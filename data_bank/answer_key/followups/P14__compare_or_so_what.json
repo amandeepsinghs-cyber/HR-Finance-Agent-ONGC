@@ -1,0 +1,33 @@
+{
+  "job_id": "a283618f-108a-4235-a942-c30454dbd60a",
+  "total_bytes_processed": 72696377,
+  "executed_at": "2026-10-20T06:33:17.727431+00:00",
+  "elapsed_seconds": 0.92,
+  "row_count": 2,
+  "columns": [
+    "grade_id",
+    "avg_monthly_headcount_paid",
+    "prp_per_fte_excellent_inr",
+    "prp_per_fte_very_good_inr",
+    "loss_per_fte_inr",
+    "prp_pct_of_basic"
+  ],
+  "rows": [
+    {
+      "grade_id": "E5",
+      "avg_monthly_headcount_paid": 2228.0,
+      "prp_per_fte_excellent_inr": 276065.0,
+      "prp_per_fte_very_good_inr": 241557.0,
+      "loss_per_fte_inr": 34508.0,
+      "prp_pct_of_basic": 12.69
+    },
+    {
+      "grade_id": "E7",
+      "avg_monthly_headcount_paid": 937.0,
+      "prp_per_fte_excellent_inr": 305118.0,
+      "prp_per_fte_very_good_inr": 266978.0,
+      "loss_per_fte_inr": 38140.0,
+      "prp_pct_of_basic": 9.9
+    }
+  ]
+}

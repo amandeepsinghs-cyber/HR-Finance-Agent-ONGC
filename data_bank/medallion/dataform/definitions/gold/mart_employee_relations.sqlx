@@ -1,0 +1,40 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_employee_relations",
+  description: "Grievance logs, litigation tracking, court forums, aging disputes, and POSH internal complaints committee registers"
+}
+
+SELECT
+  gl.case_id,
+  gl.emp_id,
+  e.name AS emp_name,
+  e.name AS name,
+  e.gender,
+  gl.wc_id,
+  w.name AS wc_name,
+  gl.case_type,
+  gl.case_category,
+  gl.forum,
+  gl.filing_date,
+  gl.fiscal_year,
+  gl.status,
+  gl.interim_stay_granted,
+  gl.age_days,
+  gl.age_years,
+  gl.is_aged_over_3_years,
+  gl.next_hearing_date,
+  gl.subject_summary,
+  icc.presiding_officer_name,
+  icc.external_member_name,
+  icc.external_member_ngo,
+  icc.women_members_pct,
+  icc.contact_email,
+  COALESCE(posh.posh_complaints_count, 0) AS posh_complaints_count,
+  COALESCE(posh.posh_completed_within_90_days_pct, 100.0) AS posh_completed_within_90_days_pct,
+  COALESCE(posh.posh_substantiated_count, 0) AS posh_substantiated_count
+FROM ${ref("grievances_litigation")} gl
+LEFT JOIN ${ref("employee_master")} e ON gl.emp_id = e.emp_id
+LEFT JOIN ${ref("dim_work_centre")} w ON gl.wc_id = w.wc_id
+LEFT JOIN ${ref("icc_committees")} icc ON gl.wc_id = icc.wc_id AND gl.fiscal_year = icc.fiscal_year
+LEFT JOIN (SELECT wc_id, fiscal_year, COUNT(DISTINCT case_id) AS posh_complaints_count, COUNT(DISTINCT CASE WHEN outcome_category LIKE '%substantiated%' THEN case_id END) AS posh_substantiated_count, AVG(CASE WHEN inquiry_days <= 90 THEN 100.0 ELSE 0.0 END) AS posh_completed_within_90_days_pct FROM ${ref("posh_cases")} GROUP BY 1, 2) posh ON gl.wc_id = posh.wc_id AND gl.fiscal_year = posh.fiscal_year

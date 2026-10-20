@@ -1,0 +1,105 @@
+{
+  "job_id": "a982465e-03fd-415d-aafa-6b2c87df1432",
+  "total_bytes_processed": 710584,
+  "executed_at": "2026-10-20T06:38:43.073997+00:00",
+  "elapsed_seconds": 0.71,
+  "row_count": 15,
+  "columns": [
+    "discipline",
+    "mid_career_voluntary_exits",
+    "exits_fy26",
+    "share_pct"
+  ],
+  "rows": [
+    {
+      "discipline": "Finance & Accounts (F&A)",
+      "mid_career_voluntary_exits": 35,
+      "exits_fy26": 22,
+      "share_pct": 20.0
+    },
+    {
+      "discipline": "Production",
+      "mid_career_voluntary_exits": 35,
+      "exits_fy26": 28,
+      "share_pct": 20.0
+    },
+    {
+      "discipline": "Drilling",
+      "mid_career_voluntary_exits": 23,
+      "exits_fy26": 13,
+      "share_pct": 13.1
+    },
+    {
+      "discipline": "Electrical",
+      "mid_career_voluntary_exits": 12,
+      "exits_fy26": 12,
+      "share_pct": 6.9
+    },
+    {
+      "discipline": "Human Resources (HR)",
+      "mid_career_voluntary_exits": 11,
+      "exits_fy26": 4,
+      "share_pct": 6.3
+    },
+    {
+      "discipline": "Information Technology",
+      "mid_career_voluntary_exits": 10,
+      "exits_fy26": 7,
+      "share_pct": 5.7
+    },
+    {
+      "discipline": "Mechanical",
+      "mid_career_voluntary_exits": 9,
+      "exits_fy26": 9,
+      "share_pct": 5.1
+    },
+    {
+      "discipline": "Reservoir",
+      "mid_career_voluntary_exits": 9,
+      "exits_fy26": 9,
+      "share_pct": 5.1
+    },
+    {
+      "discipline": "Geology",
+      "mid_career_voluntary_exits": 7,
+      "exits_fy26": 7,
+      "share_pct": 4.0
+    },
+    {
+      "discipline": "Chemistry",
+      "mid_career_voluntary_exits": 5,
+      "exits_fy26": 5,
+      "share_pct": 2.9
+    },
+    {
+      "discipline": "Geophysics (Surface)",
+      "mid_career_voluntary_exits": 5,
+      "exits_fy26": 5,
+      "share_pct": 2.9
+    },
+    {
+      "discipline": "Materials Management (MM)",
+      "mid_career_voluntary_exits": 5,
+      "exits_fy26": 5,
+      "share_pct": 2.9
+    },
+    {
+      "discipline": "Environment & Safety (HSE)",
+      "mid_career_voluntary_exits": 4,
+      "exits_fy26": 4,
+      "share_pct": 2.3
+    },
+    {
+      "discipline": "Instrumentation",
+      "mid_career_voluntary_exits": 3,
+      "exits_fy26": 3,
+      "share_pct": 1.7
+    },
+    {
+      "discipline": "Medical Services",
+      "mid_career_voluntary_exits": 2,
+      "exits_fy26": 2,
+      "share_pct": 1.1
+    }
+  ]
+}

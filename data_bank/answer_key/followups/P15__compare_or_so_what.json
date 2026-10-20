@@ -1,0 +1,57 @@
+{
+  "job_id": "b8d87f82-fb2c-40e7-9e21-f47f3a90eff2",
+  "total_bytes_processed": 5522,
+  "executed_at": "2026-10-20T06:33:20.503520+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "avg_net_profit_prev3_cr",
+    "obligation_2pct_cr",
+    "csr_spend_cr",
+    "surplus_cr",
+    "spend_pct_of_obligation"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "avg_net_profit_prev3_cr": 27401.0,
+      "obligation_2pct_cr": 548.0,
+      "csr_spend_cr": 450.0,
+      "surplus_cr": -98.0,
+      "spend_pct_of_obligation": 82.1
+    },
+    {
+      "fiscal_year": "FY23",
+      "avg_net_profit_prev3_cr": 27470.0,
+      "obligation_2pct_cr": 549.4,
+      "csr_spend_cr": 452.0,
+      "surplus_cr": -97.4,
+      "spend_pct_of_obligation": 82.3
+    },
+    {
+      "fiscal_year": "FY24",
+      "avg_net_profit_prev3_cr": 33400.3,
+      "obligation_2pct_cr": 668.0,
+      "csr_spend_cr": 650.0,
+      "surplus_cr": -18.0,
+      "spend_pct_of_obligation": 97.3
+    },
+    {
+      "fiscal_year": "FY25",
+      "avg_net_profit_prev3_cr": 40426.4,
+      "obligation_2pct_cr": 808.5,
+      "csr_spend_cr": 908.0,
+      "surplus_cr": 99.5,
+      "spend_pct_of_obligation": 112.3
+    },
+    {
+      "fiscal_year": "FY26",
+      "avg_net_profit_prev3_cr": 43176.5,
+      "obligation_2pct_cr": 863.5,
+      "csr_spend_cr": 949.0,
+      "surplus_cr": 85.5,
+      "spend_pct_of_obligation": 109.9
+    }
+  ]
+}

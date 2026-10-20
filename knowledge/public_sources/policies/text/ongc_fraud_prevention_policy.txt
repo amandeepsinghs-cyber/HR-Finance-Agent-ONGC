@@ -1,0 +1,439 @@
+                                                                           Annexure-1
+
+                       Fraud Prevention Policy
+Background
+
+ONGC is a Maharatna Public Sector undertaking engaged in exploration and
+production of Oil & Gas. One of the Mission of ONGC is for Imbibing high standards
+of business ethics and organizational values.
+
+As per Guidelines on Corporate Governance for Central Public Sector Enterprises
+(CPSE’s) issued by Department of Public Enterprises (DPE):
+
+“The Board should implement policies and procedures which should include:
+
+(a) Staff responsibilities in relation to fraud prevention and identification;
+(b) Responsibility of fraud investigation once a fraud has been identified;
+(c) Process of reporting on fraud related matters to management;
+(d) Reporting & recording processes to be followed to record allegations of fraud;
+and
+(e) Requirements of training to be conducted on fraud prevention and identification.”
+
+Further, Section 177(9) of the Companies Act, 2013 requires that every listed
+company or such class or classes of companies, as may be prescribed, shall
+establish a vigil mechanism for directors and employees to report genuine concerns
+in such manner as may be prescribed. Besides, as per section 143(12) of the Act, if
+an auditor of a company, in the course of the performance of his duties as auditor,
+has reason to believe that an offence involving fraud is being or has been committed
+against the company by officers or employees of the company, he shall immediately
+report the matter to the Central Government within such time and in such manner as
+may be prescribed.
+
+As per Auditing and Assurance Standard (AAS) 4 issued by The Institute of
+Chartered Accountants of India (ICAI), “The Auditor’s Responsibility to Consider
+Fraud and Error in an Audit of Financial Statements” states “The primary
+responsibility for the prevention and detection of fraud and error rests with both those
+charged with the governance and the management of an entity.”
+
+In line with the above, ONGC has designed the fraud risk management framework
+by development of Fraud Prevention Policy to convey the commitment of the board
+of directors, the audit committee, and senior management to assess, prevent and
+manage fraud risk. ONGC’s fraud risk management framework is intended to be
+integrated into ONGC’s philosophy, policies and business plans and be an integral
+part of the overall risk management. Accordingly, the Board approved Policy is as
+under:
+
+1.     Mission Statement of the Fraud Prevention Policy
+
+
+
+                                                              1
+“To protect ONGC from any kind of frauds resulting in loss and reputation damage
+by adopting integrated measures for effective and efficient fraud prevention,
+detection and remediation.”
+
+2.       Objectives of the policy
+The Fraud Prevention Policy shall help in strengthening the overall fraud risk
+management framework of ONGC and seeks to:
+
+        Promote an ethical and fraud-free environment at ONGC.
+        Create a culture at ONGC that promotes fraud prevention by all stakeholders;
+         including senior management, employees, business associates, vendors,
+         customers and others doing business or having dealings with ONGC.
+        Create awareness among senior management, employees, business
+         associates, vendors, customers and others doing business or having dealings
+         with ONGC of their responsibilities for prevention, detection and reporting of
+         fraud and for establishing controls and procedures for identification,
+         prevention and detection of fraud.
+
+3.       Scope of the policy
+This policy applies to any suspected or detected fraud involving senior management
+and employees of ONGC. The policy would also apply to persons appointed on
+adhoc/temporary/contract basis, trainees, apprentices as well as representatives of
+business associates, vendors, customers, and others doing business or having
+dealings with ONGC.
+
+The policy is intended to cover both internal and external fraud.
+
+This “Fraud Prevention Policy” applies to all business units, corporate entities,
+departments and functions of ONGC including corporate and other offices, assets,
+basins, services, institutes and plants.
+
+This policy is an integral part of ONGC’s overall Governance framework and should
+be read and applied in conjunction with other policies and procedures particularly,
+Code of Conduct for Board Members and Senior Management personnel, Whistle
+Blower policy and conduct of the employees which is regulated by the Employees’
+(Conduct, Discipline and Appeal Rules - 'CDA'), Standing Orders, Risk Management
+Policy, Information Security Management policy. ONGC is also governed by the
+guidelines of DPE, Chief Vigilance Commission, Comptroller and Auditor General of
+India ('C&AG'), Administrative Ministries and other nodal Ministries.
+
+4.       Definition of Fraud
+The term fraud refers to an intentional act by one or more individuals among
+management, those charged with governance, employees, or third parties, involving
+the use of deception to obtain an unjust or illegal advantage.
+
+As per section 447 of the Companies Act, 2013, “fraud” in relation to affairs of a
+company or anybody corporate, includes any act, omission, concealment of any fact
+or abuse of position committed by any person or any other person with the
+connivance in any manner, with intent to deceive, to gain undue advantage from, or
+to injure the interests of, the company or its shareholders or its creditors or any other
+person, whether or not there is any wrongful gain or wrongful loss.
+
+                                                               2
+“wrongful gain” means the gain by unlawful means of property to which the person
+gaining is not legally entitled;
+“wrongful loss” means the loss by unlawful means of property to which the person
+losing is legally entitled.
+
+5.      Actions Constituting Fraud
+The term fraud could have a wide range of coverage such as, but not limited to
+forgery, bribery, corruption, deception, embezzlement, misappropriation, false
+representation, concealment of material facts, theft and collusion. An illustrative list
+of actions constituting fraud is given below:
+
+    Misappropriation of funds, securities, supplies or other assets
+    Forgery or alteration of any document, record or account belonging to ONGC
+    Forgery or alteration of a cheque, bank draft, account or any other financial
+     instrument
+    Fraudulent financial reporting
+    Mis-utilization of ONGC funds for personal purposes
+    Authorization or receipt of payments for goods not supplied or services not
+     rendered
+    Unauthorised destruction, removal or inappropriate use of records, furniture,
+     fixtures, and equipment;
+    Making false written or oral statements or representation with respect to
+     Company activities
+    Impropriety in the handling or reporting of money or financial transactions
+    Profiteering as a result of insider knowledge of ONGC’s activities
+    Disclosing confidential and proprietary information to unauthorised parties
+    Bribery or kickbacks
+    Accepting or seeking anything of material value from contractors, vendors, or
+     persons providing services/materials to the ONGC
+    Wilful suppression of facts/deception in matters of appointment; placements;
+     submission of reports
+    Any other act that falls under the scope of fraudulent activity
+
+6.      Fraud Reporting & Investigation
+
+ONGC shall have a defined response mechanism in case of suspected or identified
+fraud.
+
+6.1 Fraud Reporting
+Any employee, representative of vendors, contractors, or any other third party doing
+any type of business with ONGC as soon as he / she comes to know of any
+suspected fraud or fraudulent activity must report such incident(s). Such reporting
+will be through Nodal Officer(s) at Work Centre Level.
+
+Anonymous / Pseudonymous Complaints will not be entertained for further action at
+any stage.
+
+Whenever complaint of Fraud is received, report thereof shall be submitted by Nodal
+Officer to Fraud Risk Management Committee (FRMC) through the Fraud Control
+
+
+                                                              3
+Officer (FCO) for their review and further reporting the matter to the Audit & Ethics
+Committee and/or to Board, as deemed fit.
+
+The Nodal Officer and other designated authorities shall make every effort to protect
+the rights and the reputations of everyone involved in a report of suspected fraud,
+including the individual who in good faith alleged the complaint.
+
+ONGC will treat all information received as part of a complaint/an investigation
+confidentially. The existence and nature of a report or investigation details shall not
+be disclosed, other than to those who need to know for the purposes of investigating
+or dealing with the matter.
+
+6.2 Investigation
+
+Based on the merits of the complaint, FRMC shall nominate an investigator who will
+be responsible for investigation. The Investigator shall conduct an investigation in
+which the complainant and the Subject may be provided an opportunity to be heard.
+The investigation shall be conducted fairly, as a neutral fact finding process and
+without presumption of guilt. The Investigator nominated for the investigation will
+report to the FRMC through FCO. After completion of the investigation, due and
+appropriate action, which may include administrative action, disciplinary action, civil
+or criminal action or closure of the matter (if it is proved that fraud is not committed,
+etc.) depending on the outcome of the investigation – shall be undertaken as per
+relevant rules of ONGC.
+
+The findings of the investigation shall be evaluated by the FRMC and based on the
+materiality of the case, the same shall be reported to the Audit & Ethics Committee
+and the Board.
+
+The FRMC shall also inform the external auditor(s) of any fraud of material nature
+that could affect the ONGC’s financial statements.
+
+7.     Responsibility For Fraud Prevention
+Every employee(full time, part time, adhoc, temporary, contract, ex-employee,
+advisor), representative of vendors, suppliers, contractors, consultants, service
+providers or any other agency(ies) doing any type of business with ONGC, is
+expected and shall be responsible to ensure that there is no fraudulent act
+committed by them while performing any business transaction(s) with ONGC. As
+soon as it is learnt that a fraud or suspected fraud has taken or is likely to take place
+they should immediately apprise the same to the concerned as per the procedure.
+
+8.     Awareness / Integrity Pledge
+
+Awareness about fraud prevention shall be disseminated through ONGC website
+and every employee shall give an undertaking and take “Fraud Prevention Pledge” to
+certify that he/she would adhere to the Fraud Prevention Policy of ONGC and shall
+not indulge or allow others to indulge in fraudulent activities and that he/she would
+immediately apprise ONGC of any fraud/suspected fraud as soon as it comes to
+notice. Chief-ER will take necessary action in this regard. (Refer Annexure-1A).
+
+
+9.     Incorporation Of Fraud Prevention Policy In Tenders /Contracts Etc.
+
+
+                                                               4
+Due amendments shall be made in the General Conditions of Contracts wherein all
+the Bidders/Service Providers/Vendors/Consultants etc. shall be required to certify
+that they would adhere to the Fraud Prevention Policy of ONGC and shall not
+indulge themselves or allow others to indulge in fraudulent activities and that they
+would immediately apprise the ONGC of the fraud/suspected fraud as soon as it
+comes to their notice. Similar clause regarding adherence to the Fraud Prevention
+Policy of ONGC will also be added in sales agreements, and other service
+agreement etc. with customers. Necessary changes in the tender documents and
+sales / service agreements shall be carried out by Chief MM and Chief Marketing
+respectively.
+
+
+10.   Implementation and Administration of the Policy
+The Chairman & Managing Director (CMD) shall be responsible for administration,
+interpretation and implementation of the policy and shall be assisted by FRMC.
+
+Any revision of the Policy shall be carried with the approval of Board through A&EC.
+
+
+
+
+                                                            5
+                                                                           Annexure-2
+
+    Operating Procedure of Fraud Prevention
+                    Policy
+A.      Fraud Risk Management Framework & Governance
+The organizational structure for fraud risk management is as under:
+
+                                  Board of Directors
+
+                                Audit & Ethics Committee
+
+                              Fraud Risk Management Committee
+
+
+                                  Fraud Control Officer
+
+
+
+
+     Assets       Basin           Plant       Services      Trusts         Institute
+       Nodal        Nodal          Nodal         Nodal           Nodal        Nodal
+       officer      officer        officer       officer         officer      officer
+
+
+The Board of Directors, Audit & Ethics Committee („A&EC‟), Fraud Risk Management
+Committee („FRMC‟), Fraud Control Officer ('FCO'), Nodal officers, Vigilance,
+Internal Audit, HR, Security, Management and Staff have roles to play in ONGC‟s
+fraud risk management program. To help ensure that ONGC‟s fraud management
+program is effective, it is important that personnel at all levels of the organization
+understand their roles and responsibilities.
+
+A.1 Board of Directors
+The Board of Directors has overall responsibility of governance and to ensure that
+the management designs effective fraud risk management framework to encourage
+ethical behaviour by employees, customers, vendors, business associates, service
+providers and others doing business or having dealings with ONGC.
+
+A.2 Audit & Ethics Committee
+The A&EC has responsibility of maintaining oversight on the fraud risk management
+processes and review of adequacy of fraud risk management framework. A&EC shall
+have the following responsibility:
+
+     Review functioning and provide guidance to the FRMC
+     Review of reports submitted by FRMC
+
+                                                             1
+A.3 Fraud Risk Management Committee
+Fraud Risk Management Committee (FRMC) shall be responsible for overseeing the
+fraud risk management at ONGC. FRMC shall comprise of:
+
+ Chief Internal Audit as Fraud Control Officer
+ Chief – Legal
+ Chief – Material Management
+ Chief – Corporate Finance
+ Head – ICE
+ Chief – ER
+
+    The management of the ONGC or FRMC members may nominate a chairman for
+    the FRMC. The FRMC shall assist the Chairman and Managing Director ('CMD') in
+    implementing the fraud prevention policy and work closely with the Executive
+    Committee ('EC'). FRMC in consultation with the A&EC may recommend for
+    induction of additional members to the FRMC as and when found necessary.
+
+A.4 Role of Fraud Risk Management Committee
+    Review reports of the FCO and Nodal officers
+    Nominate investigator for conducting investigations as required
+    Ensure that vigorous and prompt investigations are carried out on suspected and
+     detected cases of fraud
+    Ascertain appropriate disciplinary and/or legal action is taken against the
+     perpetrators and ensure that appropriate action is taken to recover assets
+    Preparation of reports for the Board of Directors /Audit & Ethics Committee, as
+     required
+
+A.5 Fraud Control Officer
+Chief Internal Audit shall assume the role of FCO who is also a member of the
+FRMC and responsible as convener and coordinator. Quarterly report shall be
+provided to Chief Vigilance Officer for appraisal / scrutiny.
+
+A.6 Nodal Officer
+
+Nodal officer(s) (not below E-5 level) shall be nominated in each location/work centre
+by the Head of the location/work centre, i.e. corporate/asset/basin/plant/service/trust/
+institute to coordinate fraud prevention and detection activities as per the Policy.
+They shall be responsible for coordinating with the Fraud Control Officer/FRMC. The
+nodal officers at locations/work centre shall do the preliminary enquiry/investigation
+before forwarding the case to FRMC.
+
+B.     Response and Investigation of Fraud
+
+ONGC shall have the following response mechanism in case of suspected or
+identified fraud:
+
+
+
+
+                                                              2
+                              Audit & Ethics Committee
+
+
+
+
+    Investigation Team
+
+                                      FRMC                 Chief Vigilance Officer
+
+
+
+
+     Protected Disclosure –                                  Others - Secured
+                                Nodal officer /Others
+         Whistle blower                                          Email ID
+
+
+
+
+B.1 Reporting Procedure
+
+Any employee, representative of vendor, contractor, or any other third party doing
+any type of business with ONGC, as soon as he / she comes to know of any
+suspected fraud or fraudulent activity must report such incident(s). Such reporting
+will be through Nodal Officer(s) at Work Centre Level.
+     The details of the fraud /suspected fraud shall be communicated by Nodal Officer
+      to the FRMC after preliminary investigations.
+     Anonymous / Pseudonymous Complaints will not be entertained for further action
+      at any stage.
+     The Nodal Officer and other designated authorities shall make every effort to
+      protect the rights and the reputations of everyone involved in a report of
+      suspected fraud, including the individual who in good faith alleged the complaint.
+
+B.2 Fraud Response Plan
+
+ FRMC will comply with CVC guidelines and ensure that complaints having
+  elements of corruption are forwarded to the CVO. Record will be maintained for
+  all the complaints received and processed including the complaints referred to
+  CVO, for periodic verification by CVO.
+
+ Other reported fraud instances should be received by FRMC. An initial review
+  should be done of the complaint; the facts presented should be confirmed by
+  examining the validity of the allegation and defining the severity of the allegation.
+  The severity would be based on identifying if the allegation is a potential violation
+  of law, rules or ONGC policy. A record of the details received such as
+  background, history of fraud, details of the subject, documentary evidence etc.
+  will be maintained by FRMC.
+
+ The FRMC shall endeavor to meet as early as possible, about fraud/suspected
+  fraud and should agree on timelines for completion of investigation on case to
+  case basis.
+
+ If the allegation is genuine then it shall be forwarded to the Investigator(s) to be
+  nominated by the FRMC.
+
+                                                               3
+ The Investigator(s) nominated by the “FRMC” shall be responsible for
+  investigation. The FRMC shall lay down the scope of the investigation and
+  identify a team leader for the purpose of the investigation.
+
+ FRMC shall analyse the detected frauds to improve upon systems and
+  procedures in order to avoid recurrence.
+
+B.3 Investigation
+
+   The Investigator nominated shall conduct an investigation in which the
+    complainant and the subject shall be provided an opportunity to be heard. The
+    evidence provided by the parties shall be investigated thoroughly. The
+    investigation shall be conducted fairly, as a neutral fact finding process and
+    without presumption of guilt.
+   If Investigator/ FRMC determine that a report is not credible or instance is not
+    fraudulent in nature, the investigator shall document this determination along with
+    facts based on which determination is made. Thereafter, the determination shall
+    be concurred by FRMC.
+B.4 Reporting
+
+ The Investigator nominated by FRMC for the investigation will report to the
+  FRMC. The findings of the investigation shall be evaluated by the FRMC and
+  based on the merits of the case, the same shall be reported to the Audit & Ethics
+  Committee and/or the Board. The FRMC shall inform the external auditor of any
+  fraud that could affect the ONGC‟s financial statements.
+
+ Complaint referred by FRMC will be dealt by Vigilance and the decision will be
+  taken by CVO, as per CVC Manual.
+
+B.5 Disciplinary Action
+
+   Failure to comply with this policy or an employee who is engaged in any form of
+    fraud or an employee who suspects or discovers fraudulent activity and fails to
+    report the same as required by this policy or an employee who intentionally
+    reports false or misleading information is subject to disciplinary action and will be
+    subject to appropriate action from Management.
+
+   Depending upon the outcome of the investigation, due and appropriate action,
+    which may include administrative action, disciplinary action, civil or criminal action
+    or closure of the matter, shall be undertaken as per relevant rules of ONGC/CVC/
+    Government guidelines.
+
+    Disciplinary actions and procedure to be followed by HR - Discipline & Appeals
+    group subsequent to completion of an investigation by Investigation team will be
+    taken as per the ONGC Rules.
+
+B.6 Confidentiality
+
+ONGC will treat all information received as part of a complaint/an investigation
+confidentially. The existence and nature of a report or investigation details shall not
+be disclosed, other than to those who need to know for the purposes of investigating
+or dealing with the matter.
+
+                                                                4
+

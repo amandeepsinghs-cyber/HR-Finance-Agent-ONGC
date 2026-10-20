@@ -1,0 +1,31 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "succession_plan",
+  description: "Succession management register for critical executive leadership positions (General Manager E7 to Executive Director E9)."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_1) AS position_id,
+    TRIM(col_2) AS role_title,
+    TRIM(col_3) AS wc_id,
+    TRIM(col_4) AS discipline_id,
+    TRIM(col_5) AS criticality_tier,
+    TRIM(col_6) AS incumbent_emp_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_7), ''), 1, 10)) AS incumbent_retire_date,
+    TRIM(col_8) AS fiscal_year,
+    TRIM(col_9) AS successor_1_emp_id,
+    TRIM(col_10) AS successor_1_readiness,
+    CASE WHEN LOWER(TRIM(col_11)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_11)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS successor_1_has_ne_hard_station,
+    TRIM(col_12) AS successor_2_emp_id,
+    TRIM(col_13) AS successor_2_readiness,
+    CASE WHEN LOWER(TRIM(col_14)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_14)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS successor_2_has_ne_hard_station,
+    TRIM(col_15) AS readiness_gap_reason
+  FROM ${ref("excel_succession_planning")}
+  WHERE _row_number >= 7 AND _sheet_name = 'succession_plan' AND col_1 IS NOT NULL AND TRIM(col_1) != '' AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Subtotal|^Total|^Summary)') AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Strictly Confidential|^Note:)')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY position_id ORDER BY _ingest_ts DESC) = 1

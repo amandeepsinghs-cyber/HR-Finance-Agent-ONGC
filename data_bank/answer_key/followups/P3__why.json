@@ -1,0 +1,30 @@
+{
+  "job_id": "32e238d0-888d-41b0-8dc5-b9980ffc9e98",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:13.438357+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 7.0",
+      "heading": "Pre-Retirement Tenure Exemption",
+      "provision": "JRTP 7.2-7.3",
+      "quote_snippet": "7.2 Exceptions to Protection: Pre-retirement exemption shall not apply where: (a) the officer explicitly requests an outstation transfer to their declared home town / choice retirement station under Rule 14; or (b) an administrative or disciplinary transfer is ordered under the specific written directions of the Director (HR) or CMD. 7.3 Statistical Compliance: Analysis of enterprise SAP records indicates that non-initial transfers within 3 years of retirement account for less than 2.0% of total transfer actions, reflecting rigorous compliance with this protective provision."
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 7.0",
+      "heading": "Pre-Retirement Tenure Exemption",
+      "provision": "JRTP 7.1 (purpose)",
+      "quote_snippet": "7.1 Superannuation Settlement Protection: Executives who are within 2 (two) years of superannuation (age 58 years and above) shall be strictly exempt from mandatory outstation transfers. In organizational practice and annual transfer planning, executives with 3 years or less remaining until superannuation (age 57 years and above) shall ordinarily not be transferred out of their current station, to enable smooth superannuation transition, pension settlement, family stabilization, and medical management."
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "job_id": "cf92063f-5908-4d02-9641-60a38246f930",
+  "total_bytes_processed": 24655800,
+  "executed_at": "2026-10-20T06:42:59.726862+00:00",
+  "elapsed_seconds": 0.69,
+  "row_count": 17,
+  "columns": [
+    "short_name",
+    "is_expanding",
+    "hc_mar21",
+    "hc_mar26",
+    "mmboe_fy26",
+    "boe_per_employee_fy26"
+  ],
+  "rows": [
+    {
+      "short_name": "Eastern Offshore",
+      "is_expanding": true,
+      "hc_mar21": 960,
+      "hc_mar26": 1011,
+      "mmboe_fy26": 28.13,
+      "boe_per_employee_fy26": 27828.0
+    },
+    {
+      "short_name": "Bassein & Satellite",
+      "is_expanding": false,
+      "hc_mar21": 1928,
+      "hc_mar26": 1855,
+      "mmboe_fy26": 84.5,
+      "boe_per_employee_fy26": 45552.0
+    },
+    {
+      "short_name": "Mumbai High",
+      "is_expanding": false,
+      "hc_mar21": 1703,
+      "hc_mar26": 1359,
+      "mmboe_fy26": 55.49,
+      "boe_per_employee_fy26": 40829.0
+    },
+    {
+      "short_name": "Ankleshwar Asset",
+      "is_expanding": false,
+      "hc_mar21": 1169,
+      "hc_mar26": 925,
+      "mmboe_fy26": 30.73,
+      "boe_per_employee_fy26": 33223.0
+    },
+    {
+      "short_name": "Neelam & Heera",
+      "is_expanding": false,
+      "hc_mar21": 2436,
+      "hc_mar26": 1728,
+      "mmboe_fy26": 26.32,
+      "boe_per_employee_fy26": 15234.0
+    },
+    {
+      "short_name": "Tripura Asset",
+      "is_expanding": false,
+      "hc_mar21": 1156,
+      "hc_mar26": 844,
+      "mmboe_fy26": 12.07,
+      "boe_per_employee_fy26": 14295.0
+    },
+    {
+      "short_name": "CBM Bokaro",
+      "is_expanding": false,
+      "hc_mar21": 769,
+      "hc_mar26": 557,
+      "mmboe_fy26": 7.13,
+      "boe_per_employee_fy26": 12806.0
+    },
+    {
+      "short_name": "Cambay Asset",
+      "is_expanding": false,
+      "hc_mar21": 718,
+      "hc_mar26": 508,
+      "mmboe_fy26": 5.79,
+      "boe_per_employee_fy26": 11390.0
+    },
+    {
+      "short_name": "Rajahmundry Asset",
+      "is_expanding": false,
+      "hc_mar21": 1213,
+      "hc_mar26": 845,
+      "mmboe_fy26": 7.55,
+      "boe_per_employee_fy26": 8930.0
+    },
+    {
+      "short_name": "Rajasthan Basin",
+      "is_expanding": false,
+      "hc_mar21": 117,
+      "hc_mar26": 91,
+      "mmboe_fy26": 0.8,
+      "boe_per_employee_fy26": 8742.0
+    },
+    {
+      "short_name": "Ahmedabad Asset",
+      "is_expanding": false,
+      "hc_mar21": 1697,
+      "hc_mar26": 1223,
+      "mmboe_fy26": 9.84,
+      "boe_per_employee_fy26": 8047.0
+    },
+    {
+      "short_name": "Assam Asset",
+      "is_expanding": false,
+      "hc_mar21": 2480,
+      "hc_mar26": 1822,
+      "mmboe_fy26": 13.73,
+      "boe_per_employee_fy26": 7534.0
+    },
+    {
+      "short_name": "Mehsana Asset",
+      "is_expanding": false,
+      "hc_mar21": 1790,
+      "hc_mar26": 1559,
+      "mmboe_fy26": 9.24,
+      "boe_per_employee_fy26": 5930.0
+    },
+    {
+      "short_name": "Cauvery Asset",
+      "is_expanding": false,
+      "hc_mar21": 920,
+      "hc_mar26": 675,
+      "mmboe_fy26": 3.55,
+      "boe_per_employee_fy26": 5255.0
+    },
+    {
+      "short_name": "Jorhat Asset",
+      "is_expanding": false,
+      "hc_mar21": 1815,
+      "hc_mar26": 1325,
+      "mmboe_fy26": 1.78,
+      "boe_per_employee_fy26": 1341.0
+    },
+    {
+      "short_name": "Corporate average - producing assets",
+      "is_expanding": null,
+      "hc_mar21": 20871,
+      "hc_mar26": 16327,
+      "mmboe_fy26": 296.64,
+      "boe_per_employee_fy26": 18169.0
+    },
+    {
+      "short_name": "Corporate average - whole company",
+      "is_expanding": null,
+      "hc_mar21": 28479,
+      "hc_mar26": 23117,
+      "mmboe_fy26": 296.64,
+      "boe_per_employee_fy26": 12832.0
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "job_id": "17fdfc9e-4d5e-4e32-8a27-26669f0139fb",
+  "total_bytes_processed": 46815,
+  "executed_at": "2026-10-20T06:39:09.212583+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 4,
+  "columns": [
+    "onshore_offshore",
+    "fiscal_year",
+    "manpower_cost_cr",
+    "revenue_cr",
+    "production_mmboe",
+    "regular_headcount",
+    "manpower_inr_per_boe",
+    "revenue_inr_per_boe",
+    "boe_per_employee",
+    "manpower_pct_revenue"
+  ],
+  "rows": [
+    {
+      "onshore_offshore": "onshore",
+      "fiscal_year": "FY22",
+      "manpower_cost_cr": 4662.0,
+      "revenue_cr": 40567.0,
+      "production_mmboe": 123.0,
+      "regular_headcount": 13021,
+      "manpower_inr_per_boe": 379.0,
+      "revenue_inr_per_boe": 3299.0,
+      "boe_per_employee": 9444.0,
+      "manpower_pct_revenue": 11.5
+    },
+    {
+      "onshore_offshore": "onshore",
+      "fiscal_year": "FY26",
+      "manpower_cost_cr": 4012.0,
+      "revenue_cr": 43720.0,
+      "production_mmboe": 102.2,
+      "regular_headcount": 10375,
+      "manpower_inr_per_boe": 393.0,
+      "revenue_inr_per_boe": 4278.0,
+      "boe_per_employee": 9850.0,
+      "manpower_pct_revenue": 9.2
+    },
+    {
+      "onshore_offshore": "offshore",
+      "fiscal_year": "FY22",
+      "manpower_cost_cr": 4105.0,
+      "revenue_cr": 63169.0,
+      "production_mmboe": 195.1,
+      "regular_headcount": 6772,
+      "manpower_inr_per_boe": 210.0,
+      "revenue_inr_per_boe": 3239.0,
+      "boe_per_employee": 28803.0,
+      "manpower_pct_revenue": 6.5
+    },
+    {
+      "onshore_offshore": "offshore",
+      "fiscal_year": "FY26",
+      "manpower_cost_cr": 3852.0,
+      "revenue_cr": 81426.0,
+      "production_mmboe": 194.4,
+      "regular_headcount": 5953,
+      "manpower_inr_per_boe": 198.0,
+      "revenue_inr_per_boe": 4188.0,
+      "boe_per_employee": 32663.0,
+      "manpower_pct_revenue": 4.7
+    }
+  ]
+}

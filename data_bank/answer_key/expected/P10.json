@@ -1,0 +1,37 @@
+{
+  "job_id": "3e9e6951-6b81-4a78-bff4-8d9d810ef288",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:31.698055+00:00",
+  "elapsed_seconds": 0.8,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 2.0",
+      "heading": "Time-Bound Promotion Channel (E1\u2192E4)",
+      "provision": "R&P 2.1-2.3 (time-bound channel)",
+      "quote_snippet": "2.1 Qualifying Residency Requirements: Promotions within the junior executive ranks (E1 through E4) shall be governed by the Time-Bound Promotion Channel subject to completing prescribed residency and meeting the APAR benchmark: (a) Promotion from E1 to E2: 3 (three) completed years of qualifying residency service at Grade E1. (b) Promotion from E2 to E3: 3 (three) completed years of qualifying residency service at Grade E2. (c) Promotion from E3 to E4: 3 to 4 (three to four) completed years of qualifying residency service at Grade E3. 2.2 Non-Vacancy Based Progression: In the time-bound channel, promotions are not constrained by fixed budgetary post vacancies; all officers who complete the qualifying residency and achieve the required performance rating and vigilance clearance shall be promoted. 2.3 Effective Date of Promotion: Time-bound promotions shall take effect from 1st January or 1st July following completion of qualifying residency."
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 3.0",
+      "heading": "APAR Benchmark for Time-Bound Promotion",
+      "provision": "R&P 3.1-3.2 (APAR benchmark)",
+      "quote_snippet": "3.1 Performance Benchmark Threshold: To qualify for time-bound promotion, an executive must maintain a consistent track record of satisfactory performance across the qualifying residency years: (a) For E1\u2192E2: Minimum cumulative rating of 'Good' (score \u2265 3.0 / 60%) in the annual e-APAR ratings for the preceding 3 years. (b) For E2\u2192E3: Minimum cumulative rating of 'Good' to 'Very Good' (score \u2265 3.5 / 70%) across the preceding 3 years, with no adverse remark. (c) For E3\u2192E4: Minimum cumulative rating of 'Very Good' (score \u2265 3.5 / 70%) across the preceding residency period. 3.2 Adverse Remark Disqualification: Any uncommunicated or sustained adverse remark, or an APAR rating below 'Good' in any single year, shall result in deferment of promotion by one year until the benchmark is restored."
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 7.0",
+      "heading": "Vigilance Clearance as Pre-Condition",
+      "provision": "R&P 7.1-7.2 (vigilance clearance)",
+      "quote_snippet": "7.1 Mandatory Vigilance Clearance: Clear and unconditional vigilance clearance from the Chief Vigilance Officer (CVO) is a non-negotiable mandatory prerequisite for placing any officer on the promotion panel or releasing promotion orders. 7.2 Disqualifying Vigilance Status: An officer shall not be granted promotion if: (a) under suspension; (b) a charge-sheet for major penalty disciplinary proceedings under CDA Rule 14 has been issued; or (c) prosecution for a criminal charge is pending."
+    }
+  ]
+}

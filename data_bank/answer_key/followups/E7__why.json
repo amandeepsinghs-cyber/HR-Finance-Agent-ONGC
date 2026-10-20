@@ -1,0 +1,99 @@
+{
+  "job_id": "61dd5404-7420-4ba2-814d-2c0ae717882f",
+  "total_bytes_processed": 8624,
+  "executed_at": "2026-10-20T06:33:14.687377+00:00",
+  "elapsed_seconds": 0.84,
+  "row_count": 14,
+  "columns": [
+    "metric",
+    "fy25",
+    "fy26",
+    "change"
+  ],
+  "rows": [
+    {
+      "metric": "brent_usd_bbl",
+      "fy25": 79.2,
+      "fy26": 70.9,
+      "change": -8.3
+    },
+    {
+      "metric": "crude_realisation_usd_bbl",
+      "fy25": 76.9,
+      "fy26": 68.4,
+      "change": -8.5
+    },
+    {
+      "metric": "inr_usd_fx",
+      "fy25": 84.56,
+      "fy26": 88.33,
+      "change": 3.77
+    },
+    {
+      "metric": "gross_revenue_inr_cr",
+      "fy25": 137846.0,
+      "fy26": 132508.0,
+      "change": -5338.0
+    },
+    {
+      "metric": "statutory_levies_inr_cr",
+      "fy25": 30690.13,
+      "fy26": 25999.0,
+      "change": -4691.13
+    },
+    {
+      "metric": "royalty_inr_cr",
+      "fy25": 13508.91,
+      "fy26": 12965.0,
+      "change": -543.91
+    },
+    {
+      "metric": "oidb_cess_inr_cr",
+      "fy25": 13233.22,
+      "fy26": 13034.0,
+      "change": -199.22
+    },
+    {
+      "metric": "windfall_tax_inr_cr",
+      "fy25": 3948.0,
+      "fy26": 0.0,
+      "change": -3948.0
+    },
+    {
+      "metric": "operating_expenses_inr_cr",
+      "fy25": 29580.56,
+      "fy26": 43275.99,
+      "change": 13695.43
+    },
+    {
+      "metric": "employee_cost_inr_cr",
+      "fy25": 10720.0,
+      "fy26": 10211.0,
+      "change": -509.0
+    },
+    {
+      "metric": "ebitda_inr_cr",
+      "fy25": 66855.31,
+      "fy26": 63284.03,
+      "change": -3571.28
+    },
+    {
+      "metric": "dda_inr_cr",
+      "fy25": 25501.51,
+      "fy26": 25197.01,
+      "change": -304.5
+    },
+    {
+      "metric": "pbt_inr_cr",
+      "fy25": 41353.8,
+      "fy26": 38087.02,
+      "change": -3266.78
+    },
+    {
+      "metric": "pat_inr_cr",
+      "fy25": 35610.0,
+      "fy26": 32894.0,
+      "change": -2716.0
+    }
+  ]
+}

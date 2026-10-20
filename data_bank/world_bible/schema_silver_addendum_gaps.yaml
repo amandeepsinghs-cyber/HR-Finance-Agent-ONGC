@@ -1,0 +1,374 @@
+version: '1.0'
+layer: silver
+metadata:
+  title: ONGC Silver Layer Schema Addendum - Gap-Closure Sprint (CMD Stress Test Gaps)
+  project: ONGC HR & Finance Agentic Data Bank
+  description: Proposed silver schema addendum defining 4 new tables closing data gaps identified in Step 5.4 stress testing (Environmental incidents, POSH register, Apprentices ledger, GeM procurement channel).
+  total_tables: 4
+
+tables:
+- table_name: env_incidents
+  spec_id: GAP1
+  description: Environmental & process-safety incident register tracking oil spills, gas leaks, well-control/blowout events, effluent/produced-water exceedances, and flaring exceedances with regulatory notices and statutory penalties.
+  grain: One row per environmental or process-safety incident event
+  primary_key:
+  - incident_id
+  columns:
+  - name: incident_id
+    type: STRING
+    nullable: false
+    description: Unique environmental incident identifier code (e.g. ENV-00001)
+  - name: date
+    type: DATE
+    nullable: false
+    description: Date of incident occurrence
+  - name: fiscal_year
+    type: STRING
+    nullable: false
+    description: Fiscal year of incident (FY22 through FY27)
+  - name: wc_id
+    type: STRING
+    nullable: false
+    description: Operating work centre identifier
+    fk: dim_work_centre.wc_id
+  - name: field_id
+    type: STRING
+    nullable: true
+    description: Producing oil/gas field identifier where incident occurred (nullable for plants/basins)
+    fk: dim_field.field_id
+  - name: incident_type
+    type: STRING
+    nullable: false
+    description: Categorisation of environmental or process safety event
+    accepted_values:
+    - oil_spill
+    - gas_leak
+    - well_control_blowout
+    - effluent_discharge_exceedance
+    - flaring_exceedance
+  - name: severity
+    type: STRING
+    nullable: false
+    description: Process safety severity tier based on API RP 754 guidance
+    accepted_values:
+    - Tier_1
+    - Tier_2
+    - Tier_3
+  - name: volume_released
+    type: NUMERIC
+    nullable: false
+    description: Quantitative physical volume released or discharged during incident
+  - name: volume_unit
+    type: STRING
+    nullable: false
+    description: Unit of measurement for volume released
+    accepted_values:
+    - bbl
+    - m3
+  - name: regulator
+    type: STRING
+    nullable: false
+    description: Statutory regulatory authority with primary jurisdiction
+    accepted_values:
+    - SPCB
+    - PNGRB
+    - DGMS
+    - OISD
+  - name: notice_issued
+    type: BOOL
+    nullable: false
+    description: True if formal regulatory notice / show-cause was issued
+  - name: penalty_inr_lakh
+    type: NUMERIC
+    nullable: true
+    description: Statutory fine or penalty imposed in INR Lakh (null if no fine levied)
+  - name: status
+    type: STRING
+    nullable: false
+    description: Current operational/investigative status of incident
+    accepted_values:
+    - closed
+    - remediated
+    - under_investigation
+    - settled
+  - name: root_cause_category
+    type: STRING
+    nullable: false
+    description: Technical or procedural root cause determined by investigation
+    accepted_values:
+    - pipeline_corrosion
+    - equipment_failure
+    - human_error_procedural
+    - subsurface_well_integrity
+    - process_upset_flaring
+    - adverse_weather_metocean
+  source_system: Corporate HSE Database
+  source_format: CSV
+  source_table: env_incident_log.csv
+  sap_field_map: null
+  scd_type: Append-only
+  partitioning_clustering_suggestion:
+    partition_by: date
+    cluster_by:
+    - wc_id
+    - incident_type
+    - severity
+  drill_dimensions:
+  - fiscal_year
+  - wc_id
+  - field_id
+  - incident_type
+  - severity
+  - regulator
+  - notice_issued
+  - root_cause_category
+  questions_served:
+  - GAP_ENV_01
+  - GAP_ENV_02
+
+- table_name: posh_cases
+  spec_id: GAP2
+  description: Prevention of Sexual Harassment (POSH) complaint ledger tracking complaints received by Internal Complaints Committees (ICC), inquiry timelines, outcomes, and annual report disclosures.
+  grain: One row per POSH complaint case received
+  primary_key:
+  - case_id
+  columns:
+  - name: case_id
+    type: STRING
+    nullable: false
+    description: Unique POSH case registry identifier (e.g. POSH-0001)
+  - name: wc_id
+    type: STRING
+    nullable: false
+    description: Work centre where the alleged incident or reporting occurred
+    fk: dim_work_centre.wc_id
+  - name: date_received
+    type: DATE
+    nullable: false
+    description: Date complaint was formally registered with ICC
+  - name: fiscal_year
+    type: STRING
+    nullable: false
+    description: Fiscal year complaint was received
+  - name: complainant_cadre
+    type: STRING
+    nullable: false
+    description: Employment cadre of the complainant
+    accepted_values:
+    - executive
+    - non_executive
+    - contract_worker
+  - name: respondent_grade_band
+    type: STRING
+    nullable: false
+    description: Grade band of the respondent
+    accepted_values:
+    - E1-E3
+    - E4-E5
+    - E6-E7
+    - E8-E9
+    - S-Level
+    - W-Level
+  - name: committee_id
+    type: STRING
+    nullable: false
+    description: Internal Complaints Committee handling the formal inquiry
+    fk: icc_committees.committee_id
+  - name: status
+    type: STRING
+    nullable: false
+    description: Current status of the complaint proceeding
+    accepted_values:
+    - disposed
+    - under_inquiry
+    - conciliated
+    - withdrawn
+  - name: inquiry_days
+    type: INT64
+    nullable: false
+    description: Number of days taken to complete inquiry (or current age in days if pending)
+  - name: outcome_category
+    type: STRING
+    nullable: false
+    description: Findings and formal outcome determined by ICC inquiry
+    accepted_values:
+    - substantiated_disciplinary_action
+    - substantiated_warning_counselling
+    - unsubstantiated
+    - conciliated
+    - withdrawn
+    - pending_inquiry
+  - name: annual_report_disclosed
+    type: BOOL
+    nullable: false
+    description: True if case statistics were disclosed in statutory Annual Report / BRSR
+  source_system: Corporate ICC Register
+  source_format: XLSX
+  source_table: posh_register.xlsx
+  sap_field_map: null
+  scd_type: Append-only
+  partitioning_clustering_suggestion:
+    partition_by: date_received
+    cluster_by:
+    - wc_id
+    - status
+    - outcome_category
+  drill_dimensions:
+  - fiscal_year
+  - wc_id
+  - complainant_cadre
+  - respondent_grade_band
+  - status
+  - outcome_category
+  - annual_report_disclosed
+  questions_served:
+  - GAP_POSH_01
+  - GAP_POSH_02
+
+- table_name: apprentices
+  spec_id: GAP3
+  description: National Apprenticeship Promotion Scheme (NAPS) engagement ledger tracking trade, technician, and graduate apprentices across work centres, stipends, and statutory diversity quotas.
+  grain: One row per apprentice engagement contract
+  primary_key:
+  - apprentice_id
+  columns:
+  - name: apprentice_id
+    type: STRING
+    nullable: false
+    description: Unique apprentice registration identifier (e.g. APP-000001)
+  - name: trade
+    type: STRING
+    nullable: false
+    description: Designated NAPS apprentice trade or discipline
+  - name: trade_category
+    type: STRING
+    nullable: false
+    description: Broad category of apprenticeship
+    accepted_values:
+    - technical
+    - non_technical
+  - name: wc_id
+    type: STRING
+    nullable: false
+    description: Work centre hosting the apprentice
+    fk: dim_work_centre.wc_id
+  - name: start_date
+    type: DATE
+    nullable: false
+    description: Effective commencement date of apprenticeship contract
+  - name: end_date
+    type: DATE
+    nullable: false
+    description: Contract completion date (standard 1-year training duration)
+  - name: stipend_inr_month
+    type: NUMERIC
+    nullable: false
+    description: Monthly statutory apprentice stipend amount in INR
+  - name: status
+    type: STRING
+    nullable: false
+    description: Current training contract status
+    accepted_values:
+    - completed
+    - active
+    - resigned
+    - terminated
+  - name: category
+    type: STRING
+    nullable: false
+    description: Social reservation affirmative action category
+    accepted_values:
+    - Gen
+    - SC
+    - ST
+    - OBC
+    - EWS
+    - PwD
+  - name: gender
+    type: STRING
+    nullable: false
+    description: Gender of apprentice
+    accepted_values:
+    - Male
+    - Female
+  - name: fiscal_year
+    type: STRING
+    nullable: false
+    description: Fiscal year of apprentice intake
+  source_system: SAP HCM / NAPS Portal
+  source_format: CSV
+  source_table: apprentice_ledger.csv
+  sap_field_map: null
+  scd_type: Append-only
+  partitioning_clustering_suggestion:
+    partition_by: start_date
+    cluster_by:
+    - wc_id
+    - trade_category
+    - category
+  drill_dimensions:
+  - fiscal_year
+  - wc_id
+  - trade
+  - trade_category
+  - category
+  - gender
+  - status
+  questions_served:
+  - GAP_APP_01
+  - GAP_APP_02
+
+- table_name: po_channel
+  spec_id: GAP4
+  description: Purchase order procurement channel classification and Government e-Marketplace (GeM) order linkage with MSE affirmative action classifications.
+  grain: One row per SAP purchase order line item (1:1 with EKKO_EKPO.po_line_id)
+  primary_key:
+  - po_line_id
+  columns:
+  - name: po_line_id
+    type: STRING
+    nullable: false
+    description: Foreign key and primary key matching SAP PO line item
+    fk: po_line_items.po_line_id
+  - name: procurement_channel
+    type: STRING
+    nullable: false
+    description: Tender or procurement channel utilised for the award
+    accepted_values:
+    - GeM
+    - e-Procurement/SRM
+    - Limited tender
+    - Single/Proprietary
+    - Nomination
+  - name: gem_order_id
+    type: STRING
+    nullable: true
+    description: Government e-Marketplace contract / order identifier (null if non-GeM channel)
+  - name: mse_vendor_social_category
+    type: STRING
+    nullable: false
+    description: Micro & Small Enterprise (MSE) entrepreneur affirmative action sub-category
+    accepted_values:
+    - none
+    - SC
+    - ST
+    - women
+  source_system: SAP MM / GeM Procurement API
+  source_format: CSV
+  source_table: EKKO_channel.csv
+  sap_field_map:
+    po_line_id: po_line_id
+    procurement_channel: ZZCHANNEL
+    gem_order_id: ZZGEM_ORD
+    mse_vendor_social_category: ZZSOC_CAT
+  scd_type: Append-only
+  partitioning_clustering_suggestion:
+    cluster_by:
+    - procurement_channel
+    - mse_vendor_social_category
+  drill_dimensions:
+  - procurement_channel
+  - mse_vendor_social_category
+  questions_served:
+  - GAP_GEM_01
+  - GAP_GEM_02

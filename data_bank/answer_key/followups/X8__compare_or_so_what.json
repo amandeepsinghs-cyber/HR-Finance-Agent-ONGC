@@ -1,0 +1,49 @@
+{
+  "job_id": "c02e37a7-2a38-46a2-894a-55d38dd55f68",
+  "total_bytes_processed": 16482,
+  "executed_at": "2026-10-20T06:37:30.335520+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 3,
+  "columns": [
+    "fiscal_year",
+    "applications",
+    "disposed",
+    "disposal_rate_pct",
+    "disposed_within_30_days",
+    "pct_disposals_within_30_days",
+    "avg_days_to_dispose",
+    "pending_beyond_30_days"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY25",
+      "applications": 310,
+      "disposed": 291,
+      "disposal_rate_pct": 93.9,
+      "disposed_within_30_days": 260,
+      "pct_disposals_within_30_days": 89.3,
+      "avg_days_to_dispose": 21.5,
+      "pending_beyond_30_days": 19
+    },
+    {
+      "fiscal_year": "FY26",
+      "applications": 309,
+      "disposed": 282,
+      "disposal_rate_pct": 91.3,
+      "disposed_within_30_days": 246,
+      "pct_disposals_within_30_days": 87.2,
+      "avg_days_to_dispose": 22.0,
+      "pending_beyond_30_days": 27
+    },
+    {
+      "fiscal_year": "FY27",
+      "applications": 160,
+      "disposed": 124,
+      "disposal_rate_pct": 77.5,
+      "disposed_within_30_days": 109,
+      "pct_disposals_within_30_days": 87.9,
+      "avg_days_to_dispose": 21.7,
+      "pending_beyond_30_days": 17
+    }
+  ]
+}

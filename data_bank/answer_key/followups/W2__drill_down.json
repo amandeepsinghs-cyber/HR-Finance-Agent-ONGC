@@ -1,0 +1,53 @@
+{
+  "job_id": "df77c13a-506b-4d86-835d-26f1315508e1",
+  "total_bytes_processed": 2306799,
+  "executed_at": "2026-10-20T06:42:35.963348+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 3,
+  "columns": [
+    "discipline_id",
+    "discipline_name",
+    "sanctioned_exec_posts",
+    "current_executives",
+    "current_deficit",
+    "retirements_by_oct2028",
+    "projected_executives_oct2028",
+    "net_deficit_oct2028",
+    "deficit_pct_of_sanctioned"
+  ],
+  "rows": [
+    {
+      "discipline_id": "DISC-PRD",
+      "discipline_name": "Production",
+      "sanctioned_exec_posts": 3337,
+      "current_executives": 2926,
+      "current_deficit": 411,
+      "retirements_by_oct2028": 486,
+      "projected_executives_oct2028": 2440,
+      "net_deficit_oct2028": 897,
+      "deficit_pct_of_sanctioned": 26.9
+    },
+    {
+      "discipline_id": "DISC-DRL",
+      "discipline_name": "Drilling",
+      "sanctioned_exec_posts": 2148,
+      "current_executives": 1876,
+      "current_deficit": 272,
+      "retirements_by_oct2028": 377,
+      "projected_executives_oct2028": 1499,
+      "net_deficit_oct2028": 649,
+      "deficit_pct_of_sanctioned": 30.2
+    },
+    {
+      "discipline_id": "DISC-RES",
+      "discipline_name": "Reservoir",
+      "sanctioned_exec_posts": 1106,
+      "current_executives": 1005,
+      "current_deficit": 101,
+      "retirements_by_oct2028": 173,
+      "projected_executives_oct2028": 832,
+      "net_deficit_oct2028": 274,
+      "deficit_pct_of_sanctioned": 24.8
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_procurement_contracts",
+  description: "Procurement purchase orders, vendor spend concentration, contract price variations, GeM share, and MSE affirmative action"
+}
+
+SELECT
+  po.po_line_id,
+  po.po_number,
+  po.line_number,
+  po.vendor_id,
+  v.name AS vendor_name,
+  v.name AS name,
+  v.category AS vendor_category,
+  v.mse_flag AS is_mse_vendor,
+  po.wc_id,
+  w.name AS wc_name,
+  po.cost_centre_id,
+  po.po_date,
+  po.fiscal_year,
+  po.service_contract_category,
+  po.original_po_value_inr,
+  po.engineers_estimate_inr,
+  po.scope_variation_value_inr,
+  po.standby_charges_inr,
+  po.revised_po_value_inr,
+  po.actual_paid_amount_inr,
+  po.cost_overrun_inr,
+  po.overrun_reason,
+  po.po_status,
+  po.currency,
+  COALESCE(poc.procurement_channel, 'e-Procurement/SRM') AS procurement_channel,
+  poc.gem_order_id,
+  COALESCE(poc.mse_vendor_social_category, 'none') AS mse_vendor_social_category,
+  CASE WHEN poc.procurement_channel = 'GeM' THEN TRUE ELSE FALSE END AS is_gem_procurement,
+  CASE WHEN poc.mse_vendor_social_category IN ('SC', 'ST') THEN TRUE ELSE FALSE END AS is_mse_sc_st_vendor,
+  CASE WHEN poc.mse_vendor_social_category = 'women' THEN TRUE ELSE FALSE END AS is_mse_women_vendor
+FROM ${ref("purchase_orders")} po
+LEFT JOIN ${ref("dim_vendor")} v ON po.vendor_id = v.vendor_id
+LEFT JOIN ${ref("dim_work_centre")} w ON po.wc_id = w.wc_id
+LEFT JOIN ${ref("po_channel")} poc ON po.po_line_id = poc.po_line_id

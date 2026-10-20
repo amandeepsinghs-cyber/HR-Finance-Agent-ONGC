@@ -1,0 +1,31 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "promotion_history",
+  description: "Historical promotion transaction ledger recording grade progressions, DPC outcomes, and effective dates."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`promotion_id`) AS promotion_id,
+    TRIM(`PERNR`) AS emp_id,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`discipline_id`) AS discipline_id,
+    TRIM(`from_grade_id`) AS from_grade_id,
+    TRIM(`PERSK`) AS to_grade_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`BEGDA`), ''), 1, 10)) AS effective_date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`dpc_id`) AS dpc_id,
+    TRIM(`MASSN`) AS promotion_mode,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`residency_years_completed`), ''), ',', ''), '₹', '') AS NUMERIC) AS residency_years_completed,
+    CASE WHEN LOWER(TRIM(`apar_benchmark_met`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`apar_benchmark_met`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS apar_benchmark_met,
+    CASE WHEN LOWER(TRIM(`vigilance_cleared`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`vigilance_cleared`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS vigilance_cleared,
+    CASE WHEN LOWER(TRIM(`hard_station_completed_flag`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`hard_station_completed_flag`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS hard_station_completed_flag,
+    TRIM(`order_no`) AS order_no
+  FROM ${ref("sap_pa0000_promotions")}
+  WHERE NULLIF(TRIM(`promotion_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY promotion_id ORDER BY _ingest_ts DESC) = 1

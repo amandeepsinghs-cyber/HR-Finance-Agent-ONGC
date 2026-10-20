@@ -1,0 +1,90 @@
+{
+  "job_id": "7fbd963d-e436-4cd5-9d37-34e9b7cf4a16",
+  "total_bytes_processed": 5923724,
+  "executed_at": "2026-10-20T06:42:31.293452+00:00",
+  "elapsed_seconds": 0.82,
+  "row_count": 8,
+  "columns": [
+    "current_posting",
+    "discipline_function",
+    "successors_without_ne",
+    "avg_tenure_years",
+    "avg_postings",
+    "c_or_ne_postings",
+    "readiness"
+  ],
+  "rows": [
+    {
+      "current_posting": "Corporate HQ (Delhi/Dehradun)",
+      "discipline_function": "support",
+      "successors_without_ne": 4,
+      "avg_tenure_years": 7.7,
+      "avg_postings": 7.0,
+      "c_or_ne_postings": 0,
+      "readiness": "Ready_3_to_5_years"
+    },
+    {
+      "current_posting": "Corporate HQ (Delhi/Dehradun)",
+      "discipline_function": "hr",
+      "successors_without_ne": 2,
+      "avg_tenure_years": 10.8,
+      "avg_postings": 7.5,
+      "c_or_ne_postings": 0,
+      "readiness": "Ready_3_to_5_years"
+    },
+    {
+      "current_posting": "Corporate HQ (Delhi/Dehradun)",
+      "discipline_function": "technical",
+      "successors_without_ne": 2,
+      "avg_tenure_years": 9.1,
+      "avg_postings": 7.0,
+      "c_or_ne_postings": 0,
+      "readiness": "Ready_3_to_5_years"
+    },
+    {
+      "current_posting": "Field asset/service (Cat B)",
+      "discipline_function": "technical",
+      "successors_without_ne": 2,
+      "avg_tenure_years": 12.4,
+      "avg_postings": 7.5,
+      "c_or_ne_postings": 0,
+      "readiness": "Ready_3_to_5_years"
+    },
+    {
+      "current_posting": "Corporate HQ (Delhi/Dehradun)",
+      "discipline_function": "finance",
+      "successors_without_ne": 1,
+      "avg_tenure_years": 8.0,
+      "avg_postings": 6.0,
+      "c_or_ne_postings": 0,
+      "readiness": "Ready_3_to_5_years"
+    },
+    {
+      "current_posting": "Regional office",
+      "discipline_function": "finance",
+      "successors_without_ne": 1,
+      "avg_tenure_years": 6.3,
+      "avg_postings": 7.0,
+      "c_or_ne_postings": 0,
+      "readiness": "Ready_3_to_5_years"
+    },
+    {
+      "current_posting": "Regional office",
+      "discipline_function": "hr",
+      "successors_without_ne": 1,
+      "avg_tenure_years": 10.4,
+      "avg_postings": 7.0,
+      "c_or_ne_postings": 0,
+      "readiness": "Ready_3_to_5_years"
+    },
+    {
+      "current_posting": "Regional office",
+      "discipline_function": "technical",
+      "successors_without_ne": 1,
+      "avg_tenure_years": 8.1,
+      "avg_postings": 6.0,
+      "c_or_ne_postings": 0,
+      "readiness": "Ready_3_to_5_years"
+    }
+  ]
+}

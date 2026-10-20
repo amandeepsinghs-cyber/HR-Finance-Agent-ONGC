@@ -1,0 +1,51 @@
+{
+  "job_id": "8329c725-61a8-4079-a026-e7731fa231c3",
+  "total_bytes_processed": 171934974,
+  "executed_at": "2026-10-20T06:33:13.576247+00:00",
+  "elapsed_seconds": 0.78,
+  "row_count": 5,
+  "columns": [
+    "scheme",
+    "employer_contribution_cr",
+    "pct_of_basic_da",
+    "policy_reference_rate",
+    "source"
+  ],
+  "rows": [
+    {
+      "scheme": "Contributory Provident Fund (CPF)",
+      "employer_contribution_cr": 596.7,
+      "pct_of_basic_da": 12.0,
+      "policy_reference_rate": "12.00%",
+      "source": "payroll_monthly.employer_cpf_inr"
+    },
+    {
+      "scheme": "PRBS pension",
+      "employer_contribution_cr": 417.7,
+      "pct_of_basic_da": 8.4,
+      "policy_reference_rate": "6.00-9.50% (balancing)",
+      "source": "payroll_monthly.employer_prbs_inr"
+    },
+    {
+      "scheme": "Post-retirement medical (PRMB)",
+      "employer_contribution_cr": 149.2,
+      "pct_of_basic_da": 3.0,
+      "policy_reference_rate": "4.00%",
+      "source": "payroll_monthly.employer_prmb_inr"
+    },
+    {
+      "scheme": "Gratuity (imputed)",
+      "employer_contribution_cr": 208.9,
+      "pct_of_basic_da": 4.2,
+      "policy_reference_rate": "4.16-4.50%",
+      "source": "superannuation_benefit_pct minus payroll schemes"
+    },
+    {
+      "scheme": "Total employer superannuation",
+      "employer_contribution_cr": 1372.5,
+      "pct_of_basic_da": 27.6,
+      "policy_reference_rate": "30.00% cap",
+      "source": "payroll_monthly.superannuation_benefit_pct"
+    }
+  ]
+}

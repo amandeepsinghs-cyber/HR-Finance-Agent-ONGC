@@ -1,0 +1,27 @@
+{
+  "job_id": "e42195b1-eb5a-4975-8991-df11d625a532",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:44.876805+00:00",
+  "elapsed_seconds": 0.69,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 2.0",
+      "heading": "Time-Bound Promotion Channel (E1\u2192E4)",
+      "quote_snippet": "2.1 Qualifying Residency Requirements: Promotions within the junior executive ranks (E1 through E4) shall be governed by the Time-Bound Promotion Channel subject to completing prescribed residency and meeting the APAR benchmark: (a) Promotion from E1 to E2: 3 (three) completed years of qualifying residency service at Grade E1. (b) Promotion from E2 to E3: 3 (three) completed years of qualifying re"
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 8.0",
+      "heading": "Confidentiality of DPC Proceedings & Sealed Cover",
+      "quote_snippet": "8.1 Strict Secrecy of DPC Deliberations: The proceedings, minutes, individual candidate scoring sheets, and recommendations of the Departmental Promotion Committee are top-secret privileged documents. No candidate or third party has any right to inspect or access DPC deliberations prior to official release of the promotion panel. 8.2 Sealed Cover Procedure: Where an officer eligible for promotion "
+    }
+  ]
+}

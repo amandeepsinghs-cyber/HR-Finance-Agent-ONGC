@@ -1,0 +1,70 @@
+{
+  "turn_id": "turn_p1_007",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "The minimum tenure at a station is three completed years under JRTP Clause 3.1, and no executive may spend more than an aggregate of ten years in a single city or Geographic Cluster over their whole career under JRTP Clause 4.1.",
+  "display_text": "ONGC Job Rotation & Transfer Policy (JRTP) Statutory Provisions [1]: Minimum normal station tenure is 3 years (Clause 3.1); career cumulative stay cap in a single city or cluster is 10 years (Clause 4.1).",
+  "visual": {
+    "type": "clause",
+    "mode": "replace",
+    "title": "Statutory Policy Provision: Station Tenure Norms & Cumulative Stay Cap",
+    "clause": {
+      "doc_id": "JRTP",
+      "doc_title": "ONGC Job Rotation & Transfer Policy (Rev 4)",
+      "clause_ref": "Clause 3.0 & Clause 4.0",
+      "text": "3.1 Minimum Station Tenure: The minimum normal tenure of an executive at any station shall be 3 (three) completed years. Normal rotation of an executive shall be considered upon completion of 3 to 5 years at a work centre. No executive shall ordinarily be displaced prior to completing 3 years, except on administrative exigencies approved by Director (HR).\n\n4.1 Maximum Cumulative Career Stay: No executive shall be permitted to spend more than an aggregate of 10 (ten) years at a single city or designated Geographic Cluster over their entire career in the Corporation.",
+      "highlight": "aggregate of 10 (ten) years at a single city or designated Geographic Cluster"
+    },
+    "kpis": [
+      {
+        "label": "Minimum Station Norm",
+        "value": 3,
+        "unit": "Years",
+        "delta": "Clause 3.1"
+      },
+      {
+        "label": "Cumulative City Cap",
+        "value": 10,
+        "unit": "Years",
+        "delta": "Clause 4.1"
+      }
+    ]
+  },
+  "insights": [
+    "The minimum tenure at a station is 3 completed years (JRTP Clause 3.1), and no executive may spend more than an aggregate of 10 years in a single city over their whole career (JRTP Clause 4.1).",
+    "Rotation is normally considered after 3 to 5 years at a work centre; moving someone before 3 years requires administrative exigency or restructuring approved by Director (HR).",
+    "The 10-year cap is cumulative: every historical posting in the same station or cluster is added up irrespective of breaks or in-place promotions (JRTP Clause 4.2)."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_docs.silver_chunks",
+      "query_id": "9048d0ce-0adb-4b14-ba6a-cee1321e73f0",
+      "sql": "-- Answer Key SQL: P1\n-- Question: What is the minimum tenure at a station, and the maximum cumulative stay in one city?\n-- Type: policy\n-- Semantic audit 2026-10-20: old query returned only SUBSTR(text,1,300) = the chunk's metadata header\n-- (title / glossary), never the clause body, so the answer key contained no actual rule. Now strips the\n-- header and extracts the specific sub-clauses that answer the question (column `provision`).\n-- Semantic audit 2026-10-20: Dropped the OR'd J-03 court judgment (B.V. Srihari Rao, disciplinary) that sorted first and filled LIMIT 5,\n-- pushing both JRTP clauses out of the result.\n\nWITH c AS (\n  SELECT doc_id, clause_ref, heading,\n         REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(text,\n           r'(?s)^.*?Domain Vocabulary[^\\n]*\\n', ''),\n           r'\\\\\\\\192\\.168\\.4\\.1\\\\e\\\\Public Enterprises \\(2018\\)(\\\\4077PE)+\\(Chapter 2\\)', ' '),\n           r'\\d*\\s*Chapter 2\u2014Personnel Policies\\s*\\d*', ' '),\n           r'Page \\d+ of \\d+', ' '),\n           r'\\s+', ' ') AS body\n  FROM `ongc-hr-finance-agent.hrfin_docs.silver_chunks`\n  WHERE (doc_id = 'JRTP' AND clause_ref = 'Clause 3.0')\n     OR (doc_id = 'JRTP' AND clause_ref = 'Clause 4.0')\n)\nSELECT doc_id, clause_ref, heading, provision, quote_snippet\nFROM (\n  SELECT 1 AS seq, doc_id, clause_ref, heading, 'JRTP 3.1-3.2' AS provision, TRIM(REGEXP_EXTRACT(body, r'(3\\.1 .*?) 3\\.3 ')) AS quote_snippet\n  FROM c WHERE doc_id = 'JRTP' AND clause_ref = 'Clause 3.0'\n  UNION ALL\n  SELECT 2 AS seq, doc_id, clause_ref, heading, 'JRTP 4.1-4.2' AS provision, TRIM(REGEXP_EXTRACT(body, r'(4\\.1 .*?) 4\\.3 ')) AS quote_snippet\n  FROM c WHERE doc_id = 'JRTP' AND clause_ref = 'Clause 4.0'\n)\nORDER BY seq;\n"
+    },
+    {
+      "kind": "policy",
+      "doc_id": "JRTP",
+      "clause": "3.0",
+      "title": "Station Tenure Norms"
+    },
+    {
+      "kind": "policy",
+      "doc_id": "JRTP",
+      "clause": "4.0",
+      "title": "Cumulative Stay Cap"
+    }
+  ],
+  "suggestions": [
+    "Show executives exceeding cumulative tenure limit",
+    "List Category C hard stations",
+    "View medical exemption guidelines"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "docs",
+    "pdf"
+  ]
+}

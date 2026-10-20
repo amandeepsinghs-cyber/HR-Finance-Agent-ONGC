@@ -1,0 +1,69 @@
+{
+  "job_id": "68ddec96-2948-4de6-9a0d-b2b197f2ac95",
+  "total_bytes_processed": 7184,
+  "executed_at": "2026-10-20T06:42:42.692006+00:00",
+  "elapsed_seconds": 0.71,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "avg_brent_usd_bbl",
+    "avg_net_realisation_usd_bbl",
+    "gap_to_brent_usd_bbl",
+    "fy_avg_saed_usd_bbl",
+    "saed_windfall_tax_inr_cr",
+    "gross_revenue_inr_cr",
+    "saed_pct_of_revenue"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "avg_brent_usd_bbl": 78.9,
+      "avg_net_realisation_usd_bbl": 76.62,
+      "gap_to_brent_usd_bbl": 2.28,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "saed_windfall_tax_inr_cr": 0.0,
+      "gross_revenue_inr_cr": 110345.0,
+      "saed_pct_of_revenue": 0.0
+    },
+    {
+      "fiscal_year": "FY23",
+      "avg_brent_usd_bbl": 95.4,
+      "avg_net_realisation_usd_bbl": 75.8,
+      "gap_to_brent_usd_bbl": 19.6,
+      "fy_avg_saed_usd_bbl": 12.15,
+      "saed_windfall_tax_inr_cr": 10964.0,
+      "gross_revenue_inr_cr": 155517.0,
+      "saed_pct_of_revenue": 7.05
+    },
+    {
+      "fiscal_year": "FY24",
+      "avg_brent_usd_bbl": 83.2,
+      "avg_net_realisation_usd_bbl": 80.77,
+      "gap_to_brent_usd_bbl": 2.43,
+      "fy_avg_saed_usd_bbl": 10.5,
+      "saed_windfall_tax_inr_cr": 8634.0,
+      "gross_revenue_inr_cr": 138402.0,
+      "saed_pct_of_revenue": 6.24
+    },
+    {
+      "fiscal_year": "FY25",
+      "avg_brent_usd_bbl": 79.2,
+      "avg_net_realisation_usd_bbl": 76.9,
+      "gap_to_brent_usd_bbl": 2.3,
+      "fy_avg_saed_usd_bbl": 3.27,
+      "saed_windfall_tax_inr_cr": 3948.0,
+      "gross_revenue_inr_cr": 137846.0,
+      "saed_pct_of_revenue": 2.86
+    },
+    {
+      "fiscal_year": "FY26",
+      "avg_brent_usd_bbl": 70.9,
+      "avg_net_realisation_usd_bbl": 68.4,
+      "gap_to_brent_usd_bbl": 2.5,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "saed_windfall_tax_inr_cr": 0.0,
+      "gross_revenue_inr_cr": 132508.0,
+      "saed_pct_of_revenue": 0.0
+    }
+  ]
+}

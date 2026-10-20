@@ -1,0 +1,74 @@
+{
+  "job_id": "f95be7bf-72ec-444f-91ac-4854b7b24e24",
+  "total_bytes_processed": 6302,
+  "executed_at": "2026-10-20T06:39:03.229369+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 4,
+  "columns": [
+    "fiscal_year",
+    "months",
+    "months_saed_levied",
+    "avg_brent_usd_bbl",
+    "max_brent_usd_bbl",
+    "avg_saed_usd_bbl",
+    "max_saed_usd_bbl",
+    "saed_pct_of_brent_when_levied",
+    "last_month_levied",
+    "saed_booked_inr_cr",
+    "saed_share_of_levies_pct"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY23",
+      "months": 12,
+      "months_saed_levied": 9,
+      "avg_brent_usd_bbl": 95.4,
+      "max_brent_usd_bbl": 97.2,
+      "avg_saed_usd_bbl": 12.15,
+      "max_saed_usd_bbl": 18.5,
+      "saed_pct_of_brent_when_levied": 17.0,
+      "last_month_levied": "2023-03",
+      "saed_booked_inr_cr": 10964.0,
+      "saed_share_of_levies_pct": 26.7
+    },
+    {
+      "fiscal_year": "FY24",
+      "months": 12,
+      "months_saed_levied": 12,
+      "avg_brent_usd_bbl": 83.2,
+      "max_brent_usd_bbl": 85.0,
+      "avg_saed_usd_bbl": 10.5,
+      "max_saed_usd_bbl": 12.0,
+      "saed_pct_of_brent_when_levied": 12.6,
+      "last_month_levied": "2024-03",
+      "saed_booked_inr_cr": 8634.0,
+      "saed_share_of_levies_pct": 24.3
+    },
+    {
+      "fiscal_year": "FY25",
+      "months": 12,
+      "months_saed_levied": 8,
+      "avg_brent_usd_bbl": 79.2,
+      "max_brent_usd_bbl": 81.0,
+      "avg_saed_usd_bbl": 3.27,
+      "max_saed_usd_bbl": 5.5,
+      "saed_pct_of_brent_when_levied": 6.1,
+      "last_month_levied": "2024-11",
+      "saed_booked_inr_cr": 3948.0,
+      "saed_share_of_levies_pct": 12.9
+    },
+    {
+      "fiscal_year": "FY26",
+      "months": 12,
+      "months_saed_levied": 0,
+      "avg_brent_usd_bbl": 70.9,
+      "max_brent_usd_bbl": 72.7,
+      "avg_saed_usd_bbl": 0.0,
+      "max_saed_usd_bbl": 0.0,
+      "saed_pct_of_brent_when_levied": null,
+      "last_month_levied": null,
+      "saed_booked_inr_cr": 0.0,
+      "saed_share_of_levies_pct": 0.0
+    }
+  ]
+}

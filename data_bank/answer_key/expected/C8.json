@@ -1,0 +1,57 @@
+{
+  "job_id": "5b0b6da4-7b9e-4e70-9e27-b4370146df5d",
+  "total_bytes_processed": 71849,
+  "executed_at": "2026-10-20T06:38:30.020190+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 2,
+  "columns": [
+    "field_name",
+    "asset",
+    "mmboe_fy26",
+    "gross_revenue_inr_cr",
+    "total_opex_inr_cr",
+    "ebitda_inr_cr",
+    "pbt_inr_cr",
+    "pbt_fy24_fy26_cr",
+    "loss_years_fy24_fy26",
+    "is_divestment_candidate",
+    "pec_monetisation_potential_flag",
+    "is_loss_making_3yr_consecutive",
+    "route_from_flags",
+    "root_cause_loss_code"
+  ],
+  "rows": [
+    {
+      "field_name": "Champang",
+      "asset": "Jorhat Asset",
+      "mmboe_fy26": 0.55,
+      "gross_revenue_inr_cr": 329.6,
+      "total_opex_inr_cr": 234.71,
+      "ebitda_inr_cr": 26.25,
+      "pbt_inr_cr": -4.93,
+      "pbt_fy24_fy26_cr": 26.79,
+      "loss_years_fy24_fy26": 1,
+      "is_divestment_candidate": false,
+      "pec_monetisation_potential_flag": true,
+      "is_loss_making_3yr_consecutive": false,
+      "route_from_flags": "Production Enhancement Contract",
+      "root_cause_loss_code": "high_water_cut_depleted"
+    },
+    {
+      "field_name": "Borholla",
+      "asset": "Jorhat Asset",
+      "mmboe_fy26": 0.59,
+      "gross_revenue_inr_cr": 350.63,
+      "total_opex_inr_cr": 241.23,
+      "ebitda_inr_cr": 36.39,
+      "pbt_inr_cr": 3.22,
+      "pbt_fy24_fy26_cr": 52.78,
+      "loss_years_fy24_fy26": 0,
+      "is_divestment_candidate": false,
+      "pec_monetisation_potential_flag": true,
+      "is_loss_making_3yr_consecutive": false,
+      "route_from_flags": "Production Enhancement Contract",
+      "root_cause_loss_code": null
+    }
+  ]
+}

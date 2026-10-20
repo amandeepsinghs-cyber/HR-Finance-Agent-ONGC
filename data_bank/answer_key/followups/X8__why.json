@@ -1,0 +1,86 @@
+{
+  "job_id": "83767015-d7fb-4180-be61-8fb236c4671d",
+  "total_bytes_processed": 5847,
+  "executed_at": "2026-10-20T06:37:29.714423+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 10,
+  "columns": [
+    "bottleneck_reason",
+    "current_status",
+    "open_paras_over_3_years",
+    "financial_implication_cr",
+    "avg_age_years"
+  ],
+  "rows": [
+    {
+      "bottleneck_reason": "Awaiting formal concurrence from CAG Principal Director of Audit on Action Taken Note (ATN)",
+      "current_status": "ATN Submitted to MoPNG",
+      "open_paras_over_3_years": 4,
+      "financial_implication_cr": 249.35,
+      "avg_age_years": 4.3
+    },
+    {
+      "bottleneck_reason": "Inter-ministerial consultation delay between MoPNG and Ministry of Finance",
+      "current_status": "Pending Committee on Public Undertakings (COPU)",
+      "open_paras_over_3_years": 4,
+      "financial_implication_cr": 176.57,
+      "avg_age_years": 4.3
+    },
+    {
+      "bottleneck_reason": "Pending reconciliation of contractor liquidated damages with project management consultant",
+      "current_status": "ATN Submitted to MoPNG",
+      "open_paras_over_3_years": 3,
+      "financial_implication_cr": 115.78,
+      "avg_age_years": 4.8
+    },
+    {
+      "bottleneck_reason": "Sub-judice commercial arbitration pending before Sole Arbitrator / High Court",
+      "current_status": "ATN Submitted to MoPNG",
+      "open_paras_over_3_years": 2,
+      "financial_implication_cr": 124.64,
+      "avg_age_years": 4.7
+    },
+    {
+      "bottleneck_reason": "Sub-judice commercial arbitration pending before Sole Arbitrator / High Court",
+      "current_status": "Pending Committee on Public Undertakings (COPU)",
+      "open_paras_over_3_years": 2,
+      "financial_implication_cr": 89.67,
+      "avg_age_years": 4.3
+    },
+    {
+      "bottleneck_reason": "Inter-ministerial consultation delay between MoPNG and Ministry of Finance",
+      "current_status": "ATN Submitted to MoPNG",
+      "open_paras_over_3_years": 1,
+      "financial_implication_cr": 83.2,
+      "avg_age_years": 3.9
+    },
+    {
+      "bottleneck_reason": "Archival document retrieval and legacy SAP voucher verification in progress",
+      "current_status": "ATN Submitted to MoPNG",
+      "open_paras_over_3_years": 1,
+      "financial_implication_cr": 81.72,
+      "avg_age_years": 5.3
+    },
+    {
+      "bottleneck_reason": "Pending reconciliation of contractor liquidated damages with project management consultant",
+      "current_status": "Pending Committee on Public Undertakings (COPU)",
+      "open_paras_over_3_years": 1,
+      "financial_implication_cr": 74.21,
+      "avg_age_years": 3.9
+    },
+    {
+      "bottleneck_reason": "Archival document retrieval and legacy SAP voucher verification in progress",
+      "current_status": "Pending Committee on Public Undertakings (COPU)",
+      "open_paras_over_3_years": 1,
+      "financial_implication_cr": 24.9,
+      "avg_age_years": 3.3
+    },
+    {
+      "bottleneck_reason": "Awaiting formal concurrence from CAG Principal Director of Audit on Action Taken Note (ATN)",
+      "current_status": "Pending Committee on Public Undertakings (COPU)",
+      "open_paras_over_3_years": 1,
+      "financial_implication_cr": 20.5,
+      "avg_age_years": 4.0
+    }
+  ]
+}

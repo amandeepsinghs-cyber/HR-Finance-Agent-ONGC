@@ -1,0 +1,21 @@
+{
+  "job_id": "c51574ad-305e-4c48-973b-5e3a12e8522f",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:32.819330+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "BDP summary",
+      "clause_ref": "Clause 8.0",
+      "heading": "Commercial Confidentiality of Operational Schedules",
+      "quote_snippet": "Document Title: ONGC Book of Delegated Powers (BDP 2015 - Governance Summary) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 8.0 - Commercial Confidentiality of Operational Schedules\nDomain Vocabulary & Glossary Terms: Book of Delegated Powers 2015; Delegated Financial Powers"
+    }
+  ]
+}

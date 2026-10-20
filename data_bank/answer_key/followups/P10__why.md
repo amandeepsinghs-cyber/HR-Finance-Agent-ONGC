@@ -1,0 +1,14 @@
+# Answer Key: P10__why
+
+**Question:** What role do qualification enhancement, mandatory training completion, and vigilance clearance play in the promotion order?
+**Type:** `policy` | **Result Count:** `3` rows | **Execution:** `0.63s`
+
+## Executive Synthesis
+Vigilance clearance is a hard gate: no officer is empanelled or promoted without unconditional CVO clearance, and suspension, a major-penalty charge-sheet or pending criminal prosecution bars promotion (R&P 7.1-7.2). If proceedings are pending at DPC time the findings go into a sealed cover, opened only on full exoneration with notional seniority from the date the immediate junior was promoted (8.2-8.3). Qualifications count only in the merit channel (E4 to E5 and above), worth 10 of 100 DPC points (4.3c); the corpus has no rule making training completion a promotion condition.
+
+### Summary Result Table
+| doc_id | clause_ref | heading | provision | quote_snippet |
+| --- | --- | --- | --- | --- |
+| R&P/Promotion | Clause 7.0 | Vigilance Clearance as Pre-Condition | R&P 7.1-7.2 (vigilance clearance) | 7.1 Mandatory Vigilance Clearance: Clear and unconditional vigilance clearance from the Chief Vigilance Officer (CVO) is a non-negotiable mandatory prerequisite for placing any officer on the promotion panel or releasing promotion orders. 7.2 Disqualifying Vigilance Status: An officer shall not be granted promotion if: (a) under suspension; (b) a charge-sheet for major penalty disciplinary proceedings under CDA Rule 14 has been issued; or (c) prosecution for a criminal charge is pending. |
+| R&P/Promotion | Clause 8.0 | Confidentiality of DPC Proceedings & Sealed Cover | R&P 8.2-8.3 (sealed cover) | 8.2 Sealed Cover Procedure: Where an officer eligible for promotion is facing disciplinary proceedings, under suspension, or under criminal prosecution at the time of DPC, the DPC shall assess their suitability, but its findings shall be placed in a sealed cover envelope marked 'Findings regarding [Name / PERNR]'. 8.3 Opening of Sealed Cover: If the officer is completely exonerated of all charges, the sealed cover shall be opened, and if found fit, notional seniority and promotion shall be granted from the date their immediate junior was promoted. |
+| R&P/Promotion | Clause 4.0 | Merit Promotion Channel (E4→E5, E5→E6) | R&P 4.3 (qualifications weight, merit channel) | 4.3 Evaluation Matrix: DPC evaluation shall be based on a 100-point composite matrix: (a) APAR Track Record (last 5 years): 50 Points; (b) Professional Competency & Technical Assessment / Interview: 30 Points; (c) Educational Qualifications & Specialized Certifications: 10 Points; (d) Seniority & Experience Weighting: 10 Points. |

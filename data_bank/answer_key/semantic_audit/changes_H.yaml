@@ -1,0 +1,241 @@
+# Semantic audit 2026-10-20 — slice H (H1–H10 + follow-ups). One entry per changed id.
+- id: H1
+  defect_class: [WRONG_QUESTION, SCD2_NOT_ASOF, THRESHOLD_VS_RANK, GENERIC_TEXT]
+  old_headline: "Top-20 WC x grade counts of ALL current executives (Mehsana E3 220 ...); no tenure test"
+  new_headline: "11,594 of 13,453 active executives (86.2%) >3 yrs at current station, 46 WCs; only 31 exempt"
+  why: "No >3-year test at all and LIMIT 20. Now continuous current-station stay (posting islands) > 3 yrs before 2026-10-19, active executives, all WC x grade rows."
+  severity: blocking
+- id: H1__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Grouped by dim_grade.group -> single 'Group A' bucket"
+  new_headline: "7,761 E1–E4 (66.9%) vs 1,994 E6–E9 (17.2%); ~86–88% of every band past 3 yrs"
+  why: "Every executive is Group A; now bands E1–E4 / E5 / E6–E9 on the corrected H1 population."
+  severity: important
+- id: H1__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "20,387 'null' + 31 EX-RET3Y (exemption_tag literal 'None' counted as an exemption)"
+  new_headline: "9,312 (80.3%) of overstayers have no recorded justification; 1,815 age 57+; 436 tech-extension; 31 exempt"
+  why: "exemption_tag holds string 'None'; old query also only counted tagged rows. Now classifies every overstayer by JRTP basis."
+  severity: important
+- id: H1__compare_or_so_what
+  defect_class: [PCT_DENOM, GENERIC_TEXT]
+  old_headline: "Delhi 17.0%, Ankleshwar 12.3%, Cambay 8.8% (all grades incl. non-exec)"
+  new_headline: "Executive compliance: Delhi HQ 21.5%, Ankleshwar 16.6%, Cambay 11.9% vs company 13.8%"
+  why: "Denominator included non-executives outside the rotation policy; added company benchmark."
+  severity: important
+- id: H2
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Executives currently in 4 NE WCs by grade (E2 364, E1 284 ...)"
+  new_headline: "4,949 of 22,798 active employees never served a Cat-C station; 842 executives (6.3%)"
+  why: "Old SQL counted the opposite population (people currently IN hard stations). Now never-posted-to-Category-C from full posting history."
+  severity: blocking
+- id: H2__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "DPC rows for anyone currently in NE WCs (E5 529, E6 403 ...)"
+  new_headline: "Only 5 of 217 never-hard E4–E5 execs in zone of consideration (3 E4, 2 E5); JRTP 6.2 bars E4s"
+  why: "Wrong population and no residency test; now never-hard E4/E5 with years-in-grade >= typical_residency_years."
+  severity: blocking
+- id: H2__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Postings in NE (hard) clusters"
+  new_headline: "Never-hard execs circulate in Cambay–Ankleshwar–Vadodara (39%), Ahmedabad–Mehsana (30%), Mumbai (21%); 535 are technical"
+  why: "Inverted question; now cluster history of the never-hard executive group."
+  severity: important
+- id: H2__compare_or_so_what
+  defect_class: [WRONG_QUESTION, PCT_DENOM, GENERIC_TEXT]
+  old_headline: "Counts of executives currently in NE WCs by discipline"
+  new_headline: "Never-hard: HR 13.9%, F&A 12.4% vs Drilling 1.7%, Production 1.9% (company 6.3%)"
+  why: "No percentage and wrong population; now % never-hard by discipline."
+  severity: important
+- id: H3
+  defect_class: [PCT_DENOM, THRESHOLD_VS_RANK, GENERIC_TEXT]
+  old_headline: "100 alphabetical rows starting ATI Goa (0 vacancies), unweighted AVG(vacancy_rate_pct)"
+  new_headline: "25,149 sanctioned vs 23,117 in position = 2,032 vacancies (8.1%); offshore assets 12–13%"
+  why: "Averaged cell-level rates; LIMIT 100 alphabetical truncated 591 cells; no sanctioned/in-position columns."
+  severity: important
+- id: H3__drill_down
+  defect_class: [THRESHOLD_VS_RANK, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Rates for 4 disciplines, no 15% test"
+  new_headline: "No critical discipline exceeds 15% (max Chemistry 9.5%); Chemistry >15% in 3 WCs (worst 18.8%)"
+  why: "Threshold not applied; Petroleum mapped only to Production. Added Drilling/Reservoir, flag and WC-level breaches."
+  severity: important
+- id: H3__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "NE vacancies by hard_station_cat (one bucket)"
+  new_headline: "No persistent NE gap (3.1% vs 7.6% rest); shortfall is offshore: KG deepwater 12.8%, W. offshore 12.0%"
+  why: "Ignored deepwater and gave no causal measure; now region vacancy rates with FY26 separations and transfer-ins."
+  severity: important
+- id: H3__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "All-grade vacancy rate for Assam/Mehsana/Ahmedabad"
+  new_headline: "Executive vacancy: Assam 0.0% vs Mehsana 9.0%, Ahmedabad 7.8% (company exec 7.8%)"
+  why: "Question asks executive vacancy rate; filter cadre='executive'; added company row."
+  severity: important
+- id: H4
+  defect_class: [WRONG_QUESTION, PCT_DENOM, GENERIC_TEXT]
+  old_headline: "Resignation counts by FY x grade only"
+  new_headline: "Mid-career E3–E5 voluntary attrition rising: 36 (0.39%) FY24, 4 (0.05%) FY25, 135 (1.67%) FY26"
+  why: "No total attrition, no VRS, no rate vs opening headcount (stock, March of prior FY). Pivoted by grade with rates."
+  severity: important
+- id: H4__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "FY26 resignations all grades by discipline"
+  new_headline: "E3–E5 voluntary exits FY24–26 (175): F&A 20.0%, Production 20.0%, Drilling 13.1%, IT 5.7%"
+  why: "Missing E3–E5 filter and share."
+  severity: important
+- id: H4__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "career_progression 142, compensation 39 (NULLs coalesced to career_progression)"
+  new_headline: "Career progression 90.2% of 396 voluntary exits FY24–26; compensation gap 39, all FY26, 29 mid-career"
+  why: "COALESCE(NULL -> 'career_progression') fabricated the top reason (no NULLs exist today, but removed); widened to the 3-yr window."
+  severity: cosmetic
+- id: H4__compare_or_so_what
+  defect_class: [WRONG_QUESTION, PCT_DENOM, GENERIC_TEXT]
+  old_headline: "FY26 resignation counts by WC type, all grades"
+  new_headline: "E3–E5 annual voluntary rate: corporate 0.94% vs onshore field 0.58% (offshore 0.64%)"
+  why: "No rate and not mid-career; now exits / summed opening E3–E5 headcount by location class."
+  severity: important
+- id: H5
+  defect_class: [WRONG_QUESTION, FY_MAPPING, GENERIC_TEXT]
+  old_headline: "128 E4->E5 + 100 E5->E6 pending (no duration)"
+  new_headline: "228 pending DPCs, avg 15.5 months overdue as of 19-Oct-2026 (stale delay_months says 8.6)"
+  why: "'For how long' unanswered; delay_months is a stale extract value - now months since due_date anchored at 2026-10-19."
+  severity: important
+- id: H5__drill_down
+  defect_class: [CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "generic template"
+  new_headline: "All 228 delayed DPCs in Drilling/Production; largest E4->E5 Production 66"
+  why: "SQL substantively correct; added status filter, overdue months, narrative."
+  severity: cosmetic
+- id: H5__why
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template"
+  new_headline: "CAT Guwahati seniority stay 122 (53.5%) + pending CVO advice 106 (46.5%) explain all delays"
+  why: "SQL fine; added share/step split and real narrative."
+  severity: cosmetic
+- id: H5__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Average delay months by from_grade"
+  new_headline: "164 of 228 pending candidates (71.9%) have completed residency: 105/128 E4->E5, 59/100 E5->E6"
+  why: "Did not count residency-complete executives; now years-in-grade vs dim_grade typical_residency_years."
+  severity: important
+- id: H6
+  defect_class: [JOIN_FANOUT, WRONG_QUESTION, CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "Fill rates per grade x category (CMD General 100%, E1 ST 92.9% ...)"
+  new_headline: "Not fully: 37 of 59 grade-category cells below norm, driven by EWS (12 grades) and PwD (11); 179 SC/ST backlog"
+  why: "LEFT JOIN employee_master on discipline_id fanned out every cell; reported in-position/sanctioned fill rate, not representation vs norm; no PwD."
+  severity: blocking
+- id: H6__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Backlog counts only"
+  new_headline: "E1–E7: SC 14.3–16.1%, ST 9.6–12.6%, EWS 4.4–5.3%, PwD 2.1–2.9%; 102 SC/ST backlog"
+  why: "Question asks representation % and backlog; added both plus norm and PwD."
+  severity: important
+- id: H6__why
+  defect_class: [GENERIC_TEXT, GAP]
+  old_headline: "generic template"
+  new_headline: "Geology + Geophysics hold 15 of 179 SC/ST backlog (8.4%); Marine has no sanctioned posts"
+  why: "Added company context and shares; Marine / Naval Architecture absent from sanctioned_posts (gap)."
+  severity: cosmetic
+- id: H6__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "In-position/sanctioned fill rate by category, no norms"
+  new_headline: "EWS 5.00% vs 10% and PwD 2.26% vs 4% below norm; OBC/SC at norm; ST 11.35% above"
+  why: "Now representation of company in-position vs statutory norms."
+  severity: important
+- id: H7
+  defect_class: [WRONG_QUESTION, PCT_DENOM, CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "Top-20 grade x WC counts of women executives (Ahmedabad E3 97 ...)"
+  new_headline: "Women 8.1% of active staff but 1.5% offshore (down from 4.2% in Mar-2021)"
+  why: "No representation share and nothing on offshore; now shares by grade, location, asset and offshore trend."
+  severity: important
+- id: H7__drill_down
+  defect_class: [WRONG_QUESTION, SCD2_NOT_ASOF, GENERIC_TEXT]
+  old_headline: "Women of all grades offshore incl. 'OR separation_date IS NULL'"
+  new_headline: "12 women executives at Mumbai High (1.5%); 41 across offshore (1.1% of 3,746)"
+  why: "Question asks executives; OR clause could admit non-active rows."
+  severity: important
+- id: H7__why
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "Quoted TA Regulations Part 1 header boilerplate"
+  new_headline: "No offshore-facility policy for women in corpus (gap); only provision = female medical officer rule (P1-03)"
+  why: "Cited doc irrelevant and quote was header text; now relevant body passages + gap narrative."
+  severity: important
+- id: H7__compare_or_so_what
+  defect_class: [PCT_DENOM, GENERIC_TEXT]
+  old_headline: "Each function's share of all women (sums to 100%)"
+  new_headline: "Women 7.5% of technical staff vs HR 15.6%, F&A 13.1%, support 13.2%"
+  why: "Representation within function, not distribution of women."
+  severity: important
+- id: H8
+  defect_class: [PCT_DENOM, GAP, GENERIC_TEXT]
+  old_headline: "Avg hours per training record by discipline (~22–23 h), all employees"
+  new_headline: "FY26: 14.3 h per executive; 8 of 16 disciplines below average; only 63% of executives trained"
+  why: "Per-record average over trainees incl. non-executives; now hours per executive on rolls (untrained = 0). No discipline target exists (gap)."
+  severity: important
+- id: H8__drill_down
+  defect_class: [FY_MAPPING, GENERIC_TEXT]
+  old_headline: "Avg days per record across ALL fiscal years"
+  new_headline: "FY26 man-days per participant ~3.3 at all three institutes; uniform by discipline"
+  why: "No FY filter; restricted to FY26 executives."
+  severity: important
+- id: H8__why
+  defect_class: [JOIN_FANOUT, FY_MAPPING, GENERIC_TEXT]
+  old_headline: "AVG hours over training x all rotation postings"
+  new_headline: "Field Drilling/Production execs 14.0–14.2 h vs 14.3 company and 15.6 corporate; offshore Production 15.0"
+  why: "Joined every historic rotation posting (fan-out), no FY filter."
+  severity: important
+- id: H8__compare_or_so_what
+  defect_class: [WRONG_QUESTION, FY_MAPPING, GAP, GENERIC_TEXT]
+  old_headline: "24.9 avg hours vs MoU actual 62,500 (FY25 value via MAX)"
+  new_headline: "FY26 MoU reports 58,200 person-days (Very Good) but records show 42,573 (< Good target 50,000)"
+  why: "Cross-join + MAX picked FY25; now per-FY targets vs reported vs recorded person-days per employee. Rupee investment not in data (gap)."
+  severity: important
+- id: H9
+  defect_class: [WRONG_QUESTION, SANITY_BOUND, GENERIC_TEXT]
+  old_headline: "140 pending (30 over 3 yrs)"
+  new_headline: "208 open (pending + 68 stayed): 190 litigations + 18 grievances; 70 over 3 yrs"
+  why: "Stayed cases are undisposed and were excluded; added case-type ageing; 11 future-dated filings flagged."
+  severity: important
+- id: H9__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Pending-only category x 7 raw forums"
+  new_headline: "CAT benches 125 of 208 open; quarters allotment (46) and seniority (41) lead"
+  why: "Included stayed; pivoted CAT/HC/SC/internal."
+  severity: important
+- id: H9__why
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "Quoted JRTP 13.0 header boilerplate"
+  new_headline: "No general grievance policy in corpus (partial gap); JRTP 13.0 TGRC 15/30-day rules quoted"
+  why: "Quote was header text; now clause body + gap narrative."
+  severity: cosmetic
+- id: H9__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "Avg age_days by case type incl. closed (1,141 d for grievances)"
+  new_headline: "Disposal time not measurable (no disposal date); 13 of 18 open grievances already >60 days"
+  why: "age_days of closed cases is time since filing, not disposal time."
+  severity: important
+- id: H10
+  defect_class: [WRONG_QUESTION, SANITY_BOUND]
+  old_headline: "'{eligible_officers_count}: 46' (row count); all-grade >=36-month counts per WC"
+  new_headline: "8,457 of 13,453 executives due (>=5y stay 10,050 - 1,592 retiring - 1 exempt); 1,362 eligible 3-5y; 7,720 of the due have stays starting 2020-07-01 (censored)"
+  why: "Included non-executives/exempt/age 57+; legacy prose reported number of WCs as officers. Rev 2 (coordinator): 'due' changed from >3y (first fix gave 9,748) to C1/X10/MET-HR-011 rule = v_continuous_stay >=60 months, no valid exemption, retirement > 3*365.25 days away; 3-5y shown as eligible_3_to_5y; censoring count column added. WC-DEL: 419 >=5y = 401 due + 17 retiring + 1 valid EX-RET3Y exemption (EMP-100697, retires 2029-10-31, 1,108 days out); C1's 402 does not remove that exemption."
+  severity: blocking
+- id: H10__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Head-count per city (2 rows)"
+  new_headline: "44 named Delhi/Dehradun technical executives due (>=5y rule) and never served Cat-C (IT 21); 33 have censored 2020-07-01 stays"
+  why: "Question asks specific executives; now named list with JRTP criteria."
+  severity: important
+- id: H10__why
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Quoted JRTP 10.0 header boilerplate"
+  new_headline: "JRTP 10.0 body quoted: one-for-one discipline replacement + asset-head certification"
+  why: "Quote contained no clause text."
+  severity: cosmetic
+- id: H10__compare_or_so_what
+  defect_class: [WRONG_QUESTION, UNIT_MIXING, FY_MAPPING, GAP, GENERIC_TEXT]
+  old_headline: "SUM(total_transfer_cost_inr) all postings since 1974 = 30,08,83,20,000 (rupees)"
+  new_headline: "No approved budget (gap); moving all 8,457 due = ₹270.63 cr ≈ 10.0x FY26 spend ₹27.16 cr; Cat-C deficit fill ≈ ₹19.58 cr (rev 2: >=5y rule, was 9,748 / ₹311.93 cr)"
+  why: "All-history rupee sum presented as budget; now FY26 run-rate (crore) vs proposal cost by station category."
+  severity: blocking

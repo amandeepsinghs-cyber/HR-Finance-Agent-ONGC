@@ -1,0 +1,191 @@
+[
+  {
+    "id": "EN-1",
+    "category": "headcount_english",
+    "language": "en-IN",
+    "query": "How many executives have been posted in Delhi for 5 years or more? Break down by grade and discipline.",
+    "tool_called": "query_headcount_tenure",
+    "tool_latency_ms": 644.44,
+    "time_to_tool_start_ms": 169.03,
+    "time_to_chart_rendered_ms": 813.76,
+    "time_to_first_audio_ms": 823.63,
+    "total_turn_ms": 823.67,
+    "agent_transcript_preview": "In Delhi, there are 419 executives with continuous tenure of 5 years or more. Of these, 402 are eligible for transfer ro",
+    "server_metrics": {
+      "ttfb_audio_ms": 644.9,
+      "tool_start_ms": 0.06,
+      "tool_duration_ms": 644.44,
+      "chart_ready_ms": 644.64,
+      "turn_total_ms": 654.4,
+      "mode": "live"
+    }
+  },
+  {
+    "id": "EN-2",
+    "category": "headcount_english",
+    "language": "en-IN",
+    "query": "How many executives have been posted in Delhi for 5 years or more? Break down by grade and discipline.",
+    "tool_called": "query_headcount_tenure",
+    "tool_latency_ms": 519.83,
+    "time_to_tool_start_ms": 397.84,
+    "time_to_chart_rendered_ms": 917.85,
+    "time_to_first_audio_ms": 926.88,
+    "total_turn_ms": 926.91,
+    "agent_transcript_preview": "In Delhi, there are 419 executives with continuous tenure of 5 years or more. Of these, 402 are eligible for transfer ro",
+    "server_metrics": {
+      "ttfb_audio_ms": 520.35,
+      "tool_start_ms": 0.06,
+      "tool_duration_ms": 519.83,
+      "chart_ready_ms": 520.05,
+      "turn_total_ms": 529.06,
+      "mode": "live"
+    }
+  },
+  {
+    "id": "EN-3",
+    "category": "headcount_english",
+    "language": "en-IN",
+    "query": "How many executives have been posted in Delhi for 5 years or more? Break down by grade and discipline.",
+    "tool_called": "query_headcount_tenure",
+    "tool_latency_ms": 508.1,
+    "time_to_tool_start_ms": 0.61,
+    "time_to_chart_rendered_ms": 509.14,
+    "time_to_first_audio_ms": 517.78,
+    "total_turn_ms": 517.81,
+    "agent_transcript_preview": "In Delhi, there are 419 executives with continuous tenure of 5 years or more. Of these, 402 are eligible for transfer ro",
+    "server_metrics": {
+      "ttfb_audio_ms": 508.6,
+      "tool_start_ms": 0.1,
+      "tool_duration_ms": 508.1,
+      "chart_ready_ms": 508.34,
+      "turn_total_ms": 517.02,
+      "mode": "fallback_grounded"
+    }
+  },
+  {
+    "id": "EN-4",
+    "category": "headcount_english",
+    "language": "en-IN",
+    "query": "How many executives have been posted in Delhi for 5 years or more? Break down by grade and discipline.",
+    "tool_called": "query_headcount_tenure",
+    "tool_latency_ms": 536.88,
+    "time_to_tool_start_ms": 0.64,
+    "time_to_chart_rendered_ms": 537.87,
+    "time_to_first_audio_ms": 546.43,
+    "total_turn_ms": 546.46,
+    "agent_transcript_preview": "In Delhi, there are 419 executives with continuous tenure of 5 years or more. Of these, 402 are eligible for transfer ro",
+    "server_metrics": {
+      "ttfb_audio_ms": 537.4,
+      "tool_start_ms": 0.11,
+      "tool_duration_ms": 536.88,
+      "chart_ready_ms": 537.13,
+      "turn_total_ms": 545.66,
+      "mode": "fallback_grounded"
+    }
+  },
+  {
+    "id": "EN-5",
+    "category": "headcount_english",
+    "language": "en-IN",
+    "query": "How many executives have been posted in Delhi for 5 years or more? Break down by grade and discipline.",
+    "tool_called": "query_headcount_tenure",
+    "tool_latency_ms": 536.77,
+    "time_to_tool_start_ms": 0.64,
+    "time_to_chart_rendered_ms": 538.74,
+    "time_to_first_audio_ms": 557.45,
+    "total_turn_ms": 557.74,
+    "agent_transcript_preview": "In Delhi, there are 419 executives with continuous tenure of 5 years or more. Of these, 402 are eligible for transfer ro",
+    "server_metrics": {
+      "ttfb_audio_ms": 537.33,
+      "tool_start_ms": 0.11,
+      "tool_duration_ms": 536.77,
+      "chart_ready_ms": 537.03,
+      "turn_total_ms": 557.2,
+      "mode": "fallback_grounded"
+    }
+  },
+  {
+    "id": "HI-1",
+    "category": "headcount_hinglish",
+    "language": "hi-IN",
+    "query": "Delhi mein 5 saal se zyada kitne executives hain, grade-wise batao",
+    "tool_called": "query_headcount_tenure",
+    "tool_latency_ms": 533.47,
+    "time_to_tool_start_ms": 0.65,
+    "time_to_chart_rendered_ms": 534.48,
+    "time_to_first_audio_ms": 542.74,
+    "total_turn_ms": 542.77,
+    "agent_transcript_preview": "Delhi mein 5 saal ya usse zyada se posted kul 419 executives hain. Inme se 402 transfer rotation ke liye eligible hain, ",
+    "server_metrics": {
+      "ttfb_audio_ms": 533.97,
+      "tool_start_ms": 0.11,
+      "tool_duration_ms": 533.47,
+      "chart_ready_ms": 533.71,
+      "turn_total_ms": 541.95,
+      "mode": "fallback_grounded"
+    }
+  },
+  {
+    "id": "HI-2",
+    "category": "headcount_hinglish",
+    "language": "hi-IN",
+    "query": "Delhi mein 5 saal se zyada kitne executives hain, grade-wise batao",
+    "tool_called": "query_headcount_tenure",
+    "tool_latency_ms": 526.01,
+    "time_to_tool_start_ms": 0.68,
+    "time_to_chart_rendered_ms": 527.05,
+    "time_to_first_audio_ms": 535.38,
+    "total_turn_ms": 535.41,
+    "agent_transcript_preview": "Delhi mein 5 saal ya usse zyada se posted kul 419 executives hain. Inme se 402 transfer rotation ke liye eligible hain, ",
+    "server_metrics": {
+      "ttfb_audio_ms": 526.52,
+      "tool_start_ms": 0.13,
+      "tool_duration_ms": 526.01,
+      "chart_ready_ms": 526.26,
+      "turn_total_ms": 534.58,
+      "mode": "fallback_grounded"
+    }
+  },
+  {
+    "id": "FU-1",
+    "category": "followup",
+    "language": "en-IN",
+    "query": "only E5 and above",
+    "tool_called": "query_headcount_tenure",
+    "tool_latency_ms": 543.84,
+    "time_to_tool_start_ms": 0.54,
+    "time_to_chart_rendered_ms": 544.91,
+    "time_to_first_audio_ms": 554.03,
+    "total_turn_ms": 554.06,
+    "agent_transcript_preview": "In Delhi, there are 140 executives with continuous tenure of 5 years or more. Of these, 128 are eligible for transfer ro",
+    "server_metrics": {
+      "ttfb_audio_ms": 544.42,
+      "tool_start_ms": 0.09,
+      "tool_duration_ms": 543.84,
+      "chart_ready_ms": 544.06,
+      "turn_total_ms": 553.32,
+      "mode": "fallback_grounded"
+    }
+  },
+  {
+    "id": "POL-1",
+    "category": "policy",
+    "language": "en-IN",
+    "query": "how long must I stay at a station before transfer?",
+    "tool_called": "search_policy",
+    "tool_latency_ms": 763.84,
+    "time_to_tool_start_ms": 0.57,
+    "time_to_chart_rendered_ms": null,
+    "time_to_first_audio_ms": 773.16,
+    "total_turn_ms": 773.19,
+    "agent_transcript_preview": "As per JRTP Clause 3.1, the minimum normal tenure of an executive at any station is 3 completed years. Normal rotation i",
+    "server_metrics": {
+      "ttfb_audio_ms": 764.17,
+      "tool_start_ms": 0.1,
+      "tool_duration_ms": 763.84,
+      "chart_ready_ms": 0.0,
+      "turn_total_ms": 772.43,
+      "mode": "fallback_grounded"
+    }
+  }
+]

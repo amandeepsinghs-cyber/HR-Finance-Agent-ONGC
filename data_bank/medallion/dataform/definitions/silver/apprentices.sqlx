@@ -1,0 +1,27 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "apprentices",
+  description: "National Apprenticeship Promotion Scheme (NAPS) engagement ledger tracking trade, technician, and graduate apprentices across work centres, stipends, and statutory diversity quotas."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`apprentice_id`) AS apprentice_id,
+    TRIM(`trade`) AS trade,
+    TRIM(`trade_category`) AS trade_category,
+    TRIM(`wc_id`) AS wc_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`start_date`), ''), 1, 10)) AS start_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`end_date`), ''), 1, 10)) AS end_date,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`stipend_inr_month`), ''), ',', ''), '₹', '') AS NUMERIC) AS stipend_inr_month,
+    TRIM(`status`) AS status,
+    TRIM(`category`) AS category,
+    TRIM(`gender`) AS gender,
+    TRIM(`fiscal_year`) AS fiscal_year
+  FROM ${ref("sap_apprentice_ledger")}
+  WHERE NULLIF(TRIM(`apprentice_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY apprentice_id ORDER BY _ingest_ts DESC) = 1

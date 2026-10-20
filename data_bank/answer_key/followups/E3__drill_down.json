@@ -1,0 +1,36 @@
+{
+  "job_id": "749f1a71-897a-4e3f-aa00-4e690ae59352",
+  "total_bytes_processed": 3786924,
+  "executed_at": "2026-10-20T06:33:05.845048+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 2,
+  "columns": [
+    "claim_id",
+    "claim_status",
+    "claimed_amount_inr",
+    "approved_amount_inr",
+    "deduction_amount_inr",
+    "deduction_reason",
+    "net_payable_inr"
+  ],
+  "rows": [
+    {
+      "claim_id": "CLM-P002",
+      "claim_status": "pending_scrutiny",
+      "claimed_amount_inr": 42000.0,
+      "approved_amount_inr": 0.0,
+      "deduction_amount_inr": 0.0,
+      "deduction_reason": "none",
+      "net_payable_inr": 0.0
+    },
+    {
+      "claim_id": "CLM-P001",
+      "claim_status": "approved_paid",
+      "claimed_amount_inr": 18500.0,
+      "approved_amount_inr": 17200.0,
+      "deduction_amount_inr": 1300.0,
+      "deduction_reason": "non_reimbursable_consumables",
+      "net_payable_inr": 17200.0
+    }
+  ]
+}

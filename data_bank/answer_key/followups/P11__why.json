@@ -1,0 +1,27 @@
+{
+  "job_id": "f45e13f7-af7a-4e52-bea1-c5936351d9a9",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:07.019649+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 4.0",
+      "heading": "Cumulative Stay Cap",
+      "quote_snippet": "Document Title: ONGC Job Rotation and Transfer Policy (JRTP, Rev 4) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 4.0 - Cumulative Stay Cap\nDomain Vocabulary & Glossary Terms: Job Rotation and Transfer Policy (JRTP); Station Tenure Norms; Minimum Station Tenure; Normal Rotat"
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 7.0",
+      "heading": "Pre-Retirement Tenure Exemption",
+      "quote_snippet": "Document Title: ONGC Job Rotation and Transfer Policy (JRTP, Rev 4) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 7.0 - Pre-Retirement Tenure Exemption\nDomain Vocabulary & Glossary Terms: Job Rotation and Transfer Policy (JRTP); Station Tenure Norms; Minimum Station Tenure; "
+    }
+  ]
+}

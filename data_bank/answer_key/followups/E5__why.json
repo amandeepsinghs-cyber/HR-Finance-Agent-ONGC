@@ -1,0 +1,27 @@
+{
+  "job_id": "65f76c1e-12ce-45a2-a588-f24745854305",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:54.708759+00:00",
+  "elapsed_seconds": 0.61,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "P1-16",
+      "clause_ref": "Part 10",
+      "heading": "ONGC Travelling Allowance Regulations (full text) (Part 10)",
+      "quote_snippet": "i) Henceforth all air tickets should be booked by check fare only. However, employees working on 14 days On/Off shift pattern in Offshore areas of Mumbai and KG Offshore may not be forced to travel by check fare tickets and instead they may be allowed to travel by air by economy/\u2019Y\u2019 class for operating on On/Off shift pattern. ii) If tickets are not to be booked by check fare, controlling officer "
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 5.0",
+      "heading": "Mandatory Hard-Station Prerequisite for Promotion",
+      "quote_snippet": "5.1 Prerequisite for Consideration to Grade E5: No executive belonging to technical cadres (Drilling, Production, Reservoir, Geology, Geophysics, Engineering) shall be considered eligible for empanelment or promotion from Grade E4 to Grade E5 (Deputy General Manager) unless they have successfully completed at least one full tenure of 3 (three) years in a designated Category 'C' Hard Station or Nor"
+    }
+  ]
+}

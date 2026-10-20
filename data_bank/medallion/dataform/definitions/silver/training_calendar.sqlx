@@ -1,0 +1,38 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "training_calendar",
+  description: "Annual training master calendar of approved executive development courses, eligibility prerequisites, and dates."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_0) AS programme_id,
+    TRIM(col_1) AS programme_name,
+    TRIM(col_2) AS institute_wc_id,
+    TRIM(col_3) AS institute,
+    TRIM(col_4) AS location_city,
+    TRIM(col_5) AS category,
+    TRIM(col_6) AS target_cadre,
+    SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(NULLIF(TRIM(col_7), ''), r'^\[|\]$', ''), r"'", ''), ', ') AS eligible_grades,
+    TRIM(col_8) AS grade_id,
+    SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(NULLIF(TRIM(col_9), ''), r'^\[|\]$', ''), r"'", ''), ', ') AS eligible_disciplines,
+    TRIM(col_10) AS discipline_id,
+    TRIM(col_11) AS gender,
+    TRIM(col_12) AS category_quota,
+    CASE WHEN LOWER(TRIM(col_13)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_13)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS pwd_flag,
+    TRIM(col_14) AS age_band,
+    TRIM(col_15) AS tenure_band,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_16), ''), 1, 10)) AS start_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_17), ''), 1, 10)) AS end_date,
+    TRIM(col_18) AS fiscal_year,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_19), ''), ',', ''), '₹', '') AS INT64) AS duration_days,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_20), ''), ',', ''), '₹', '') AS INT64) AS seats_capacity,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_21), ''), ',', ''), '₹', '') AS INT64) AS prerequisite_experience_years
+  FROM ${ref("excel_training_calendar")}
+  WHERE _row_number >= 2 AND col_0 IS NOT NULL AND TRIM(col_0) != '' AND _sheet_name NOT IN ('Notes_and_Citations', 'Executive_Summary', '_Ref_Capex_Codes', '_Cadre_Control_Master', '_MoU_Grading_Rules', '_Schedule_VII_Themes', '_Talent_Bench_Scale', '_Court_Jurisdiction_Codes')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY programme_id ORDER BY _ingest_ts DESC) = 1

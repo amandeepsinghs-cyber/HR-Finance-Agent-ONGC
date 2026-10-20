@@ -1,0 +1,49 @@
+{
+  "job_id": "9e619a40-d025-490f-9ef8-3279693d4763",
+  "total_bytes_processed": 11304836,
+  "executed_at": "2026-10-19T14:43:22.794366+00:00",
+  "elapsed_seconds": 1.15,
+  "row_count": 9,
+  "columns": [
+    "grade_id",
+    "executives_ge_5yr_count"
+  ],
+  "rows": [
+    {
+      "grade_id": "E1",
+      "executives_ge_5yr_count": 35
+    },
+    {
+      "grade_id": "E2",
+      "executives_ge_5yr_count": 90
+    },
+    {
+      "grade_id": "E3",
+      "executives_ge_5yr_count": 87
+    },
+    {
+      "grade_id": "E4",
+      "executives_ge_5yr_count": 67
+    },
+    {
+      "grade_id": "E5",
+      "executives_ge_5yr_count": 57
+    },
+    {
+      "grade_id": "E6",
+      "executives_ge_5yr_count": 35
+    },
+    {
+      "grade_id": "E7",
+      "executives_ge_5yr_count": 33
+    },
+    {
+      "grade_id": "E8",
+      "executives_ge_5yr_count": 12
+    },
+    {
+      "grade_id": "E9",
+      "executives_ge_5yr_count": 3
+    }
+  ]
+}

@@ -1,0 +1,850 @@
+work_centres:
+- wc_id: WC-DEL
+  name: Corporate HQ Delhi (Deendayal Urja Bhawan)
+  short_name: Delhi HQ
+  type: office
+  director_owner: Chairman
+  city: New Delhi
+  state: Delhi
+  state_code: DL
+  sector: Northern
+  cluster_id: CL-DEL
+  cluster_name: Delhi National Capital Region
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: true
+  aliases:
+  - Delhi
+  - Corporate HQ Delhi
+  - Deendayal Urja Bhawan
+  - Delhi office
+  - Delhi Corporate HQ
+  - Delhi-based
+- wc_id: WC-DDN
+  name: Tel Bhavan Corporate Administration
+  short_name: Dehradun Tel Bhavan
+  type: office
+  director_owner: HR
+  city: Dehradun
+  state: Uttarakhand
+  state_code: UK
+  sector: Northern
+  cluster_id: CL-DDN
+  cluster_name: Dehradun Complex
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: true
+  aliases:
+  - Dehradun
+  - Tel Bhavan
+  - Corp Admin
+  - Dehradun Tel Bhavan
+  - Dehradun Office
+- wc_id: WC-MUM
+  name: Mumbai High Asset
+  short_name: Mumbai High
+  type: asset
+  director_owner: Production
+  city: Mumbai
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: C
+  onshore_offshore: offshore
+  is_corporate_hq: false
+  aliases:
+  - Mumbai High
+  - Mumbai High Asset
+  - MHN
+  - MHS
+  - Western Offshore Asset
+- wc_id: WC-BAS
+  name: Bassein & Satellite Asset
+  short_name: Bassein & Satellite
+  type: asset
+  director_owner: Production
+  city: Mumbai
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: C
+  onshore_offshore: offshore
+  is_corporate_hq: false
+  aliases:
+  - Bassein
+  - Bassein Asset
+  - Bassein & Satellite
+  - B&S
+  - B&S Asset
+- wc_id: WC-NEH
+  name: Neelam & Heera Asset
+  short_name: Neelam & Heera
+  type: asset
+  director_owner: Production
+  city: Mumbai
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: C
+  onshore_offshore: offshore
+  is_corporate_hq: false
+  aliases:
+  - Neelam-Heera
+  - Neelam & Heera
+  - N&H
+  - Neelam
+  - Heera
+  - N&H Asset
+- wc_id: WC-EAS
+  name: Eastern Offshore Asset
+  short_name: Eastern Offshore
+  type: asset
+  director_owner: Production
+  city: Kakinada
+  state: Andhra Pradesh
+  state_code: AP
+  sector: Eastern
+  cluster_id: CL-KG
+  cluster_name: Rajahmundry–Kakinada
+  hard_station_cat: C
+  onshore_offshore: offshore
+  is_corporate_hq: false
+  aliases:
+  - Eastern Offshore
+  - Eastern Offshore Asset
+  - EOA
+  - KG-DWN-98/2
+  - KG-98/2
+  - Kakinada
+- wc_id: WC-AHM
+  name: Ahmedabad Asset
+  short_name: Ahmedabad Asset
+  type: asset
+  director_owner: Production
+  city: Ahmedabad
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-AHM-MEH
+  cluster_name: Ahmedabad–Mehsana
+  hard_station_cat: A
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Ahmedabad
+  - Ahmedabad Asset
+  - Onshore Gujarat
+  - Western Onshore
+- wc_id: WC-MEH
+  name: Mehsana Asset
+  short_name: Mehsana Asset
+  type: asset
+  director_owner: Production
+  city: Mehsana
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-AHM-MEH
+  cluster_name: Ahmedabad–Mehsana
+  hard_station_cat: A
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Mehsana
+  - Mehsana Asset
+  - Onshore Gujarat
+- wc_id: WC-ANK
+  name: Ankleshwar Asset
+  short_name: Ankleshwar Asset
+  type: asset
+  director_owner: Production
+  city: Ankleshwar
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-CAM-ANK-VAD
+  cluster_name: Cambay–Ankleshwar–Vadodara
+  hard_station_cat: B
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Ankleshwar
+  - Ankleshwar Asset
+  - Gandhar
+- wc_id: WC-CAM
+  name: Cambay Asset
+  short_name: Cambay Asset
+  type: asset
+  director_owner: Production
+  city: Cambay
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-CAM-ANK-VAD
+  cluster_name: Cambay–Ankleshwar–Vadodara
+  hard_station_cat: B
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Cambay
+  - Cambay Asset
+  - Khambhat
+- wc_id: WC-ASM
+  name: Assam Asset
+  short_name: Assam Asset
+  type: asset
+  director_owner: Production
+  city: Nazira
+  state: Assam
+  state_code: AS
+  sector: NE
+  cluster_id: CL-NE-ASSAM
+  cluster_name: Nazira–Jorhat–Silchar
+  hard_station_cat: C
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Assam
+  - Assam Asset
+  - Nazira
+  - Sivasagar
+  - Nazira/Sivasagar
+  - North-East
+  - NE
+- wc_id: WC-JOR
+  name: Jorhat Asset
+  short_name: Jorhat Asset
+  type: asset
+  director_owner: Production
+  city: Jorhat
+  state: Assam
+  state_code: AS
+  sector: NE
+  cluster_id: CL-NE-ASSAM
+  cluster_name: Nazira–Jorhat–Silchar
+  hard_station_cat: C
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Jorhat
+  - Jorhat Asset
+  - North-East
+  - NE
+- wc_id: WC-TRI
+  name: Tripura Asset
+  short_name: Tripura Asset
+  type: asset
+  director_owner: Production
+  city: Agartala
+  state: Tripura
+  state_code: TR
+  sector: NE
+  cluster_id: CL-NE-TRIPURA
+  cluster_name: Tripura Agartala
+  hard_station_cat: C
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Tripura
+  - Tripura Asset
+  - Agartala
+  - North-East
+  - NE
+- wc_id: WC-BOK
+  name: CBM Bokaro Asset
+  short_name: CBM Bokaro
+  type: asset
+  director_owner: Production
+  city: Bokaro
+  state: Jharkhand
+  state_code: JH
+  sector: Eastern
+  cluster_id: CL-BOK
+  cluster_name: Bokaro CBM Complex
+  hard_station_cat: C
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Bokaro
+  - CBM Bokaro
+  - CBM
+  - Bokaro Asset
+  - Jharia
+- wc_id: WC-RAJ
+  name: Rajahmundry Asset
+  short_name: Rajahmundry Asset
+  type: asset
+  director_owner: Production
+  city: Rajahmundry
+  state: Andhra Pradesh
+  state_code: AP
+  sector: Southern
+  cluster_id: CL-KG
+  cluster_name: Rajahmundry–Kakinada
+  hard_station_cat: B
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Rajahmundry
+  - Rajahmundry Asset
+  - KG Onshore
+- wc_id: WC-CAU
+  name: Cauvery Asset
+  short_name: Cauvery Asset
+  type: asset
+  director_owner: Production
+  city: Karaikal
+  state: Tamil Nadu
+  state_code: TN
+  sector: Southern
+  cluster_id: CL-CAU-CHN
+  cluster_name: Cauvery–Chennai
+  hard_station_cat: B
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Cauvery
+  - Cauvery Asset
+  - Karaikal
+- wc_id: WC-URN
+  name: Uran Gas Processing Plant
+  short_name: Uran Plant
+  type: plant
+  director_owner: Production
+  city: Uran
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: B
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Uran
+  - Uran Plant
+  - Uran Gas Processing Plant
+  - Uran Terminal
+- wc_id: WC-HAZ
+  name: Hazira Gas Processing Plant
+  short_name: Hazira Plant
+  type: plant
+  director_owner: Production
+  city: Surat
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-CAM-ANK-VAD
+  cluster_name: Cambay–Ankleshwar–Vadodara
+  hard_station_cat: B
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Hazira
+  - Hazira Plant
+  - Hazira Gas Plant
+  - Surat
+- wc_id: WC-DAH
+  name: Dahej C2-C3 Plant
+  short_name: Dahej Plant
+  type: plant
+  director_owner: Strategy & CA
+  city: Dahej
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-CAM-ANK-VAD
+  cluster_name: Cambay–Ankleshwar–Vadodara
+  hard_station_cat: B
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Dahej
+  - Dahej Plant
+  - Dahej C2-C3
+  - Dahej C2-C3 Plant
+- wc_id: WC-WOB
+  name: Western Offshore Basin
+  short_name: Western Offshore Basin
+  type: basin
+  director_owner: Exploration
+  city: Mumbai
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: A
+  onshore_offshore: offshore
+  is_corporate_hq: false
+  aliases:
+  - Western Offshore
+  - Western Offshore Basin
+  - WOB
+- wc_id: WC-WNB
+  name: Western Onshore Basin
+  short_name: Western Onshore Basin
+  type: basin
+  director_owner: Exploration
+  city: Vadodara
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-CAM-ANK-VAD
+  cluster_name: Cambay–Ankleshwar–Vadodara
+  hard_station_cat: A
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Western Onshore
+  - Western Onshore Basin
+  - Vadodara
+- wc_id: WC-RAJ-BSN
+  name: Jodhpur (Rajasthan) Basin
+  short_name: Rajasthan Basin
+  type: basin
+  director_owner: Exploration
+  city: Jodhpur
+  state: Rajasthan
+  state_code: RJ
+  sector: Western
+  cluster_id: CL-JOD
+  cluster_name: Jodhpur Rajasthan
+  hard_station_cat: C
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Jodhpur
+  - Rajasthan
+  - Rajasthan Basin
+  - Jodhpur Basin
+- wc_id: WC-AAB
+  name: Assam & Assam-Arakan Basin
+  short_name: A&AA Basin
+  type: basin
+  director_owner: Exploration
+  city: Jorhat
+  state: Assam
+  state_code: AS
+  sector: NE
+  cluster_id: CL-NE-ASSAM
+  cluster_name: Nazira–Jorhat–Silchar
+  hard_station_cat: C
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Assam-Arakan
+  - A&AA Basin
+  - Assam & AA Basin
+- wc_id: WC-SIL
+  name: Silchar Basin
+  short_name: Silchar Basin
+  type: basin
+  director_owner: Exploration
+  city: Silchar
+  state: Assam
+  state_code: AS
+  sector: NE
+  cluster_id: CL-NE-ASSAM
+  cluster_name: Nazira–Jorhat–Silchar
+  hard_station_cat: C
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Silchar
+  - Silchar Basin
+  - Cachar Forward Base
+- wc_id: WC-CAB
+  name: Cauvery Basin
+  short_name: Cauvery Basin
+  type: basin
+  director_owner: Exploration
+  city: Chennai
+  state: Tamil Nadu
+  state_code: TN
+  sector: Southern
+  cluster_id: CL-CAU-CHN
+  cluster_name: Cauvery–Chennai
+  hard_station_cat: A
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Cauvery Basin
+  - Chennai Basin
+- wc_id: WC-KGB
+  name: KG-PG Basin
+  short_name: KG Basin
+  type: basin
+  director_owner: Exploration
+  city: Rajahmundry
+  state: Andhra Pradesh
+  state_code: AP
+  sector: Southern
+  cluster_id: CL-KG
+  cluster_name: Rajahmundry–Kakinada
+  hard_station_cat: B
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - KG Basin
+  - Krishna Godavari
+  - KG-PG Basin
+  - KG-PG
+- wc_id: WC-FRB
+  name: Frontier Basin
+  short_name: Frontier Basin
+  type: basin
+  director_owner: Exploration
+  city: Dehradun
+  state: Uttarakhand
+  state_code: UK
+  sector: Northern
+  cluster_id: CL-DDN
+  cluster_name: Dehradun Complex
+  hard_station_cat: A
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Frontier Basin
+  - Dehradun Basin
+- wc_id: WC-MBA
+  name: MBA Basin (Mahanadi-Bengal-Andaman)
+  short_name: MBA Basin
+  type: basin
+  director_owner: Exploration
+  city: Kolkata
+  state: West Bengal
+  state_code: WB
+  sector: Eastern
+  cluster_id: CL-KOL
+  cluster_name: Kolkata Hub
+  hard_station_cat: A
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - MBA
+  - MBA Basin
+  - Kolkata
+  - Mahanadi Bengal Andaman
+- wc_id: WC-KDM
+  name: KDMIPE (K. D. Malaviya Institute of Petroleum Exploration)
+  short_name: KDMIPE
+  type: institute
+  director_owner: Exploration
+  city: Dehradun
+  state: Uttarakhand
+  state_code: UK
+  sector: Northern
+  cluster_id: CL-DDN
+  cluster_name: Dehradun Complex
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - KDMIPE
+  - KD Malaviya Institute
+- wc_id: WC-GEO
+  name: GEOPIC (Geodata Processing & Interpretation Centre)
+  short_name: GEOPIC
+  type: institute
+  director_owner: Exploration
+  city: Dehradun
+  state: Uttarakhand
+  state_code: UK
+  sector: Northern
+  cluster_id: CL-DDN
+  cluster_name: Dehradun Complex
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - GEOPIC
+- wc_id: WC-IRS
+  name: IRS (Institute of Reservoir Studies)
+  short_name: IRS
+  type: institute
+  director_owner: Exploration
+  city: Ahmedabad
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-AHM-MEH
+  cluster_name: Ahmedabad–Mehsana
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - IRS
+  - Institute of Reservoir Studies
+- wc_id: WC-INB
+  name: INBIGS (Institute of Biotechnology & Geotectonic Studies)
+  short_name: INBIGS
+  type: institute
+  director_owner: Exploration
+  city: Jorhat
+  state: Assam
+  state_code: AS
+  sector: NE
+  cluster_id: CL-NE-ASSAM
+  cluster_name: Nazira–Jorhat–Silchar
+  hard_station_cat: C
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - INBIGS
+- wc_id: WC-CEW
+  name: CEWELL (Centre for Excellence in Well Logging)
+  short_name: CEWELL
+  type: institute
+  director_owner: Exploration
+  city: Vadodara
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-CAM-ANK-VAD
+  cluster_name: Cambay–Ankleshwar–Vadodara
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - CEWELL
+- wc_id: WC-IDW
+  name: IDWE (Institute of Drilling & Well Engineering fka IDT)
+  short_name: IDWE
+  type: institute
+  director_owner: T&FS
+  city: Dehradun
+  state: Uttarakhand
+  state_code: UK
+  sector: Northern
+  cluster_id: CL-DDN
+  cluster_name: Dehradun Complex
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - IDWE
+  - IDT
+  - Institute of Drilling Technology
+- wc_id: WC-IOG
+  name: IOGPT (Institute of Oil & Gas Production Technology)
+  short_name: IOGPT
+  type: institute
+  director_owner: Production
+  city: Panvel
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - IOGPT
+  - IOGPT Navi Mumbai
+  - Panvel
+  - Navi Mumbai
+- wc_id: WC-IEO
+  name: IEOT/IPEOT (Institute of Engineering and Ocean Technology)
+  short_name: IEOT
+  type: institute
+  director_owner: Production
+  city: Panvel
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - IEOT
+  - IPEOT
+  - Institute of Engineering & Ocean Technology
+- wc_id: WC-ACA
+  name: ONGC Academy
+  short_name: ONGC Academy
+  type: institute
+  director_owner: HR
+  city: Dehradun
+  state: Uttarakhand
+  state_code: UK
+  sector: Northern
+  cluster_id: CL-DDN
+  cluster_name: Dehradun Complex
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - ONGC Academy
+  - ONGC Academy Dehradun
+  - IMD Dehradun
+- wc_id: WC-ATI
+  name: ATI Goa (Advanced Training Institute fka IPSHEM)
+  short_name: ATI Goa
+  type: institute
+  director_owner: HR
+  city: Betul
+  state: Goa
+  state_code: GA
+  sector: Western
+  cluster_id: CL-GOA
+  cluster_name: Goa Training Complex
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - ATI Goa
+  - IPSHEM
+  - Goa
+- wc_id: WC-ROM
+  name: Regional Office Mumbai
+  short_name: RO Mumbai
+  type: office
+  director_owner: HR
+  city: Mumbai
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - Mumbai
+  - RO Mumbai
+  - Mumbai Regional Office
+  - NBP Green Heights
+- wc_id: WC-ROK
+  name: Regional Office Kolkata
+  short_name: RO Kolkata
+  type: office
+  director_owner: HR
+  city: Kolkata
+  state: West Bengal
+  state_code: WB
+  sector: Eastern
+  cluster_id: CL-KOL
+  cluster_name: Kolkata Hub
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - RO Kolkata
+  - Kolkata Office
+- wc_id: WC-ROC
+  name: Regional Office Chennai
+  short_name: RO Chennai
+  type: office
+  director_owner: HR
+  city: Chennai
+  state: Tamil Nadu
+  state_code: TN
+  sector: Southern
+  cluster_id: CL-CAU-CHN
+  cluster_name: Cauvery–Chennai
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - RO Chennai
+  - Chennai
+  - Chennai Office
+- wc_id: WC-ROV
+  name: Regional Office Vadodara
+  short_name: RO Vadodara
+  type: office
+  director_owner: HR
+  city: Vadodara
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-CAM-ANK-VAD
+  cluster_name: Cambay–Ankleshwar–Vadodara
+  hard_station_cat: A
+  onshore_offshore: corporate
+  is_corporate_hq: false
+  aliases:
+  - RO Vadodara
+  - Vadodara Office
+- wc_id: WC-DRL
+  name: Corporate Drilling Services
+  short_name: Drilling Services
+  type: service
+  director_owner: T&FS
+  city: Mumbai
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: B
+  onshore_offshore: offshore
+  is_corporate_hq: false
+  aliases:
+  - Drilling Services
+  - Corporate Drilling
+  - Deepwater Drilling
+- wc_id: WC-WEL
+  name: Corporate Well Services
+  short_name: Well Services
+  type: service
+  director_owner: T&FS
+  city: Panvel
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: B
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Well Services
+  - Corporate Well Services
+  - Workover Services
+- wc_id: WC-LOG
+  name: Offshore Logistics & Marine Services
+  short_name: Offshore Logistics
+  type: service
+  director_owner: Production
+  city: Mumbai
+  state: Maharashtra
+  state_code: MH
+  sector: Western
+  cluster_id: CL-MUM
+  cluster_name: Mumbai–Panvel–Uran
+  hard_station_cat: B
+  onshore_offshore: offshore
+  is_corporate_hq: false
+  aliases:
+  - Offshore Logistics
+  - Marine Services
+  - Helicopter Logistics
+- wc_id: WC-GLS
+  name: Geophysical & Logging Services
+  short_name: Geophysical Services
+  type: service
+  director_owner: Exploration
+  city: Vadodara
+  state: Gujarat
+  state_code: GJ
+  sector: Western
+  cluster_id: CL-CAM-ANK-VAD
+  cluster_name: Cambay–Ankleshwar–Vadodara
+  hard_station_cat: A
+  onshore_offshore: onshore
+  is_corporate_hq: false
+  aliases:
+  - Geophysical Services
+  - Logging Services
+  - Geophysical & Logging Services

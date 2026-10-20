@@ -1,0 +1,45 @@
+{
+  "job_id": "9804dde1-5a31-47b7-a4df-709f4662a23c",
+  "total_bytes_processed": 7938,
+  "executed_at": "2026-10-20T06:42:41.985292+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 3,
+  "columns": [
+    "period",
+    "months",
+    "avg_saed_usd_bbl",
+    "avg_brent_usd_bbl",
+    "avg_net_realisation_usd_bbl",
+    "avg_discount_to_brent_usd_bbl",
+    "realisation_pct_of_brent"
+  ],
+  "rows": [
+    {
+      "period": "1 Apr-Nov 2024 (SAED levied)",
+      "months": 8,
+      "avg_saed_usd_bbl": 4.91,
+      "avg_brent_usd_bbl": 79.93,
+      "avg_net_realisation_usd_bbl": 77.51,
+      "avg_discount_to_brent_usd_bbl": 2.42,
+      "realisation_pct_of_brent": 97.0
+    },
+    {
+      "period": "2 Dec 2024-Mar 2025 (SAED removed)",
+      "months": 4,
+      "avg_saed_usd_bbl": 0.0,
+      "avg_brent_usd_bbl": 77.75,
+      "avg_net_realisation_usd_bbl": 75.69,
+      "avg_discount_to_brent_usd_bbl": 2.06,
+      "realisation_pct_of_brent": 97.4
+    },
+    {
+      "period": "3 FY26 Apr 2025-Mar 2026 (no SAED)",
+      "months": 12,
+      "avg_saed_usd_bbl": 0.0,
+      "avg_brent_usd_bbl": 70.9,
+      "avg_net_realisation_usd_bbl": 68.4,
+      "avg_discount_to_brent_usd_bbl": 2.5,
+      "realisation_pct_of_brent": 96.5
+    }
+  ]
+}

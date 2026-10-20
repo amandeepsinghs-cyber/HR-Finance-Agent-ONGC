@@ -1,0 +1,33 @@
+{
+  "job_id": "344836fb-d286-41c2-a298-621c74d91b62",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:16.805773+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "G-01",
+      "clause_ref": "Part 13",
+      "heading": "DPE OM No. W-02/0028/2017-DPE(WC)-GL-XIII/17: Pay Revision of Board and below-Board-level Executives & Non-Unionised Supervisors w.e.f. 01.01.2017 (3rd PRC) (Part 13)",
+      "quote_snippet": "Document Title: DPE OM No. W-02/0028/2017-DPE(WC)-GL-XIII/17: Pay Revision of Board and below-Board-level Executives & Non-Unionised Supervisors w.e.f. 01.01.2017 (3rd PRC)\nDocument Type: policy\nSection: Part 13\nDomain Vocabulary & Glossary Terms: Post Retirement Benefit Scheme (PRBS); Defined Contr"
+    },
+    {
+      "doc_id": "G-01",
+      "clause_ref": "Part 14",
+      "heading": "DPE OM No. W-02/0028/2017-DPE(WC)-GL-XIII/17: Pay Revision of Board and below-Board-level Executives & Non-Unionised Supervisors w.e.f. 01.01.2017 (3rd PRC) (Part 14)",
+      "quote_snippet": "Document Title: DPE OM No. W-02/0028/2017-DPE(WC)-GL-XIII/17: Pay Revision of Board and below-Board-level Executives & Non-Unionised Supervisors w.e.f. 01.01.2017 (3rd PRC)\nDocument Type: policy\nSection: Part 14\nDomain Vocabulary & Glossary Terms: Post Retirement Benefit Scheme (PRBS); Defined Contr"
+    },
+    {
+      "doc_id": "G-01",
+      "clause_ref": "Part 15",
+      "heading": "DPE OM No. W-02/0028/2017-DPE(WC)-GL-XIII/17: Pay Revision of Board and below-Board-level Executives & Non-Unionised Supervisors w.e.f. 01.01.2017 (3rd PRC) (Part 15)",
+      "quote_snippet": "Document Title: DPE OM No. W-02/0028/2017-DPE(WC)-GL-XIII/17: Pay Revision of Board and below-Board-level Executives & Non-Unionised Supervisors w.e.f. 01.01.2017 (3rd PRC)\nDocument Type: policy\nSection: Part 15\nDomain Vocabulary & Glossary Terms: Post Retirement Benefit Scheme (PRBS); Defined Contr"
+    }
+  ]
+}

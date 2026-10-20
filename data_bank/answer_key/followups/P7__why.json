@@ -1,0 +1,30 @@
+{
+  "job_id": "14c05861-5720-458a-a9a7-1ec95bb0ac23",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:24.313184+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "P1-16",
+      "clause_ref": "Part 9",
+      "heading": "ONGC Travelling Allowance Regulations (full text) (Part 9)",
+      "provision": "TA Regs 4.2.1(g)-(h) (air class, check fare)",
+      "quote_snippet": "g. Executive Directors may travel by air by executive class on official tour/LFA within and outside the country. However, other executives eligible to travel by Air shall be entitled to travel by Economy Class on official tours/LFA within and outside the country. h. Keeping in view the large amount of saving on the check fare tickets and in order to reduce the expenditure of ONGC on account of air travel of its executives, it has been decided that :-"
+    },
+    {
+      "doc_id": "P1-16",
+      "clause_ref": "Part 10",
+      "heading": "ONGC Travelling Allowance Regulations (full text) (Part 10)",
+      "provision": "TA Regs 4.2.1(h)(i)-(v) (booking rules)",
+      "quote_snippet": "i) Henceforth all air tickets should be booked by check fare only. However, employees working on 14 days On/Off shift pattern in Offshore areas of Mumbai and KG Offshore may not be forced to travel by check fare tickets and instead they may be allowed to travel by air by economy/\u2019Y\u2019 class for operating on On/Off shift pattern. ii) If tickets are not to be booked by check fare, controlling officer will have to give the reasons and circumstances thereof and will countersign in the requisition form. iii) The individual shall mention the date and timing of travel which is to be certified by the controlling officer. iv) Ticket shall be booked by the most economical fare available as per the timing mentioned in the requisition form. v) Due care must be taken while booking air tickets under the new concept so that booked tickets are utilized to the maximum extent to avoid cancellation charges. In case of cancellation, the cancellation charges, if any shall be reimbursed."
+    }
+  ]
+}

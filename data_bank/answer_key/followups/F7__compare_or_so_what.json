@@ -1,0 +1,53 @@
+{
+  "job_id": "03ed1cdb-d659-42fb-969f-12fbbec0a782",
+  "total_bytes_processed": 380,
+  "executed_at": "2026-10-20T06:39:09.862284+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 10,
+  "columns": [
+    "fiscal_year",
+    "employee_cost_ratio_pct"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY17",
+      "employee_cost_ratio_pct": 14.83
+    },
+    {
+      "fiscal_year": "FY18",
+      "employee_cost_ratio_pct": 13.39
+    },
+    {
+      "fiscal_year": "FY19",
+      "employee_cost_ratio_pct": 11.05
+    },
+    {
+      "fiscal_year": "FY20",
+      "employee_cost_ratio_pct": 11.96
+    },
+    {
+      "fiscal_year": "FY21",
+      "employee_cost_ratio_pct": 14.86
+    },
+    {
+      "fiscal_year": "FY22",
+      "employee_cost_ratio_pct": 10.04
+    },
+    {
+      "fiscal_year": "FY23",
+      "employee_cost_ratio_pct": 6.83
+    },
+    {
+      "fiscal_year": "FY24",
+      "employee_cost_ratio_pct": 7.61
+    },
+    {
+      "fiscal_year": "FY25",
+      "employee_cost_ratio_pct": 7.78
+    },
+    {
+      "fiscal_year": "FY26",
+      "employee_cost_ratio_pct": 7.71
+    }
+  ]
+}

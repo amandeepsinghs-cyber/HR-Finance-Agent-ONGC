@@ -1,0 +1,75 @@
+{
+  "job_id": "95cb81c8-e5a8-4ed0-8647-85370d11bb3c",
+  "total_bytes_processed": 40741,
+  "executed_at": "2026-10-20T06:41:46.584149+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 5,
+  "columns": [
+    "onshore_offshore",
+    "maturity",
+    "fields",
+    "mmboe_fy26",
+    "mmboe_per_field",
+    "regular_headcount",
+    "boe_per_employee",
+    "manpower_cost_per_employee_inr_lakh",
+    "manpower_cost_usd_per_boe"
+  ],
+  "rows": [
+    {
+      "onshore_offshore": "onshore",
+      "maturity": "mature",
+      "fields": 35,
+      "mmboe_fy26": 85.85,
+      "mmboe_per_field": 2.45,
+      "regular_headcount": 9202,
+      "boe_per_employee": 9330.0,
+      "manpower_cost_per_employee_inr_lakh": 38.3,
+      "manpower_cost_usd_per_boe": 4.65
+    },
+    {
+      "onshore_offshore": "onshore",
+      "maturity": "plateau",
+      "fields": 5,
+      "mmboe_fy26": 16.34,
+      "mmboe_per_field": 3.27,
+      "regular_headcount": 1173,
+      "boe_per_employee": 13930.0,
+      "manpower_cost_per_employee_inr_lakh": 41.6,
+      "manpower_cost_usd_per_boe": 3.38
+    },
+    {
+      "onshore_offshore": "offshore",
+      "maturity": "growth",
+      "fields": 2,
+      "mmboe_fy26": 35.17,
+      "mmboe_per_field": 17.58,
+      "regular_headcount": 1226,
+      "boe_per_employee": 28686.0,
+      "manpower_cost_per_employee_inr_lakh": 63.8,
+      "manpower_cost_usd_per_boe": 2.52
+    },
+    {
+      "onshore_offshore": "offshore",
+      "maturity": "mature",
+      "fields": 9,
+      "mmboe_fy26": 143.74,
+      "mmboe_per_field": 15.97,
+      "regular_headcount": 4284,
+      "boe_per_employee": 33553.0,
+      "manpower_cost_per_employee_inr_lakh": 65.0,
+      "manpower_cost_usd_per_boe": 2.19
+    },
+    {
+      "onshore_offshore": "offshore",
+      "maturity": "plateau",
+      "fields": 2,
+      "mmboe_fy26": 15.53,
+      "mmboe_per_field": 7.77,
+      "regular_headcount": 443,
+      "boe_per_employee": 35064.0,
+      "manpower_cost_per_employee_inr_lakh": 64.7,
+      "manpower_cost_usd_per_boe": 2.09
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "job_id": "aa7ad176-ca13-48fa-90bf-f9ed725d99ba",
+  "total_bytes_processed": 12190,
+  "executed_at": "2026-10-20T06:42:41.359004+00:00",
+  "elapsed_seconds": 0.71,
+  "row_count": 4,
+  "columns": [
+    "fiscal_year",
+    "months_saed_levied",
+    "avg_saed_usd_bbl_when_levied",
+    "avg_saed_inr_bbl_when_levied",
+    "last_levied_saed_usd_bbl",
+    "fy_avg_saed_usd_bbl",
+    "avg_brent_usd_bbl",
+    "avg_net_realisation_usd_bbl",
+    "avg_fx_rate",
+    "saed_paid_inr_cr"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY23",
+      "months_saed_levied": 9,
+      "avg_saed_usd_bbl_when_levied": 16.2,
+      "avg_saed_inr_bbl_when_levied": 1300.23,
+      "last_levied_saed_usd_bbl": 15.5,
+      "fy_avg_saed_usd_bbl": 12.15,
+      "avg_brent_usd_bbl": 95.4,
+      "avg_net_realisation_usd_bbl": 75.8,
+      "avg_fx_rate": 80.39,
+      "saed_paid_inr_cr": 10964.0
+    },
+    {
+      "fiscal_year": "FY24",
+      "months_saed_levied": 12,
+      "avg_saed_usd_bbl_when_levied": 10.5,
+      "avg_saed_inr_bbl_when_levied": 869.3,
+      "last_levied_saed_usd_bbl": 9.75,
+      "fy_avg_saed_usd_bbl": 10.5,
+      "avg_brent_usd_bbl": 83.2,
+      "avg_net_realisation_usd_bbl": 80.77,
+      "avg_fx_rate": 82.79,
+      "saed_paid_inr_cr": 8634.0
+    },
+    {
+      "fiscal_year": "FY25",
+      "months_saed_levied": 8,
+      "avg_saed_usd_bbl_when_levied": 4.91,
+      "avg_saed_inr_bbl_when_levied": 414.59,
+      "last_levied_saed_usd_bbl": 4.0,
+      "fy_avg_saed_usd_bbl": 3.27,
+      "avg_brent_usd_bbl": 79.2,
+      "avg_net_realisation_usd_bbl": 76.9,
+      "avg_fx_rate": 84.56,
+      "saed_paid_inr_cr": 3948.0
+    },
+    {
+      "fiscal_year": "FY26",
+      "months_saed_levied": 0,
+      "avg_saed_usd_bbl_when_levied": null,
+      "avg_saed_inr_bbl_when_levied": null,
+      "last_levied_saed_usd_bbl": null,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "avg_brent_usd_bbl": 70.9,
+      "avg_net_realisation_usd_bbl": 68.4,
+      "avg_fx_rate": 88.33,
+      "saed_paid_inr_cr": 0.0
+    }
+  ]
+}

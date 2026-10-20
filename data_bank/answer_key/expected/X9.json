@@ -1,0 +1,252 @@
+{
+  "job_id": "409f64aa-0cbb-4f68-b8c4-9b79ae9ad4f9",
+  "total_bytes_processed": 12717,
+  "executed_at": "2026-10-20T06:37:31.011777+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 26,
+  "columns": [
+    "state_name",
+    "csr_theme",
+    "projects",
+    "spend_cr",
+    "operational_area_spend_cr",
+    "aspirational_district_spend_cr",
+    "state_has_ongc_operations"
+  ],
+  "rows": [
+    {
+      "state_name": "Uttar Pradesh",
+      "csr_theme": "Education",
+      "projects": 2,
+      "spend_cr": 79.25,
+      "operational_area_spend_cr": 0.0,
+      "aspirational_district_spend_cr": 38.6,
+      "state_has_ongc_operations": false
+    },
+    {
+      "state_name": "Uttar Pradesh",
+      "csr_theme": "Sanitation & Safe Drinking Water",
+      "projects": 2,
+      "spend_cr": 75.75,
+      "operational_area_spend_cr": 0.0,
+      "aspirational_district_spend_cr": 75.75,
+      "state_has_ongc_operations": false
+    },
+    {
+      "state_name": "Maharashtra",
+      "csr_theme": "Education",
+      "projects": 2,
+      "spend_cr": 68.0,
+      "operational_area_spend_cr": 68.0,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Tamil Nadu",
+      "csr_theme": "Environmental Sustainability",
+      "projects": 2,
+      "spend_cr": 50.1,
+      "operational_area_spend_cr": 50.1,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "West Bengal",
+      "csr_theme": "Environmental Sustainability",
+      "projects": 2,
+      "spend_cr": 50.1,
+      "operational_area_spend_cr": 50.1,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Jammu & Kashmir",
+      "csr_theme": "Healthcare",
+      "projects": 1,
+      "spend_cr": 48.85,
+      "operational_area_spend_cr": 0.0,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": false
+    },
+    {
+      "state_name": "Jammu & Kashmir",
+      "csr_theme": "Sanitation & Safe Drinking Water",
+      "projects": 1,
+      "spend_cr": 43.84,
+      "operational_area_spend_cr": 0.0,
+      "aspirational_district_spend_cr": 43.84,
+      "state_has_ongc_operations": false
+    },
+    {
+      "state_name": "Jammu & Kashmir",
+      "csr_theme": "Rural Development",
+      "projects": 1,
+      "spend_cr": 39.91,
+      "operational_area_spend_cr": 0.0,
+      "aspirational_district_spend_cr": 39.91,
+      "state_has_ongc_operations": false
+    },
+    {
+      "state_name": "Maharashtra",
+      "csr_theme": "Environmental Sustainability",
+      "projects": 1,
+      "spend_cr": 37.0,
+      "operational_area_spend_cr": 37.0,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Goa",
+      "csr_theme": "Skill Development & Livelihoods",
+      "projects": 1,
+      "spend_cr": 36.46,
+      "operational_area_spend_cr": 36.46,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Delhi",
+      "csr_theme": "Rural Development",
+      "projects": 1,
+      "spend_cr": 36.44,
+      "operational_area_spend_cr": 36.44,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Maharashtra",
+      "csr_theme": "Healthcare",
+      "projects": 1,
+      "spend_cr": 32.6,
+      "operational_area_spend_cr": 32.6,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Gujarat",
+      "csr_theme": "Environmental Sustainability",
+      "projects": 1,
+      "spend_cr": 28.31,
+      "operational_area_spend_cr": 28.31,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Rajasthan",
+      "csr_theme": "Skill Development & Livelihoods",
+      "projects": 1,
+      "spend_cr": 27.56,
+      "operational_area_spend_cr": 27.56,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Tripura",
+      "csr_theme": "Environmental Sustainability",
+      "projects": 1,
+      "spend_cr": 27.32,
+      "operational_area_spend_cr": 27.32,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Jharkhand",
+      "csr_theme": "Education",
+      "projects": 1,
+      "spend_cr": 26.79,
+      "operational_area_spend_cr": 26.79,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Andhra Pradesh",
+      "csr_theme": "Promotion of Sports",
+      "projects": 1,
+      "spend_cr": 26.79,
+      "operational_area_spend_cr": 26.79,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Uttarakhand",
+      "csr_theme": "Sanitation & Safe Drinking Water",
+      "projects": 1,
+      "spend_cr": 26.03,
+      "operational_area_spend_cr": 26.03,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Assam",
+      "csr_theme": "Skill Development & Livelihoods",
+      "projects": 1,
+      "spend_cr": 25.53,
+      "operational_area_spend_cr": 25.53,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Assam",
+      "csr_theme": "Education",
+      "projects": 1,
+      "spend_cr": 24.57,
+      "operational_area_spend_cr": 24.57,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Uttarakhand",
+      "csr_theme": "Skill Development & Livelihoods",
+      "projects": 1,
+      "spend_cr": 24.07,
+      "operational_area_spend_cr": 0.0,
+      "aspirational_district_spend_cr": 24.07,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Jharkhand",
+      "csr_theme": "Rural Development",
+      "projects": 1,
+      "spend_cr": 23.31,
+      "operational_area_spend_cr": 23.31,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Andhra Pradesh",
+      "csr_theme": "Education",
+      "projects": 1,
+      "spend_cr": 23.31,
+      "operational_area_spend_cr": 23.31,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Tripura",
+      "csr_theme": "Skill Development & Livelihoods",
+      "projects": 1,
+      "spend_cr": 22.78,
+      "operational_area_spend_cr": 22.78,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Rajasthan",
+      "csr_theme": "Healthcare",
+      "projects": 1,
+      "spend_cr": 22.54,
+      "operational_area_spend_cr": 22.54,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    },
+    {
+      "state_name": "Gujarat",
+      "csr_theme": "Sanitation & Safe Drinking Water",
+      "projects": 1,
+      "spend_cr": 21.79,
+      "operational_area_spend_cr": 21.79,
+      "aspirational_district_spend_cr": 0.0,
+      "state_has_ongc_operations": true
+    }
+  ]
+}

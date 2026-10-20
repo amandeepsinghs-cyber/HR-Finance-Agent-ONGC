@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "price_fx_monthly",
+  description: "Monthly economic parameters: crude oil benchmarks, net realisation, APM gas prices, statutory levies, and INR/USD FX rates."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_0) AS month,
+    TRIM(col_1) AS fiscal_year,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_2), ''), ',', ''), '₹', '') AS NUMERIC) AS brent_usd_bbl,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_3), ''), ',', ''), '₹', '') AS NUMERIC) AS ongc_crude_net_realisation_usd_bbl,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_4), ''), ',', ''), '₹', '') AS NUMERIC) AS ongc_crude_net_realisation_inr_bbl,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_5), ''), ',', ''), '₹', '') AS NUMERIC) AS apm_gas_price_usd_mmbtu,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_6), ''), ',', ''), '₹', '') AS NUMERIC) AS non_apm_deepwater_gas_price_usd_mmbtu,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_7), ''), ',', ''), '₹', '') AS NUMERIC) AS inr_usd_fx_rate,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_8), ''), ',', ''), '₹', '') AS NUMERIC) AS da_percentage,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_9), ''), ',', ''), '₹', '') AS NUMERIC) AS windfall_tax_saed_usd_bbl,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_10), ''), ',', ''), '₹', '') AS NUMERIC) AS windfall_tax_saed_inr_bbl,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_11), ''), ',', ''), '₹', '') AS NUMERIC) AS cess_per_barrel_usd,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_12), ''), ',', ''), '₹', '') AS NUMERIC) AS royalty_per_barrel_usd,
+    TRIM(col_13) AS anchor_source
+  FROM ${ref("excel_price_fx")}
+  WHERE _row_number >= 2 AND col_0 IS NOT NULL AND TRIM(col_0) != '' AND _sheet_name NOT IN ('Notes_and_Citations', 'Executive_Summary', '_Ref_Capex_Codes', '_Cadre_Control_Master', '_MoU_Grading_Rules', '_Schedule_VII_Themes', '_Talent_Bench_Scale', '_Court_Jurisdiction_Codes')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY month ORDER BY _ingest_ts DESC) = 1

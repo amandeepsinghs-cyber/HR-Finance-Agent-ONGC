@@ -1,0 +1,45 @@
+{
+  "job_id": "c98c683d-fcfa-4134-b4b5-e8d8e8e5980d",
+  "total_bytes_processed": 12579348,
+  "executed_at": "2026-10-20T06:38:34.863557+00:00",
+  "elapsed_seconds": 0.93,
+  "row_count": 5,
+  "columns": [
+    "retention_basis",
+    "executives",
+    "share_pct",
+    "avg_station_years"
+  ],
+  "rows": [
+    {
+      "retention_basis": "Beyond 5 yrs, no justification recorded",
+      "executives": 8394,
+      "share_pct": 72.4,
+      "avg_station_years": 6.2
+    },
+    {
+      "retention_basis": "Age 57+ pre-retirement protection (JRTP 7.1), no exemption recorded",
+      "executives": 1815,
+      "share_pct": 15.7,
+      "avg_station_years": 5.9
+    },
+    {
+      "retention_basis": "Within 3-5 yr rotation window, no justification recorded",
+      "executives": 918,
+      "share_pct": 7.9,
+      "avg_station_years": 3.7
+    },
+    {
+      "retention_basis": "Critical technical cadre within 5-yr extension (JRTP 3.3)",
+      "executives": 436,
+      "share_pct": 3.8,
+      "avg_station_years": 3.7
+    },
+    {
+      "retention_basis": "Recorded exemption: Impending_Retirement (EX-RET3Y)",
+      "executives": 31,
+      "share_pct": 0.3,
+      "avg_station_years": 5.9
+    }
+  ]
+}

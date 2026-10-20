@@ -1,0 +1,37 @@
+{
+  "job_id": "ae8ea22a-6c56-4cca-92f9-16a9c174690c",
+  "total_bytes_processed": 7956,
+  "executed_at": "2026-10-20T06:33:13.205889+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 3,
+  "columns": [
+    "track",
+    "programmes",
+    "total_days",
+    "avg_days_per_programme",
+    "seats"
+  ],
+  "rows": [
+    {
+      "track": "technical",
+      "programmes": 6,
+      "total_days": 22,
+      "avg_days_per_programme": 3.7,
+      "seats": 250
+    },
+    {
+      "track": "other (hse/finance/renewables)",
+      "programmes": 18,
+      "total_days": 66,
+      "avg_days_per_programme": 3.7,
+      "seats": 700
+    },
+    {
+      "track": "managerial_leadership",
+      "programmes": 12,
+      "total_days": 47,
+      "avg_days_per_programme": 3.9,
+      "seats": 370
+    }
+  ]
+}

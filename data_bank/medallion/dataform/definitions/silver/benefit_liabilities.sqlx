@@ -1,0 +1,31 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "benefit_liabilities",
+  description: "Actuarial valuation ledger of post-retirement employee benefits: PRBS pension, PRMB medical, gratuity, and leave encashment."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_0) AS scheme_record_id,
+    TRIM(col_1) AS fiscal_year,
+    TRIM(col_2) AS scheme_type,
+    TRIM(col_3) AS scheme_name,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_4), ''), ',', ''), '₹', '') AS NUMERIC) AS actuarial_liability_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_5), ''), ',', ''), '₹', '') AS NUMERIC) AS plan_assets_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_6), ''), ',', ''), '₹', '') AS NUMERIC) AS net_liability_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_7), ''), ',', ''), '₹', '') AS NUMERIC) AS funded_ratio_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_8), ''), ',', ''), '₹', '') AS NUMERIC) AS discount_rate_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_9), ''), ',', ''), '₹', '') AS NUMERIC) AS salary_escalation_rate_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_10), ''), ',', ''), '₹', '') AS NUMERIC) AS medical_inflation_rate_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_11), ''), ',', ''), '₹', '') AS INT64) AS active_members_covered,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_12), ''), ',', ''), '₹', '') AS INT64) AS retiree_beneficiaries_covered,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_13), ''), ',', ''), '₹', '') AS NUMERIC) AS annual_payout_inr_cr,
+    CASE WHEN LOWER(TRIM(col_14)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_14)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS dpe_30pct_superannuation_compliance_flag
+  FROM ${ref("excel_actuarial_benefit_liabilities")}
+  WHERE _row_number >= 2 AND col_0 IS NOT NULL AND TRIM(col_0) != '' AND _sheet_name NOT IN ('Notes_and_Citations', 'Executive_Summary', '_Ref_Capex_Codes', '_Cadre_Control_Master', '_MoU_Grading_Rules', '_Schedule_VII_Themes', '_Talent_Bench_Scale', '_Court_Jurisdiction_Codes')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY scheme_record_id ORDER BY _ingest_ts DESC) = 1

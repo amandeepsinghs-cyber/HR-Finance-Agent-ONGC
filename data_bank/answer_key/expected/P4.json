@@ -1,0 +1,30 @@
+{
+  "job_id": "ed4eab1e-4736-47da-8fd6-b11a6cc4f21f",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:14.779698+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 3.0",
+      "heading": "Earned Leave Accrual & Accumulation",
+      "provision": "Leave Rules 3.1-3.3",
+      "quote_snippet": "3.1 Annual Accrual Rate: Regular employees shall earn 30 (thirty) calendar days of Earned Leave in each calendar year. 3.2 Advance Credit: EL shall be credited in advance in two equal installments of 15 days each on 1st January and 1st July of every calendar year. 3.3 Maximum Accumulation Ceiling: Earned Leave may be accumulated up to a strict maximum ceiling of 300 (three hundred) days."
+    },
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 4.0",
+      "heading": "Encashment of Earned Leave",
+      "provision": "Leave Rules 4.1-4.2",
+      "quote_snippet": "4.1 Encashment on Superannuation: An employee retiring on superannuation, voluntary retirement, or upon death in service shall be entitled to receive lump-sum cash equivalent of unutilized Earned Leave standing to their credit, subject to a maximum aggregate ceiling of 300 (three hundred) days. 4.2 Encashment Calculation Formula: The cash equivalent of leave salary for encashment shall be calculated strictly as: Cash Amount = [(Basic Pay on date of retirement + IDA applicable) / 30] \u00d7 Number of Unutilized EL Days (up to max 300). No house rent allowance (HRA), cafeteria perks, or performance related pay (PRP) shall be included in the encashment calculation."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "job_id": "af1a2f4b-9b51-4555-befa-c618404c244a",
+  "total_bytes_processed": 11681310,
+  "executed_at": "2026-10-20T06:55:33.201862+00:00",
+  "elapsed_seconds": 1.37,
+  "row_count": 3,
+  "columns": [
+    "indicator",
+    "alert_claimed_value",
+    "actual_value",
+    "documented_norm",
+    "actual_breaching_norm"
+  ],
+  "rows": [
+    {
+      "indicator": "Field lifting cost increase (%)",
+      "alert_claimed_value": 12.0,
+      "actual_value": 0.9,
+      "documented_norm": "none documented",
+      "actual_breaching_norm": 0.0
+    },
+    {
+      "indicator": "Projects slipped",
+      "alert_claimed_value": 3.0,
+      "actual_value": 7.0,
+      "documented_norm": "Rs 100 cr overrun (BDP cl.6.1 Board-reserved)",
+      "actual_breaching_norm": 4.0
+    },
+    {
+      "indicator": "Rotation cases overdue",
+      "alert_claimed_value": 42.0,
+      "actual_value": 8457.0,
+      "documented_norm": "5 years at station (JRTP cl.3.2)",
+      "actual_breaching_norm": 8457.0
+    }
+  ]
+}

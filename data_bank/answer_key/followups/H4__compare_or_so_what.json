@@ -1,0 +1,33 @@
+{
+  "job_id": "4319691b-cc33-457c-b852-409d75bb589f",
+  "total_bytes_processed": 29870965,
+  "executed_at": "2026-10-20T06:38:44.361775+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 3,
+  "columns": [
+    "location_class",
+    "mid_career_voluntary_exits",
+    "opening_person_years",
+    "avg_annual_voluntary_rate_pct"
+  ],
+  "rows": [
+    {
+      "location_class": "Corporate offices & institutes",
+      "mid_career_voluntary_exits": 49,
+      "opening_person_years": 5233,
+      "avg_annual_voluntary_rate_pct": 0.94
+    },
+    {
+      "location_class": "Offshore assets",
+      "mid_career_voluntary_exits": 46,
+      "opening_person_years": 7183,
+      "avg_annual_voluntary_rate_pct": 0.64
+    },
+    {
+      "location_class": "Onshore field assets",
+      "mid_career_voluntary_exits": 80,
+      "opening_person_years": 13753,
+      "avg_annual_voluntary_rate_pct": 0.58
+    }
+  ]
+}

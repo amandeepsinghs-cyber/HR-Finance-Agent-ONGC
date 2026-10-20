@@ -1,0 +1,35 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "purchase_orders",
+  description: "Purchase order line item register detailing vendor commitments, engineer's estimates, scope variations, and standby costs."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`po_line_id`) AS po_line_id,
+    TRIM(`po_number`) AS po_number,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`line_number`), ''), ',', ''), '₹', '') AS INT64) AS line_number,
+    TRIM(`vendor_id`) AS vendor_id,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`cost_centre_id`) AS cost_centre_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`po_date`), ''), 1, 10)) AS po_date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`service_contract_category`) AS service_contract_category,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`original_po_value_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS original_po_value_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`engineers_estimate_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS engineers_estimate_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`scope_variation_value_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS scope_variation_value_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`standby_charges_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS standby_charges_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`revised_po_value_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS revised_po_value_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`actual_paid_amount_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS actual_paid_amount_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`cost_overrun_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS cost_overrun_inr,
+    TRIM(`overrun_reason`) AS overrun_reason,
+    TRIM(`po_status`) AS po_status,
+    TRIM(`currency`) AS currency
+  FROM ${ref("sap_ekko_ekpo")}
+  WHERE NULLIF(TRIM(`po_line_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY po_line_id ORDER BY _ingest_ts DESC) = 1

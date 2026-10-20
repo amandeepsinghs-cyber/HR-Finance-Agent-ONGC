@@ -1,0 +1,179 @@
+       OIL AND NATURAL GAS CORPORATION LIMITED
+                              (A Government of India Enterprise)
+                               CIN: L74899DL1993GOI054155
+               Regd. Office: Plot No. 5A-5B, Nelson Mandela Marg, Vasant Kunj,
+                                      New Delhi – 110070
+                             Phone No.: 011-26754073, Fax: 011-26129081
+                   Website: www.ongcindia.com Email ID: secretariat@ongc.co.in
+
+
+                 ONGC - POLICY ON RELATED PARTY TRANSACTIONS
+                                    (With effect from 20.05.2024)
+
+
+
+
+Adopted on: 12.12.2014
+Revised on: 09.02.2018
+Revised on: 04.03.2020
+                     Oil and Natural Gas Corporation Limited
+                           ONGC - POLICY ON RELATED PARTY TRANSACTIONS
+
+
+Oil and Natural Gas Corporation Limited (“ONGC”/ the Company), a Maharatna, Central Public Sector Enterprise,
+under administrative control of the Ministry of Petroleum and Natural Gas (MoP&NG), Government of India, is an
+Integrated Energy Company and has footprints in energy business through its Subsidiaries and Joint ventures.
+
+
+1. Introduction
+   The Company enters into various transactions in normal course of business, including transactions with related
+   parties, which can be potential reason for conflict of interest and therefore closely linked to governance. The
+   Company conducts its business in compliance with applicable laws and regulations in a manner that is in larger
+   interest of the Company. Framework of the Policy is mainly governed by the provisions of the Companies Act,
+   2013 (herein after referred to as the Act) and the Securities and Exchange Board of India (Listing Obligations
+   and Disclosure Requirements) Regulations, 2015 (herein after referred to as “SEBI – LODR Regulations”).
+
+
+2. Scope and Effective Date
+   The SEBI – LODR Regulations” mandates formulation of a policy on Materiality of Related Party Transactions
+   and also on dealings with Related Party Transactions (RPTs). Further, the said policy shall be reviewed and
+   updated by the Board of Directors at least once every three years.
+
+
+   The Board of Directors of the Company at its 326th meeting on 16.03.2020 had inter-alia approved the Policy on
+   RPTs mainly to regulate the approval and reporting of transactions between the Company and their Related
+   Parties based on the laws and Regulations applicable to the Company.
+
+
+Effective Date:
+   This Revised ONGC Policy on Related Party Transactions shall become effective upon approval by the Board
+   from 20.05.2024 and shall supersede the existing Policy.
+
+
+3. Definitions
+3.1 Arm’s Length Transaction means a transaction between two related parties that is conducted as if they were
+   unrelated, so that there is no conflict of interest [Explanation to sub-section (1) of Section 188 of the Act].
+
+   Arm’s length basis is to be determined based on terms and conditions including price of transaction(s) and the
+   said determination is to be made by the Functional Director(s) concerned.
+
+
+3.2 Material Related Party Transaction - means a RPT having value exceeding the threshold limits as
+     prescribed under the SEBI LODR Regulations and/ or the Companies Act, 2013 whichever is lower.
+3.3 Material Modifications” means any subsequent change to an existing Related Party Transaction, approved
+     by the Audit Committee/ Board and/or shareholders, having variance (increase or decrease) of 25% of
+     existing limit.
+     Provided that change in the value of RPT on account of following factors shall not be considered as Material
+     Modification:
+          (a) Change in benchmarking components including rates [such as Saudi Aramco CP prices for VAPs,
+               Platts Arab Gulf for Naptha, or any other benchmarking components as may be agreed upon in
+               transaction document(s)], or quantity due to the reasons beyond the control of the Related Parties;
+          (b) Change in underlying exchange rate(s) of currency;
+          (c) Change due to revision/ imposition of levies on account of regulatory/ statutory reasons like taxes,
+               duties, etc.
+ 3.4 Ordinary course of business, includes, but not limited to, activities that are necessary, normal, and
+     incidental to the business.
+
+Meaning and Interpretation: All other terms used in this Policy but not defined herein shall have the same
+meaning as assigned to such term in the Act (including Rules issued thereunder)/ SEBI LODR Regulations, as
+amended from time to time.
+
+In case of any conflict between this Policy and applicable laws, the applicable law (as existing on the date of the
+concerned transaction) shall prevail.
+
+4. Procedures
+
+A. Identification of Related Party
+   Company shall identify the list of related parties as per the criteria provided under Companies Act, 2013 and SEBI
+   (LODR), Regulations, 2015 and application accounting standards and laws.
+
+
+   Corporate Accounts Department shall prepare and maintain the list of Related Parties as also required for preparing
+   the Notes to the Accounts. The list shall be maintained in SAP so that Related Party and transactions related thereto
+   can be accessed/ downloaded in a centralized manner.
+
+
+   The said identification shall be done at the Company level based on following documents:-
+
+
+  i) Related Parties relating to Directors and KMPs:
+     Company Secretary shall collate list of Related Party(ies) pertaining to Director(s) and KMP(s) of the
+     Company based on disclosures provided by the individual(s) concerned. The said list shall be updated on
+     quarterly basis based on revision in disclosure(s), if any, or change in Director(s) or KMPs.
+ ii) Related Parties relating to Subsidiaries and List of Joint Ventures, Associates and Controlled entities:
+     a. Company Secretary: List of Related Parties of Subsidiaries shall be collated by the Company Secretary from
+         company secretary of respective subsidiaries.
+     b. Chief of JV&BD and Corporate Strategy: Chief of JV&BD Group and Chief of Corporate Strategy shall provide
+         list of Joint Ventures and Associate companies;
+     c. Chief Corporate Accounts: Chief Corporate Accounts shall provide list of Controlled entities for the purpose
+         of ascertaining Related Parties.
+
+
+B. Identification of Related Party Transactions:
+     i. The Key Executive(s) in coordination with Local Finance In-charge shall bring to the notice of any potential
+        related party transactions to the Company Secretariat through the Functional Director concerned.
+     ii. The Company Secretariat shall review the information and suggest appropriate actions including prior
+        approval, if any, required from Audit Committee or Board or the Shareholders of the Company
+
+
+        Timelines: Estimation of routine and/ or repetitive RPTs having annual value of transaction around ₹800
+        Crore [equivalent to 80% of threshold for material related party transaction] shall be made preferably by mid
+        of February in previous financial year, so that approval of Audit Committee and/ or Board, if required, may be
+        obtained well before commencement of financial year. If estimated value exceeds ₹800 Crore then such
+        transaction should reported preferably in the 1st quarter of previous financial year, so that such RPTs can be
+        placed for approval of Annual General Meeting convened prior to beginning of the financial year.
+
+
+5. Approval and Review of RPTs
+  Approval of RPTs:
+     (a) Audit Committee:
+          All the transactions which are identified as Related Party Transactions and subsequent modifications
+          thereof, shall be approved by the Audit Committee in the manner specified under the SEBI LODR
+          Regulations and/ the Companies Act, 2013. The Audit Committee shall consider the proposal along with
+          requisite details as stipulated under the relevant statutory provisions.
+
+
+          Audit Committee may grant omnibus approval for Related Party Transactions which are repetitive/ frequent
+          in nature and subject to such criteria/ conditions as per requirements of SEBI LODR Regulation and such
+          other conditions as it may consider necessary in line with this Policy and in the interest of the Company.
+          Such omnibus approval shall be valid for a period not exceeding one year and shall require fresh approval
+          after the expiry of one year.
+     (b) Board of Directors:
+          Approval of Board of Directors for RPT’s that is not in the ordinary course of business or not on arm’s length
+          basis.
+     (c) Shareholders:
+          Approval of Shareholders for RPTs as per requirements of the Companies Act, 2013 and/ or approval of
+          Material RPT’s and Material Modification thereto, if any.
+
+
+ Review and Reporting of RPTs:
+    (a) Functional Directors shall review all Related Party Transactions (RPTs) undertaken under their administrative
+        control to ensure that all RPTs are within approved limits.
+    (b) Chief Corporate Accounts shall place an agenda to the Audit Committee for review of all RPTs on a Quarterly
+        basis and approval of RPTs, if any.
+    (c) Chief Corporate Accounts shall prepare and finalise RPTs details as required for the purpose of disclosure
+        under the SEBI LODR Regulations and Company Secretary shall do the necessary filings of said disclosure.
+    (d) Chief Corporate Accounts shall prepare and annex the details of RPTs in the prescribed format of AOC-2;
+    (e) Review of Long term Contracts: All long term RPTs (more than one year) contracts shall be placed for review
+        of Audit committee annually before start of financial year by the Key Executive concerned through his
+        Functional Directors.
+
+
+06. Review
+   The “ONGC – Policy on Related Party Transactions” shall be reviewed by the Board once in every three years and
+   updated accordingly.
+
+
+07. Amendment:
+   Amendment in Policy shall be made as under:
+      i. Amendment required due to statutory modifications on account of change in law including circular/
+          clarifications   issued by the Competent Authority under the Companies Act, 2013 and/or SEBI LODR
+          Regulations, such modifications shall be appropriately factored in the Policy with the approval of the
+          Chairman/ CMD of the Company; and
+      ii. Amendment proposal not covered as per clause (i) above, shall be subject to approval of the Board
+          of Directors of the Company.
+
+
+08. Disclosure of the Policy
+   This Policy will be uploaded on the website of the Company.
+

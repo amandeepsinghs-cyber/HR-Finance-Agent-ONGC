@@ -1,0 +1,23 @@
+{
+  "job_id": "aef7956e-2267-45fd-80fe-cd87842d491f",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:19.588302+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 6.0",
+      "heading": "Study Leave Eligibility & Approval",
+      "provision": "Leave Rules 6.3-6.4",
+      "quote_snippet": "6.3 Maximum Duration: The maximum duration of study leave that may be granted during an executive's entire service shall be 24 (twenty-four) months. This may be extended to a maximum of 36 months for an approved doctoral research program (Ph.D.) with the specific sanction of Director (HR). 6.4 Competent Sanctioning Authority: Study leave within India shall be sanctioned by Director (HR); study leave outside India shall require the approval of the Chairman & Managing Director (CMD)."
+    }
+  ]
+}

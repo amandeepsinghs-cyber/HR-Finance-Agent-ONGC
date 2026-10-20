@@ -1,0 +1,35 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "hse_incidents",
+  description: "Health, Safety & Environment incident log tracking Lost Time Injuries (LTI), LTIFR, overtime fatigue, and platform safety."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`incident_id`) AS incident_id,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`emp_id`) AS emp_id,
+    TRIM(`grade_id`) AS grade_id,
+    TRIM(`discipline_id`) AS discipline_id,
+    TRIM(`installation_name`) AS installation_name,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`incident_date`), ''), 1, 10)) AS incident_date,
+    TRIM(`month`) AS month,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`incident_type`) AS incident_type,
+    CASE WHEN LOWER(TRIM(`lost_time_injury_flag`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`lost_time_injury_flag`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS lost_time_injury_flag,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`days_lost`), ''), ',', ''), '₹', '') AS INT64) AS days_lost,
+    TRIM(`severity_tier`) AS severity_tier,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`monthly_overtime_hours_per_worker`), ''), ',', ''), '₹', '') AS NUMERIC) AS monthly_overtime_hours_per_worker,
+    CASE WHEN LOWER(TRIM(`fatigue_factor_flag`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`fatigue_factor_flag`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS fatigue_factor_flag,
+    TRIM(`workforce_category_involved`) AS workforce_category_involved,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`total_manhours_worked`), ''), ',', ''), '₹', '') AS NUMERIC) AS total_manhours_worked,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`calculated_ltifr`), ''), ',', ''), '₹', '') AS NUMERIC) AS calculated_ltifr,
+    TRIM(`brief_description`) AS brief_description
+  FROM ${ref("db_exports_hse_incident_log")}
+  WHERE NULLIF(TRIM(`incident_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY incident_id ORDER BY _ingest_ts DESC) = 1

@@ -1,0 +1,30 @@
+{
+  "job_id": "1f86256d-cf86-49e6-90c2-a2519f5759cf",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:16.867818+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 4.0",
+      "heading": "Encashment of Earned Leave",
+      "provision": "Leave Rules 4.2 (retirement formula)",
+      "quote_snippet": "4.2 Encashment Calculation Formula: The cash equivalent of leave salary for encashment shall be calculated strictly as: Cash Amount = [(Basic Pay on date of retirement + IDA applicable) / 30] \u00d7 Number of Unutilized EL Days (up to max 300). No house rent allowance (HRA), cafeteria perks, or performance related pay (PRP) shall be included in the encashment calculation."
+    },
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 4.0",
+      "heading": "Encashment of Earned Leave",
+      "provision": "Leave Rules 4.3 (in-service encashment)",
+      "quote_snippet": "4.3 Running Encashment during Service: An employee may encash up to 30 days EL once in a calendar year, provided a minimum balance of 30 days EL is retained in their leave account after such encashment."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "travel_claims",
+  description: "Travel and conveyance claims register tracking official tours, transfer transit, offshore hardship allowances, and TA/DA limits."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`travel_claim_id`) AS travel_claim_id,
+    TRIM(`PERNR`) AS emp_id,
+    TRIM(`grade_id`) AS grade_id,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`from_city`) AS from_city,
+    TRIM(`to_city`) AS to_city,
+    TRIM(`city_category`) AS city_category,
+    TRIM(`purpose`) AS purpose,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`BEGDA`), ''), 1, 10)) AS start_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`ENDDA`), ''), 1, 10)) AS end_date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`travel_class_availed`) AS travel_class_availed,
+    TRIM(`travel_class_entitlement`) AS travel_class_entitlement,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`fare_amount_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS fare_amount_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`daily_allowance_da_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS daily_allowance_da_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`lodging_hotel_amount_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS lodging_hotel_amount_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`special_hardship_allowance_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS special_hardship_allowance_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`total_claim_amount_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS total_claim_amount_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`BETRG`), ''), ',', ''), '₹', '') AS NUMERIC) AS approved_amount_inr,
+    TRIM(`status`) AS status
+  FROM ${ref("sap_ptrv_head_doc")}
+  WHERE NULLIF(TRIM(`travel_claim_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY travel_claim_id ORDER BY _ingest_ts DESC) = 1

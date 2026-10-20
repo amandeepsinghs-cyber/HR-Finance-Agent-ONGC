@@ -1,0 +1,13 @@
+config {
+  type: "assertion",
+  schema: "hrfin_silver",
+  description: "Check accepted values for employee master categories and gender"
+}
+
+SELECT
+  emp_id,
+  gender,
+  category
+FROM ${ref("employee_master")}
+WHERE gender NOT IN ('Male', 'Female', 'Other')
+   OR category NOT IN ('General', 'SC', 'ST', 'OBC', 'EWS')

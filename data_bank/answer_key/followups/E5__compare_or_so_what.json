@@ -1,0 +1,86 @@
+{
+  "job_id": "3598bd31-73c2-47a3-a748-22c13c24e73a",
+  "total_bytes_processed": 1427,
+  "executed_at": "2026-10-20T06:33:11.041389+00:00",
+  "elapsed_seconds": 0.81,
+  "row_count": 10,
+  "columns": [
+    "grade_id",
+    "designation",
+    "ta_da_travel_class",
+    "daily_lodging_limit_cat_a_inr",
+    "da_fraction_when_free_board_and_lodging"
+  ],
+  "rows": [
+    {
+      "grade_id": "E0",
+      "designation": "Assistant Officer / Graduate Trainee",
+      "ta_da_travel_class": "Economy_Air",
+      "daily_lodging_limit_cat_a_inr": 4500.0,
+      "da_fraction_when_free_board_and_lodging": 0.25
+    },
+    {
+      "grade_id": "E1",
+      "designation": "Assistant Executive Engineer (AEE) / Officer",
+      "ta_da_travel_class": "Economy_Air",
+      "daily_lodging_limit_cat_a_inr": 4500.0,
+      "da_fraction_when_free_board_and_lodging": 0.25
+    },
+    {
+      "grade_id": "E2",
+      "designation": "Assistant Executive Engineer (AEE) / Deputy Manager",
+      "ta_da_travel_class": "Economy_Air",
+      "daily_lodging_limit_cat_a_inr": 4500.0,
+      "da_fraction_when_free_board_and_lodging": 0.25
+    },
+    {
+      "grade_id": "E3",
+      "designation": "Executive Engineer (EE) / Manager",
+      "ta_da_travel_class": "Economy_Air",
+      "daily_lodging_limit_cat_a_inr": 4500.0,
+      "da_fraction_when_free_board_and_lodging": 0.25
+    },
+    {
+      "grade_id": "E4",
+      "designation": "Superintending Engineer (SE) / Chief Manager",
+      "ta_da_travel_class": "Economy_Air",
+      "daily_lodging_limit_cat_a_inr": 6500.0,
+      "da_fraction_when_free_board_and_lodging": 0.25
+    },
+    {
+      "grade_id": "E5",
+      "designation": "Deputy General Manager (DGM)",
+      "ta_da_travel_class": "Economy_Air",
+      "daily_lodging_limit_cat_a_inr": 6500.0,
+      "da_fraction_when_free_board_and_lodging": 0.25
+    },
+    {
+      "grade_id": "E6",
+      "designation": "Joint General Manager (JGM) / Addl. GM",
+      "ta_da_travel_class": "Economy_Air",
+      "daily_lodging_limit_cat_a_inr": 6500.0,
+      "da_fraction_when_free_board_and_lodging": 0.25
+    },
+    {
+      "grade_id": "E7",
+      "designation": "General Manager (GM)",
+      "ta_da_travel_class": "Economy_Air",
+      "daily_lodging_limit_cat_a_inr": 6500.0,
+      "da_fraction_when_free_board_and_lodging": 0.25
+    },
+    {
+      "grade_id": "E8",
+      "designation": "Chief General Manager (CGM)",
+      "ta_da_travel_class": "Business_Air",
+      "daily_lodging_limit_cat_a_inr": 10000.0,
+      "da_fraction_when_free_board_and_lodging": 0.25
+    },
+    {
+      "grade_id": "E9",
+      "designation": "Executive Director (ED) / Group General Manager",
+      "ta_da_travel_class": "Business_Air",
+      "daily_lodging_limit_cat_a_inr": 10000.0,
+      "da_fraction_when_free_board_and_lodging": 0.25
+    }
+  ]
+}

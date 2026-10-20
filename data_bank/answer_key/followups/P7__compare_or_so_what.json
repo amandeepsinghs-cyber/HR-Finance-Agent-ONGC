@@ -1,0 +1,54 @@
+{
+  "job_id": "f5e1f1fe-b3ba-492d-a708-1ec547e43ce3",
+  "total_bytes_processed": 1076187,
+  "executed_at": "2026-10-20T06:33:24.997817+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 4,
+  "columns": [
+    "grade_id",
+    "cat_a_ceiling_inr",
+    "class_a_per_night_inr",
+    "class_b_per_night_inr",
+    "class_c_per_night_inr",
+    "offshore_per_night_inr",
+    "claims"
+  ],
+  "rows": [
+    {
+      "grade_id": "E1",
+      "cat_a_ceiling_inr": 4500.0,
+      "class_a_per_night_inr": 4500.0,
+      "class_b_per_night_inr": 3000.0,
+      "class_c_per_night_inr": 3000.0,
+      "offshore_per_night_inr": 3000.0,
+      "claims": 2268
+    },
+    {
+      "grade_id": "E2",
+      "cat_a_ceiling_inr": 4500.0,
+      "class_a_per_night_inr": 4500.0,
+      "class_b_per_night_inr": 3000.0,
+      "class_c_per_night_inr": 3000.0,
+      "offshore_per_night_inr": 3000.0,
+      "claims": 3389
+    },
+    {
+      "grade_id": "E3",
+      "cat_a_ceiling_inr": 4500.0,
+      "class_a_per_night_inr": 4500.0,
+      "class_b_per_night_inr": 3000.0,
+      "class_c_per_night_inr": 3000.0,
+      "offshore_per_night_inr": 3000.0,
+      "claims": 4300
+    },
+    {
+      "grade_id": "E4",
+      "cat_a_ceiling_inr": 6500.0,
+      "class_a_per_night_inr": 4500.0,
+      "class_b_per_night_inr": 3000.0,
+      "class_c_per_night_inr": 3000.0,
+      "offshore_per_night_inr": 3000.0,
+      "claims": 4019
+    }
+  ]
+}

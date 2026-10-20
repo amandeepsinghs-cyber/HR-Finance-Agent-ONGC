@@ -1,0 +1,49 @@
+{
+  "job_id": "39fffacd-964c-45b4-a0f8-baeac14742fb",
+  "total_bytes_processed": 169345,
+  "executed_at": "2026-10-20T06:37:16.805064+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 4,
+  "columns": [
+    "incident_type",
+    "overtime_band",
+    "incidents_fy22_fy26",
+    "fatigue_flagged_fy22_fy26",
+    "fatigue_flagged_pct",
+    "incidents_per_million_manhours"
+  ],
+  "rows": [
+    {
+      "incident_type": "Lost_Time_Injury_LTI",
+      "overtime_band": "High overtime (54 h)",
+      "incidents_fy22_fy26": 36,
+      "fatigue_flagged_fy22_fy26": 36,
+      "fatigue_flagged_pct": 100.0,
+      "incidents_per_million_manhours": 0.211
+    },
+    {
+      "incident_type": "Lost_Time_Injury_LTI",
+      "overtime_band": "Standard overtime (36 h)",
+      "incidents_fy22_fy26": 38,
+      "fatigue_flagged_fy22_fy26": 0,
+      "fatigue_flagged_pct": 0.0,
+      "incidents_per_million_manhours": 0.103
+    },
+    {
+      "incident_type": "Near_Miss",
+      "overtime_band": "High overtime (54 h)",
+      "incidents_fy22_fy26": 94,
+      "fatigue_flagged_fy22_fy26": 0,
+      "fatigue_flagged_pct": 0.0,
+      "incidents_per_million_manhours": 0.552
+    },
+    {
+      "incident_type": "Near_Miss",
+      "overtime_band": "Standard overtime (36 h)",
+      "incidents_fy22_fy26": 545,
+      "fatigue_flagged_fy22_fy26": 0,
+      "fatigue_flagged_pct": 0.0,
+      "incidents_per_million_manhours": 1.476
+    }
+  ]
+}

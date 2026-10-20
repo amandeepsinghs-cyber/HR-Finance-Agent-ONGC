@@ -1,0 +1,53 @@
+{
+  "job_id": "c6c4cec2-a850-4877-bd24-bdd8f3af4a64",
+  "total_bytes_processed": 698079,
+  "executed_at": "2026-10-20T06:38:31.405062+00:00",
+  "elapsed_seconds": 0.71,
+  "row_count": 3,
+  "columns": [
+    "field_name",
+    "water_cut_pct",
+    "water_bbl_per_boe",
+    "avg_uptime_pct",
+    "well_downtime_hours",
+    "lifting_cost_usd_boe",
+    "manpower_cost_usd_boe",
+    "boe_per_regular_employee",
+    "root_cause_loss_code"
+  ],
+  "rows": [
+    {
+      "field_name": "Champang",
+      "water_cut_pct": 93.9,
+      "water_bbl_per_boe": 15.4,
+      "avg_uptime_pct": 97.2,
+      "well_downtime_hours": 4019.0,
+      "lifting_cost_usd_boe": 48.12,
+      "manpower_cost_usd_boe": 32.23,
+      "boe_per_regular_employee": 1284.0,
+      "root_cause_loss_code": "high_water_cut_depleted"
+    },
+    {
+      "field_name": "Borholla",
+      "water_cut_pct": 93.8,
+      "water_bbl_per_boe": 15.2,
+      "avg_uptime_pct": 96.8,
+      "well_downtime_hours": 4559.0,
+      "lifting_cost_usd_boe": 46.49,
+      "manpower_cost_usd_boe": 31.04,
+      "boe_per_regular_employee": 1335.0,
+      "root_cause_loss_code": null
+    },
+    {
+      "field_name": "All FY26 fields (benchmark)",
+      "water_cut_pct": 49.5,
+      "water_bbl_per_boe": 2.2,
+      "avg_uptime_pct": 97.1,
+      "well_downtime_hours": 9146.0,
+      "lifting_cost_usd_boe": 9.13,
+      "manpower_cost_usd_boe": 3.0,
+      "boe_per_regular_employee": 18167.0,
+      "root_cause_loss_code": null
+    }
+  ]
+}

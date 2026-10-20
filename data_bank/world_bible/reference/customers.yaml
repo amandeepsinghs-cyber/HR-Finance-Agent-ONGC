@@ -1,0 +1,249 @@
+customers:
+- customer_id: CUST-IOC
+  name: Indian Oil Corporation Limited
+  short_name: IOCL
+  type: PSU
+  key_products:
+  - Crude Oil
+  - Natural Gas
+  - Naphtha
+  headquarters_city: New Delhi
+  state: Delhi
+  notes: India's largest refiner; key offtaker for Mumbai High, Assam, and Gujarat crude.
+- customer_id: CUST-BPC
+  name: Bharat Petroleum Corporation Limited
+  short_name: BPCL
+  type: PSU
+  key_products:
+  - Crude Oil
+  - Natural Gas
+  - LPG
+  headquarters_city: Mumbai
+  state: Maharashtra
+  notes: Major off-taker of Mumbai Offshore crude connected via subsea pipeline from Uran to Trombay.
+- customer_id: CUST-HPC
+  name: Hindustan Petroleum Corporation Limited
+  short_name: HPCL
+  type: PSU / Subsidiary
+  key_products:
+  - Crude Oil
+  - Natural Gas
+  - LPG
+  headquarters_city: Mumbai
+  state: Maharashtra
+  notes: ONGC subsidiary (54.90%); major domestic refining partner in Mumbai and Visakhapatnam.
+- customer_id: CUST-MRP
+  name: Mangalore Refinery and Petrochemicals Limited
+  short_name: MRPL
+  type: PSU / Subsidiary
+  key_products:
+  - Crude Oil
+  - Condensate
+  headquarters_city: Mangalore
+  state: Karnataka
+  notes: ONGC subsidiary (71.63%); coastal refinery designed for complex crude processing.
+- customer_id: CUST-CPC
+  name: Chennai Petroleum Corporation Limited
+  short_name: CPCL
+  type: PSU
+  key_products:
+  - Crude Oil
+  - Natural Gas
+  headquarters_city: Chennai
+  state: Tamil Nadu
+  notes: Primary buyer for Cauvery Basin onshore crude and Narimanam field production.
+- customer_id: CUST-GAL
+  name: GAIL (India) Limited
+  short_name: GAIL
+  type: PSU
+  key_products:
+  - Natural Gas
+  - LPG
+  - C2-C3
+  headquarters_city: New Delhi
+  state: Delhi
+  notes: National gas transmission utility; main marketer of ONGC APM gas via HVJ pipeline.
+- customer_id: CUST-NRL
+  name: Numaligarh Refinery Limited
+  short_name: NRL
+  type: PSU
+  key_products:
+  - Crude Oil
+  headquarters_city: Golaghat
+  state: Assam
+  notes: Dedicated northeastern refiner receiving crude from Geleki, Lakwa, and Borholla.
+- customer_id: CUST-OPL
+  name: ONGC Petro additions Limited
+  short_name: OPaL
+  type: Joint Venture / Subsidiary
+  key_products:
+  - C2-C3
+  - Naphtha
+  - Natural Gas
+  headquarters_city: Dahej
+  state: Gujarat
+  notes: Mega petrochemical plant at Dahej (95.69% ONGC); consumes C2-C3 rich gas.
+- customer_id: CUST-RIL
+  name: Reliance Industries Limited
+  short_name: RIL
+  type: Private
+  key_products:
+  - Crude Oil
+  - Naphtha
+  headquarters_city: Mumbai
+  state: Maharashtra
+  notes: Purchaser of domestic crude under E&P market-freedom auctions.
+- customer_id: CUST-NYR
+  name: Nayara Energy Limited
+  short_name: Nayara
+  type: Private
+  key_products:
+  - Crude Oil
+  headquarters_city: Mumbai
+  state: Gujarat
+  notes: Vadinar refinery operator bidding for West Coast domestic crude parcels.
+- customer_id: CUST-IGL
+  name: Indraprastha Gas Limited
+  short_name: IGL
+  type: City Gas JV
+  key_products:
+  - Natural Gas
+  headquarters_city: New Delhi
+  state: Delhi
+  notes: City gas distributor for Delhi-NCR supplied via GAIL APM gas allocations.
+- customer_id: CUST-MGL
+  name: Mahanagar Gas Limited
+  short_name: MGL
+  type: City Gas JV
+  key_products:
+  - Natural Gas
+  headquarters_city: Mumbai
+  state: Maharashtra
+  notes: City gas distributor for Mumbai and Thane supplied from Uran gas plant.
+- customer_id: CUST-GGL
+  name: Gujarat Gas Limited
+  short_name: Gujarat Gas
+  type: State PSU
+  key_products:
+  - Natural Gas
+  headquarters_city: Ahmedabad
+  state: Gujarat
+  notes: Largest city gas entity in India; off-taker for Cambay and South Gujarat gas.
+- customer_id: CUST-TOR
+  name: Torrent Gas Limited
+  short_name: Torrent Gas
+  type: Private
+  key_products:
+  - Natural Gas
+  headquarters_city: Ahmedabad
+  state: Gujarat
+  notes: Regional city gas distributor across UP, Gujarat, and Rajasthan.
+- customer_id: CUST-ATG
+  name: Adani Total Gas Limited
+  short_name: Adani Total Gas
+  type: Private
+  key_products:
+  - Natural Gas
+  headquarters_city: Ahmedabad
+  state: Gujarat
+  notes: City gas distribution licensee across multiple geographical areas.
+- customer_id: CUST-BCP
+  name: Brahmaputra Cracker and Polymer Limited
+  short_name: BCPL
+  type: PSU
+  key_products:
+  - Natural Gas
+  - Naphtha
+  headquarters_city: Dibrugarh
+  state: Assam
+  notes: Assam gas cracker project consuming associated gas from Lakwa and Geleki.
+- customer_id: CUST-APL
+  name: Assam Petrochemicals Limited
+  short_name: APL
+  type: State PSU
+  key_products:
+  - Natural Gas
+  headquarters_city: Namrup
+  state: Assam
+  notes: Methanol and formalin manufacturing unit supplied with ONGC natural gas.
+- customer_id: CUST-OTC
+  name: ONGC Tripura Power Company
+  short_name: OTPC
+  type: Joint Venture
+  key_products:
+  - Natural Gas
+  headquarters_city: Palatana
+  state: Tripura
+  notes: 726 MW combined cycle gas power plant fueled 100% by ONGC Tripura gas fields.
+- customer_id: CUST-NFL
+  name: National Fertilizers Limited
+  short_name: NFL
+  type: PSU
+  key_products:
+  - Natural Gas
+  headquarters_city: Noida
+  state: Uttar Pradesh
+  notes: Priority APM gas customer for urea feedstock (Vijaipur/Panipat plants).
+- customer_id: CUST-RCF
+  name: Rashtriya Chemicals and Fertilizers Limited
+  short_name: RCF
+  type: PSU
+  key_products:
+  - Natural Gas
+  headquarters_city: Mumbai
+  state: Maharashtra
+  notes: Trombay and Thal fertilizer plants receiving gas via Uran pipeline.
+- customer_id: CUST-GSF
+  name: Gujarat State Fertilizers & Chemicals Limited
+  short_name: GSFC
+  type: State PSU
+  key_products:
+  - Natural Gas
+  headquarters_city: Vadodara
+  state: Gujarat
+  notes: Industrial gas customer in central Gujarat.
+- customer_id: CUST-GNF
+  name: Gujarat Narmada Valley Fertilizers & Chemicals
+  short_name: GNFC
+  type: State PSU
+  key_products:
+  - Natural Gas
+  headquarters_city: Bharuch
+  state: Gujarat
+  notes: Off-taker of Ankleshwar / Gandhar gas for ammonia-urea synthesis.
+- customer_id: CUST-CFCL
+  name: Chambal Fertilisers and Chemicals Limited
+  short_name: Chambal Fertilisers
+  type: Private
+  key_products:
+  - Natural Gas
+  headquarters_city: Kota
+  state: Rajasthan
+  notes: Major private fertilizer manufacturer in north-western grid.
+- customer_id: CUST-DFP
+  name: Deepak Fertilisers and Petrochemicals Corporation
+  short_name: Deepak Fertilisers
+  type: Private
+  key_products:
+  - Natural Gas
+  headquarters_city: Pune
+  state: Maharashtra
+  notes: Industrial gas off-taker in Taloja industrial belt near Navi Mumbai.
+- customer_id: CUST-TATA
+  name: The Tata Power Company Limited
+  short_name: Tata Power
+  type: Private
+  key_products:
+  - Natural Gas
+  headquarters_city: Mumbai
+  state: Maharashtra
+  notes: Trombay generating station gas turbine unit.
+- customer_id: CUST-NTPC
+  name: NTPC Limited
+  short_name: NTPC
+  type: PSU
+  key_products:
+  - Natural Gas
+  headquarters_city: New Delhi
+  state: Delhi
+  notes: National power generation utility with gas-fired stations in Kawas, Jhanor, and Dadri.

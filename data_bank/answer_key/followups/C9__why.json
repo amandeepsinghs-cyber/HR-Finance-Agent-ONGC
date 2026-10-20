@@ -1,0 +1,59 @@
+{
+  "job_id": "b57729e8-fedd-4611-8de6-66f2f43cf818",
+  "total_bytes_processed": 52136,
+  "executed_at": "2026-10-20T06:44:58.009645+00:00",
+  "elapsed_seconds": 0.79,
+  "row_count": 4,
+  "columns": [
+    "delay_root_cause_category",
+    "projects_slipped",
+    "avg_slippage_months",
+    "max_slippage_months",
+    "cost_overrun_cr",
+    "delayed_critical_path_milestones",
+    "projects",
+    "first_delayed_milestones"
+  ],
+  "rows": [
+    {
+      "delay_root_cause_category": "contractor_standby",
+      "projects_slipped": 5,
+      "avg_slippage_months": 16.2,
+      "max_slippage_months": 17,
+      "cost_overrun_cr": 463.35,
+      "delayed_critical_path_milestones": 15,
+      "projects": "TCPP Process Gas Compressors at Bassein (17 m); MHN Gas Process Booster Compressors (17 m); Sobhasan Group Gathering Station (GGS) Modernisation (16 m); Uran Plant Booster Compressors Modernisation (16 m); Linch Group Gathering Station Upgrade (15 m)",
+      "first_delayed_milestones": "Platform Jacket & Topsides Fabrication"
+    },
+    {
+      "delay_root_cause_category": "fabrication_delay_yard",
+      "projects_slipped": 2,
+      "avg_slippage_months": 10.0,
+      "max_slippage_months": 19,
+      "cost_overrun_cr": 689.85,
+      "delayed_critical_path_milestones": 6,
+      "projects": "Pipeline Replacement Project Phase-VIII Part-B (PRP-VIII B) (19 m); Pipeline Replacement Project Phase-VII (PRP-VII) (1 m)",
+      "first_delayed_milestones": "Platform Jacket & Topsides Fabrication"
+    },
+    {
+      "delay_root_cause_category": "subsea_commissioning",
+      "projects_slipped": 1,
+      "avg_slippage_months": 15.0,
+      "max_slippage_months": 15,
+      "cost_overrun_cr": 5101.8,
+      "delayed_critical_path_milestones": 3,
+      "projects": "KG-DWN-98/2 Cluster-II Deepwater Development (15 m)",
+      "first_delayed_milestones": "Platform Jacket & Topsides Fabrication"
+    },
+    {
+      "delay_root_cause_category": "engineering_drawing_approval",
+      "projects_slipped": 1,
+      "avg_slippage_months": 1.0,
+      "max_slippage_months": 1,
+      "cost_overrun_cr": 744.0,
+      "delayed_critical_path_milestones": 3,
+      "projects": "Daman Upside Development Project (DUDP) (1 m)",
+      "first_delayed_milestones": "Platform Jacket & Topsides Fabrication"
+    }
+  ]
+}

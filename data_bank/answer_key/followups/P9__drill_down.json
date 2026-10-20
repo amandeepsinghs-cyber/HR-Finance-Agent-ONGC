@@ -1,0 +1,54 @@
+{
+  "job_id": "39e415a0-6aaa-4060-994c-94b62d6a3e69",
+  "total_bytes_processed": 5501,
+  "executed_at": "2026-10-20T06:33:29.468410+00:00",
+  "elapsed_seconds": 0.78,
+  "row_count": 4,
+  "columns": [
+    "external_member_name",
+    "external_member_ngo",
+    "committees",
+    "work_centres",
+    "female_presiding_officers",
+    "distinct_presiding_officer_names",
+    "min_women_members_pct"
+  ],
+  "rows": [
+    {
+      "external_member_name": "Dr. Sunita Sharma",
+      "external_member_ngo": "Centre for Women Empowerment NGO",
+      "committees": 17,
+      "work_centres": "WC-AHM, WC-ANK, WC-ASM, WC-BAS, WC-BOK, WC-DEL, WC-DRL, WC-EAS, WC-GEO, WC-GLS, WC-INB, WC-MEH, WC-RAJ, WC-RAJ-BSN, WC-ROC, WC-ROV, WC-TRI",
+      "female_presiding_officers": 17,
+      "distinct_presiding_officer_names": 1,
+      "min_women_members_pct": 60.0
+    },
+    {
+      "external_member_name": "Prof. Anuradha Roy",
+      "external_member_ngo": "Society for Social Development",
+      "committees": 11,
+      "work_centres": "WC-CEW, WC-FRB, WC-IEO, WC-IOG, WC-KDM, WC-KGB, WC-LOG, WC-MBA, WC-NEH, WC-ROK, WC-URN",
+      "female_presiding_officers": 11,
+      "distinct_presiding_officer_names": 1,
+      "min_women_members_pct": 60.0
+    },
+    {
+      "external_member_name": "Advocate Meenakshi Sen",
+      "external_member_ngo": "Legal Aid & Gender Rights Foundation",
+      "committees": 10,
+      "work_centres": "WC-AAB, WC-ACA, WC-CAU, WC-DDN, WC-HAZ, WC-IRS, WC-MUM, WC-SIL, WC-WNB, WC-WOB",
+      "female_presiding_officers": 10,
+      "distinct_presiding_officer_names": 1,
+      "min_women_members_pct": 60.0
+    },
+    {
+      "external_member_name": "Smt. Shashi Kaul",
+      "external_member_ngo": "All India Women Conference",
+      "committees": 8,
+      "work_centres": "WC-ATI, WC-CAB, WC-CAM, WC-DAH, WC-IDW, WC-JOR, WC-ROM, WC-WEL",
+      "female_presiding_officers": 8,
+      "distinct_presiding_officer_names": 1,
+      "min_women_members_pct": 60.0
+    }
+  ]
+}

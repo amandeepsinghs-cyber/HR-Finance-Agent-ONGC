@@ -1,0 +1,210 @@
+    Independent Assurance Statement
+
+
+
+     Assurance Statement on Integrated
+     Report (IR) of Oil and Natural Gas
+            Corporation Limited
+                            For
+                      Reporting Period:
+
+
+           April 01, 2022 – March 31, 2023
+
+
+
+
+       Bureau Veritas (India) Private Limited
+72 Business Park, 9th Floor, MIDC Cross Road ‘C’, Opp. SEEPZ
+        Gate #2, Andheri (East) Mumbai-400 093 India.
+                               Independent Assurance Statement
+
+
+To
+Oil & Natural Gas Corporation Limited (ONGC).
+Plot No. 5A-5B, Nelson Mandela Road, Deendayal Urja Bhawan,
+Vasant Kunj, New Delhi-110070, India.
+
+Introduction and Objective of Work
+BUREAU VERITAS has been engaged by Oil & Natural Gas Corporation Limited (hereinafter
+abbreviated as “ONGC”) to conduct an independent assurance of its sustainability parameters in its
+Integrated Report (“IR”) for the reporting period from 01.04.2022 to 31.03.2023. This assurance
+statement applies to the related information included within the scope of work described below.
+
+The selection of reporting criteria, reporting period, reporting boundary, monitoring, and measurement
+of data, preparation, and presentation of information for the Integrated Reporting (IR) is the sole
+responsibility of the management of “ONGC”. Bureau Veritas was not involved in the drafting or
+preparation of the backup data of “ONGC” for the Integrated Reporting (IR). Our sole responsibility was
+to provide independent assurance on its content.
+
+Intended User
+The assurance statement is made solely for “ONGC” as per the governing contractual terms and
+conditions of the assurance engagement contract between “ONGC” and Bureau Veritas. To the extent
+that the law permits, we owe no responsibility and do not accept any liability to any other party other
+than “ONGC” for the work we have performed for this assurance report or for our conclusions stated in
+the paragraph below.
+
+Scope of Work
+
+    •   Checking that the data and information included in the IR for the reporting period from
+        01.04.2022 to 31.03.2023 was fairly presented without material misrepresentation.
+    •   Appropriateness and robustness of underlying reporting systems and processes, used to
+        collect, analyze, and review the information reported.
+
+Reporting criteria: International Integrated Reporting Council’s (IIRC’s) Integrated Reporting
+Framework and National Guidelines for Responsible Business Conduct (NGRBC).
+Reporting period: 01/04/2022 to 31/03/2023
+Assurance Standard: The assurance process was conducted in line with the requirements of the ISAE
+3000 (Revised) standard.
+
+Level of assurance: Limited (the level of assurance obtained in work performed in a limited
+assurance engagement is lower than for a reasonable assurance engagement, but is higher than no
+assurance)
+Assurance Standards Used
+Bureau Veritas conducted sustainability assurance in accordance with the requirements of the
+International Federation of Accountants (IFAC) International Standard on Assurance Engagement
+(ISAE) 3000 (Revised) (Limited Assurance), Assurance Engagements Other than Audits or Reviews of
+Historical Financial Information. Under this standard, Bureau Veritas has reviewed the information
+presented in the report against the characteristics of relevance, completeness, materiality, reliability,
+neutrality, and understandability. Limited assurance consists primarily of inquiries and analytical
+procedures. The procedures performed in a limited assurance engagement vary in nature and timing
+and are less in extent than for a reasonable assurance engagement.
+
+'Limited Assurance’ procedures as per the International Federation of Accountants (IFAC)
+International Standard on Assurance Engagements (ISAE) 3410, Assurance Engagements on
+Greenhouse Gas Statements, for the GHG emissions data have also been used. Further, a limited
+assurance engagement in accordance with ISAE 3410 involved assessing procedures to obtain
+evidence about the quantification of GHG emissions and related information in the Report.
+                               Independent Assurance Statement
+
+
+
+The methodology used to conduct the assurance
+
+ONGC initially submitted the IR for the reporting period from 01.04.2022 to 31.03.2023 covering the
+sites that are within the reporting boundaries. The assessment of the reports and the data was done at
+ONGC headquarters in New Delhi.
+
+The reporting boundaries considered for this reporting period include the ONGC Group of Companies
+viz., ONGC, ONGC Videsh, Mangalore Refineries and Petrochemicals Ltd (MRPL), ONGC Mangalore
+Petrochemicals Ltd (OMPL), ONGC Petro-additions Ltd (OPaL) & ONGC Tripura Power Company Ltd
+(OTPC).
+
+The assessment team from Bureau Veritas, for this verification, included the following members;
+   1. Mr. B S Vishwakarma – Team Leader&
+   2. Mr Kalyan Dey – Team Member
+
+The personnel with whom the Bureau Veritas team interacted during this assessment are as follows;
+
+ Name of person                    Designation                                   Location
+ Mr. Kunal Roy                     GM Chemistry                                  ONGC HQ
+ Mr. Pratap Chaudhary              GM Production                                 ONGC HQ
+ Ms. Hema Verma                    Sr. Chemist                                   ONGC HQ
+ Ms. Sudha Gupta                   Executive Engineer (Electrical)               ONGC HQ
+
+The assessment was carried out, of the submitted information, based on a sampling exercise, to
+verify the data and computations that were prepared by ONGC. An on-site visit to the company’s
+corporate office, as well as the remote assessment, was conducted by the audit team.
+
+The assessment was carried out only for the parameters that have been considered by ONGC for the
+sustainability reporting in the Integrated Report for FY 2022 -2023 which includes the following
+parameters;
+
+• Human Capital – including the number of permanent employees, trainees, women employees, etc.
+• Training hours per entity
+• Diversity & Inclusion – Male to female ratio
+• OHS Accident / Incident data
+• Energy consumption
+• Water consumption
+• Wastewater generation
+• Solid and Hazardous waste management
+
+The data values for some of the reported parameters in the Integrated Report (IR) were verified by
+Bureau Veritas from the data already published in the Annual Report of FY 2022-2023. A separate
+verification checklist was also utilized during the assessment.
+
+Bureau Veritas has validated the quantification methodology used by ONGC for the monitoring and
+calculations of the sustainability parameters from its different sources and confirms the same to be in
+line with the accepted practice of standard GHG computations. The materiality threshold of 5% has
+been considered in this assessment process.
+
+Most of the data were cross-checked by Bureau Veritas against the data already published in the Annual
+Report of FY 2022-23. As such, further backup evidence of the reported data was made available. Also,
+data related to the other entities / JV’s of ONGC, within the reporting boundaries was not available for
+verification.
+
+Our work was conducted against the requirements defined in the Integrated Reporting Framework and
+National Guidelines for Responsible Business Conduct (NGRBC), along with the requirements of ISAE
+                                  Independent Assurance Statement
+
+
+3000 Assurance standard and Bureau Veritas’ standard procedures and guidelines for external
+assurance of sustainability information, based on current best practice in independent assurance. The
+Bureau Veritas assurance process has also involved an Independent Technical Review (ITR) to check
+for the correctness and accuracy of the assurance conclusions as well as adherence to Bureau Veritas
+internal procedures and/or assurance standard requirements.
+
+Conclusions
+
+On the basis of our methodology and the activities described above, it is our opinion that the IR for FY
+2022-23 of “ONGC”, containing its reporting and declaration of the various ESG parameters from the
+operations within the reporting boundary and the reporting period, as described above, is prepared in
+all material respects in line with the applicable criteria here before stated.
+
+Limitations and Exclusions
+
+Excluded from the scope of our work is any assurance of information relating to:
+• Non-submission of supporting (backup) evidence for the reported data.
+• Data related to the ONGC Group of Companies; viz., ONGC, ONGC Videsh, Mangalore Refineries
+    and Petrochemicals Ltd (MRPL), ONGC Mangalore Petrochemicals Ltd (OMPL), ONGC Petro-
+    additions Ltd (OPaL) & ONGC Tripura Power Company Ltd (OTPC).
+• Activities outside the defined assurance period stated hereinabove;
+• Positional statements, expressions of opinion, belief, aim, or future intention by “ONGC” and
+    statements of future commitment;
+• Competitive claims in the report claiming “first in India”, “first time in India”, “first of its kind”, etc, if
+    any;
+• Our assurance does not extend to the activities and operations of “ONGC” outside of the scope and
+    geographical boundaries mentioned in this report as well as the operations undertaken by any other
+    entity that may be associated with or have a business relationship with “ONGC”.
+• Our assurance of the various ESG parameters covers only those parameters and sites that have
+    been reported in the IR for FY 2022-23. This independent statement should not be relied upon to
+    detect all errors, omissions, or misstatements that may exist within the IR or the supporting
+    documentation.
+
+Uncertainty
+The reliability of assurance is subject to uncertainty(ies) that is inherent in the assurance process.
+Uncertainties stem from limitations in quantification models used, assumptions, or data conversion
+factors used or may be present in the estimation of data used to arrive at results. Our conclusions in
+respect of this assurance are naturally subject to any inherent uncertainty(ies) involved in the assurance
+process.
+Statement of independence, impartiality, and competence
+Bureau Veritas is an independent professional services company that specializes in Quality, Health,
+Safety, Social, and Environmental management with almost 190 years of history in providing
+independent assurance services. Bureau Veritas has implemented a Code of Ethics across the
+business to maintain high ethical standards among staff in their day-to-day business activities. We are
+particularly vigilant in the prevention of conflicts of interest.
+No member of the assurance team has a business relationship with “ONGC”, its Directors, Managers,
+or officials beyond that required of this assignment. We have conducted this verification independently
+and there has been no conflict of interest. The assurance team has extensive experience in conducting
+assurance over environmental, social, ethical, and health & safety information, systems, and processes
+and an excellent understanding of Bureau Veritas standard methodology for the Assurance of
+Sustainability Reporting.
+                              Independent Assurance Statement
+
+
+ Bureau Veritas (India) Private Limited
+ 72 Business Park, 9th Floor, MIDC Cross Road ‘C’, Opp. SEEPZ Gate #2, Andheri (East) Mumbai-400
+ 093 India.
+
+
+
+
+Bholenath Vishwakarma
+Lead Assurer
+
+
+
+
+Date: 02/08/2023
+Place: Mumbai, India
+

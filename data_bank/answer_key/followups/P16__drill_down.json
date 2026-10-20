@@ -1,0 +1,27 @@
+{
+  "job_id": "70a902cc-833a-45ae-951a-6af00c9e8bcf",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:21.939568+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "BDP summary",
+      "clause_ref": "Clause 3.0",
+      "heading": "Whole-Time Directors Financial Limits",
+      "quote_snippet": "Document Title: ONGC Book of Delegated Powers (BDP 2015 - Governance Summary) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 3.0 - Whole-Time Directors Financial Limits\nDomain Vocabulary & Glossary Terms: Book of Delegated Powers 2015; Delegated Financial Powers; Administrati"
+    },
+    {
+      "doc_id": "BDP summary",
+      "clause_ref": "Clause 4.0",
+      "heading": "Executive Committee (EC) Financial Limits",
+      "quote_snippet": "Document Title: ONGC Book of Delegated Powers (BDP 2015 - Governance Summary) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 4.0 - Executive Committee (EC) Financial Limits\nDomain Vocabulary & Glossary Terms: Book of Delegated Powers 2015; Delegated Financial Powers; Administ"
+    }
+  ]
+}

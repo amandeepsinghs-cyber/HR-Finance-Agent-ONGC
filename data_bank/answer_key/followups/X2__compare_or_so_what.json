@@ -1,0 +1,63 @@
+{
+  "job_id": "35d0245e-0a52-4def-b219-14f3574c7983",
+  "total_bytes_processed": 24534349,
+  "executed_at": "2026-10-20T06:37:14.809482+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 5,
+  "columns": [
+    "segment",
+    "work_centres",
+    "core_activity_work_centres",
+    "contract_workers_sep26",
+    "regular_employees_sep26",
+    "contract_to_regular_ratio",
+    "core_activity_contract_workers_sep26"
+  ],
+  "rows": [
+    {
+      "segment": "Processing plants",
+      "work_centres": 3,
+      "core_activity_work_centres": 3,
+      "contract_workers_sep26": 2452,
+      "regular_employees_sep26": 1552,
+      "contract_to_regular_ratio": 1.58,
+      "core_activity_contract_workers_sep26": 2452
+    },
+    {
+      "segment": "Offshore production assets",
+      "work_centres": 4,
+      "core_activity_work_centres": 4,
+      "contract_workers_sep26": 8540,
+      "regular_employees_sep26": 5890,
+      "contract_to_regular_ratio": 1.45,
+      "core_activity_contract_workers_sep26": 8540
+    },
+    {
+      "segment": "Onshore production assets",
+      "work_centres": 10,
+      "core_activity_work_centres": 10,
+      "contract_workers_sep26": 11230,
+      "regular_employees_sep26": 10209,
+      "contract_to_regular_ratio": 1.1,
+      "core_activity_contract_workers_sep26": 11230
+    },
+    {
+      "segment": "Basins, services and institutes",
+      "work_centres": 23,
+      "core_activity_work_centres": 3,
+      "contract_workers_sep26": 1782,
+      "regular_employees_sep26": 2437,
+      "contract_to_regular_ratio": 0.73,
+      "core_activity_contract_workers_sep26": 564
+    },
+    {
+      "segment": "Corporate offices (HQ + regional)",
+      "work_centres": 6,
+      "core_activity_work_centres": 0,
+      "contract_workers_sep26": 869,
+      "regular_employees_sep26": 2715,
+      "contract_to_regular_ratio": 0.32,
+      "core_activity_contract_workers_sep26": 0
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "job_id": "669dedf9-abe4-4490-9d31-2cf6de45a347",
+  "total_bytes_processed": 570197,
+  "executed_at": "2026-10-20T06:37:26.474651+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 10,
+  "columns": [
+    "state",
+    "category",
+    "sanctioned",
+    "in_position",
+    "vacancies",
+    "fill_rate_pct"
+  ],
+  "rows": [
+    {
+      "state": "Assam",
+      "category": "SC",
+      "sanctioned": 569,
+      "in_position": 566,
+      "vacancies": 3,
+      "fill_rate_pct": 99.5
+    },
+    {
+      "state": "Assam",
+      "category": "ST",
+      "sanctioned": 439,
+      "in_position": 436,
+      "vacancies": 3,
+      "fill_rate_pct": 99.3
+    },
+    {
+      "state": "Assam",
+      "category": "OBC",
+      "sanctioned": 938,
+      "in_position": 928,
+      "vacancies": 10,
+      "fill_rate_pct": 98.9
+    },
+    {
+      "state": "Assam",
+      "category": "EWS",
+      "sanctioned": 158,
+      "in_position": 156,
+      "vacancies": 2,
+      "fill_rate_pct": 98.7
+    },
+    {
+      "state": "Assam",
+      "category": "General",
+      "sanctioned": 1487,
+      "in_position": 1475,
+      "vacancies": 12,
+      "fill_rate_pct": 99.2
+    },
+    {
+      "state": "Tripura",
+      "category": "SC",
+      "sanctioned": 151,
+      "in_position": 138,
+      "vacancies": 13,
+      "fill_rate_pct": 91.4
+    },
+    {
+      "state": "Tripura",
+      "category": "ST",
+      "sanctioned": 105,
+      "in_position": 92,
+      "vacancies": 13,
+      "fill_rate_pct": 87.6
+    },
+    {
+      "state": "Tripura",
+      "category": "OBC",
+      "sanctioned": 269,
+      "in_position": 239,
+      "vacancies": 30,
+      "fill_rate_pct": 88.8
+    },
+    {
+      "state": "Tripura",
+      "category": "EWS",
+      "sanctioned": 51,
+      "in_position": 45,
+      "vacancies": 6,
+      "fill_rate_pct": 88.2
+    },
+    {
+      "state": "Tripura",
+      "category": "General",
+      "sanctioned": 381,
+      "in_position": 330,
+      "vacancies": 51,
+      "fill_rate_pct": 86.6
+    }
+  ]
+}

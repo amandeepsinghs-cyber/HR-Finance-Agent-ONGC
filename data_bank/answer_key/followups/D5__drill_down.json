@@ -1,0 +1,25 @@
+{
+  "job_id": "a2c56c66-a274-4e38-9c07-5dc3a55c79ef",
+  "total_bytes_processed": 25408634,
+  "executed_at": "2026-10-20T06:32:57.812672+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 1,
+  "columns": [
+    "wc_id",
+    "work_centre",
+    "active_employees",
+    "executives",
+    "non_executives",
+    "snapshot_headcount_2026_09"
+  ],
+  "rows": [
+    {
+      "wc_id": "WC-DEL",
+      "work_centre": "Corporate HQ Delhi (Deendayal Urja Bhawan)",
+      "active_employees": 943,
+      "executives": 692,
+      "non_executives": 251,
+      "snapshot_headcount_2026_09": 943
+    }
+  ]
+}

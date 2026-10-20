@@ -1,0 +1,48 @@
+- table: field_pnl_annual
+  issue: "SAED windfall tax booked only in FY25 (Rs 4,282 cr); zero in FY23 and FY24"
+  evidence: "corporate_financials SAED FY23 10,964, FY24 8,634, FY25 3,948 cr; price_fx_monthly SAED > 0 from FY23 to 2024-11"
+  impact_on_ids: [F3__why, F4__compare_or_so_what, F10]
+- table: corporate_financials vs field_pnl_annual
+  issue: "Reported lifting_cost_average_usd_boe (FY26 14.04) does not match field P&L opex/BOE (9.13); definition undocumented"
+  evidence: "SUM(field opex)/SUM(BOE)/FX = $9.13; 14.04 implies ~Rs 36,800 cr cost incl. plant/corporate"
+  impact_on_ids: [F1, F1__compare_or_so_what]
+- table: capex_budget
+  issue: "FY17-FY24 BE/RE identical every year (19,151 / 18,768 cr) and actual (~18.2k) does not reconcile to corporate_financials total_capex_spent (e.g. FY18 72,902); FY25/FY26 reconcile. Monthly phasing is flat (H1 = 50%)"
+  evidence: "SUM(budget_estimate_be_inr_cr) by FY; corporate_financials.total_capex_spent_inr_cr"
+  impact_on_ids: [F2, F2__compare_or_so_what]
+- table: project_progress
+  issue: "Project-level fields (cost_overrun, sanctioned/revised cost, root cause, slippage) repeated on each of 6 milestone rows; only FY26 snapshot; only 4 root-cause codes (no procurement, rig mobilisation, environmental clearance)"
+  evidence: "360 rows = 60 projects x 6 milestones, identical cost_overrun per project"
+  impact_on_ids: [F2, F2__why]
+- table: receivables
+  issue: "Only FY26 invoices carry outstanding balances (prior year-ends not retained); FY27 invoices dated up to 2027-03-28 and paid to 2027-05 (beyond today 2026-10-19); billed FY22-FY25 does not reconcile to corporate revenue (FY22 132,643 vs 110,345 cr) though FY26 does (132,508)"
+  evidence: "SUM(billed), MAX(invoice_date/payment_date) by FY"
+  impact_on_ids: [F6, F6__compare_or_so_what]
+- table: receivables
+  issue: "Every invoice >90 days is disputed and every disputed invoice is >90 days (bucket determines status)"
+  evidence: "aging_bucket x invoice_status crosstab"
+  impact_on_ids: [F6, F6__drill_down, F6__why]
+- table: purchase_orders / dim_vendor
+  issue: "25 vendor names shared by multiple vendor_ids; overrun_reason 'Subsea route realignment' applied to rig charter and TSP lines; standby_charges = 25% of scope variation on every line; all FY26 POs 'in_execution'; PO spend (Rs 15,878 cr FY26) is flat across categories (~10% each)"
+  evidence: "COUNT(DISTINCT name)=1975 for 2000 vendor_ids; reason x category"
+  impact_on_ids: [F5, F5__drill_down, F5__why, F5__compare_or_so_what]
+- table: cost_ledger
+  issue: "FY26 total ~Rs 1,400 cr vs field P&L opex Rs 23,920 cr; monthly profile flat (25% per quarter)"
+  evidence: "SUM(amount_inr)/1e7 by fiscal_year"
+  impact_on_ids: [F10, F10__why]
+- table: reserves_annual
+  issue: "6 rows with NULL fiscal_year; RRR ~1.12 for every basin FY17-FY25 (modelled); Rajasthan FY26 finding cost = 0; finding cost constant within basin"
+  evidence: "GROUP BY fiscal_year, basin_name"
+  impact_on_ids: [F8, F8__drill_down, F8__compare_or_so_what]
+- table: forex_hedges
+  issue: "Only FY26 positions; cross_currency_swap rows (EUR 120 mn, JPY 60 mn) have hedged_amount 0; non-USD exposures stored in *_usd columns (USD-equivalent assumed)"
+  evidence: "instrument_type x hedged_amount_usd"
+  impact_on_ids: [F9, F9__drill_down]
+- table: hrfin_docs.silver_chunks
+  issue: "No SAED/windfall-tax notification, no hedging/treasury policy, no NELP/HELP contract terms in corpus"
+  evidence: "text search for windfall, hedg, NELP returned nothing relevant"
+  impact_on_ids: [F4__why, F4__compare_or_so_what, F9__why]
+- table: (missing)
+  issue: "No quarterly P&L, no asset-level operating plan/BE, no NOC benchmarks, no treasury DSO target, no HP-HT well flag, no reservoir pressure"
+  evidence: "schema review"
+  impact_on_ids: [F10, F10__compare_or_so_what, F7__compare_or_so_what, F6__compare_or_so_what, F8__why, F3__drill_down]

@@ -1,0 +1,282 @@
+{
+  "step_id": "all",
+  "verdict": "FAIL",
+  "verdict_msg": "Step all verification failed: 11 probes failed, 0 consistency audits failed.",
+  "execution_timestamp": "2026-10-19T12:09:40Z",
+  "duration_seconds": 32.83,
+  "tables": {
+    "available_count": 53,
+    "available": [
+      "dim_work_centre",
+      "dim_grade",
+      "dim_discipline",
+      "dim_field",
+      "dim_project",
+      "dim_cost_centre",
+      "dim_customer",
+      "dim_vendor",
+      "dim_geography",
+      "dim_calendar",
+      "dim_price_fx",
+      "employee_master",
+      "posting_history",
+      "promotion_history",
+      "dpc_cases",
+      "separations",
+      "sanctioned_posts",
+      "headcount_snapshot",
+      "payroll_monthly",
+      "apar_ratings",
+      "succession_plan",
+      "training_records",
+      "training_calendar",
+      "leave_ledger",
+      "medical_claims",
+      "grievances_litigation",
+      "contract_workforce",
+      "hse_incidents",
+      "travel_claims",
+      "icc_committees",
+      "vigilance_cases",
+      "production_monthly",
+      "reserves_annual",
+      "wells_drilled",
+      "price_fx_monthly",
+      "field_pnl_annual",
+      "cost_ledger",
+      "capex_budget",
+      "project_progress",
+      "purchase_orders",
+      "receivables",
+      "forex_hedges",
+      "csr_projects",
+      "mou_targets",
+      "benefit_liabilities",
+      "subsidiary_financials",
+      "energy_transition",
+      "corporate_financials",
+      "parliament_questions",
+      "cag_paras",
+      "rti_applications",
+      "board_agenda_index",
+      "access_audit_log"
+    ],
+    "skipped_count": 0,
+    "skipped": []
+  },
+  "consistency": {
+    "total_audits": 170,
+    "passed": 170,
+    "failed": 0,
+    "calibration_targets_checked": 32,
+    "calibration_targets_passed": 31
+  },
+  "probes": {
+    "total_in_step_scope": 356,
+    "answered": 243,
+    "failed": 11,
+    "pending": 0,
+    "stubs": 102,
+    "pass_rate_pct": 95.67
+  },
+  "failed_probe_details": [
+    {
+      "probe_id": "W4",
+      "status": "FAIL",
+      "failure_reasons": [
+        "story_range_breach: S21 target=13034.0 actual=0.0 delta=-100.0% (limit \u00b110.0%)"
+      ],
+      "sample_rows": [
+        {
+          "fiscal_year": "FY26",
+          "saed_windfall_tax_inr_cr": "0.0",
+          "ebitda_inr_cr": "63284.03"
+        }
+      ]
+    },
+    {
+      "probe_id": "C12.compare_or_so_what",
+      "status": "FAIL",
+      "failure_reasons": [
+        "missing_drill_dimension: corporate_financials.fiscal_year (expected column 'fiscal_year')",
+        "identical_to_parent: follow-up returned exact duplicate of parent 'C12'"
+      ],
+      "sample_rows": [
+        {
+          "short_name": "Jorhat Asset",
+          "allocated_manpower_cost_inr_cr": "157.23",
+          "manpower_cost_pct_revenue": "47.7"
+        },
+        {
+          "short_name": "Jorhat Asset",
+          "allocated_manpower_cost_inr_cr": "161.08",
+          "manpower_cost_pct_revenue": "45.94"
+        },
+        {
+          "short_name": "Jorhat Asset",
+          "allocated_manpower_cost_inr_cr": "166.43",
+          "manpower_cost_pct_revenue": "43.81"
+        }
+      ]
+    },
+    {
+      "probe_id": "C12.why",
+      "status": "FAIL",
+      "failure_reasons": [
+        "missing_drill_dimension: production_monthly.fiscal_year (expected column 'fiscal_year')",
+        "identical_to_parent: follow-up returned exact duplicate of parent 'C12'"
+      ],
+      "sample_rows": [
+        {
+          "short_name": "Jorhat Asset",
+          "allocated_manpower_cost_inr_cr": "157.23",
+          "manpower_cost_pct_revenue": "47.7"
+        },
+        {
+          "short_name": "Jorhat Asset",
+          "allocated_manpower_cost_inr_cr": "161.08",
+          "manpower_cost_pct_revenue": "45.94"
+        },
+        {
+          "short_name": "Jorhat Asset",
+          "allocated_manpower_cost_inr_cr": "166.43",
+          "manpower_cost_pct_revenue": "43.81"
+        }
+      ]
+    },
+    {
+      "probe_id": "C3.why",
+      "status": "FAIL",
+      "failure_reasons": [
+        "missing_drill_dimension: dim_work_centre.wc_id (expected column 'wc_id')"
+      ],
+      "sample_rows": [
+        {
+          "short_name": "Cambay Asset",
+          "fiscal_year": "FY21",
+          "oil_prod_kmt": "411.8",
+          "gas_prod_mmscm": "600.15"
+        },
+        {
+          "short_name": "Cambay Asset",
+          "fiscal_year": "FY26",
+          "oil_prod_kmt": "358.26",
+          "gas_prod_mmscm": "431.12"
+        },
+        {
+          "short_name": "Eastern Offshore",
+          "fiscal_year": "FY21",
+          "oil_prod_kmt": "0.0",
+          "gas_prod_mmscm": "0.0"
+        }
+      ]
+    },
+    {
+      "probe_id": "F1.compare_or_so_what",
+      "status": "FAIL",
+      "failure_reasons": [
+        "identical_to_parent: follow-up returned exact duplicate of parent 'F1'"
+      ],
+      "sample_rows": [
+        {
+          "short_name": "Jorhat Asset",
+          "allocated_manpower_cost_inr_cr": "157.23",
+          "manpower_cost_pct_revenue": "47.7"
+        },
+        {
+          "short_name": "Jorhat Asset",
+          "allocated_manpower_cost_inr_cr": "161.08",
+          "manpower_cost_pct_revenue": "45.94"
+        },
+        {
+          "short_name": "Jorhat Asset",
+          "allocated_manpower_cost_inr_cr": "166.43",
+          "manpower_cost_pct_revenue": "43.81"
+        }
+      ]
+    },
+    {
+      "probe_id": "H8.compare_or_so_what",
+      "status": "ERROR",
+      "failure_reasons": [
+        "Execution Error: Binder Error: column \"actual_achievement\" must appear in the GROUP BY clause or must be part of an aggregate function.\nEither add it to the GROUP BY list, or use \"ANY_VALUE(actual_achievement)\" if the exact value of \"actual_achievement\" is not important.\n\nLINE 15:     mou_targets.actual_achievement AS actual_achievement\n             ^"
+      ],
+      "sample_rows": []
+    },
+    {
+      "probe_id": "P17.why",
+      "status": "ERROR",
+      "failure_reasons": [
+        "Execution Error: Binder Error: Referenced column \"dividend_paid_inr_cr\" not found in FROM clause!\nCandidate bindings: \"dividend_per_share_inr\", \"dividend_payout_ratio_pct\", \"total_dividend_payout_inr_cr\", \"consolidated_pat_inr_cr\", \"ebitda_inr_cr\"\n\nLINE 15:     dividend_paid_inr_cr,\n             ^"
+      ],
+      "sample_rows": []
+    },
+    {
+      "probe_id": "W3.compare_or_so_what",
+      "status": "FAIL",
+      "failure_reasons": [
+        "identical_to_parent: follow-up returned exact duplicate of parent 'W3'"
+      ],
+      "sample_rows": [
+        {
+          "city": "New Delhi",
+          "current_delhi_deh_executives": "692"
+        },
+        {
+          "city": "Dehradun",
+          "current_delhi_deh_executives": "595"
+        }
+      ]
+    },
+    {
+      "probe_id": "W3.why",
+      "status": "FAIL",
+      "failure_reasons": [
+        "identical_to_parent: follow-up returned exact duplicate of parent 'W3'"
+      ],
+      "sample_rows": [
+        {
+          "city": "New Delhi",
+          "current_delhi_deh_executives": "692"
+        },
+        {
+          "city": "Dehradun",
+          "current_delhi_deh_executives": "595"
+        }
+      ]
+    },
+    {
+      "probe_id": "X3.compare_or_so_what",
+      "status": "ERROR",
+      "failure_reasons": [
+        "Execution Error: Binder Error: column \"excellent_target\" must appear in the GROUP BY clause or must be part of an aggregate function.\nEither add it to the GROUP BY list, or use \"ANY_VALUE(excellent_target)\" if the exact value of \"excellent_target\" is not important.\n\nLINE 14:     mou_targets.excellent_target AS excellent_target\n             ^"
+      ],
+      "sample_rows": []
+    },
+    {
+      "probe_id": "X6.drill_down",
+      "status": "FAIL",
+      "failure_reasons": [
+        "identical_to_parent: follow-up returned exact duplicate of parent 'X6'"
+      ],
+      "sample_rows": [
+        {
+          "technology_type": "Solar PV",
+          "total_mw": "1903.0",
+          "annual_capex_cr": "7992.6"
+        },
+        {
+          "technology_type": "Wind Onshore",
+          "total_mw": "500.0",
+          "annual_capex_cr": "2100.0"
+        },
+        {
+          "technology_type": "Wind Offshore",
+          "total_mw": "250.0",
+          "annual_capex_cr": "1050.0"
+        }
+      ]
+    }
+  ],
+  "pending_probes": []
+}

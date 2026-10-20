@@ -1,0 +1,37 @@
+{
+  "job_id": "259e38c8-98ad-426c-b275-4b5a6ff96463",
+  "total_bytes_processed": 7978332,
+  "executed_at": "2026-10-20T06:33:12.040302+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 3,
+  "columns": [
+    "hardship_status",
+    "e4_e5_cases",
+    "cleared",
+    "pending_delayed",
+    "clearance_rate_pct"
+  ],
+  "rows": [
+    {
+      "hardship_status": "Met 3-yr hard/NE norm",
+      "e4_e5_cases": 1843,
+      "cleared": 1719,
+      "pending_delayed": 124,
+      "clearance_rate_pct": 93.3
+    },
+    {
+      "hardship_status": "Some hard/NE service (<3 yrs)",
+      "e4_e5_cases": 167,
+      "cleared": 164,
+      "pending_delayed": 3,
+      "clearance_rate_pct": 98.2
+    },
+    {
+      "hardship_status": "No hard/NE posting",
+      "e4_e5_cases": 217,
+      "cleared": 216,
+      "pending_delayed": 1,
+      "clearance_rate_pct": 99.5
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "job_id": "d3d41ea8-9d18-44e6-84a3-25b08f6523ca",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:52.402934+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 2.0",
+      "heading": "Time-Bound Promotion Channel (E1\u2192E4)",
+      "quote_snippet": "2.1 Qualifying Residency Requirements: Promotions within the junior executive ranks (E1 through E4) shall be governed by the Time-Bound Promotion Channel subject to completing prescribed residency and meeting the APAR benchmark: (a) Promotion from E1 to E2: 3 (three) completed years of qualifying residency service at Grade E1. (b) Promotion from E2 to E3: 3 (three) completed years of qualifying re"
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 4.0",
+      "heading": "Merit Promotion Channel (E4\u2192E5, E5\u2192E6)",
+      "quote_snippet": "4.1 Selection by Merit: Promotions from Superintending Engineer / Chief Manager (Grade E4) to Deputy General Manager (Grade E5), and through higher grades (E6, E7, E8, E9), are strictly vacancy-based and governed by the Merit Promotion Channel through a Departmental Promotion Committee (DPC). 4.2 Zone of Consideration: The zone of consideration of eligible candidates shall be determined in the rat"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "job_id": "1cbb27e1-d4ad-49ce-b745-5bded83788a5",
+  "total_bytes_processed": 2045,
+  "executed_at": "2026-10-20T06:37:19.341469+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "discount_rate_pct",
+    "medical_inflation_rate_pct",
+    "active_members",
+    "retiree_beneficiaries",
+    "retirees_per_active",
+    "combined_liability_cr",
+    "liability_per_retiree_lakh",
+    "combined_annual_payout_cr"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "discount_rate_pct": 7.25,
+      "medical_inflation_rate_pct": 7.5,
+      "active_members": 27500,
+      "retiree_beneficiaries": 26500,
+      "retirees_per_active": 0.96,
+      "combined_liability_cr": 19886.84,
+      "liability_per_retiree_lakh": 75.0,
+      "combined_annual_payout_cr": 1690.39
+    },
+    {
+      "fiscal_year": "FY23",
+      "discount_rate_pct": 7.2,
+      "medical_inflation_rate_pct": 7.5,
+      "active_members": 26200,
+      "retiree_beneficiaries": 28100,
+      "retirees_per_active": 1.07,
+      "combined_liability_cr": 21119.81,
+      "liability_per_retiree_lakh": 75.2,
+      "combined_annual_payout_cr": 1795.19
+    },
+    {
+      "fiscal_year": "FY24",
+      "discount_rate_pct": 7.15,
+      "medical_inflation_rate_pct": 7.5,
+      "active_members": 25100,
+      "retiree_beneficiaries": 30200,
+      "retirees_per_active": 1.2,
+      "combined_liability_cr": 22432.0,
+      "liability_per_retiree_lakh": 74.3,
+      "combined_annual_payout_cr": 1906.72
+    },
+    {
+      "fiscal_year": "FY25",
+      "discount_rate_pct": 7.1,
+      "medical_inflation_rate_pct": 7.5,
+      "active_members": 24200,
+      "retiree_beneficiaries": 32100,
+      "retirees_per_active": 1.33,
+      "combined_liability_cr": 23828.71,
+      "liability_per_retiree_lakh": 74.2,
+      "combined_annual_payout_cr": 2025.44
+    },
+    {
+      "fiscal_year": "FY26",
+      "discount_rate_pct": 7.05,
+      "medical_inflation_rate_pct": 7.5,
+      "active_members": 23117,
+      "retiree_beneficiaries": 34500,
+      "retirees_per_active": 1.49,
+      "combined_liability_cr": 25315.6,
+      "liability_per_retiree_lakh": 73.4,
+      "combined_annual_payout_cr": 2151.83
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "job_id": "04a417e7-c8d8-4430-9e93-a6e92e696bec",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:28.365410+00:00",
+  "elapsed_seconds": 0.61,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 1.0",
+      "heading": "Short Title, Commencement and Scope",
+      "quote_snippet": "Document Title: ONGC Job Rotation and Transfer Policy (JRTP, Rev 4) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 1.0 - Short Title, Commencement and Scope\nDomain Vocabulary & Glossary Terms: Job Rotation and Transfer Policy (JRTP); Station Tenure Norms; Minimum Station Tenu"
+    }
+  ]
+}

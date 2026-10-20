@@ -1,0 +1,28 @@
+- table: hrfin_silver.leave_ledger
+  issue: "Persona EMP-102451 has a single EL row (FY26, dated 2026-01-01..2026-12-31, closing 78, encashable 18) and no HPL/CL rows in any FY, while 22,796 other employees have full EL/HPL/CL ledgers for FY24-FY27. Persona's encashable 18 matches neither the population convention (encashable = closing - 30 -> 48) nor Leave Rules 4.3 (up to 30/yr while retaining 30 -> 30). Row is labelled FY26 but spans calendar 2026."
+  evidence: "leave_ledger WHERE emp_id='EMP-102451' -> 1 row; population FY27 sample closing 83.4 / encashable 53.4 (= closing-30); Leave Rules Clause 4.3."
+  impact_on_ids: [E1, E1__drill_down, E1__compare_or_so_what]
+- table: hrfin_silver.medical_claims
+  issue: "turnaround_days is NULL for all 35,134 claims although 25,687 have both submission_date and settlement_date."
+  evidence: "COUNT(*)=35134, COUNTIF(turnaround_days IS NULL)=35134, COUNTIF(settlement_date IS NOT NULL)=25687."
+  impact_on_ids: [E3__compare_or_so_what]
+- table: hrfin_silver.training_calendar
+  issue: "FY27 calendar has 36 programmes all starting 2026-04-04..2026-09-19; nothing after 'today' (2026-10-19), and every FY's calendar ends by November, so 'upcoming' training is always empty in H2. eligible_disciplines holds a single discipline per programme and DISC-HR appears in none of FY25-FY27. location_city contradicts institute (ONGC_Academy_Dehradun sessions in 'New Delhi', IOGPT_Navi_Mumbai sessions in 'Dehradun', 'External' in 'Jorhat')."
+  evidence: "FY27: n=36, max start_date 2026-09-19, upcoming=0; COUNTIF('DISC-HR' IN eligible_disciplines) = 0 for FY25-FY27."
+  impact_on_ids: [E6, E6__drill_down, E6__why, E6__compare_or_so_what]
+- table: hrfin_silver.payroll_monthly
+  issue: "mining_offshore_allowance_inr for E2 at offshore work centres averages Rs 1,53,870/month (160% of basic) in 2026-09, inconsistent with JRTP 6.3 (hard-station allowance 10% of BP) - implausible magnitude; not used as an answer source for E5 for this reason."
+  evidence: "payroll_monthly x dim_work_centre, grade E2, month 2026-09: offshore avg allowance 153,870 vs basic 96,408; onshore 16,905; corporate 220."
+  impact_on_ids: [E5__drill_down]
+- table: hrfin_silver.corporate_financials
+  issue: "P&L lines are not internally consistent: FY22 PAT 40,306 > PBT 33,103; FY24 implied tax only ~2% (PBT 41,521 vs PAT 40,526); FY25 revenue - levies - opex = 77,575 vs EBITDA 66,855 while FY26 reconciles (~63,233 vs 63,284); FY26 opex jumps 29,581 -> 43,276 (+46%) while revenue falls. PAT/revenue/capex values used as published anchors are unaffected, but bridge analyses (E7__why) inherit the inconsistency."
+  evidence: "SELECT * FROM corporate_financials WHERE fiscal_year IN ('FY22'..'FY26')."
+  impact_on_ids: [E7__why, E7__compare_or_so_what]
+- table: hrfin_docs.silver_chunks
+  issue: "questions_served tags route refusal question D6 to strictly_confidential documents (DOC-CONF-010/011 vigilance docket) and tag P1-01/J-03 fragments to D2/D5/D6; any retrieval that trusts questions_served can leak confidential content into a refusal. P1-16 TA Regulations has no explicit offshore TA/DA, daily offshore allowance or 14x14 safety/travel-time clause (only Part 10 air-class and Part 38 free board/lodging DA rule)."
+  evidence: "questions_served LIKE '%D6%' returns DOC-CONF-010, DOC-CONF-011 (confidentiality=strictly_confidential)."
+  impact_on_ids: [D6, E5, E5__drill_down, E5__why]
+- table: hrfin_silver.dpc_cases
+  issue: "228 FY26 cases with status 'delayed' have held_date NULL and due dates Jun-Jul 2025 (15+ months overdue) concentrated in only two disciplines (DISC-DRL, DISC-PRD); eligible_candidates_count is a pool-level value repeated on every candidate row (summing it multiplies)."
+  evidence: "FY26 delayed: E4->E5 128 rows (2 disciplines), E5->E6 100 rows; SUM(eligible_candidates_count) 6,871 for 128 rows."
+  impact_on_ids: [D3__drill_down]

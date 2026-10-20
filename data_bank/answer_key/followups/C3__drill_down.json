@@ -1,0 +1,117 @@
+{
+  "job_id": "b18fa143-af09-43ee-bc1c-2d0fa1ee4f25",
+  "total_bytes_processed": 29198046,
+  "executed_at": "2026-10-20T06:29:04.930182+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 8,
+  "columns": [
+    "short_name",
+    "cadre",
+    "hc_mar21",
+    "hc_mar22",
+    "hc_mar23",
+    "hc_mar24",
+    "hc_mar25",
+    "hc_mar26",
+    "change_5yr",
+    "change_pct"
+  ],
+  "rows": [
+    {
+      "short_name": "Cambay Asset",
+      "cadre": "executive",
+      "hc_mar21": 507,
+      "hc_mar22": 471,
+      "hc_mar23": 434,
+      "hc_mar24": 396,
+      "hc_mar25": 349,
+      "hc_mar26": 312,
+      "change_5yr": -195,
+      "change_pct": -38.5
+    },
+    {
+      "short_name": "Cambay Asset",
+      "cadre": "non_executive",
+      "hc_mar21": 211,
+      "hc_mar22": 203,
+      "hc_mar23": 198,
+      "hc_mar24": 207,
+      "hc_mar25": 205,
+      "hc_mar26": 196,
+      "change_5yr": -15,
+      "change_pct": -7.1
+    },
+    {
+      "short_name": "Eastern Offshore",
+      "cadre": "executive",
+      "hc_mar21": 545,
+      "hc_mar22": 559,
+      "hc_mar23": 567,
+      "hc_mar24": 587,
+      "hc_mar25": 601,
+      "hc_mar26": 604,
+      "change_5yr": 59,
+      "change_pct": 10.8
+    },
+    {
+      "short_name": "Eastern Offshore",
+      "cadre": "non_executive",
+      "hc_mar21": 415,
+      "hc_mar22": 407,
+      "hc_mar23": 405,
+      "hc_mar24": 424,
+      "hc_mar25": 418,
+      "hc_mar26": 407,
+      "change_5yr": -8,
+      "change_pct": -1.9
+    },
+    {
+      "short_name": "Mehsana Asset",
+      "cadre": "executive",
+      "hc_mar21": 1126,
+      "hc_mar22": 1080,
+      "hc_mar23": 1064,
+      "hc_mar24": 1069,
+      "hc_mar25": 998,
+      "hc_mar26": 922,
+      "change_5yr": -204,
+      "change_pct": -18.1
+    },
+    {
+      "short_name": "Mehsana Asset",
+      "cadre": "non_executive",
+      "hc_mar21": 664,
+      "hc_mar22": 652,
+      "hc_mar23": 644,
+      "hc_mar24": 672,
+      "hc_mar25": 658,
+      "hc_mar26": 637,
+      "change_5yr": -27,
+      "change_pct": -4.1
+    },
+    {
+      "short_name": "Rajahmundry Asset",
+      "cadre": "executive",
+      "hc_mar21": 857,
+      "hc_mar22": 783,
+      "hc_mar23": 702,
+      "hc_mar24": 655,
+      "hc_mar25": 566,
+      "hc_mar26": 507,
+      "change_5yr": -350,
+      "change_pct": -40.8
+    },
+    {
+      "short_name": "Rajahmundry Asset",
+      "cadre": "non_executive",
+      "hc_mar21": 356,
+      "hc_mar22": 349,
+      "hc_mar23": 341,
+      "hc_mar24": 362,
+      "hc_mar25": 346,
+      "hc_mar26": 338,
+      "change_5yr": -18,
+      "change_pct": -5.1
+    }
+  ]
+}

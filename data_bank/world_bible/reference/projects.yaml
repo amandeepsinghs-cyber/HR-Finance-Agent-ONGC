@@ -1,0 +1,661 @@
+projects:
+- prj_id: PRJ-0001
+  name: KG-DWN-98/2 Cluster-II Deepwater Development
+  sanctioned_cost_inr_cr: 34012.0
+  start_date: '2018-04-01'
+  planned_completion: '2025-03-31'
+  actual_or_revised_completion: '2026-06-30'
+  asset_wc_id: WC-EAS
+  director_owner: Production
+  category: development
+  status: ongoing
+  notes: Flagship deepwater subsea project; first oil achieved Jan-2024; gas processing platform facing commissioning delays.
+- prj_id: PRJ-0002
+  name: Daman Upside Development Project (DUDP)
+  sanctioned_cost_inr_cr: 4960.0
+  start_date: '2022-02-01'
+  planned_completion: '2026-02-28'
+  actual_or_revised_completion: '2026-03-31'
+  asset_wc_id: WC-BAS
+  director_owner: Production
+  category: development
+  status: completed
+  notes: Offshore gas and condensate development; first gas achieved March 2026.
+- prj_id: PRJ-0003
+  name: Mumbai High North (MHN) Redevelopment Phase-IV
+  sanctioned_cost_inr_cr: 3546.0
+  start_date: '2019-01-01'
+  planned_completion: '2025-02-28'
+  actual_or_revised_completion: '2025-02-28'
+  asset_wc_id: WC-MUM
+  director_owner: Production
+  category: redevelopment
+  status: completed
+  notes: Infill drilling, water injection, and topside modifications in northern sector.
+- prj_id: PRJ-0004
+  name: Mumbai High South (MHS) Redevelopment Phase-IV
+  sanctioned_cost_inr_cr: 3750.0
+  start_date: '2019-03-01'
+  planned_completion: '2025-06-30'
+  actual_or_revised_completion: '2025-06-30'
+  asset_wc_id: WC-MUM
+  director_owner: Production
+  category: redevelopment
+  status: completed
+  notes: Redevelopment of southern fault blocks to mitigate reservoir pressure decline.
+- prj_id: PRJ-0005
+  name: Mumbai High bp TSP Redevelopment Scheme Phase-1
+  sanctioned_cost_inr_cr: 5200.0
+  start_date: '2025-01-01'
+  planned_completion: '2040-03-31'
+  actual_or_revised_completion: '2040-03-31'
+  asset_wc_id: WC-MUM
+  director_owner: Production
+  category: redevelopment
+  status: ongoing
+  notes: Strategic 10+5 year Technical Service Provider partnership with bp targeting up to 60% recovery uplift.
+- prj_id: PRJ-0006
+  name: Development of DSF-II (Discovered Small Fields)
+  sanctioned_cost_inr_cr: 2450.0
+  start_date: '2021-08-01'
+  planned_completion: '2027-04-30'
+  actual_or_revised_completion: '2027-04-30'
+  asset_wc_id: WC-BAS
+  director_owner: Production
+  category: development
+  status: ongoing
+  notes: Development of unmonetized marginal fields in Western Offshore.
+- prj_id: PRJ-0007
+  name: CBM Bokaro Field Development Project
+  sanctioned_cost_inr_cr: 1076.0
+  start_date: '2018-09-01'
+  planned_completion: '2025-03-31'
+  actual_or_revised_completion: '2025-03-31'
+  asset_wc_id: WC-BOK
+  director_owner: Production
+  category: development
+  status: completed
+  notes: Commercial monetisation of coal bed methane reserves in Jharkhand.
+- prj_id: PRJ-0008
+  name: Santhal Field Redevelopment Project
+  sanctioned_cost_inr_cr: 1240.0
+  start_date: '2020-04-01'
+  planned_completion: '2026-03-31'
+  actual_or_revised_completion: '2026-03-31'
+  asset_wc_id: WC-MEH
+  director_owner: Production
+  category: redevelopment
+  status: completed
+  notes: Thermal in-situ combustion expansion for heavy crude extraction.
+- prj_id: PRJ-0009
+  name: Kalol Redevelopment Phase-II
+  sanctioned_cost_inr_cr: 1120.0
+  start_date: '2021-06-01'
+  planned_completion: '2027-03-31'
+  actual_or_revised_completion: '2027-03-31'
+  asset_wc_id: WC-AHM
+  director_owner: Production
+  category: redevelopment
+  status: ongoing
+  notes: Infill drilling and water injection profiling across Kalol blocks.
+- prj_id: PRJ-0010
+  name: Jharia CBM Commercial Development
+  sanctioned_cost_inr_cr: 850.0
+  start_date: '2019-11-01'
+  planned_completion: '2025-03-31'
+  actual_or_revised_completion: '2025-03-31'
+  asset_wc_id: WC-BOK
+  director_owner: Production
+  category: development
+  status: completed
+  notes: Development wells and surface gas dehydration facilities in Jharia.
+- prj_id: PRJ-0011
+  name: Bechraji Polymer Flood EOR Project
+  sanctioned_cost_inr_cr: 680.0
+  start_date: '2022-01-01'
+  planned_completion: '2026-11-30'
+  actual_or_revised_completion: '2026-11-30'
+  asset_wc_id: WC-MEH
+  director_owner: Production
+  category: development
+  status: ongoing
+  notes: Chemical polymer injection to sweep viscous oil reserves.
+- prj_id: PRJ-0012
+  name: Sobhasan Redevelopment Scheme
+  sanctioned_cost_inr_cr: 540.0
+  start_date: '2021-04-01'
+  planned_completion: '2026-02-28'
+  actual_or_revised_completion: '2026-02-28'
+  asset_wc_id: WC-MEH
+  director_owner: Production
+  category: redevelopment
+  status: completed
+  notes: Surface gathering enhancement and multiphase metering.
+- prj_id: PRJ-0013
+  name: Linch Field Redevelopment Scheme
+  sanctioned_cost_inr_cr: 480.0
+  start_date: '2020-09-01'
+  planned_completion: '2025-07-31'
+  actual_or_revised_completion: '2025-07-31'
+  asset_wc_id: WC-MEH
+  director_owner: Production
+  category: redevelopment
+  status: completed
+  notes: Gas-lift enhancement and reservoir pressure maintenance.
+- prj_id: PRJ-0014
+  name: Pipeline Replacement Project Phase-VII (PRP-VII)
+  sanctioned_cost_inr_cr: 3215.0
+  start_date: '2020-01-01'
+  planned_completion: '2024-12-31'
+  actual_or_revised_completion: '2025-01-31'
+  asset_wc_id: WC-MUM
+  director_owner: Production
+  category: pipeline
+  status: completed
+  notes: Subsea pipeline replacement across Mumbai High platforms to prevent corrosion leaks.
+- prj_id: PRJ-0015
+  name: Pipeline Replacement Project Phase-VIII Part-B (PRP-VIII B)
+  sanctioned_cost_inr_cr: 1384.0
+  start_date: '2022-05-01'
+  planned_completion: '2025-05-31'
+  actual_or_revised_completion: '2026-12-31'
+  asset_wc_id: WC-BAS
+  director_owner: Production
+  category: pipeline
+  status: delayed
+  notes: Subsea lines in Bassein sector; flagged as overdue in CWIP audit.
+- prj_id: PRJ-0016
+  name: TCPP Process Gas Compressors at Bassein
+  sanctioned_cost_inr_cr: 1114.0
+  start_date: '2021-03-01'
+  planned_completion: '2024-10-31'
+  actual_or_revised_completion: '2026-03-31'
+  asset_wc_id: WC-BAS
+  director_owner: Production
+  category: infrastructure
+  status: delayed
+  notes: Overdue compression platform project with cost overruns of ~₹1,100 cr (Story S9).
+- prj_id: PRJ-0017
+  name: MHN Gas Process Booster Compressors
+  sanctioned_cost_inr_cr: 808.0
+  start_date: '2021-10-01'
+  planned_completion: '2025-01-31'
+  actual_or_revised_completion: '2026-06-30'
+  asset_wc_id: WC-MUM
+  director_owner: Production
+  category: infrastructure
+  status: delayed
+  notes: Overdue booster units on MHN process complex.
+- prj_id: PRJ-0018
+  name: Sobhasan Group Gathering Station (GGS) Modernisation
+  sanctioned_cost_inr_cr: 406.0
+  start_date: '2022-03-01'
+  planned_completion: '2024-12-31'
+  actual_or_revised_completion: '2026-04-30'
+  asset_wc_id: WC-MEH
+  director_owner: Production
+  category: infrastructure
+  status: delayed
+  notes: Modernisation of outdated separation and effluent units.
+- prj_id: PRJ-0019
+  name: Uran Plant Booster Compressors Modernisation
+  sanctioned_cost_inr_cr: 402.0
+  start_date: '2022-07-01'
+  planned_completion: '2025-04-30'
+  actual_or_revised_completion: '2026-08-31'
+  asset_wc_id: WC-URN
+  director_owner: Production
+  category: infrastructure
+  status: delayed
+  notes: Overdue gas intake booster replacement at Uran terminal.
+- prj_id: PRJ-0020
+  name: Linch Group Gathering Station Upgrade
+  sanctioned_cost_inr_cr: 359.0
+  start_date: '2022-06-01'
+  planned_completion: '2025-02-28'
+  actual_or_revised_completion: '2026-05-31'
+  asset_wc_id: WC-MEH
+  director_owner: Production
+  category: infrastructure
+  status: delayed
+  notes: New separation trains and fiscal metering at Linch.
+- prj_id: PRJ-0021
+  name: Hazira Plant Gas Processing Unit Upgrade
+  sanctioned_cost_inr_cr: 650.0
+  start_date: '2023-01-01'
+  planned_completion: '2026-09-30'
+  actual_or_revised_completion: '2026-09-30'
+  asset_wc_id: WC-HAZ
+  director_owner: Production
+  category: infrastructure
+  status: completed
+  notes: Debottlenecking of cryogenic turbo-expander train.
+- prj_id: PRJ-0022
+  name: Dahej C2-C3 Plant Extraction Capacity Augmentation
+  sanctioned_cost_inr_cr: 420.0
+  start_date: '2023-04-01'
+  planned_completion: '2026-10-31'
+  actual_or_revised_completion: '2026-10-31'
+  asset_wc_id: WC-DAH
+  director_owner: Strategy & CA
+  category: infrastructure
+  status: ongoing
+  notes: Feedstock expansion for OPaL petrochemical complex.
+- prj_id: PRJ-0023
+  name: Geleki Low Pressure Gas Compression & Evacuation
+  sanctioned_cost_inr_cr: 580.0
+  start_date: '2021-05-01'
+  planned_completion: '2025-08-31'
+  actual_or_revised_completion: '2025-08-31'
+  asset_wc_id: WC-ASM
+  director_owner: Production
+  category: infrastructure
+  status: completed
+  notes: Elimination of routine gas flaring in Geleki field.
+- prj_id: PRJ-0024
+  name: Rudrasagar Heavy Investment Redevelopment Project
+  sanctioned_cost_inr_cr: 650.0
+  start_date: '2020-02-01'
+  planned_completion: '2025-03-31'
+  actual_or_revised_completion: '2025-03-31'
+  asset_wc_id: WC-ASM
+  director_owner: Production
+  category: redevelopment
+  status: completed
+  notes: Heavily invested Assam field yet persistently loss-making due to high water cut (Story S6).
+- prj_id: PRJ-0025
+  name: Lakwa EOR Chemical Injection Pilot
+  sanctioned_cost_inr_cr: 320.0
+  start_date: '2022-10-01'
+  planned_completion: '2026-06-30'
+  actual_or_revised_completion: '2026-06-30'
+  asset_wc_id: WC-ASM
+  director_owner: Production
+  category: development
+  status: completed
+  notes: Surfactant flood pilot to sweep bypassed oil in Tipam sands.
+- prj_id: PRJ-0026
+  name: Tripura Gas Evacuation Pipeline to OTPC Palatana
+  sanctioned_cost_inr_cr: 620.0
+  start_date: '2022-01-01'
+  planned_completion: '2025-11-30'
+  actual_or_revised_completion: '2025-11-30'
+  asset_wc_id: WC-TRI
+  director_owner: Production
+  category: pipeline
+  status: completed
+  notes: Looping line ensuring uninterrupted gas supply to 726 MW power plant.
+- prj_id: PRJ-0027
+  name: Western Offshore Water Injection Augmentation
+  sanctioned_cost_inr_cr: 1450.0
+  start_date: '2021-01-01'
+  planned_completion: '2025-12-31'
+  actual_or_revised_completion: '2025-12-31'
+  asset_wc_id: WC-MUM
+  director_owner: Production
+  category: infrastructure
+  status: completed
+  notes: De-sulphation plants and high pressure injection pumps on WIN platforms.
+- prj_id: PRJ-0028
+  name: Heera Redevelopment Phase-III
+  sanctioned_cost_inr_cr: 2100.0
+  start_date: '2020-08-01'
+  planned_completion: '2026-03-31'
+  actual_or_revised_completion: '2026-03-31'
+  asset_wc_id: WC-NEH
+  director_owner: Production
+  category: redevelopment
+  status: completed
+  notes: Four new wellhead platforms and pipeline tie-backs.
+- prj_id: PRJ-0029
+  name: Neelam Multi-Well Platform Installation
+  sanctioned_cost_inr_cr: 1180.0
+  start_date: '2022-04-01'
+  planned_completion: '2026-05-31'
+  actual_or_revised_completion: '2026-05-31'
+  asset_wc_id: WC-NEH
+  director_owner: Production
+  category: development
+  status: ongoing
+  notes: Jacket fabrication and topsides for NLM-D platform.
+- prj_id: PRJ-0030
+  name: Ratna-R Series Cluster Redevelopment
+  sanctioned_cost_inr_cr: 890.0
+  start_date: '2021-11-01'
+  planned_completion: '2026-04-30'
+  actual_or_revised_completion: '2026-04-30'
+  asset_wc_id: WC-NEH
+  director_owner: Production
+  category: redevelopment
+  status: ongoing
+  notes: Well re-entry and structural rehabilitation of unmanned platforms.
+- prj_id: PRJ-0031
+  name: Gandhar Miscible Gas Injection EOR Scheme
+  sanctioned_cost_inr_cr: 760.0
+  start_date: '2021-07-01'
+  planned_completion: '2025-10-31'
+  actual_or_revised_completion: '2025-10-31'
+  asset_wc_id: WC-ANK
+  director_owner: Production
+  category: redevelopment
+  status: completed
+  notes: Lean gas injection into GS-12 reservoir sand.
+- prj_id: PRJ-0032
+  name: Ankleshwar Effluent Treatment Plant Modernisation
+  sanctioned_cost_inr_cr: 280.0
+  start_date: '2022-08-01'
+  planned_completion: '2025-12-31'
+  actual_or_revised_completion: '2025-12-31'
+  asset_wc_id: WC-ANK
+  director_owner: Production
+  category: infrastructure
+  status: completed
+  notes: Zero liquid discharge (ZLD) effluent plant compliance.
+- prj_id: PRJ-0033
+  name: Nawagam Oil Gathering Facility Modernisation
+  sanctioned_cost_inr_cr: 310.0
+  start_date: '2022-11-01'
+  planned_completion: '2026-03-31'
+  actual_or_revised_completion: '2026-03-31'
+  asset_wc_id: WC-AHM
+  director_owner: Production
+  category: infrastructure
+  status: completed
+  notes: Automated oil custody transfer unit (LACT) installation.
+- prj_id: PRJ-0034
+  name: Cambay Basin Deep Tight Gas Exploration Scheme
+  sanctioned_cost_inr_cr: 490.0
+  start_date: '2023-02-01'
+  planned_completion: '2026-12-31'
+  actual_or_revised_completion: '2026-12-31'
+  asset_wc_id: WC-CAM
+  director_owner: Exploration
+  category: exploration
+  status: ongoing
+  notes: Deep exploration drilling targeting syn-rift sands below 3,500m.
+- prj_id: PRJ-0035
+  name: KG Onshore Gas Gathering & Processing Facility
+  sanctioned_cost_inr_cr: 820.0
+  start_date: '2021-09-01'
+  planned_completion: '2025-09-30'
+  actual_or_revised_completion: '2025-09-30'
+  asset_wc_id: WC-RAJ
+  director_owner: Production
+  category: infrastructure
+  status: completed
+  notes: Central gas processing facility near Odalarevu landfall.
+- prj_id: PRJ-0036
+  name: Cauvery Basin Narimanam Redevelopment Project
+  sanctioned_cost_inr_cr: 410.0
+  start_date: '2020-05-01'
+  planned_completion: '2025-06-30'
+  actual_or_revised_completion: '2025-06-30'
+  asset_wc_id: WC-CAU
+  director_owner: Production
+  category: redevelopment
+  status: completed
+  notes: Loss-making mature onshore Cauvery field requiring operational rationalization (Story S6).
+- prj_id: PRJ-0037
+  name: Cauvery Ultra-Deepwater Exploration Campaign
+  sanctioned_cost_inr_cr: 1250.0
+  start_date: '2023-03-01'
+  planned_completion: '2027-03-31'
+  actual_or_revised_completion: '2027-03-31'
+  asset_wc_id: WC-CAB
+  director_owner: Exploration
+  category: exploration
+  status: ongoing
+  notes: Deepwater drilling in block CY-DWN-2001/1.
+- prj_id: PRJ-0038
+  name: Jodhpur Heavy Oil Thermal EOR Pilot
+  sanctioned_cost_inr_cr: 310.0
+  start_date: '2022-09-01'
+  planned_completion: '2026-11-30'
+  actual_or_revised_completion: '2026-11-30'
+  asset_wc_id: WC-RAJ-BSN
+  director_owner: Production
+  category: development
+  status: ongoing
+  notes: Cyclic steam stimulation pilot in Baghewala heavy crude reservoir.
+- prj_id: PRJ-0039
+  name: 300 MW ISTS Inter-State Captive Solar Plant Project
+  sanctioned_cost_inr_cr: 1540.0
+  start_date: '2025-11-21'
+  planned_completion: '2027-11-30'
+  actual_or_revised_completion: '2027-11-30'
+  asset_wc_id: WC-DEL
+  director_owner: Strategy & CA
+  category: renewable
+  status: ongoing
+  notes: Awarded Nov-2025 to supply captive green power to ONGC plants.
+- prj_id: PRJ-0040
+  name: Gandhar Carbon Capture Utilisation & Storage (CCUS) Pilot
+  sanctioned_cost_inr_cr: 210.0
+  start_date: '2024-01-01'
+  planned_completion: '2027-03-31'
+  actual_or_revised_completion: '2027-03-31'
+  asset_wc_id: WC-ANK
+  director_owner: Strategy & CA
+  category: renewable
+  status: ongoing
+  notes: Pilot injecting 100 t CO2/day into Gandhar depleted reservoir.
+- prj_id: PRJ-0041
+  name: National Seismic Programme (NSP) Onshore 2D/3D Survey
+  sanctioned_cost_inr_cr: 1800.0
+  start_date: '2019-04-01'
+  planned_completion: '2025-03-31'
+  actual_or_revised_completion: '2025-03-31'
+  asset_wc_id: WC-WNB
+  director_owner: Exploration
+  category: exploration
+  status: completed
+  notes: Government-mandated unappraised sedimentary basin mapping.
+- prj_id: PRJ-0042
+  name: Deepwater Drillship Upgrade & Refurbishment Campaign
+  sanctioned_cost_inr_cr: 1650.0
+  start_date: '2022-01-01'
+  planned_completion: '2025-12-31'
+  actual_or_revised_completion: '2025-12-31'
+  asset_wc_id: WC-DRL
+  director_owner: T&FS
+  category: infrastructure
+  status: completed
+  notes: Drydocking and BOP recertification for Sagar Vijay & Sagar Bhushan.
+- prj_id: PRJ-0043
+  name: Western Offshore Jackup Rig Life Extension Scheme
+  sanctioned_cost_inr_cr: 1120.0
+  start_date: '2021-08-01'
+  planned_completion: '2026-06-30'
+  actual_or_revised_completion: '2026-06-30'
+  asset_wc_id: WC-DRL
+  director_owner: T&FS
+  category: infrastructure
+  status: completed
+  notes: Structural life enhancement of 4 owned offshore cantilever jackups.
+- prj_id: PRJ-0044
+  name: Enterprise SCADA & Centralized Production Monitoring
+  sanctioned_cost_inr_cr: 380.0
+  start_date: '2023-01-01'
+  planned_completion: '2026-06-30'
+  actual_or_revised_completion: '2026-06-30'
+  asset_wc_id: WC-IOG
+  director_owner: Production
+  category: infrastructure
+  status: completed
+  notes: Unified digital monitoring for offshore wellheads and process complexes.
+- prj_id: PRJ-0045
+  name: KDMIPE High Performance Computing Centre Upgrade
+  sanctioned_cost_inr_cr: 190.0
+  start_date: '2023-04-01'
+  planned_completion: '2025-12-31'
+  actual_or_revised_completion: '2025-12-31'
+  asset_wc_id: WC-KDM
+  director_owner: Exploration
+  category: infrastructure
+  status: completed
+  notes: Petascale computing cluster for full waveform inversion seismic imaging.
+- prj_id: PRJ-0046
+  name: GEOPIC Subsurface Seismic Imaging Cluster
+  sanctioned_cost_inr_cr: 160.0
+  start_date: '2023-07-01'
+  planned_completion: '2026-03-31'
+  actual_or_revised_completion: '2026-03-31'
+  asset_wc_id: WC-GEO
+  director_owner: Exploration
+  category: infrastructure
+  status: completed
+  notes: AI-assisted reservoir characterization compute infrastructure.
+- prj_id: PRJ-0047
+  name: ONGC Academy Green Campus & Simulator Centre
+  sanctioned_cost_inr_cr: 240.0
+  start_date: '2022-04-01'
+  planned_completion: '2025-09-30'
+  actual_or_revised_completion: '2025-09-30'
+  asset_wc_id: WC-ACA
+  director_owner: HR
+  category: infrastructure
+  status: completed
+  notes: State-of-the-art drilling and production training simulators at Dehradun.
+- prj_id: PRJ-0048
+  name: ATI Goa Sea Survival & Well Control Simulator Upgrade
+  sanctioned_cost_inr_cr: 140.0
+  start_date: '2023-01-01'
+  planned_completion: '2025-12-31'
+  actual_or_revised_completion: '2025-12-31'
+  asset_wc_id: WC-ATI
+  director_owner: HR
+  category: infrastructure
+  status: completed
+  notes: HUET (Helicopter Underwater Escape Training) world-class facility.
+- prj_id: PRJ-0049
+  name: Uran to Trombay Replacement Subsea Pipeline
+  sanctioned_cost_inr_cr: 720.0
+  start_date: '2021-12-01'
+  planned_completion: '2025-04-30'
+  actual_or_revised_completion: '2025-04-30'
+  asset_wc_id: WC-URN
+  director_owner: Production
+  category: pipeline
+  status: completed
+  notes: Subsea gas and crude feeder line to BPCL/HPCL Mumbai refineries.
+- prj_id: PRJ-0050
+  name: Hazira Sour Gas Sweetening Plant-IV
+  sanctioned_cost_inr_cr: 1350.0
+  start_date: '2021-06-01'
+  planned_completion: '2025-08-31'
+  actual_or_revised_completion: '2025-08-31'
+  asset_wc_id: WC-HAZ
+  director_owner: Production
+  category: infrastructure
+  status: completed
+  notes: Amine treatment unit and sulphur recovery unit expansion.
+- prj_id: PRJ-0051
+  name: North Assam Gas Gathering Station - Borholla
+  sanctioned_cost_inr_cr: 310.0
+  start_date: '2022-05-01'
+  planned_completion: '2026-03-31'
+  actual_or_revised_completion: '2026-03-31'
+  asset_wc_id: WC-JOR
+  director_owner: Production
+  category: infrastructure
+  status: completed
+  notes: Associated gas compression and delivery to Assam Gas Company grid.
+- prj_id: PRJ-0052
+  name: Silchar Basin Exploration & Well Testing Campaign
+  sanctioned_cost_inr_cr: 480.0
+  start_date: '2023-01-01'
+  planned_completion: '2026-11-30'
+  actual_or_revised_completion: '2026-11-30'
+  asset_wc_id: WC-SIL
+  director_owner: Exploration
+  category: exploration
+  status: ongoing
+  notes: Testing high-pressure sub-thrust prospects in Cachar fold belt.
+- prj_id: PRJ-0053
+  name: Bengal-Fan Deepwater Seismic & Stratigraphic Test
+  sanctioned_cost_inr_cr: 860.0
+  start_date: '2023-06-01'
+  planned_completion: '2027-06-30'
+  actual_or_revised_completion: '2027-06-30'
+  asset_wc_id: WC-MBA
+  director_owner: Exploration
+  category: exploration
+  status: ongoing
+  notes: Deepwater basin opening exploration in offshore Bay of Bengal.
+- prj_id: PRJ-0054
+  name: Frontier Basin Himalayan Foothills 2D Survey
+  sanctioned_cost_inr_cr: 340.0
+  start_date: '2022-10-01'
+  planned_completion: '2026-05-31'
+  actual_or_revised_completion: '2026-05-31'
+  asset_wc_id: WC-FRB
+  director_owner: Exploration
+  category: exploration
+  status: completed
+  notes: Seismic acquisition across rugged sub-Himalayan Siwalik belt.
+- prj_id: PRJ-0055
+  name: Corporate Digital Core SAP S/4HANA Transformation
+  sanctioned_cost_inr_cr: 450.0
+  start_date: '2023-01-01'
+  planned_completion: '2026-12-31'
+  actual_or_revised_completion: '2026-12-31'
+  asset_wc_id: WC-DEL
+  director_owner: Finance
+  category: infrastructure
+  status: ongoing
+  notes: Enterprise modernization replacing legacy ECC 6.0 with S/4HANA Cloud.
+- prj_id: PRJ-0056
+  name: Western Offshore Living Quarters Refurbishment
+  sanctioned_cost_inr_cr: 620.0
+  start_date: '2022-03-01'
+  planned_completion: '2025-10-31'
+  actual_or_revised_completion: '2025-10-31'
+  asset_wc_id: WC-MUM
+  director_owner: Production
+  category: infrastructure
+  status: completed
+  notes: Habitability and offshore crew cabin safety upgrades across process complexes.
+- prj_id: PRJ-0057
+  name: Eastern Offshore Subsea Umbilicals, Risers & Flowlines (SURF)
+  sanctioned_cost_inr_cr: 2100.0
+  start_date: '2020-06-01'
+  planned_completion: '2025-04-30'
+  actual_or_revised_completion: '2025-04-30'
+  asset_wc_id: WC-EAS
+  director_owner: Production
+  category: development
+  status: completed
+  notes: Deepwater subsea tiebacks in KG-DWN-98/2 field.
+- prj_id: PRJ-0058
+  name: 50 MW Onshore Wind Power Project (Gujarat)
+  sanctioned_cost_inr_cr: 340.0
+  start_date: '2023-05-01'
+  planned_completion: '2026-03-31'
+  actual_or_revised_completion: '2026-03-31'
+  asset_wc_id: WC-DAH
+  director_owner: Strategy & CA
+  category: renewable
+  status: completed
+  notes: Captive wind farm supplying Dahej and Hazira manufacturing sites.
+- prj_id: PRJ-0059
+  name: Solar Rooftop Programme Across 41 Establishments
+  sanctioned_cost_inr_cr: 180.0
+  start_date: '2023-01-01'
+  planned_completion: '2026-06-30'
+  actual_or_revised_completion: '2026-06-30'
+  asset_wc_id: WC-DEL
+  director_owner: HR
+  category: renewable
+  status: completed
+  notes: Decarbonizing ONGC administrative offices and residential colonies.
+- prj_id: PRJ-0060
+  name: CEWELL Automated Well Log Digitization & Cloud Archive
+  sanctioned_cost_inr_cr: 95.0
+  start_date: '2023-08-01'
+  planned_completion: '2026-02-28'
+  actual_or_revised_completion: '2026-02-28'
+  asset_wc_id: WC-CEW
+  director_owner: Exploration
+  category: infrastructure
+  status: completed
+  notes: High-fidelity digital preservation of vintage paper well logs.

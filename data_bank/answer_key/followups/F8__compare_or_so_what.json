@@ -1,0 +1,69 @@
+{
+  "job_id": "dcac12d0-a1ac-4d88-ba4f-dea232c3996e",
+  "total_bytes_processed": 26740,
+  "executed_at": "2026-10-20T06:39:11.841124+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "company_rrr_2p",
+    "target_rrr",
+    "min_basin_rrr",
+    "min_basin",
+    "max_basin_rrr",
+    "basins_below_target",
+    "basins"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "company_rrr_2p": 1.12,
+      "target_rrr": 1.0,
+      "min_basin_rrr": 1.11,
+      "min_basin": "Cauvery",
+      "max_basin_rrr": 1.13,
+      "basins_below_target": 0,
+      "basins": 7
+    },
+    {
+      "fiscal_year": "FY23",
+      "company_rrr_2p": 1.12,
+      "target_rrr": 1.0,
+      "min_basin_rrr": 1.12,
+      "min_basin": "Cauvery",
+      "max_basin_rrr": 1.16,
+      "basins_below_target": 0,
+      "basins": 7
+    },
+    {
+      "fiscal_year": "FY24",
+      "company_rrr_2p": 1.12,
+      "target_rrr": 1.0,
+      "min_basin_rrr": 1.1,
+      "min_basin": "Rajasthan",
+      "max_basin_rrr": 1.14,
+      "basins_below_target": 0,
+      "basins": 7
+    },
+    {
+      "fiscal_year": "FY25",
+      "company_rrr_2p": 1.12,
+      "target_rrr": 1.0,
+      "min_basin_rrr": 1.11,
+      "min_basin": "Cauvery",
+      "max_basin_rrr": 1.15,
+      "basins_below_target": 0,
+      "basins": 7
+    },
+    {
+      "fiscal_year": "FY26",
+      "company_rrr_2p": 1.17,
+      "target_rrr": 1.0,
+      "min_basin_rrr": 1.16,
+      "min_basin": "Cauvery",
+      "max_basin_rrr": 1.2,
+      "basins_below_target": 0,
+      "basins": 7
+    }
+  ]
+}

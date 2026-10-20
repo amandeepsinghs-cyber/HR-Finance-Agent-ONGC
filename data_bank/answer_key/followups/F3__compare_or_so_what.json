@@ -1,0 +1,36 @@
+{
+  "job_id": "5fb3217b-cfa7-4003-9c01-545849dc4e0d",
+  "total_bytes_processed": 43012,
+  "executed_at": "2026-10-20T06:39:01.968228+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 2,
+  "columns": [
+    "segment",
+    "fields",
+    "revenue_5yr_cr",
+    "ebitda_ocf_proxy_5yr_cr",
+    "ebitda_margin_pct",
+    "production_5yr_mmboe",
+    "ebitda_inr_per_boe"
+  ],
+  "rows": [
+    {
+      "segment": "Western Offshore",
+      "fields": 12,
+      "revenue_5yr_cr": 368788.0,
+      "ebitda_ocf_proxy_5yr_cr": 215825.0,
+      "ebitda_margin_pct": 58.5,
+      "production_5yr_mmboe": 919.9,
+      "ebitda_inr_per_boe": 2346.0
+    },
+    {
+      "segment": "Onshore Gujarat",
+      "fields": 19,
+      "revenue_5yr_cr": 145951.0,
+      "ebitda_ocf_proxy_5yr_cr": 93624.0,
+      "ebitda_margin_pct": 64.1,
+      "production_5yr_mmboe": 307.9,
+      "ebitda_inr_per_boe": 3040.0
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "apar_ratings",
+  description: "Annual Performance Appraisal Report (e-APAR) ratings, numeric scores, reviewing hierarchy, and DPC eligibility."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`apar_id`) AS apar_id,
+    TRIM(`PERNR`) AS emp_id,
+    TRIM(`GJAHR`) AS fiscal_year,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`grade_id`) AS grade_id,
+    TRIM(`discipline_id`) AS discipline_id,
+    TRIM(`reporting_officer_emp_id`) AS reporting_officer_emp_id,
+    TRIM(`reviewing_officer_emp_id`) AS reviewing_officer_emp_id,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`NOTE`), ''), ',', ''), '₹', '') AS NUMERIC) AS numerical_score,
+    TRIM(`RATING`) AS final_rating,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`benchmark_score`), ''), ',', ''), '₹', '') AS NUMERIC) AS benchmark_score,
+    CASE WHEN LOWER(TRIM(`is_dpc_eligible`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`is_dpc_eligible`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_dpc_eligible,
+    CASE WHEN LOWER(TRIM(`appeal_submitted_flag`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`appeal_submitted_flag`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS appeal_submitted_flag,
+    TRIM(`appeal_status`) AS appeal_status
+  FROM ${ref("sap_eapar_ratings")}
+  WHERE NULLIF(TRIM(`apar_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY apar_id ORDER BY _ingest_ts DESC) = 1

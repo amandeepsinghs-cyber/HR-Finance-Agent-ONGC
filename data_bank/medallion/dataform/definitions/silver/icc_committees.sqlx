@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "icc_committees",
+  description: "Internal Complaints Committee (ICC) register tracking statutory POSH compliance, presiding officers, and committee composition."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_0) AS committee_id,
+    TRIM(col_1) AS wc_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_2), ''), 1, 10)) AS constitution_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_3), ''), 1, 10)) AS expiry_date,
+    TRIM(col_4) AS fiscal_year,
+    TRIM(col_5) AS presiding_officer_emp_id,
+    TRIM(col_6) AS presiding_officer_name,
+    TRIM(col_7) AS presiding_officer_gender,
+    TRIM(col_8) AS external_member_name,
+    TRIM(col_9) AS external_member_ngo,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_10), ''), ',', ''), '₹', '') AS INT64) AS internal_members_count,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_11), ''), ',', ''), '₹', '') AS NUMERIC) AS women_members_pct,
+    TRIM(col_12) AS status,
+    TRIM(col_13) AS contact_email
+  FROM ${ref("excel_icc_committees")}
+  WHERE _row_number >= 2 AND col_0 IS NOT NULL AND TRIM(col_0) != '' AND _sheet_name NOT IN ('Notes_and_Citations', 'Executive_Summary', '_Ref_Capex_Codes', '_Cadre_Control_Master', '_MoU_Grading_Rules', '_Schedule_VII_Themes', '_Talent_Bench_Scale', '_Court_Jurisdiction_Codes')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY committee_id ORDER BY _ingest_ts DESC) = 1

@@ -1,0 +1,121 @@
+{
+  "job_id": "42c9e4fa-010a-4312-9ab3-a8890b5dacfb",
+  "total_bytes_processed": 7003598,
+  "executed_at": "2026-10-20T06:33:09.418961+00:00",
+  "elapsed_seconds": 0.84,
+  "row_count": 13,
+  "columns": [
+    "cluster_id",
+    "cluster_name",
+    "work_centres",
+    "cities",
+    "work_centre_names",
+    "listed_in_jrtp_5_2"
+  ],
+  "rows": [
+    {
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "work_centres": 11,
+      "cities": "Mumbai, Panvel, Uran",
+      "work_centre_names": "Bassein & Satellite; Drilling Services; IEOT; IOGPT; Offshore Logistics; Mumbai High; Neelam & Heera; RO Mumbai; Uran Plant; Well Services; Western Offshore Basin",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-CAM-ANK-VAD",
+      "cluster_name": "Cambay\u2013Ankleshwar\u2013Vadodara",
+      "work_centres": 8,
+      "cities": "Ankleshwar, Cambay, Dahej, Surat, Vadodara",
+      "work_centre_names": "Ankleshwar Asset; Cambay Asset; CEWELL; Dahej Plant; Geophysical Services; Hazira Plant; RO Vadodara; Western Onshore Basin",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-DDN",
+      "cluster_name": "Dehradun Complex",
+      "work_centres": 6,
+      "cities": "Dehradun",
+      "work_centre_names": "ONGC Academy; Dehradun Tel Bhavan; Frontier Basin; GEOPIC; IDWE; KDMIPE",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-NE-ASSAM",
+      "cluster_name": "Nazira\u2013Jorhat\u2013Silchar",
+      "work_centres": 5,
+      "cities": "Jorhat, Nazira, Silchar",
+      "work_centre_names": "A&AA Basin; Assam Asset; INBIGS; Jorhat Asset; Silchar Basin",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-AHM-MEH",
+      "cluster_name": "Ahmedabad\u2013Mehsana",
+      "work_centres": 3,
+      "cities": "Ahmedabad, Mehsana",
+      "work_centre_names": "Ahmedabad Asset; IRS; Mehsana Asset",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-CAU-CHN",
+      "cluster_name": "Cauvery\u2013Chennai",
+      "work_centres": 3,
+      "cities": "Chennai, Karaikal",
+      "work_centre_names": "Cauvery Basin; Cauvery Asset; RO Chennai",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-KG",
+      "cluster_name": "Rajahmundry\u2013Kakinada",
+      "work_centres": 3,
+      "cities": "Kakinada, Rajahmundry",
+      "work_centre_names": "Eastern Offshore; KG Basin; Rajahmundry Asset",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-KOL",
+      "cluster_name": "Kolkata Hub",
+      "work_centres": 2,
+      "cities": "Kolkata",
+      "work_centre_names": "MBA Basin; RO Kolkata",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-BOK",
+      "cluster_name": "Bokaro CBM Complex",
+      "work_centres": 1,
+      "cities": "Bokaro",
+      "work_centre_names": "CBM Bokaro",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-DEL",
+      "cluster_name": "Delhi National Capital Region",
+      "work_centres": 1,
+      "cities": "New Delhi",
+      "work_centre_names": "Delhi HQ",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-GOA",
+      "cluster_name": "Goa Training Complex",
+      "work_centres": 1,
+      "cities": "Betul",
+      "work_centre_names": "ATI Goa",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-JOD",
+      "cluster_name": "Jodhpur Rajasthan",
+      "work_centres": 1,
+      "cities": "Jodhpur",
+      "work_centre_names": "Rajasthan Basin",
+      "listed_in_jrtp_5_2": true
+    },
+    {
+      "cluster_id": "CL-NE-TRIPURA",
+      "cluster_name": "Tripura Agartala",
+      "work_centres": 1,
+      "cities": "Agartala",
+      "work_centre_names": "Tripura Asset",
+      "listed_in_jrtp_5_2": true
+    }
+  ]
+}

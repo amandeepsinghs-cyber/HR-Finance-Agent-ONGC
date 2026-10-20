@@ -1,0 +1,214 @@
+{
+  "step_id": "2.5",
+  "verdict": "PASS",
+  "verdict_msg": "Step 2.5 verification passed: 100% available probes answered (37/37), 21 pending cross-domain tables, 0 consistency violations.",
+  "execution_timestamp": "2026-10-19T12:07:08Z",
+  "duration_seconds": 32.2,
+  "tables": {
+    "available_count": 53,
+    "available": [
+      "dim_work_centre",
+      "dim_grade",
+      "dim_discipline",
+      "dim_field",
+      "dim_project",
+      "dim_cost_centre",
+      "dim_customer",
+      "dim_vendor",
+      "dim_geography",
+      "dim_calendar",
+      "dim_price_fx",
+      "employee_master",
+      "posting_history",
+      "promotion_history",
+      "dpc_cases",
+      "separations",
+      "sanctioned_posts",
+      "headcount_snapshot",
+      "payroll_monthly",
+      "apar_ratings",
+      "succession_plan",
+      "training_records",
+      "training_calendar",
+      "leave_ledger",
+      "medical_claims",
+      "grievances_litigation",
+      "contract_workforce",
+      "hse_incidents",
+      "travel_claims",
+      "icc_committees",
+      "vigilance_cases",
+      "production_monthly",
+      "reserves_annual",
+      "wells_drilled",
+      "price_fx_monthly",
+      "field_pnl_annual",
+      "cost_ledger",
+      "capex_budget",
+      "project_progress",
+      "purchase_orders",
+      "receivables",
+      "forex_hedges",
+      "csr_projects",
+      "mou_targets",
+      "benefit_liabilities",
+      "subsidiary_financials",
+      "energy_transition",
+      "corporate_financials",
+      "parliament_questions",
+      "cag_paras",
+      "rti_applications",
+      "board_agenda_index",
+      "access_audit_log"
+    ],
+    "skipped_count": 0,
+    "skipped": []
+  },
+  "consistency": {
+    "total_audits": 38,
+    "passed": 38,
+    "failed": 0,
+    "calibration_targets_checked": 0,
+    "calibration_targets_passed": 0
+  },
+  "probes": {
+    "total_in_step_scope": 69,
+    "answered": 37,
+    "failed": 0,
+    "pending": 21,
+    "stubs": 11,
+    "pass_rate_pct": 100.0
+  },
+  "failed_probe_details": [],
+  "pending_probes": [
+    {
+      "probe_id": "C10",
+      "missing_tables": [
+        "capex_budget",
+        "production_monthly"
+      ]
+    },
+    {
+      "probe_id": "F1",
+      "missing_tables": [
+        "field_pnl_annual"
+      ]
+    },
+    {
+      "probe_id": "F4",
+      "missing_tables": [
+        "price_fx_monthly"
+      ]
+    },
+    {
+      "probe_id": "P13",
+      "missing_tables": [
+        "payroll_monthly"
+      ]
+    },
+    {
+      "probe_id": "P14",
+      "missing_tables": [
+        "payroll_monthly"
+      ]
+    },
+    {
+      "probe_id": "P17",
+      "missing_tables": [
+        "capex_budget"
+      ]
+    },
+    {
+      "probe_id": "W4",
+      "missing_tables": [
+        "price_fx_monthly",
+        "production_monthly"
+      ]
+    },
+    {
+      "probe_id": "X6",
+      "missing_tables": [
+        "training_records"
+      ]
+    },
+    {
+      "probe_id": "X7",
+      "missing_tables": [
+        "sanctioned_posts"
+      ]
+    },
+    {
+      "probe_id": "C10.why",
+      "missing_tables": [
+        "production_monthly",
+        "project_progress"
+      ]
+    },
+    {
+      "probe_id": "C12.compare_or_so_what",
+      "missing_tables": [
+        "field_pnl_annual"
+      ]
+    },
+    {
+      "probe_id": "F1.compare_or_so_what",
+      "missing_tables": [
+        "field_pnl_annual"
+      ]
+    },
+    {
+      "probe_id": "F6.compare_or_so_what",
+      "missing_tables": [
+        "receivables"
+      ]
+    },
+    {
+      "probe_id": "F9.compare_or_so_what",
+      "missing_tables": [
+        "forex_hedges"
+      ]
+    },
+    {
+      "probe_id": "H8.compare_or_so_what",
+      "missing_tables": [
+        "training_records"
+      ]
+    },
+    {
+      "probe_id": "P13.compare_or_so_what",
+      "missing_tables": [
+        "payroll_monthly"
+      ]
+    },
+    {
+      "probe_id": "P13.drill_down",
+      "missing_tables": [
+        "payroll_monthly"
+      ]
+    },
+    {
+      "probe_id": "P14.compare_or_so_what",
+      "missing_tables": [
+        "payroll_monthly"
+      ]
+    },
+    {
+      "probe_id": "P14.drill_down",
+      "missing_tables": [
+        "payroll_monthly"
+      ]
+    },
+    {
+      "probe_id": "P17.why",
+      "missing_tables": [
+        "capex_budget"
+      ]
+    },
+    {
+      "probe_id": "X3.compare_or_so_what",
+      "missing_tables": [
+        "hse_incidents"
+      ]
+    }
+  ]
+}

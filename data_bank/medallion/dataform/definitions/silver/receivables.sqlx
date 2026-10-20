@@ -1,0 +1,32 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "receivables",
+  description: "Commercial sales invoices and trade receivables ledger tracking customer dues, aging buckets, and reconciliation disputes."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`invoice_id`) AS invoice_id,
+    TRIM(`customer_id`) AS customer_id,
+    TRIM(`wc_id`) AS wc_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`invoice_date`), ''), 1, 10)) AS invoice_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`due_date`), ''), 1, 10)) AS due_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`payment_date`), ''), 1, 10)) AS payment_date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`product_type`) AS product_type,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`billed_amount_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS billed_amount_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`paid_amount_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS paid_amount_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`outstanding_amount_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS outstanding_amount_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`aging_days`), ''), ',', ''), '₹', '') AS INT64) AS aging_days,
+    TRIM(`aging_bucket`) AS aging_bucket,
+    CASE WHEN LOWER(TRIM(`is_disputed`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`is_disputed`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_disputed,
+    TRIM(`dispute_reason`) AS dispute_reason,
+    TRIM(`invoice_status`) AS invoice_status
+  FROM ${ref("sap_fi_ar_invoices")}
+  WHERE NULLIF(TRIM(`invoice_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY invoice_id ORDER BY _ingest_ts DESC) = 1

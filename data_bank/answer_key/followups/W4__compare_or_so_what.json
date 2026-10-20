@@ -1,0 +1,129 @@
+{
+  "job_id": "c2c8effa-a1f4-4357-ae12-1fa5aa1275e0",
+  "total_bytes_processed": 6804,
+  "executed_at": "2026-10-20T06:42:43.313937+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 11,
+  "columns": [
+    "fiscal_year",
+    "months",
+    "is_partial_year",
+    "avg_brent_usd_bbl",
+    "avg_net_realisation_usd_bbl",
+    "realisation_pct_of_brent",
+    "fy_avg_saed_usd_bbl",
+    "brent_rank"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY17",
+      "months": 12,
+      "is_partial_year": false,
+      "avg_brent_usd_bbl": 48.6,
+      "avg_net_realisation_usd_bbl": 46.8,
+      "realisation_pct_of_brent": 96.3,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "brent_rank": 10
+    },
+    {
+      "fiscal_year": "FY18",
+      "months": 12,
+      "is_partial_year": false,
+      "avg_brent_usd_bbl": 57.5,
+      "avg_net_realisation_usd_bbl": 55.4,
+      "realisation_pct_of_brent": 96.3,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "brent_rank": 9
+    },
+    {
+      "fiscal_year": "FY19",
+      "months": 12,
+      "is_partial_year": false,
+      "avg_brent_usd_bbl": 70.4,
+      "avg_net_realisation_usd_bbl": 68.2,
+      "realisation_pct_of_brent": 96.9,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "brent_rank": 6
+    },
+    {
+      "fiscal_year": "FY20",
+      "months": 12,
+      "is_partial_year": false,
+      "avg_brent_usd_bbl": 60.8,
+      "avg_net_realisation_usd_bbl": 58.6,
+      "realisation_pct_of_brent": 96.4,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "brent_rank": 8
+    },
+    {
+      "fiscal_year": "FY21",
+      "months": 12,
+      "is_partial_year": false,
+      "avg_brent_usd_bbl": 44.8,
+      "avg_net_realisation_usd_bbl": 42.78,
+      "realisation_pct_of_brent": 95.5,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "brent_rank": 11
+    },
+    {
+      "fiscal_year": "FY22",
+      "months": 12,
+      "is_partial_year": false,
+      "avg_brent_usd_bbl": 78.9,
+      "avg_net_realisation_usd_bbl": 76.62,
+      "realisation_pct_of_brent": 97.1,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "brent_rank": 4
+    },
+    {
+      "fiscal_year": "FY23",
+      "months": 12,
+      "is_partial_year": false,
+      "avg_brent_usd_bbl": 95.4,
+      "avg_net_realisation_usd_bbl": 75.8,
+      "realisation_pct_of_brent": 79.5,
+      "fy_avg_saed_usd_bbl": 12.15,
+      "brent_rank": 1
+    },
+    {
+      "fiscal_year": "FY24",
+      "months": 12,
+      "is_partial_year": false,
+      "avg_brent_usd_bbl": 83.2,
+      "avg_net_realisation_usd_bbl": 80.77,
+      "realisation_pct_of_brent": 97.1,
+      "fy_avg_saed_usd_bbl": 10.5,
+      "brent_rank": 2
+    },
+    {
+      "fiscal_year": "FY25",
+      "months": 12,
+      "is_partial_year": false,
+      "avg_brent_usd_bbl": 79.2,
+      "avg_net_realisation_usd_bbl": 76.9,
+      "realisation_pct_of_brent": 97.1,
+      "fy_avg_saed_usd_bbl": 3.27,
+      "brent_rank": 3
+    },
+    {
+      "fiscal_year": "FY26",
+      "months": 12,
+      "is_partial_year": false,
+      "avg_brent_usd_bbl": 70.9,
+      "avg_net_realisation_usd_bbl": 68.4,
+      "realisation_pct_of_brent": 96.5,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "brent_rank": 5
+    },
+    {
+      "fiscal_year": "FY27",
+      "months": 6,
+      "is_partial_year": true,
+      "avg_brent_usd_bbl": 70.32,
+      "avg_net_realisation_usd_bbl": 67.73,
+      "realisation_pct_of_brent": 96.3,
+      "fy_avg_saed_usd_bbl": 0.0,
+      "brent_rank": 7
+    }
+  ]
+}

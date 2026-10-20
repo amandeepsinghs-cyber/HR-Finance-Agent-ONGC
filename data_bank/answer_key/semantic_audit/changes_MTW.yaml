@@ -1,0 +1,288 @@
+- id: M1
+  defect_class: [STOCK_SUMMED, UNEQUAL_PERIODS, WRONG_QUESTION, SANITY_BOUND, GENERIC_TEXT]
+  old_headline: "4 hand-picked assets, growth FY21->FY26: Eastern Offshore 960 -> 12,312 (+1,182.5%), Mehsana 1,790 -> 19,200"
+  new_headline: "14 operating assets employ 16,099 of 22,803 at 30-Sep-2026; Bassein 1,833 and Assam 1,823 largest"
+  why: "Summed 12 monthly FY26 snapshots vs 1 FY21 snapshot (asset > company-scale numbers) and answered a growth question for 4 assets. Now headcount by asset at the 2026-09 snapshot (plus 2026-03) for all type='asset' WCs."
+  severity: blocking
+- id: M1__drill_down
+  defect_class: [STOCK_SUMMED, GENERIC_TEXT]
+  old_headline: "generic template; SUM(headcount) over 12 FY26 months by WC x cadre (person-months)"
+  new_headline: "8,830 of 16,099 asset employees (54.8%) are executives; Jorhat 37.6% vs Cambay 61.3%"
+  why: "Summed 12 monthly snapshots across 46 WCs. Now 2026-09 snapshot, 14 assets, exec vs non-exec pivot; reconciles to M1."
+  severity: blocking
+- id: M1__why
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "Cited G-08 Make-in-India procurement order chunks (header boilerplate only)"
+  new_headline: "No clause explicitly splits HR vs Finance access to aggregate headcount; closest are JRTP 11.0 (role-based HR access) and HR Manual 5.0"
+  why: "G-08 is irrelevant and P1-01 'Clause 5.0' does not exist; quote was SUBSTR(text,1,300) = chunk header. Now JRTP 11.0 + HR Manual 5.0 clause body; narrative states the documentation gap."
+  severity: important
+- id: M1__compare_or_so_what
+  defect_class: [STOCK_SUMMED, UNEQUAL_PERIODS, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; sector growth % from summed FY26 (12 mo) vs FY21 (1 mo) snapshots"
+  new_headline: "Western Onshore 4,164 vs Eastern Offshore 1,003 (30-Sep-2026); W.Onshore -21.6% vs E.Offshore +5.3% Mar-21->Mar-26"
+  why: "Whole-sector summed snapshots, not onshore/offshore groups. Now Western onshore assets vs Eastern offshore assets, Mar-21/Mar-26/Sep-26 snapshots."
+  severity: blocking
+- id: M2
+  defect_class: [WRONG_QUESTION, JOIN_FANOUT, FY_MAPPING, GENERIC_TEXT]
+  old_headline: "360 rows of project cost overruns (PRJ-0001 +5,101.8 cr repeated per milestone)"
+  new_headline: "FY27 YTD capex utilisation 95.3% of phased BE (18,020 / 18,915 cr) across 31 centres"
+  why: "Answered project overruns, not capex utilisation; joined milestone-grain project_progress (duplicates). Now capex_budget FY27 (Apr-Sep 2026) actual vs BE/RE by asset WC."
+  severity: blocking
+- id: M2__drill_down
+  defect_class: [FY_MAPPING, GENERIC_TEXT]
+  old_headline: "generic template; FY26 full-year BE vs actual by WC"
+  new_headline: "15 producing assets spent 15,215 of 16,018 cr phased BE FY27 YTD (95.0%); Eastern Offshore -448 cr"
+  why: "Question asks YTD; FY26 is a closed year. Now FY27 YTD for producing assets with variance and FY26 MMboe."
+  severity: important
+- id: M2__why
+  defect_class: [CASE_HYGIENE, GAP]
+  old_headline: "BDP Clause 1.0 header boilerplate quoted"
+  new_headline: "BDP 1.0 (budget delegation to posts) + 8.0 (controlled financial schedules); no explicit HR-restriction clause"
+  why: "Quote was chunk header, not clause text; added Clause 8.0 and narrative noting the gap."
+  severity: cosmetic
+- id: M2__compare_or_so_what
+  defect_class: [WRONG_QUESTION, FY_MAPPING, GENERIC_TEXT]
+  old_headline: "generic template; FY26 utilisation for every WC"
+  new_headline: "Mumbai High 96.8% of phased BE FY27 YTD; run-rate 7,068 cr = 96.8% of FY26 annual BE 7,298 cr"
+  why: "Not Mumbai High-specific and wrong year. Now MH vs company YTD, annualised run-rate vs FY26 annual BE (FY27 annual BE not in data = GAP)."
+  severity: important
+- id: M3__drill_down
+  defect_class: [WRONG_QUESTION]
+  old_headline: "HR Manual Clause 1.0 (designation hierarchy) header"
+  new_headline: "ESS portal is the sole channel to view own payslip/e-APAR (HR Manual 4.0)"
+  why: "Wrong clause; now Clause 4.0 body with narrative."
+  severity: important
+- id: M3__why
+  defect_class: [WRONG_QUESTION]
+  old_headline: "REFUSAL citing 'CDA Rule 5.0' with G-08 Make-in-India chunks as evidence"
+  new_headline: "REFUSAL upheld: colleague salary/APAR protected under HR Manual 5.0 (RTI 8(1)(j), CDA Rules 4/11); DPC secrecy R&P 8.0"
+  why: "Evidence rows were irrelevant procurement rules and legacy prose mis-cites 'CDA Rule 5.0'. Now HR Manual 5.0 + R&P Promotion 8.0, narrative registered."
+  severity: important
+- id: M3__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "E3 pay scale 80,000-2,20,000 (hard-coded grade)"
+  new_headline: "Employee 104523 is GRP-C (non-executive): scale 24,000-87,500, time-bound ~5 yrs via trade test -> GRP-B"
+  why: "Hard-coded E3; employee is actually GRP-C. Now looks up grade, returns grade-level scale and promotion criteria only."
+  severity: important
+- id: M4__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; metric_1=19,525,000 (t oil), metric_2=19,967 (MMSCM gas), annual, no condensate"
+  new_headline: "Latest quarter FY27 Q2: 4.77 MMT oil, 0.25 MMT condensate, 5.02 BCM gas (73.5 MMboe)"
+  why: "Question asks quarterly published volumes; unlabelled annual metrics without condensate. Now quarterly FY26-FY27, separate units + MMboe."
+  severity: important
+- id: M4__why
+  defect_class: [CASE_HYGIENE]
+  old_headline: "BDP Clause 8.0 header boilerplate"
+  new_headline: "Field-level P&L is commercially sensitive internal controlled data under BDP 8.0"
+  why: "Quote now clause body; narrative registered."
+  severity: cosmetic
+- id: M4__compare_or_so_what
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template; single EBITDA value 63,284.03"
+  new_headline: "FY26 audited EBITDA 63,284 cr on 1,32,508 cr revenue (47.8%), -5.3% vs FY25"
+  why: "Added FY25 comparator, margin, PAT; real narrative."
+  severity: cosmetic
+- id: M5
+  defect_class: [FY_MAPPING, GENERIC_TEXT]
+  old_headline: "generic template; all 102 denials over 91 days (no week filter)"
+  new_headline: "15 users denied confidential data 13-19 Oct 2026 (HR 10, Governance 3, Finance 2); 2 authorised accesses"
+  why: "'This week' not applied. Now 7 days to 2026-10-19, confidential classifications, per user with denied/allowed."
+  severity: blocking
+- id: M5__drill_down
+  defect_class: [FY_MAPPING, CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "generic template; dept x classification over whole log"
+  new_headline: "This week's 15 denials: HR 10, Governance 3, Finance 2; top target transfer drafts (4)"
+  why: "Whole-log; now same week as parent. LOWER(access_decision) hygiene."
+  severity: important
+- id: M5__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; denial_reason counts (COALESCE to 'Access_Denied_Policy')"
+  new_headline: "No repeat offenders: max 1 denial per user across 102 denials since 2026-07-21"
+  why: "Premise of repeated denials never tested. Now reasons with week/full-log counts, distinct users, max per user."
+  severity: important
+- id: M5__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; last 14 daily counts"
+  new_headline: "15 denials this week = 1.95x the 30-day baseline (7.7/week)"
+  why: "No baseline. Now week vs prior 30 days scaled to 7 days, by classification + total."
+  severity: important
+- id: T1
+  defect_class: [CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "generic template; Champang PBT -4.93 cr"
+  new_headline: "Only 1 of 53 fields lost money in FY26: Champang (PBT -4.93 cr, EBITDA +26.25 cr)"
+  why: "Result was correct; added LOWER(line_type)='field', context columns, real narrative."
+  severity: cosmetic
+- id: T1__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; re-listed Champang (same filter as parent)"
+  new_headline: "None of 44 mature fields had negative EBITDA in FY26; only Champang negative PBT; thinnest margins Champang 8.0%, Borholla 10.4%"
+  why: "'Negative operating earnings' = EBITDA<0 was never isolated. Now all mature fields with EBITDA margin and separate flags."
+  severity: important
+- id: T1__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; avg water cut for all 53 fields"
+  new_headline: "Champang water cut 93.9% vs 76.6% peers, lifting cost $48.12 vs $15.49/boe; gas utilisation/uptime in line"
+  why: "Ignored Field X and the other named factors. Now Field X (dynamic) vs mature-onshore peers vs all fields."
+  severity: important
+- id: T1__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "generic template; FY26 EBITDA list of all fields"
+  new_headline: "Divest Champang: 410.74 cr 5-yr payoff vs -24.65 cr status quo; secondary recovery must add >87.08 cr PBT/yr to beat it"
+  why: "No option comparison. Now Field X options + breakeven; field-level secondary-recovery cost/uplift is a data GAP."
+  severity: important
+- id: T2
+  defect_class: [THRESHOLD_VS_RANK, GENERIC_TEXT]
+  old_headline: "generic template; LIMIT 100 list, exemption shown as 'None'"
+  new_headline: "419 Delhi HQ executives have 5+ years continuous stay; 17 within 3 yrs of superannuation"
+  why: "LIMIT 100 truncated 419 qualifiers. Now full list from v_continuous_stay (consistent with C1), 'None' string mapped to NULL, 3-yr flag."
+  severity: important
+- id: T2__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; all Delhi execs by grade/discipline"
+  new_headline: "43 technical Delhi 5yr+ execs (Drilling, Production, HSE) match Tripura vacancies; Assam has 0 exec vacancies"
+  why: "No technical filter or NE-need link. Now technical disciplines vs Assam/Tripura exec vacancies; flags premise 412 vs 419."
+  severity: important
+- id: T2__why
+  defect_class: [WRONG_QUESTION, SCD2_NOT_ASOF, GENERIC_TEXT]
+  old_headline: "generic template; exemption tag counts for single-posting >=60 months"
+  new_headline: "No Delhi executive has breached the 10-yr cap (max 8.4 yrs); the 200 cluster breaches are non-executives (+1 board)"
+  why: "Single-posting tenure is not the cumulative cap. Now v_cluster_cumulative_tenure CL-DEL by cadre with breaches/exemptions; premise rejected."
+  severity: important
+- id: T2__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; active executives per WC"
+  new_headline: "Delhi 5yr+ execs can fill 25 of 62 NE exec vacancies for ~0.79 cr; 7 disciplines still short"
+  why: "No vacancies or costs. Now NE vacancy-by-discipline match with FY26 avg transfer cost."
+  severity: important
+- id: T3
+  defect_class: [WRONG_QUESTION, FY_MAPPING, GENERIC_TEXT]
+  old_headline: "generic template; 6 succession-plan rows incl. CMD and a CGM, window 19-Oct-2026..Dec-2027"
+  new_headline: "12 GMs retire in calendar 2027; 8 have no succession plan, 3 of 4 planned have Ready-Now successors"
+  why: "Not GM-restricted and limited to plan rows. Now all active E7 retiring Jan-Dec 2027 LEFT JOIN succession_plan."
+  severity: important
+- id: T3__drill_down
+  defect_class: [WRONG_QUESTION, FY_MAPPING, GENERIC_TEXT]
+  old_headline: "generic template; role x readiness counts for all years"
+  new_headline: "39 E7+ officers retire by Mar-2029 (FY27 10, FY28 17, FY29 12); 33 have succession gaps (32 no plan)"
+  why: "No FY27-FY29 window or officer list. Now officer list with retirement FY and gap flag; premise 47/11 not reproduced."
+  severity: important
+- id: T3__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; readiness_gap_reason counts over 105 positions"
+  new_headline: "14 successors lacking NE service have zero Cat-C/NE postings; 9 at Corporate HQ, mostly support/HR/finance"
+  why: "Did not examine the successors lacking NE. Now successor career profile."
+  severity: important
+- id: T3__compare_or_so_what
+  defect_class: [WRONG_QUESTION, CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "generic template; Tier-1 positions with NE flags"
+  new_headline: "16 successor slots lack NE tenure; 5 cannot complete a 36-month stint before retirement (alternate qualifies in all 5)"
+  why: "No timing vs requirement. Now months-to-retirement vs JRTP 6.1 36-month stint per successor."
+  severity: important
+- id: W1__drill_down
+  defect_class: [WRONG_QUESTION]
+  old_headline: "3 fields with sim PBT<0 presented as 'negative operating cash flow'"
+  new_headline: "At $60, 2 mature fields go operating-cash negative (Champang, Borholla); 3 go PBT-negative (+Khoraghat)"
+  why: "DD&A is non-cash; operating cash proxy is EBITDA. Same test_08 formula; separate flags; premise '6 fields' rejected."
+  severity: important
+- id: W1__why
+  defect_class: [WRONG_QUESTION, PCT_DENOM]
+  old_headline: "Onshore avg lifting $15.23 vs offshore $11.39 (unweighted); revenue loss onshore -5,333 vs offshore -9,135 cr"
+  new_headline: "High-cost onshore fields ($37.67/boe) lose 53.5% of EBITDA at $60 vs 5.2% for low-cost offshore"
+  why: "Unweighted averages and absolute revenue loss cannot show vulnerability; onshore/offshore taken from WC. Now field segments by lifting-cost band, BOE-weighted cost, % EBITDA erosion."
+  severity: important
+- id: W1__compare_or_so_what
+  defect_class: [WRONG_QUESTION, SANITY_BOUND]
+  old_headline: "EBITDA 75,277.88 -> 64,157.15 cr (-11,120.73) presented as ONGC EBITDA"
+  new_headline: "At $60, ONGC EBITDA falls ~11,121 cr from 63,284 to 52,163 cr (-17.6%); pre-tax OCF same"
+  why: "Field-only sum (75,278) is not ONGC EBITDA (63,284 incl. write-offs/unallocated). Now company base from corporate_financials; post-tax cash flow GAP."
+  severity: important
+- id: W2
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Executive-only headcount by discipline (13,453 of 22,798)"
+  new_headline: "2-yr freeze: headcount 22,798 -> ~21,479 by Oct-2028 (-5.8%); Production -487, Drilling -377, Reservoir -173"
+  why: "'Headcount' silently restricted to executives. Now all active employees by discipline; narrative registered (legacy prose said exec cadres only)."
+  severity: important
+- id: W2__drill_down
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Technical current/retirements for 5 disciplines (incl. GEO, GPS); no deficit"
+  new_headline: "DRL/RES/PRD would be 1,820 execs short of sanctioned by Oct-2028 (PRD 897, DRL 649, RES 274)"
+  why: "No sanctioned-strength deficit computed. Now sanctioned vs projected for the 3 named disciplines."
+  severity: important
+- id: W2__why
+  defect_class: [WRONG_QUESTION, PCT_DENOM]
+  old_headline: "Retiring count by grade group, no denominator"
+  new_headline: "No senior cliff in data: E7-E9 technical execs 2.9% retire by Oct-2028 vs 12.5% in E1-E6"
+  why: "Counts without population cannot show 'disproportionate'. Now rate by grade; premise rejected with data caveat."
+  severity: important
+- id: W2__compare_or_so_what
+  defect_class: [WRONG_QUESTION, FY_MAPPING]
+  old_headline: "Exec total 13,453; 2-yr retirements 1,317 (9.79%)"
+  new_headline: "Reservation mix barely moves by end-FY28 (General 41.55% -> 41.47%); E6 bench loses 8.6%, E5-E9 lose 281"
+  why: "Nothing on rosters or bench; window not FY28. Now by category and E5-E9 grade to 31-Mar-2028 with shares."
+  severity: important
+- id: W3
+  defect_class: [WRONG_QUESTION, SANITY_BOUND]
+  old_headline: "Hard-coded 200 / 6.50 cr; all-cadre vacancies at ASM/TRI/CAM/RAJ (Assam shown as deficit)"
+  new_headline: "200 movers cost ~6.40 cr and lift asset exec coverage 90.6% -> 92.7%; 728 of 928 vacancies remain"
+  why: "Literal cost (3.25 lakh) contradicts posting_history (3.20 lakh); non-exec vacancies mixed in; Assam has 0 exec vacancies. Now pro-rata allocation to 14 assets' exec vacancies, data-derived cost; narrative replaces legacy prose."
+  severity: important
+- id: W3__drill_down
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Cat-C vacancy list, no budget"
+  new_headline: "200 relocations need ~6.40 cr: CTA 3.00 + transfer grant 2.40 + baggage 1.00 cr"
+  why: "Budget question answered with vacancies. Now cost components from FY26 posting_history x 200."
+  severity: important
+- id: W3__why
+  defect_class: [THRESHOLD_VS_RANK, WRONG_QUESTION]
+  old_headline: "10 B/C WCs with fewest technical staff (LIMIT 10)"
+  new_headline: "Moderate link only: technical-exec vacancy vs uptime corr -0.39; 4 most short-staffed 96.56% vs 97.35% uptime"
+  why: "No uptime/maintenance evidence. Now vacancy rate vs FY26 uptime/downtime for all producing assets with correlation."
+  severity: important
+- id: W3__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "6.50 / 35,878 cr literals = 0.0181% of capex"
+  new_headline: "6.40 cr pays back with +0.007% output (~19,466 boe) at the 12 receiving assets in one year"
+  why: "All literals, no production. Now data-derived cost vs receiving-asset net revenue/boe breakeven; actual uplift is a GAP."
+  severity: important
+- id: W4
+  defect_class: [UNEQUAL_PERIODS]
+  old_headline: "FY-average SAED $12.15 (FY23) / $10.50 / $3.27 (FY25) incl. unlevied months"
+  new_headline: "Removal lifts realisation by the SAED: $4.00/bbl last rate, $4.91 avg in 8 levied FY25 months ($16.20 FY23 peak)"
+  why: "Averaged over months with no levy (diluted). Now levied-month averages, last rate, SAED paid; narrative replaces legacy prose."
+  severity: important
+- id: W4__drill_down
+  defect_class: [WRONG_QUESTION]
+  old_headline: "12 FY25 monthly rows"
+  new_headline: "Dec-2024 removal eliminated a $4.91/bbl levy; recorded realisation 97.0% -> 97.4% of Brent (series not net of SAED)"
+  why: "No before/after. Now Apr-Nov 2024 vs Dec-2024-Mar-2025 vs FY26 comparison."
+  severity: important
+- id: W4__why
+  defect_class: [WRONG_QUESTION]
+  old_headline: "SAED cr, revenue, EBITDA FY23-FY26"
+  new_headline: "SAED widened FY23 Brent-realisation gap to $19.60 (vs $2.28 FY22); 7.05% of revenue"
+  why: "No benchmark gap. Now Brent vs realisation gap, SAED $/bbl and % revenue FY22-FY26."
+  severity: important
+- id: W4__compare_or_so_what
+  defect_class: [WRONG_QUESTION]
+  old_headline: "FY23-FY26 realisation % of Brent only"
+  new_headline: "FY26 $68.40 = 96.5% of Brent, close to pre-SAED FY22 (97.1%); FY23 peak $75.80 only 79.5%"
+  why: "No earlier price cycles. Now FY17-FY27 YTD with partial-year flag and Brent rank."
+  severity: important
+- id: W1
+  defect_class: []
+  old_headline: "At $60 Brent, 2 fields EBITDA-negative (Champang, Borholla), 3 PBT-negative (+Khoraghat)"
+  new_headline: "unchanged"
+  why: "Audited: formula matches test_08 and v_field_pnl; SQL untouched. Legacy prose states APM gas $6.50/MMBtu but FY26 data average is $6.60 (cosmetic, build_answer_key.py not editable)."
+  severity: cosmetic
+- id: M3
+  defect_class: []
+  old_headline: "REFUSAL; executive pay bands"
+  new_headline: "unchanged"
+  why: "Audited: refusal correct. Legacy REFUSAL_MAP cites 'CDA Rules 1994 Rule 5.0'; actual source is HR Manual Clause 5.0 (citing CDA Rules 4/11, RTI 8(1)(j)) - build_answer_key.py not editable. Employee 104523 is non-executive (GRP-C) while table shows executive bands."
+  severity: cosmetic
+- id: M4
+  defect_class: []
+  old_headline: "REFUSAL; FY22-FY26 revenue/EBITDA/PAT"
+  new_headline: "unchanged"
+  why: "Audited: mart_corporate_performance has 1 row per FY; values match corporate_financials."
+  severity: cosmetic

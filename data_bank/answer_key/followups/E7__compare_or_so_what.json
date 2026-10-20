@@ -1,0 +1,21 @@
+{
+  "job_id": "13918a40-276f-4dc4-b647-8381337f5ac6",
+  "total_bytes_processed": 220,
+  "executed_at": "2026-10-20T06:33:15.263758+00:00",
+  "elapsed_seconds": 0.58,
+  "row_count": 1,
+  "columns": [
+    "fy26_pat_inr_cr",
+    "avg_fy23_fy25_pat_inr_cr",
+    "gap_inr_cr",
+    "gap_pct"
+  ],
+  "rows": [
+    {
+      "fy26_pat_inr_cr": 32894.0,
+      "avg_fy23_fy25_pat_inr_cr": 38744.0,
+      "gap_inr_cr": -5850.0,
+      "gap_pct": -15.1
+    }
+  ]
+}

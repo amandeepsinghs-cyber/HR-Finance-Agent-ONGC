@@ -1,0 +1,42 @@
+{
+  "job_id": "cc6f1da9-51e4-409f-b5bb-0bfbfc07e8cd",
+  "total_bytes_processed": 416964,
+  "executed_at": "2026-10-20T06:42:13.760713+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 2,
+  "columns": [
+    "scope",
+    "fy27_months",
+    "fy27_ytd_be_inr_cr",
+    "fy27_ytd_actual_inr_cr",
+    "fy27_ytd_utilisation_pct",
+    "fy27_annualised_run_rate_inr_cr",
+    "fy26_annual_be_inr_cr",
+    "fy26_actual_inr_cr",
+    "run_rate_pct_of_fy26_be"
+  ],
+  "rows": [
+    {
+      "scope": "Mumbai High",
+      "fy27_months": 6,
+      "fy27_ytd_be_inr_cr": 3648.95,
+      "fy27_ytd_actual_inr_cr": 3533.8,
+      "fy27_ytd_utilisation_pct": 96.8,
+      "fy27_annualised_run_rate_inr_cr": 7067.6,
+      "fy26_annual_be_inr_cr": 7297.98,
+      "fy26_actual_inr_cr": 7091.78,
+      "run_rate_pct_of_fy26_be": 96.8
+    },
+    {
+      "scope": "Company total",
+      "fy27_months": 6,
+      "fy27_ytd_be_inr_cr": 18914.81,
+      "fy27_ytd_actual_inr_cr": 18020.19,
+      "fy27_ytd_utilisation_pct": 95.3,
+      "fy27_annualised_run_rate_inr_cr": 36040.38,
+      "fy26_annual_be_inr_cr": 37829.83,
+      "fy26_actual_inr_cr": 35877.88,
+      "run_rate_pct_of_fy26_be": 95.3
+    }
+  ]
+}

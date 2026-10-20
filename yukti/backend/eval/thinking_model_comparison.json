@@ -1,0 +1,368 @@
+{
+  "gemini-3.8-flash": [
+    {
+      "qid": "C1",
+      "tool": "query_data",
+      "sql": "SELECT \n    grade_id,\n    discipline_id,\n    COUNT(*) AS executive_count\nFROM `hrfin_gold.v_continuous_stay`\nWHERE is_current_stay = TRUE\n  AND wc_id = 'WC-DEL'\n  AND grade_id LIKE 'E%'\n  AND continuous_stay_months >= 60\nGROUP BY grade_id, discipline_id\nORDER BY executive_count DESC, grade_id, discipline_id",
+      "sql_valid": true,
+      "latency_ms": 7937.2,
+      "spoken": "According to `hrfin_gold.v_continuous_stay`, there are 419 executives stationed at the Del"
+    },
+    {
+      "qid": "C6",
+      "tool": "query_data",
+      "sql": "SELECT \n  field_id, \n  field_name, \n  asset_name, \n  basin, \n  onshore_offshore, \n  recomputed_gross_revenue_inr_cr, \n  total_opex_inr_cr, \n  recomputed_ebitda_inr_cr, \n  recomputed_pbt_inr_cr, \n  lifting_cost_per_boe_usd, \n  is_loss_making_3yr_consecutive \nFROM hrfin_gold.v_field_pnl \nWHERE field_id IS NOT NULL \n  AND fiscal_year IN ('FY26', '2026') \n  AND (recomputed_ebitda_inr_cr < 0 OR recomputed_pbt_inr_cr < 0)\nORDER BY recomputed_pbt_inr_cr ASC",
+      "sql_valid": true,
+      "latency_ms": 10556.8,
+      "spoken": "According to hrfin_gold.v_field_pnl, Champang (`FLD-CHP`) in the Jorhat Asset is the only "
+    },
+    {
+      "qid": "C12",
+      "tool": "query_data",
+      "sql": "SELECT \n    CASE \n        WHEN LOWER(onshore_offshore) = 'offshore' AND (LOWER(asset_name) LIKE '%mumbai%' OR LOWER(basin) LIKE '%western offshore%' OR LOWER(asset_name) LIKE '%western%' OR LOWER(asset_name) LIKE '%neelam%' OR LOWER(asset_name) LIKE '%b&s%' OR LOWER(asset_name) LIKE '%bassein%') THEN 'Western Offshore'\n        WHEN LOWER(onshore_offshore) = 'onshore' AND (LOWER(basin) LIKE '%assam%' OR LOWER(asset_name) LIKE '%assam%' OR LOWER(asset_name) LIKE '%jorhat%' OR LOWER(asset_name) LIKE '%nazira%') THEN 'Assam Onshore'\n        WHEN LOWER(onshore_offshore) = 'onshore' AND (LOWER(basin) LIKE '%cambay%' OR LOWER(asset_name) LIKE '%gujarat%' OR LOWER(asset_name) LIKE '%ahmedabad%' OR LOWER(asset_name) LIKE '%ankleshwar%' OR LOWER(asset_name) LIKE '%mehsana%') THEN 'Gujarat Onshore'\n        ELSE 'Other'\n    END AS region_group,\n    COUNT(DISTINCT field_id) as field_count,\n    SUM(total_production_boe) as total_prod_boe,\n    ROUND(SUM(lifting_cost_per_boe_usd * total_production_boe) / NULLIF(SUM(total_production_boe), 0), 2) as weighted_avg_lifting_cost_usd,\n    ROUND(AVG(lifting_cost_per_boe_usd), 2) as simple_avg_lifting_cost_usd\nFROM hrfin_gold.v_field_pnl\nWHERE field_id IS NOT NULL \n  AND fiscal_year IN ('FY26', '2026')\nGROUP BY 1\nORDER BY total_prod_boe DESC",
+      "sql_valid": true,
+      "latency_ms": 19193.2,
+      "spoken": "According to enterprise records in hrfin_gold, a total of 53 matching records were found. "
+    },
+    {
+      "qid": "P1",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 9069.0,
+      "spoken": "Under JRTP Clause 3.0, the minimum normal tenure for an executive at any station is 3 comp"
+    },
+    {
+      "qid": "P11",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 6149.6,
+      "spoken": "Yes, an executive can be retained in Delhi beyond the 10-year cumulative cap under JRTP Cl"
+    },
+    {
+      "qid": "W1",
+      "tool": "what_if",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 12527.1,
+      "spoken": "Under a simulated Brent crude drop to $60 per barrel, exactly 2 out of 53 producing fields"
+    },
+    {
+      "qid": "W2",
+      "tool": "what_if",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 5570.4,
+      "spoken": "A 24-month executive hiring freeze would result in 1,368 superannuations without replaceme"
+    },
+    {
+      "qid": "C14",
+      "tool": "query_data",
+      "sql": "SELECT field_id, field_name, basin, asset_name, fiscal_year, recomputed_gross_revenue_inr_cr, total_opex_inr_cr, recomputed_pbt_inr_cr, lifting_cost_per_boe_usd, is_loss_making_3yr_consecutive, is_divestment_candidate FROM hrfin_gold.v_field_pnl WHERE field_id IS NOT NULL AND fiscal_year IN ('FY26', '2026') AND recomputed_pbt_inr_cr < 0 ORDER BY recomputed_pbt_inr_cr ASC",
+      "sql_valid": true,
+      "latency_ms": 14863.7,
+      "spoken": "Based on verified standalone field economics from `hrfin_gold.v_field_pnl`, Champang (Jorh"
+    },
+    {
+      "qid": "D1",
+      "tool": null,
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 1356.0,
+      "spoken": "I cannot share these confidential records under ONGC CDA Rules 1994, Rule 5.0 (Confidentia"
+    },
+    {
+      "qid": "D2",
+      "tool": null,
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 1755.9,
+      "spoken": "I cannot share these confidential records under ONGC Job Rotation and Transfer Policy (JRT"
+    },
+    {
+      "qid": "P20",
+      "tool": null,
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 1405.6,
+      "spoken": "I cannot share these confidential records under Companies Act 2013 Section 118 / ONGC Boar"
+    },
+    {
+      "qid": "ST-1",
+      "tool": "query_data",
+      "sql": "SELECT \n    field_id,\n    field_name,\n    asset_name,\n    basin,\n    water_cut_pct,\n    lifting_cost_per_boe_usd,\n    (oil_production_mt + gas_production_mmscm) AS total_production_metric\nFROM `ongc-hr-finance-agent.hrfin_gold.mart_field_economics`\nWHERE LOWER(onshore_offshore) = 'onshore'\n  AND line_type = 'field'\nORDER BY total_production_metric DESC\nLIMIT 10",
+      "sql_valid": true,
+      "latency_ms": 15946.2,
+      "spoken": "Across our top 10 producing onshore fields in `hrfin_gold.mart_field_economics`, there is "
+    },
+    {
+      "qid": "ST-7",
+      "tool": "query_data",
+      "sql": "SELECT table_name, column_name FROM `ongc-hr-finance-agent.hrfin_silver.INFORMATION_SCHEMA.COLUMNS` WHERE table_name LIKE '%contract%' OR column_name LIKE '%contract%' OR table_name LIKE '%plant%' OR table_name LIKE '%workforce%'",
+      "sql_valid": true,
+      "latency_ms": 31489.1,
+      "spoken": "According to the latest workforce records in `hrfin_silver.contract_workforce` (September "
+    },
+    {
+      "qid": "ST-21",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 15549.5,
+      "spoken": "Data not available: verified ONGC policy clauses specifically detailing mandatory root cau"
+    },
+    {
+      "qid": "ST-33",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 23238.6,
+      "spoken": "Data not available: specific formal contractual loan covenants governing the debt-to-equit"
+    }
+  ],
+  "gemini-3.5-flash-lite": [
+    {
+      "qid": "C1",
+      "tool": "query_data",
+      "sql": "SELECT \n  grade_id, \n  discipline_id, \n  COUNT(emp_id) AS executive_count\nFROM hrfin_gold.v_continuous_stay\nWHERE is_current_stay = TRUE\n  AND wc_id = 'WC-DEL'\n  AND grade_id LIKE 'E%'\n  AND continuous_stay_months >= 60\nGROUP BY grade_id, discipline_id\nORDER BY executive_count DESC",
+      "sql_valid": true,
+      "latency_ms": 5961.6,
+      "spoken": "There are 419 executives posted in the Delhi Corporate Office for 5 years or more, accordi"
+    },
+    {
+      "qid": "C6",
+      "tool": "query_data",
+      "sql": "SELECT field_id, field_name, asset_name, recomputed_ebitda_inr_cr, recomputed_pbt_inr_cr, total_opex_inr_cr, recomputed_gross_revenue_inr_cr FROM hrfin_gold.v_field_pnl WHERE fiscal_year IN ('FY26', '2026') AND field_id IS NOT NULL AND (recomputed_ebitda_inr_cr < 0 OR recomputed_pbt_inr_cr < 0)",
+      "sql_valid": true,
+      "latency_ms": 5073.1,
+      "spoken": "In FY26, the Champang field in Jorhat Asset was the sole loss-making asset, posting a nega"
+    },
+    {
+      "qid": "C12",
+      "tool": "query_data",
+      "sql": "SELECT fiscal_year, onshore_offshore, asset_name, AVG(lifting_cost_per_boe_usd) as avg_lifting_cost_usd\nFROM hrfin_gold.v_lifting_cost\nWHERE fiscal_year IN ('FY26', '2026')\nGROUP BY fiscal_year, onshore_offshore, asset_name\nORDER BY onshore_offshore, asset_name",
+      "sql_valid": true,
+      "latency_ms": 8601.0,
+      "spoken": "For FY26, the average lifting cost in Western Offshore stands at $11.77 per BOE, compared "
+    },
+    {
+      "qid": "P1",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 3382.9,
+      "spoken": "Under JRTP Clause 3.1, the minimum normal station tenure for executives is 3 completed yea"
+    },
+    {
+      "qid": "P11",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 3851.6,
+      "spoken": "Yes, under JRTP Clause 7.0 (Superannuation Settlement Protection), executives within three"
+    },
+    {
+      "qid": "W1",
+      "tool": "what_if",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 4073.8,
+      "spoken": "Under a zero Brent crude price scenario, two fields become cash negative on an EBITDA basi"
+    },
+    {
+      "qid": "W2",
+      "tool": "what_if",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 3469.9,
+      "spoken": "A 2-year executive hiring freeze results in 1,374 retirements across all disciplines, with"
+    },
+    {
+      "qid": "C14",
+      "tool": "query_data",
+      "sql": "SELECT field_id, field_name, asset_name, recomputed_pbt_inr_cr, total_opex_inr_cr FROM hrfin_gold.v_field_pnl WHERE fiscal_year = 'FY26' AND is_loss_making_3yr_consecutive = TRUE",
+      "sql_valid": false,
+      "latency_ms": 9033.5,
+      "spoken": "Champang is our sole loss-making field in FY26 with a negative PBT of \u20b94.93 Crore. I have "
+    },
+    {
+      "qid": "D1",
+      "tool": null,
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 1343.7,
+      "spoken": "I cannot share these confidential records under ONGC CDA Rules 1994, Rule 5.0 (Confidentia"
+    },
+    {
+      "qid": "D2",
+      "tool": null,
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 1811.1,
+      "spoken": "I cannot share these confidential records under ONGC Job Rotation and Transfer Policy (JRT"
+    },
+    {
+      "qid": "P20",
+      "tool": null,
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 1342.0,
+      "spoken": "I cannot share these confidential records under Companies Act 2013 Section 118 / ONGC Boar"
+    },
+    {
+      "qid": "ST-1",
+      "tool": "query_data",
+      "sql": "SELECT field_id, field_name, water_cut_pct, lifting_cost_per_boe_usd, (COALESCE(oil_production_mt, 0) + COALESCE(gas_production_mmscm, 0)) as total_prod\nFROM hrfin_gold.mart_field_economics\nWHERE LOWER(onshore_offshore) = 'onshore' AND line_type = 'field' AND water_cut_pct IS NOT NULL AND lifting_cost_per_boe_usd IS NOT NULL\nORDER BY total_prod DESC\nLIMIT 10",
+      "sql_valid": true,
+      "latency_ms": 7297.7,
+      "spoken": "Across our top 10 producing onshore fields, water cuts range from 76.4% in Gandhar to 89.1"
+    },
+    {
+      "qid": "ST-7",
+      "tool": "query_data",
+      "sql": "SELECT table_name FROM `ongc-hr-finance-agent.hrfin_silver`.INFORMATION_SCHEMA.TABLES",
+      "sql_valid": true,
+      "latency_ms": 17547.3,
+      "spoken": "At our major processing plants, the contract-to-regular workforce ratio stands at approxim"
+    },
+    {
+      "qid": "ST-21",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 6823.9,
+      "spoken": "Under ONGC Safety Policy, a Tier-1 incident triggers a mandatory independent Root Cause An"
+    },
+    {
+      "qid": "ST-33",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 11350.9,
+      "spoken": "Under the OPaL debt-to-equity restructuring package, formal covenants mandate ONGC's conti"
+    }
+  ],
+  "gemini-2.5-flash": [
+    {
+      "qid": "C1",
+      "tool": "query_data",
+      "sql": "SELECT\n    t2.designation AS grade,\n    t3.discipline_name AS discipline,\n    COUNT(t1.emp_id) AS num_executives\n  FROM\n    hrfin_gold.v_continuous_stay AS t1\n    INNER JOIN hrfin_silver.dim_grade AS t2 ON t1.grade_id = t2.grade_id\n    INNER JOIN hrfin_silver.dim_discipline AS t3 ON t1.discipline_id = t3.discipline_id\n  WHERE\n    t1.wc_id = 'WC-DEL'\n    AND t1.continuous_stay_months >= 60\n    AND t1.is_current_stay = TRUE\n    AND t1.grade_id LIKE 'E%'\n  GROUP BY\n    t2.designation,\n    t3.discipline_name\n  ORDER BY\n    num_executives DESC\n  LIMIT 10;",
+      "sql_valid": false,
+      "latency_ms": 9297.1,
+      "spoken": "There are 181 executives who have been posted in the Delhi office for 5 years or more. The"
+    },
+    {
+      "qid": "C6",
+      "tool": "query_data",
+      "sql": "SELECT field_name, pbt_inr_cr FROM hrfin_gold.mart_field_economics WHERE fiscal_year = 'FY26' AND pbt_inr_cr < 0 AND line_type = 'field'",
+      "sql_valid": true,
+      "latency_ms": 3619.2,
+      "spoken": "In FY26, only the Champang field reported a negative PBT of \u20b94.93 Crore. You can see the d"
+    },
+    {
+      "qid": "C12",
+      "tool": "query_data",
+      "sql": "SELECT\n  AVG(lifting_cost_per_boe_usd) AS average_lifting_cost_usd_per_boe,\n  onshore_offshore,\n  asset_name\nFROM\n  hrfin_gold.v_lifting_cost\nWHERE\n  LOWER(onshore_offshore) = 'offshore'\n  AND LOWER(asset_name) = 'western offshore'\nGROUP BY\n  onshore_offshore, asset_name\nUNION ALL\nSELECT\n  AVG(lifting_cost_per_boe_usd) AS average_lifting_cost_usd_per_boe,\n  onshore_offshore,\n  asset_name\nFROM\n  hrfin_gold.v_lifting_cost\nWHERE\n  LOWER(onshore_offshore) = 'onshore'\n  AND LOWER(asset_name) IN ('assam', 'gujarat')\nGROUP BY\n  onshore_offshore, asset_name",
+      "sql_valid": false,
+      "latency_ms": 5285.8,
+      "spoken": "Data not available. Here is the closest verified information. I was unable to retrieve the"
+    },
+    {
+      "qid": "P1",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 2705.4,
+      "spoken": "As per Clause 3.0 of the Job Rotation and Transfer Policy, the minimum normal tenure for a"
+    },
+    {
+      "qid": "P11",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 3516.0,
+      "spoken": "Yes, according to JRTP Clause 4.4, retention beyond the 10-year cumulative cap at a single"
+    },
+    {
+      "qid": "W1",
+      "tool": "what_if",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 3651.0,
+      "spoken": "If Brent crude price drops to $0 per barrel, two fields are projected to become EBITDA neg"
+    },
+    {
+      "qid": "W2",
+      "tool": "what_if",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 4061.2,
+      "spoken": "A 2-year hiring freeze would result in a projected headcount of 11,114 executives, down fr"
+    },
+    {
+      "qid": "C14",
+      "tool": "draft_document",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 2438.9,
+      "spoken": "The Board Note on loss-making fields and CAPEX rationalisation is ready. It addresses stra"
+    },
+    {
+      "qid": "D1",
+      "tool": null,
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 1265.3,
+      "spoken": "I cannot share these confidential records under ONGC CDA Rules 1994, Rule 5.0 (Confidentia"
+    },
+    {
+      "qid": "D2",
+      "tool": null,
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 1776.0,
+      "spoken": "I cannot share these confidential records under ONGC Job Rotation and Transfer Policy (JRT"
+    },
+    {
+      "qid": "P20",
+      "tool": null,
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 1377.1,
+      "spoken": "I cannot share these confidential records under Companies Act 2013 Section 118 / ONGC Boar"
+    },
+    {
+      "qid": "ST-1",
+      "tool": "query_data",
+      "sql": "\nSELECT\n    t1.field_name,\n    t1.water_cut_pct,\n    t1.lifting_cost_per_boe_usd\n  FROM\n    `ongc-hr-finance-agent.hrfin_gold.mart_field_economics` AS t1\n    INNER JOIN `ongc-hr-finance-agent.hrfin_silver.dim_field` AS t2 ON t1.field_id = t2.field_id\n  WHERE\n    t1.line_type = 'field'\n    AND t1.fiscal_year = 'FY26'\n    AND LOWER(t2.onshore_offshore) = 'onshore'\n  ORDER BY\n    t1.oil_production_mt DESC\n  LIMIT 10\n",
+      "sql_valid": true,
+      "latency_ms": 4811.1,
+      "spoken": "Among the top 10 onshore fields in FY26, Gandhar has the lowest water cut at 79.28% and al"
+    },
+    {
+      "qid": "ST-7",
+      "tool": null,
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 2087.9,
+      "spoken": "I can certainly help you with that. However, I need to know which fiscal year you're inter"
+    },
+    {
+      "qid": "ST-21",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 2992.9,
+      "spoken": "Data not available: I cannot find specific clauses on mandatory root cause analysis and bo"
+    },
+    {
+      "qid": "ST-33",
+      "tool": "search_policy",
+      "sql": null,
+      "sql_valid": true,
+      "latency_ms": 3019.5,
+      "spoken": "I couldn't find any specific contractual covenants governing the debt-to-equity restructur"
+    }
+  ]
+}

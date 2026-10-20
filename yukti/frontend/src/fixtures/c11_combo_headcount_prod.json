@@ -1,0 +1,96 @@
+{
+  "turn_id": "turn_c11_003",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "No asset both added headcount and lost production over the five years. Every asset whose production fell also reduced its headcount, with Rajahmundry experiencing the steepest decline of 25.5 percent in production and 30.3 percent in headcount.",
+  "display_text": "Enterprise productivity analysis across 15 producing assets [1]: Between March 2021 and March 2026, 14 assets saw production declines alongside reduced headcount. The sole headcount addition was Eastern Offshore (+51 HC, output rose to 28.1 MMboe).",
+  "visual": {
+    "type": "chart",
+    "mode": "replace",
+    "title": "Headcount Growth % vs Production Output Growth % (FY21\u2013FY26)",
+    "chart": {
+      "kind": "grouped_bar",
+      "x": "asset",
+      "series": "metric",
+      "unit": "% Change",
+      "data": [
+        {
+          "asset": "Eastern Offshore",
+          "Headcount Growth %": 5.31,
+          "Production Growth %": 0.0
+        },
+        {
+          "asset": "Rajahmundry Asset",
+          "Headcount Growth %": -30.34,
+          "Production Growth %": -25.48
+        },
+        {
+          "asset": "Tripura Asset",
+          "Headcount Growth %": -26.99,
+          "Production Growth %": -24.02
+        },
+        {
+          "asset": "CBM Bokaro",
+          "Headcount Growth %": -27.57,
+          "Production Growth %": -22.89
+        },
+        {
+          "asset": "Bassein & Satellite",
+          "Headcount Growth %": -3.79,
+          "Production Growth %": -22.61
+        },
+        {
+          "asset": "Cauvery Asset",
+          "Headcount Growth %": -26.63,
+          "Production Growth %": -22.05
+        }
+      ]
+    },
+    "kpis": [
+      {
+        "label": "Producing Assets",
+        "value": 15,
+        "unit": "Assets",
+        "delta": "FY21 vs FY26"
+      },
+      {
+        "label": "Rajahmundry BOE Delta",
+        "value": -25.48,
+        "unit": "%",
+        "delta": "Steepest Drop"
+      },
+      {
+        "label": "Eastern Offshore HC",
+        "value": 51,
+        "unit": "Net Additions",
+        "delta": "+5.31% Growth"
+      }
+    ]
+  },
+  "insights": [
+    "Across the 15 producing assets, period-end headcount fell from 20,871 to 16,327 (-21.8%), while 14 assets produced less in FY26 than FY21.",
+    "The steepest BOE decline was Rajahmundry Asset (-25.48%, headcount -30.34%).",
+    "The only headcount gain was Eastern Offshore (+51), whose output rose to 28.13 MMboe as new production came on stream."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.mart_asset_productivity",
+      "query_id": "3118379c-55a7-47cb-9700-23ded6cfc20c",
+      "sql": "-- Answer Key SQL: C11\n-- Question: Which assets added headcount but lost production over 5 years?\n-- Type: data\n-- Semantic audit 2026-10-20: headcount is a stock -> compare period-end snapshots\n-- (31-Mar-2021 = month 2021-03 vs 31-Mar-2026 = month 2026-03), never SUM across months.\n-- Production is a flow -> full-FY sums (both FY21 and FY26 have 12 months), expressed in BOE\n-- (total_production_boe) with oil (MMT) and gas (BCM) shown separately, never added together.\n-- Criterion: headcount Mar-26 > Mar-21 AND FY26 BOE < FY21 BOE (flag column).\n\nWITH hc AS (\n    SELECT\n        wc_id,\n        SUM(CASE WHEN month = '2021-03' THEN headcount END) AS hc_mar21,\n        SUM(CASE WHEN month = '2026-03' THEN headcount END) AS hc_mar26\n    FROM headcount_snapshot\n    WHERE month IN ('2021-03', '2026-03')\n    GROUP BY wc_id\n),\nprod AS (\n    SELECT\n        asset_wc_id AS wc_id,\n        SUM(CASE WHEN fiscal_year = 'FY21' THEN total_production_boe END) / 1e6 AS mmboe_fy21,\n        SUM(CASE WHEN fiscal_year = 'FY26' THEN total_production_boe END) / 1e6 AS mmboe_fy26,\n        SUM(CASE WHEN fiscal_year = 'FY21' THEN oil_production_mt END) / 1e6 AS oil_mmt_fy21,\n        SUM(CASE WHEN fiscal_year = 'FY26' THEN oil_production_mt END) / 1e6 AS oil_mmt_fy26,\n        SUM(CASE WHEN fiscal_year = 'FY21' THEN gas_production_mmscm END) / 1e3 AS gas_bcm_fy21,\n        SUM(CASE WHEN fiscal_year = 'FY26' THEN gas_production_mmscm END) / 1e3 AS gas_bcm_fy26\n    FROM production_monthly\n    WHERE fiscal_year IN ('FY21', 'FY26')\n    GROUP BY asset_wc_id\n)\nSELECT\n    wc.wc_id,\n    wc.short_name,\n    h.hc_mar21,\n    h.hc_mar26,\n    h.hc_mar26 - h.hc_mar21 AS hc_change,\n    ROUND((h.hc_mar26 - h.hc_mar21) * 100.0 / NULLIF(h.hc_mar21, 0), 2) AS hc_growth_pct,\n    ROUND(p.mmboe_fy21, 2) AS mmboe_fy21,\n    ROUND(p.mmboe_fy26, 2) AS mmboe_fy26,\n    ROUND((p.mmboe_fy26 - p.mmboe_fy21) * 100.0 / NULLIF(p.mmboe_fy21, 0), 2) AS boe_growth_pct,\n    ROUND(p.oil_mmt_fy21, 3) AS oil_mmt_fy21,\n    ROUND(p.oil_mmt_fy26, 3) AS oil_mmt_fy26,\n    ROUND(p.gas_bcm_fy21, 3) AS gas_bcm_fy21,\n    ROUND(p.gas_bcm_fy26, 3) AS gas_bcm_fy26,\n    (h.hc_mar26 > h.hc_mar21 AND p.mmboe_fy26 < p.mmboe_fy21) AS added_hc_and_lost_production\nFROM hc h\nJOIN prod p ON h.wc_id = p.wc_id\nJOIN dim_work_centre wc ON h.wc_id = wc.wc_id\n-- All producing assets are returned with the criterion flag so that an empty qualifying set\n-- is still an explicit, checkable answer.\nORDER BY added_hc_and_lost_production DESC, boe_growth_pct ASC;\n"
+    }
+  ],
+  "suggestions": [
+    "Drill down into Rajahmundry field P&L",
+    "Show lifting cost comparison",
+    "Recommend manpower redeployment plan"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "pdf"
+  ]
+}

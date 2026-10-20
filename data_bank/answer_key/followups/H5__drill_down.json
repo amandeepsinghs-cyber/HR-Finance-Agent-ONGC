@@ -1,0 +1,44 @@
+{
+  "job_id": "51af1857-1059-476d-9da5-382e865728bd",
+  "total_bytes_processed": 863598,
+  "executed_at": "2026-10-20T06:38:45.689331+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 4,
+  "columns": [
+    "promotion_step",
+    "discipline",
+    "pending_candidates",
+    "avg_recorded_delay_months",
+    "avg_months_overdue_asof_2026_10_19"
+  ],
+  "rows": [
+    {
+      "promotion_step": "E4->E5",
+      "discipline": "Production",
+      "pending_candidates": 66,
+      "avg_recorded_delay_months": 8.5,
+      "avg_months_overdue_asof_2026_10_19": 15.0
+    },
+    {
+      "promotion_step": "E4->E5",
+      "discipline": "Drilling",
+      "pending_candidates": 62,
+      "avg_recorded_delay_months": 8.7,
+      "avg_months_overdue_asof_2026_10_19": 16.0
+    },
+    {
+      "promotion_step": "E5->E6",
+      "discipline": "Production",
+      "pending_candidates": 56,
+      "avg_recorded_delay_months": 8.4,
+      "avg_months_overdue_asof_2026_10_19": 15.0
+    },
+    {
+      "promotion_step": "E5->E6",
+      "discipline": "Drilling",
+      "pending_candidates": 44,
+      "avg_recorded_delay_months": 8.6,
+      "avg_months_overdue_asof_2026_10_19": 16.0
+    }
+  ]
+}

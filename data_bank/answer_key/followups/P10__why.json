@@ -1,0 +1,37 @@
+{
+  "job_id": "9e7895ed-28a0-43f5-a35f-aaa8f44b8d62",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:33.032086+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 7.0",
+      "heading": "Vigilance Clearance as Pre-Condition",
+      "provision": "R&P 7.1-7.2 (vigilance clearance)",
+      "quote_snippet": "7.1 Mandatory Vigilance Clearance: Clear and unconditional vigilance clearance from the Chief Vigilance Officer (CVO) is a non-negotiable mandatory prerequisite for placing any officer on the promotion panel or releasing promotion orders. 7.2 Disqualifying Vigilance Status: An officer shall not be granted promotion if: (a) under suspension; (b) a charge-sheet for major penalty disciplinary proceedings under CDA Rule 14 has been issued; or (c) prosecution for a criminal charge is pending."
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 8.0",
+      "heading": "Confidentiality of DPC Proceedings & Sealed Cover",
+      "provision": "R&P 8.2-8.3 (sealed cover)",
+      "quote_snippet": "8.2 Sealed Cover Procedure: Where an officer eligible for promotion is facing disciplinary proceedings, under suspension, or under criminal prosecution at the time of DPC, the DPC shall assess their suitability, but its findings shall be placed in a sealed cover envelope marked 'Findings regarding [Name / PERNR]'. 8.3 Opening of Sealed Cover: If the officer is completely exonerated of all charges, the sealed cover shall be opened, and if found fit, notional seniority and promotion shall be granted from the date their immediate junior was promoted."
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 4.0",
+      "heading": "Merit Promotion Channel (E4\u2192E5, E5\u2192E6)",
+      "provision": "R&P 4.3 (qualifications weight, merit channel)",
+      "quote_snippet": "4.3 Evaluation Matrix: DPC evaluation shall be based on a 100-point composite matrix: (a) APAR Track Record (last 5 years): 50 Points; (b) Professional Competency & Technical Assessment / Interview: 30 Points; (c) Educational Qualifications & Specialized Certifications: 10 Points; (d) Seniority & Experience Weighting: 10 Points."
+    }
+  ]
+}

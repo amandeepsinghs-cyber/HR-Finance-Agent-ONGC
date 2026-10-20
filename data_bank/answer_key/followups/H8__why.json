@@ -1,0 +1,65 @@
+{
+  "job_id": "0f247f03-3cb2-48b4-ac47-ffb3098033da",
+  "total_bytes_processed": 4554438,
+  "executed_at": "2026-10-20T06:38:54.475062+00:00",
+  "elapsed_seconds": 0.61,
+  "row_count": 6,
+  "columns": [
+    "discipline",
+    "location_class",
+    "executives",
+    "pct_trained",
+    "hours_per_executive",
+    "company_hours_per_executive"
+  ],
+  "rows": [
+    {
+      "discipline": "Drilling",
+      "location_class": "offshore",
+      "executives": 727,
+      "pct_trained": 62.2,
+      "hours_per_executive": 14.0,
+      "company_hours_per_executive": 14.3
+    },
+    {
+      "discipline": "Drilling",
+      "location_class": "onshore",
+      "executives": 1074,
+      "pct_trained": 62.3,
+      "hours_per_executive": 14.1,
+      "company_hours_per_executive": 14.3
+    },
+    {
+      "discipline": "Production",
+      "location_class": "onshore",
+      "executives": 1851,
+      "pct_trained": 62.3,
+      "hours_per_executive": 14.2,
+      "company_hours_per_executive": 14.3
+    },
+    {
+      "discipline": "Production",
+      "location_class": "offshore",
+      "executives": 968,
+      "pct_trained": 65.0,
+      "hours_per_executive": 15.0,
+      "company_hours_per_executive": 14.3
+    },
+    {
+      "discipline": "Drilling",
+      "location_class": "corporate",
+      "executives": 176,
+      "pct_trained": 68.2,
+      "hours_per_executive": 15.6,
+      "company_hours_per_executive": 14.3
+    },
+    {
+      "discipline": "Production",
+      "location_class": "corporate",
+      "executives": 228,
+      "pct_trained": 68.9,
+      "hours_per_executive": 15.6,
+      "company_hours_per_executive": 14.3
+    }
+  ]
+}

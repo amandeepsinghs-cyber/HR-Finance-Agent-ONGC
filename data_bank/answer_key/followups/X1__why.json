@@ -1,0 +1,89 @@
+{
+  "job_id": "9fd46510-287c-44bd-bdb6-35356f83a9b5",
+  "total_bytes_processed": 24534349,
+  "executed_at": "2026-10-20T06:37:11.510499+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 9,
+  "columns": [
+    "work_centre_segment",
+    "work_centres",
+    "core_activity_work_centres",
+    "contract_workers_mar26",
+    "regular_employees_mar26",
+    "contract_to_regular_ratio"
+  ],
+  "rows": [
+    {
+      "work_centre_segment": "plant / onshore",
+      "work_centres": 3,
+      "core_activity_work_centres": 3,
+      "contract_workers_mar26": 2415,
+      "regular_employees_mar26": 1528,
+      "contract_to_regular_ratio": 1.58
+    },
+    {
+      "work_centre_segment": "basin / offshore",
+      "work_centres": 1,
+      "core_activity_work_centres": 1,
+      "contract_workers_mar26": 168,
+      "regular_employees_mar26": 116,
+      "contract_to_regular_ratio": 1.45
+    },
+    {
+      "work_centre_segment": "asset / offshore",
+      "work_centres": 4,
+      "core_activity_work_centres": 4,
+      "contract_workers_mar26": 8633,
+      "regular_employees_mar26": 5953,
+      "contract_to_regular_ratio": 1.45
+    },
+    {
+      "work_centre_segment": "service / offshore",
+      "work_centres": 2,
+      "core_activity_work_centres": 2,
+      "contract_workers_mar26": 406,
+      "regular_employees_mar26": 280,
+      "contract_to_regular_ratio": 1.45
+    },
+    {
+      "work_centre_segment": "basin / onshore",
+      "work_centres": 8,
+      "core_activity_work_centres": 0,
+      "contract_workers_mar26": 808,
+      "regular_employees_mar26": 734,
+      "contract_to_regular_ratio": 1.1
+    },
+    {
+      "work_centre_segment": "asset / onshore",
+      "work_centres": 10,
+      "core_activity_work_centres": 10,
+      "contract_workers_mar26": 11313,
+      "regular_employees_mar26": 10283,
+      "contract_to_regular_ratio": 1.1
+    },
+    {
+      "work_centre_segment": "office / corporate",
+      "work_centres": 6,
+      "core_activity_work_centres": 0,
+      "contract_workers_mar26": 911,
+      "regular_employees_mar26": 2852,
+      "contract_to_regular_ratio": 0.32
+    },
+    {
+      "work_centre_segment": "institute / corporate",
+      "work_centres": 10,
+      "core_activity_work_centres": 0,
+      "contract_workers_mar26": 383,
+      "regular_employees_mar26": 1193,
+      "contract_to_regular_ratio": 0.32
+    },
+    {
+      "work_centre_segment": "service / onshore",
+      "work_centres": 2,
+      "core_activity_work_centres": 0,
+      "contract_workers_mar26": 56,
+      "regular_employees_mar26": 178,
+      "contract_to_regular_ratio": 0.31
+    }
+  ]
+}

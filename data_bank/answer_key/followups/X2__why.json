@@ -1,0 +1,33 @@
+{
+  "job_id": "d6a6fa52-989c-428b-a845-f603b1b9ba70",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:37:14.150187+00:00",
+  "elapsed_seconds": 0.72,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "J-14",
+      "clause_ref": "4 of that Act casts a duty on the employer in ever",
+      "heading": "ONGC Employees Mazdoor Sabha v. ONGC - Section 4 of that Act casts a duty on the employer in every",
+      "quote_snippet": "ed due to retirement on account\nof superannuation or voluntary basis, termination of employment,\nabandonment of employment etc. Therefore the Corporation has started\nmanaging its affairs by deploying contract labour in western region\nand such contract labourers have put in more than 10 to 15 years of\nservice by this time. The appointments were made after calling the\nnames from employment exchange and after conducting necessary\nprocedures for appointment. A perusal of one of the appointment\nletters reveals that the appointment contained all the requirements\nof a regular appointment as per the Recruitme"
+    },
+    {
+      "doc_id": "J-17",
+      "clause_ref": "Part 5",
+      "heading": "Engineering Mazdoor Sangh v. ONGC (Part 5)",
+      "quote_snippet": "or adjudication before the Tribunal, on 28th April 1993, the Union filed a complaint under Section 33A of the Act being Complaint (ITC) No. 5 of 1993 alleging that the ONGC had started giving work to contractors in preference to the casual/contingent/ temporary workmen and had thus altered the conditions of service of the workmen in breach of Section 33(1)(a) of the Industrial Disputes Act. On 30th October 1993, the Tribunal held that it was not permissible for the Tribunal to examine whether the work of the ONGC was seasonal or not and that the ONGC had committed breach of any conditions of the servi"
+    },
+    {
+      "doc_id": "P2-17",
+      "clause_ref": "Part 2",
+      "heading": "Supplier Code of Conduct (Part 2)",
+      "quote_snippet": "business ethics.\n1. Applicability\nThis Supplier Code of Conduct is applicable to all \u2018Suppliers\u2019 of ONGC Limited.\nSupplier\u2019 here refers to Suppliers, service providers, traders, agents, consultants,\ncontractors,jointventure partners,thirdparties includingtheir employees,agents,and\notherrepresentatives,whohaveabusinessrelationshipwithandprovide,sell,seekto\nsell,anykindsofgoodsorservicestoONGCLimited.\n1. PolicyCommitment\nAdhering to the Supplier Code of Conduct,Suppliers shall:\nLabor and HumanRights\nComply with all applicable local, state and national laws regarding human rights.\nComply with the Compan"
+    }
+  ]
+}

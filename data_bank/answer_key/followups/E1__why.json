@@ -1,0 +1,27 @@
+{
+  "job_id": "7fa52534-8c0e-4c41-8e1d-1bbab785f404",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:49.793697+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 3.0",
+      "heading": "Earned Leave Accrual & Accumulation",
+      "quote_snippet": "3.1 Annual Accrual Rate: Regular employees shall earn 30 (thirty) calendar days of Earned Leave in each calendar year. 3.2 Advance Credit: EL shall be credited in advance in two equal installments of 15 days each on 1st January and 1st July of every calendar year. 3.3 Maximum Accumulation Ceiling: Earned Leave may be accumulated up to a strict maximum ceiling of 300 (three hundred) days. 3.4 Treat"
+    },
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 4.0",
+      "heading": "Encashment of Earned Leave",
+      "quote_snippet": "4.1 Encashment on Superannuation: An employee retiring on superannuation, voluntary retirement, or upon death in service shall be entitled to receive lump-sum cash equivalent of unutilized Earned Leave standing to their credit, subject to a maximum aggregate ceiling of 300 (three hundred) days. 4.2 Encashment Calculation Formula: The cash equivalent of leave salary for encashment shall be calculat"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "job_id": "68fe1acf-e34a-4217-a088-d49f9db00be6",
+  "total_bytes_processed": 1270820,
+  "executed_at": "2026-10-20T06:42:37.240084+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 10,
+  "columns": [
+    "dimension",
+    "group_name",
+    "current_headcount",
+    "retirements_by_fy28",
+    "projected_fy28",
+    "attrition_pct",
+    "current_share_pct",
+    "projected_share_pct"
+  ],
+  "rows": [
+    {
+      "dimension": "reservation_category",
+      "group_name": "EWS",
+      "current_headcount": 1132,
+      "retirements_by_fy28": 45,
+      "projected_fy28": 1087,
+      "attrition_pct": 4.0,
+      "current_share_pct": 4.97,
+      "projected_share_pct": 4.99
+    },
+    {
+      "dimension": "reservation_category",
+      "group_name": "General",
+      "current_headcount": 9472,
+      "retirements_by_fy28": 435,
+      "projected_fy28": 9037,
+      "attrition_pct": 4.6,
+      "current_share_pct": 41.55,
+      "projected_share_pct": 41.47
+    },
+    {
+      "dimension": "reservation_category",
+      "group_name": "OBC",
+      "current_headcount": 6149,
+      "retirements_by_fy28": 256,
+      "projected_fy28": 5893,
+      "attrition_pct": 4.2,
+      "current_share_pct": 26.97,
+      "projected_share_pct": 27.04
+    },
+    {
+      "dimension": "reservation_category",
+      "group_name": "SC",
+      "current_headcount": 3444,
+      "retirements_by_fy28": 155,
+      "projected_fy28": 3289,
+      "attrition_pct": 4.5,
+      "current_share_pct": 15.11,
+      "projected_share_pct": 15.09
+    },
+    {
+      "dimension": "reservation_category",
+      "group_name": "ST",
+      "current_headcount": 2601,
+      "retirements_by_fy28": 114,
+      "projected_fy28": 2487,
+      "attrition_pct": 4.4,
+      "current_share_pct": 11.41,
+      "projected_share_pct": 11.41
+    },
+    {
+      "dimension": "succession_bench_grade",
+      "group_name": "E5",
+      "current_headcount": 2128,
+      "retirements_by_fy28": 156,
+      "projected_fy28": 1972,
+      "attrition_pct": 7.3,
+      "current_share_pct": 48.36,
+      "projected_share_pct": 47.88
+    },
+    {
+      "dimension": "succession_bench_grade",
+      "group_name": "E6",
+      "current_headcount": 1146,
+      "retirements_by_fy28": 98,
+      "projected_fy28": 1048,
+      "attrition_pct": 8.6,
+      "current_share_pct": 26.05,
+      "projected_share_pct": 25.44
+    },
+    {
+      "dimension": "succession_bench_grade",
+      "group_name": "E7",
+      "current_headcount": 839,
+      "retirements_by_fy28": 21,
+      "projected_fy28": 818,
+      "attrition_pct": 2.5,
+      "current_share_pct": 19.07,
+      "projected_share_pct": 19.86
+    },
+    {
+      "dimension": "succession_bench_grade",
+      "group_name": "E8",
+      "current_headcount": 238,
+      "retirements_by_fy28": 5,
+      "projected_fy28": 233,
+      "attrition_pct": 2.1,
+      "current_share_pct": 5.41,
+      "projected_share_pct": 5.66
+    },
+    {
+      "dimension": "succession_bench_grade",
+      "group_name": "E9",
+      "current_headcount": 49,
+      "retirements_by_fy28": 1,
+      "projected_fy28": 48,
+      "attrition_pct": 2.0,
+      "current_share_pct": 1.11,
+      "projected_share_pct": 1.17
+    }
+  ]
+}

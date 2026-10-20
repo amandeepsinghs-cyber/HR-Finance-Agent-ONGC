@@ -1,0 +1,61 @@
+{
+  "job_id": "4a48d83c-3888-4ccd-b490-659f8afebfb4",
+  "total_bytes_processed": 636897,
+  "executed_at": "2026-10-20T06:42:23.590201+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 3,
+  "columns": [
+    "comparison_group",
+    "n_fields",
+    "root_cause",
+    "avg_water_cut_pct",
+    "avg_gas_utilisation_pct",
+    "avg_uptime_pct",
+    "downtime_hrs_per_well_month",
+    "avg_field_age_years",
+    "avg_lifting_cost_usd_boe",
+    "water_handling_pct_of_opex",
+    "avg_pbt_inr_cr"
+  ],
+  "rows": [
+    {
+      "comparison_group": "Field X: Champang",
+      "n_fields": 1,
+      "root_cause": "high_water_cut_depleted",
+      "avg_water_cut_pct": 93.9,
+      "avg_gas_utilisation_pct": 97.5,
+      "avg_uptime_pct": 97.23,
+      "downtime_hrs_per_well_month": 22.3,
+      "avg_field_age_years": 53.0,
+      "avg_lifting_cost_usd_boe": 48.12,
+      "water_handling_pct_of_opex": 2.4,
+      "avg_pbt_inr_cr": -4.93
+    },
+    {
+      "comparison_group": "Mature onshore peers (excl. Field X)",
+      "n_fields": 34,
+      "root_cause": null,
+      "avg_water_cut_pct": 76.6,
+      "avg_gas_utilisation_pct": 97.5,
+      "avg_uptime_pct": 97.21,
+      "downtime_hrs_per_well_month": 21.9,
+      "avg_field_age_years": 50.4,
+      "avg_lifting_cost_usd_boe": 15.49,
+      "water_handling_pct_of_opex": 2.7,
+      "avg_pbt_inr_cr": 572.68
+    },
+    {
+      "comparison_group": "All fields",
+      "n_fields": 53,
+      "root_cause": null,
+      "avg_water_cut_pct": 65.1,
+      "avg_gas_utilisation_pct": 97.5,
+      "avg_uptime_pct": 97.07,
+      "downtime_hrs_per_well_month": 22.9,
+      "avg_field_age_years": 46.0,
+      "avg_lifting_cost_usd_boe": 14.29,
+      "water_handling_pct_of_opex": 1.2,
+      "avg_pbt_inr_cr": 973.16
+    }
+  ]
+}

@@ -1,0 +1,1261 @@
+prices_fx:
+- month: 2016-04
+  fiscal_year: FY17
+  brent_usd_bbl: 48.6
+  ongc_crude_net_realisation_usd_bbl: 46.8
+  ongc_crude_net_realisation_inr_bbl: 3158.53
+  apm_gas_price_usd_mmbtu: 2.82
+  inr_usd_fx_rate: 67.49
+  da_percentage: 1.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2016-05
+  fiscal_year: FY17
+  brent_usd_bbl: 49.5
+  ongc_crude_net_realisation_usd_bbl: 47.55
+  ongc_crude_net_realisation_inr_bbl: 3206.77
+  apm_gas_price_usd_mmbtu: 2.82
+  inr_usd_fx_rate: 67.44
+  da_percentage: 1.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2016-06
+  fiscal_year: FY17
+  brent_usd_bbl: 50.16
+  ongc_crude_net_realisation_usd_bbl: 48.1
+  ongc_crude_net_realisation_inr_bbl: 3236.65
+  apm_gas_price_usd_mmbtu: 2.81
+  inr_usd_fx_rate: 67.29
+  da_percentage: 1.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2016-07
+  fiscal_year: FY17
+  brent_usd_bbl: 50.4
+  ongc_crude_net_realisation_usd_bbl: 48.3
+  ongc_crude_net_realisation_inr_bbl: 3240.45
+  apm_gas_price_usd_mmbtu: 2.8
+  inr_usd_fx_rate: 67.09
+  da_percentage: 2.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2016-08
+  fiscal_year: FY17
+  brent_usd_bbl: 50.16
+  ongc_crude_net_realisation_usd_bbl: 48.1
+  ongc_crude_net_realisation_inr_bbl: 3217.41
+  apm_gas_price_usd_mmbtu: 2.79
+  inr_usd_fx_rate: 66.89
+  da_percentage: 2.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2016-09
+  fiscal_year: FY17
+  brent_usd_bbl: 49.5
+  ongc_crude_net_realisation_usd_bbl: 47.55
+  ongc_crude_net_realisation_inr_bbl: 3173.49
+  apm_gas_price_usd_mmbtu: 2.78
+  inr_usd_fx_rate: 66.74
+  da_percentage: 2.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2016-10
+  fiscal_year: FY17
+  brent_usd_bbl: 48.6
+  ongc_crude_net_realisation_usd_bbl: 46.8
+  ongc_crude_net_realisation_inr_bbl: 3121.09
+  apm_gas_price_usd_mmbtu: 2.78
+  inr_usd_fx_rate: 66.69
+  da_percentage: 3.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2016-11
+  fiscal_year: FY17
+  brent_usd_bbl: 47.7
+  ongc_crude_net_realisation_usd_bbl: 46.05
+  ongc_crude_net_realisation_inr_bbl: 3073.38
+  apm_gas_price_usd_mmbtu: 2.78
+  inr_usd_fx_rate: 66.74
+  da_percentage: 3.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2016-12
+  fiscal_year: FY17
+  brent_usd_bbl: 47.04
+  ongc_crude_net_realisation_usd_bbl: 45.5
+  ongc_crude_net_realisation_inr_bbl: 3043.49
+  apm_gas_price_usd_mmbtu: 2.79
+  inr_usd_fx_rate: 66.89
+  da_percentage: 3.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2017-01
+  fiscal_year: FY17
+  brent_usd_bbl: 46.8
+  ongc_crude_net_realisation_usd_bbl: 45.3
+  ongc_crude_net_realisation_inr_bbl: 3039.18
+  apm_gas_price_usd_mmbtu: 2.8
+  inr_usd_fx_rate: 67.09
+  da_percentage: 1.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2017-02
+  fiscal_year: FY17
+  brent_usd_bbl: 47.04
+  ongc_crude_net_realisation_usd_bbl: 45.5
+  ongc_crude_net_realisation_inr_bbl: 3061.7
+  apm_gas_price_usd_mmbtu: 2.81
+  inr_usd_fx_rate: 67.29
+  da_percentage: 1.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2017-03
+  fiscal_year: FY17
+  brent_usd_bbl: 47.7
+  ongc_crude_net_realisation_usd_bbl: 46.05
+  ongc_crude_net_realisation_inr_bbl: 3105.61
+  apm_gas_price_usd_mmbtu: 2.82
+  inr_usd_fx_rate: 67.44
+  da_percentage: 1.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR17 p.24, DPE IDA OM
+- month: 2017-04
+  fiscal_year: FY18
+  brent_usd_bbl: 57.5
+  ongc_crude_net_realisation_usd_bbl: 55.4
+  ongc_crude_net_realisation_inr_bbl: 3592.69
+  apm_gas_price_usd_mmbtu: 2.72
+  inr_usd_fx_rate: 64.85
+  da_percentage: 3.7
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2017-05
+  fiscal_year: FY18
+  brent_usd_bbl: 58.4
+  ongc_crude_net_realisation_usd_bbl: 56.15
+  ongc_crude_net_realisation_inr_bbl: 3638.52
+  apm_gas_price_usd_mmbtu: 2.72
+  inr_usd_fx_rate: 64.8
+  da_percentage: 3.7
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2017-06
+  fiscal_year: FY18
+  brent_usd_bbl: 59.06
+  ongc_crude_net_realisation_usd_bbl: 56.7
+  ongc_crude_net_realisation_inr_bbl: 3665.66
+  apm_gas_price_usd_mmbtu: 2.71
+  inr_usd_fx_rate: 64.65
+  da_percentage: 3.7
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2017-07
+  fiscal_year: FY18
+  brent_usd_bbl: 59.3
+  ongc_crude_net_realisation_usd_bbl: 56.9
+  ongc_crude_net_realisation_inr_bbl: 3667.2
+  apm_gas_price_usd_mmbtu: 2.7
+  inr_usd_fx_rate: 64.45
+  da_percentage: 4.5
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2017-08
+  fiscal_year: FY18
+  brent_usd_bbl: 59.06
+  ongc_crude_net_realisation_usd_bbl: 56.7
+  ongc_crude_net_realisation_inr_bbl: 3642.98
+  apm_gas_price_usd_mmbtu: 2.69
+  inr_usd_fx_rate: 64.25
+  da_percentage: 4.5
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2017-09
+  fiscal_year: FY18
+  brent_usd_bbl: 58.4
+  ongc_crude_net_realisation_usd_bbl: 56.15
+  ongc_crude_net_realisation_inr_bbl: 3599.21
+  apm_gas_price_usd_mmbtu: 2.68
+  inr_usd_fx_rate: 64.1
+  da_percentage: 4.5
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2017-10
+  fiscal_year: FY18
+  brent_usd_bbl: 57.5
+  ongc_crude_net_realisation_usd_bbl: 55.4
+  ongc_crude_net_realisation_inr_bbl: 3548.37
+  apm_gas_price_usd_mmbtu: 2.68
+  inr_usd_fx_rate: 64.05
+  da_percentage: 5.3
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2017-11
+  fiscal_year: FY18
+  brent_usd_bbl: 56.6
+  ongc_crude_net_realisation_usd_bbl: 54.65
+  ongc_crude_net_realisation_inr_bbl: 3503.06
+  apm_gas_price_usd_mmbtu: 2.68
+  inr_usd_fx_rate: 64.1
+  da_percentage: 5.3
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2017-12
+  fiscal_year: FY18
+  brent_usd_bbl: 55.94
+  ongc_crude_net_realisation_usd_bbl: 54.1
+  ongc_crude_net_realisation_inr_bbl: 3475.93
+  apm_gas_price_usd_mmbtu: 2.69
+  inr_usd_fx_rate: 64.25
+  da_percentage: 5.3
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2018-01
+  fiscal_year: FY18
+  brent_usd_bbl: 55.7
+  ongc_crude_net_realisation_usd_bbl: 53.9
+  ongc_crude_net_realisation_inr_bbl: 3473.86
+  apm_gas_price_usd_mmbtu: 2.7
+  inr_usd_fx_rate: 64.45
+  da_percentage: 2.9
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2018-02
+  fiscal_year: FY18
+  brent_usd_bbl: 55.94
+  ongc_crude_net_realisation_usd_bbl: 54.1
+  ongc_crude_net_realisation_inr_bbl: 3497.57
+  apm_gas_price_usd_mmbtu: 2.71
+  inr_usd_fx_rate: 64.65
+  da_percentage: 2.9
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2018-03
+  fiscal_year: FY18
+  brent_usd_bbl: 56.6
+  ongc_crude_net_realisation_usd_bbl: 54.65
+  ongc_crude_net_realisation_inr_bbl: 3541.32
+  apm_gas_price_usd_mmbtu: 2.72
+  inr_usd_fx_rate: 64.8
+  da_percentage: 2.9
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR18 p.24, DPE IDA OM
+- month: 2018-04
+  fiscal_year: FY19
+  brent_usd_bbl: 70.4
+  ongc_crude_net_realisation_usd_bbl: 68.2
+  ongc_crude_net_realisation_inr_bbl: 4795.82
+  apm_gas_price_usd_mmbtu: 3.22
+  inr_usd_fx_rate: 70.32
+  da_percentage: 8.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2018-05
+  fiscal_year: FY19
+  brent_usd_bbl: 71.3
+  ongc_crude_net_realisation_usd_bbl: 68.95
+  ongc_crude_net_realisation_inr_bbl: 4845.12
+  apm_gas_price_usd_mmbtu: 3.22
+  inr_usd_fx_rate: 70.27
+  da_percentage: 8.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2018-06
+  fiscal_year: FY19
+  brent_usd_bbl: 71.96
+  ongc_crude_net_realisation_usd_bbl: 69.5
+  ongc_crude_net_realisation_inr_bbl: 4873.34
+  apm_gas_price_usd_mmbtu: 3.21
+  inr_usd_fx_rate: 70.12
+  da_percentage: 8.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2018-07
+  fiscal_year: FY19
+  brent_usd_bbl: 72.2
+  ongc_crude_net_realisation_usd_bbl: 69.7
+  ongc_crude_net_realisation_inr_bbl: 4873.42
+  apm_gas_price_usd_mmbtu: 3.2
+  inr_usd_fx_rate: 69.92
+  da_percentage: 9.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2018-08
+  fiscal_year: FY19
+  brent_usd_bbl: 71.96
+  ongc_crude_net_realisation_usd_bbl: 69.5
+  ongc_crude_net_realisation_inr_bbl: 4845.54
+  apm_gas_price_usd_mmbtu: 3.19
+  inr_usd_fx_rate: 69.72
+  da_percentage: 9.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2018-09
+  fiscal_year: FY19
+  brent_usd_bbl: 71.3
+  ongc_crude_net_realisation_usd_bbl: 68.95
+  ongc_crude_net_realisation_inr_bbl: 4796.85
+  apm_gas_price_usd_mmbtu: 3.18
+  inr_usd_fx_rate: 69.57
+  da_percentage: 9.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2018-10
+  fiscal_year: FY19
+  brent_usd_bbl: 70.4
+  ongc_crude_net_realisation_usd_bbl: 68.2
+  ongc_crude_net_realisation_inr_bbl: 4741.26
+  apm_gas_price_usd_mmbtu: 3.18
+  inr_usd_fx_rate: 69.52
+  da_percentage: 10.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2018-11
+  fiscal_year: FY19
+  brent_usd_bbl: 69.5
+  ongc_crude_net_realisation_usd_bbl: 67.45
+  ongc_crude_net_realisation_inr_bbl: 4692.5
+  apm_gas_price_usd_mmbtu: 3.18
+  inr_usd_fx_rate: 69.57
+  da_percentage: 10.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2018-12
+  fiscal_year: FY19
+  brent_usd_bbl: 68.84
+  ongc_crude_net_realisation_usd_bbl: 66.9
+  ongc_crude_net_realisation_inr_bbl: 4664.27
+  apm_gas_price_usd_mmbtu: 3.19
+  inr_usd_fx_rate: 69.72
+  da_percentage: 10.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2019-01
+  fiscal_year: FY19
+  brent_usd_bbl: 68.6
+  ongc_crude_net_realisation_usd_bbl: 66.7
+  ongc_crude_net_realisation_inr_bbl: 4663.66
+  apm_gas_price_usd_mmbtu: 3.2
+  inr_usd_fx_rate: 69.92
+  da_percentage: 7.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2019-02
+  fiscal_year: FY19
+  brent_usd_bbl: 68.84
+  ongc_crude_net_realisation_usd_bbl: 66.9
+  ongc_crude_net_realisation_inr_bbl: 4691.03
+  apm_gas_price_usd_mmbtu: 3.21
+  inr_usd_fx_rate: 70.12
+  da_percentage: 7.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2019-03
+  fiscal_year: FY19
+  brent_usd_bbl: 69.5
+  ongc_crude_net_realisation_usd_bbl: 67.45
+  ongc_crude_net_realisation_inr_bbl: 4739.71
+  apm_gas_price_usd_mmbtu: 3.22
+  inr_usd_fx_rate: 70.27
+  da_percentage: 7.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR19 p.24, DPE IDA OM
+- month: 2019-04
+  fiscal_year: FY20
+  brent_usd_bbl: 60.8
+  ongc_crude_net_realisation_usd_bbl: 58.6
+  ongc_crude_net_realisation_inr_bbl: 4177.01
+  apm_gas_price_usd_mmbtu: 3.42
+  inr_usd_fx_rate: 71.28
+  da_percentage: 14.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2019-05
+  fiscal_year: FY20
+  brent_usd_bbl: 61.7
+  ongc_crude_net_realisation_usd_bbl: 59.35
+  ongc_crude_net_realisation_inr_bbl: 4227.5
+  apm_gas_price_usd_mmbtu: 3.42
+  inr_usd_fx_rate: 71.23
+  da_percentage: 14.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2019-06
+  fiscal_year: FY20
+  brent_usd_bbl: 62.36
+  ongc_crude_net_realisation_usd_bbl: 59.9
+  ongc_crude_net_realisation_inr_bbl: 4257.69
+  apm_gas_price_usd_mmbtu: 3.41
+  inr_usd_fx_rate: 71.08
+  da_percentage: 14.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2019-07
+  fiscal_year: FY20
+  brent_usd_bbl: 62.6
+  ongc_crude_net_realisation_usd_bbl: 60.1
+  ongc_crude_net_realisation_inr_bbl: 4259.89
+  apm_gas_price_usd_mmbtu: 3.4
+  inr_usd_fx_rate: 70.88
+  da_percentage: 15.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2019-08
+  fiscal_year: FY20
+  brent_usd_bbl: 62.36
+  ongc_crude_net_realisation_usd_bbl: 59.9
+  ongc_crude_net_realisation_inr_bbl: 4233.73
+  apm_gas_price_usd_mmbtu: 3.39
+  inr_usd_fx_rate: 70.68
+  da_percentage: 15.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2019-09
+  fiscal_year: FY20
+  brent_usd_bbl: 61.7
+  ongc_crude_net_realisation_usd_bbl: 59.35
+  ongc_crude_net_realisation_inr_bbl: 4185.96
+  apm_gas_price_usd_mmbtu: 3.38
+  inr_usd_fx_rate: 70.53
+  da_percentage: 15.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2019-10
+  fiscal_year: FY20
+  brent_usd_bbl: 60.8
+  ongc_crude_net_realisation_usd_bbl: 58.6
+  ongc_crude_net_realisation_inr_bbl: 4130.13
+  apm_gas_price_usd_mmbtu: 3.38
+  inr_usd_fx_rate: 70.48
+  da_percentage: 16.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2019-11
+  fiscal_year: FY20
+  brent_usd_bbl: 59.9
+  ongc_crude_net_realisation_usd_bbl: 57.85
+  ongc_crude_net_realisation_inr_bbl: 4080.16
+  apm_gas_price_usd_mmbtu: 3.38
+  inr_usd_fx_rate: 70.53
+  da_percentage: 16.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2019-12
+  fiscal_year: FY20
+  brent_usd_bbl: 59.24
+  ongc_crude_net_realisation_usd_bbl: 57.3
+  ongc_crude_net_realisation_inr_bbl: 4049.96
+  apm_gas_price_usd_mmbtu: 3.39
+  inr_usd_fx_rate: 70.68
+  da_percentage: 16.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2020-01
+  fiscal_year: FY20
+  brent_usd_bbl: 59.0
+  ongc_crude_net_realisation_usd_bbl: 57.1
+  ongc_crude_net_realisation_inr_bbl: 4047.25
+  apm_gas_price_usd_mmbtu: 3.4
+  inr_usd_fx_rate: 70.88
+  da_percentage: 13.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2020-02
+  fiscal_year: FY20
+  brent_usd_bbl: 59.24
+  ongc_crude_net_realisation_usd_bbl: 57.3
+  ongc_crude_net_realisation_inr_bbl: 4072.88
+  apm_gas_price_usd_mmbtu: 3.41
+  inr_usd_fx_rate: 71.08
+  da_percentage: 13.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2020-03
+  fiscal_year: FY20
+  brent_usd_bbl: 59.9
+  ongc_crude_net_realisation_usd_bbl: 57.85
+  ongc_crude_net_realisation_inr_bbl: 4120.66
+  apm_gas_price_usd_mmbtu: 3.42
+  inr_usd_fx_rate: 71.23
+  da_percentage: 13.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR20 p.24, DPE IDA OM
+- month: 2020-04
+  fiscal_year: FY21
+  brent_usd_bbl: 44.8
+  ongc_crude_net_realisation_usd_bbl: 42.78
+  ongc_crude_net_realisation_inr_bbl: 3192.24
+  apm_gas_price_usd_mmbtu: 2.02
+  inr_usd_fx_rate: 74.62
+  da_percentage: 18.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2020-05
+  fiscal_year: FY21
+  brent_usd_bbl: 45.7
+  ongc_crude_net_realisation_usd_bbl: 43.53
+  ongc_crude_net_realisation_inr_bbl: 3246.03
+  apm_gas_price_usd_mmbtu: 2.02
+  inr_usd_fx_rate: 74.57
+  da_percentage: 18.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2020-06
+  fiscal_year: FY21
+  brent_usd_bbl: 46.36
+  ongc_crude_net_realisation_usd_bbl: 44.08
+  ongc_crude_net_realisation_inr_bbl: 3280.43
+  apm_gas_price_usd_mmbtu: 2.01
+  inr_usd_fx_rate: 74.42
+  da_percentage: 18.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2020-07
+  fiscal_year: FY21
+  brent_usd_bbl: 46.6
+  ongc_crude_net_realisation_usd_bbl: 44.28
+  ongc_crude_net_realisation_inr_bbl: 3286.46
+  apm_gas_price_usd_mmbtu: 2.0
+  inr_usd_fx_rate: 74.22
+  da_percentage: 18.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2020-08
+  fiscal_year: FY21
+  brent_usd_bbl: 46.36
+  ongc_crude_net_realisation_usd_bbl: 44.08
+  ongc_crude_net_realisation_inr_bbl: 3262.8
+  apm_gas_price_usd_mmbtu: 1.99
+  inr_usd_fx_rate: 74.02
+  da_percentage: 18.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2020-09
+  fiscal_year: FY21
+  brent_usd_bbl: 45.7
+  ongc_crude_net_realisation_usd_bbl: 43.53
+  ongc_crude_net_realisation_inr_bbl: 3215.56
+  apm_gas_price_usd_mmbtu: 1.98
+  inr_usd_fx_rate: 73.87
+  da_percentage: 18.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2020-10
+  fiscal_year: FY21
+  brent_usd_bbl: 44.8
+  ongc_crude_net_realisation_usd_bbl: 42.78
+  ongc_crude_net_realisation_inr_bbl: 3158.02
+  apm_gas_price_usd_mmbtu: 1.98
+  inr_usd_fx_rate: 73.82
+  da_percentage: 19.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2020-11
+  fiscal_year: FY21
+  brent_usd_bbl: 43.9
+  ongc_crude_net_realisation_usd_bbl: 42.03
+  ongc_crude_net_realisation_inr_bbl: 3104.76
+  apm_gas_price_usd_mmbtu: 1.98
+  inr_usd_fx_rate: 73.87
+  da_percentage: 19.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2020-12
+  fiscal_year: FY21
+  brent_usd_bbl: 43.24
+  ongc_crude_net_realisation_usd_bbl: 41.48
+  ongc_crude_net_realisation_inr_bbl: 3070.35
+  apm_gas_price_usd_mmbtu: 1.99
+  inr_usd_fx_rate: 74.02
+  da_percentage: 19.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2021-01
+  fiscal_year: FY21
+  brent_usd_bbl: 43.0
+  ongc_crude_net_realisation_usd_bbl: 41.28
+  ongc_crude_net_realisation_inr_bbl: 3063.8
+  apm_gas_price_usd_mmbtu: 2.0
+  inr_usd_fx_rate: 74.22
+  da_percentage: 17.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2021-02
+  fiscal_year: FY21
+  brent_usd_bbl: 43.24
+  ongc_crude_net_realisation_usd_bbl: 41.48
+  ongc_crude_net_realisation_inr_bbl: 3086.94
+  apm_gas_price_usd_mmbtu: 2.01
+  inr_usd_fx_rate: 74.42
+  da_percentage: 17.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2021-03
+  fiscal_year: FY21
+  brent_usd_bbl: 43.9
+  ongc_crude_net_realisation_usd_bbl: 42.03
+  ongc_crude_net_realisation_inr_bbl: 3134.18
+  apm_gas_price_usd_mmbtu: 2.02
+  inr_usd_fx_rate: 74.57
+  da_percentage: 17.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR21 p.24 (COVID-19 impact), DPE IDA OM
+- month: 2021-04
+  fiscal_year: FY22
+  brent_usd_bbl: 78.9
+  ongc_crude_net_realisation_usd_bbl: 76.62
+  ongc_crude_net_realisation_inr_bbl: 5739.6
+  apm_gas_price_usd_mmbtu: 2.92
+  inr_usd_fx_rate: 74.91
+  da_percentage: 25.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2021-05
+  fiscal_year: FY22
+  brent_usd_bbl: 79.8
+  ongc_crude_net_realisation_usd_bbl: 77.37
+  ongc_crude_net_realisation_inr_bbl: 5791.92
+  apm_gas_price_usd_mmbtu: 2.92
+  inr_usd_fx_rate: 74.86
+  da_percentage: 25.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2021-06
+  fiscal_year: FY22
+  brent_usd_bbl: 80.46
+  ongc_crude_net_realisation_usd_bbl: 77.92
+  ongc_crude_net_realisation_inr_bbl: 5821.4
+  apm_gas_price_usd_mmbtu: 2.91
+  inr_usd_fx_rate: 74.71
+  da_percentage: 25.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2021-07
+  fiscal_year: FY22
+  brent_usd_bbl: 80.7
+  ongc_crude_net_realisation_usd_bbl: 78.12
+  ongc_crude_net_realisation_inr_bbl: 5820.72
+  apm_gas_price_usd_mmbtu: 2.9
+  inr_usd_fx_rate: 74.51
+  da_percentage: 26.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2021-08
+  fiscal_year: FY22
+  brent_usd_bbl: 80.46
+  ongc_crude_net_realisation_usd_bbl: 77.92
+  ongc_crude_net_realisation_inr_bbl: 5790.24
+  apm_gas_price_usd_mmbtu: 2.89
+  inr_usd_fx_rate: 74.31
+  da_percentage: 26.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2021-09
+  fiscal_year: FY22
+  brent_usd_bbl: 79.8
+  ongc_crude_net_realisation_usd_bbl: 77.37
+  ongc_crude_net_realisation_inr_bbl: 5737.76
+  apm_gas_price_usd_mmbtu: 2.88
+  inr_usd_fx_rate: 74.16
+  da_percentage: 26.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2021-10
+  fiscal_year: FY22
+  brent_usd_bbl: 78.9
+  ongc_crude_net_realisation_usd_bbl: 76.62
+  ongc_crude_net_realisation_inr_bbl: 5678.31
+  apm_gas_price_usd_mmbtu: 2.88
+  inr_usd_fx_rate: 74.11
+  da_percentage: 27.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2021-11
+  fiscal_year: FY22
+  brent_usd_bbl: 78.0
+  ongc_crude_net_realisation_usd_bbl: 75.87
+  ongc_crude_net_realisation_inr_bbl: 5626.52
+  apm_gas_price_usd_mmbtu: 2.88
+  inr_usd_fx_rate: 74.16
+  da_percentage: 27.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2021-12
+  fiscal_year: FY22
+  brent_usd_bbl: 77.34
+  ongc_crude_net_realisation_usd_bbl: 75.32
+  ongc_crude_net_realisation_inr_bbl: 5597.03
+  apm_gas_price_usd_mmbtu: 2.89
+  inr_usd_fx_rate: 74.31
+  da_percentage: 27.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2022-01
+  fiscal_year: FY22
+  brent_usd_bbl: 77.1
+  ongc_crude_net_realisation_usd_bbl: 75.12
+  ongc_crude_net_realisation_inr_bbl: 5597.19
+  apm_gas_price_usd_mmbtu: 2.9
+  inr_usd_fx_rate: 74.51
+  da_percentage: 25.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2022-02
+  fiscal_year: FY22
+  brent_usd_bbl: 77.34
+  ongc_crude_net_realisation_usd_bbl: 75.32
+  ongc_crude_net_realisation_inr_bbl: 5627.16
+  apm_gas_price_usd_mmbtu: 2.91
+  inr_usd_fx_rate: 74.71
+  da_percentage: 25.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2022-03
+  fiscal_year: FY22
+  brent_usd_bbl: 78.0
+  ongc_crude_net_realisation_usd_bbl: 75.87
+  ongc_crude_net_realisation_inr_bbl: 5679.63
+  apm_gas_price_usd_mmbtu: 2.92
+  inr_usd_fx_rate: 74.86
+  da_percentage: 25.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR22 p.24, DPE IDA OM
+- month: 2022-04
+  fiscal_year: FY23
+  brent_usd_bbl: 95.4
+  ongc_crude_net_realisation_usd_bbl: 75.8
+  ongc_crude_net_realisation_inr_bbl: 6123.88
+  apm_gas_price_usd_mmbtu: 6.12
+  inr_usd_fx_rate: 80.79
+  da_percentage: 34.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2022-05
+  fiscal_year: FY23
+  brent_usd_bbl: 96.3
+  ongc_crude_net_realisation_usd_bbl: 76.55
+  ongc_crude_net_realisation_inr_bbl: 6180.65
+  apm_gas_price_usd_mmbtu: 6.12
+  inr_usd_fx_rate: 80.74
+  da_percentage: 34.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2022-06
+  fiscal_year: FY23
+  brent_usd_bbl: 96.96
+  ongc_crude_net_realisation_usd_bbl: 77.1
+  ongc_crude_net_realisation_inr_bbl: 6213.49
+  apm_gas_price_usd_mmbtu: 6.11
+  inr_usd_fx_rate: 80.59
+  da_percentage: 34.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2022-07
+  fiscal_year: FY23
+  brent_usd_bbl: 97.2
+  ongc_crude_net_realisation_usd_bbl: 77.3
+  ongc_crude_net_realisation_inr_bbl: 6214.15
+  apm_gas_price_usd_mmbtu: 6.1
+  inr_usd_fx_rate: 80.39
+  da_percentage: 35.2
+  windfall_tax_saed_usd_bbl: 18.5
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2022-08
+  fiscal_year: FY23
+  brent_usd_bbl: 96.96
+  ongc_crude_net_realisation_usd_bbl: 77.1
+  ongc_crude_net_realisation_inr_bbl: 6182.65
+  apm_gas_price_usd_mmbtu: 6.09
+  inr_usd_fx_rate: 80.19
+  da_percentage: 35.2
+  windfall_tax_saed_usd_bbl: 18.23
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2022-09
+  fiscal_year: FY23
+  brent_usd_bbl: 96.3
+  ongc_crude_net_realisation_usd_bbl: 76.55
+  ongc_crude_net_realisation_inr_bbl: 6127.06
+  apm_gas_price_usd_mmbtu: 6.08
+  inr_usd_fx_rate: 80.04
+  da_percentage: 35.2
+  windfall_tax_saed_usd_bbl: 17.5
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2022-10
+  fiscal_year: FY23
+  brent_usd_bbl: 95.4
+  ongc_crude_net_realisation_usd_bbl: 75.8
+  ongc_crude_net_realisation_inr_bbl: 6063.24
+  apm_gas_price_usd_mmbtu: 6.08
+  inr_usd_fx_rate: 79.99
+  da_percentage: 36.0
+  windfall_tax_saed_usd_bbl: 16.5
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2022-11
+  fiscal_year: FY23
+  brent_usd_bbl: 94.5
+  ongc_crude_net_realisation_usd_bbl: 75.05
+  ongc_crude_net_realisation_inr_bbl: 6007.0
+  apm_gas_price_usd_mmbtu: 6.08
+  inr_usd_fx_rate: 80.04
+  da_percentage: 36.0
+  windfall_tax_saed_usd_bbl: 15.5
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2022-12
+  fiscal_year: FY23
+  brent_usd_bbl: 93.84
+  ongc_crude_net_realisation_usd_bbl: 74.5
+  ongc_crude_net_realisation_inr_bbl: 5974.15
+  apm_gas_price_usd_mmbtu: 6.09
+  inr_usd_fx_rate: 80.19
+  da_percentage: 36.0
+  windfall_tax_saed_usd_bbl: 14.77
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2023-01
+  fiscal_year: FY23
+  brent_usd_bbl: 93.6
+  ongc_crude_net_realisation_usd_bbl: 74.3
+  ongc_crude_net_realisation_inr_bbl: 5972.98
+  apm_gas_price_usd_mmbtu: 6.1
+  inr_usd_fx_rate: 80.39
+  da_percentage: 33.6
+  windfall_tax_saed_usd_bbl: 14.5
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2023-02
+  fiscal_year: FY23
+  brent_usd_bbl: 93.84
+  ongc_crude_net_realisation_usd_bbl: 74.5
+  ongc_crude_net_realisation_inr_bbl: 6003.95
+  apm_gas_price_usd_mmbtu: 6.11
+  inr_usd_fx_rate: 80.59
+  da_percentage: 33.6
+  windfall_tax_saed_usd_bbl: 14.77
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2023-03
+  fiscal_year: FY23
+  brent_usd_bbl: 94.5
+  ongc_crude_net_realisation_usd_bbl: 75.05
+  ongc_crude_net_realisation_inr_bbl: 6059.54
+  apm_gas_price_usd_mmbtu: 6.12
+  inr_usd_fx_rate: 80.74
+  da_percentage: 33.6
+  windfall_tax_saed_usd_bbl: 15.5
+  anchor_source: AR23 p.24, SAED introduced 1-Jul-2022
+- month: 2023-04
+  fiscal_year: FY24
+  brent_usd_bbl: 83.2
+  ongc_crude_net_realisation_usd_bbl: 80.77
+  ongc_crude_net_realisation_inr_bbl: 6719.26
+  apm_gas_price_usd_mmbtu: 6.57
+  inr_usd_fx_rate: 83.19
+  da_percentage: 41.1
+  windfall_tax_saed_usd_bbl: 10.5
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2023-05
+  fiscal_year: FY24
+  brent_usd_bbl: 84.1
+  ongc_crude_net_realisation_usd_bbl: 81.52
+  ongc_crude_net_realisation_inr_bbl: 6777.57
+  apm_gas_price_usd_mmbtu: 6.57
+  inr_usd_fx_rate: 83.14
+  da_percentage: 41.1
+  windfall_tax_saed_usd_bbl: 11.25
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2023-06
+  fiscal_year: FY24
+  brent_usd_bbl: 84.76
+  ongc_crude_net_realisation_usd_bbl: 82.07
+  ongc_crude_net_realisation_inr_bbl: 6810.99
+  apm_gas_price_usd_mmbtu: 6.56
+  inr_usd_fx_rate: 82.99
+  da_percentage: 41.1
+  windfall_tax_saed_usd_bbl: 11.8
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2023-07
+  fiscal_year: FY24
+  brent_usd_bbl: 85.0
+  ongc_crude_net_realisation_usd_bbl: 82.27
+  ongc_crude_net_realisation_inr_bbl: 6811.13
+  apm_gas_price_usd_mmbtu: 6.55
+  inr_usd_fx_rate: 82.79
+  da_percentage: 41.9
+  windfall_tax_saed_usd_bbl: 12.0
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2023-08
+  fiscal_year: FY24
+  brent_usd_bbl: 84.76
+  ongc_crude_net_realisation_usd_bbl: 82.07
+  ongc_crude_net_realisation_inr_bbl: 6778.16
+  apm_gas_price_usd_mmbtu: 6.54
+  inr_usd_fx_rate: 82.59
+  da_percentage: 41.9
+  windfall_tax_saed_usd_bbl: 11.8
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2023-09
+  fiscal_year: FY24
+  brent_usd_bbl: 84.1
+  ongc_crude_net_realisation_usd_bbl: 81.52
+  ongc_crude_net_realisation_inr_bbl: 6720.51
+  apm_gas_price_usd_mmbtu: 6.53
+  inr_usd_fx_rate: 82.44
+  da_percentage: 41.9
+  windfall_tax_saed_usd_bbl: 11.25
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2023-10
+  fiscal_year: FY24
+  brent_usd_bbl: 83.2
+  ongc_crude_net_realisation_usd_bbl: 80.77
+  ongc_crude_net_realisation_inr_bbl: 6654.64
+  apm_gas_price_usd_mmbtu: 6.53
+  inr_usd_fx_rate: 82.39
+  da_percentage: 42.7
+  windfall_tax_saed_usd_bbl: 10.5
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2023-11
+  fiscal_year: FY24
+  brent_usd_bbl: 82.3
+  ongc_crude_net_realisation_usd_bbl: 80.02
+  ongc_crude_net_realisation_inr_bbl: 6596.85
+  apm_gas_price_usd_mmbtu: 6.53
+  inr_usd_fx_rate: 82.44
+  da_percentage: 42.7
+  windfall_tax_saed_usd_bbl: 9.75
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2023-12
+  fiscal_year: FY24
+  brent_usd_bbl: 81.64
+  ongc_crude_net_realisation_usd_bbl: 79.47
+  ongc_crude_net_realisation_inr_bbl: 6563.43
+  apm_gas_price_usd_mmbtu: 6.54
+  inr_usd_fx_rate: 82.59
+  da_percentage: 42.7
+  windfall_tax_saed_usd_bbl: 9.2
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2024-01
+  fiscal_year: FY24
+  brent_usd_bbl: 81.4
+  ongc_crude_net_realisation_usd_bbl: 79.27
+  ongc_crude_net_realisation_inr_bbl: 6562.76
+  apm_gas_price_usd_mmbtu: 6.55
+  inr_usd_fx_rate: 82.79
+  da_percentage: 40.3
+  windfall_tax_saed_usd_bbl: 9.0
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2024-02
+  fiscal_year: FY24
+  brent_usd_bbl: 81.64
+  ongc_crude_net_realisation_usd_bbl: 79.47
+  ongc_crude_net_realisation_inr_bbl: 6595.22
+  apm_gas_price_usd_mmbtu: 6.56
+  inr_usd_fx_rate: 82.99
+  da_percentage: 40.3
+  windfall_tax_saed_usd_bbl: 9.2
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2024-03
+  fiscal_year: FY24
+  brent_usd_bbl: 82.3
+  ongc_crude_net_realisation_usd_bbl: 80.02
+  ongc_crude_net_realisation_inr_bbl: 6652.86
+  apm_gas_price_usd_mmbtu: 6.57
+  inr_usd_fx_rate: 83.14
+  da_percentage: 40.3
+  windfall_tax_saed_usd_bbl: 9.75
+  anchor_source: FACTS §D3 (PR25), AR24 p.24
+- month: 2024-04
+  fiscal_year: FY25
+  brent_usd_bbl: 79.2
+  ongc_crude_net_realisation_usd_bbl: 76.9
+  ongc_crude_net_realisation_inr_bbl: 6533.42
+  apm_gas_price_usd_mmbtu: 6.52
+  inr_usd_fx_rate: 84.96
+  da_percentage: 46.4
+  windfall_tax_saed_usd_bbl: 4.5
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2024-05
+  fiscal_year: FY25
+  brent_usd_bbl: 80.1
+  ongc_crude_net_realisation_usd_bbl: 77.65
+  ongc_crude_net_realisation_inr_bbl: 6593.26
+  apm_gas_price_usd_mmbtu: 6.52
+  inr_usd_fx_rate: 84.91
+  da_percentage: 46.4
+  windfall_tax_saed_usd_bbl: 5.0
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2024-06
+  fiscal_year: FY25
+  brent_usd_bbl: 80.76
+  ongc_crude_net_realisation_usd_bbl: 78.2
+  ongc_crude_net_realisation_inr_bbl: 6628.23
+  apm_gas_price_usd_mmbtu: 6.51
+  inr_usd_fx_rate: 84.76
+  da_percentage: 46.4
+  windfall_tax_saed_usd_bbl: 5.37
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2024-07
+  fiscal_year: FY25
+  brent_usd_bbl: 81.0
+  ongc_crude_net_realisation_usd_bbl: 78.4
+  ongc_crude_net_realisation_inr_bbl: 6629.5
+  apm_gas_price_usd_mmbtu: 6.5
+  inr_usd_fx_rate: 84.56
+  da_percentage: 47.2
+  windfall_tax_saed_usd_bbl: 5.5
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2024-08
+  fiscal_year: FY25
+  brent_usd_bbl: 80.76
+  ongc_crude_net_realisation_usd_bbl: 78.2
+  ongc_crude_net_realisation_inr_bbl: 6596.95
+  apm_gas_price_usd_mmbtu: 6.49
+  inr_usd_fx_rate: 84.36
+  da_percentage: 47.2
+  windfall_tax_saed_usd_bbl: 5.37
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2024-09
+  fiscal_year: FY25
+  brent_usd_bbl: 80.1
+  ongc_crude_net_realisation_usd_bbl: 77.65
+  ongc_crude_net_realisation_inr_bbl: 6538.91
+  apm_gas_price_usd_mmbtu: 6.48
+  inr_usd_fx_rate: 84.21
+  da_percentage: 47.2
+  windfall_tax_saed_usd_bbl: 5.0
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2024-10
+  fiscal_year: FY25
+  brent_usd_bbl: 79.2
+  ongc_crude_net_realisation_usd_bbl: 76.9
+  ongc_crude_net_realisation_inr_bbl: 6471.9
+  apm_gas_price_usd_mmbtu: 6.48
+  inr_usd_fx_rate: 84.16
+  da_percentage: 48.0
+  windfall_tax_saed_usd_bbl: 4.5
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2024-11
+  fiscal_year: FY25
+  brent_usd_bbl: 78.3
+  ongc_crude_net_realisation_usd_bbl: 76.15
+  ongc_crude_net_realisation_inr_bbl: 6412.59
+  apm_gas_price_usd_mmbtu: 6.48
+  inr_usd_fx_rate: 84.21
+  da_percentage: 48.0
+  windfall_tax_saed_usd_bbl: 4.0
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2024-12
+  fiscal_year: FY25
+  brent_usd_bbl: 77.64
+  ongc_crude_net_realisation_usd_bbl: 75.6
+  ongc_crude_net_realisation_inr_bbl: 6377.62
+  apm_gas_price_usd_mmbtu: 6.49
+  inr_usd_fx_rate: 84.36
+  da_percentage: 48.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2025-01
+  fiscal_year: FY25
+  brent_usd_bbl: 77.4
+  ongc_crude_net_realisation_usd_bbl: 75.4
+  ongc_crude_net_realisation_inr_bbl: 6375.82
+  apm_gas_price_usd_mmbtu: 6.5
+  inr_usd_fx_rate: 84.56
+  da_percentage: 45.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2025-02
+  fiscal_year: FY25
+  brent_usd_bbl: 77.64
+  ongc_crude_net_realisation_usd_bbl: 75.6
+  ongc_crude_net_realisation_inr_bbl: 6407.86
+  apm_gas_price_usd_mmbtu: 6.51
+  inr_usd_fx_rate: 84.76
+  da_percentage: 45.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2025-03
+  fiscal_year: FY25
+  brent_usd_bbl: 78.3
+  ongc_crude_net_realisation_usd_bbl: 76.15
+  ongc_crude_net_realisation_inr_bbl: 6465.9
+  apm_gas_price_usd_mmbtu: 6.52
+  inr_usd_fx_rate: 84.91
+  da_percentage: 45.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: FACTS §D3 (PR25), SAED ended 2-Dec-2024
+- month: 2025-04
+  fiscal_year: FY26
+  brent_usd_bbl: 70.9
+  ongc_crude_net_realisation_usd_bbl: 68.4
+  ongc_crude_net_realisation_inr_bbl: 6069.13
+  apm_gas_price_usd_mmbtu: 6.62
+  inr_usd_fx_rate: 88.73
+  da_percentage: 51.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2025-05
+  fiscal_year: FY26
+  brent_usd_bbl: 71.8
+  ongc_crude_net_realisation_usd_bbl: 69.15
+  ongc_crude_net_realisation_inr_bbl: 6132.22
+  apm_gas_price_usd_mmbtu: 6.62
+  inr_usd_fx_rate: 88.68
+  da_percentage: 51.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2025-06
+  fiscal_year: FY26
+  brent_usd_bbl: 72.46
+  ongc_crude_net_realisation_usd_bbl: 69.7
+  ongc_crude_net_realisation_inr_bbl: 6170.54
+  apm_gas_price_usd_mmbtu: 6.61
+  inr_usd_fx_rate: 88.53
+  da_percentage: 51.2
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2025-07
+  fiscal_year: FY26
+  brent_usd_bbl: 72.7
+  ongc_crude_net_realisation_usd_bbl: 69.9
+  ongc_crude_net_realisation_inr_bbl: 6174.27
+  apm_gas_price_usd_mmbtu: 6.6
+  inr_usd_fx_rate: 88.33
+  da_percentage: 52.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2025-08
+  fiscal_year: FY26
+  brent_usd_bbl: 72.46
+  ongc_crude_net_realisation_usd_bbl: 69.7
+  ongc_crude_net_realisation_inr_bbl: 6142.66
+  apm_gas_price_usd_mmbtu: 6.59
+  inr_usd_fx_rate: 88.13
+  da_percentage: 52.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2025-09
+  fiscal_year: FY26
+  brent_usd_bbl: 71.8
+  ongc_crude_net_realisation_usd_bbl: 69.15
+  ongc_crude_net_realisation_inr_bbl: 6083.82
+  apm_gas_price_usd_mmbtu: 6.58
+  inr_usd_fx_rate: 87.98
+  da_percentage: 52.0
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2025-10
+  fiscal_year: FY26
+  brent_usd_bbl: 70.9
+  ongc_crude_net_realisation_usd_bbl: 68.4
+  ongc_crude_net_realisation_inr_bbl: 6014.41
+  apm_gas_price_usd_mmbtu: 6.58
+  inr_usd_fx_rate: 87.93
+  da_percentage: 52.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2025-11
+  fiscal_year: FY26
+  brent_usd_bbl: 70.0
+  ongc_crude_net_realisation_usd_bbl: 67.65
+  ongc_crude_net_realisation_inr_bbl: 5951.85
+  apm_gas_price_usd_mmbtu: 6.58
+  inr_usd_fx_rate: 87.98
+  da_percentage: 52.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2025-12
+  fiscal_year: FY26
+  brent_usd_bbl: 69.34
+  ongc_crude_net_realisation_usd_bbl: 67.1
+  ongc_crude_net_realisation_inr_bbl: 5913.52
+  apm_gas_price_usd_mmbtu: 6.59
+  inr_usd_fx_rate: 88.13
+  da_percentage: 52.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2026-01
+  fiscal_year: FY26
+  brent_usd_bbl: 69.1
+  ongc_crude_net_realisation_usd_bbl: 66.9
+  ongc_crude_net_realisation_inr_bbl: 5909.28
+  apm_gas_price_usd_mmbtu: 6.6
+  inr_usd_fx_rate: 88.33
+  da_percentage: 50.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2026-02
+  fiscal_year: FY26
+  brent_usd_bbl: 69.34
+  ongc_crude_net_realisation_usd_bbl: 67.1
+  ongc_crude_net_realisation_inr_bbl: 5940.36
+  apm_gas_price_usd_mmbtu: 6.61
+  inr_usd_fx_rate: 88.53
+  da_percentage: 50.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2026-03
+  fiscal_year: FY26
+  brent_usd_bbl: 70.0
+  ongc_crude_net_realisation_usd_bbl: 67.65
+  ongc_crude_net_realisation_inr_bbl: 5999.2
+  apm_gas_price_usd_mmbtu: 6.62
+  inr_usd_fx_rate: 88.68
+  da_percentage: 50.4
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: 'FACTS §0 #14, FACTS §D3 (PR26, PR25)'
+- month: 2026-04
+  fiscal_year: FY27
+  brent_usd_bbl: 69.2
+  ongc_crude_net_realisation_usd_bbl: 66.8
+  ongc_crude_net_realisation_inr_bbl: 5945.2
+  apm_gas_price_usd_mmbtu: 6.77
+  inr_usd_fx_rate: 89.0
+  da_percentage: 54.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: FACTS H1-FY27 budget & APM ceiling increment ($6.75/mmbtu)
+- month: 2026-05
+  fiscal_year: FY27
+  brent_usd_bbl: 70.1
+  ongc_crude_net_realisation_usd_bbl: 67.55
+  ongc_crude_net_realisation_inr_bbl: 6008.57
+  apm_gas_price_usd_mmbtu: 6.77
+  inr_usd_fx_rate: 88.95
+  da_percentage: 54.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: FACTS H1-FY27 budget & APM ceiling increment ($6.75/mmbtu)
+- month: 2026-06
+  fiscal_year: FY27
+  brent_usd_bbl: 70.76
+  ongc_crude_net_realisation_usd_bbl: 68.1
+  ongc_crude_net_realisation_inr_bbl: 6047.28
+  apm_gas_price_usd_mmbtu: 6.76
+  inr_usd_fx_rate: 88.8
+  da_percentage: 54.8
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: FACTS H1-FY27 budget & APM ceiling increment ($6.75/mmbtu)
+- month: 2026-07
+  fiscal_year: FY27
+  brent_usd_bbl: 71.0
+  ongc_crude_net_realisation_usd_bbl: 68.3
+  ongc_crude_net_realisation_inr_bbl: 6051.38
+  apm_gas_price_usd_mmbtu: 6.75
+  inr_usd_fx_rate: 88.6
+  da_percentage: 55.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: FACTS H1-FY27 budget & APM ceiling increment ($6.75/mmbtu)
+- month: 2026-08
+  fiscal_year: FY27
+  brent_usd_bbl: 70.76
+  ongc_crude_net_realisation_usd_bbl: 68.1
+  ongc_crude_net_realisation_inr_bbl: 6020.04
+  apm_gas_price_usd_mmbtu: 6.74
+  inr_usd_fx_rate: 88.4
+  da_percentage: 55.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: FACTS H1-FY27 budget & APM ceiling increment ($6.75/mmbtu)
+- month: 2026-09
+  fiscal_year: FY27
+  brent_usd_bbl: 70.1
+  ongc_crude_net_realisation_usd_bbl: 67.55
+  ongc_crude_net_realisation_inr_bbl: 5961.29
+  apm_gas_price_usd_mmbtu: 6.73
+  inr_usd_fx_rate: 88.25
+  da_percentage: 55.6
+  windfall_tax_saed_usd_bbl: 0.0
+  anchor_source: FACTS H1-FY27 budget & APM ceiling increment ($6.75/mmbtu)

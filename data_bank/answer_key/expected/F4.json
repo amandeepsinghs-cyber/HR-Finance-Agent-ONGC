@@ -1,0 +1,61 @@
+{
+  "job_id": "89a1f378-1880-4688-bec6-9dc3c396ad78",
+  "total_bytes_processed": 12852,
+  "executed_at": "2026-10-20T06:38:50.077165+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 3,
+  "columns": [
+    "fiscal_year",
+    "months_covered",
+    "brent_usd_bbl",
+    "gross_realisation_usd_bbl",
+    "royalty_usd_bbl",
+    "oidb_cess_usd_bbl",
+    "saed_windfall_usd_bbl",
+    "total_levies_usd_bbl",
+    "post_levy_realisation_usd_bbl",
+    "levies_pct_of_realisation",
+    "total_levies_inr_bbl"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY27",
+      "months_covered": 6,
+      "brent_usd_bbl": 70.32,
+      "gross_realisation_usd_bbl": 67.73,
+      "royalty_usd_bbl": 8.64,
+      "oidb_cess_usd_bbl": 13.55,
+      "saed_windfall_usd_bbl": 0.0,
+      "total_levies_usd_bbl": 22.18,
+      "post_levy_realisation_usd_bbl": 45.55,
+      "levies_pct_of_realisation": 32.7,
+      "total_levies_inr_bbl": 1967.0
+    },
+    {
+      "fiscal_year": "FY26",
+      "months_covered": 12,
+      "brent_usd_bbl": 70.9,
+      "gross_realisation_usd_bbl": 68.4,
+      "royalty_usd_bbl": 8.72,
+      "oidb_cess_usd_bbl": 13.68,
+      "saed_windfall_usd_bbl": 0.0,
+      "total_levies_usd_bbl": 22.4,
+      "post_levy_realisation_usd_bbl": 46.0,
+      "levies_pct_of_realisation": 32.8,
+      "total_levies_inr_bbl": 1979.0
+    },
+    {
+      "fiscal_year": "FY25",
+      "months_covered": 12,
+      "brent_usd_bbl": 79.2,
+      "gross_realisation_usd_bbl": 76.9,
+      "royalty_usd_bbl": 9.8,
+      "oidb_cess_usd_bbl": 15.38,
+      "saed_windfall_usd_bbl": 3.27,
+      "total_levies_usd_bbl": 28.45,
+      "post_levy_realisation_usd_bbl": 48.45,
+      "levies_pct_of_realisation": 37.0,
+      "total_levies_inr_bbl": 2406.0
+    }
+  ]
+}

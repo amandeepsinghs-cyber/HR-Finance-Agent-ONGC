@@ -1,0 +1,139 @@
+{
+  "job_id": "f8853c8d-e2ad-423d-af90-b0af5690019f",
+  "total_bytes_processed": 2220818,
+  "executed_at": "2026-10-20T06:31:51.245183+00:00",
+  "elapsed_seconds": 0.69,
+  "row_count": 12,
+  "columns": [
+    "work_centre",
+    "discipline_name",
+    "retiring_12m",
+    "retiring_12m_e5_plus",
+    "retiring_12m_e7_plus",
+    "succession_plan_roles",
+    "plan_roles_retiring",
+    "first_retirement"
+  ],
+  "rows": [
+    {
+      "work_centre": "Mumbai High",
+      "discipline_name": "Production",
+      "retiring_12m": 24,
+      "retiring_12m_e5_plus": 9,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2026-10-31"
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline_name": "Production",
+      "retiring_12m": 19,
+      "retiring_12m_e5_plus": 6,
+      "retiring_12m_e7_plus": 2,
+      "succession_plan_roles": 1,
+      "plan_roles_retiring": "Chief General Manager (CGM) (2027-02-28)",
+      "first_retirement": "2026-10-31"
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline_name": "Drilling",
+      "retiring_12m": 17,
+      "retiring_12m_e5_plus": 6,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2026-10-31"
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline_name": "Drilling",
+      "retiring_12m": 10,
+      "retiring_12m_e5_plus": 3,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2026-10-31"
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline_name": "Geology",
+      "retiring_12m": 9,
+      "retiring_12m_e5_plus": 3,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2026-12-31"
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline_name": "Geophysics (Surface)",
+      "retiring_12m": 6,
+      "retiring_12m_e5_plus": 2,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2026-10-31"
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline_name": "Geophysics (Surface)",
+      "retiring_12m": 7,
+      "retiring_12m_e5_plus": 1,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2026-10-31"
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline_name": "Reservoir",
+      "retiring_12m": 3,
+      "retiring_12m_e5_plus": 1,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2026-10-31"
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline_name": "Geophysics (Surface)",
+      "retiring_12m": 2,
+      "retiring_12m_e5_plus": 1,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2027-06-30"
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline_name": "Reservoir",
+      "retiring_12m": 7,
+      "retiring_12m_e5_plus": 0,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2026-10-31"
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline_name": "Geology",
+      "retiring_12m": 4,
+      "retiring_12m_e5_plus": 0,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2026-10-31"
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline_name": "Drilling",
+      "retiring_12m": 3,
+      "retiring_12m_e5_plus": 0,
+      "retiring_12m_e7_plus": 0,
+      "succession_plan_roles": 0,
+      "plan_roles_retiring": null,
+      "first_retirement": "2026-12-31"
+    }
+  ]
+}

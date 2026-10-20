@@ -1,0 +1,231 @@
+disciplines:
+- discipline_id: DISC-DRL
+  code: DRL
+  name: Drilling
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Drilling operations, well engineering, rig operations onshore & offshore.
+- discipline_id: DISC-PRD
+  code: PRD
+  name: Production
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Petroleum engineering, surface facility operations, artificial lift, gathering systems.
+- discipline_id: DISC-RES
+  code: RES
+  name: Reservoir
+  function: technical
+  applicable_cadres:
+  - executive
+  description: Reservoir engineering, fluid characterization, dynamic modeling, reserve estimation.
+- discipline_id: DISC-GEO
+  code: GEO
+  name: Geology
+  function: technical
+  applicable_cadres:
+  - executive
+  description: Basin modeling, sedimentology, exploration geology, structural interpretation.
+- discipline_id: DISC-GPS
+  code: GPS
+  name: Geophysics (Surface)
+  function: technical
+  applicable_cadres:
+  - executive
+  description: 2D/3D/4D seismic acquisition, seismic processing, depth imaging, velocity modeling.
+- discipline_id: DISC-GPW
+  code: GPW
+  name: Geophysics (Wells)
+  function: technical
+  applicable_cadres:
+  - executive
+  description: Borehole geophysics, vertical seismic profiling (VSP), petrophysical logging.
+- discipline_id: DISC-CHM
+  code: CHM
+  name: Chemistry
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Oil & gas analytics, drilling fluids chemistry, produced water quality, production chemicals.
+- discipline_id: DISC-MEC
+  code: MEC
+  name: Mechanical
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Rotary equipment, turbines, compressors, maintenance, pipeline engineering.
+- discipline_id: DISC-ELE
+  code: ELE
+  name: Electrical
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Power generation, transmission, switchgears, offshore electrical distribution.
+- discipline_id: DISC-INS
+  code: INS
+  name: Instrumentation
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: SCADA, distributed control systems (DCS), telemetry, field sensors.
+- discipline_id: DISC-CIV
+  code: CIV
+  name: Civil
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Plinth construction, foundations, marine jetties, structural civil engineering.
+- discipline_id: DISC-MAR
+  code: MAR
+  name: Marine / Naval Architecture
+  function: technical
+  applicable_cadres:
+  - executive
+  description: Offshore vessel stability, mooring systems, FPSO & platform marine integrity.
+- discipline_id: DISC-WEL
+  code: WEL
+  name: Well Services
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Workover rigs, well stimulation, acidizing, hydraulic fracturing, wireline.
+- discipline_id: DISC-AUT
+  code: AUT
+  name: Auto / Transport Engineering
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Heavy transport fleets, specialized mobile equipment, field mobilization.
+- discipline_id: DISC-HSE
+  code: HSE
+  name: Environment & Safety (HSE)
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Occupational health, process safety management, effluent standards, emissions compliance.
+- discipline_id: DISC-IT
+  code: IT
+  name: Information Technology
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: SAP ERP, high-performance computing, corporate networking, cloud infrastructure, cybersecurity.
+- discipline_id: DISC-TEL
+  code: TEL
+  name: Telecommunications
+  function: technical
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Offshore microwave, VSAT communications, radio links, field telemetry.
+- discipline_id: DISC-IE
+  code: IE
+  name: Industrial Engineering
+  function: technical
+  applicable_cadres:
+  - executive
+  description: Manpower norms, operational productivity studies, business process engineering.
+- discipline_id: DISC-FIN
+  code: FIN
+  name: Finance & Accounts (F&A)
+  function: finance
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Corporate accounts, budget & cost control, treasury, taxation, JV accounting, audit.
+- discipline_id: DISC-HR
+  code: HR
+  name: Human Resources (HR)
+  function: hr
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Employee relations, talent acquisition, transfer & posting, DPC, training, welfare.
+- discipline_id: DISC-MM
+  code: MM
+  name: Materials Management (MM)
+  function: support
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Procurement, tendering, inventory control, warehouse management, GeM portal operations.
+- discipline_id: DISC-LEG
+  code: LEG
+  name: Legal
+  function: support
+  applicable_cadres:
+  - executive
+  description: Contractual dispute resolution, arbitration, statutory litigation, corporate governance.
+- discipline_id: DISC-CC
+  code: CC
+  name: Corporate Communications
+  function: support
+  applicable_cadres:
+  - executive
+  description: Media relations, public affairs, branding, internal communications, stakeholder outreach.
+- discipline_id: DISC-MED
+  code: MED
+  name: Medical Services
+  function: support
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Occupational health centres, offshore medical emergencies, employee healthcare benefits.
+- discipline_id: DISC-SEC
+  code: SEC
+  name: Security
+  function: support
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Asset protection, CISF liaison, installation access control, perimeter security.
+- discipline_id: DISC-FIR
+  code: FIR
+  name: Fire Services
+  function: support
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Fire prevention, plant emergency response, offshore firefighting systems, disaster drill management.
+- discipline_id: DISC-OL
+  code: OL
+  name: Official Language (Rajbhasha)
+  function: support
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Implementation of Official Language Policy, translation, bilingual compliance.
+- discipline_id: DISC-LOG
+  code: LOG
+  name: Logistics & Shipping
+  function: support
+  applicable_cadres:
+  - executive
+  - non_executive
+  description: Supply base operations, crew movement, heavy consignment routing.
+- discipline_id: DISC-CSR
+  code: CSR
+  name: Corporate Social Responsibility
+  function: support
+  applicable_cadres:
+  - executive
+  description: Community development, aspirational districts development, education and healthcare initiatives.
+- discipline_id: DISC-SECY
+  code: SECY
+  name: Secretarial & Board Affairs
+  function: support
+  applicable_cadres:
+  - executive
+  description: Company secretary operations, SEBI compliance, Board & AGM management.

@@ -1,0 +1,29 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "cag_paras",
+  description: "Comptroller & Auditor General (CAG) audit paragraphs, aged audit objections, and Action Taken Note (ATN) status."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_0) AS cag_para_id,
+    TRIM(col_1) AS report_number,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_2), ''), ',', ''), '₹', '') AS INT64) AS cag_report_year,
+    TRIM(col_3) AS fiscal_year,
+    TRIM(col_4) AS operating_department,
+    TRIM(col_5) AS wc_id,
+    TRIM(col_6) AS para_subject,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_7), ''), ',', ''), '₹', '') AS NUMERIC) AS financial_implication_inr_cr,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_8), ''), 1, 10)) AS notification_date,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_9), ''), ',', ''), '₹', '') AS NUMERIC) AS age_in_years,
+    CASE WHEN LOWER(TRIM(col_10)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_10)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_aged_over_3_years,
+    TRIM(col_11) AS current_status,
+    TRIM(col_12) AS bottleneck_reason
+  FROM ${ref("excel_cag_paras_register")}
+  WHERE _row_number >= 2 AND col_0 IS NOT NULL AND TRIM(col_0) != '' AND _sheet_name NOT IN ('Notes_and_Citations', 'Executive_Summary', '_Ref_Capex_Codes', '_Cadre_Control_Master', '_MoU_Grading_Rules', '_Schedule_VII_Themes', '_Talent_Bench_Scale', '_Court_Jurisdiction_Codes')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY cag_para_id ORDER BY _ingest_ts DESC) = 1

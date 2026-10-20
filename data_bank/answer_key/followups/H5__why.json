@@ -1,0 +1,36 @@
+{
+  "job_id": "3984338a-24fa-418c-a4d3-3e4e652f55b5",
+  "total_bytes_processed": 456938,
+  "executed_at": "2026-10-20T06:38:46.338738+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 2,
+  "columns": [
+    "pending_reason",
+    "delay_bottleneck_reason",
+    "case_count",
+    "share_pct",
+    "e4_to_e5",
+    "e5_to_e6",
+    "avg_recorded_delay_months"
+  ],
+  "rows": [
+    {
+      "pending_reason": "court_stay_seniority_dispute",
+      "delay_bottleneck_reason": "CAT Guwahati stay on feeder grade seniority roster",
+      "case_count": 122,
+      "share_pct": 53.5,
+      "e4_to_e5": 66,
+      "e5_to_e6": 56,
+      "avg_recorded_delay_months": 8.5
+    },
+    {
+      "pending_reason": "vigilance_clearance_pending",
+      "delay_bottleneck_reason": "Pending CVO advice on disciplinary review appeals",
+      "case_count": 106,
+      "share_pct": 46.5,
+      "e4_to_e5": 62,
+      "e5_to_e6": 44,
+      "avg_recorded_delay_months": 8.7
+    }
+  ]
+}

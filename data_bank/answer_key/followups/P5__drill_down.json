@@ -1,0 +1,23 @@
+{
+  "job_id": "3d6d7dbc-d0ce-4ed6-b5be-75bfb748ffb5",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:18.206687+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 6.0",
+      "heading": "Study Leave Eligibility & Approval",
+      "provision": "Leave Rules 6.1-6.2",
+      "quote_snippet": "6.1 Purpose & Eligibility: Study leave may be granted to an executive to undergo specialized postgraduate study, executive fellowship, or research directly relevant to the hydrocarbon exploration, reservoir development, drilling engineering, or corporate finance operations of the Corporation. 6.2 Minimum Service Prerequisite: An executive must have completed a minimum of 5 (five) years of continuous regular service in ONGC to be eligible for consideration for study leave."
+    }
+  ]
+}

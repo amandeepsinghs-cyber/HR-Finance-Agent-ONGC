@@ -1,0 +1,75 @@
+{
+  "job_id": "b2533bf5-5385-4cd2-9a1b-eaae959e5254",
+  "total_bytes_processed": 2225905,
+  "executed_at": "2026-10-20T06:37:23.171710+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "green_capex_cr",
+    "cumulative_green_capex_cr",
+    "company_capex_cr",
+    "green_share_of_capex_pct",
+    "installed_mw",
+    "all_roadmap_milestones_met",
+    "employees_newly_reskilled",
+    "cumulative_distinct_employees_reskilled"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "green_capex_cr": 253.3,
+      "cumulative_green_capex_cr": 253.3,
+      "company_capex_cr": 27741.0,
+      "green_share_of_capex_pct": 0.9,
+      "installed_mw": 60.3,
+      "all_roadmap_milestones_met": true,
+      "employees_newly_reskilled": 1672,
+      "cumulative_distinct_employees_reskilled": 1672
+    },
+    {
+      "fiscal_year": "FY23",
+      "green_capex_cr": 1346.5,
+      "cumulative_green_capex_cr": 1599.8,
+      "company_capex_cr": 30208.0,
+      "green_share_of_capex_pct": 4.5,
+      "installed_mw": 320.6,
+      "all_roadmap_milestones_met": true,
+      "employees_newly_reskilled": 1510,
+      "cumulative_distinct_employees_reskilled": 3182
+    },
+    {
+      "fiscal_year": "FY24",
+      "green_capex_cr": 4037.0,
+      "cumulative_green_capex_cr": 5636.8,
+      "company_capex_cr": 37494.0,
+      "green_share_of_capex_pct": 10.8,
+      "installed_mw": 961.2,
+      "all_roadmap_milestones_met": true,
+      "employees_newly_reskilled": 1336,
+      "cumulative_distinct_employees_reskilled": 4518
+    },
+    {
+      "fiscal_year": "FY25",
+      "green_capex_cr": 7788.9,
+      "cumulative_green_capex_cr": 13425.7,
+      "company_capex_cr": 62057.0,
+      "green_share_of_capex_pct": 12.6,
+      "installed_mw": 1854.5,
+      "all_roadmap_milestones_met": true,
+      "employees_newly_reskilled": 1199,
+      "cumulative_distinct_employees_reskilled": 5717
+    },
+    {
+      "fiscal_year": "FY26",
+      "green_capex_cr": 11982.6,
+      "cumulative_green_capex_cr": 25408.3,
+      "company_capex_cr": 35878.0,
+      "green_share_of_capex_pct": 33.4,
+      "installed_mw": 2853.0,
+      "all_roadmap_milestones_met": true,
+      "employees_newly_reskilled": 1195,
+      "cumulative_distinct_employees_reskilled": 6912
+    }
+  ]
+}

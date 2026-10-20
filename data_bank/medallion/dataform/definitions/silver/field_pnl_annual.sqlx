@@ -1,0 +1,54 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "field_pnl_annual",
+  description: "Field-level profitability statement detailing gross revenues, statutory levies, opex cost elements, EBITDA, lifting cost, and PEC farmout viability."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`pnl_id`) AS pnl_id,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`field_id`) AS field_id,
+    TRIM(`line_type`) AS line_type,
+    TRIM(`asset_wc_id`) AS asset_wc_id,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`oil_revenue_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS oil_revenue_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`gas_revenue_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS gas_revenue_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`gross_revenue_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS gross_revenue_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`statutory_royalty_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS statutory_royalty_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`statutory_cess_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS statutory_cess_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`statutory_windfall_tax_saed_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS statutory_windfall_tax_saed_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`net_revenue_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS net_revenue_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`allocated_manpower_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS allocated_manpower_cost_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`regular_employee_headcount`), ''), ',', ''), '₹', '') AS INT64) AS regular_employee_headcount,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`contractor_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS contractor_cost_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`contractor_headcount`), ''), ',', ''), '₹', '') AS INT64) AS contractor_headcount,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`power_fuel_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS power_fuel_cost_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`workover_repairs_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS workover_repairs_cost_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`water_handling_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS water_handling_cost_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`logistics_osv_chopper_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS logistics_osv_chopper_cost_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`chemicals_consumables_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS chemicals_consumables_cost_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`other_opex_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS other_opex_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`total_opex_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS total_opex_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`ebitda_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS ebitda_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`ebitda_margin_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS ebitda_margin_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`dda_depreciation_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS dda_depreciation_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`pbt_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS pbt_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`total_production_boe`), ''), ',', ''), '₹', '') AS NUMERIC) AS total_production_boe,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`lifting_cost_per_boe_usd`), ''), ',', ''), '₹', '') AS NUMERIC) AS lifting_cost_per_boe_usd,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`manpower_cost_per_boe_usd`), ''), ',', ''), '₹', '') AS NUMERIC) AS manpower_cost_per_boe_usd,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`boe_per_employee`), ''), ',', ''), '₹', '') AS NUMERIC) AS boe_per_employee,
+    CASE WHEN LOWER(TRIM(`is_loss_making_3yr_consecutive`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`is_loss_making_3yr_consecutive`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_loss_making_3yr_consecutive,
+    CASE WHEN LOWER(TRIM(`is_divestment_candidate`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`is_divestment_candidate`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_divestment_candidate,
+    CASE WHEN LOWER(TRIM(`pec_monetisation_potential_flag`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`pec_monetisation_potential_flag`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS pec_monetisation_potential_flag,
+    TRIM(`root_cause_loss_code`) AS root_cause_loss_code,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`estimated_annual_opex_savings_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS estimated_annual_opex_savings_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`estimated_annual_capex_savings_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS estimated_annual_capex_savings_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`projected_pec_farmout_payoff_5yr_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS projected_pec_farmout_payoff_5yr_inr_cr
+  FROM ${ref("sap_co_pa")}
+  WHERE NULLIF(TRIM(`pnl_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY pnl_id ORDER BY _ingest_ts DESC) = 1

@@ -1,0 +1,35 @@
+{
+  "job_id": "3b94bffa-8b99-4acd-9559-a4cc71b9cdc1",
+  "total_bytes_processed": 727401,
+  "executed_at": "2026-10-20T06:42:16.412480+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 1,
+  "columns": [
+    "grade_id",
+    "cadre",
+    "designation",
+    "pay_scale_min_inr",
+    "pay_scale_max_inr",
+    "scale_type",
+    "promotion_mode",
+    "typical_residency_years",
+    "dpc_evaluation_type",
+    "next_grade_id",
+    "next_grade_designation"
+  ],
+  "rows": [
+    {
+      "grade_id": "GRP-C",
+      "cadre": "non_executive",
+      "designation": "Junior Technician / Rigman / Production Operator (W3\u2013W4)",
+      "pay_scale_min_inr": 24000.0,
+      "pay_scale_max_inr": 87500.0,
+      "scale_type": "ONGC-Wage-Settlement",
+      "promotion_mode": "time_bound",
+      "typical_residency_years": 5,
+      "dpc_evaluation_type": "Trade Test & Performance Review",
+      "next_grade_id": "GRP-B",
+      "next_grade_designation": "Senior Technician / Foreman / Assistant Superintendent (W5\u2013W7)"
+    }
+  ]
+}

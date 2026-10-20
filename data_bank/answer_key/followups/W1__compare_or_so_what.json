@@ -1,0 +1,33 @@
+{
+  "job_id": "ee4007e4-e03d-43fc-bea4-09f6c431f7d2",
+  "total_bytes_processed": 79278,
+  "executed_at": "2026-10-20T06:42:34.601020+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 1,
+  "columns": [
+    "field_gross_revenue_cr",
+    "sim_field_gross_revenue_cr",
+    "revenue_change_cr",
+    "field_ebitda_cr",
+    "sim_field_ebitda_cr",
+    "ebitda_change_cr",
+    "company_ebitda_fy26_cr",
+    "sim_company_ebitda_cr",
+    "company_ebitda_change_pct",
+    "pretax_operating_cash_flow_change_cr"
+  ],
+  "rows": [
+    {
+      "field_gross_revenue_cr": 125145.85,
+      "sim_field_gross_revenue_cr": 110677.61,
+      "revenue_change_cr": -14468.24,
+      "field_ebitda_cr": 75277.88,
+      "sim_field_ebitda_cr": 64157.15,
+      "ebitda_change_cr": -11120.73,
+      "company_ebitda_fy26_cr": 63284.03,
+      "sim_company_ebitda_cr": 52163.3,
+      "company_ebitda_change_pct": -17.6,
+      "pretax_operating_cash_flow_change_cr": -11120.73
+    }
+  ]
+}

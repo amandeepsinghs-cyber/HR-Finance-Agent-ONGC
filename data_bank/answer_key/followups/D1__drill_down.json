@@ -1,0 +1,23 @@
+{
+  "job_id": "acf54bfa-23f5-4a75-b951-55690358807e",
+  "total_bytes_processed": 1180,
+  "executed_at": "2026-10-20T06:32:49.267565+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 1,
+  "columns": [
+    "grade_id",
+    "designation",
+    "pay_scale_min_inr",
+    "pay_scale_max_inr",
+    "pay_scale_midpoint_inr"
+  ],
+  "rows": [
+    {
+      "grade_id": "E6",
+      "designation": "Joint General Manager (JGM) / Addl. GM",
+      "pay_scale_min_inr": 120000.0,
+      "pay_scale_max_inr": 280000.0,
+      "pay_scale_midpoint_inr": 200000.0
+    }
+  ]
+}

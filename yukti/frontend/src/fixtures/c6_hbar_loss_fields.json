@@ -1,0 +1,103 @@
+{
+  "turn_id": "turn_c6_004",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "In fiscal 2026, Mumbai High South and North generated our highest profits with 7132.1 crore and 6972.39 crore profit before tax. Conversely, Champang and Borholla recorded operational losses.",
+  "display_text": "Analysis across 53 field records for FY26 [1]. Leading record reflects field_name: Mumbai High South, asset: Mumbai High, gross_revenue_inr_cr: 16711.24, pbt_inr_cr: 7132.1.",
+  "visual": {
+    "type": "chart",
+    "mode": "replace",
+    "title": "ONGC Field Profitability (PBT in \u20b9 Crore) \u2014 FY26 Top Earners vs Loss Fields",
+    "chart": {
+      "kind": "hbar",
+      "y": "field",
+      "value": "pbt_cr",
+      "unit": "\u20b9 Crore",
+      "sort": "desc",
+      "data": [
+        {
+          "field": "Mumbai High South",
+          "work_centre": "Mumbai High",
+          "revenue_cr": 16711.24,
+          "pbt_cr": 7132.1,
+          "status": "Profit"
+        },
+        {
+          "field": "Mumbai High North",
+          "work_centre": "Mumbai High",
+          "revenue_cr": 16397.73,
+          "pbt_cr": 6972.39,
+          "status": "Profit"
+        },
+        {
+          "field": "Gandhar",
+          "work_centre": "Ankleshwar Asset",
+          "revenue_cr": 10043.62,
+          "pbt_cr": 5702.6,
+          "status": "Profit"
+        },
+        {
+          "field": "KG-DWN-98/2 Cluster-II",
+          "work_centre": "Eastern Offshore",
+          "revenue_cr": 11506.51,
+          "pbt_cr": 5230.72,
+          "status": "Profit"
+        },
+        {
+          "field": "Bassein",
+          "work_centre": "Bassein & Satellite",
+          "revenue_cr": 14092.95,
+          "pbt_cr": 4366.37,
+          "status": "Profit"
+        },
+        {
+          "field": "Champang",
+          "work_centre": "Jorhat Asset",
+          "revenue_cr": 329.6,
+          "pbt_cr": -4.93,
+          "status": "Loss"
+        }
+      ]
+    },
+    "kpis": [
+      {
+        "label": "Top Producer PBT",
+        "value": 7132.1,
+        "unit": "\u20b9 Cr",
+        "delta": "Mumbai High South"
+      },
+      {
+        "label": "Evaluated Fields Count",
+        "value": 53,
+        "unit": "Fields",
+        "delta": "FY26 Audited"
+      }
+    ]
+  },
+  "insights": [
+    "Analysis of enterprise data across 53 records indicates operational field earnings patterns.",
+    "Leading record reflects field_name: Mumbai High South, asset: Mumbai High, pbt_inr_cr: 7132.1.",
+    "Second leading producer is Mumbai High North with PBT of 6972.39 crore."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.v_field_pnl",
+      "query_id": "7d5015b2-937c-4203-8684-d2c2c7cd281a",
+      "sql": "-- Answer Key SQL: C6\n-- Question: Which fields or assets were the most profitable and which made losses in FY26?\n-- Type: data\n-- Semantic audit 2026-10-20: result unchanged in substance (the inner join to dim_field already excluded the\n-- non-field P&L lines). Hygiene: explicit LOWER(line_type) = 'field', dropped the never-matching '2026'\n-- fiscal-year alternate, added PBT margin and a loss flag so \"which made losses\" is explicit (FY26: 53 fields).\n\nSELECT\n    f.name AS field_name,\n    wc.short_name AS asset,\n    f.onshore_offshore,\n    f.maturity,\n    pnl.gross_revenue_inr_cr,\n    pnl.total_opex_inr_cr,\n    pnl.ebitda_inr_cr,\n    pnl.pbt_inr_cr,\n    ROUND(pnl.pbt_inr_cr * 100.0 / NULLIF(pnl.gross_revenue_inr_cr, 0), 1) AS pbt_margin_pct,\n    pnl.pbt_inr_cr < 0 AS is_loss_making\nFROM field_pnl_annual pnl\nJOIN dim_field f ON pnl.field_id = f.field_id\nJOIN dim_work_centre wc ON pnl.asset_wc_id = wc.wc_id\nWHERE pnl.fiscal_year = 'FY26'\n  AND LOWER(pnl.line_type) = 'field'\nORDER BY pnl.pbt_inr_cr DESC;\n"
+    }
+  ],
+  "suggestions": [
+    "Run $60 Brent sensitivity on loss fields",
+    "Compare lifting cost per boe across assets",
+    "Draft PEC transition strategy paper"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "pdf"
+  ]
+}

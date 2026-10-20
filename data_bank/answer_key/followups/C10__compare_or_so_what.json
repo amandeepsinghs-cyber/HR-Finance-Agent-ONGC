@@ -1,0 +1,53 @@
+{
+  "job_id": "18a434de-3595-4d32-ae19-2ee744352d44",
+  "total_bytes_processed": 2162,
+  "executed_at": "2026-10-20T06:48:51.900399+00:00",
+  "elapsed_seconds": 0.83,
+  "row_count": 3,
+  "columns": [
+    "fiscal_year",
+    "composite_score",
+    "projected_year_end_composite",
+    "sum_weighted_scores",
+    "params_excellent",
+    "params_very_good",
+    "params_good",
+    "weight_rated_excellent",
+    "parameters"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY25",
+      "composite_score": 4.62,
+      "projected_year_end_composite": 4.62,
+      "sum_weighted_scores": 4.62,
+      "params_excellent": 4,
+      "params_very_good": 5,
+      "params_good": 0,
+      "weight_rated_excellent": 45.0,
+      "parameters": 9
+    },
+    {
+      "fiscal_year": "FY26",
+      "composite_score": 4.28,
+      "projected_year_end_composite": 4.28,
+      "sum_weighted_scores": 4.28,
+      "params_excellent": 0,
+      "params_very_good": 7,
+      "params_good": 2,
+      "weight_rated_excellent": 0.0,
+      "parameters": 9
+    },
+    {
+      "fiscal_year": "FY27",
+      "composite_score": 4.0,
+      "projected_year_end_composite": 3.88,
+      "sum_weighted_scores": 4.0,
+      "params_excellent": 0,
+      "params_very_good": 6,
+      "params_good": 3,
+      "weight_rated_excellent": 0.0,
+      "parameters": 9
+    }
+  ]
+}

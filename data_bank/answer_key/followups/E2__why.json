@@ -1,0 +1,27 @@
+{
+  "job_id": "1ef15f67-280a-4cff-88bf-87da187d4bef",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:50.505058+00:00",
+  "elapsed_seconds": 0.71,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 3.0",
+      "heading": "Station Tenure Norms",
+      "quote_snippet": "3.1 Minimum Station Tenure: The minimum normal tenure of an executive at any station shall be 3 (three) completed years. 3.2 Normal Rotation Window: Normal rotation of an executive shall be considered upon completion of 3 to 5 years at a work centre. No executive shall ordinarily be displaced prior to completing 3 years, except on administrative exigencies, organizational restructuring, or proven "
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 9.0",
+      "heading": "Annual Transfer Calendar & Notification Procedure",
+      "quote_snippet": "9.1 Structured Annual Transfer Cycle: To maintain operational stability and align with academic school sessions, general transfers shall follow a strict annual schedule: (a) Initiation & Preference Submission (November\u2013December): Corporate HR invites online tenure-complete declarations and transfer preferences via ESS. (b) Cadre Balancing & Replacement Mapping (January\u2013February): Corporate HR and "
+    }
+  ]
+}

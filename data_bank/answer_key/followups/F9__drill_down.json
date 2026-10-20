@@ -1,0 +1,54 @@
+{
+  "job_id": "40995993-7357-493f-a157-ec55676cc1e4",
+  "total_bytes_processed": 11127,
+  "executed_at": "2026-10-20T06:39:12.518926+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 4,
+  "columns": [
+    "contract_category",
+    "gross_exposure_usd_mn",
+    "hedged_usd_mn",
+    "unhedged_usd_mn",
+    "hedge_ratio_pct",
+    "unhedged_inr_cr",
+    "fx_rate_used"
+  ],
+  "rows": [
+    {
+      "contract_category": "subsea_epc",
+      "gross_exposure_usd_mn": 228.2,
+      "hedged_usd_mn": 40.2,
+      "unhedged_usd_mn": 188.1,
+      "hedge_ratio_pct": 17.6,
+      "unhedged_inr_cr": 1660.0,
+      "fx_rate_used": 88.25
+    },
+    {
+      "contract_category": "rig_charter",
+      "gross_exposure_usd_mn": 327.9,
+      "hedged_usd_mn": 305.8,
+      "unhedged_usd_mn": 22.1,
+      "hedge_ratio_pct": 93.3,
+      "unhedged_inr_cr": 195.0,
+      "fx_rate_used": 88.25
+    },
+    {
+      "contract_category": "equipment_import",
+      "gross_exposure_usd_mn": 104.1,
+      "hedged_usd_mn": 82.1,
+      "unhedged_usd_mn": 22.0,
+      "hedge_ratio_pct": 78.9,
+      "unhedged_inr_cr": 194.0,
+      "fx_rate_used": 88.25
+    },
+    {
+      "contract_category": "TOTAL (3 categories)",
+      "gross_exposure_usd_mn": 660.2,
+      "hedged_usd_mn": 428.0,
+      "unhedged_usd_mn": 232.1,
+      "hedge_ratio_pct": 64.8,
+      "unhedged_inr_cr": 2049.0,
+      "fx_rate_used": 88.25
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "job_id": "d36b7c76-7a1f-4ba8-beac-2db673ab64a2",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:42:10.386929+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 11.0",
+      "heading": "Confidentiality of Pre-Decisional Records",
+      "quote_snippet": "11.1 Absolute Confidentiality of Draft Proposals: All preliminary transfer sheets, draft rosters, internal deliberations of the Transfer Screening Committee, and proposed replacement lists are strictly CONFIDENTIAL and PRE-DECISIONAL records under Rule 11 of the ONGC CDA Rules, 1994. 11.2 Prohibition of Unauthorized Disclosure: No employee or executive shall solicit, disclose, share, circulate, or leak draft transfer orders prior to official notification on the intranet portal. Any unauthorized disclosure of draft transfer lists constitutes major misconduct. 11.3 Digital System Access Controls: Access to transfer generation modules and draft proposal tables shall be restricted strictly to authorized personnel in Corporate HR."
+    },
+    {
+      "doc_id": "HR Manual",
+      "clause_ref": "Clause 5.0",
+      "heading": "Confidentiality of Individual Compensation",
+      "quote_snippet": "5.1 Colleague Data Privacy: The individual salary details, net pay, allowances, deductions, bank accounts, income tax records, and performance ratings of colleagues and supervisors are protected personal information under corporate data privacy rules and Section 8(1)(j) of the Right to Information Act, 2005. 5.2 Strict Prohibition against Queries: Employees, automated systems, and corporate tools are prohibited from disclosing, querying, or facilitating access to individual compensation or appraisal records of any other employee without written statutory authorization. 5.3 Disciplinary Violation: Attempting to access, query, extract, or publish the salary, appraisal rating, or confidential HR profile of a reporting officer or colleague constitutes major misconduct under Rule 4 and Rule 11 of the ONGC CDA Rules, 1994."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# Answer Key: P6__drill_down
+
+**Question:** What is the exact monetary ceiling on gifts specified under ONGC Conduct, Discipline and Appeal (CDA) rules?
+**Type:** `policy` | **Result Count:** `3` rows | **Execution:** `0.65s`
+
+## Executive Synthesis
+The gift ceilings are: gifts from near relatives at weddings or religious functions must be reported above rupees twenty five thousand for executives / rupees fifteen thousand for non-executives (Rule 12(2)); gifts from personal friends without official dealings must be reported above rupees one thousand five hundred (12(3)); and any other gift above rupees one thousand five hundred needs prior sanction, with repeat gifts from one source within 12 months reportable above Rs.25,000/- / Rs.15000/- in aggregate (12(4)). These are the DPE model conduct rules for CPSEs (G-06); the ONGC CDA Rules text in the corpus (P1-01) contains no gift schedule of its own.
+
+### Summary Result Table
+| doc_id | clause_ref | heading | provision | quote_snippet |
+| --- | --- | --- | --- | --- |
+| G-06 | 12. Gifts | DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts | DPE CDA Rule 12(2) (near relatives) | 2. On occasions such as weddings, anniversaries, funerals or religious functions, when the making of gifts is in conformity with the prevailing religious or social practices, an employee of the CPSE may accept gifts, from his/her near relatives but employee shall make a report to the competent authority if the value of the gift exceeds (i) rupees twenty five thousand in the case of Executives; (ii) rupees fifteen thousand in the case of an Non-Executives; |
+| G-06 | 12. Gifts | DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts | DPE CDA Rule 12(3) (personal friends) | 3. On such occasions as are specified in sub-rule (2), an employee of the CPSE may accept gifts from his/her personal friends having no official dealings with the employee, but employee shall make a report to the competent authority if the value of any such gift exceeds rupees one thousand five hundred in the case of Executives and Non-Executives; |
+| G-06 | 12. Gifts | DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts | DPE CDA Rule 12(4) (any other case / aggregate) | 4. In any other case, an employee of the CPSE shall not accept or permit any other member of his/her family or any other person acting on his/her behalf to accept any gifts without the sanction of the competent authority if the value thereof exceeds rupees one thousand five hundred in the case of Executives and Non-Executives; Provided that when more than one gift has been received from the same person/firm within a period of 12 months, the matter shall be reported to the competent authority if the aggregate value of the gifts exceeds Rs.25,000/- and Rs.15000/-in case of Executives and Non-Executives respec- tively. |

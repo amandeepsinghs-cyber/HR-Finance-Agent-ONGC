@@ -1,0 +1,240 @@
+- id: F1
+  defect_class: [PCT_DENOM, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Unweighted avg of field $/BOE by asset (Jorhat 46.39, Cauvery 17.47...); no company average, no above/below flag"
+  new_headline: "9 of 15 assets above production-weighted company avg $9.13/BOE; Jorhat $46.30 outlier, Ankleshwar $6.13 lowest"
+  why: "AVG of field ratios ignores volume; question needs company average and flag. Now SUM(cost x BOE)/SUM(BOE), field lines, FY26."
+  severity: important
+- id: F1__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Opex components for all 19 work centres ranked by total opex (Delhi HQ first)"
+  new_headline: "Jorhat ($46.30/BOE): manpower 66.7% of Rs 726 cr opex; power/workover/chemicals/water only 18.6%"
+  why: "Did not isolate the highest-cost asset and included corporate/plant lines. Now dynamic top asset from F1 and component breakdown."
+  severity: blocking
+- id: F1__why
+  defect_class: [PCT_DENOM, GENERIC_TEXT]
+  old_headline: "Cambay/Mehsana unweighted $/BOE FY24-26 (9.63->...) with opex only"
+  new_headline: "Rs/BOE up FY24->FY26 (Cambay +4.6%, Mehsana +8.0%): output -14%/-11% on flat opex, rising water cut; USD masks it"
+  why: "Unweighted average and no drivers; now weighted, INR & USD, production, manpower, power, water cut."
+  severity: important
+- id: F1__compare_or_so_what
+  defect_class: [WRONG_QUESTION, PCT_DENOM, GENERIC_TEXT]
+  old_headline: "Onshore 15.23 vs offshore 11.39 $/BOE (unweighted) vs 11.5; Mumbai High not isolated"
+  new_headline: "Mumbai High $10.31/BOE vs onshore $10.13, other offshore $7.92, company $9.13; all below $11.5 benchmark"
+  why: "Question asks for Mumbai High specifically; ratios were unweighted. Added reported corporate lifting cost $14.04 for context."
+  severity: important
+- id: F2
+  defect_class: [WRONG_QUESTION, JOIN_FANOUT, FY_MAPPING, GENERIC_TEXT]
+  old_headline: "360 project_progress milestone rows (6 per project) with RCE overrun; no BE/RE/actual, no year"
+  new_headline: "FY27 YTD capex Rs 18,020 cr vs BE Rs 18,915 cr (95.3%) / RE Rs 18,537 cr (97.2%); Eastern Offshore largest shortfall"
+  why: "Did not answer BE vs RE vs actual by asset for current year; now capex_budget FY27 (6 months) by asset."
+  severity: blocking
+- id: F2__drill_down
+  defect_class: [FY_MAPPING, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "FY26 project variance vs BE, grouped by name, no segment (KG-DWN -1,189 cr)"
+  new_headline: "FY27 YTD: KG-DWN-98/2 Cluster-II Rs 454 cr under BE; largest overspend only +Rs 6.8 cr (PRP-VII)"
+  why: "Aligned to parent's current year; offshore/onshore split; top-3 over/under per segment."
+  severity: important
+- id: F2__why
+  defect_class: [JOIN_FANOUT, WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "Company-wide overrun by root cause: engineering_drawing_approval Rs 44,601 cr, subsea Rs 33,995 cr (6x milestone fan-out)"
+  new_headline: "Eastern Offshore: KG-DWN-98/2 subsea_commissioning, 15 months slip, Rs 5,102 cr overrun, 3 critical-path milestones"
+  why: "Project-level overrun repeated on 6 milestone rows was summed (6x); no Eastern Offshore filter. Procurement/rig/clearance causes absent from data (GAP)."
+  severity: blocking
+- id: F2__compare_or_so_what
+  defect_class: [WRONG_QUESTION, UNEQUAL_PERIODS, GENERIC_TEXT]
+  old_headline: "Full-year FY22-FY26 BE/RE/actual totals; no current YTD or Q2 curve"
+  new_headline: "FY27 H1 Rs 18,020 cr = 95.3% of H1 BE, within FY22-26 range 94.8-97.0%; H1 historically 49.7-50.2% of year"
+  why: "Compared 12-month totals instead of end-Q2 position; now H1 (Apr-Sep) each year."
+  severity: important
+- id: F3
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template"
+  new_headline: "53 fields: revenue Rs 1,03,737 cr (FY22) -> Rs 1,25,146 cr (FY26); EBITDA Rs 56,004 cr -> Rs 75,278 cr"
+  why: "SQL correct (dim_field join restricts to field lines); narrative written."
+  severity: cosmetic
+- id: F3__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "FY26 fields sorted by lowest EBITDA (Champang 26.25)"
+  new_headline: "37 fields raised EBITDA margin FY22->FY26 despite falling production; Kuthalam -21.3% -> 45.6%"
+  why: "No trend or decline test; now margin up AND BOE down (production as pressure-decline proxy)."
+  severity: blocking
+- id: F3__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "FY26 average water cut by field (Charali 94.25%)"
+  new_headline: "Mature onshore margin 63.2% (FY24) -> 58.7% (FY25): SAED Rs 1,605 cr + lower Brent; workover flat ~Rs 546-549 cr"
+  why: "Question asks price, cess and workover; now FY22-FY26 drivers table."
+  severity: blocking
+- id: F3__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "All 8 basins 5-yr revenue/EBITDA"
+  new_headline: "Western Offshore Rs 3,68,788 cr revenue / Rs 2,15,825 cr EBITDA vs Onshore Gujarat Rs 1,45,951 / Rs 93,624 cr"
+  why: "Restricted to the two segments asked; added margin and per-BOE; OCF proxied by EBITDA (GAP)."
+  severity: cosmetic
+- id: F4
+  defect_class: [JOIN_FANOUT, UNIT_MIXING, FY_MAPPING, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "FY26 statutory levies Rs 3,11,988 cr (12x fan-out of 25,999 via monthly price join); not per barrel"
+  new_headline: "FY27 YTD levies cut realisation $22.18/bbl ($67.73 -> $45.55, 32.7%); cess $13.55, royalty $8.64, SAED $0"
+  why: "Join to 12 monthly rows multiplied annual levies; question asks per barrel this year (FY27 YTD)."
+  severity: blocking
+- id: F4__drill_down
+  defect_class: [FY_MAPPING, GENERIC_TEXT]
+  old_headline: "FY26 monthly cess/royalty $/bbl (unnamed metrics)"
+  new_headline: "FY27 YTD cess $13.55/bbl (20.0%), royalty $8.63 (12.7%); Rs 10,000/MT equivalent = $15.39/bbl"
+  why: "Aligned to parent year; added % of realisation and Rs 10,000/MT conversion."
+  severity: cosmetic
+- id: F4__why
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "Cited G-01 Part 1 (DPE pay-revision OM)"
+  new_headline: "SAED tracked Brent: $12.15/bbl avg FY23 (Brent $95.4) -> $3.27 FY25; last levied 2024-11; Rs 10,964 cr in FY23"
+  why: "Citation irrelevant; no SAED document in corpus (GAP) so answered from price_fx_monthly + corporate_financials."
+  severity: blocking
+- id: F4__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "Single FY26 levies/revenue 19.62% mislabelled gross_revenue_inr_cr"
+  new_headline: "Nomination govt take 20.5% (FY26) vs Panna-Mukta JV 24.9%; NELP/HELP data absent"
+  why: "No comparison side; JV fields are the only non-nomination proxy; profit petroleum not in data (GAP)."
+  severity: important
+- id: F5
+  defect_class: [THRESHOLD_VS_RANK, JOIN_FANOUT, UNIT_MIXING, GENERIC_TEXT]
+  old_headline: "100 vendors alphabetically (Acharya ... Rs 6.24 cr in raw rupees), no 80% cut, grouped by name"
+  new_headline: "870 of 2,000 vendors = top 80% of FY26 spend (Rs 12,703 of 15,878 cr); overruns Rs 75.0 cr total, Rs 61.6 cr in top group"
+  why: "No Pareto logic, LIMIT 100 alphabetical, 25 duplicate vendor names merged; now vendor_id Pareto in crore."
+  severity: blocking
+- id: F5__drill_down
+  defect_class: [UNIT_MIXING, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Revised PO value by category in raw rupees, alphabetical, all vendors"
+  new_headline: "Top-80% spend spread evenly across 10 categories (9.6-10.5% each); Workover Rigless Rs 1,333 cr largest"
+  why: "Restricted to parent's top-80% vendors, crore, ranked."
+  severity: cosmetic
+- id: F5__why
+  defect_class: [FY_MAPPING, UNIT_MIXING, GENERIC_TEXT]
+  old_headline: "All-years overrun by reason in raw rupees (Subsea realignment Rs 2.16e9)"
+  new_headline: "FY26 overruns: subsea route/scope variation Rs 50.1 cr (~19% of PO) vs minor changes Rs 24.9 cr; standby Rs 18.8 cr extra"
+  why: "Mixed FY22-FY27; now FY26, category x reason, crore."
+  severity: important
+- id: F5__compare_or_so_what
+  defect_class: [WRONG_QUESTION, FY_MAPPING, GENERIC_TEXT]
+  old_headline: "Paid minus estimate for 100 overrun PO numbers, all years"
+  new_headline: "FY26 POs 2.04% above engineer's estimate; paid Rs 15,878 cr = 95.4% of original PO (all still in execution)"
+  why: "Now FY26 by category with total: estimate vs PO vs revised vs paid."
+  severity: important
+- id: F6
+  defect_class: [THRESHOLD_VS_RANK, GENERIC_TEXT]
+  old_headline: "Customer x bucket rows alphabetical, LIMIT 100 (125 exist -> 25 dropped)"
+  new_headline: "Rs 13,168 cr receivables at 31-Mar-2026 across 26 customers; Rs 1,595 cr (12.1%) >90 days, all disputed"
+  why: "LIMIT truncated results; now one row per customer with pivoted buckets."
+  severity: important
+- id: F6__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "9 customers type='PSU' (HPCL, MRPL and all gas consumers missing)"
+  new_headline: "26 customers owe Rs 1,594.5 cr >90 days, led by GNFC Rs 132.9 cr; OMCs BPCL 61.7, IOCL 60.7, HPCL 16.1"
+  why: "Exact type='PSU' excluded 'PSU / Subsidiary' (HPCL named in question) and gas consumers."
+  severity: blocking
+- id: F6__why
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template (dispute reasons alphabetical)"
+  new_headline: "GCV billing/metering disputes Rs 1,324.8 cr (83.1% of >90-day dues); BS&W crude disputes Rs 269.6 cr"
+  why: "SQL essentially right; ordered by amount, added share of aged dues; subsidy reason absent (GAP)."
+  severity: cosmetic
+- id: F6__compare_or_so_what
+  defect_class: [JOIN_FANOUT, GAP, GENERIC_TEXT]
+  old_headline: "DSO 0.003 days (revenue summed once per invoice row)"
+  new_headline: "FY26 DSO 36.3 days vs 32.5-day historical collection period; no treasury target in data"
+  why: "Invoice-grain join to corporate_financials multiplied revenue ~12,000x. Prior year-end balances not retained (GAP)."
+  severity: blocking
+- id: F7
+  defect_class: [JOIN_FANOUT, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "295 field rows labelled by asset name (several per asset-year), incl. zero-revenue corporate lines"
+  new_headline: "Employee cost 6.3% of field revenue FY26; Jorhat 45.7% (84.2% FY21) to Ankleshwar 2.6%"
+  why: "GROUP BY included field-level values so no asset aggregation; now asset-level FY21-FY26 trend."
+  severity: blocking
+- id: F7__drill_down
+  defect_class: [THRESHOLD_VS_RANK, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "All 59 FY26 lines ranked (offshore, plant included), no 25% filter"
+  new_headline: "4 mature onshore fields >25%: Champang 47.7%, Borholla 45.9%, Khoraghat 43.8% (Jorhat), Kuthalam 25.6%"
+  why: "Threshold, onshore and maturity filters added."
+  severity: important
+- id: F7__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Identical SQL/result to F7__drill_down"
+  new_headline: "Onshore manpower/BOE Rs 379 -> 393 (FY22-26) vs offshore 210 -> 198; offshore 3.3x BOE per employee"
+  why: "Was a copy of the drill-down; now onshore vs offshore drivers. Ratio to revenue fell in both (premise holds per BOE only)."
+  severity: blocking
+- id: F7__compare_or_so_what
+  defect_class: [GAP, GENERIC_TEXT]
+  old_headline: "generic template"
+  new_headline: "Standalone employee cost 7.71% of revenue FY26 (range 6.83-14.86% FY17-26); no NOC benchmarks in data"
+  why: "SQL fine; narrative written; external benchmark not available (GAP)."
+  severity: cosmetic
+- id: F8
+  defect_class: [PCT_DENOM, GENERIC_TEXT]
+  old_headline: "Basin unweighted avg FC/DC/RRR (Assam Arakan 2.33/8.81/1.16)"
+  new_headline: "FY26 RRR 1.17 (47.35 vs 40.47 MMTOE) at F&D $14.13/BOE; KG costliest $28.79, MBA cheapest $2.77"
+  why: "RRR now SUM(accretion)/SUM(production), costs accretion-weighted, company row added. Values change slightly."
+  severity: cosmetic
+- id: F8__drill_down
+  defect_class: [FY_MAPPING, GENERIC_TEXT]
+  old_headline: "FY26-only finding cost (KG 5.67, WO 2.90, AA 2.33)"
+  new_headline: "3-yr trailing FY24-26 finding cost: KG $7.38, Western Offshore $2.63, Assam-Arakan $2.17 /BOE"
+  why: "Question asks 3-year trailing; used one year."
+  severity: important
+- id: F8__why
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "FY26 dry holes incl. development wells, counts only (Cambay 23)"
+  new_headline: "KG deepwater: Rs 298.7 cr/exploratory well, 61.5% dry FY24-26 (Rs 2,264 cr); total dry-hole cost Rs 10,988 cr"
+  why: "Now exploratory only with rate and cost per well; no HP-HT flag (GAP)."
+  severity: important
+- id: F8__compare_or_so_what
+  defect_class: [PCT_DENOM, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "FY26 avg RRR 1.17 only"
+  new_headline: "Company RRR 1.12-1.17 FY22-26, above 1.0 every year; no basin below target"
+  why: "Now annual trend with weighted RRR and basin min/max vs target."
+  severity: cosmetic
+- id: F9
+  defect_class: [UNIT_MIXING, GENERIC_TEXT]
+  old_headline: "Unlabelled raw-USD sums by currency (EUR 406,509,255.85)"
+  new_headline: "FY26 forex book $2,991.3 mn, 78.3% hedged, $648.6 mn open; USD 87.2% covered mainly by natural hedge"
+  why: "Added natural vs derivative split, ratio, MTM, USD mn, total row."
+  severity: cosmetic
+- id: F9__drill_down
+  defect_class: [WRONG_QUESTION, UNIT_MIXING, GENERIC_TEXT]
+  old_headline: "Unhedged by category, all currencies, raw USD (incl. loans/consulting)"
+  new_headline: "USD unhedged across charter/EPC/imports $232.1 mn (Rs 2,049 cr); subsea EPC $188.1 mn, 17.6% hedged"
+  why: "Restricted to USD and the three categories asked; INR at latest FX."
+  severity: important
+- id: F9__why
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "Cited BDP Clause 5.0 (CMD powers)"
+  new_headline: "No Board hedging policy in corpus; only DPE guideline (G-04/G-06): quarterly forex exposures & mitigation to Board"
+  why: "Irrelevant citation replaced with the only relevant provision; narrative registered to state GAP."
+  severity: important
+- id: F9__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "Total gross exposure 2,991,260,293 (raw USD)"
+  new_headline: "Crude USD revenue ~$10,279 mn = 3.4x forex book; FY26 FX range swings unhedged book ~Rs 52 cr vs Rs 822 cr on crude"
+  why: "Now natural hedge vs FX volatility; USD share of opex/capex not recorded (GAP)."
+  severity: important
+- id: F10
+  defect_class: [WRONG_QUESTION, JOIN_FANOUT, GAP]
+  old_headline: "Annual FY26 sheet for 19 'work centres' incl. corporate/plant/reconciliation lines; legacy text claimed 'quarterly'"
+  new_headline: "FY26 quarterly P&L, 15 assets: revenue Rs 1,25,145 cr, EBITDA Rs 75,278 cr, quarters Rs 18,453-18,982 cr"
+  why: "Not quarterly. No quarterly P&L source (GAP): annual field P&L phased by monthly volume x price and cost-ledger profile; narrative registered (legacy placeholders wrong)."
+  severity: blocking
+- id: F10__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "FY26 field EBITDA ascending (copy of F3__drill_down)"
+  new_headline: "Net of levies FY26: crude Rs 68,434 cr, gas Rs 30,764 cr; levies 24.6% of crude vs 10.5% of gas"
+  why: "No quarters, no crude/gas split or levies."
+  severity: blocking
+- id: F10__why
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "FY26 water cut by field (copy of F3__why)"
+  new_headline: "Quarterly EBITDA swings are revenue-driven: Mumbai High Rs 180.5 cr swing vs opex Rs 25.2 cr"
+  why: "Now quarterly EBITDA swing decomposition; opex only annual (GAP)."
+  severity: blocking
+- id: F10__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "FY26 field EBITDA list"
+  new_headline: "No asset operating-plan BE in data; vs FY25, 14 of 15 assets lower EBITDA (Mumbai High -8.2%), Eastern Offshore +87.6%"
+  why: "BE for operating profit absent (GAP); compared quarterly EBITDA with FY25 actual."
+  severity: important

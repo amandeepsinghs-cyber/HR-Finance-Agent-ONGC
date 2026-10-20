@@ -1,0 +1,39 @@
+{
+  "job_id": "eab13c71-abef-4788-be31-26b4fa015a68",
+  "total_bytes_processed": 1131978,
+  "executed_at": "2026-10-20T06:31:51.932428+00:00",
+  "elapsed_seconds": 0.69,
+  "row_count": 2,
+  "columns": [
+    "readiness_gap_reason",
+    "criticality_tier",
+    "positions_no_ready_now",
+    "held_by_active_e7_plus",
+    "incumbent_retires_3yr",
+    "successor_1_lacks_ne_hard_station",
+    "both_successors_lack_ne_hard_station",
+    "roles"
+  ],
+  "rows": [
+    {
+      "readiness_gap_reason": "lack_of_offshore_leadership_experience",
+      "criticality_tier": "Tier_1_Critical",
+      "positions_no_ready_now": 8,
+      "held_by_active_e7_plus": 7,
+      "incumbent_retires_3yr": 3,
+      "successor_1_lacks_ne_hard_station": 3,
+      "both_successors_lack_ne_hard_station": 0,
+      "roles": "Chief General Manager (CGM); Director (Human Resources); Executive Director (ED) / Group General Manager"
+    },
+    {
+      "readiness_gap_reason": "lack_of_offshore_leadership_experience",
+      "criticality_tier": "Tier_2_Key",
+      "positions_no_ready_now": 8,
+      "held_by_active_e7_plus": 8,
+      "incumbent_retires_3yr": 3,
+      "successor_1_lacks_ne_hard_station": 4,
+      "both_successors_lack_ne_hard_station": 0,
+      "roles": "General Manager (GM)"
+    }
+  ]
+}

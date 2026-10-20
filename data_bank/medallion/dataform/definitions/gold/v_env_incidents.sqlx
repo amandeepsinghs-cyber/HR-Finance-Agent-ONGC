@@ -1,0 +1,30 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "v_env_incidents",
+  description: "Environmental and process-safety incidents tracking spills, leaks, blowouts, and regulatory notices"
+}
+
+SELECT
+  env.incident_id,
+  env.date,
+  env.fiscal_year,
+  env.wc_id,
+  w.name AS wc_name,
+  w.sector,
+  w.onshore_offshore,
+  env.field_id,
+  f.name AS field_name,
+  f.basin,
+  env.incident_type,
+  env.severity,
+  env.volume_released,
+  env.volume_unit,
+  env.regulator,
+  env.notice_issued,
+  env.penalty_inr_lakh,
+  env.status,
+  env.root_cause_category
+FROM ${ref("env_incidents")} env
+LEFT JOIN ${ref("dim_work_centre")} w ON env.wc_id = w.wc_id
+LEFT JOIN ${ref("dim_field")} f ON env.field_id = f.field_id

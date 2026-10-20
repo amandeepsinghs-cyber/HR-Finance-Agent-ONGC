@@ -1,0 +1,114 @@
+{
+  "job_id": "3f8772e2-2f27-4114-a451-1185e04f34a9",
+  "total_bytes_processed": 29198422,
+  "executed_at": "2026-10-20T06:42:09.768423+00:00",
+  "elapsed_seconds": 0.69,
+  "row_count": 14,
+  "columns": [
+    "asset",
+    "executive_hc",
+    "non_executive_hc",
+    "total_hc",
+    "executive_share_pct"
+  ],
+  "rows": [
+    {
+      "asset": "Bassein & Satellite",
+      "executive_hc": 1071,
+      "non_executive_hc": 762,
+      "total_hc": 1833,
+      "executive_share_pct": 58.4
+    },
+    {
+      "asset": "Assam Asset",
+      "executive_hc": 687,
+      "non_executive_hc": 1136,
+      "total_hc": 1823,
+      "executive_share_pct": 37.7
+    },
+    {
+      "asset": "Neelam & Heera",
+      "executive_hc": 996,
+      "non_executive_hc": 709,
+      "total_hc": 1705,
+      "executive_share_pct": 58.4
+    },
+    {
+      "asset": "Mehsana Asset",
+      "executive_hc": 899,
+      "non_executive_hc": 638,
+      "total_hc": 1537,
+      "executive_share_pct": 58.5
+    },
+    {
+      "asset": "Mumbai High",
+      "executive_hc": 792,
+      "non_executive_hc": 557,
+      "total_hc": 1349,
+      "executive_share_pct": 58.7
+    },
+    {
+      "asset": "Jorhat Asset",
+      "executive_hc": 496,
+      "non_executive_hc": 824,
+      "total_hc": 1320,
+      "executive_share_pct": 37.6
+    },
+    {
+      "asset": "Ahmedabad Asset",
+      "executive_hc": 698,
+      "non_executive_hc": 501,
+      "total_hc": 1199,
+      "executive_share_pct": 58.2
+    },
+    {
+      "asset": "Eastern Offshore",
+      "executive_hc": 593,
+      "non_executive_hc": 410,
+      "total_hc": 1003,
+      "executive_share_pct": 59.1
+    },
+    {
+      "asset": "Ankleshwar Asset",
+      "executive_hc": 548,
+      "non_executive_hc": 371,
+      "total_hc": 919,
+      "executive_share_pct": 59.6
+    },
+    {
+      "asset": "Rajahmundry Asset",
+      "executive_hc": 505,
+      "non_executive_hc": 338,
+      "total_hc": 843,
+      "executive_share_pct": 59.9
+    },
+    {
+      "asset": "Tripura Asset",
+      "executive_hc": 500,
+      "non_executive_hc": 338,
+      "total_hc": 838,
+      "executive_share_pct": 59.7
+    },
+    {
+      "asset": "Cauvery Asset",
+      "executive_hc": 402,
+      "non_executive_hc": 269,
+      "total_hc": 671,
+      "executive_share_pct": 59.9
+    },
+    {
+      "asset": "CBM Bokaro",
+      "executive_hc": 331,
+      "non_executive_hc": 219,
+      "total_hc": 550,
+      "executive_share_pct": 60.2
+    },
+    {
+      "asset": "Cambay Asset",
+      "executive_hc": 312,
+      "non_executive_hc": 197,
+      "total_hc": 509,
+      "executive_share_pct": 61.3
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "job_id": "be917edf-6c4c-4336-9570-ee85cc4d8ade",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:25.793077+00:00",
+  "elapsed_seconds": 0.79,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 7",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 7)",
+      "provision": "WBP 7.1-7.2 (where/when to file)",
+      "quote_snippet": "7.1 All Protected Disclosures should be addressed only to the Nodal Officer at the following address\u2013 The Company Secretary Oil and Natural Gas Corporation Limited Deendayal Urja Bhawan 5, Nelson Mandela Marg, Vasant Kunj, New Delhi \u2013 110070 E-mail: vigil@ongc.co.in 7.2 All Protected Disclosures should be reported in writing by the Whistle Blower as soon as possible, not later than 30 days after the Whistle Blower becomes aware of the same and should either be typed or written in a legible handwriting in English or Hindi or local language as applicable."
+    },
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 8",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 8)",
+      "provision": "WBP 7.3-7.5 (sealed envelope, identity concealed)",
+      "quote_snippet": "7.3 The Protected Disclosure should be submitted under a covering letter signed by the Whistle Blower in a closed and secured envelope and should be super-scribed as \u201cProtected Disclosure under the Whistle Blower policy\u201d or sent through email to vigil@ongc.co.in with the caption/ subject as \u201cProtected Disclosure under the Whistle Blower policy\u201d. The Nodal Officer shall refer the protected disclosures to the Competent Authority or the Chairman of Audit Committee, duly concealing the identity of the whistle blower, who in turn will refer the complaint to the Screening Committee after confirming the genuineness of the disclosure/ complaint. If a complaint is not super-scribed or not closed and secured as mentioned above, it will be dealt with as if a normal disclosure and the same would not deserve the privileges otherwise available for Protected Disclosures under this Policy. 7.4 In order to protect the identity of the complainant, acknowledgement will not be issued to the Whistle Blowers. 7.5 Anonymous / Pseudonymous complaint shall not be entertained."
+    },
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 15",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 15)",
+      "provision": "WBP 13.1-13.3 (protection)",
+      "quote_snippet": "13.1 No unfair treatment will be meted out to a Whistle Blower by virtue of his / her having reported a Protected Disclosure under this policy. Adequate safeguards against victimisation of complainants shall be provided. The Company, as a policy, shall ensure that no discrimination, harassment, victimization or any other unfair employment practice being adopted against Whistle Blowers. Complete protection will, therefore, be given to Whistle Blowers against any unfair practice like retaliation, threat or intimidation of termination/ suspension of service, disciplinary action, transfer, demotion, refusal of promotion, or the like including any direct or indirect use of authority to obstruct the Whistle Blower\u2019s right to continue to perform his/ her duties/ functions including making further Protected Disclosure. The Company will take steps to minimize difficulties, which the Whistle Blower may experience as a result of making the Protected Disclosure. 13.2 A Whistle Blower may report any violation of the above clause to the Chairman of Audit Committee, who shall investigate into the same and recommend suitable action to the executive management. 13.3 The identity of the Whistle Blower shall be kept confidential to the extent possible and permitted under law. Any other employee assisting in the said investigation shall also be protected to the same extent as the Whistle Blower."
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "job_id": "40bbb6f0-a7f3-4fea-a829-1c1226786267",
+  "total_bytes_processed": 12048222,
+  "executed_at": "2026-10-20T06:56:44.543045+00:00",
+  "elapsed_seconds": 1.31,
+  "row_count": 3,
+  "columns": [
+    "station_category",
+    "due_for_rotation",
+    "eligible_3_to_5y",
+    "exec_vacancies_fy26",
+    "est_cost_if_all_due_moved_inr_cr",
+    "fy26_transfers_in",
+    "fy26_spend_inr_cr",
+    "avg_cost_per_transfer_inr_lakh"
+  ],
+  "rows": [
+    {
+      "station_category": "Category C",
+      "due_for_rotation": 3346,
+      "eligible_3_to_5y": 590,
+      "exec_vacancies_fy26": 612,
+      "est_cost_if_all_due_moved_inr_cr": 107.07,
+      "fy26_transfers_in": 412,
+      "fy26_spend_inr_cr": 13.18,
+      "avg_cost_per_transfer_inr_lakh": 3.2
+    },
+    {
+      "station_category": "Category B",
+      "due_for_rotation": 1748,
+      "eligible_3_to_5y": 284,
+      "exec_vacancies_fy26": 242,
+      "est_cost_if_all_due_moved_inr_cr": 55.94,
+      "fy26_transfers_in": 171,
+      "fy26_spend_inr_cr": 5.47,
+      "avg_cost_per_transfer_inr_lakh": 3.2
+    },
+    {
+      "station_category": "Category A",
+      "due_for_rotation": 3363,
+      "eligible_3_to_5y": 488,
+      "exec_vacancies_fy26": 309,
+      "est_cost_if_all_due_moved_inr_cr": 107.62,
+      "fy26_transfers_in": 266,
+      "fy26_spend_inr_cr": 8.51,
+      "avg_cost_per_transfer_inr_lakh": 3.2
+    }
+  ]
+}

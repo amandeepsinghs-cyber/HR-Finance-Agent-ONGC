@@ -1,0 +1,46 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_contract_workforce",
+  description: "Contractor deployment across installations, contractor cost, and core vs non-core operational ratios"
+}
+
+SELECT
+  cw.contract_entry_id,
+  cw.contract_id,
+  cw.vendor_id,
+  v.name AS vendor_name,
+  v.name AS name,
+  v.category AS vendor_category,
+  v.mse_flag AS is_mse_vendor,
+  cw.wc_id,
+  cw.wc_id AS asset_wc_id,
+  w.name AS wc_name,
+  w.short_name AS short_name,
+  w.state,
+  w.sector,
+  w.onshore_offshore,
+  w.type,
+  cw.month,
+  cw.fiscal_year,
+  cw.service_category,
+  cw.discipline_id,
+  cw.grade_id,
+  cw.gender,
+  cw.category,
+  cw.pwd_flag,
+  cw.age_band,
+  cw.tenure_band,
+  cw.is_core_activity,
+  cw.contractor_headcount,
+  cw.contractor_headcount AS headcount,
+  cw.regular_employee_count_matching,
+  cw.contractor_to_regular_ratio,
+  cw.monthly_cost_inr,
+  cw.contractor_cost_per_boe_usd,
+  cw.contractor_cost_per_boe_usd AS manpower_cost_per_boe_usd,
+  cw.clra_license_no,
+  cw.clra_compliance_status
+FROM ${ref("contract_workforce")} cw
+LEFT JOIN ${ref("dim_vendor")} v ON cw.vendor_id = v.vendor_id
+LEFT JOIN ${ref("dim_work_centre")} w ON cw.wc_id = w.wc_id

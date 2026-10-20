@@ -1,0 +1,13 @@
+# Answer Key: P7__why
+
+**Question:** Why does the TA/DA policy mandate booking air tickets through designated travel partners (Balmer Lawrie/IRCTC)?
+**Type:** `policy` | **Result Count:** `2` rows | **Execution:** `0.67s`
+
+## Executive Synthesis
+The corpus does not name Balmer Lawrie or IRCTC as mandatory booking agents, so that premise cannot be confirmed from ONGC documents. What the TA Regulations do mandate is cost control on air travel: citing 'the large amount of saving on the check fare tickets', all air tickets must be booked at check fare / the most economical fare for the stated timing, and any deviation needs the controlling officer's written reasons (TA Regs 4.2.1 h). Executives other than EDs fly economy (4.2.1 g), and 14-day on/off offshore crews are exempt from check-fare booking.
+
+### Summary Result Table
+| doc_id | clause_ref | heading | provision | quote_snippet |
+| --- | --- | --- | --- | --- |
+| P1-16 | Part 9 | ONGC Travelling Allowance Regulations (full text) (Part 9) | TA Regs 4.2.1(g)-(h) (air class, check fare) | g. Executive Directors may travel by air by executive class on official tour/LFA within and outside the country. However, other executives eligible to travel by Air shall be entitled to travel by Economy Class on official tours/LFA within and outside the country. h. Keeping in view the large amount of saving on the check fare tickets and in order to reduce the expenditure of ONGC on account of air travel of its executives, it has been decided that :- |
+| P1-16 | Part 10 | ONGC Travelling Allowance Regulations (full text) (Part 10) | TA Regs 4.2.1(h)(i)-(v) (booking rules) | i) Henceforth all air tickets should be booked by check fare only. However, employees working on 14 days On/Off shift pattern in Offshore areas of Mumbai and KG Offshore may not be forced to travel by check fare tickets and instead they may be allowed to travel by air by economy/’Y’ class for operating on On/Off shift pattern. ii) If tickets are not to be booked by check fare, controlling officer will have to give the reasons and circumstances thereof and will countersign in the requisition form. iii) The individual shall mention the date and timing of travel which is to be certified by the controlling officer. iv) Ticket shall be booked by the most economical fare available as per the timing mentioned in the requisition form. v) Due care must be taken while booking air tickets under the new concept so that booked tickets are utilized to the maximum extent to avoid cancellation charges. In case of cancellation, the cancellation charges, if any shall be reimbursed. |

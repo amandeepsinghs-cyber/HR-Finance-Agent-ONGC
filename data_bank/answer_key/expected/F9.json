@@ -1,0 +1,79 @@
+{
+  "job_id": "16c4d053-6d0d-46ad-9c85-338bdbe51ec9",
+  "total_bytes_processed": 9588,
+  "executed_at": "2026-10-20T06:38:53.617068+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 6,
+  "columns": [
+    "currency_pair",
+    "positions",
+    "gross_exposure_usd_mn",
+    "natural_hedge_usd_mn",
+    "derivative_hedged_usd_mn",
+    "unhedged_usd_mn",
+    "hedge_ratio_pct",
+    "mtm_gain_loss_inr_cr"
+  ],
+  "rows": [
+    {
+      "currency_pair": "USD/INR",
+      "positions": 27,
+      "gross_exposure_usd_mn": 1964.2,
+      "natural_hedge_usd_mn": 1517.0,
+      "derivative_hedged_usd_mn": 195.5,
+      "unhedged_usd_mn": 251.7,
+      "hedge_ratio_pct": 87.2,
+      "mtm_gain_loss_inr_cr": -3.9
+    },
+    {
+      "currency_pair": "SGD/INR",
+      "positions": 29,
+      "gross_exposure_usd_mn": 415.4,
+      "natural_hedge_usd_mn": 0.0,
+      "derivative_hedged_usd_mn": 299.4,
+      "unhedged_usd_mn": 116.0,
+      "hedge_ratio_pct": 72.1,
+      "mtm_gain_loss_inr_cr": 0.8
+    },
+    {
+      "currency_pair": "EUR/INR",
+      "positions": 22,
+      "gross_exposure_usd_mn": 406.5,
+      "natural_hedge_usd_mn": 0.0,
+      "derivative_hedged_usd_mn": 223.0,
+      "unhedged_usd_mn": 183.5,
+      "hedge_ratio_pct": 54.9,
+      "mtm_gain_loss_inr_cr": -71.5
+    },
+    {
+      "currency_pair": "GBP/INR",
+      "positions": 12,
+      "gross_exposure_usd_mn": 145.1,
+      "natural_hedge_usd_mn": 0.0,
+      "derivative_hedged_usd_mn": 107.7,
+      "unhedged_usd_mn": 37.4,
+      "hedge_ratio_pct": 74.2,
+      "mtm_gain_loss_inr_cr": 4.5
+    },
+    {
+      "currency_pair": "JPY/INR",
+      "positions": 1,
+      "gross_exposure_usd_mn": 60.0,
+      "natural_hedge_usd_mn": 0.0,
+      "derivative_hedged_usd_mn": 0.0,
+      "unhedged_usd_mn": 60.0,
+      "hedge_ratio_pct": 0.0,
+      "mtm_gain_loss_inr_cr": -39.6
+    },
+    {
+      "currency_pair": "ALL CURRENCIES",
+      "positions": 91,
+      "gross_exposure_usd_mn": 2991.3,
+      "natural_hedge_usd_mn": 1517.0,
+      "derivative_hedged_usd_mn": 825.6,
+      "unhedged_usd_mn": 648.6,
+      "hedge_ratio_pct": 78.3,
+      "mtm_gain_loss_inr_cr": -109.7
+    }
+  ]
+}

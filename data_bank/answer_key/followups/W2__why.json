@@ -1,0 +1,89 @@
+{
+  "job_id": "0151c01a-46da-445f-87c0-4933ee39a7ad",
+  "total_bytes_processed": 2552228,
+  "executed_at": "2026-10-20T06:42:36.620380+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 9,
+  "columns": [
+    "grade_id",
+    "designation",
+    "technical_executives",
+    "retiring_by_oct2028",
+    "retiring_pct",
+    "avg_age"
+  ],
+  "rows": [
+    {
+      "grade_id": "E1",
+      "designation": "Assistant Executive Engineer (AEE) / Officer",
+      "technical_executives": 1232,
+      "retiring_by_oct2028": 153,
+      "retiring_pct": 12.4,
+      "avg_age": 43.4
+    },
+    {
+      "grade_id": "E2",
+      "designation": "Assistant Executive Engineer (AEE) / Deputy Manager",
+      "technical_executives": 1801,
+      "retiring_by_oct2028": 227,
+      "retiring_pct": 12.6,
+      "avg_age": 44.9
+    },
+    {
+      "grade_id": "E3",
+      "designation": "Executive Engineer (EE) / Manager",
+      "technical_executives": 2345,
+      "retiring_by_oct2028": 307,
+      "retiring_pct": 13.1,
+      "avg_age": 45.2
+    },
+    {
+      "grade_id": "E4",
+      "designation": "Superintending Engineer (SE) / Chief Manager",
+      "technical_executives": 2127,
+      "retiring_by_oct2028": 256,
+      "retiring_pct": 12.0,
+      "avg_age": 45.0
+    },
+    {
+      "grade_id": "E5",
+      "designation": "Deputy General Manager (DGM)",
+      "technical_executives": 1811,
+      "retiring_by_oct2028": 210,
+      "retiring_pct": 11.6,
+      "avg_age": 44.8
+    },
+    {
+      "grade_id": "E6",
+      "designation": "Joint General Manager (JGM) / Addl. GM",
+      "technical_executives": 946,
+      "retiring_by_oct2028": 132,
+      "retiring_pct": 14.0,
+      "avg_age": 45.1
+    },
+    {
+      "grade_id": "E7",
+      "designation": "General Manager (GM)",
+      "technical_executives": 690,
+      "retiring_by_oct2028": 20,
+      "retiring_pct": 2.9,
+      "avg_age": 52.1
+    },
+    {
+      "grade_id": "E8",
+      "designation": "Chief General Manager (CGM)",
+      "technical_executives": 202,
+      "retiring_by_oct2028": 6,
+      "retiring_pct": 3.0,
+      "avg_age": 52.0
+    },
+    {
+      "grade_id": "E9",
+      "designation": "Executive Director (ED) / Group General Manager",
+      "technical_executives": 40,
+      "retiring_by_oct2028": 1,
+      "retiring_pct": 2.5,
+      "avg_age": 51.6
+    }
+  ]
+}

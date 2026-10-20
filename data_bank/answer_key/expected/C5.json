@@ -1,0 +1,63 @@
+{
+  "job_id": "a57bc198-fbf3-4b7d-9a7b-e0621ef7f99a",
+  "total_bytes_processed": 1876781,
+  "executed_at": "2026-10-20T06:34:03.963142+00:00",
+  "elapsed_seconds": 1.36,
+  "row_count": 5,
+  "columns": [
+    "discipline_id",
+    "discipline_name",
+    "active_executives",
+    "retiring_by_fy30",
+    "retirement_pct",
+    "retiring_by_fy30_e5_plus",
+    "e0_e2_pipeline"
+  ],
+  "rows": [
+    {
+      "discipline_id": "DISC-PRD",
+      "discipline_name": "Production",
+      "active_executives": 2926,
+      "retiring_by_fy30": 823,
+      "retirement_pct": 28.1,
+      "retiring_by_fy30_e5_plus": 257,
+      "e0_e2_pipeline": 778
+    },
+    {
+      "discipline_id": "DISC-DRL",
+      "discipline_name": "Drilling",
+      "active_executives": 1876,
+      "retiring_by_fy30": 640,
+      "retirement_pct": 34.1,
+      "retiring_by_fy30_e5_plus": 181,
+      "e0_e2_pipeline": 518
+    },
+    {
+      "discipline_id": "DISC-RES",
+      "discipline_name": "Reservoir",
+      "active_executives": 1005,
+      "retiring_by_fy30": 301,
+      "retirement_pct": 30.0,
+      "retiring_by_fy30_e5_plus": 88,
+      "e0_e2_pipeline": 277
+    },
+    {
+      "discipline_id": "DISC-GEO",
+      "discipline_name": "Geology",
+      "active_executives": 857,
+      "retiring_by_fy30": 262,
+      "retirement_pct": 30.6,
+      "retiring_by_fy30_e5_plus": 74,
+      "e0_e2_pipeline": 218
+    },
+    {
+      "discipline_id": "DISC-GPS",
+      "discipline_name": "Geophysics (Surface)",
+      "active_executives": 741,
+      "retiring_by_fy30": 228,
+      "retirement_pct": 30.8,
+      "retiring_by_fy30_e5_plus": 61,
+      "e0_e2_pipeline": 209
+    }
+  ]
+}

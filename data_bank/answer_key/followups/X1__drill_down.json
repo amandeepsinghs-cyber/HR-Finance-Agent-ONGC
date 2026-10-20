@@ -1,0 +1,44 @@
+{
+  "job_id": "3a3529b3-24cb-47d8-90db-4b6f48ce07e0",
+  "total_bytes_processed": 24531496,
+  "executed_at": "2026-10-20T06:37:10.842229+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 4,
+  "columns": [
+    "short_name",
+    "wc_type",
+    "contract_workers_mar26",
+    "regular_employees_mar26",
+    "contract_to_regular_ratio"
+  ],
+  "rows": [
+    {
+      "short_name": "Uran Plant",
+      "wc_type": "plant",
+      "contract_workers_mar26": 803,
+      "regular_employees_mar26": 508,
+      "contract_to_regular_ratio": 1.58
+    },
+    {
+      "short_name": "Hazira Plant",
+      "wc_type": "plant",
+      "contract_workers_mar26": 814,
+      "regular_employees_mar26": 515,
+      "contract_to_regular_ratio": 1.58
+    },
+    {
+      "short_name": "Mumbai High",
+      "wc_type": "asset",
+      "contract_workers_mar26": 1971,
+      "regular_employees_mar26": 1359,
+      "contract_to_regular_ratio": 1.45
+    },
+    {
+      "short_name": "All ONGC (46 work centres)",
+      "wc_type": "company",
+      "contract_workers_mar26": 25093,
+      "regular_employees_mar26": 23117,
+      "contract_to_regular_ratio": 1.09
+    }
+  ]
+}

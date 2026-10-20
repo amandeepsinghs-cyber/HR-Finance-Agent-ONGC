@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "env_incidents",
+  description: "Environmental & process-safety incident register tracking oil spills, gas leaks, well-control/blowout events, effluent/produced-water exceedances, and flaring exceedances with regulatory notices and statutory penalties."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`incident_id`) AS incident_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`date`), ''), 1, 10)) AS date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`field_id`) AS field_id,
+    TRIM(`incident_type`) AS incident_type,
+    TRIM(`severity`) AS severity,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`volume_released`), ''), ',', ''), '₹', '') AS NUMERIC) AS volume_released,
+    TRIM(`volume_unit`) AS volume_unit,
+    TRIM(`regulator`) AS regulator,
+    CASE WHEN LOWER(TRIM(`notice_issued`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`notice_issued`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS notice_issued,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`penalty_inr_lakh`), ''), ',', ''), '₹', '') AS NUMERIC) AS penalty_inr_lakh,
+    TRIM(`status`) AS status,
+    TRIM(`root_cause_category`) AS root_cause_category
+  FROM ${ref("db_exports_env_incident_log")}
+  WHERE NULLIF(TRIM(`incident_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY incident_id ORDER BY _ingest_ts DESC) = 1

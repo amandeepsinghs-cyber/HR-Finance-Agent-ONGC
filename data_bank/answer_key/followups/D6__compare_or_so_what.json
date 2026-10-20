@@ -1,0 +1,27 @@
+{
+  "job_id": "8f55375b-fd4a-4155-89b1-fe8a0f34bdfb",
+  "total_bytes_processed": 7337473,
+  "executed_at": "2026-10-20T06:34:49.121862+00:00",
+  "elapsed_seconds": 0.72,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 15",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 15)",
+      "quote_snippet": "13.1 No unfair treatment will be meted out to a Whistle Blower by virtue of his / her having reported a Protected Disclosure under this policy. Adequate safeguards against victimisation of complainants shall be provided. The Company, as a policy, shall ensure that no discrimination, harassment, victimization or any other unfair employment practice being adopted against Whistle Blowers. Complete pr"
+    },
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 16",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 16)",
+      "quote_snippet": "13.4 Whistle Blower should not enter into any correspondence with the Competent Authority/ the Chairman of Audit Committee in their own interest. If any further clarification is required, the Whistle Blower will be contacted. 14. DISQUALIFICATIONS 14.1 While it will be ensured that genuine Whistle Blowers are accorded complete protection from any kind of unfair treatment as herein set out, any abu"
+    }
+  ]
+}

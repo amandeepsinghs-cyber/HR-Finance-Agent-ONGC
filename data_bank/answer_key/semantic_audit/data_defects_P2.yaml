@@ -1,0 +1,37 @@
+# Data defects found during semantic audit 2026-10-20 — slice P2 (report only; not fixed)
+- table: hrfin_silver.posting_history (via hrfin_gold.v_cluster_cumulative_tenure) vs hrfin_docs DOC-CONF-002
+  issue: "Story/confidential AGTO annex and follow-up questions assume ~138 Delhi executives over the 10-year cumulative cap and 31 exempt seniors; structured posting history has 0 executives over the cap in CL-DEL (max 8.39 yrs, 4 executives >8 yrs). Only Group C/D non-executives (200) and the CMD exceed 10 yrs."
+  evidence: "v_cluster_cumulative_tenure, cluster_id='CL-DEL', is_currently_in_cluster, joined dim_grade.cadre: executive breached=0 of 692; non_executive breached=200 of 248; board 1 of 3."
+  impact_on_ids: [P11, P11__drill_down, P11__why, P11__compare_or_so_what, C1]
+- table: hrfin_gold.v_cluster_cumulative_tenure
+  issue: "View does not filter by cadre (JRTP applies only to E0–E9) and its is_superannuation_exempt flag uses DATE_DIFF(...,YEAR)<=2 (calendar-year boundary, not 2 x 365 days)."
+  evidence: "View definition in INFORMATION_SCHEMA.VIEWS."
+  impact_on_ids: [P11, P11__drill_down, P11__compare_or_so_what]
+- table: hrfin_silver.employee_master / posting_history
+  issue: "exemption_tag holds the literal string 'None' instead of NULL (IS NULL never true); only 34 'Impending_Retirement' tags exist and no hardship-waiver tag at all, although 380 E4→E5 promotions FY22–FY27 happened without a 3-year hard/NE tenure (JRTP Clause 6.2)."
+  evidence: "employee_master: COUNTIF(exemption_tag IS NULL)=0, COUNTIF(exemption_tag='')=0 of 42,171; GROUP BY shows 'None' 22,764 + Impending_Retirement 34 (active)."
+  impact_on_ids: [P12, P12__compare_or_so_what]
+- table: hrfin_silver.dpc_cases
+  issue: "dpc_id is not unique per employee (several employees share one dpc_id); aggregating by dpc_id alone undercounts cases."
+  evidence: "E4→E5 FY22–FY27: 2,227 (dpc_id, emp_id) cases vs 2,168 when grouped by dpc_id."
+  impact_on_ids: [P12__compare_or_so_what]
+- table: hrfin_silver.payroll_monthly
+  issue: "Employer PRMB contribution is 3.00% of Basic+DA vs 4.00% in PRBS Clause 3.1; gratuity contribution is not booked (only implied by superannuation_benefit_pct = 27.6 constant for every row)."
+  evidence: "FY26 SUM(employer_prmb_inr)/SUM(basic+da)=3.0%; superannuation_benefit_pct min=max=27.6."
+  impact_on_ids: [P13, P13__drill_down, P13__compare_or_so_what]
+- table: hrfin_silver.payroll_monthly
+  issue: "PRP is paid in equal monthly instalments (not an annual payout) and is a LOWER % of basic for senior grades (E6–E9 9.9%) than juniors (E1–E5 ~12.5%), contrary to DPE grade ceilings that rise with grade."
+  evidence: "FY26 prp_inr by month 29.45→27.54 cr; prp/basic by grade E1 12.64% … E6–E9 9.9%."
+  impact_on_ids: [P14, P14__drill_down, P14__compare_or_so_what]
+- table: hrfin_silver.csr_projects vs corporate_financials
+  issue: "statutory_2pct_mandate_met_flag is TRUE on every project in every year, but 2% × avg prior-3-year PBT exceeds actual spend in FY22 (82.1%), FY23 (82.3%) and FY24 (97.3%)."
+  evidence: "P15__compare_or_so_what result."
+  impact_on_ids: [P15, P15__compare_or_so_what]
+- table: hrfin_silver.corporate_financials
+  issue: "FY22 PAT (40,306) > PBT (33,103) and FY24 PAT 40,526 vs PBT 41,521 (implied tax 2.4%); no net worth or borrowings columns (DIPAM 5%-of-net-worth test and debt constraints not answerable)."
+  evidence: "corporate_financials rows FY22, FY24."
+  impact_on_ids: [P15, P17, P17__drill_down, P17__why]
+- table: hrfin_silver.capex_budget vs corporate_financials
+  issue: "capex_budget actual spend is ~₹18,100–18,300 cr every year FY17–FY24 (identical BE 19,151) while corporate_financials capex ranges ₹26,859–72,902 cr; reconciles only for FY25/FY26."
+  evidence: "SUM(actual_spend_inr_cr) by FY vs corporate_financials.total_capex_spent_inr_cr."
+  impact_on_ids: [P17]

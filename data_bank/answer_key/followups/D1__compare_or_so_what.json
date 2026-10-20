@@ -1,0 +1,35 @@
+{
+  "job_id": "1efb2260-c102-4bf4-bdac-a6fa5e2c54b5",
+  "total_bytes_processed": 124951675,
+  "executed_at": "2026-10-20T06:32:50.575340+00:00",
+  "elapsed_seconds": 0.75,
+  "row_count": 1,
+  "columns": [
+    "payslip_month",
+    "grade_id",
+    "pay_scale_min_inr",
+    "pay_scale_max_inr",
+    "band_midpoint_inr",
+    "basic_pay_inr",
+    "da_inr",
+    "gross_salary_inr",
+    "basic_pct_of_midpoint",
+    "basic_position_in_band_pct",
+    "gross_pct_of_midpoint"
+  ],
+  "rows": [
+    {
+      "payslip_month": "2026-09",
+      "grade_id": "E2",
+      "pay_scale_min_inr": 70000.0,
+      "pay_scale_max_inr": 200000.0,
+      "band_midpoint_inr": 135000.0,
+      "basic_pay_inr": 79227.42,
+      "da_inr": 35493.88,
+      "gross_salary_inr": 156791.06,
+      "basic_pct_of_midpoint": 58.7,
+      "basic_position_in_band_pct": 7.1,
+      "gross_pct_of_midpoint": 116.1
+    }
+  ]
+}

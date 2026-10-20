@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --canvas-bg: #FFFFFF;
+    --surface-bg: #F8F9FA;
+    --text-primary: #1F1F1F;
+    --text-secondary: #5F6368;
+    --accent: #3186FF;
+    --accent-secondary: #76BBFF;
+    --ongc-maroon: #8E000C;
+  }
+
+  .dark {
+    --canvas-bg: #121316;
+    --surface-bg: #1E2024;
+    --text-primary: #F1F3F4;
+    --text-secondary: #9AA0A6;
+    --accent: #3186FF;
+    --accent-secondary: #76BBFF;
+    --ongc-maroon: #8E000C;
+  }
+
+  /* Big-screen presence: ensure legible typography at 5 metres */
+  html {
+    font-size: 16px;
+    font-family: 'Inter', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  @media (min-width: 1280px) {
+    html {
+      font-size: 18px; /* Readable at 5m on large monitors */
+    }
+  }
+
+  body {
+    background-color: var(--canvas-bg);
+    color: var(--text-primary);
+    overflow: hidden;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.45);
+}
+
+/* Reduced motion preference support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

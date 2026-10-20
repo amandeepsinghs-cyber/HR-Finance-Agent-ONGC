@@ -1,0 +1,86 @@
+{
+  "job_id": "0fa3f15f-a08e-479b-ae31-e522ba58411b",
+  "total_bytes_processed": 49225,
+  "executed_at": "2026-10-20T06:38:32.063570+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 6,
+  "columns": [
+    "field_name",
+    "asset",
+    "pbt_fy26_inr_cr",
+    "opex_fy26_inr_cr",
+    "manpower_fy26_inr_cr",
+    "estimated_annual_opex_savings_inr_cr",
+    "estimated_annual_capex_savings_inr_cr",
+    "total_annual_savings_inr_cr",
+    "has_estimate"
+  ],
+  "rows": [
+    {
+      "field_name": "Champang",
+      "asset": "Jorhat Asset",
+      "pbt_fy26_inr_cr": -4.93,
+      "opex_fy26_inr_cr": 234.71,
+      "manpower_fy26_inr_cr": 157.23,
+      "estimated_annual_opex_savings_inr_cr": 105.62,
+      "estimated_annual_capex_savings_inr_cr": 152.56,
+      "total_annual_savings_inr_cr": 258.18,
+      "has_estimate": true
+    },
+    {
+      "field_name": "Borholla",
+      "asset": "Jorhat Asset",
+      "pbt_fy26_inr_cr": 3.22,
+      "opex_fy26_inr_cr": 241.23,
+      "manpower_fy26_inr_cr": 161.08,
+      "estimated_annual_opex_savings_inr_cr": 108.55,
+      "estimated_annual_capex_savings_inr_cr": 156.8,
+      "total_annual_savings_inr_cr": 265.35,
+      "has_estimate": true
+    },
+    {
+      "field_name": "Khoraghat",
+      "asset": "Jorhat Asset",
+      "pbt_fy26_inr_cr": 14.35,
+      "opex_fy26_inr_cr": 250.46,
+      "manpower_fy26_inr_cr": 166.43,
+      "estimated_annual_opex_savings_inr_cr": null,
+      "estimated_annual_capex_savings_inr_cr": null,
+      "total_annual_savings_inr_cr": 0.0,
+      "has_estimate": false
+    },
+    {
+      "field_name": "Kuthalam",
+      "asset": "Cauvery Asset",
+      "pbt_fy26_inr_cr": 87.73,
+      "opex_fy26_inr_cr": 196.27,
+      "manpower_fy26_inr_cr": 113.3,
+      "estimated_annual_opex_savings_inr_cr": null,
+      "estimated_annual_capex_savings_inr_cr": null,
+      "total_annual_savings_inr_cr": 0.0,
+      "has_estimate": false
+    },
+    {
+      "field_name": "Mori",
+      "asset": "Rajahmundry Asset",
+      "pbt_fy26_inr_cr": 93.49,
+      "opex_fy26_inr_cr": 123.36,
+      "manpower_fy26_inr_cr": 72.55,
+      "estimated_annual_opex_savings_inr_cr": null,
+      "estimated_annual_capex_savings_inr_cr": null,
+      "total_annual_savings_inr_cr": 0.0,
+      "has_estimate": false
+    },
+    {
+      "field_name": "Bottom-5 total",
+      "asset": null,
+      "pbt_fy26_inr_cr": 193.86,
+      "opex_fy26_inr_cr": 1046.03,
+      "manpower_fy26_inr_cr": 670.59,
+      "estimated_annual_opex_savings_inr_cr": 214.17,
+      "estimated_annual_capex_savings_inr_cr": 309.36,
+      "total_annual_savings_inr_cr": 523.53,
+      "has_estimate": false
+    }
+  ]
+}

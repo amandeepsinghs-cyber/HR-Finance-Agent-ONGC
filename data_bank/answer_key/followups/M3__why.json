@@ -1,0 +1,27 @@
+{
+  "job_id": "5b73935b-8cf2-46fd-b026-c87cdea17c01",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:42:15.783714+00:00",
+  "elapsed_seconds": 0.56,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "HR Manual",
+      "clause_ref": "Clause 5.0",
+      "heading": "Confidentiality of Individual Compensation",
+      "quote_snippet": "5.1 Colleague Data Privacy: The individual salary details, net pay, allowances, deductions, bank accounts, income tax records, and performance ratings of colleagues and supervisors are protected personal information under corporate data privacy rules and Section 8(1)(j) of the Right to Information Act, 2005. 5.2 Strict Prohibition against Queries: Employees, automated systems, and corporate tools are prohibited from disclosing, querying, or facilitating access to individual compensation or appraisal records of any other employee without written statutory authorization. 5.3 Disciplinary Violation: Attempting to access, query, extract, or publish the salary, appraisal rating, or confidential HR profile of a reporting officer or colleague constitutes major misconduct under Rule 4 and Rule 11 of the ONGC CDA Rules, 1994."
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 8.0",
+      "heading": "Confidentiality of DPC Proceedings & Sealed Cover",
+      "quote_snippet": "8.1 Strict Secrecy of DPC Deliberations: The proceedings, minutes, individual candidate scoring sheets, and recommendations of the Departmental Promotion Committee are top-secret privileged documents. No candidate or third party has any right to inspect or access DPC deliberations prior to official release of the promotion panel. 8.2 Sealed Cover Procedure: Where an officer eligible for promotion is facing disciplinary proceedings, under suspension, or under criminal prosecution at the time of DPC, the DPC shall assess their suitability, but its findings shall be placed in a sealed cover envelope marked 'Findings regarding [Name / PERNR]'. 8.3 Opening of Sealed Cover: If the officer is completely exonerated of all charges, the sealed cover shall be opened, and if found fit, notional seniority and promotion shall be granted from the date their immediate junior was promoted."
+    }
+  ]
+}

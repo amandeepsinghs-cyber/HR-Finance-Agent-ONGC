@@ -1,0 +1,2758 @@
+cost_centres:
+- cost_centre_id: CC-10001
+  wc_id: WC-DEL
+  field_id: null
+  name: Delhi HQ - Executive Management & Board Secretarial
+  cost_centre_type: corporate_hq
+  hierarchy_area: Delhi HQ Functions
+- cost_centre_id: CC-10002
+  wc_id: WC-DEL
+  field_id: null
+  name: Delhi HQ - Corporate Finance & Taxation
+  cost_centre_type: finance_commercial
+  hierarchy_area: Delhi HQ Functions
+- cost_centre_id: CC-10003
+  wc_id: WC-DEL
+  field_id: null
+  name: Delhi HQ - Corporate HR & Talent Management
+  cost_centre_type: admin_hr
+  hierarchy_area: Delhi HQ Functions
+- cost_centre_id: CC-10004
+  wc_id: WC-DEL
+  field_id: null
+  name: Delhi HQ - Corporate Legal & Regulatory
+  cost_centre_type: corporate_hq
+  hierarchy_area: Delhi HQ Functions
+- cost_centre_id: CC-10005
+  wc_id: WC-DEL
+  field_id: null
+  name: Delhi HQ - Estate Management & Guest Houses
+  cost_centre_type: admin_hr
+  hierarchy_area: Delhi HQ Functions
+- cost_centre_id: CC-10006
+  wc_id: WC-DEL
+  field_id: null
+  name: Delhi HQ - Enterprise IT & Cyber Security
+  cost_centre_type: maintenance
+  hierarchy_area: Delhi HQ Functions
+- cost_centre_id: CC-10007
+  wc_id: WC-DDN
+  field_id: null
+  name: Dehradun Tel Bhavan - Executive Management & Board Secretarial
+  cost_centre_type: corporate_hq
+  hierarchy_area: Dehradun Tel Bhavan Functions
+- cost_centre_id: CC-10008
+  wc_id: WC-DDN
+  field_id: null
+  name: Dehradun Tel Bhavan - Corporate Finance & Taxation
+  cost_centre_type: finance_commercial
+  hierarchy_area: Dehradun Tel Bhavan Functions
+- cost_centre_id: CC-10009
+  wc_id: WC-DDN
+  field_id: null
+  name: Dehradun Tel Bhavan - Corporate HR & Talent Management
+  cost_centre_type: admin_hr
+  hierarchy_area: Dehradun Tel Bhavan Functions
+- cost_centre_id: CC-10010
+  wc_id: WC-DDN
+  field_id: null
+  name: Dehradun Tel Bhavan - Corporate Legal & Regulatory
+  cost_centre_type: corporate_hq
+  hierarchy_area: Dehradun Tel Bhavan Functions
+- cost_centre_id: CC-10011
+  wc_id: WC-DDN
+  field_id: null
+  name: Dehradun Tel Bhavan - Estate Management & Guest Houses
+  cost_centre_type: admin_hr
+  hierarchy_area: Dehradun Tel Bhavan Functions
+- cost_centre_id: CC-10012
+  wc_id: WC-DDN
+  field_id: null
+  name: Dehradun Tel Bhavan - Enterprise IT & Cyber Security
+  cost_centre_type: maintenance
+  hierarchy_area: Dehradun Tel Bhavan Functions
+- cost_centre_id: CC-10013
+  wc_id: WC-MUM
+  field_id: FLD-MHN
+  name: Mumbai High North Field Operations
+  cost_centre_type: production
+  hierarchy_area: Mumbai High Production
+- cost_centre_id: CC-10014
+  wc_id: WC-MUM
+  field_id: FLD-MHS
+  name: Mumbai High South Field Operations
+  cost_centre_type: production
+  hierarchy_area: Mumbai High Production
+- cost_centre_id: CC-10015
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10016
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10017
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10018
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10019
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10020
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10021
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10022
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10023
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10024
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10025
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10026
+  wc_id: WC-MUM
+  field_id: null
+  name: Mumbai High - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Mumbai High Functions
+- cost_centre_id: CC-10027
+  wc_id: WC-BAS
+  field_id: FLD-BAS
+  name: Bassein Field Operations
+  cost_centre_type: production
+  hierarchy_area: Bassein & Satellite Production
+- cost_centre_id: CC-10028
+  wc_id: WC-BAS
+  field_id: FLD-DAM
+  name: Daman Field Operations
+  cost_centre_type: production
+  hierarchy_area: Bassein & Satellite Production
+- cost_centre_id: CC-10029
+  wc_id: WC-BAS
+  field_id: FLD-B17
+  name: B-173A / B-Series Clusters Field Operations
+  cost_centre_type: production
+  hierarchy_area: Bassein & Satellite Production
+- cost_centre_id: CC-10030
+  wc_id: WC-BAS
+  field_id: FLD-D1
+  name: D-1 Field Field Operations
+  cost_centre_type: production
+  hierarchy_area: Bassein & Satellite Production
+- cost_centre_id: CC-10031
+  wc_id: WC-BAS
+  field_id: FLD-CS1
+  name: C-Series Clusters Field Operations
+  cost_centre_type: production
+  hierarchy_area: Bassein & Satellite Production
+- cost_centre_id: CC-10032
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10033
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10034
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10035
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10036
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10037
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10038
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10039
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10040
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10041
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10042
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10043
+  wc_id: WC-BAS
+  field_id: null
+  name: Bassein & Satellite - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Bassein & Satellite Functions
+- cost_centre_id: CC-10044
+  wc_id: WC-NEH
+  field_id: FLD-HEE
+  name: Heera Field Operations
+  cost_centre_type: production
+  hierarchy_area: Neelam & Heera Production
+- cost_centre_id: CC-10045
+  wc_id: WC-NEH
+  field_id: FLD-NEE
+  name: Neelam Field Operations
+  cost_centre_type: production
+  hierarchy_area: Neelam & Heera Production
+- cost_centre_id: CC-10046
+  wc_id: WC-NEH
+  field_id: FLD-RAT
+  name: Ratna & R-Series Field Operations
+  cost_centre_type: production
+  hierarchy_area: Neelam & Heera Production
+- cost_centre_id: CC-10047
+  wc_id: WC-NEH
+  field_id: FLD-MUK
+  name: Mukta Field Operations
+  cost_centre_type: production
+  hierarchy_area: Neelam & Heera Production
+- cost_centre_id: CC-10048
+  wc_id: WC-NEH
+  field_id: FLD-PAN
+  name: Panna Field Operations
+  cost_centre_type: production
+  hierarchy_area: Neelam & Heera Production
+- cost_centre_id: CC-10049
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10050
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10051
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10052
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10053
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10054
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10055
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10056
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10057
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10058
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10059
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10060
+  wc_id: WC-NEH
+  field_id: null
+  name: Neelam & Heera - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Neelam & Heera Functions
+- cost_centre_id: CC-10061
+  wc_id: WC-EAS
+  field_id: FLD-KG982
+  name: KG-DWN-98/2 Cluster-II Field Operations
+  cost_centre_type: production
+  hierarchy_area: Eastern Offshore Production
+- cost_centre_id: CC-10062
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10063
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10064
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10065
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10066
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10067
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10068
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10069
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10070
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10071
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10072
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10073
+  wc_id: WC-EAS
+  field_id: null
+  name: Eastern Offshore - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Eastern Offshore Functions
+- cost_centre_id: CC-10074
+  wc_id: WC-AHM
+  field_id: FLD-KAL
+  name: Kalol Field Operations
+  cost_centre_type: production
+  hierarchy_area: Ahmedabad Asset Production
+- cost_centre_id: CC-10075
+  wc_id: WC-AHM
+  field_id: FLD-NAW
+  name: Nawagam Field Operations
+  cost_centre_type: production
+  hierarchy_area: Ahmedabad Asset Production
+- cost_centre_id: CC-10076
+  wc_id: WC-AHM
+  field_id: FLD-SND
+  name: Sanand Field Operations
+  cost_centre_type: production
+  hierarchy_area: Ahmedabad Asset Production
+- cost_centre_id: CC-10077
+  wc_id: WC-AHM
+  field_id: FLD-JHL
+  name: Jhalora Field Operations
+  cost_centre_type: production
+  hierarchy_area: Ahmedabad Asset Production
+- cost_centre_id: CC-10078
+  wc_id: WC-AHM
+  field_id: FLD-VIR
+  name: Viraj Field Operations
+  cost_centre_type: production
+  hierarchy_area: Ahmedabad Asset Production
+- cost_centre_id: CC-10079
+  wc_id: WC-AHM
+  field_id: FLD-NAN
+  name: Nandej Field Operations
+  cost_centre_type: production
+  hierarchy_area: Ahmedabad Asset Production
+- cost_centre_id: CC-10080
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10081
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10082
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10083
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10084
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10085
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10086
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10087
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10088
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10089
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10090
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10091
+  wc_id: WC-AHM
+  field_id: null
+  name: Ahmedabad Asset - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Ahmedabad Asset Functions
+- cost_centre_id: CC-10092
+  wc_id: WC-MEH
+  field_id: FLD-SNT
+  name: Santhal Field Operations
+  cost_centre_type: production
+  hierarchy_area: Mehsana Asset Production
+- cost_centre_id: CC-10093
+  wc_id: WC-MEH
+  field_id: FLD-BAL
+  name: Balol Field Operations
+  cost_centre_type: production
+  hierarchy_area: Mehsana Asset Production
+- cost_centre_id: CC-10094
+  wc_id: WC-MEH
+  field_id: FLD-LAN
+  name: Lanwa Field Operations
+  cost_centre_type: production
+  hierarchy_area: Mehsana Asset Production
+- cost_centre_id: CC-10095
+  wc_id: WC-MEH
+  field_id: FLD-JOT
+  name: Jotana Field Operations
+  cost_centre_type: production
+  hierarchy_area: Mehsana Asset Production
+- cost_centre_id: CC-10096
+  wc_id: WC-MEH
+  field_id: FLD-SOB
+  name: Sobhasan Field Operations
+  cost_centre_type: production
+  hierarchy_area: Mehsana Asset Production
+- cost_centre_id: CC-10097
+  wc_id: WC-MEH
+  field_id: FLD-LIN
+  name: Linch Field Operations
+  cost_centre_type: production
+  hierarchy_area: Mehsana Asset Production
+- cost_centre_id: CC-10098
+  wc_id: WC-MEH
+  field_id: FLD-BEC
+  name: Bechraji Field Operations
+  cost_centre_type: production
+  hierarchy_area: Mehsana Asset Production
+- cost_centre_id: CC-10099
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10100
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10101
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10102
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10103
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10104
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10105
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10106
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10107
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10108
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10109
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10110
+  wc_id: WC-MEH
+  field_id: null
+  name: Mehsana Asset - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Mehsana Asset Functions
+- cost_centre_id: CC-10111
+  wc_id: WC-ANK
+  field_id: FLD-GAN
+  name: Gandhar Field Operations
+  cost_centre_type: production
+  hierarchy_area: Ankleshwar Asset Production
+- cost_centre_id: CC-10112
+  wc_id: WC-ANK
+  field_id: FLD-ANK
+  name: Ankleshwar Field Operations
+  cost_centre_type: production
+  hierarchy_area: Ankleshwar Asset Production
+- cost_centre_id: CC-10113
+  wc_id: WC-ANK
+  field_id: FLD-KOS
+  name: Kosamba Field Operations
+  cost_centre_type: production
+  hierarchy_area: Ankleshwar Asset Production
+- cost_centre_id: CC-10114
+  wc_id: WC-ANK
+  field_id: FLD-MOT
+  name: Motwan Field Operations
+  cost_centre_type: production
+  hierarchy_area: Ankleshwar Asset Production
+- cost_centre_id: CC-10115
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10116
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10117
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10118
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10119
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10120
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10121
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10122
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10123
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10124
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10125
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10126
+  wc_id: WC-ANK
+  field_id: null
+  name: Ankleshwar Asset - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Ankleshwar Asset Functions
+- cost_centre_id: CC-10127
+  wc_id: WC-CAM
+  field_id: FLD-CAM
+  name: Cambay Field Operations
+  cost_centre_type: production
+  hierarchy_area: Cambay Asset Production
+- cost_centre_id: CC-10128
+  wc_id: WC-CAM
+  field_id: FLD-KAT
+  name: Kathana Field Operations
+  cost_centre_type: production
+  hierarchy_area: Cambay Asset Production
+- cost_centre_id: CC-10129
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10130
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10131
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10132
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10133
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10134
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10135
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10136
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10137
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10138
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10139
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10140
+  wc_id: WC-CAM
+  field_id: null
+  name: Cambay Asset - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Cambay Asset Functions
+- cost_centre_id: CC-10141
+  wc_id: WC-ASM
+  field_id: FLD-GEL
+  name: Geleki Field Operations
+  cost_centre_type: production
+  hierarchy_area: Assam Asset Production
+- cost_centre_id: CC-10142
+  wc_id: WC-ASM
+  field_id: FLD-LAK
+  name: Lakwa Field Operations
+  cost_centre_type: production
+  hierarchy_area: Assam Asset Production
+- cost_centre_id: CC-10143
+  wc_id: WC-ASM
+  field_id: FLD-RDS
+  name: Rudrasagar Field Operations
+  cost_centre_type: production
+  hierarchy_area: Assam Asset Production
+- cost_centre_id: CC-10144
+  wc_id: WC-ASM
+  field_id: FLD-CHA
+  name: Charali Field Operations
+  cost_centre_type: production
+  hierarchy_area: Assam Asset Production
+- cost_centre_id: CC-10145
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10146
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10147
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10148
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10149
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10150
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10151
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10152
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10153
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10154
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10155
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10156
+  wc_id: WC-ASM
+  field_id: null
+  name: Assam Asset - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Assam Asset Functions
+- cost_centre_id: CC-10157
+  wc_id: WC-JOR
+  field_id: FLD-BOR
+  name: Borholla Field Operations
+  cost_centre_type: production
+  hierarchy_area: Jorhat Asset Production
+- cost_centre_id: CC-10158
+  wc_id: WC-JOR
+  field_id: FLD-CHP
+  name: Champang Field Operations
+  cost_centre_type: production
+  hierarchy_area: Jorhat Asset Production
+- cost_centre_id: CC-10159
+  wc_id: WC-JOR
+  field_id: FLD-KHO
+  name: Khoraghat Field Operations
+  cost_centre_type: production
+  hierarchy_area: Jorhat Asset Production
+- cost_centre_id: CC-10160
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10161
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10162
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10163
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10164
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10165
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10166
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10167
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10168
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10169
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10170
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10171
+  wc_id: WC-JOR
+  field_id: null
+  name: Jorhat Asset - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Jorhat Asset Functions
+- cost_centre_id: CC-10172
+  wc_id: WC-TRI
+  field_id: FLD-ROK
+  name: Rokhia Field Operations
+  cost_centre_type: production
+  hierarchy_area: Tripura Asset Production
+- cost_centre_id: CC-10173
+  wc_id: WC-TRI
+  field_id: FLD-AGT
+  name: Agartala Dome Field Operations
+  cost_centre_type: production
+  hierarchy_area: Tripura Asset Production
+- cost_centre_id: CC-10174
+  wc_id: WC-TRI
+  field_id: FLD-KON
+  name: Konaban Field Operations
+  cost_centre_type: production
+  hierarchy_area: Tripura Asset Production
+- cost_centre_id: CC-10175
+  wc_id: WC-TRI
+  field_id: FLD-BAR
+  name: Baramura Field Operations
+  cost_centre_type: production
+  hierarchy_area: Tripura Asset Production
+- cost_centre_id: CC-10176
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10177
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10178
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10179
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10180
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10181
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10182
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10183
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10184
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10185
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10186
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10187
+  wc_id: WC-TRI
+  field_id: null
+  name: Tripura Asset - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Tripura Asset Functions
+- cost_centre_id: CC-10188
+  wc_id: WC-BOK
+  field_id: FLD-BOK
+  name: CBM Bokaro Field Operations
+  cost_centre_type: production
+  hierarchy_area: CBM Bokaro Production
+- cost_centre_id: CC-10189
+  wc_id: WC-BOK
+  field_id: FLD-JHA
+  name: Jharia CBM Field Operations
+  cost_centre_type: production
+  hierarchy_area: CBM Bokaro Production
+- cost_centre_id: CC-10190
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10191
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10192
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10193
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10194
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10195
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10196
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10197
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10198
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10199
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10200
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10201
+  wc_id: WC-BOK
+  field_id: null
+  name: CBM Bokaro - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: CBM Bokaro Functions
+- cost_centre_id: CC-10202
+  wc_id: WC-RAJ
+  field_id: FLD-PAS
+  name: Pasarlapudi Field Operations
+  cost_centre_type: production
+  hierarchy_area: Rajahmundry Asset Production
+- cost_centre_id: CC-10203
+  wc_id: WC-RAJ
+  field_id: FLD-TAT
+  name: Tatipaka Field Operations
+  cost_centre_type: production
+  hierarchy_area: Rajahmundry Asset Production
+- cost_centre_id: CC-10204
+  wc_id: WC-RAJ
+  field_id: FLD-MOR
+  name: Mori Field Operations
+  cost_centre_type: production
+  hierarchy_area: Rajahmundry Asset Production
+- cost_centre_id: CC-10205
+  wc_id: WC-RAJ
+  field_id: FLD-KES
+  name: Kesanapalli Field Operations
+  cost_centre_type: production
+  hierarchy_area: Rajahmundry Asset Production
+- cost_centre_id: CC-10206
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10207
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10208
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10209
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10210
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10211
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10212
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10213
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10214
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10215
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10216
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10217
+  wc_id: WC-RAJ
+  field_id: null
+  name: Rajahmundry Asset - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Rajahmundry Asset Functions
+- cost_centre_id: CC-10218
+  wc_id: WC-CAU
+  field_id: FLD-NAR
+  name: Narimanam Field Operations
+  cost_centre_type: production
+  hierarchy_area: Cauvery Asset Production
+- cost_centre_id: CC-10219
+  wc_id: WC-CAU
+  field_id: FLD-KUT
+  name: Kuthalam Field Operations
+  cost_centre_type: production
+  hierarchy_area: Cauvery Asset Production
+- cost_centre_id: CC-10220
+  wc_id: WC-CAU
+  field_id: FLD-ADI
+  name: Adiyakkamangalam Field Operations
+  cost_centre_type: production
+  hierarchy_area: Cauvery Asset Production
+- cost_centre_id: CC-10221
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Production Operations & Separation
+  cost_centre_type: production
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10222
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Gathering & Metering Stations
+  cost_centre_type: production
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10223
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Field Drilling & Rig Services
+  cost_centre_type: drilling
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10224
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Well Workover & Stimulation
+  cost_centre_type: well_services
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10225
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Mechanical & Rotary Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10226
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Electrical Power Distribution
+  cost_centre_type: maintenance
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10227
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Instrumentation & Telemetry
+  cost_centre_type: maintenance
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10228
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Surface & Marine Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10229
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Fire, Safety & Environment
+  cost_centre_type: hse_safety
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10230
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Asset Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10231
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Field Accounts & Billing
+  cost_centre_type: finance_commercial
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10232
+  wc_id: WC-CAU
+  field_id: null
+  name: Cauvery Asset - Human Resources & Industrial Relations
+  cost_centre_type: admin_hr
+  hierarchy_area: Cauvery Asset Functions
+- cost_centre_id: CC-10233
+  wc_id: WC-URN
+  field_id: null
+  name: Uran Plant - Gas Processing & Fractionation
+  cost_centre_type: plant_operations
+  hierarchy_area: Uran Plant Functions
+- cost_centre_id: CC-10234
+  wc_id: WC-URN
+  field_id: null
+  name: Uran Plant - LPG & Condensate Recovery
+  cost_centre_type: plant_operations
+  hierarchy_area: Uran Plant Functions
+- cost_centre_id: CC-10235
+  wc_id: WC-URN
+  field_id: null
+  name: Uran Plant - Utilities, Steam & Power Generation
+  cost_centre_type: plant_operations
+  hierarchy_area: Uran Plant Functions
+- cost_centre_id: CC-10236
+  wc_id: WC-URN
+  field_id: null
+  name: Uran Plant - Plant Preventive Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Uran Plant Functions
+- cost_centre_id: CC-10237
+  wc_id: WC-URN
+  field_id: null
+  name: Uran Plant - Quality Control & Analytical Lab
+  cost_centre_type: plant_operations
+  hierarchy_area: Uran Plant Functions
+- cost_centre_id: CC-10238
+  wc_id: WC-URN
+  field_id: null
+  name: Uran Plant - Hydrocarbon Dispatch & Storage
+  cost_centre_type: logistics
+  hierarchy_area: Uran Plant Functions
+- cost_centre_id: CC-10239
+  wc_id: WC-URN
+  field_id: null
+  name: Uran Plant - Plant Safety & Fire Fighting
+  cost_centre_type: hse_safety
+  hierarchy_area: Uran Plant Functions
+- cost_centre_id: CC-10240
+  wc_id: WC-URN
+  field_id: null
+  name: Uran Plant - Plant Administration & Security
+  cost_centre_type: admin_hr
+  hierarchy_area: Uran Plant Functions
+- cost_centre_id: CC-10241
+  wc_id: WC-URN
+  field_id: null
+  name: Uran Plant - Plant Costing & Commercial
+  cost_centre_type: finance_commercial
+  hierarchy_area: Uran Plant Functions
+- cost_centre_id: CC-10242
+  wc_id: WC-HAZ
+  field_id: null
+  name: Hazira Plant - Gas Processing & Fractionation
+  cost_centre_type: plant_operations
+  hierarchy_area: Hazira Plant Functions
+- cost_centre_id: CC-10243
+  wc_id: WC-HAZ
+  field_id: null
+  name: Hazira Plant - LPG & Condensate Recovery
+  cost_centre_type: plant_operations
+  hierarchy_area: Hazira Plant Functions
+- cost_centre_id: CC-10244
+  wc_id: WC-HAZ
+  field_id: null
+  name: Hazira Plant - Utilities, Steam & Power Generation
+  cost_centre_type: plant_operations
+  hierarchy_area: Hazira Plant Functions
+- cost_centre_id: CC-10245
+  wc_id: WC-HAZ
+  field_id: null
+  name: Hazira Plant - Plant Preventive Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Hazira Plant Functions
+- cost_centre_id: CC-10246
+  wc_id: WC-HAZ
+  field_id: null
+  name: Hazira Plant - Quality Control & Analytical Lab
+  cost_centre_type: plant_operations
+  hierarchy_area: Hazira Plant Functions
+- cost_centre_id: CC-10247
+  wc_id: WC-HAZ
+  field_id: null
+  name: Hazira Plant - Hydrocarbon Dispatch & Storage
+  cost_centre_type: logistics
+  hierarchy_area: Hazira Plant Functions
+- cost_centre_id: CC-10248
+  wc_id: WC-HAZ
+  field_id: null
+  name: Hazira Plant - Plant Safety & Fire Fighting
+  cost_centre_type: hse_safety
+  hierarchy_area: Hazira Plant Functions
+- cost_centre_id: CC-10249
+  wc_id: WC-HAZ
+  field_id: null
+  name: Hazira Plant - Plant Administration & Security
+  cost_centre_type: admin_hr
+  hierarchy_area: Hazira Plant Functions
+- cost_centre_id: CC-10250
+  wc_id: WC-HAZ
+  field_id: null
+  name: Hazira Plant - Plant Costing & Commercial
+  cost_centre_type: finance_commercial
+  hierarchy_area: Hazira Plant Functions
+- cost_centre_id: CC-10251
+  wc_id: WC-DAH
+  field_id: null
+  name: Dahej Plant - Gas Processing & Fractionation
+  cost_centre_type: plant_operations
+  hierarchy_area: Dahej Plant Functions
+- cost_centre_id: CC-10252
+  wc_id: WC-DAH
+  field_id: null
+  name: Dahej Plant - LPG & Condensate Recovery
+  cost_centre_type: plant_operations
+  hierarchy_area: Dahej Plant Functions
+- cost_centre_id: CC-10253
+  wc_id: WC-DAH
+  field_id: null
+  name: Dahej Plant - Utilities, Steam & Power Generation
+  cost_centre_type: plant_operations
+  hierarchy_area: Dahej Plant Functions
+- cost_centre_id: CC-10254
+  wc_id: WC-DAH
+  field_id: null
+  name: Dahej Plant - Plant Preventive Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Dahej Plant Functions
+- cost_centre_id: CC-10255
+  wc_id: WC-DAH
+  field_id: null
+  name: Dahej Plant - Quality Control & Analytical Lab
+  cost_centre_type: plant_operations
+  hierarchy_area: Dahej Plant Functions
+- cost_centre_id: CC-10256
+  wc_id: WC-DAH
+  field_id: null
+  name: Dahej Plant - Hydrocarbon Dispatch & Storage
+  cost_centre_type: logistics
+  hierarchy_area: Dahej Plant Functions
+- cost_centre_id: CC-10257
+  wc_id: WC-DAH
+  field_id: null
+  name: Dahej Plant - Plant Safety & Fire Fighting
+  cost_centre_type: hse_safety
+  hierarchy_area: Dahej Plant Functions
+- cost_centre_id: CC-10258
+  wc_id: WC-DAH
+  field_id: null
+  name: Dahej Plant - Plant Administration & Security
+  cost_centre_type: admin_hr
+  hierarchy_area: Dahej Plant Functions
+- cost_centre_id: CC-10259
+  wc_id: WC-DAH
+  field_id: null
+  name: Dahej Plant - Plant Costing & Commercial
+  cost_centre_type: finance_commercial
+  hierarchy_area: Dahej Plant Functions
+- cost_centre_id: CC-10260
+  wc_id: WC-WOB
+  field_id: null
+  name: Western Offshore Basin - Geological & Basin Studies
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Western Offshore Basin Functions
+- cost_centre_id: CC-10261
+  wc_id: WC-WOB
+  field_id: null
+  name: Western Offshore Basin - Seismic Data Acquisition & QC
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Western Offshore Basin Functions
+- cost_centre_id: CC-10262
+  wc_id: WC-WOB
+  field_id: null
+  name: Western Offshore Basin - Seismic Data Processing
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Western Offshore Basin Functions
+- cost_centre_id: CC-10263
+  wc_id: WC-WOB
+  field_id: null
+  name: Western Offshore Basin - Reservoir Characterisation
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Western Offshore Basin Functions
+- cost_centre_id: CC-10264
+  wc_id: WC-WOB
+  field_id: null
+  name: Western Offshore Basin - Well Log Analysis & Petrophysics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Western Offshore Basin Functions
+- cost_centre_id: CC-10265
+  wc_id: WC-WOB
+  field_id: null
+  name: Western Offshore Basin - Basin Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Western Offshore Basin Functions
+- cost_centre_id: CC-10266
+  wc_id: WC-WOB
+  field_id: null
+  name: Western Offshore Basin - Exploration Accounting & Concessions
+  cost_centre_type: finance_commercial
+  hierarchy_area: Western Offshore Basin Functions
+- cost_centre_id: CC-10267
+  wc_id: WC-WNB
+  field_id: null
+  name: Western Onshore Basin - Geological & Basin Studies
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Western Onshore Basin Functions
+- cost_centre_id: CC-10268
+  wc_id: WC-WNB
+  field_id: null
+  name: Western Onshore Basin - Seismic Data Acquisition & QC
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Western Onshore Basin Functions
+- cost_centre_id: CC-10269
+  wc_id: WC-WNB
+  field_id: null
+  name: Western Onshore Basin - Seismic Data Processing
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Western Onshore Basin Functions
+- cost_centre_id: CC-10270
+  wc_id: WC-WNB
+  field_id: null
+  name: Western Onshore Basin - Reservoir Characterisation
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Western Onshore Basin Functions
+- cost_centre_id: CC-10271
+  wc_id: WC-WNB
+  field_id: null
+  name: Western Onshore Basin - Well Log Analysis & Petrophysics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Western Onshore Basin Functions
+- cost_centre_id: CC-10272
+  wc_id: WC-WNB
+  field_id: null
+  name: Western Onshore Basin - Basin Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Western Onshore Basin Functions
+- cost_centre_id: CC-10273
+  wc_id: WC-WNB
+  field_id: null
+  name: Western Onshore Basin - Exploration Accounting & Concessions
+  cost_centre_type: finance_commercial
+  hierarchy_area: Western Onshore Basin Functions
+- cost_centre_id: CC-10274
+  wc_id: WC-RAJ-BSN
+  field_id: FLD-BAG
+  name: Baghewala Field Operations
+  cost_centre_type: production
+  hierarchy_area: Rajasthan Basin Production
+- cost_centre_id: CC-10275
+  wc_id: WC-RAJ-BSN
+  field_id: null
+  name: Rajasthan Basin - Geological & Basin Studies
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Rajasthan Basin Functions
+- cost_centre_id: CC-10276
+  wc_id: WC-RAJ-BSN
+  field_id: null
+  name: Rajasthan Basin - Seismic Data Acquisition & QC
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Rajasthan Basin Functions
+- cost_centre_id: CC-10277
+  wc_id: WC-RAJ-BSN
+  field_id: null
+  name: Rajasthan Basin - Seismic Data Processing
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Rajasthan Basin Functions
+- cost_centre_id: CC-10278
+  wc_id: WC-RAJ-BSN
+  field_id: null
+  name: Rajasthan Basin - Reservoir Characterisation
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Rajasthan Basin Functions
+- cost_centre_id: CC-10279
+  wc_id: WC-RAJ-BSN
+  field_id: null
+  name: Rajasthan Basin - Well Log Analysis & Petrophysics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Rajasthan Basin Functions
+- cost_centre_id: CC-10280
+  wc_id: WC-RAJ-BSN
+  field_id: null
+  name: Rajasthan Basin - Basin Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Rajasthan Basin Functions
+- cost_centre_id: CC-10281
+  wc_id: WC-RAJ-BSN
+  field_id: null
+  name: Rajasthan Basin - Exploration Accounting & Concessions
+  cost_centre_type: finance_commercial
+  hierarchy_area: Rajasthan Basin Functions
+- cost_centre_id: CC-10282
+  wc_id: WC-AAB
+  field_id: null
+  name: A&AA Basin - Geological & Basin Studies
+  cost_centre_type: geology_geophysics
+  hierarchy_area: A&AA Basin Functions
+- cost_centre_id: CC-10283
+  wc_id: WC-AAB
+  field_id: null
+  name: A&AA Basin - Seismic Data Acquisition & QC
+  cost_centre_type: geology_geophysics
+  hierarchy_area: A&AA Basin Functions
+- cost_centre_id: CC-10284
+  wc_id: WC-AAB
+  field_id: null
+  name: A&AA Basin - Seismic Data Processing
+  cost_centre_type: geology_geophysics
+  hierarchy_area: A&AA Basin Functions
+- cost_centre_id: CC-10285
+  wc_id: WC-AAB
+  field_id: null
+  name: A&AA Basin - Reservoir Characterisation
+  cost_centre_type: geology_geophysics
+  hierarchy_area: A&AA Basin Functions
+- cost_centre_id: CC-10286
+  wc_id: WC-AAB
+  field_id: null
+  name: A&AA Basin - Well Log Analysis & Petrophysics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: A&AA Basin Functions
+- cost_centre_id: CC-10287
+  wc_id: WC-AAB
+  field_id: null
+  name: A&AA Basin - Basin Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: A&AA Basin Functions
+- cost_centre_id: CC-10288
+  wc_id: WC-AAB
+  field_id: null
+  name: A&AA Basin - Exploration Accounting & Concessions
+  cost_centre_type: finance_commercial
+  hierarchy_area: A&AA Basin Functions
+- cost_centre_id: CC-10289
+  wc_id: WC-SIL
+  field_id: null
+  name: Silchar Basin - Geological & Basin Studies
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Silchar Basin Functions
+- cost_centre_id: CC-10290
+  wc_id: WC-SIL
+  field_id: null
+  name: Silchar Basin - Seismic Data Acquisition & QC
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Silchar Basin Functions
+- cost_centre_id: CC-10291
+  wc_id: WC-SIL
+  field_id: null
+  name: Silchar Basin - Seismic Data Processing
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Silchar Basin Functions
+- cost_centre_id: CC-10292
+  wc_id: WC-SIL
+  field_id: null
+  name: Silchar Basin - Reservoir Characterisation
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Silchar Basin Functions
+- cost_centre_id: CC-10293
+  wc_id: WC-SIL
+  field_id: null
+  name: Silchar Basin - Well Log Analysis & Petrophysics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Silchar Basin Functions
+- cost_centre_id: CC-10294
+  wc_id: WC-SIL
+  field_id: null
+  name: Silchar Basin - Basin Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Silchar Basin Functions
+- cost_centre_id: CC-10295
+  wc_id: WC-SIL
+  field_id: null
+  name: Silchar Basin - Exploration Accounting & Concessions
+  cost_centre_type: finance_commercial
+  hierarchy_area: Silchar Basin Functions
+- cost_centre_id: CC-10296
+  wc_id: WC-CAB
+  field_id: null
+  name: Cauvery Basin - Geological & Basin Studies
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Cauvery Basin Functions
+- cost_centre_id: CC-10297
+  wc_id: WC-CAB
+  field_id: null
+  name: Cauvery Basin - Seismic Data Acquisition & QC
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Cauvery Basin Functions
+- cost_centre_id: CC-10298
+  wc_id: WC-CAB
+  field_id: null
+  name: Cauvery Basin - Seismic Data Processing
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Cauvery Basin Functions
+- cost_centre_id: CC-10299
+  wc_id: WC-CAB
+  field_id: null
+  name: Cauvery Basin - Reservoir Characterisation
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Cauvery Basin Functions
+- cost_centre_id: CC-10300
+  wc_id: WC-CAB
+  field_id: null
+  name: Cauvery Basin - Well Log Analysis & Petrophysics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Cauvery Basin Functions
+- cost_centre_id: CC-10301
+  wc_id: WC-CAB
+  field_id: null
+  name: Cauvery Basin - Basin Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Cauvery Basin Functions
+- cost_centre_id: CC-10302
+  wc_id: WC-CAB
+  field_id: null
+  name: Cauvery Basin - Exploration Accounting & Concessions
+  cost_centre_type: finance_commercial
+  hierarchy_area: Cauvery Basin Functions
+- cost_centre_id: CC-10303
+  wc_id: WC-KGB
+  field_id: null
+  name: KG Basin - Geological & Basin Studies
+  cost_centre_type: geology_geophysics
+  hierarchy_area: KG Basin Functions
+- cost_centre_id: CC-10304
+  wc_id: WC-KGB
+  field_id: null
+  name: KG Basin - Seismic Data Acquisition & QC
+  cost_centre_type: geology_geophysics
+  hierarchy_area: KG Basin Functions
+- cost_centre_id: CC-10305
+  wc_id: WC-KGB
+  field_id: null
+  name: KG Basin - Seismic Data Processing
+  cost_centre_type: geology_geophysics
+  hierarchy_area: KG Basin Functions
+- cost_centre_id: CC-10306
+  wc_id: WC-KGB
+  field_id: null
+  name: KG Basin - Reservoir Characterisation
+  cost_centre_type: geology_geophysics
+  hierarchy_area: KG Basin Functions
+- cost_centre_id: CC-10307
+  wc_id: WC-KGB
+  field_id: null
+  name: KG Basin - Well Log Analysis & Petrophysics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: KG Basin Functions
+- cost_centre_id: CC-10308
+  wc_id: WC-KGB
+  field_id: null
+  name: KG Basin - Basin Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: KG Basin Functions
+- cost_centre_id: CC-10309
+  wc_id: WC-KGB
+  field_id: null
+  name: KG Basin - Exploration Accounting & Concessions
+  cost_centre_type: finance_commercial
+  hierarchy_area: KG Basin Functions
+- cost_centre_id: CC-10310
+  wc_id: WC-FRB
+  field_id: null
+  name: Frontier Basin - Geological & Basin Studies
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Frontier Basin Functions
+- cost_centre_id: CC-10311
+  wc_id: WC-FRB
+  field_id: null
+  name: Frontier Basin - Seismic Data Acquisition & QC
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Frontier Basin Functions
+- cost_centre_id: CC-10312
+  wc_id: WC-FRB
+  field_id: null
+  name: Frontier Basin - Seismic Data Processing
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Frontier Basin Functions
+- cost_centre_id: CC-10313
+  wc_id: WC-FRB
+  field_id: null
+  name: Frontier Basin - Reservoir Characterisation
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Frontier Basin Functions
+- cost_centre_id: CC-10314
+  wc_id: WC-FRB
+  field_id: null
+  name: Frontier Basin - Well Log Analysis & Petrophysics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: Frontier Basin Functions
+- cost_centre_id: CC-10315
+  wc_id: WC-FRB
+  field_id: null
+  name: Frontier Basin - Basin Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: Frontier Basin Functions
+- cost_centre_id: CC-10316
+  wc_id: WC-FRB
+  field_id: null
+  name: Frontier Basin - Exploration Accounting & Concessions
+  cost_centre_type: finance_commercial
+  hierarchy_area: Frontier Basin Functions
+- cost_centre_id: CC-10317
+  wc_id: WC-MBA
+  field_id: null
+  name: MBA Basin - Geological & Basin Studies
+  cost_centre_type: geology_geophysics
+  hierarchy_area: MBA Basin Functions
+- cost_centre_id: CC-10318
+  wc_id: WC-MBA
+  field_id: null
+  name: MBA Basin - Seismic Data Acquisition & QC
+  cost_centre_type: geology_geophysics
+  hierarchy_area: MBA Basin Functions
+- cost_centre_id: CC-10319
+  wc_id: WC-MBA
+  field_id: null
+  name: MBA Basin - Seismic Data Processing
+  cost_centre_type: geology_geophysics
+  hierarchy_area: MBA Basin Functions
+- cost_centre_id: CC-10320
+  wc_id: WC-MBA
+  field_id: null
+  name: MBA Basin - Reservoir Characterisation
+  cost_centre_type: geology_geophysics
+  hierarchy_area: MBA Basin Functions
+- cost_centre_id: CC-10321
+  wc_id: WC-MBA
+  field_id: null
+  name: MBA Basin - Well Log Analysis & Petrophysics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: MBA Basin Functions
+- cost_centre_id: CC-10322
+  wc_id: WC-MBA
+  field_id: null
+  name: MBA Basin - Basin Administration & Estate
+  cost_centre_type: admin_hr
+  hierarchy_area: MBA Basin Functions
+- cost_centre_id: CC-10323
+  wc_id: WC-MBA
+  field_id: null
+  name: MBA Basin - Exploration Accounting & Concessions
+  cost_centre_type: finance_commercial
+  hierarchy_area: MBA Basin Functions
+- cost_centre_id: CC-10324
+  wc_id: WC-KDM
+  field_id: null
+  name: KDMIPE - Core R&D & Advanced Research
+  cost_centre_type: geology_geophysics
+  hierarchy_area: KDMIPE Functions
+- cost_centre_id: CC-10325
+  wc_id: WC-KDM
+  field_id: null
+  name: KDMIPE - Specialized Testing & Analytics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: KDMIPE Functions
+- cost_centre_id: CC-10326
+  wc_id: WC-KDM
+  field_id: null
+  name: KDMIPE - Executive Training & Simulation
+  cost_centre_type: admin_hr
+  hierarchy_area: KDMIPE Functions
+- cost_centre_id: CC-10327
+  wc_id: WC-KDM
+  field_id: null
+  name: KDMIPE - Computing & Data Centre Facilities
+  cost_centre_type: maintenance
+  hierarchy_area: KDMIPE Functions
+- cost_centre_id: CC-10328
+  wc_id: WC-KDM
+  field_id: null
+  name: KDMIPE - Institute Administration & Facilities
+  cost_centre_type: admin_hr
+  hierarchy_area: KDMIPE Functions
+- cost_centre_id: CC-10329
+  wc_id: WC-GEO
+  field_id: null
+  name: GEOPIC - Core R&D & Advanced Research
+  cost_centre_type: geology_geophysics
+  hierarchy_area: GEOPIC Functions
+- cost_centre_id: CC-10330
+  wc_id: WC-GEO
+  field_id: null
+  name: GEOPIC - Specialized Testing & Analytics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: GEOPIC Functions
+- cost_centre_id: CC-10331
+  wc_id: WC-GEO
+  field_id: null
+  name: GEOPIC - Executive Training & Simulation
+  cost_centre_type: admin_hr
+  hierarchy_area: GEOPIC Functions
+- cost_centre_id: CC-10332
+  wc_id: WC-GEO
+  field_id: null
+  name: GEOPIC - Computing & Data Centre Facilities
+  cost_centre_type: maintenance
+  hierarchy_area: GEOPIC Functions
+- cost_centre_id: CC-10333
+  wc_id: WC-GEO
+  field_id: null
+  name: GEOPIC - Institute Administration & Facilities
+  cost_centre_type: admin_hr
+  hierarchy_area: GEOPIC Functions
+- cost_centre_id: CC-10334
+  wc_id: WC-IRS
+  field_id: null
+  name: IRS - Core R&D & Advanced Research
+  cost_centre_type: geology_geophysics
+  hierarchy_area: IRS Functions
+- cost_centre_id: CC-10335
+  wc_id: WC-IRS
+  field_id: null
+  name: IRS - Specialized Testing & Analytics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: IRS Functions
+- cost_centre_id: CC-10336
+  wc_id: WC-IRS
+  field_id: null
+  name: IRS - Executive Training & Simulation
+  cost_centre_type: admin_hr
+  hierarchy_area: IRS Functions
+- cost_centre_id: CC-10337
+  wc_id: WC-IRS
+  field_id: null
+  name: IRS - Computing & Data Centre Facilities
+  cost_centre_type: maintenance
+  hierarchy_area: IRS Functions
+- cost_centre_id: CC-10338
+  wc_id: WC-IRS
+  field_id: null
+  name: IRS - Institute Administration & Facilities
+  cost_centre_type: admin_hr
+  hierarchy_area: IRS Functions
+- cost_centre_id: CC-10339
+  wc_id: WC-INB
+  field_id: null
+  name: INBIGS - Core R&D & Advanced Research
+  cost_centre_type: geology_geophysics
+  hierarchy_area: INBIGS Functions
+- cost_centre_id: CC-10340
+  wc_id: WC-INB
+  field_id: null
+  name: INBIGS - Specialized Testing & Analytics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: INBIGS Functions
+- cost_centre_id: CC-10341
+  wc_id: WC-INB
+  field_id: null
+  name: INBIGS - Executive Training & Simulation
+  cost_centre_type: admin_hr
+  hierarchy_area: INBIGS Functions
+- cost_centre_id: CC-10342
+  wc_id: WC-INB
+  field_id: null
+  name: INBIGS - Computing & Data Centre Facilities
+  cost_centre_type: maintenance
+  hierarchy_area: INBIGS Functions
+- cost_centre_id: CC-10343
+  wc_id: WC-INB
+  field_id: null
+  name: INBIGS - Institute Administration & Facilities
+  cost_centre_type: admin_hr
+  hierarchy_area: INBIGS Functions
+- cost_centre_id: CC-10344
+  wc_id: WC-CEW
+  field_id: null
+  name: CEWELL - Core R&D & Advanced Research
+  cost_centre_type: geology_geophysics
+  hierarchy_area: CEWELL Functions
+- cost_centre_id: CC-10345
+  wc_id: WC-CEW
+  field_id: null
+  name: CEWELL - Specialized Testing & Analytics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: CEWELL Functions
+- cost_centre_id: CC-10346
+  wc_id: WC-CEW
+  field_id: null
+  name: CEWELL - Executive Training & Simulation
+  cost_centre_type: admin_hr
+  hierarchy_area: CEWELL Functions
+- cost_centre_id: CC-10347
+  wc_id: WC-CEW
+  field_id: null
+  name: CEWELL - Computing & Data Centre Facilities
+  cost_centre_type: maintenance
+  hierarchy_area: CEWELL Functions
+- cost_centre_id: CC-10348
+  wc_id: WC-CEW
+  field_id: null
+  name: CEWELL - Institute Administration & Facilities
+  cost_centre_type: admin_hr
+  hierarchy_area: CEWELL Functions
+- cost_centre_id: CC-10349
+  wc_id: WC-IDW
+  field_id: null
+  name: IDWE - Core R&D & Advanced Research
+  cost_centre_type: geology_geophysics
+  hierarchy_area: IDWE Functions
+- cost_centre_id: CC-10350
+  wc_id: WC-IDW
+  field_id: null
+  name: IDWE - Specialized Testing & Analytics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: IDWE Functions
+- cost_centre_id: CC-10351
+  wc_id: WC-IDW
+  field_id: null
+  name: IDWE - Executive Training & Simulation
+  cost_centre_type: admin_hr
+  hierarchy_area: IDWE Functions
+- cost_centre_id: CC-10352
+  wc_id: WC-IDW
+  field_id: null
+  name: IDWE - Computing & Data Centre Facilities
+  cost_centre_type: maintenance
+  hierarchy_area: IDWE Functions
+- cost_centre_id: CC-10353
+  wc_id: WC-IDW
+  field_id: null
+  name: IDWE - Institute Administration & Facilities
+  cost_centre_type: admin_hr
+  hierarchy_area: IDWE Functions
+- cost_centre_id: CC-10354
+  wc_id: WC-IOG
+  field_id: null
+  name: IOGPT - Core R&D & Advanced Research
+  cost_centre_type: geology_geophysics
+  hierarchy_area: IOGPT Functions
+- cost_centre_id: CC-10355
+  wc_id: WC-IOG
+  field_id: null
+  name: IOGPT - Specialized Testing & Analytics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: IOGPT Functions
+- cost_centre_id: CC-10356
+  wc_id: WC-IOG
+  field_id: null
+  name: IOGPT - Executive Training & Simulation
+  cost_centre_type: admin_hr
+  hierarchy_area: IOGPT Functions
+- cost_centre_id: CC-10357
+  wc_id: WC-IOG
+  field_id: null
+  name: IOGPT - Computing & Data Centre Facilities
+  cost_centre_type: maintenance
+  hierarchy_area: IOGPT Functions
+- cost_centre_id: CC-10358
+  wc_id: WC-IOG
+  field_id: null
+  name: IOGPT - Institute Administration & Facilities
+  cost_centre_type: admin_hr
+  hierarchy_area: IOGPT Functions
+- cost_centre_id: CC-10359
+  wc_id: WC-IEO
+  field_id: null
+  name: IEOT - Core R&D & Advanced Research
+  cost_centre_type: geology_geophysics
+  hierarchy_area: IEOT Functions
+- cost_centre_id: CC-10360
+  wc_id: WC-IEO
+  field_id: null
+  name: IEOT - Specialized Testing & Analytics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: IEOT Functions
+- cost_centre_id: CC-10361
+  wc_id: WC-IEO
+  field_id: null
+  name: IEOT - Executive Training & Simulation
+  cost_centre_type: admin_hr
+  hierarchy_area: IEOT Functions
+- cost_centre_id: CC-10362
+  wc_id: WC-IEO
+  field_id: null
+  name: IEOT - Computing & Data Centre Facilities
+  cost_centre_type: maintenance
+  hierarchy_area: IEOT Functions
+- cost_centre_id: CC-10363
+  wc_id: WC-IEO
+  field_id: null
+  name: IEOT - Institute Administration & Facilities
+  cost_centre_type: admin_hr
+  hierarchy_area: IEOT Functions
+- cost_centre_id: CC-10364
+  wc_id: WC-ACA
+  field_id: null
+  name: ONGC Academy - Core R&D & Advanced Research
+  cost_centre_type: geology_geophysics
+  hierarchy_area: ONGC Academy Functions
+- cost_centre_id: CC-10365
+  wc_id: WC-ACA
+  field_id: null
+  name: ONGC Academy - Specialized Testing & Analytics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: ONGC Academy Functions
+- cost_centre_id: CC-10366
+  wc_id: WC-ACA
+  field_id: null
+  name: ONGC Academy - Executive Training & Simulation
+  cost_centre_type: admin_hr
+  hierarchy_area: ONGC Academy Functions
+- cost_centre_id: CC-10367
+  wc_id: WC-ACA
+  field_id: null
+  name: ONGC Academy - Computing & Data Centre Facilities
+  cost_centre_type: maintenance
+  hierarchy_area: ONGC Academy Functions
+- cost_centre_id: CC-10368
+  wc_id: WC-ACA
+  field_id: null
+  name: ONGC Academy - Institute Administration & Facilities
+  cost_centre_type: admin_hr
+  hierarchy_area: ONGC Academy Functions
+- cost_centre_id: CC-10369
+  wc_id: WC-ATI
+  field_id: null
+  name: ATI Goa - Core R&D & Advanced Research
+  cost_centre_type: geology_geophysics
+  hierarchy_area: ATI Goa Functions
+- cost_centre_id: CC-10370
+  wc_id: WC-ATI
+  field_id: null
+  name: ATI Goa - Specialized Testing & Analytics
+  cost_centre_type: geology_geophysics
+  hierarchy_area: ATI Goa Functions
+- cost_centre_id: CC-10371
+  wc_id: WC-ATI
+  field_id: null
+  name: ATI Goa - Executive Training & Simulation
+  cost_centre_type: admin_hr
+  hierarchy_area: ATI Goa Functions
+- cost_centre_id: CC-10372
+  wc_id: WC-ATI
+  field_id: null
+  name: ATI Goa - Computing & Data Centre Facilities
+  cost_centre_type: maintenance
+  hierarchy_area: ATI Goa Functions
+- cost_centre_id: CC-10373
+  wc_id: WC-ATI
+  field_id: null
+  name: ATI Goa - Institute Administration & Facilities
+  cost_centre_type: admin_hr
+  hierarchy_area: ATI Goa Functions
+- cost_centre_id: CC-10374
+  wc_id: WC-ROM
+  field_id: null
+  name: RO Mumbai - Executive Management & Board Secretarial
+  cost_centre_type: corporate_hq
+  hierarchy_area: RO Mumbai Functions
+- cost_centre_id: CC-10375
+  wc_id: WC-ROM
+  field_id: null
+  name: RO Mumbai - Corporate Finance & Taxation
+  cost_centre_type: finance_commercial
+  hierarchy_area: RO Mumbai Functions
+- cost_centre_id: CC-10376
+  wc_id: WC-ROM
+  field_id: null
+  name: RO Mumbai - Corporate HR & Talent Management
+  cost_centre_type: admin_hr
+  hierarchy_area: RO Mumbai Functions
+- cost_centre_id: CC-10377
+  wc_id: WC-ROM
+  field_id: null
+  name: RO Mumbai - Corporate Legal & Regulatory
+  cost_centre_type: corporate_hq
+  hierarchy_area: RO Mumbai Functions
+- cost_centre_id: CC-10378
+  wc_id: WC-ROM
+  field_id: null
+  name: RO Mumbai - Estate Management & Guest Houses
+  cost_centre_type: admin_hr
+  hierarchy_area: RO Mumbai Functions
+- cost_centre_id: CC-10379
+  wc_id: WC-ROM
+  field_id: null
+  name: RO Mumbai - Enterprise IT & Cyber Security
+  cost_centre_type: maintenance
+  hierarchy_area: RO Mumbai Functions
+- cost_centre_id: CC-10380
+  wc_id: WC-ROK
+  field_id: null
+  name: RO Kolkata - Executive Management & Board Secretarial
+  cost_centre_type: corporate_hq
+  hierarchy_area: RO Kolkata Functions
+- cost_centre_id: CC-10381
+  wc_id: WC-ROK
+  field_id: null
+  name: RO Kolkata - Corporate Finance & Taxation
+  cost_centre_type: finance_commercial
+  hierarchy_area: RO Kolkata Functions
+- cost_centre_id: CC-10382
+  wc_id: WC-ROK
+  field_id: null
+  name: RO Kolkata - Corporate HR & Talent Management
+  cost_centre_type: admin_hr
+  hierarchy_area: RO Kolkata Functions
+- cost_centre_id: CC-10383
+  wc_id: WC-ROK
+  field_id: null
+  name: RO Kolkata - Corporate Legal & Regulatory
+  cost_centre_type: corporate_hq
+  hierarchy_area: RO Kolkata Functions
+- cost_centre_id: CC-10384
+  wc_id: WC-ROK
+  field_id: null
+  name: RO Kolkata - Estate Management & Guest Houses
+  cost_centre_type: admin_hr
+  hierarchy_area: RO Kolkata Functions
+- cost_centre_id: CC-10385
+  wc_id: WC-ROK
+  field_id: null
+  name: RO Kolkata - Enterprise IT & Cyber Security
+  cost_centre_type: maintenance
+  hierarchy_area: RO Kolkata Functions
+- cost_centre_id: CC-10386
+  wc_id: WC-ROC
+  field_id: null
+  name: RO Chennai - Executive Management & Board Secretarial
+  cost_centre_type: corporate_hq
+  hierarchy_area: RO Chennai Functions
+- cost_centre_id: CC-10387
+  wc_id: WC-ROC
+  field_id: null
+  name: RO Chennai - Corporate Finance & Taxation
+  cost_centre_type: finance_commercial
+  hierarchy_area: RO Chennai Functions
+- cost_centre_id: CC-10388
+  wc_id: WC-ROC
+  field_id: null
+  name: RO Chennai - Corporate HR & Talent Management
+  cost_centre_type: admin_hr
+  hierarchy_area: RO Chennai Functions
+- cost_centre_id: CC-10389
+  wc_id: WC-ROC
+  field_id: null
+  name: RO Chennai - Corporate Legal & Regulatory
+  cost_centre_type: corporate_hq
+  hierarchy_area: RO Chennai Functions
+- cost_centre_id: CC-10390
+  wc_id: WC-ROC
+  field_id: null
+  name: RO Chennai - Estate Management & Guest Houses
+  cost_centre_type: admin_hr
+  hierarchy_area: RO Chennai Functions
+- cost_centre_id: CC-10391
+  wc_id: WC-ROC
+  field_id: null
+  name: RO Chennai - Enterprise IT & Cyber Security
+  cost_centre_type: maintenance
+  hierarchy_area: RO Chennai Functions
+- cost_centre_id: CC-10392
+  wc_id: WC-ROV
+  field_id: null
+  name: RO Vadodara - Executive Management & Board Secretarial
+  cost_centre_type: corporate_hq
+  hierarchy_area: RO Vadodara Functions
+- cost_centre_id: CC-10393
+  wc_id: WC-ROV
+  field_id: null
+  name: RO Vadodara - Corporate Finance & Taxation
+  cost_centre_type: finance_commercial
+  hierarchy_area: RO Vadodara Functions
+- cost_centre_id: CC-10394
+  wc_id: WC-ROV
+  field_id: null
+  name: RO Vadodara - Corporate HR & Talent Management
+  cost_centre_type: admin_hr
+  hierarchy_area: RO Vadodara Functions
+- cost_centre_id: CC-10395
+  wc_id: WC-ROV
+  field_id: null
+  name: RO Vadodara - Corporate Legal & Regulatory
+  cost_centre_type: corporate_hq
+  hierarchy_area: RO Vadodara Functions
+- cost_centre_id: CC-10396
+  wc_id: WC-ROV
+  field_id: null
+  name: RO Vadodara - Estate Management & Guest Houses
+  cost_centre_type: admin_hr
+  hierarchy_area: RO Vadodara Functions
+- cost_centre_id: CC-10397
+  wc_id: WC-ROV
+  field_id: null
+  name: RO Vadodara - Enterprise IT & Cyber Security
+  cost_centre_type: maintenance
+  hierarchy_area: RO Vadodara Functions
+- cost_centre_id: CC-10398
+  wc_id: WC-DRL
+  field_id: null
+  name: Drilling Services - Field Operational Services
+  cost_centre_type: production
+  hierarchy_area: Drilling Services Functions
+- cost_centre_id: CC-10399
+  wc_id: WC-DRL
+  field_id: null
+  name: Drilling Services - Equipment Overhaul & Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Drilling Services Functions
+- cost_centre_id: CC-10400
+  wc_id: WC-DRL
+  field_id: null
+  name: Drilling Services - Mobility & Transport Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Drilling Services Functions
+- cost_centre_id: CC-10401
+  wc_id: WC-DRL
+  field_id: null
+  name: Drilling Services - Operational Safety & Risk
+  cost_centre_type: hse_safety
+  hierarchy_area: Drilling Services Functions
+- cost_centre_id: CC-10402
+  wc_id: WC-DRL
+  field_id: null
+  name: Drilling Services - Service Base Administration
+  cost_centre_type: admin_hr
+  hierarchy_area: Drilling Services Functions
+- cost_centre_id: CC-10403
+  wc_id: WC-DRL
+  field_id: null
+  name: Drilling Services - Service Costing & Contracts
+  cost_centre_type: finance_commercial
+  hierarchy_area: Drilling Services Functions
+- cost_centre_id: CC-10404
+  wc_id: WC-WEL
+  field_id: null
+  name: Well Services - Field Operational Services
+  cost_centre_type: production
+  hierarchy_area: Well Services Functions
+- cost_centre_id: CC-10405
+  wc_id: WC-WEL
+  field_id: null
+  name: Well Services - Equipment Overhaul & Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Well Services Functions
+- cost_centre_id: CC-10406
+  wc_id: WC-WEL
+  field_id: null
+  name: Well Services - Mobility & Transport Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Well Services Functions
+- cost_centre_id: CC-10407
+  wc_id: WC-WEL
+  field_id: null
+  name: Well Services - Operational Safety & Risk
+  cost_centre_type: hse_safety
+  hierarchy_area: Well Services Functions
+- cost_centre_id: CC-10408
+  wc_id: WC-WEL
+  field_id: null
+  name: Well Services - Service Base Administration
+  cost_centre_type: admin_hr
+  hierarchy_area: Well Services Functions
+- cost_centre_id: CC-10409
+  wc_id: WC-WEL
+  field_id: null
+  name: Well Services - Service Costing & Contracts
+  cost_centre_type: finance_commercial
+  hierarchy_area: Well Services Functions
+- cost_centre_id: CC-10410
+  wc_id: WC-LOG
+  field_id: null
+  name: Offshore Logistics - Field Operational Services
+  cost_centre_type: production
+  hierarchy_area: Offshore Logistics Functions
+- cost_centre_id: CC-10411
+  wc_id: WC-LOG
+  field_id: null
+  name: Offshore Logistics - Equipment Overhaul & Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Offshore Logistics Functions
+- cost_centre_id: CC-10412
+  wc_id: WC-LOG
+  field_id: null
+  name: Offshore Logistics - Mobility & Transport Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Offshore Logistics Functions
+- cost_centre_id: CC-10413
+  wc_id: WC-LOG
+  field_id: null
+  name: Offshore Logistics - Operational Safety & Risk
+  cost_centre_type: hse_safety
+  hierarchy_area: Offshore Logistics Functions
+- cost_centre_id: CC-10414
+  wc_id: WC-LOG
+  field_id: null
+  name: Offshore Logistics - Service Base Administration
+  cost_centre_type: admin_hr
+  hierarchy_area: Offshore Logistics Functions
+- cost_centre_id: CC-10415
+  wc_id: WC-LOG
+  field_id: null
+  name: Offshore Logistics - Service Costing & Contracts
+  cost_centre_type: finance_commercial
+  hierarchy_area: Offshore Logistics Functions
+- cost_centre_id: CC-10416
+  wc_id: WC-GLS
+  field_id: null
+  name: Geophysical Services - Field Operational Services
+  cost_centre_type: production
+  hierarchy_area: Geophysical Services Functions
+- cost_centre_id: CC-10417
+  wc_id: WC-GLS
+  field_id: null
+  name: Geophysical Services - Equipment Overhaul & Maintenance
+  cost_centre_type: maintenance
+  hierarchy_area: Geophysical Services Functions
+- cost_centre_id: CC-10418
+  wc_id: WC-GLS
+  field_id: null
+  name: Geophysical Services - Mobility & Transport Logistics
+  cost_centre_type: logistics
+  hierarchy_area: Geophysical Services Functions
+- cost_centre_id: CC-10419
+  wc_id: WC-GLS
+  field_id: null
+  name: Geophysical Services - Operational Safety & Risk
+  cost_centre_type: hse_safety
+  hierarchy_area: Geophysical Services Functions
+- cost_centre_id: CC-10420
+  wc_id: WC-GLS
+  field_id: null
+  name: Geophysical Services - Service Base Administration
+  cost_centre_type: admin_hr
+  hierarchy_area: Geophysical Services Functions
+- cost_centre_id: CC-10421
+  wc_id: WC-GLS
+  field_id: null
+  name: Geophysical Services - Service Costing & Contracts
+  cost_centre_type: finance_commercial
+  hierarchy_area: Geophysical Services Functions
+profit_centres:
+- profit_centre_id: PC-10100
+  wc_id: WC-DEL
+  name: Delhi HQ Profit Centre
+  responsible_person: Head Delhi HQ
+  segment: Onshore
+- profit_centre_id: PC-10200
+  wc_id: WC-DDN
+  name: Dehradun Tel Bhavan Profit Centre
+  responsible_person: Head Dehradun Tel Bhavan
+  segment: Onshore
+- profit_centre_id: PC-10300
+  wc_id: WC-MUM
+  name: Mumbai High Profit Centre
+  responsible_person: Head Mumbai High
+  segment: Offshore
+- profit_centre_id: PC-10400
+  wc_id: WC-BAS
+  name: Bassein & Satellite Profit Centre
+  responsible_person: Head Bassein & Satellite
+  segment: Offshore
+- profit_centre_id: PC-10500
+  wc_id: WC-NEH
+  name: Neelam & Heera Profit Centre
+  responsible_person: Head Neelam & Heera
+  segment: Offshore
+- profit_centre_id: PC-10600
+  wc_id: WC-EAS
+  name: Eastern Offshore Profit Centre
+  responsible_person: Head Eastern Offshore
+  segment: Offshore
+- profit_centre_id: PC-10700
+  wc_id: WC-AHM
+  name: Ahmedabad Asset Profit Centre
+  responsible_person: Head Ahmedabad Asset
+  segment: Onshore
+- profit_centre_id: PC-10800
+  wc_id: WC-MEH
+  name: Mehsana Asset Profit Centre
+  responsible_person: Head Mehsana Asset
+  segment: Onshore
+- profit_centre_id: PC-10900
+  wc_id: WC-ANK
+  name: Ankleshwar Asset Profit Centre
+  responsible_person: Head Ankleshwar Asset
+  segment: Onshore
+- profit_centre_id: PC-11000
+  wc_id: WC-CAM
+  name: Cambay Asset Profit Centre
+  responsible_person: Head Cambay Asset
+  segment: Onshore
+- profit_centre_id: PC-11100
+  wc_id: WC-ASM
+  name: Assam Asset Profit Centre
+  responsible_person: Head Assam Asset
+  segment: Onshore
+- profit_centre_id: PC-11200
+  wc_id: WC-JOR
+  name: Jorhat Asset Profit Centre
+  responsible_person: Head Jorhat Asset
+  segment: Onshore
+- profit_centre_id: PC-11300
+  wc_id: WC-TRI
+  name: Tripura Asset Profit Centre
+  responsible_person: Head Tripura Asset
+  segment: Onshore
+- profit_centre_id: PC-11400
+  wc_id: WC-BOK
+  name: CBM Bokaro Profit Centre
+  responsible_person: Head CBM Bokaro
+  segment: Onshore
+- profit_centre_id: PC-11500
+  wc_id: WC-RAJ
+  name: Rajahmundry Asset Profit Centre
+  responsible_person: Head Rajahmundry Asset
+  segment: Onshore
+- profit_centre_id: PC-11600
+  wc_id: WC-CAU
+  name: Cauvery Asset Profit Centre
+  responsible_person: Head Cauvery Asset
+  segment: Onshore
+- profit_centre_id: PC-11700
+  wc_id: WC-URN
+  name: Uran Plant Profit Centre
+  responsible_person: Head Uran Plant
+  segment: Onshore
+- profit_centre_id: PC-11800
+  wc_id: WC-HAZ
+  name: Hazira Plant Profit Centre
+  responsible_person: Head Hazira Plant
+  segment: Onshore
+- profit_centre_id: PC-11900
+  wc_id: WC-DAH
+  name: Dahej Plant Profit Centre
+  responsible_person: Head Dahej Plant
+  segment: Onshore
+- profit_centre_id: PC-12000
+  wc_id: WC-WOB
+  name: Western Offshore Basin Profit Centre
+  responsible_person: Head Western Offshore Basin
+  segment: Offshore
+- profit_centre_id: PC-12100
+  wc_id: WC-WNB
+  name: Western Onshore Basin Profit Centre
+  responsible_person: Head Western Onshore Basin
+  segment: Onshore
+- profit_centre_id: PC-12200
+  wc_id: WC-RAJ-BSN
+  name: Rajasthan Basin Profit Centre
+  responsible_person: Head Rajasthan Basin
+  segment: Onshore
+- profit_centre_id: PC-12300
+  wc_id: WC-AAB
+  name: A&AA Basin Profit Centre
+  responsible_person: Head A&AA Basin
+  segment: Onshore
+- profit_centre_id: PC-12400
+  wc_id: WC-SIL
+  name: Silchar Basin Profit Centre
+  responsible_person: Head Silchar Basin
+  segment: Onshore
+- profit_centre_id: PC-12500
+  wc_id: WC-CAB
+  name: Cauvery Basin Profit Centre
+  responsible_person: Head Cauvery Basin
+  segment: Onshore
+- profit_centre_id: PC-12600
+  wc_id: WC-KGB
+  name: KG Basin Profit Centre
+  responsible_person: Head KG Basin
+  segment: Onshore
+- profit_centre_id: PC-12700
+  wc_id: WC-FRB
+  name: Frontier Basin Profit Centre
+  responsible_person: Head Frontier Basin
+  segment: Onshore
+- profit_centre_id: PC-12800
+  wc_id: WC-MBA
+  name: MBA Basin Profit Centre
+  responsible_person: Head MBA Basin
+  segment: Onshore
+- profit_centre_id: PC-12900
+  wc_id: WC-KDM
+  name: KDMIPE Profit Centre
+  responsible_person: Head KDMIPE
+  segment: Onshore
+- profit_centre_id: PC-13000
+  wc_id: WC-GEO
+  name: GEOPIC Profit Centre
+  responsible_person: Head GEOPIC
+  segment: Onshore
+- profit_centre_id: PC-13100
+  wc_id: WC-IRS
+  name: IRS Profit Centre
+  responsible_person: Head IRS
+  segment: Onshore
+- profit_centre_id: PC-13200
+  wc_id: WC-INB
+  name: INBIGS Profit Centre
+  responsible_person: Head INBIGS
+  segment: Onshore
+- profit_centre_id: PC-13300
+  wc_id: WC-CEW
+  name: CEWELL Profit Centre
+  responsible_person: Head CEWELL
+  segment: Onshore
+- profit_centre_id: PC-13400
+  wc_id: WC-IDW
+  name: IDWE Profit Centre
+  responsible_person: Head IDWE
+  segment: Onshore
+- profit_centre_id: PC-13500
+  wc_id: WC-IOG
+  name: IOGPT Profit Centre
+  responsible_person: Head IOGPT
+  segment: Onshore
+- profit_centre_id: PC-13600
+  wc_id: WC-IEO
+  name: IEOT Profit Centre
+  responsible_person: Head IEOT
+  segment: Onshore
+- profit_centre_id: PC-13700
+  wc_id: WC-ACA
+  name: ONGC Academy Profit Centre
+  responsible_person: Head ONGC Academy
+  segment: Onshore
+- profit_centre_id: PC-13800
+  wc_id: WC-ATI
+  name: ATI Goa Profit Centre
+  responsible_person: Head ATI Goa
+  segment: Onshore
+- profit_centre_id: PC-13900
+  wc_id: WC-ROM
+  name: RO Mumbai Profit Centre
+  responsible_person: Head RO Mumbai
+  segment: Onshore
+- profit_centre_id: PC-14000
+  wc_id: WC-ROK
+  name: RO Kolkata Profit Centre
+  responsible_person: Head RO Kolkata
+  segment: Onshore
+- profit_centre_id: PC-14100
+  wc_id: WC-ROC
+  name: RO Chennai Profit Centre
+  responsible_person: Head RO Chennai
+  segment: Onshore
+- profit_centre_id: PC-14200
+  wc_id: WC-ROV
+  name: RO Vadodara Profit Centre
+  responsible_person: Head RO Vadodara
+  segment: Onshore
+- profit_centre_id: PC-14300
+  wc_id: WC-DRL
+  name: Drilling Services Profit Centre
+  responsible_person: Head Drilling Services
+  segment: Offshore
+- profit_centre_id: PC-14400
+  wc_id: WC-WEL
+  name: Well Services Profit Centre
+  responsible_person: Head Well Services
+  segment: Onshore
+- profit_centre_id: PC-14500
+  wc_id: WC-LOG
+  name: Offshore Logistics Profit Centre
+  responsible_person: Head Offshore Logistics
+  segment: Offshore
+- profit_centre_id: PC-14600
+  wc_id: WC-GLS
+  name: Geophysical Services Profit Centre
+  responsible_person: Head Geophysical Services
+  segment: Onshore

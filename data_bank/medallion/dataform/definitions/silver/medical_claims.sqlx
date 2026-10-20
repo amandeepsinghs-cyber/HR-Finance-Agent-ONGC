@@ -1,0 +1,32 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "medical_claims",
+  description: "Healthcare reimbursement claims ledger covering empanelled hospital treatment, diagnostic deductions, and settlement turnaround."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`claim_id`) AS claim_id,
+    TRIM(`emp_id`) AS emp_id,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`patient_relationship`) AS patient_relationship,
+    TRIM(`hospital_name`) AS hospital_name,
+    CASE WHEN LOWER(TRIM(`is_empanelled_hospital`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`is_empanelled_hospital`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_empanelled_hospital,
+    TRIM(`claim_type`) AS claim_type,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`submission_date`), ''), 1, 10)) AS submission_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`settlement_date`), ''), 1, 10)) AS settlement_date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`turnaround_days`), ''), ',', ''), '₹', '') AS INT64) AS turnaround_days,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`claimed_amount_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS claimed_amount_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`approved_amount_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS approved_amount_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`deduction_amount_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS deduction_amount_inr,
+    TRIM(`deduction_reason`) AS deduction_reason,
+    TRIM(`claim_status`) AS claim_status
+  FROM ${ref("db_exports_medical_claims_export")}
+  WHERE NULLIF(TRIM(`claim_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY claim_id ORDER BY _ingest_ts DESC) = 1

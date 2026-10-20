@@ -1,0 +1,37 @@
+{
+  "job_id": "0d62deb1-f492-4d35-aa17-314798867638",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:14.135787+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 8.0",
+      "heading": "Medical & Compassionate Grounds",
+      "provision": "JRTP 8.1-8.3 (medical)",
+      "quote_snippet": "8.1 Serious Medical Illness: An executive suffering from serious chronic ailments (cancer, renal failure, cardiac disease requiring tertiary care, or major neurological disorders), or having a dependent spouse or child suffering from such certified conditions, may apply for deferment or exemption from transfer. 8.2 Medical Board Certification: All medical grounds must be evaluated and certified by an ONGC Standing Medical Board comprising the Chief Medical Officer and specialist government physicians. 8.3 Special Review Board (SRB): All medical and compassionate exemption requests shall be adjudicated by the Special Review Board, chaired by Director (HR), with ED-Chief ER and Head Corporate Medical as members. Approvals shall be valid for a maximum of 1 to 2 years, subject to annual medical re-evaluation."
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 13.0",
+      "heading": "Transfer Grievance Redressal Mechanism",
+      "provision": "JRTP 13.1-13.3 (spouse / representation)",
+      "quote_snippet": "13.1 Representation Timeline: Any executive aggrieved by a transfer order may submit a formal representation to the Transfer Grievance Redressal Committee (TGRC) within 15 (fifteen) calendar days from the date of official publication of the transfer order on the intranet portal. 13.2 Grounds for Representation: Representations shall be entertained strictly on specified grounds: (a) genuine medical emergency certified by Medical Board; (b) child appearing in Class X or XII Board examination in the current academic year; (c) spouse working in central/state government or CPSE at the current station (DOPT guidelines); or (d) superannuation within 2\u20133 years. 13.3 Time-Bound Disposal: The TGRC, chaired by an Executive Director, shall examine each representation and convey its recommendations to Director (HR) within 30 days. Filing a representation does not confer an automatic right to stay at the station unless stay is granted in writing by Director (HR)."
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 7.0",
+      "heading": "Pre-Retirement Tenure Exemption",
+      "provision": "JRTP 7.1 (retirement)",
+      "quote_snippet": "7.1 Superannuation Settlement Protection: Executives who are within 2 (two) years of superannuation (age 58 years and above) shall be strictly exempt from mandatory outstation transfers. In organizational practice and annual transfer planning, executives with 3 years or less remaining until superannuation (age 57 years and above) shall ordinarily not be transferred out of their current station, to enable smooth superannuation transition, pension settlement, family stabilization, and medical management."
+    }
+  ]
+}

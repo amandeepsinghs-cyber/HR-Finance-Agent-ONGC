@@ -1,0 +1,81 @@
+{
+  "job_id": "231966de-9b6a-492f-9d38-83b5b49be131",
+  "total_bytes_processed": 11284,
+  "executed_at": "2026-10-20T06:37:31.760714+00:00",
+  "elapsed_seconds": 0.75,
+  "row_count": 7,
+  "columns": [
+    "csr_theme",
+    "projects",
+    "spend_cr",
+    "share_of_total_pct",
+    "aspirational_district_spend_cr",
+    "total_csr_spend_cr",
+    "total_aspirational_spend_cr"
+  ],
+  "rows": [
+    {
+      "csr_theme": "Education",
+      "projects": 7,
+      "spend_cr": 221.92,
+      "share_of_total_pct": 23.4,
+      "aspirational_district_spend_cr": 38.6,
+      "total_csr_spend_cr": 949.0,
+      "total_aspirational_spend_cr": 222.17
+    },
+    {
+      "csr_theme": "Environmental Sustainability",
+      "projects": 7,
+      "spend_cr": 192.83,
+      "share_of_total_pct": 20.3,
+      "aspirational_district_spend_cr": 0.0,
+      "total_csr_spend_cr": 949.0,
+      "total_aspirational_spend_cr": 222.17
+    },
+    {
+      "csr_theme": "Sanitation & Safe Drinking Water",
+      "projects": 5,
+      "spend_cr": 167.41,
+      "share_of_total_pct": 17.6,
+      "aspirational_district_spend_cr": 119.59,
+      "total_csr_spend_cr": 949.0,
+      "total_aspirational_spend_cr": 222.17
+    },
+    {
+      "csr_theme": "Skill Development & Livelihoods",
+      "projects": 5,
+      "spend_cr": 136.4,
+      "share_of_total_pct": 14.4,
+      "aspirational_district_spend_cr": 24.07,
+      "total_csr_spend_cr": 949.0,
+      "total_aspirational_spend_cr": 222.17
+    },
+    {
+      "csr_theme": "Healthcare",
+      "projects": 3,
+      "spend_cr": 103.99,
+      "share_of_total_pct": 11.0,
+      "aspirational_district_spend_cr": 0.0,
+      "total_csr_spend_cr": 949.0,
+      "total_aspirational_spend_cr": 222.17
+    },
+    {
+      "csr_theme": "Rural Development",
+      "projects": 3,
+      "spend_cr": 99.66,
+      "share_of_total_pct": 10.5,
+      "aspirational_district_spend_cr": 39.91,
+      "total_csr_spend_cr": 949.0,
+      "total_aspirational_spend_cr": 222.17
+    },
+    {
+      "csr_theme": "Promotion of Sports",
+      "projects": 1,
+      "spend_cr": 26.79,
+      "share_of_total_pct": 2.8,
+      "aspirational_district_spend_cr": 0.0,
+      "total_csr_spend_cr": 949.0,
+      "total_aspirational_spend_cr": 222.17
+    }
+  ]
+}

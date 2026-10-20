@@ -1,0 +1,30 @@
+{
+  "job_id": "9fd8ce79-fa79-48bc-be36-61aa217151ad",
+  "total_bytes_processed": 540,
+  "executed_at": "2026-10-20T06:42:19.070895+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 2,
+  "columns": [
+    "fiscal_year",
+    "gross_revenue_inr_cr",
+    "ebitda_inr_cr",
+    "ebitda_margin_pct",
+    "pat_inr_cr"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 132508.0,
+      "ebitda_inr_cr": 63284.03,
+      "ebitda_margin_pct": 47.8,
+      "pat_inr_cr": 32894.0
+    },
+    {
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 137846.0,
+      "ebitda_inr_cr": 66855.31,
+      "ebitda_margin_pct": 48.5,
+      "pat_inr_cr": 35610.0
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "job_id": "2ebd7bd9-a476-4a5e-a83b-012d27b6c959",
+  "total_bytes_processed": 385619,
+  "executed_at": "2026-10-20T06:37:27.101520+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 4,
+  "columns": [
+    "special_drive_name",
+    "short_name",
+    "category",
+    "backlog_reserved_vacancies",
+    "special_drive_target",
+    "national_drive_target"
+  ],
+  "rows": [
+    {
+      "special_drive_name": "Special Recruitment Drive (SC/ST/OBC)",
+      "short_name": "Tripura Asset",
+      "category": "SC",
+      "backlog_reserved_vacancies": 6,
+      "special_drive_target": 6,
+      "national_drive_target": 179
+    },
+    {
+      "special_drive_name": "Special Recruitment Drive (SC/ST/OBC)",
+      "short_name": "Tripura Asset",
+      "category": "ST",
+      "backlog_reserved_vacancies": 5,
+      "special_drive_target": 5,
+      "national_drive_target": 179
+    },
+    {
+      "special_drive_name": "Special Recruitment Drive (SC/ST/OBC)",
+      "short_name": "Assam Asset",
+      "category": "SC",
+      "backlog_reserved_vacancies": 2,
+      "special_drive_target": 2,
+      "national_drive_target": 179
+    },
+    {
+      "special_drive_name": "Special Recruitment Drive (SC/ST/OBC)",
+      "short_name": "Assam Asset",
+      "category": "ST",
+      "backlog_reserved_vacancies": 2,
+      "special_drive_target": 2,
+      "national_drive_target": 179
+    }
+  ]
+}

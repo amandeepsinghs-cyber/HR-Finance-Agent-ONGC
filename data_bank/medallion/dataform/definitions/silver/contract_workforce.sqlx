@@ -1,0 +1,38 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "contract_workforce",
+  description: "Monthly contract labour deployment ledger by installation, vendor, service category, core vs non-core activity, and unit cost."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`LBLNI`) AS contract_entry_id,
+    TRIM(`EBELN`) AS contract_id,
+    TRIM(`LIFNR`) AS vendor_id,
+    TRIM(`WERKS`) AS wc_id,
+    TRIM(`month`) AS month,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`service_category`) AS service_category,
+    TRIM(`discipline_id`) AS discipline_id,
+    TRIM(`grade_id`) AS grade_id,
+    TRIM(`gender`) AS gender,
+    TRIM(`category`) AS category,
+    CASE WHEN LOWER(TRIM(`pwd_flag`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`pwd_flag`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS pwd_flag,
+    TRIM(`age_band`) AS age_band,
+    TRIM(`tenure_band`) AS tenure_band,
+    CASE WHEN LOWER(TRIM(`is_core_activity`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`is_core_activity`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_core_activity,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`contractor_headcount`), ''), ',', ''), '₹', '') AS INT64) AS contractor_headcount,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`regular_employee_count_matching`), ''), ',', ''), '₹', '') AS INT64) AS regular_employee_count_matching,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`contractor_to_regular_ratio`), ''), ',', ''), '₹', '') AS NUMERIC) AS contractor_to_regular_ratio,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`NETWR`), ''), ',', ''), '₹', '') AS NUMERIC) AS monthly_cost_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`contractor_cost_per_boe_usd`), ''), ',', ''), '₹', '') AS NUMERIC) AS contractor_cost_per_boe_usd,
+    TRIM(`clra_license_no`) AS clra_license_no,
+    TRIM(`clra_compliance_status`) AS clra_compliance_status
+  FROM ${ref("sap_essr_esll")}
+  WHERE NULLIF(TRIM(`LBLNI`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_entry_id ORDER BY _ingest_ts DESC) = 1

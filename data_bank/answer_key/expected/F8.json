@@ -1,0 +1,99 @@
+{
+  "job_id": "9838653a-5663-4142-870e-7745edfa74d6",
+  "total_bytes_processed": 52180,
+  "executed_at": "2026-10-20T06:38:52.955424+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 8,
+  "columns": [
+    "basin_name",
+    "production_mmtoe",
+    "reserve_accretion_2p_mmtoe",
+    "rrr_2p",
+    "finding_cost_usd_boe",
+    "development_cost_usd_boe",
+    "fd_cost_usd_boe",
+    "reserves_2p_mmtoe"
+  ],
+  "rows": [
+    {
+      "basin_name": "Krishna Godavari",
+      "production_mmtoe": 4.87,
+      "reserve_accretion_2p_mmtoe": 5.7,
+      "rrr_2p": 1.17,
+      "finding_cost_usd_boe": 5.67,
+      "development_cost_usd_boe": 23.12,
+      "fd_cost_usd_boe": 28.79,
+      "reserves_2p_mmtoe": 141.5
+    },
+    {
+      "basin_name": "Cauvery",
+      "production_mmtoe": 0.48,
+      "reserve_accretion_2p_mmtoe": 0.56,
+      "rrr_2p": 1.16,
+      "finding_cost_usd_boe": 3.73,
+      "development_cost_usd_boe": 16.35,
+      "fd_cost_usd_boe": 20.08,
+      "reserves_2p_mmtoe": 7.5
+    },
+    {
+      "basin_name": "Rajasthan",
+      "production_mmtoe": 0.11,
+      "reserve_accretion_2p_mmtoe": 0.13,
+      "rrr_2p": 1.2,
+      "finding_cost_usd_boe": 0.0,
+      "development_cost_usd_boe": 18.41,
+      "fd_cost_usd_boe": 18.41,
+      "reserves_2p_mmtoe": 1.6
+    },
+    {
+      "basin_name": "Western Offshore",
+      "production_mmtoe": 22.69,
+      "reserve_accretion_2p_mmtoe": 26.54,
+      "rrr_2p": 1.17,
+      "finding_cost_usd_boe": 2.9,
+      "development_cost_usd_boe": 10.07,
+      "fd_cost_usd_boe": 12.97,
+      "reserves_2p_mmtoe": 381.5
+    },
+    {
+      "basin_name": "Assam Arakan",
+      "production_mmtoe": 3.76,
+      "reserve_accretion_2p_mmtoe": 4.4,
+      "rrr_2p": 1.17,
+      "finding_cost_usd_boe": 2.33,
+      "development_cost_usd_boe": 8.81,
+      "fd_cost_usd_boe": 11.14,
+      "reserves_2p_mmtoe": 56.8
+    },
+    {
+      "basin_name": "Cambay",
+      "production_mmtoe": 7.59,
+      "reserve_accretion_2p_mmtoe": 8.88,
+      "rrr_2p": 1.17,
+      "finding_cost_usd_boe": 2.18,
+      "development_cost_usd_boe": 8.52,
+      "fd_cost_usd_boe": 10.7,
+      "reserves_2p_mmtoe": 107.5
+    },
+    {
+      "basin_name": "MBA",
+      "production_mmtoe": 0.97,
+      "reserve_accretion_2p_mmtoe": 1.14,
+      "rrr_2p": 1.17,
+      "finding_cost_usd_boe": 0.25,
+      "development_cost_usd_boe": 2.52,
+      "fd_cost_usd_boe": 2.77,
+      "reserves_2p_mmtoe": 12.8
+    },
+    {
+      "basin_name": "ALL BASINS",
+      "production_mmtoe": 40.47,
+      "reserve_accretion_2p_mmtoe": 47.35,
+      "rrr_2p": 1.17,
+      "finding_cost_usd_boe": 2.98,
+      "development_cost_usd_boe": 11.15,
+      "fd_cost_usd_boe": 14.13,
+      "reserves_2p_mmtoe": 709.3
+    }
+  ]
+}

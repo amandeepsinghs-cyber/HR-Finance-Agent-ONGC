@@ -1,0 +1,27 @@
+{
+  "job_id": "d9975a02-b0b0-43a9-973f-14cbe727a53e",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:44.184502+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 8.0",
+      "heading": "Confidentiality of DPC Proceedings & Sealed Cover",
+      "quote_snippet": "8.1 Strict Secrecy of DPC Deliberations: The proceedings, minutes, individual candidate scoring sheets, and recommendations of the Departmental Promotion Committee are top-secret privileged documents. No candidate or third party has any right to inspect or access DPC deliberations prior to official release of the promotion panel. 8.2 Sealed Cover Procedure: Where an officer eligible for promotion "
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 7.0",
+      "heading": "Vigilance Clearance as Pre-Condition",
+      "quote_snippet": "7.1 Mandatory Vigilance Clearance: Clear and unconditional vigilance clearance from the Chief Vigilance Officer (CVO) is a non-negotiable mandatory prerequisite for placing any officer on the promotion panel or releasing promotion orders. 7.2 Disqualifying Vigilance Status: An officer shall not be granted promotion if: (a) under suspension; (b) a charge-sheet for major penalty disciplinary proceed"
+    }
+  ]
+}

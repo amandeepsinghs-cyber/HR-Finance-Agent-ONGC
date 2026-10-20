@@ -1,0 +1,45 @@
+{
+  "job_id": "92069c3c-7d28-4505-b1ea-92e2e00f7f39",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:19.862937+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 5,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "P2-10",
+      "clause_ref": "Part 1",
+      "heading": "CSR Policy 2025 (Part 1)",
+      "quote_snippet": "Document Title: CSR Policy 2025\nDocument Type: policy\nSection: Part 1\nDomain Vocabulary & Glossary Terms: Corporate Social Responsibility (CSR); Companies Act 2013 Section 135; Statutory CSR Allocation; Two Percent Net Profit Mandate; Eligible Social Projects; Schedule VII Activities; Aspirational D"
+    },
+    {
+      "doc_id": "P2-10",
+      "clause_ref": "Part 2",
+      "heading": "CSR Policy 2025 (Part 2)",
+      "quote_snippet": "Document Title: CSR Policy 2025\nDocument Type: policy\nSection: Part 2\nDomain Vocabulary & Glossary Terms: Corporate Social Responsibility (CSR); Companies Act 2013 Section 135; Statutory CSR Allocation; Two Percent Net Profit Mandate; Eligible Social Projects; Schedule VII Activities; Aspirational D"
+    },
+    {
+      "doc_id": "P2-10",
+      "clause_ref": "Part 3",
+      "heading": "CSR Policy 2025 (Part 3)",
+      "quote_snippet": "Document Title: CSR Policy 2025\nDocument Type: policy\nSection: Part 3\nDomain Vocabulary & Glossary Terms: Corporate Social Responsibility (CSR); Companies Act 2013 Section 135; Statutory CSR Allocation; Two Percent Net Profit Mandate; Eligible Social Projects; Schedule VII Activities; Aspirational D"
+    },
+    {
+      "doc_id": "P2-10",
+      "clause_ref": "Part 4",
+      "heading": "CSR Policy 2025 (Part 4)",
+      "quote_snippet": "Document Title: CSR Policy 2025\nDocument Type: policy\nSection: Part 4\nDomain Vocabulary & Glossary Terms: Corporate Social Responsibility (CSR); Companies Act 2013 Section 135; Statutory CSR Allocation; Two Percent Net Profit Mandate; Eligible Social Projects; Schedule VII Activities; Aspirational D"
+    },
+    {
+      "doc_id": "P2-10",
+      "clause_ref": "Part 5",
+      "heading": "CSR Policy 2025 (Part 5)",
+      "quote_snippet": "Document Title: CSR Policy 2025\nDocument Type: policy\nSection: Part 5\nDomain Vocabulary & Glossary Terms: Corporate Social Responsibility (CSR); Companies Act 2013 Section 135; Statutory CSR Allocation; Two Percent Net Profit Mandate; Eligible Social Projects; Schedule VII Activities; Aspirational D"
+    }
+  ]
+}

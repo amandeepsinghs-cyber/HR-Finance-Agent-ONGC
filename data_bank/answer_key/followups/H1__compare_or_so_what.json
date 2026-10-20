@@ -1,0 +1,44 @@
+{
+  "job_id": "1f9ff832-3058-45b1-9b05-8d471c866dcb",
+  "total_bytes_processed": 10292543,
+  "executed_at": "2026-10-20T06:38:35.866475+00:00",
+  "elapsed_seconds": 1.0,
+  "row_count": 4,
+  "columns": [
+    "work_centre",
+    "active_executives",
+    "within_3y",
+    "over_3y",
+    "tenure_compliance_pct"
+  ],
+  "rows": [
+    {
+      "work_centre": "Cambay Asset",
+      "active_executives": 312,
+      "within_3y": 37,
+      "over_3y": 275,
+      "tenure_compliance_pct": 11.9
+    },
+    {
+      "work_centre": "All work centres",
+      "active_executives": 13453,
+      "within_3y": 1859,
+      "over_3y": 11594,
+      "tenure_compliance_pct": 13.8
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "active_executives": 548,
+      "within_3y": 91,
+      "over_3y": 457,
+      "tenure_compliance_pct": 16.6
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "active_executives": 692,
+      "within_3y": 149,
+      "over_3y": 543,
+      "tenure_compliance_pct": 21.5
+    }
+  ]
+}

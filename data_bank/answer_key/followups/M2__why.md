@@ -1,0 +1,13 @@
+# Answer Key: M2__why
+
+**Question:** Why is financial capex utilisation accessible to Finance officers while restricted for junior HR officers?
+**Type:** `data` | **Result Count:** `2` rows | **Execution:** `0.65s`
+
+## Executive Synthesis
+Capex utilisation is a Finance function because the Book of Delegated Powers ties expenditure authority and BE/RE budget control to financial posts, and classifies financial schedules as internal controlled information (BDP summary Clause 1.0 (Principles of Financial Delegation) and BDP summary Clause 8.0 (Commercial Confidentiality of Operational Schedules)). The corpus has no clause that explicitly bars junior HR officers from aggregate capex data, so the HR restriction is a need-to-know access-design choice rather than a cited rule (documentation gap). Key text: "1.1 Constitutional Authority: Under Section 179 of the Companies Act, 2013, the Board of Directors of ONGC delegates financial and administrative powers to specified executive..."
+
+### Summary Result Table
+| doc_id | clause_ref | heading | quote_snippet |
+| --- | --- | --- | --- |
+| BDP summary | Clause 1.0 | Principles of Financial Delegation | 1.1 Constitutional Authority: Under Section 179 of the Companies Act, 2013, the Board of Directors of ONGC delegates financial and administrative powers to specified executive levels to facilitate agile and decentralised operational decision-making. 1.2 Fundamental Delegation Principles:    (a) Powers are delegated to posts, not individuals. Powers shall be exercised only by the substantive holder of a post or an officer formally designated as in-charge by an office order.    (b) Exercise of powers is subject to approved budgetary provisions (BE/RE), technical sanction, and established procurement procedures.    (c) No authority may sanction expenditure for their own personal benefit or override higher authority reservations.    (d) Five-tier governance structure: Level 1 (CMD), Level 2 (Functional Directors), Level 3 (Key Executives / Asset Managers / EC), Level 4 (GMs/CGMs), and Level 5 (Sectional In-charges). |
+| BDP summary | Clause 8.0 | Commercial Confidentiality of Operational Schedules | 8.1 Commercial Sensitivity: The detailed schedules of delegated powers, proprietary procurement limits, field-specific financial delegations, and vendor sanction thresholds constitute commercially sensitive internal information. 8.2 Internal Controlled Classification: This Book of Delegated Powers is classified as an Internal Controlled Document. Unauthorized publication, sharing with external contractors, or public disclosure is prohibited under corporate confidentiality regulations. |

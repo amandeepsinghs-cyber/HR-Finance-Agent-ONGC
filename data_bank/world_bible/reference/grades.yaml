@@ -1,0 +1,181 @@
+grades:
+- grade_id: E0
+  cadre: executive
+  group: Group A
+  designation: Assistant Officer / Graduate Trainee
+  pay_scale_min_inr: 30000
+  pay_scale_max_inr: 120000
+  scale_type: DPE-3rd-PRC
+  scale_source: DPE OM 3-Aug-2017 (Standard CPSE E0 Scale)
+  promotion_mode: time_bound
+  typical_residency_years: 2
+  dpc_evaluation_type: Confirmation & Screening
+  level_order: 1
+- grade_id: E1
+  cadre: executive
+  group: Group A
+  designation: Assistant Executive Engineer (AEE) / Officer
+  pay_scale_min_inr: 60000
+  pay_scale_max_inr: 180000
+  scale_type: ONGC-Direct-Entry
+  scale_source: ONGC Recruitment Advertisements (GATE Entry / Officer Cadre)
+  promotion_mode: time_bound
+  typical_residency_years: 3
+  dpc_evaluation_type: Time-Bound Assessment
+  level_order: 2
+- grade_id: E2
+  cadre: executive
+  group: Group A
+  designation: Assistant Executive Engineer (AEE) / Deputy Manager
+  pay_scale_min_inr: 70000
+  pay_scale_max_inr: 200000
+  scale_type: DPE-3rd-PRC
+  scale_source: DPE OM 3-Aug-2017 (Standard CPSE E2/E3 Progression)
+  promotion_mode: time_bound
+  typical_residency_years: 3
+  dpc_evaluation_type: Time-Bound Assessment
+  level_order: 3
+- grade_id: E3
+  cadre: executive
+  group: Group A
+  designation: Executive Engineer (EE) / Manager
+  pay_scale_min_inr: 80000
+  pay_scale_max_inr: 220000
+  scale_type: DPE-3rd-PRC
+  scale_source: DPE OM 3-Aug-2017 (CPSE Executive Scale)
+  promotion_mode: time_bound
+  typical_residency_years: 4
+  dpc_evaluation_type: Time-Bound Assessment
+  level_order: 4
+- grade_id: E4
+  cadre: executive
+  group: Group A
+  designation: Superintending Engineer (SE) / Chief Manager
+  pay_scale_min_inr: 90000
+  pay_scale_max_inr: 240000
+  scale_type: DPE-3rd-PRC
+  scale_source: DPE OM 3-Aug-2017 (CPSE Executive Scale)
+  promotion_mode: time_bound
+  typical_residency_years: 4
+  dpc_evaluation_type: Time-Bound / Benchmarked DPC
+  level_order: 5
+- grade_id: E5
+  cadre: executive
+  group: Group A
+  designation: Deputy General Manager (DGM)
+  pay_scale_min_inr: 100000
+  pay_scale_max_inr: 260000
+  scale_type: DPE-3rd-PRC
+  scale_source: DPE OM 3-Aug-2017 (Merit DPC Progression)
+  promotion_mode: merit
+  typical_residency_years: 4
+  dpc_evaluation_type: Merit DPC (APAR + Interview + Board)
+  level_order: 6
+- grade_id: E6
+  cadre: executive
+  group: Group A
+  designation: Joint General Manager (JGM) / Addl. GM
+  pay_scale_min_inr: 120000
+  pay_scale_max_inr: 280000
+  scale_type: DPE-3rd-PRC
+  scale_source: DPE OM 3-Aug-2017 (Senior Management Scale)
+  promotion_mode: merit
+  typical_residency_years: 3
+  dpc_evaluation_type: Merit DPC (Competitive Quorum)
+  level_order: 7
+- grade_id: E7
+  cadre: executive
+  group: Group A
+  designation: General Manager (GM)
+  pay_scale_min_inr: 120000
+  pay_scale_max_inr: 280000
+  scale_type: DPE-3rd-PRC
+  scale_source: DPE OM 3-Aug-2017 (Executive Leadership Scale)
+  promotion_mode: merit
+  typical_residency_years: 3
+  dpc_evaluation_type: Senior Leadership DPC
+  level_order: 8
+- grade_id: E8
+  cadre: executive
+  group: Group A
+  designation: Chief General Manager (CGM)
+  pay_scale_min_inr: 130000
+  pay_scale_max_inr: 280000
+  scale_type: DPE-3rd-PRC
+  scale_source: DPE OM 3-Aug-2017 (Top Management Scale)
+  promotion_mode: merit
+  typical_residency_years: 3
+  dpc_evaluation_type: Apex Selection Committee
+  level_order: 9
+- grade_id: E9
+  cadre: executive
+  group: Group A
+  designation: Executive Director (ED) / Group General Manager
+  pay_scale_min_inr: 150000
+  pay_scale_max_inr: 300000
+  scale_type: DPE-3rd-PRC
+  scale_source: DPE OM 3-Aug-2017 (Apex Executive Cadre)
+  promotion_mode: merit
+  typical_residency_years: 2
+  dpc_evaluation_type: Board Committee / CMD Selection
+  level_order: 10
+- grade_id: GRP-B
+  cadre: non_executive
+  group: Group B
+  designation: Senior Technician / Foreman / Assistant Superintendent (W5–W7)
+  pay_scale_min_inr: 29000
+  pay_scale_max_inr: 98000
+  scale_type: ONGC-Wage-Settlement
+  scale_source: ONGC Non-Executive Tripartite Wage Agreement (Group B)
+  promotion_mode: time_bound
+  typical_residency_years: 4
+  dpc_evaluation_type: Trade Test & Seniority Review
+  level_order: 11
+- grade_id: GRP-C
+  cadre: non_executive
+  group: Group C
+  designation: Junior Technician / Rigman / Production Operator (W3–W4)
+  pay_scale_min_inr: 24000
+  pay_scale_max_inr: 87500
+  scale_type: ONGC-Wage-Settlement
+  scale_source: ONGC Non-Executive Tripartite Wage Agreement (Group C)
+  promotion_mode: time_bound
+  typical_residency_years: 5
+  dpc_evaluation_type: Trade Test & Performance Review
+  level_order: 12
+- grade_id: GRP-D
+  cadre: non_executive
+  group: Group D
+  designation: Field Attendant / Helper / Support Staff (W1–W2)
+  pay_scale_min_inr: 22000
+  pay_scale_max_inr: 78000
+  scale_type: ONGC-Wage-Settlement
+  scale_source: ONGC Non-Executive Tripartite Wage Agreement (Group D)
+  promotion_mode: time_bound
+  typical_residency_years: 5
+  dpc_evaluation_type: Seniority-cum-Fitness
+  level_order: 13
+- grade_id: DIR
+  cadre: board
+  group: Board
+  designation: Functional Director
+  pay_scale_min_inr: 180000
+  pay_scale_max_inr: 340000
+  scale_type: DPE-Schedule-A
+  scale_source: DPE OM 3-Aug-2017 (Schedule A Board Level)
+  promotion_mode: selection
+  typical_residency_years: 5
+  dpc_evaluation_type: PESB / ACC Appointment
+  level_order: 14
+- grade_id: CMD
+  cadre: board
+  group: Board
+  designation: Chairman & Managing Director (CMD) / CEO
+  pay_scale_min_inr: 200000
+  pay_scale_max_inr: 370000
+  scale_type: DPE-Schedule-A
+  scale_source: DPE OM 3-Aug-2017 (Schedule A CMD)
+  promotion_mode: selection
+  typical_residency_years: 5
+  dpc_evaluation_type: PESB / ACC Appointment
+  level_order: 15

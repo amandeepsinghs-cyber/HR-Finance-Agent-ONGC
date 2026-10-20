@@ -1,0 +1,31 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "subsidiary_financials",
+  description: "Financial and operational returns of ONGC major subsidiaries and joint ventures (OVL, HPCL, MRPL, OGL, OPaL, OTPC)."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`subsidiary_record_id`) AS subsidiary_record_id,
+    TRIM(`entity_code`) AS entity_code,
+    TRIM(`entity_name`) AS entity_name,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`ongc_equity_holding_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS ongc_equity_holding_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`revenue_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS revenue_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`ebitda_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS ebitda_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`pat_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS pat_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`net_margin_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS net_margin_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`roce_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS roce_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`dividend_declared_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS dividend_declared_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`dividend_received_by_ongc_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS dividend_received_by_ongc_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`international_production_mmtoe`), ''), ',', ''), '₹', '') AS NUMERIC) AS international_production_mmtoe,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`refining_throughput_mmt`), ''), ',', ''), '₹', '') AS NUMERIC) AS refining_throughput_mmt,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`gross_refining_margin_usd_bbl`), ''), ',', ''), '₹', '') AS NUMERIC) AS gross_refining_margin_usd_bbl
+  FROM ${ref("governance_subsidiary_group_financials")}
+  WHERE NULLIF(TRIM(`subsidiary_record_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY subsidiary_record_id ORDER BY _ingest_ts DESC) = 1

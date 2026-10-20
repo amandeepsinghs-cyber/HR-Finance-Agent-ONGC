@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "headcount_snapshot",
+  description: "Monthly conformed headcount snapshot aggregating active personnel across all demographic and operational dimensions."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`snapshot_id`) AS snapshot_id,
+    TRIM(`month`) AS month,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`grade_id`) AS grade_id,
+    TRIM(`discipline_id`) AS discipline_id,
+    TRIM(`gender`) AS gender,
+    TRIM(`category`) AS category,
+    CASE WHEN LOWER(TRIM(`pwd_flag`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`pwd_flag`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS pwd_flag,
+    TRIM(`age_band`) AS age_band,
+    TRIM(`tenure_band`) AS tenure_band,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`headcount`), ''), ',', ''), '₹', '') AS INT64) AS headcount,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`active_headcount`), ''), ',', ''), '₹', '') AS INT64) AS active_headcount,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`on_leave_headcount`), ''), ',', ''), '₹', '') AS INT64) AS on_leave_headcount
+  FROM ${ref("sap_headcount_monthly_snapshot")}
+  WHERE NULLIF(TRIM(`snapshot_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY snapshot_id ORDER BY _ingest_ts DESC) = 1

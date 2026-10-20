@@ -1,0 +1,39 @@
+{
+  "job_id": "a265838f-cc97-4e42-81b9-ad7b0258ffd4",
+  "total_bytes_processed": 27715,
+  "executed_at": "2026-10-20T06:39:13.869621+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 1,
+  "columns": [
+    "crude_revenue_fy26_inr_cr",
+    "crude_revenue_fy26_usd_mn",
+    "fx_exposure_usd_mn",
+    "natural_hedge_designated_usd_mn",
+    "derivative_hedged_usd_mn",
+    "unhedged_usd_mn",
+    "crude_usd_cover_of_exposure_x",
+    "fx_avg_fy26",
+    "fx_min_fy26",
+    "fx_max_fy26",
+    "fx_volatility_pct",
+    "unhedged_impact_of_fy26_fx_range_inr_cr",
+    "crude_revenue_swing_of_fy26_fx_range_inr_cr"
+  ],
+  "rows": [
+    {
+      "crude_revenue_fy26_inr_cr": 90792.0,
+      "crude_revenue_fy26_usd_mn": 10279.0,
+      "fx_exposure_usd_mn": 2991.0,
+      "natural_hedge_designated_usd_mn": 1517.0,
+      "derivative_hedged_usd_mn": 826.0,
+      "unhedged_usd_mn": 649.0,
+      "crude_usd_cover_of_exposure_x": 3.4,
+      "fx_avg_fy26": 88.33,
+      "fx_min_fy26": 87.93,
+      "fx_max_fy26": 88.73,
+      "fx_volatility_pct": 0.34,
+      "unhedged_impact_of_fy26_fx_range_inr_cr": 52.0,
+      "crude_revenue_swing_of_fy26_fx_range_inr_cr": 822.0
+    }
+  ]
+}

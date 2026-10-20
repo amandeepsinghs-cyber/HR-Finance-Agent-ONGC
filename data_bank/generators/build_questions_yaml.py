@@ -1,0 +1,2134 @@
+"""Script to build questions.yaml from question_bank.md with all required fields and follow-ups."""
+
+import re
+from pathlib import Path
+import yaml
+
+DATA_BANK_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = DATA_BANK_ROOT.parent
+BANK_PATH = PROJECT_ROOT / "docs/question_bank.md"
+OUT_PATH = DATA_BANK_ROOT / "world_bible/reference/questions.yaml"
+
+
+def extract_raw_bank(path: Path) -> dict[str, str]:
+    text = path.read_text(encoding="utf-8")
+    raw = {}
+    for line in text.splitlines():
+        line = line.strip()
+        if (
+            not line.startswith("|")
+            or line.startswith("| #")
+            or line.startswith("|---")
+            or line.startswith("| Chain")
+            or line.startswith("| Question")
+        ):
+            continue
+        cols = [c.strip() for c in line.split("|")[1:-1]]
+        if not cols:
+            continue
+        id_m = re.match(
+            r"^(C\d+|H\d+|F\d+|E\d+|D\d+|P\d+|T\d+|W\d+|M\d+|X\d+)", cols[0]
+        )
+        if id_m:
+            qid = id_m.group(1)
+            if qid.startswith("T"):
+                raw[qid] = cols[1]
+            elif qid.startswith("X"):
+                raw[qid] = cols[2]
+            else:
+                raw[qid] = cols[1]
+    return raw
+
+
+RAW_BANK = extract_raw_bank(BANK_PATH)
+
+QUESTIONS_DATA = [
+    # C1–C5 CMD people and transfers
+    {
+        "id": "C1",
+        "group": "CMD people and transfers",
+        "personas": ["CMD"],
+        "decision_it_drives": "Transfer rotation",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which specific disciplines in Delhi (e.g. F&A, HR, MM, Legal) have the highest concentration of E5–E7 officers past 5 years?",
+            },
+            {
+                "kind": "why",
+                "question": "What are the approved administrative justifications or exemption tags recorded in SAP for those exceeding 5 years in Delhi?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the Delhi retention rate compare with corporate headquarters in Dehradun (Tel Bhavan) and Mumbai?",
+            },
+        ],
+    },
+    {
+        "id": "C2",
+        "group": "CMD people and transfers",
+        "personas": ["CMD"],
+        "decision_it_drives": "Annual transfer order",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the discipline-wise deficit in Assam Asset (Nazira/Sivasagar) and Tripura Asset (Agartala) versus sanctioned posts?",
+            },
+            {
+                "kind": "why",
+                "question": "Why have previous annual transfer cycles left North-East work centres persistently below sanctioned executive strength?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How many of the overdue executives have never completed a mandatory tenure in a Category-C or offshore location?",
+            },
+        ],
+    },
+    {
+        "id": "C3",
+        "group": "CMD people and transfers",
+        "personas": ["CMD"],
+        "decision_it_drives": "Manpower rebalancing",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Break down the 5-year headcount trajectory of Rajahmundry, Eastern Offshore, Mehsana, and Cambay by executive vs non-executive.",
+            },
+            {
+                "kind": "why",
+                "question": "What operational developments (e.g. KG-DWN-98/2 deepwater ramp-up vs mature field natural decline) drove this headcount shift?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the asset-wise headcount growth compare with the 5-year oil and gas production growth rate across those same assets?",
+            },
+        ],
+    },
+    {
+        "id": "C4",
+        "group": "CMD people and transfers",
+        "personas": ["CMD"],
+        "decision_it_drives": "Succession planning",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which key operational roles in Offshore (Mumbai High, Neelam-Heera) and Drilling have retirement vacancies within 12 months?",
+            },
+            {
+                "kind": "why",
+                "question": "Why are certain critical E7+ positions identified as having zero 'Ready Now' successors in the latest succession board review?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What percentage of eligible E6 Chief Engineers / Chief Geologists meet the DPC benchmark for accelerated promotion to GM?",
+            },
+        ],
+    },
+    {
+        "id": "C5",
+        "group": "CMD people and transfers",
+        "personas": ["CMD"],
+        "decision_it_drives": "Recruitment and campus hiring",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the projected cumulative superannuation count in Geology, Geophysics, and Reservoir Engineering by FY30?",
+            },
+            {
+                "kind": "why",
+                "question": "Why has low executive trainee recruitment between FY20 and FY25 exacerbated the mid-career seniority vacuum?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does our projected technical specialist loss compare with planned deepwater and HP-HT exploration projects?",
+            },
+        ],
+    },
+    # C6–C10 CMD money and assets
+    {
+        "id": "C6",
+        "group": "CMD money and assets",
+        "personas": ["CMD"],
+        "decision_it_drives": "Portfolio focus",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What were the individual net margins and EBITDA of mature onshore fields in Assam and Cauvery in FY26?",
+            },
+            {
+                "kind": "why",
+                "question": "What are the primary cost drivers (e.g. high water cut, power costs, workover frequency, aging surface facilities) behind the loss-making fields?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How do the profit margins of Mumbai High and Bassein compare with onshore assets like Ankleshwar and Mehsana?",
+            },
+        ],
+    },
+    {
+        "id": "C7",
+        "group": "CMD money and assets",
+        "personas": ["CMD"],
+        "decision_it_drives": "Capex reallocation",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the cumulative 5-year capex allocation across Western Offshore (MH, B&S) versus Eastern Offshore (KG Basin)?",
+            },
+            {
+                "kind": "why",
+                "question": "Why did fields with substantial 2P oil/gas reserves receive less development drilling capex than planned in the BE/RE cycles?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the reserve replacement ratio (RRR) and capital intensity ($/BOE added) compare between KG-98/2 and Mumbai High Redevelopment?",
+            },
+        ],
+    },
+    {
+        "id": "C8",
+        "group": "CMD money and assets",
+        "personas": ["CMD"],
+        "decision_it_drives": "Monetise or exit",
+        "type": "data",
+        "expected_output": "list",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which specific fields in Assam and Cambay have sustained negative EBITDA for 3 consecutive fiscal years?",
+            },
+            {
+                "kind": "why",
+                "question": "What technical operating constraints make in-house secondary/tertiary recovery uneconomic compared to third-party PEC operators?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What would be the estimated capex and opex savings if the bottom 5 loss-making marginal fields are monetised or farmed out?",
+            },
+        ],
+    },
+    {
+        "id": "C9",
+        "group": "CMD money and assets",
+        "personas": ["CMD"],
+        "decision_it_drives": "Project intervention",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the current schedule slippage and cost overrun on the KG-DWN-98/2 development and Western Offshore pipeline replacement projects?",
+            },
+            {
+                "kind": "why",
+                "question": "What engineering, fabrication, or contractor delivery delays caused the milestone slippages across these projects?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the anticipated final cost compare against the original Board-sanctioned budget and subsequent Revised Cost Estimates (RCE)?",
+            },
+        ],
+    },
+    {
+        "id": "C10",
+        "group": "CMD money and assets",
+        "personas": ["CMD"],
+        "decision_it_drives": "Board and Ministry review",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which specific MoU parameters (crude production, natural gas sales, capex expenditure, RRR) are currently rated below 'Excellent'?",
+            },
+            {
+                "kind": "why",
+                "question": "Why did Q2 natural gas production and development well drilling targets fall behind the DPE MoU milestone schedule?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What is the projected year-end composite score under current trends compared to the 'Excellent' rating achieved in FY25?",
+            },
+        ],
+    },
+    # C11–C14 CMD cross-silo HR × Finance
+    {
+        "id": "C11",
+        "group": "CMD cross-silo HR × Finance",
+        "personas": ["CMD"],
+        "decision_it_drives": "Productivity correction",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the specific 5-year headcount change and crude/gas output variance for Mehsana, Assam, and Rajahmundry assets?",
+            },
+            {
+                "kind": "why",
+                "question": "Why did surface engineering and administrative staffing expand despite continuous reservoir pressure and production declines?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the labor productivity (BOE per employee) in expanding assets compare with the ONGC corporate average?",
+            },
+        ],
+    },
+    {
+        "id": "C12",
+        "group": "CMD cross-silo HR × Finance",
+        "personas": ["CMD"],
+        "decision_it_drives": "Benchmarking and restructuring",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Break down the manpower cost per BOE for Mumbai High, Neelam-Heera, Ahmedabad, and Assam into executive vs non-executive payroll.",
+            },
+            {
+                "kind": "why",
+                "question": "Why is manpower cost per BOE significantly higher at mature, low-volume onshore fields compared to offshore assets?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does ONGC's overall manpower cost per BOE compare with Indian peer upstream operators (e.g. Oil India Limited)?",
+            },
+        ],
+    },
+    {
+        "id": "C13",
+        "group": "CMD cross-silo HR × Finance",
+        "personas": ["CMD"],
+        "decision_it_drives": "Transfer impact simulation",
+        "type": "what_if",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which field assets (e.g. Assam, Tripura, Karaikal) would gain the most production and maintenance engineering coverage?",
+            },
+            {
+                "kind": "why",
+                "question": "What one-time transfer grant, composite transfer allowance (CTA), and baggage transportation costs would be incurred?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How would the reduction in Delhi/Dehradun corporate overhead compare against improved field asset uptime and supervisor ratios?",
+            },
+        ],
+    },
+    {
+        "id": "C14",
+        "group": "CMD cross-silo HR × Finance",
+        "personas": ["CMD"],
+        "decision_it_drives": "Executive Board decision on loss-making mature fields",
+        "type": "document",
+        "expected_output": "document",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What are the exact FY26 financial figures (gross revenue, opex, manpower cost, net operating loss) for these 5 fields?",
+            },
+            {
+                "kind": "why",
+                "question": "What specific reservoir recovery mechanism or operating constraint is identified as the root cause of loss in each field?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What is the quantified financial payoff of farm-out/PEC versus continued in-house operation over a 5-year outlook?",
+            },
+        ],
+    },
+    # H1–H10 Director HR
+    {
+        "id": "H1",
+        "group": "Director (HR)",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Draft transfer list",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "How many of these executives are in non-executive and junior executive grades (E1–E4) versus senior management (E6–E9)?",
+            },
+            {
+                "kind": "why",
+                "question": "What operational dependencies or retention justifications have kept these officers beyond their 3-year tenure?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the tenure compliance rate in Corporate HQ Delhi compare with field assets like Ankleshwar and Cambay?",
+            },
+        ],
+    },
+    {
+        "id": "H2",
+        "group": "Director (HR)",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Fair rotation",
+        "type": "data",
+        "expected_output": "list",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Filter the list for E4–E5 executives who are currently within the zone of consideration for promotion to E5/E6.",
+            },
+            {
+                "kind": "why",
+                "question": "Why have these executives been repeatedly posted across non-hard clusters (e.g. Delhi, Dehradun, Ahmedabad, Mumbai)?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the percentage of hard-station unserved officers in HR and Finance compare with Drilling and Production disciplines?",
+            },
+        ],
+    },
+    {
+        "id": "H3",
+        "group": "Director (HR)",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Recruitment plan",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which critical disciplines (Instrumentation, Petroleum, Chemical, Geophysics) have a vacancy deficit exceeding 15%?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is there a persistent vacancy gap in North-East and deepwater asset operational roles?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the executive vacancy rate in Assam Asset compare with Western Onshore assets (Mehsana, Ahmedabad)?",
+            },
+        ],
+    },
+    {
+        "id": "H4",
+        "group": "Director (HR)",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Retention measures",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which technical disciplines (IT, Drilling, Reservoir, Finance) account for the highest share of voluntary resignations in E3–E5?",
+            },
+            {
+                "kind": "why",
+                "question": "What primary exit reasons (compensation gap with private E&P, location hardship, career progression) were cited in exit interviews?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does ONGC's mid-career executive attrition rate compare between onshore field postings and corporate offices?",
+            },
+        ],
+    },
+    {
+        "id": "H5",
+        "group": "Director (HR)",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Clear the promotion backlog",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which specific grades (e.g. E4 to E5, E5 to E6) and disciplines have DPC meetings delayed beyond 6 months?",
+            },
+            {
+                "kind": "why",
+                "question": "What procedural bottlenecks (e.g. pending vigilance clearances, APAR grading appeals, seniority litigation) delayed convening the DPCs?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How many eligible executives have completed the required residency period but are still awaiting promotion notification?",
+            },
+        ],
+    },
+    {
+        "id": "H6",
+        "group": "Director (HR)",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Statutory compliance",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the exact representation percentage and backlog vacancy count for SC, ST, OBC, EWS, and PwD in E1 to E7?",
+            },
+            {
+                "kind": "why",
+                "question": "Why has backlog vacancy clearance lagged in specialized technical disciplines like Geoscience and Marine Engineering?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How do our current roster representation percentages compare against statutory presidential directives and DoPT guidelines?",
+            },
+        ],
+    },
+    {
+        "id": "H7",
+        "group": "Director (HR)",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Diversity targets",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "How many women executives are currently deployed in rotational offshore shifts on Mumbai High platforms and rigs?",
+            },
+            {
+                "kind": "why",
+                "question": "What logistical or facility barriers (accommodation, medical support) impact female officer deployment in offshore/remote fields?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does women's representation in technical disciplines compare with corporate and support functions (HR, F&A, Medical)?",
+            },
+        ],
+    },
+    {
+        "id": "H8",
+        "group": "Director (HR)",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "L&D budget (ONGC Academy, IOGPT, KDMIPE)",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What were the average training man-days completed at ONGC Academy (Dehradun), IOGPT, and KDMIPE by discipline?",
+            },
+            {
+                "kind": "why",
+                "question": "Why did executives in high-workload operational assets (Drilling, Offshore Production) achieve fewer training hours than target?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does our training investment per employee compare with the target set in the MoU with DPE?",
+            },
+        ],
+    },
+    {
+        "id": "H9",
+        "group": "Director (HR)",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Grievance resolution",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Break down pending cases by category (promotion dispute, transfer challenge, disciplinary action, pay anomaly) across High Courts and CAT.",
+            },
+            {
+                "kind": "why",
+                "question": "What institutional delays in the internal grievance redressal mechanism contributed to cases escalating to litigation?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What is the average disposal time of internal employee grievances compared to the statutory 60-day charter target?",
+            },
+        ],
+    },
+    {
+        "id": "H10",
+        "group": "Director (HR)",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Annual Job Rotation and Transfer Proposal for FY27",
+        "type": "document",
+        "expected_output": "document",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which specific executives meet the criteria for transfer from Delhi/Dehradun to Assam and Tripura assets?",
+            },
+            {
+                "kind": "why",
+                "question": "What replacement executives are proposed to ensure operational continuity in vacated corporate roles?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the proposed transfer list balance regional deficit clearance against the approved annual transfer budget?",
+            },
+        ],
+    },
+    # F1–F10 Director Finance
+    {
+        "id": "F1",
+        "group": "Director (Finance)",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Cost optimisation",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What are the individual cost components (power, workover, chemicals, surface repair, water handling) of lifting cost for the highest-cost asset?",
+            },
+            {
+                "kind": "why",
+                "question": "Why has the lifting cost in mature fields like Cambay and Mehsana increased over the last 3 fiscal years?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the lifting cost of Mumbai High offshore compare with onshore assets and the overall company average ($11.5/BOE)?",
+            },
+        ],
+    },
+    {
+        "id": "F2",
+        "group": "Director (Finance)",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Mid-year budget revision",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which offshore and onshore projects show the largest underspend or overspend against their Budget Estimates (BE)?",
+            },
+            {
+                "kind": "why",
+                "question": "Why have procurement delays, rig mobilization slippages, or environmental clearances slowed capex execution in Eastern Offshore?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does our year-to-date capex burn rate compare with the historical expenditure curve at the end of Q2?",
+            },
+        ],
+    },
+    {
+        "id": "F3",
+        "group": "Director (Finance)",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Field P&L review",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which fields have demonstrated improving EBITDA margins despite natural decline in reservoir pressure?",
+            },
+            {
+                "kind": "why",
+                "question": "What combination of oil price fluctuations, cess rates, and workover costs drove margin compression in mature onshore fields?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How do 5-year cumulative revenues and operating cash flows compare between Western Offshore and Onshore Gujarat assets?",
+            },
+        ],
+    },
+    {
+        "id": "F4",
+        "group": "Director (Finance)",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Policy representation to the Ministry",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What was the exact dollar-per-barrel impact of OIDB cess (₹10,000/MT equivalent) and royalty on gross crude revenue?",
+            },
+            {
+                "kind": "why",
+                "question": "What were the structural statutory reasons for windfall tax (SAED) variations prior to its discontinuation in December 2024?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the statutory government take percentage on ONGC nomination fields compare with NELP/HELP revenue-sharing contracts?",
+            },
+        ],
+    },
+    {
+        "id": "F5",
+        "group": "Director (Finance)",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Contract renegotiation",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What are the major service contract categories (rig charter, OSV hire, subsea EPC, directional drilling) dominating the top spend?",
+            },
+            {
+                "kind": "why",
+                "question": "What contract variations, scope changes, or standby day rates caused cost overruns on major turnkey contracts?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does actual contract expenditure compare against the initial purchase order commitment and engineer's estimate?",
+            },
+        ],
+    },
+    {
+        "id": "F6",
+        "group": "Director (Finance)",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Working capital",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which public sector OMCs (IOCL, BPCL, HPCL) or regional gas consumers have outstanding dues aged beyond 90 days?",
+            },
+            {
+                "kind": "why",
+                "question": "What billing disputes, price reconciliation delays, or subsidy settlement issues delayed clearance of aged trade receivables?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does our Days Sales Outstanding (DSO) compare with historical averages and treasury working capital targets?",
+            },
+        ],
+    },
+    {
+        "id": "F7",
+        "group": "Director (Finance)",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Manpower cost control",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which low-revenue, mature onshore assets have an employee cost exceeding 25% of gross field revenue?",
+            },
+            {
+                "kind": "why",
+                "question": "Why has employee cost per unit revenue risen faster in legacy onshore assets compared to high-volume offshore platforms?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does ONGC's overall standalone employee cost ratio compare with global national oil company benchmarks?",
+            },
+        ],
+    },
+    {
+        "id": "F8",
+        "group": "Director (Finance)",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Exploration budget",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the 3-year trailing finding cost ($/BOE) in deepwater Western Offshore versus Krishna-Godavari and Assam-Arakan basins?",
+            },
+            {
+                "kind": "why",
+                "question": "Why have complex HP-HT and exploratory drilling dry holes elevated exploration costs in frontier basins?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the annual Reserve Replacement Ratio (RRR 2P) across domestic basins compare against the target of >1.0?",
+            },
+        ],
+    },
+    {
+        "id": "F9",
+        "group": "Director (Finance)",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Treasury",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is our net unhedged foreign currency liability across USD-denominated charter hires, EPC contracts, and equipment imports?",
+            },
+            {
+                "kind": "why",
+                "question": "What treasury risk parameters and Board-approved hedging guidelines govern our forward derivative coverage?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the natural hedge from dollar-denominated crude sales compare against foreign exchange rate volatility on opex and capex?",
+            },
+        ],
+    },
+    {
+        "id": "F10",
+        "group": "Director (Finance)",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Quarterly financial review and field performance benchmarking",
+        "type": "document",
+        "expected_output": "document",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What are the individual asset-wise quarterly crude and natural gas revenues net of statutory levies?",
+            },
+            {
+                "kind": "why",
+                "question": "What specific asset-level operating expense variations accounted for the quarterly EBITDA fluctuations?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does each asset's quarterly operating profit compare with the sanctioned annual operating plan (BE)?",
+            },
+        ],
+    },
+    # E1–E7 E1–E4 Officer Allowed
+    {
+        "id": "E1",
+        "group": "E1–E4 officer self-service",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Personal leave management and encashment planning",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Break down my current leave balances across Earned Leave (EL), Half Pay Leave (HPL), and Casual Leave (CL).",
+            },
+            {
+                "kind": "why",
+                "question": "Why is there a ceiling on maximum earned leave accumulation and encashment during active service versus retirement?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What would be the gross monetary value of encashing 30 days of earned leave based on my current basic pay and DA?",
+            },
+        ],
+    },
+    {
+        "id": "E2",
+        "group": "E1–E4 officer self-service",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Career planning and transfer readiness under rotation rules",
+        "type": "policy_plus_data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "How many years of cumulative tenure have I completed at my current work centre and station cluster?",
+            },
+            {
+                "kind": "why",
+                "question": "What specific criteria under the Job Rotation and Transfer Policy (JRTP) determine my priority for transfer in the upcoming cycle?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the standard tenure duration for my grade (E2) compare with senior executive tenures (E5+)?",
+            },
+        ],
+    },
+    {
+        "id": "E3",
+        "group": "E1–E4 officer self-service",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Personal healthcare expense settlement",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the settlement breakdown between approved claim amount, deduction heads, and net payable for my recent medical claims?",
+            },
+            {
+                "kind": "why",
+                "question": "Why was a specific deduction applied to the room rent or investigation charges under the ONGC medical trust schedule?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the turnaround time for my claim compare with the standard 15-day settlement service level agreement?",
+            },
+        ],
+    },
+    {
+        "id": "E4",
+        "group": "E1–E4 officer self-service",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Promotion eligibility assessment and appraisal preparation",
+        "type": "policy",
+        "expected_output": "list",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the mandatory residency period (years of service) and minimum APAR benchmark score required for E2 to E3 promotion?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is promotion up to E4 time-bound subject to fitness, whereas E5 and above are merit-cum-seniority selections?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the promotion timeline change if an executive completes an offshore or North-East hardship tenure?",
+            },
+        ],
+    },
+    {
+        "id": "E5",
+        "group": "E1–E4 officer self-service",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Offshore tour claim submission and allowance verification",
+        "type": "policy",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the daily offshore hardship allowance rate and special conveyance entitlement for an E2 engineer?",
+            },
+            {
+                "kind": "why",
+                "question": "What safety, travel time, and operational guidelines govern the 14-day on / 14-day off rotational shift allowance?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the offshore boarding and lodging allowance compare with onshore Class-A city travel entitlements?",
+            },
+        ],
+    },
+    {
+        "id": "E6",
+        "group": "E1–E4 officer self-service",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Skill development and annual training plan nomination",
+        "type": "data",
+        "expected_output": "list",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What upcoming courses are scheduled at ONGC Academy Dehradun and IOGPT Navi Mumbai for my grade and discipline?",
+            },
+            {
+                "kind": "why",
+                "question": "Why are certain advanced technical courses restricted to officers with minimum field experience prerequisites?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How do the mandatory technical training credits compare against managerial and leadership module requirements?",
+            },
+        ],
+    },
+    {
+        "id": "E7",
+        "group": "E1–E4 officer self-service",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Company financial performance awareness (public report)",
+        "type": "data",
+        "expected_output": "number",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What was the breakdown between standalone profit after tax (PAT) and consolidated group profit for FY25/FY26?",
+            },
+            {
+                "kind": "why",
+                "question": "What major factors (crude realization, statutory cess, dividend income) drove the annual profit growth?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does last year's net profit compare with the previous 3-year average annual earnings?",
+            },
+        ],
+    },
+    # D1–D6 E1–E4 Officer Denied
+    {
+        "id": "D1",
+        "group": "E1–E4 officer refusals",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Enforce employee data privacy and prevent unauthorized salary disclosure",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the published pay scale and basic pay range for my reporting officer's grade (E6)?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is individual officer salary confidential under ONGC policy and CDA rules?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does my own total compensation compare to the midpoint of the E2 pay scale band?",
+            },
+        ],
+    },
+    {
+        "id": "D2",
+        "group": "E1–E4 officer refusals",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Protect pre-decisional transfer deliberations and administrative confidentiality",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the general criteria and eligibility cutoff date for the upcoming Mumbai transfer cycle?",
+            },
+            {
+                "kind": "why",
+                "question": "Why are draft transfer orders restricted from disclosure before official notification by HR?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How many executives in Mumbai have completed their standard 3-year tenure and are due for rotation?",
+            },
+        ],
+    },
+    {
+        "id": "D3",
+        "group": "E1–E4 officer refusals",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Protect pre-decisional promotion committee proceedings",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which grades and disciplines are being considered in the current DPC cycle?",
+            },
+            {
+                "kind": "why",
+                "question": "Why are DPC committee deliberations and promotion candidate lists classified as confidential?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "When is the final DPC promotion result scheduled to be formally published on the ONGC intranet?",
+            },
+        ],
+    },
+    {
+        "id": "D4",
+        "group": "E1–E4 officer refusals",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Protect unpublished market-sensitive commercial and capex information",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the company-wide crude oil and natural gas production volume published in the latest annual report?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is field-level P&L and forward capex planning restricted to senior management?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What were ONGC's total standalone capex spend and revenue reported in the last audited financial year?",
+            },
+        ],
+    },
+    {
+        "id": "D5",
+        "group": "E1–E4 officer refusals",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Protect company-wide HR roster from unauthorized bulk extraction",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the aggregate number of employees currently stationed at Delhi Corporate HQ?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is bulk employee roster extraction with tenure restricted for junior officers?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What does the ONGC transfer policy specify as the standard cumulative tenure cap for Delhi office postings?",
+            },
+        ],
+    },
+    {
+        "id": "D6",
+        "group": "E1–E4 officer refusals",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Protect statutory confidentiality of vigilance investigations",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the standard procedure for reporting a vigilance concern or submitting a complaint in ONGC?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is vigilance inquiry status confidential and exempt from disclosure?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What whistle-blower protection mechanisms exist under ONGC Vigilance guidelines?",
+            },
+        ],
+    },
+    # P1–P10 Policy look-up
+    {
+        "id": "P1",
+        "group": "Policy look-up",
+        "personas": [
+            "CMD",
+            "Director (HR)",
+            "Director (Finance)",
+            "E1–E4 Officer (HR)",
+            "E1–E4 Officer (Finance)",
+        ],
+        "decision_it_drives": "Understanding station tenure limits and cumulative city stay rules under JRTP",
+        "type": "policy",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What are the specific tenure limits for hard stations (Assam, Tripura, Silchar) versus normal stations?",
+            },
+            {
+                "kind": "why",
+                "question": "Why does the JRTP establish a 10-year cumulative city tenure cap for executives?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How do tenure rules differ between executive cadres and non-executive unionized employees?",
+            },
+        ],
+    },
+    {
+        "id": "P2",
+        "group": "Policy look-up",
+        "personas": [
+            "CMD",
+            "Director (HR)",
+            "Director (Finance)",
+            "E1–E4 Officer (HR)",
+            "E1–E4 Officer (Finance)",
+        ],
+        "decision_it_drives": "Ascertaining station clustering rules for transfer counting",
+        "type": "policy",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Do Delhi and Dehradun form separate clusters, and how are Mumbai, Uran, and Panvel treated?",
+            },
+            {
+                "kind": "why",
+                "question": "Why are contiguous work centres grouped into unified clusters to prevent superficial rotational transfers?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What is the policy consequence on station tenure calculation if an officer moves within the same cluster?",
+            },
+        ],
+    },
+    {
+        "id": "P3",
+        "group": "Policy look-up",
+        "personas": [
+            "CMD",
+            "Director (HR)",
+            "Director (Finance)",
+            "E1–E4 Officer (HR)",
+            "E1–E4 Officer (Finance)",
+        ],
+        "decision_it_drives": "Verifying superannuation exemption clause for transfer postings",
+        "type": "policy",
+        "expected_output": "list",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the exact superannuation exemption cut-off window (e.g. 2 years vs 3 years) under the JRTP?",
+            },
+            {
+                "kind": "why",
+                "question": "What operational guidelines govern the retention or preferred posting of executives approaching retirement?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the transfer exemption policy apply to medical hardship or spouse-ground cases compared to retirement?",
+            },
+        ],
+    },
+    {
+        "id": "P4",
+        "group": "Policy look-up",
+        "personas": [
+            "CMD",
+            "Director (HR)",
+            "Director (Finance)",
+            "E1–E4 Officer (HR)",
+            "E1–E4 Officer (Finance)",
+        ],
+        "decision_it_drives": "Planning retirement leave accumulation and statutory encashment",
+        "type": "policy",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the maximum limit on earned leave accumulation (e.g. 300 days) and half pay leave encashment at superannuation?",
+            },
+            {
+                "kind": "why",
+                "question": "Why are leave encashment calculations governed by DPE and income tax statutory caps?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the encashment formula at retirement compare with active service leave encashment during LFA/LTC?",
+            },
+        ],
+    },
+    {
+        "id": "P5",
+        "group": "Policy look-up",
+        "personas": [
+            "CMD",
+            "Director (HR)",
+            "Director (Finance)",
+            "E1–E4 Officer (HR)",
+            "E1–E4 Officer (Finance)",
+        ],
+        "decision_it_drives": "Assessing higher education study leave eligibility and service bond obligations",
+        "type": "policy",
+        "expected_output": "list",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What are the qualifying service criteria and approved postgraduate degree specializations for executive study leave?",
+            },
+            {
+                "kind": "why",
+                "question": "Why does ONGC require execution of a mandatory service bond with financial surety prior to study leave approval?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the study leave duration and allowance compare between domestic universities and premier overseas institutions?",
+            },
+        ],
+    },
+    {
+        "id": "P6",
+        "group": "Policy look-up",
+        "personas": [
+            "CMD",
+            "Director (HR)",
+            "Director (Finance)",
+            "E1–E4 Officer (HR)",
+            "E1–E4 Officer (Finance)",
+        ],
+        "decision_it_drives": "Compliance with CDA rules regarding gifts and vendor interactions",
+        "type": "policy",
+        "expected_output": "list",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the exact monetary ceiling on gifts specified under ONGC Conduct, Discipline and Appeal (CDA) rules?",
+            },
+            {
+                "kind": "why",
+                "question": "Why do CVC regulations require prompt reporting and surrender of commercial vendor gifts exceeding nominal value?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the gift acceptance policy differ between festive occasions with personal friends and business associates?",
+            },
+        ],
+    },
+    {
+        "id": "P7",
+        "group": "Policy look-up",
+        "personas": [
+            "CMD",
+            "Director (HR)",
+            "Director (Finance)",
+            "E1–E4 Officer (HR)",
+            "E1–E4 Officer (Finance)",
+        ],
+        "decision_it_drives": "Booking official tour travel class and lodging within entitlement",
+        "type": "policy",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the approved daily hotel reimbursement entitlement and local conveyance ceiling for Mumbai (Class-A city) for E2?",
+            },
+            {
+                "kind": "why",
+                "question": "Why does the TA/DA policy mandate booking air tickets through designated travel partners (Balmer Lawrie/IRCTC)?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the lodging entitlement for Class-A cities like Mumbai and Delhi compare with Class-B field work centres?",
+            },
+        ],
+    },
+    {
+        "id": "P8",
+        "group": "Policy look-up",
+        "personas": [
+            "CMD",
+            "Director (HR)",
+            "Director (Finance)",
+            "E1–E4 Officer (HR)",
+            "E1–E4 Officer (Finance)",
+        ],
+        "decision_it_drives": "Filing whistle-blower protected disclosure confidentially",
+        "type": "policy",
+        "expected_output": "list",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Who is the designated Chief Vigilance Officer (CVO) / Nodal Officer for receiving Whistle Blower disclosures?",
+            },
+            {
+                "kind": "why",
+                "question": "Why does the Whistle Blower policy provide explicit safeguards against reprisal and retaliatory service transfers?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does a formal Whistle Blower disclosure differ procedurally from an ordinary employee grievance petition?",
+            },
+        ],
+    },
+    {
+        "id": "P9",
+        "group": "Policy look-up",
+        "personas": [
+            "CMD",
+            "Director (HR)",
+            "Director (Finance)",
+            "E1–E4 Officer (HR)",
+            "E1–E4 Officer (Finance)",
+        ],
+        "decision_it_drives": "Submitting POSH complaint to designated Internal Complaints Committee",
+        "type": "policy",
+        "expected_output": "list",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Who are the external members and Presiding Officers of the Internal Complaints Committee (ICC) at my work centre?",
+            },
+            {
+                "kind": "why",
+                "question": "Why does the statutory POSH policy mandate time-bound inquiry completion within 90 days?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What interim relief and workplace protection measures can the ICC recommend during an ongoing inquiry?",
+            },
+        ],
+    },
+    {
+        "id": "P10",
+        "group": "Policy look-up",
+        "personas": [
+            "CMD",
+            "Director (HR)",
+            "Director (Finance)",
+            "E1–E4 Officer (HR)",
+            "E1–E4 Officer (Finance)",
+        ],
+        "decision_it_drives": "Reviewing eligibility criteria and benchmarks for E3 to E4 promotion",
+        "type": "policy",
+        "expected_output": "list",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the minimum qualifying residency period and aggregate APAR score threshold for E3 to E4 advancement?",
+            },
+            {
+                "kind": "why",
+                "question": "What role do qualification enhancement, mandatory training completion, and vigilance clearance play in the promotion order?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How do promotion criteria compare between engineering disciplines and support services (HR, MM, Finance)?",
+            },
+        ],
+    },
+    # P11–P17 Policy + live data
+    {
+        "id": "P11",
+        "group": "Policy + live data",
+        "personas": ["CMD", "Director (HR)"],
+        "decision_it_drives": "Transfer rotation compliance and exemption review for Delhi corporate office",
+        "type": "policy_plus_data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "List the 138 executives in Delhi who have exceeded the 10-year cumulative cap, filtered by discipline and grade.",
+            },
+            {
+                "kind": "why",
+                "question": "Why have 31 senior executives been granted superannuation exemptions from the upcoming transfer order?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What would be the net change in Delhi office staffing if all non-exempt tenure-breaching officers are rotated?",
+            },
+        ],
+    },
+    {
+        "id": "P12",
+        "group": "Policy + live data",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Merit promotion screening and hard station prerequisite compliance",
+        "type": "policy_plus_data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "How many of the 260 E4 executives awaiting E5 promotion consideration fall into Drilling, Production, and F&A?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is completion of a hard or North-East station tenure an essential policy prerequisite for managerial advancement to E5?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the promotion clearance rate compare between officers who fulfilled the hardship criteria versus those with waivers?",
+            },
+        ],
+    },
+    {
+        "id": "P13",
+        "group": "Policy + live data",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "DPE 30% superannuation ceiling compliance and benefit restructuring",
+        "type": "policy_plus_data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the exact percentage breakdown of basic pay + DA contributed to CPF, PRBS pension, gratuity, and post-retirement medical?",
+            },
+            {
+                "kind": "why",
+                "question": "Why does the DPE guidelines prohibit employer contribution towards superannuation benefits exceeding 30%?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How much financial headroom in crore remains under the 30% cap based on the FY26 executive payroll?",
+            },
+        ],
+    },
+    {
+        "id": "P14",
+        "group": "Policy + live data",
+        "personas": ["CMD", "Director (Finance)"],
+        "decision_it_drives": "Performance Related Pay (PRP) budgeting based on MoU grading scenarios",
+        "type": "policy_plus_data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the percentage reduction in the total distributable PRP corpus across E1–E9 grades between 'Excellent' and 'Very Good'?",
+            },
+            {
+                "kind": "why",
+                "question": "Why does the DPE PRP computation formula scale bonus multipliers steeply based on company MoU performance grades?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What is the estimated monetary difference in PRP payout for an E5 Manager and an E7 General Manager?",
+            },
+        ],
+    },
+    {
+        "id": "P15",
+        "group": "Policy + live data",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Statutory 2% CSR spend compliance under Companies Act and geographic allocation",
+        "type": "policy_plus_data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What were the actual CSR expenditures in Assam, Gujarat, Maharashtra, and Andhra Pradesh against total CSR spend of ₹949 cr?",
+            },
+            {
+                "kind": "why",
+                "question": "Why are statutory CSR funds prioritized in operational districts and national aspirational districts under Ministry guidelines?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does our FY26 CSR spend compare with the mandatory 2% average net profit calculation under Section 135 of the Companies Act?",
+            },
+        ],
+    },
+    {
+        "id": "P16",
+        "group": "Policy + live data",
+        "personas": ["CMD", "Director (HR)", "Director (Finance)"],
+        "decision_it_drives": "Enforcing financial delegation limits for high-value drilling contract award",
+        "type": "policy_plus_data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What are the specific approval limits for Director (T&FS), Director (Offshore), and the Executive Committee for drilling tenders?",
+            },
+            {
+                "kind": "why",
+                "question": "Why does the Book of Delegated Powers (BDP) require tender committee recommendations prior to Director sanction?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How do financial approval thresholds differ between single-source / nomination procurement and open competitive bidding?",
+            },
+        ],
+    },
+    {
+        "id": "P17",
+        "group": "Policy + live data",
+        "personas": ["CMD", "Director (Finance)"],
+        "decision_it_drives": "Capital allocation and dividend declaration balancing capex requirements",
+        "type": "policy_plus_data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the minimum dividend requirement under DIPAM guidelines (5% of net worth or 30% of PAT) for FY26?",
+            },
+            {
+                "kind": "why",
+                "question": "What capital expenditure commitments (₹35,878 cr capex) and debt obligations constrain increasing the dividend payout ratio?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the proposed dividend per share (₹13.25) compare with the previous 3-year historical payout trend?",
+            },
+        ],
+    },
+    # P18–P20 Policy refusals
+    {
+        "id": "P18",
+        "group": "Policy refusals",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Enforce confidentiality of pre-decisional transfer orders while redirecting to general policy",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What are the general guidelines, cut-off dates, and timeline for publishing the final FY27 transfer order?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is the draft transfer proposal strictly confidential prior to official approval by Director (HR) and CMD?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "Where can I view the published Job Rotation and Transfer Policy (JRTP) principles on the ONGC portal?",
+            },
+        ],
+    },
+    {
+        "id": "P19",
+        "group": "Policy refusals",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Protect executive delegation limits while providing general delegated powers summary",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What are the general financial authorities delegated to Key Executives / Level-1 managers for day-to-day operations?",
+            },
+            {
+                "kind": "why",
+                "question": "Why are detailed Director and Board financial authorities restricted from full disclosure to general staff?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How can an employee verify whether an expenditure approval has been sanctioned by a competent authority?",
+            },
+        ],
+    },
+    {
+        "id": "P20",
+        "group": "Policy refusals",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Enforce cross-functional access control restricting Board divestment notes to Finance/CMD",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the general Board-approved framework for offering mature fields under Production Enhancement Contracts (PEC)?",
+            },
+            {
+                "kind": "why",
+                "question": "Why are specific Board agenda notes and divestment deliberations restricted to Finance and the CMD?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What public notices or tender documents exist regarding marginal field monetization on the ONGC website?",
+            },
+        ],
+    },
+    # T1–T3 Follow-up chains
+    {
+        "id": "T1",
+        "group": "Follow-up chains",
+        "personas": ["CMD", "Director (Finance)"],
+        "decision_it_drives": "Loss-making mature fields turnaround or divestment decision chain",
+        "type": "chain",
+        "expected_output": "list",
+        "steps": [
+            "Which fields lost money in FY26?",
+            "Why is Field X losing?",
+            "How many people work there, and what do they cost?",
+            "Draft a board note with options.",
+        ],
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which specific offshore and onshore mature fields recorded negative operating earnings in FY26?",
+            },
+            {
+                "kind": "why",
+                "question": "What are the primary operational factors (water cut >90%, low gas utilization, aging infrastructure) behind Field X's losses?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What is the net cost impact of divesting Field X versus investing in secondary recovery over a 5-year horizon?",
+            },
+        ],
+    },
+    {
+        "id": "T2",
+        "group": "Follow-up chains",
+        "personas": ["CMD", "Director (HR)"],
+        "decision_it_drives": "Corporate transfer rotation and hard-station rebalancing decision chain",
+        "type": "chain",
+        "expected_output": "list",
+        "steps": [
+            "Who in Delhi has 5+ years?",
+            "Which of them breach the transfer policy?",
+            "Match them to vacancies at hard stations.",
+            "Export as an Excel transfer proposal.",
+        ],
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which of the 412 Delhi-based executives with 5+ years hold technical designations needed in Assam or Tripura?",
+            },
+            {
+                "kind": "why",
+                "question": "Why have these specific officers remained at corporate headquarters beyond the 10-year cumulative cap?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does transferring these executives balance vacancy deficits in North-East assets while controlling transfer allowance expenses?",
+            },
+        ],
+    },
+    {
+        "id": "T3",
+        "group": "Follow-up chains",
+        "personas": ["CMD", "Director (HR)"],
+        "decision_it_drives": "Senior leadership retirement cliff and succession pipeline readiness",
+        "type": "chain",
+        "expected_output": "list",
+        "steps": [
+            "Which GMs retire in 2027?",
+            "Who is ready to succeed each?",
+            "Which successors haven't served in the North East?",
+        ],
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "List the 47 E7+ officers retiring in FY27–FY29, highlighting the 11 critical operational roles with succession gaps.",
+            },
+            {
+                "kind": "why",
+                "question": "Why do certain identified successor candidates lack the mandatory hard-station or North-East service prerequisite?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What accelerated leadership development or rotational posting is required to qualify successors before retirement dates?",
+            },
+        ],
+    },
+    # W1–W4 What-if
+    {
+        "id": "W1",
+        "group": "What-if",
+        "personas": ["CMD", "Director (Finance)"],
+        "decision_it_drives": "Assessing field-level economic viability under low oil price shock ($60/bbl)",
+        "type": "what_if",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which 6 mature fields transition from marginal profitability to negative operating cash flow at $60 Brent?",
+            },
+            {
+                "kind": "why",
+                "question": "Why do high-lifting-cost onshore assets suffer greater financial vulnerability to crude price contractions?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What would be the overall reduction in ONGC's annual EBITDA and operating cash flows if crude averages $60/bbl?",
+            },
+        ],
+    },
+    {
+        "id": "W2",
+        "group": "What-if",
+        "personas": ["CMD", "Director (HR)"],
+        "decision_it_drives": "Long-term workforce planning and skill preservation under 2-year hiring freeze",
+        "type": "what_if",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What will be the net deficit in Drilling, Reservoir, and Production engineering disciplines by 2028?",
+            },
+            {
+                "kind": "why",
+                "question": "Why does the projected retirement cliff disproportionately deplete executive technical talent in senior grades?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How would a hiring freeze impact our statutory reservation rosters and succession bench strength by FY28?",
+            },
+        ],
+    },
+    {
+        "id": "W3",
+        "group": "What-if",
+        "personas": ["CMD"],
+        "decision_it_drives": "Simulating cost vs operational coverage of shifting corporate staff to field assets",
+        "type": "what_if",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the estimated budget required for Composite Transfer Allowance (CTA) and relocation grants for 200 officers?",
+            },
+            {
+                "kind": "why",
+                "question": "Why does shifting senior technical officers from corporate headquarters directly improve field maintenance and facility uptime?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the one-time relocation expenditure compare against the multi-year production gains from enhanced field coverage?",
+            },
+        ],
+    },
+    {
+        "id": "W4",
+        "group": "What-if",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Evaluating net crude realisation uplift following Special Additional Excise Duty (SAED) repeal",
+        "type": "what_if",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What was the incremental dollar-per-barrel benefit realized across domestic crude production following the December 2024 SAED removal?",
+            },
+            {
+                "kind": "why",
+                "question": "Why did the Special Additional Excise Duty (SAED) previously compress ONGC net realizations below international benchmarks?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the post-windfall tax realization compare with historical net realizations during peak oil price cycles?",
+            },
+        ],
+    },
+    # M1–M5 HR vs Finance officer split
+    {
+        "id": "M1",
+        "group": "E1–E4 functional split (HR vs Finance)",
+        "personas": ["E1–E4 Officer (HR)"],
+        "decision_it_drives": "Allowed aggregate asset headcount visibility for HR officer; enforce functional RBAC for Finance",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the breakdown of total headcount by executive versus non-executive cadre across assets?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is aggregate asset-level headcount accessible to HR officers but restricted from general Finance officers?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the total workforce in Western Onshore assets compare with Eastern Offshore installations?",
+            },
+        ],
+    },
+    {
+        "id": "M2",
+        "group": "E1–E4 functional split (HR vs Finance)",
+        "personas": ["E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Allowed asset capex utilisation visibility for Finance officer; enforce functional RBAC for HR",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the year-to-date capex spend compared to Budget Estimates (BE) across major producing assets?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is financial capex utilisation accessible to Finance officers while restricted for junior HR officers?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the capex expenditure rate in Mumbai High compare with the annual sanctioned budget plan?",
+            },
+        ],
+    },
+    {
+        "id": "M3",
+        "group": "E1–E4 functional split (HR vs Finance)",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Enforce strict peer-level PII and appraisal privacy for both junior functional officers",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the authorized procedure for an executive to view their own APAR grading and salary slip on the ESS portal?",
+            },
+            {
+                "kind": "why",
+                "question": "Why are individual salary and APAR appraisals classified as strictly confidential personal data?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What is the designated salary pay scale and promotion criteria for employee 104523's grade?",
+            },
+        ],
+    },
+    {
+        "id": "M4",
+        "group": "E1–E4 functional split (HR vs Finance)",
+        "personas": ["E1–E4 Officer (HR)", "E1–E4 Officer (Finance)"],
+        "decision_it_drives": "Enforce restricted access on Board-level field profitability for junior operational officers",
+        "type": "refusal",
+        "expected_output": "refusal",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the company-wide crude oil and gas production volume published in the public quarterly report?",
+            },
+            {
+                "kind": "why",
+                "question": "Why is field-level profitability confidential and restricted from junior functional officers?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What was the total operating profit (EBITDA) reported by ONGC in the last audited annual financial statements?",
+            },
+        ],
+    },
+    {
+        "id": "M5",
+        "group": "E1–E4 functional split (HR vs Finance)",
+        "personas": ["CMD"],
+        "decision_it_drives": "CMD governance audit of unauthorized confidential access attempts and policy violation patterns",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Break down the unauthorized access attempts by department (HR vs Finance vs Operations) and data type (salary, transfer, P&L).",
+            },
+            {
+                "kind": "why",
+                "question": "Why did specific user accounts trigger repeated RBAC access denials on confidential commercial and personnel tables?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does this week's frequency of access violations compare with the 30-day baseline security audit log?",
+            },
+        ],
+    },
+    # X1–X10 Additional themes
+    {
+        "id": "X1",
+        "group": "Additional themes",
+        "personas": ["CMD", "Director (HR)"],
+        "decision_it_drives": "Assessing contract labour dependency, cost structure, and productivity per BOE",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the ratio of contract workforce to regular employees at Hazira Plant, Uran Plant, and Mumbai High?",
+            },
+            {
+                "kind": "why",
+                "question": "Why do processing plants and field installations maintain higher contract labour ratios for support operations?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the contractor cost per BOE compare with regular employee cost across onshore and offshore assets?",
+            },
+        ],
+    },
+    {
+        "id": "X2",
+        "group": "Additional themes",
+        "personas": ["Director (HR)"],
+        "decision_it_drives": "Evaluating operational risk and statutory compliance of contract labour in core operations",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which production installations in Gujarat and Assam employ contract personnel in drilling or hydrocarbon processing roles?",
+            },
+            {
+                "kind": "why",
+                "question": "What statutory compliance guidelines (Contract Labour Regulation & Abolition Act) govern deployment in core operational activities?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does core contract labour dependency compare between offshore production platforms and corporate office complexes?",
+            },
+        ],
+    },
+    {
+        "id": "X3",
+        "group": "Additional themes",
+        "personas": ["CMD"],
+        "decision_it_drives": "Mitigating offshore safety risks by correlating overtime fatigue with Lost Time Injury rates",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which offshore platforms in Mumbai High and Neelam-Heera recorded the highest monthly overtime hours per technician?",
+            },
+            {
+                "kind": "why",
+                "question": "What role does fatigue from extended shift overtime play in near-misses and Lost Time Injuries (LTI)?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the safety incident frequency rate (LTIFR) in high-overtime assets compare with the corporate safety target?",
+            },
+        ],
+    },
+    {
+        "id": "X4",
+        "group": "Additional themes",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Actuarial funding and balance sheet risk management of retirement benefit obligations",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the actuarial valuation breakdown between Post-Retirement Medical Scheme (PRMB) and PRBS pension liabilities?",
+            },
+            {
+                "kind": "why",
+                "question": "What demographic aging trends and discount rate assumptions drove the expansion of actuarial liabilities over 5 years?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does our funded asset coverage ratio under the PRBS trust compare with total actuarial benefit obligations?",
+            },
+        ],
+    },
+    {
+        "id": "X5",
+        "group": "Additional themes",
+        "personas": ["CMD"],
+        "decision_it_drives": "Evaluating group capital return, profitability, and dividend contribution from subsidiaries",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What were the individual net profit (PAT) contributions and dividend dividends declared by OVL, MRPL, and HPCL in FY26?",
+            },
+            {
+                "kind": "why",
+                "question": "What refining margins at MRPL/HPCL and international production volumes at OVL drove their financial performance?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the consolidated return on capital employed (ROCE) compare with ONGC standalone domestic upstream ROCE?",
+            },
+        ],
+    },
+    {
+        "id": "X6",
+        "group": "Additional themes",
+        "personas": ["CMD"],
+        "decision_it_drives": "Tracking Net Zero 2038 capital allocation and workforce green-skills transition",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What is the cumulative capital invested in solar, wind, and green hydrogen projects under ONGC Green Limited (OGL)?",
+            },
+            {
+                "kind": "why",
+                "question": "What technical training programmes have been established at ONGC Academy to transition conventional engineers into renewable energy roles?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does our annual green energy capex compare with the milestone spending targets outlined in the Net Zero 2038 roadmap?",
+            },
+        ],
+    },
+    {
+        "id": "X7",
+        "group": "Additional themes",
+        "personas": ["CMD", "Director (HR)"],
+        "decision_it_drives": "Fulfilling statutory Lok Sabha/Rajya Sabha parliamentary disclosure on North-East vacancies",
+        "type": "document",
+        "expected_output": "document",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What are the exact sanctioned versus in-position numbers in Assam and Tripura broken down by SC, ST, OBC, EWS, and General?",
+            },
+            {
+                "kind": "why",
+                "question": "What specific recruitment initiatives and special drives have been launched to fill reserved category vacancies in the North-East?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the vacancy percentage in North-East work centres compare with ONGC's national average vacancy level?",
+            },
+        ],
+    },
+    {
+        "id": "X8",
+        "group": "Additional themes",
+        "personas": ["CMD"],
+        "decision_it_drives": "Clearing outstanding CAG audit paras and pending Right to Information (RTI) petitions",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which operating departments (Procurement/MM, Finance, HR) have the largest volume of outstanding CAG audit paragraphs?",
+            },
+            {
+                "kind": "why",
+                "question": "What procedural bottlenecks or documentation delays have prevented closure of audit paras aged over 3 years?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "What is our current RTI compliance and disposal rate compared to the statutory 30-day timeline mandated by the RTI Act?",
+            },
+        ],
+    },
+    {
+        "id": "X9",
+        "group": "Additional themes",
+        "personas": ["Director (Finance)"],
+        "decision_it_drives": "Aligning CSR fund deployment across aspirational districts with statutory priority themes",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "What proportion of our ₹949 cr CSR spend was allocated to education, healthcare, sanitation, and aspirational districts?",
+            },
+            {
+                "kind": "why",
+                "question": "Why did certain non-operational states receive CSR project funding under national priority and disaster relief allocations?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How does the expenditure distribution across states compare with the statutory guideline prioritizing operational field areas?",
+            },
+        ],
+    },
+    {
+        "id": "X10",
+        "group": "Additional themes",
+        "personas": ["CMD"],
+        "decision_it_drives": "Real-time executive situational awareness and operational exception alerts",
+        "type": "data",
+        "expected_output": "table",
+        "followups": [
+            {
+                "kind": "drill_down",
+                "question": "Which 3 specific projects experienced milestone delays, and what is the quantified impact on anticipated completion dates?",
+            },
+            {
+                "kind": "why",
+                "question": "What specific maintenance or compressor downtime event caused the 12% lifting cost spike in Field X this week?",
+            },
+            {
+                "kind": "compare_or_so_what",
+                "question": "How do these operational exception indicators compare with the pre-set threshold limits for Executive Committee notification?",
+            },
+        ],
+    },
+]
+
+
+def build():
+    # Build complete question list by injecting question text from RAW_BANK
+    final_questions = []
+    for item in QUESTIONS_DATA:
+        qid = item["id"]
+        assert qid in RAW_BANK, f"ID {qid} missing in RAW_BANK"
+        entry = {
+            "id": qid,
+            "group": item["group"],
+            "personas": item["personas"],
+            "question": RAW_BANK[qid],
+            "decision_it_drives": item["decision_it_drives"],
+            "type": item["type"],
+            "expected_output": item["expected_output"],
+        }
+        if "steps" in item:
+            entry["steps"] = item["steps"]
+        entry["followups"] = item["followups"]
+        final_questions.append(entry)
+
+    # Check length
+    assert len(final_questions) == 89, f"Expected 89, got {len(final_questions)}"
+
+    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(OUT_PATH, "w", encoding="utf-8") as f:
+        yaml.dump(
+            {"questions": final_questions},
+            f,
+            sort_keys=False,
+            allow_unicode=True,
+            width=120,
+        )
+    print(f"Wrote {len(final_questions)} questions to {OUT_PATH}")
+
+
+if __name__ == "__main__":
+    build()

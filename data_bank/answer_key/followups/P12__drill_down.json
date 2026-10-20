@@ -1,0 +1,30 @@
+{
+  "job_id": "33ee1b82-ecea-4c19-8448-d232c26126bc",
+  "total_bytes_processed": 9108201,
+  "executed_at": "2026-10-20T06:33:10.761058+00:00",
+  "elapsed_seconds": 1.86,
+  "row_count": 2,
+  "columns": [
+    "discipline",
+    "asked_discipline",
+    "due_for_e4_e5_review",
+    "never_hard_or_ne_posted",
+    "lacking_3yr_hard_ne_tenure"
+  ],
+  "rows": [
+    {
+      "discipline": "Production",
+      "asked_discipline": true,
+      "due_for_e4_e5_review": 66,
+      "never_hard_or_ne_posted": 1,
+      "lacking_3yr_hard_ne_tenure": 4
+    },
+    {
+      "discipline": "Drilling",
+      "asked_discipline": true,
+      "due_for_e4_e5_review": 62,
+      "never_hard_or_ne_posted": 0,
+      "lacking_3yr_hard_ne_tenure": 0
+    }
+  ]
+}

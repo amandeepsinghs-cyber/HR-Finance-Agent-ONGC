@@ -1,0 +1,20 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "po_channel",
+  description: "Purchase order procurement channel classification and Government e-Marketplace (GeM) order linkage with MSE affirmative action classifications."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`po_line_id`) AS po_line_id,
+    TRIM(`procurement_channel`) AS procurement_channel,
+    TRIM(`gem_order_id`) AS gem_order_id,
+    TRIM(`mse_vendor_social_category`) AS mse_vendor_social_category
+  FROM ${ref("sap_ekko_channel")}
+  WHERE NULLIF(TRIM(`po_line_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY po_line_id ORDER BY _ingest_ts DESC) = 1

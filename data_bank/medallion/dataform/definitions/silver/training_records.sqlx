@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "training_records",
+  description: "Employee learning and development participation ledger tracking course completion, training hours, and technical reskilling."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`training_record_id`) AS training_record_id,
+    TRIM(`emp_id`) AS emp_id,
+    TRIM(`programme_id`) AS programme_id,
+    TRIM(`programme_name`) AS programme_name,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`institute`) AS institute,
+    TRIM(`category`) AS category,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`start_date`), ''), 1, 10)) AS start_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`end_date`), ''), 1, 10)) AS end_date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`training_hours`), ''), ',', ''), '₹', '') AS NUMERIC) AS training_hours,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`training_days`), ''), ',', ''), '₹', '') AS INT64) AS training_days,
+    TRIM(`completion_status`) AS completion_status,
+    CASE WHEN LOWER(TRIM(`is_renewable_reskilling`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`is_renewable_reskilling`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_renewable_reskilling
+  FROM ${ref("db_exports_lms_attendance")}
+  WHERE NULLIF(TRIM(`training_record_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY training_record_id ORDER BY _ingest_ts DESC) = 1

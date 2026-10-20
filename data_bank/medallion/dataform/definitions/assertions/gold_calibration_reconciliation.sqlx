@@ -1,0 +1,27 @@
+config {
+  type: "assertion",
+  schema: "hrfin_silver",
+  description: "Assert Gold marts reconcile to calibration targets within ±2% tolerance"
+}
+
+WITH cal_check AS (
+  SELECT
+    (SELECT COUNT(*) FROM ${ref("employee_master")} WHERE doj <= DATE '2026-03-31' AND (separation_date IS NULL OR separation_date > DATE '2026-03-31')) AS hc_act,
+    23117 AS hc_tgt,
+    (SELECT gross_revenue_inr_cr FROM ${ref("mart_corporate_performance")} WHERE fiscal_year = 'FY26') AS rev_act,
+    132508.0 AS rev_tgt,
+    (SELECT total_csr_spend_inr_cr FROM ${ref("mart_corporate_performance")} WHERE fiscal_year = 'FY26') AS csr_act,
+    949.0 AS csr_tgt,
+    (SELECT ROUND(SUM(total_liquids_production_mmt), 3) FROM ${ref("mart_asset_productivity")} WHERE fiscal_year = 'FY26') AS liquids_act,
+    20.501 AS liquids_tgt,
+    (SELECT ROUND(SUM(gas_production_bcm), 3) FROM ${ref("mart_asset_productivity")} WHERE fiscal_year = 'FY26') AS gas_act,
+    19.966 AS gas_tgt
+)
+SELECT
+  *
+FROM cal_check
+WHERE ABS(hc_act - hc_tgt) / hc_tgt > 0.02
+   OR ABS(rev_act - rev_tgt) / rev_tgt > 0.02
+   OR ABS(csr_act - csr_tgt) / csr_tgt > 0.02
+   OR ABS(liquids_act - liquids_tgt) / liquids_tgt > 0.02
+   OR ABS(gas_act - gas_tgt) / gas_tgt > 0.02

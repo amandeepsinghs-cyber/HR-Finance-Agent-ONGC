@@ -1,0 +1,29 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "vigilance_cases",
+  description: "Confidential vigilance case register tracking disciplinary investigations, inquiry stages, and promotion clearance status."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`vigilance_case_id`) AS vigilance_case_id,
+    TRIM(`emp_id`) AS emp_id,
+    TRIM(`grade_id`) AS grade_id,
+    TRIM(`discipline_id`) AS discipline_id,
+    TRIM(`wc_id`) AS wc_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`complaint_date`), ''), 1, 10)) AS complaint_date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`nature_of_allegation`) AS nature_of_allegation,
+    TRIM(`stage`) AS stage,
+    TRIM(`inquiry_status`) AS inquiry_status,
+    TRIM(`vigilance_clearance_status`) AS vigilance_clearance_status,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`age_months`), ''), ',', ''), '₹', '') AS INT64) AS age_months,
+    TRIM(`confidentiality_level`) AS confidentiality_level
+  FROM ${ref("sap_vigilance_cases_confidential")}
+  WHERE NULLIF(TRIM(`vigilance_case_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY vigilance_case_id ORDER BY _ingest_ts DESC) = 1

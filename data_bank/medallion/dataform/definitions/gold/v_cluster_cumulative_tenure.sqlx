@@ -1,0 +1,40 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "v_cluster_cumulative_tenure",
+  description: "Cumulative tenure tracking per employee per JRTP geographic cluster across historical stints"
+}
+
+WITH posting_clusters AS (
+  SELECT
+    p.emp_id,
+    w.cluster_id,
+    w.cluster_name,
+    DATE_DIFF(COALESCE(p.to_date, DATE '2026-10-19'), p.from_date, DAY) AS stint_days,
+    p.is_current_posting,
+    p.wc_id AS current_wc_id,
+    p.grade_id AS current_grade_id
+  FROM ${ref("posting_history")} p
+  JOIN ${ref("dim_work_centre")} w ON p.wc_id = w.wc_id
+)
+SELECT
+  pc.emp_id,
+  e.name AS emp_name,
+  e.gender,
+  e.category,
+  e.dob,
+  e.retirement_date,
+  e.current_grade_id,
+  e.current_wc_id,
+  pc.cluster_id,
+  pc.cluster_name,
+  SUM(pc.stint_days) AS cumulative_cluster_days,
+  ROUND(SUM(pc.stint_days) / 365.25, 2) AS cumulative_cluster_years,
+  LOGICAL_OR(pc.is_current_posting) AS is_currently_in_cluster,
+  CASE WHEN ROUND(SUM(pc.stint_days) / 365.25, 2) >= 10.0 THEN TRUE ELSE FALSE END AS has_breached_cluster_10yr_cap,
+  CASE WHEN DATE_DIFF(e.retirement_date, DATE '2026-10-19', YEAR) <= 2 THEN TRUE ELSE FALSE END AS is_superannuation_exempt
+FROM posting_clusters pc
+JOIN ${ref("employee_master")} e ON pc.emp_id = e.emp_id
+GROUP BY
+  pc.emp_id, e.name, e.gender, e.category, e.dob, e.retirement_date,
+  e.current_grade_id, e.current_wc_id, pc.cluster_id, pc.cluster_name

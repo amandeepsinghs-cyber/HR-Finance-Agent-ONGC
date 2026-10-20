@@ -1,0 +1,41 @@
+{
+  "job_id": "6bd1551e-085c-46d4-88f0-8f44c3e34031",
+  "total_bytes_processed": 6818,
+  "executed_at": "2026-10-20T06:37:33.066826+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 3,
+  "columns": [
+    "area_category",
+    "projects",
+    "states",
+    "spend_cr",
+    "share_pct",
+    "of_which_aspirational_cr"
+  ],
+  "rows": [
+    {
+      "area_category": "1: Operational field areas",
+      "projects": 23,
+      "states": 12,
+      "spend_cr": 637.33,
+      "share_pct": 67.2,
+      "of_which_aspirational_cr": 0.0
+    },
+    {
+      "area_category": "2: Non-operational district in an ONGC state",
+      "projects": 1,
+      "states": 1,
+      "spend_cr": 24.07,
+      "share_pct": 2.5,
+      "of_which_aspirational_cr": 24.07
+    },
+    {
+      "area_category": "3: State with no ONGC operations",
+      "projects": 7,
+      "states": 2,
+      "spend_cr": 287.6,
+      "share_pct": 30.3,
+      "of_which_aspirational_cr": 198.1
+    }
+  ]
+}

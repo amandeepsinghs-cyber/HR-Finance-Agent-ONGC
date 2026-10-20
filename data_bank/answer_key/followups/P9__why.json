@@ -1,0 +1,72 @@
+{
+  "job_id": "bbc2ea33-3e1c-4bf5-aac3-311f6bf145e5",
+  "total_bytes_processed": 1402,
+  "executed_at": "2026-10-20T06:33:30.220466+00:00",
+  "elapsed_seconds": 0.75,
+  "row_count": 6,
+  "columns": [
+    "fiscal_year",
+    "cases_received",
+    "cases_closed",
+    "closed_within_90_days",
+    "pct_closed_within_90",
+    "avg_inquiry_days_closed",
+    "max_inquiry_days"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "cases_received": 8,
+      "cases_closed": 8,
+      "closed_within_90_days": 8,
+      "pct_closed_within_90": 100.0,
+      "avg_inquiry_days_closed": 73.9,
+      "max_inquiry_days": 84
+    },
+    {
+      "fiscal_year": "FY23",
+      "cases_received": 10,
+      "cases_closed": 10,
+      "closed_within_90_days": 10,
+      "pct_closed_within_90": 100.0,
+      "avg_inquiry_days_closed": 68.5,
+      "max_inquiry_days": 87
+    },
+    {
+      "fiscal_year": "FY24",
+      "cases_received": 12,
+      "cases_closed": 12,
+      "closed_within_90_days": 11,
+      "pct_closed_within_90": 91.7,
+      "avg_inquiry_days_closed": 60.8,
+      "max_inquiry_days": 120
+    },
+    {
+      "fiscal_year": "FY25",
+      "cases_received": 10,
+      "cases_closed": 10,
+      "closed_within_90_days": 8,
+      "pct_closed_within_90": 80.0,
+      "avg_inquiry_days_closed": 79.6,
+      "max_inquiry_days": 124
+    },
+    {
+      "fiscal_year": "FY26",
+      "cases_received": 12,
+      "cases_closed": 12,
+      "closed_within_90_days": 7,
+      "pct_closed_within_90": 58.3,
+      "avg_inquiry_days_closed": 80.8,
+      "max_inquiry_days": 130
+    },
+    {
+      "fiscal_year": "FY27",
+      "cases_received": 5,
+      "cases_closed": 3,
+      "closed_within_90_days": 3,
+      "pct_closed_within_90": 100.0,
+      "avg_inquiry_days_closed": 54.7,
+      "max_inquiry_days": 72
+    }
+  ]
+}

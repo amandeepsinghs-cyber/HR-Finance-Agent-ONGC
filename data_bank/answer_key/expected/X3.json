@@ -1,0 +1,45 @@
+{
+  "job_id": "52823a1a-a510-45d9-879b-82cd116f8167",
+  "total_bytes_processed": 145992,
+  "executed_at": "2026-10-20T06:37:15.483431+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 2,
+  "columns": [
+    "overtime_band",
+    "overtime_hours_per_worker_month",
+    "work_centres",
+    "ltis_fy26",
+    "million_manhours_fy26",
+    "ltifr_fy26",
+    "ltis_fy22_fy26",
+    "million_manhours_fy22_fy26",
+    "ltifr_fy22_fy26",
+    "fatigue_linked_ltis_fy22_fy26"
+  ],
+  "rows": [
+    {
+      "overtime_band": "High overtime (54 h/month, offshore)",
+      "overtime_hours_per_worker_month": 54.0,
+      "work_centres": 7,
+      "ltis_fy26": 9,
+      "million_manhours_fy26": 31.89,
+      "ltifr_fy26": 0.282,
+      "ltis_fy22_fy26": 36,
+      "million_manhours_fy22_fy26": 170.41,
+      "ltifr_fy22_fy26": 0.211,
+      "fatigue_linked_ltis_fy22_fy26": 36
+    },
+    {
+      "overtime_band": "Standard overtime (36 h/month)",
+      "overtime_hours_per_worker_month": 36.0,
+      "work_centres": 39,
+      "ltis_fy26": 6,
+      "million_manhours_fy26": 66.98,
+      "ltifr_fy26": 0.09,
+      "ltis_fy22_fy26": 38,
+      "million_manhours_fy22_fy26": 369.12,
+      "ltifr_fy22_fy26": 0.103,
+      "fatigue_linked_ltis_fy22_fy26": 0
+    }
+  ]
+}

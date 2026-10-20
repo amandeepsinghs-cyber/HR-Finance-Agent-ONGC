@@ -1,0 +1,51 @@
+{
+  "job_id": "0266af6c-30c4-496b-9640-410e035ab4ec",
+  "total_bytes_processed": 1074595,
+  "executed_at": "2026-10-20T06:38:52.506301+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 6,
+  "columns": [
+    "segment",
+    "women",
+    "employees",
+    "women_pct"
+  ],
+  "rows": [
+    {
+      "segment": "Function: hr",
+      "women": 91,
+      "employees": 584,
+      "women_pct": 15.6
+    },
+    {
+      "segment": "Function: support",
+      "women": 123,
+      "employees": 934,
+      "women_pct": 13.2
+    },
+    {
+      "segment": "Function: finance",
+      "women": 97,
+      "employees": 743,
+      "women_pct": 13.1
+    },
+    {
+      "segment": "Discipline: Medical Services",
+      "women": 11,
+      "employees": 101,
+      "women_pct": 10.9
+    },
+    {
+      "segment": "Company",
+      "women": 1848,
+      "employees": 22798,
+      "women_pct": 8.1
+    },
+    {
+      "segment": "Function: technical",
+      "women": 1537,
+      "employees": 20537,
+      "women_pct": 7.5
+    }
+  ]
+}

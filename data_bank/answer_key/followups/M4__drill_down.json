@@ -1,0 +1,86 @@
+{
+  "job_id": "df9f5870-e83a-4707-b15a-b1fc517e433e",
+  "total_bytes_processed": 527562,
+  "executed_at": "2026-10-20T06:42:17.761083+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 6,
+  "columns": [
+    "fiscal_year",
+    "fy_quarter",
+    "first_month",
+    "last_month",
+    "months",
+    "oil_mmt",
+    "condensate_mmt",
+    "gas_bcm",
+    "total_mmboe"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY27",
+      "fy_quarter": "Q2",
+      "first_month": "2026-07",
+      "last_month": "2026-09",
+      "months": 3,
+      "oil_mmt": 4.766,
+      "condensate_mmt": 0.248,
+      "gas_bcm": 5.02,
+      "total_mmboe": 73.55
+    },
+    {
+      "fiscal_year": "FY27",
+      "fy_quarter": "Q1",
+      "first_month": "2026-04",
+      "last_month": "2026-06",
+      "months": 3,
+      "oil_mmt": 4.759,
+      "condensate_mmt": 0.248,
+      "gas_bcm": 5.006,
+      "total_mmboe": 73.4
+    },
+    {
+      "fiscal_year": "FY26",
+      "fy_quarter": "Q4",
+      "first_month": "2026-01",
+      "last_month": "2026-03",
+      "months": 3,
+      "oil_mmt": 4.842,
+      "condensate_mmt": 0.244,
+      "gas_bcm": 4.963,
+      "total_mmboe": 73.66
+    },
+    {
+      "fiscal_year": "FY26",
+      "fy_quarter": "Q3",
+      "first_month": "2025-10",
+      "last_month": "2025-12",
+      "months": 3,
+      "oil_mmt": 4.957,
+      "condensate_mmt": 0.249,
+      "gas_bcm": 5.072,
+      "total_mmboe": 75.34
+    },
+    {
+      "fiscal_year": "FY26",
+      "fy_quarter": "Q2",
+      "first_month": "2025-07",
+      "last_month": "2025-09",
+      "months": 3,
+      "oil_mmt": 4.86,
+      "condensate_mmt": 0.242,
+      "gas_bcm": 4.972,
+      "total_mmboe": 73.84
+    },
+    {
+      "fiscal_year": "FY26",
+      "fy_quarter": "Q1",
+      "first_month": "2025-04",
+      "last_month": "2025-06",
+      "months": 3,
+      "oil_mmt": 4.865,
+      "condensate_mmt": 0.242,
+      "gas_bcm": 4.96,
+      "total_mmboe": 73.8
+    }
+  ]
+}

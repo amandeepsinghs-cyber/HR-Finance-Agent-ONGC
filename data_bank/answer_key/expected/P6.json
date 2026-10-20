@@ -1,0 +1,37 @@
+{
+  "job_id": "cac5849a-3741-4645-9030-8953a6c1a76d",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:20.204233+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "G-06",
+      "clause_ref": "12. Gifts",
+      "heading": "DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts",
+      "provision": "DPE CDA Rule 12(1) + Explanation/Note",
+      "quote_snippet": "1. Save as otherwise provided in these rules, no employee of the CPSE shall accept or permit any member of his/her family or any other person acting on his/her behalf, to accept any gift. Explanation - The expression \u201cgift\u201d, shall include free transport, board, lodging or other service or any other pecuniary advantage when provided by any person other than a near relative or a personal friend having no official dealings with the employee. Note - An employee of the CPSE shall avoid acceptance of lavish or frequent hospitality from any individual or firm having official dealings with the employee."
+    },
+    {
+      "doc_id": "G-06",
+      "clause_ref": "12. Gifts",
+      "heading": "DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts",
+      "provision": "DPE CDA Rule 12(4) (any other case)",
+      "quote_snippet": "4. In any other case, an employee of the CPSE shall not accept or permit any other member of his/her family or any other person acting on his/her behalf to accept any gifts without the sanction of the competent authority if the value thereof exceeds rupees one thousand five hundred in the case of Executives and Non-Executives; Provided that when more than one gift has been received from the same person/firm within a period of 12 months, the matter shall be reported to the competent authority if the aggregate value of the gifts exceeds Rs.25,000/- and Rs.15000/-in case of Executives and Non-Executives respec- tively."
+    },
+    {
+      "doc_id": "G-06",
+      "clause_ref": "12. Gifts",
+      "heading": "DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts",
+      "provision": "DPE CDA Rule 12(3) (personal friends)",
+      "quote_snippet": "3. On such occasions as are specified in sub-rule (2), an employee of the CPSE may accept gifts from his/her personal friends having no official dealings with the employee, but employee shall make a report to the competent authority if the value of any such gift exceeds rupees one thousand five hundred in the case of Executives and Non-Executives;"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "job_id": "243c6b46-1bcc-4379-88eb-877f8e649b67",
+  "total_bytes_processed": 380,
+  "executed_at": "2026-10-20T06:33:13.845519+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 2,
+  "columns": [
+    "fiscal_year",
+    "standalone_pat_inr_cr",
+    "consolidated_pat_inr_cr",
+    "group_entities_contribution_inr_cr"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY25",
+      "standalone_pat_inr_cr": 35610.0,
+      "consolidated_pat_inr_cr": 48073.5,
+      "group_entities_contribution_inr_cr": 12463.5
+    },
+    {
+      "fiscal_year": "FY26",
+      "standalone_pat_inr_cr": 32894.0,
+      "consolidated_pat_inr_cr": 49793.0,
+      "group_entities_contribution_inr_cr": 16899.0
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "turn_id": "turn_c10_010",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Under our annual MoU targets with MoPNG and DPE, full-year projected composite score is 3.88, tracking Very Good. Capital Expenditure is projected at 36040.0 crore, while Crude Oil Production is projected at 19.051 MMT.",
+  "display_text": "Annual MoU scorecard evaluation across 9 parameters [1]. Projected composite score is 3.88 (6 Very Good, 3 Good). Standalone Capex is tracking at 97.4% (36040.0 Cr vs 37000.0 Cr). Crude oil output is tracking at 90.7% (19.051 MMT vs 21.0 MMT).",
+  "visual": {
+    "type": "chart",
+    "mode": "replace",
+    "title": "DPE / MoPNG Annual MoU Performance Scorecard \u2014 FY27 Projected vs Target",
+    "chart": {
+      "kind": "bullet",
+      "y": "parameter",
+      "value": "achievement_pct",
+      "target": 100,
+      "unit": "% of Excellent",
+      "data": [
+        {
+          "parameter": "Crude Oil Production (excluding JV)",
+          "weight": 20.0,
+          "target_val": 21.0,
+          "actual_val": 19.051,
+          "achievement_pct": 90.7
+        },
+        {
+          "parameter": "Natural Gas Sales & Production",
+          "weight": 15.0,
+          "target_val": 21.0,
+          "actual_val": 20.05,
+          "achievement_pct": 95.5
+        },
+        {
+          "parameter": "Revenue from Operations (Net of Levies)",
+          "weight": 15.0,
+          "target_val": 135000.0,
+          "actual_val": 130500.0,
+          "achievement_pct": 96.7
+        },
+        {
+          "parameter": "Capital Expenditure (Standalone)",
+          "weight": 15.0,
+          "target_val": 37000.0,
+          "actual_val": 36040.0,
+          "achievement_pct": 97.4
+        },
+        {
+          "parameter": "Operating Profit / PAT",
+          "weight": 10.0,
+          "target_val": 35000.0,
+          "actual_val": 31600.0,
+          "achievement_pct": 90.3
+        }
+      ]
+    },
+    "kpis": [
+      {
+        "label": "Projected Composite",
+        "value": 3.88,
+        "unit": "/ 5.0",
+        "delta": "Very Good Rating"
+      },
+      {
+        "label": "Capex Projection",
+        "value": 36040.0,
+        "unit": "\u20b9 Cr",
+        "delta": "97.4% Target"
+      },
+      {
+        "label": "Crude Projection",
+        "value": 19.051,
+        "unit": "MMT",
+        "delta": "90.7% Target"
+      }
+    ]
+  },
+  "insights": [
+    "FY27 is tracking Very Good at best: on the H1 run-rate the projected composite score is 3.88 (6 Very Good, 3 Good).",
+    "Capital Expenditure standalone is projected at 36040.0 crore against Excellent target of 37000.0 crore (97.4%).",
+    "Crude oil production (20% weightage) is projected at 19.051 MMT against Excellent target of 21.0 MMT (90.7%)."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.mart_corporate_performance",
+      "query_id": "c9e74dce-7be8-40c4-90a2-9dcd83d66c03",
+      "sql": "-- Answer Key SQL: C10\n-- Question: How are we tracking against our MoU targets with MoPNG/DPE for this year?\n-- Type: data\n-- Semantic audit 2026-10-20: (1) FY_MAPPING - \"this year\" is FY27 (current FY, 2026-04..2026-09 elapsed); the\n-- old SQL reported FY26. FY27 actual_achievement is the full-year projection on the H1 run-rate (e.g. crude\n-- 19.051 MMT = 2 x H1 9.525 MMT in production_monthly), so it is labelled as projected. (2) PCT_DENOM - LTIFR is\n-- lower-is-better, so actual/target gave 140% \"achievement\"; it is now inverted (target/actual) for that\n-- parameter. Added the recorded rating, Very Good threshold, gap to Excellent and FY26 final rating.\n\nSELECT\n    m.parameter_name,\n    m.unit_of_measure,\n    m.weightage,\n    m.excellent_target,\n    m.very_good_target,\n    m.actual_achievement AS fy27_projected_achievement,\n    ROUND(CASE WHEN m.parameter_id = 'MOU-HSE-SAFETY' THEN m.excellent_target * 100.0 / NULLIF(m.actual_achievement, 0)\n               ELSE m.actual_achievement * 100.0 / NULLIF(m.excellent_target, 0) END, 1) AS pct_of_excellent,\n    ROUND(CASE WHEN m.parameter_id = 'MOU-HSE-SAFETY' THEN m.excellent_target - m.actual_achievement\n               ELSE m.actual_achievement - m.excellent_target END, 3) AS gap_to_excellent,\n    m.achieved_rating AS fy27_projected_rating,\n    p.achieved_rating AS fy26_final_rating,\n    m.composite_score AS fy27_composite_to_date,\n    m.projected_composite_score AS fy27_projected_composite\nFROM mou_targets m\nLEFT JOIN mou_targets p ON p.parameter_id = m.parameter_id AND p.fiscal_year = 'FY26'\nWHERE m.fiscal_year = 'FY27'\nORDER BY m.weightage DESC, pct_of_excellent ASC;\n"
+    }
+  ],
+  "suggestions": [
+    "How do we reach Excellent on crude output?",
+    "Show capex breakdown by offshore vs onshore",
+    "Export MoU scorecard to PDF"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "pdf"
+  ]
+}

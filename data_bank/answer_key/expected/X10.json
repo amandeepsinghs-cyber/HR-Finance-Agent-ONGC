@@ -1,0 +1,29 @@
+{
+  "job_id": "3fa018a1-5662-4600-997a-ff2b7d0e849c",
+  "total_bytes_processed": 11676119,
+  "executed_at": "2026-10-20T06:55:30.472911+00:00",
+  "elapsed_seconds": 2.44,
+  "row_count": 3,
+  "columns": [
+    "indicator",
+    "value",
+    "detail"
+  ],
+  "rows": [
+    {
+      "indicator": "1: Capital projects behind schedule (open)",
+      "value": 7.0,
+      "detail": "max slippage 19 months; 9 projects incl. completed ones with slippage"
+    },
+    {
+      "indicator": "2: Executives overdue for rotation (>=5 yrs at station, non-exempt, >3 yrs to retirement)",
+      "value": 8457.0,
+      "detail": "of 13453 executives in current postings; median 75 months at station"
+    },
+    {
+      "indicator": "3: Largest field lifting-cost increase FY26 vs FY25 (%)",
+      "value": 0.9,
+      "detail": "Panna; fields up >=12%: 0 of 53"
+    }
+  ]
+}

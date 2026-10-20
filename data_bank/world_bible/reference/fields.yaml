@@ -1,0 +1,670 @@
+fields:
+- field_id: FLD-MHN
+  name: Mumbai High North
+  asset_wc_id: WC-MUM
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 1974
+  hydrocarbon: oil
+  maturity: mature
+  notes: Flagship offshore oil field; under Phase-IV redevelopment with bp as Technical Service Provider.
+  aliases:
+  - Mumbai High North
+  - MHN
+  - Mumbai High
+  - Western Offshore
+- field_id: FLD-MHS
+  name: Mumbai High South
+  asset_wc_id: WC-MUM
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 1974
+  hydrocarbon: oil
+  maturity: mature
+  notes: Southern sector of Mumbai High; major contributor to domestic crude output.
+  aliases:
+  - Mumbai High South
+  - MHS
+  - Mumbai High
+- field_id: FLD-HEE
+  name: Heera
+  asset_wc_id: WC-NEH
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 1977
+  hydrocarbon: oil
+  maturity: mature
+  notes: Key producing field in Neelam-Heera Asset; water injection redevelopment.
+  aliases:
+  - Heera
+  - Heera Field
+  - Neelam-Heera
+- field_id: FLD-NEE
+  name: Neelam
+  asset_wc_id: WC-NEH
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 1987
+  hydrocarbon: oil
+  maturity: mature
+  notes: Discovered in 1987; sandstone reservoir under active gas lift and water injection.
+  aliases:
+  - Neelam
+  - Neelam Field
+  - Neelam-Heera
+- field_id: FLD-RAT
+  name: Ratna & R-Series
+  asset_wc_id: WC-NEH
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 1979
+  hydrocarbon: oil
+  maturity: mature
+  notes: Cluster of small satellite fields re-integrated into ONGC operations.
+  aliases:
+  - Ratna
+  - R-Series
+  - Ratna & R-Series
+- field_id: FLD-MUK
+  name: Mukta
+  asset_wc_id: WC-NEH
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 1981
+  hydrocarbon: oil
+  maturity: mature
+  notes: Panna-Mukta sector operated under joint venture / nomination framework.
+  aliases:
+  - Mukta
+  - Mukta Field
+- field_id: FLD-PAN
+  name: Panna
+  asset_wc_id: WC-NEH
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 1979
+  hydrocarbon: both
+  maturity: mature
+  notes: Western Offshore carbonate reservoir producing crude and rich gas.
+  aliases:
+  - Panna
+  - Panna Field
+- field_id: FLD-BAS
+  name: Bassein
+  asset_wc_id: WC-BAS
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 1976
+  hydrocarbon: gas
+  maturity: mature
+  notes: India's largest offshore gas field; supplies gas directly to Hazira and Uran plants.
+  aliases:
+  - Bassein
+  - Bassein Field
+  - Bassein & Satellite
+- field_id: FLD-DAM
+  name: Daman
+  asset_wc_id: WC-BAS
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 2006
+  hydrocarbon: gas
+  maturity: growth
+  notes: Daman Upside Development Project (DUDP) achieving first gas in Mar-2026.
+  aliases:
+  - Daman
+  - Daman Field
+  - DUDP
+- field_id: FLD-B17
+  name: B-173A / B-Series Clusters
+  asset_wc_id: WC-BAS
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 1993
+  hydrocarbon: gas
+  maturity: plateau
+  notes: Cluster of marginal offshore gas discoveries evacuated through Bassein TCPP.
+  aliases:
+  - B-Series
+  - B-173A
+  - B-Series Clusters
+- field_id: FLD-D1
+  name: D-1 Field
+  asset_wc_id: WC-BAS
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 1998
+  hydrocarbon: oil
+  maturity: mature
+  notes: Deep offshore marginal oil field evacuated via FPSO Armada Sterling.
+  aliases:
+  - D-1
+  - D-1 Field
+- field_id: FLD-CS1
+  name: C-Series Clusters
+  asset_wc_id: WC-BAS
+  basin: Western Offshore Basin
+  onshore_offshore: offshore
+  discovery_year: 2005
+  hydrocarbon: gas
+  maturity: plateau
+  notes: Gas-bearing satellite structures tied back to Bassein process complex.
+  aliases:
+  - C-Series
+  - C-Series Clusters
+- field_id: FLD-GAN
+  name: Gandhar
+  asset_wc_id: WC-ANK
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1983
+  hydrocarbon: both
+  maturity: mature
+  notes: Largest onshore oil & gas field in Gujarat; site of CCUS pilot.
+  aliases:
+  - Gandhar
+  - Gandhar Field
+  - Ankleshwar
+- field_id: FLD-ANK
+  name: Ankleshwar
+  asset_wc_id: WC-ANK
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1960
+  hydrocarbon: oil
+  maturity: mature
+  notes: Historic first major oil discovery in Western India; highly mature water-drive field.
+  aliases:
+  - Ankleshwar
+  - Ankleshwar Field
+- field_id: FLD-KOS
+  name: Kosamba
+  asset_wc_id: WC-ANK
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1964
+  hydrocarbon: oil
+  maturity: mature
+  notes: Satellite oil field in South Gujarat sector.
+  aliases:
+  - Kosamba
+  - Kosamba Field
+- field_id: FLD-MOT
+  name: Motwan
+  asset_wc_id: WC-ANK
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1978
+  hydrocarbon: oil
+  maturity: mature
+  notes: Mature producing field producing medium gravity crude.
+  aliases:
+  - Motwan
+  - Motwan Field
+- field_id: FLD-KAL
+  name: Kalol
+  asset_wc_id: WC-AHM
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1961
+  hydrocarbon: oil
+  maturity: mature
+  notes: Major oil field in North Cambay Basin under ongoing thermal / chemical EOR.
+  aliases:
+  - Kalol
+  - Kalol Field
+  - Ahmedabad
+- field_id: FLD-NAW
+  name: Nawagam
+  asset_wc_id: WC-AHM
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1963
+  hydrocarbon: oil
+  maturity: mature
+  notes: High wax crude field operated under Ahmedabad Asset.
+  aliases:
+  - Nawagam
+  - Nawagam Field
+  - Ahmedabad
+- field_id: FLD-SND
+  name: Sanand
+  asset_wc_id: WC-AHM
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1962
+  hydrocarbon: oil
+  maturity: mature
+  notes: Mature onshore field with significant heavy oil pay intervals.
+  aliases:
+  - Sanand
+  - Sanand Field
+- field_id: FLD-JHL
+  name: Jhalora
+  asset_wc_id: WC-AHM
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1971
+  hydrocarbon: oil
+  maturity: mature
+  notes: Mature sand reservoir producing through electric submersible pumps.
+  aliases:
+  - Jhalora
+  - Jhalora Field
+- field_id: FLD-VIR
+  name: Viraj
+  asset_wc_id: WC-AHM
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1986
+  hydrocarbon: oil
+  maturity: mature
+  notes: Commercial oil field in North Gujarat under Ahmedabad management.
+  aliases:
+  - Viraj
+  - Viraj Field
+- field_id: FLD-SNT
+  name: Santhal
+  asset_wc_id: WC-MEH
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1972
+  hydrocarbon: oil
+  maturity: mature
+  notes: Pioneering in-situ combustion thermal EOR project in heavy oil reservoir.
+  aliases:
+  - Santhal
+  - Santhal Field
+  - Mehsana
+- field_id: FLD-BAL
+  name: Balol
+  asset_wc_id: WC-MEH
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1971
+  hydrocarbon: oil
+  maturity: mature
+  notes: In-situ combustion thermal recovery project operated by Mehsana Asset.
+  aliases:
+  - Balol
+  - Balol Field
+  - Mehsana
+- field_id: FLD-LAN
+  name: Lanwa
+  asset_wc_id: WC-MEH
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1973
+  hydrocarbon: oil
+  maturity: mature
+  notes: Heavy oil sandstone reservoir under enhanced oil recovery thermal recovery.
+  aliases:
+  - Lanwa
+  - Lanwa Field
+  - Mehsana
+- field_id: FLD-JOT
+  name: Jotana
+  asset_wc_id: WC-MEH
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1977
+  hydrocarbon: oil
+  maturity: mature
+  notes: Onshore field contributing stable medium-gravity crude in Mehsana.
+  aliases:
+  - Jotana
+  - Jotana Field
+  - Mehsana
+- field_id: FLD-SOB
+  name: Sobhasan
+  asset_wc_id: WC-MEH
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1968
+  hydrocarbon: both
+  maturity: mature
+  notes: Key multizone gas and oil producer; GGS modernization underway.
+  aliases:
+  - Sobhasan
+  - Sobhasan Field
+- field_id: FLD-LIN
+  name: Linch
+  asset_wc_id: WC-MEH
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1975
+  hydrocarbon: both
+  maturity: mature
+  notes: Active deep gas and oil field under redevelopment.
+  aliases:
+  - Linch
+  - Linch Field
+- field_id: FLD-BEC
+  name: Bechraji
+  asset_wc_id: WC-MEH
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1987
+  hydrocarbon: oil
+  maturity: mature
+  notes: Heavy crude field undergoing commercial polymer flood EOR scheme.
+  aliases:
+  - Bechraji
+  - Bechraji Field
+- field_id: FLD-NAN
+  name: Nandej
+  asset_wc_id: WC-AHM
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1982
+  hydrocarbon: oil
+  maturity: mature
+  notes: Mature satellite field near Ahmedabad city.
+  aliases:
+  - Nandej
+  - Nandej Field
+- field_id: FLD-CAM
+  name: Cambay
+  asset_wc_id: WC-CAM
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1958
+  hydrocarbon: gas
+  maturity: mature
+  notes: Birthplace of ONGC operations in Gujarat (Lunej well-1, 1958).
+  aliases:
+  - Cambay
+  - Cambay Field
+  - Lunej
+- field_id: FLD-KAT
+  name: Kathana
+  asset_wc_id: WC-CAM
+  basin: Western Onshore Basin
+  onshore_offshore: onshore
+  discovery_year: 1965
+  hydrocarbon: oil
+  maturity: mature
+  notes: Mature onshore oil producer in the gulf vicinity.
+  aliases:
+  - Kathana
+  - Kathana Field
+- field_id: FLD-GEL
+  name: Geleki
+  asset_wc_id: WC-ASM
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1968
+  hydrocarbon: oil
+  maturity: mature
+  notes: Deep sandstone oil field in Sivasagar district; major Assam producer.
+  aliases:
+  - Geleki
+  - Geleki Field
+  - Assam
+- field_id: FLD-LAK
+  name: Lakwa
+  asset_wc_id: WC-ASM
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1964
+  hydrocarbon: both
+  maturity: mature
+  notes: Major oil and gas field feeding Numaligarh and Bongaigaon refineries.
+  aliases:
+  - Lakwa
+  - Lakwa Field
+  - Assam
+- field_id: FLD-RDS
+  name: Rudrasagar
+  asset_wc_id: WC-ASM
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1960
+  hydrocarbon: oil
+  maturity: mature
+  notes: Historic first discovery in Assam by ONGC; mature water-drive field.
+  aliases:
+  - Rudrasagar
+  - Rudrasagar Field
+  - Assam
+- field_id: FLD-CHA
+  name: Charali
+  asset_wc_id: WC-ASM
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1972
+  hydrocarbon: oil
+  maturity: mature
+  notes: Mature producer in Sivasagar region with multi-layered sandstones.
+  aliases:
+  - Charali
+  - Charali Field
+- field_id: FLD-BOR
+  name: Borholla
+  asset_wc_id: WC-JOR
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1970
+  hydrocarbon: oil
+  maturity: mature
+  notes: Key field under Jorhat Asset near the Assam-Nagaland foothills.
+  aliases:
+  - Borholla
+  - Borholla Field
+  - Jorhat
+- field_id: FLD-CHP
+  name: Champang
+  asset_wc_id: WC-JOR
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1973
+  hydrocarbon: oil
+  maturity: mature
+  notes: Border structure shared across the Assam-Nagaland belt.
+  aliases:
+  - Champang
+  - Champang Field
+- field_id: FLD-KHO
+  name: Khoraghat
+  asset_wc_id: WC-JOR
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1989
+  hydrocarbon: oil
+  maturity: mature
+  notes: Producing field in Golaghat district under Jorhat Asset management.
+  aliases:
+  - Khoraghat
+  - Khoraghat Field
+- field_id: FLD-ROK
+  name: Rokhia
+  asset_wc_id: WC-TRI
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1980
+  hydrocarbon: gas
+  maturity: plateau
+  notes: High-purity natural gas field supplying state power generation.
+  aliases:
+  - Rokhia
+  - Rokhia Field
+  - Tripura
+- field_id: FLD-AGT
+  name: Agartala Dome
+  asset_wc_id: WC-TRI
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1986
+  hydrocarbon: gas
+  maturity: plateau
+  notes: Large anticlinal gas field fueling industrial and city gas in Tripura.
+  aliases:
+  - Agartala Dome
+  - Agartala
+  - Tripura
+- field_id: FLD-KON
+  name: Konaban
+  asset_wc_id: WC-TRI
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1990
+  hydrocarbon: gas
+  maturity: plateau
+  notes: Feeds the 726 MW OTPC Palatana thermal power station.
+  aliases:
+  - Konaban
+  - Konaban Field
+  - Tripura
+- field_id: FLD-BAR
+  name: Baramura
+  asset_wc_id: WC-TRI
+  basin: Assam & Assam-Arakan Basin
+  onshore_offshore: onshore
+  discovery_year: 1975
+  hydrocarbon: gas
+  maturity: mature
+  notes: First commercial gas discovery in Tripura; high methane purity.
+  aliases:
+  - Baramura
+  - Baramura Field
+- field_id: FLD-PAS
+  name: Pasarlapudi
+  asset_wc_id: WC-RAJ
+  basin: KG-PG Basin
+  onshore_offshore: onshore
+  discovery_year: 1988
+  hydrocarbon: gas
+  maturity: mature
+  notes: High-pressure onshore gas field in the Godavari delta.
+  aliases:
+  - Pasarlapudi
+  - Pasarlapudi Field
+  - Rajahmundry
+- field_id: FLD-TAT
+  name: Tatipaka
+  asset_wc_id: WC-RAJ
+  basin: KG-PG Basin
+  onshore_offshore: onshore
+  discovery_year: 1985
+  hydrocarbon: gas
+  maturity: mature
+  notes: Home of ONGC mini-refinery in East Godavari district.
+  aliases:
+  - Tatipaka
+  - Tatipaka Field
+  - Rajahmundry
+- field_id: FLD-MOR
+  name: Mori
+  asset_wc_id: WC-RAJ
+  basin: KG-PG Basin
+  onshore_offshore: onshore
+  discovery_year: 1987
+  hydrocarbon: oil
+  maturity: mature
+  notes: Light sweet crude producer in coastal Andhra Pradesh.
+  aliases:
+  - Mori
+  - Mori Field
+- field_id: FLD-KES
+  name: Kesanapalli
+  asset_wc_id: WC-RAJ
+  basin: KG-PG Basin
+  onshore_offshore: onshore
+  discovery_year: 1991
+  hydrocarbon: oil
+  maturity: mature
+  notes: Kesanapalli-West field; high deliverability onshore reservoir.
+  aliases:
+  - Kesanapalli
+  - Kesanapalli Field
+- field_id: FLD-KG982
+  name: KG-DWN-98/2 Cluster-II
+  asset_wc_id: WC-EAS
+  basin: KG-PG Basin
+  onshore_offshore: offshore
+  discovery_year: 2006
+  hydrocarbon: both
+  maturity: growth
+  notes: Mega deepwater development; FPSO Armada Sterling V producing first oil Jan-2024.
+  aliases:
+  - KG-DWN-98/2
+  - KG-98/2
+  - Cluster-II
+  - Eastern Offshore
+  - KG Basin
+- field_id: FLD-NAR
+  name: Narimanam
+  asset_wc_id: WC-CAU
+  basin: Cauvery Basin
+  onshore_offshore: onshore
+  discovery_year: 1985
+  hydrocarbon: oil
+  maturity: mature
+  notes: Primary onshore producing field in Cauvery Basin, Nagapattinam.
+  aliases:
+  - Narimanam
+  - Narimanam Field
+  - Cauvery
+- field_id: FLD-KUT
+  name: Kuthalam
+  asset_wc_id: WC-CAU
+  basin: Cauvery Basin
+  onshore_offshore: onshore
+  discovery_year: 1997
+  hydrocarbon: gas
+  maturity: mature
+  notes: Natural gas field supplying power plants in Tamil Nadu.
+  aliases:
+  - Kuthalam
+  - Kuthalam Field
+  - Cauvery
+- field_id: FLD-ADI
+  name: Adiyakkamangalam
+  asset_wc_id: WC-CAU
+  basin: Cauvery Basin
+  onshore_offshore: onshore
+  discovery_year: 1993
+  hydrocarbon: oil
+  maturity: mature
+  notes: Onshore oil producer under Cauvery Asset administration.
+  aliases:
+  - Adiyakkamangalam
+  - Adiyakkamangalam Field
+- field_id: FLD-BAG
+  name: Baghewala
+  asset_wc_id: WC-RAJ-BSN
+  basin: Jodhpur (Rajasthan) Basin
+  onshore_offshore: onshore
+  discovery_year: 1991
+  hydrocarbon: oil
+  maturity: mature
+  notes: Heavy viscous oil field in the Bikaner-Nagaur basin.
+  aliases:
+  - Baghewala
+  - Baghewala Field
+  - Rajasthan
+- field_id: FLD-BOK
+  name: CBM Bokaro
+  asset_wc_id: WC-BOK
+  basin: MBA Basin (Mahanadi-Bengal-Andaman)
+  onshore_offshore: onshore
+  discovery_year: 2002
+  hydrocarbon: gas
+  maturity: plateau
+  notes: Commercial coal-bed methane block in the Damodar valley.
+  aliases:
+  - CBM Bokaro
+  - Bokaro CBM
+  - Bokaro
+- field_id: FLD-JHA
+  name: Jharia CBM
+  asset_wc_id: WC-BOK
+  basin: MBA Basin (Mahanadi-Bengal-Andaman)
+  onshore_offshore: onshore
+  discovery_year: 2002
+  hydrocarbon: gas
+  maturity: plateau
+  notes: Coal bed methane block in Jharia coalfields, Jharkhand.
+  aliases:
+  - Jharia CBM
+  - Jharia Field

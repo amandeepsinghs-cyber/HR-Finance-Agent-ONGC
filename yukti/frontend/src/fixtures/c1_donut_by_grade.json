@@ -1,0 +1,138 @@
+{
+  "turn_id": "turn_c1_001",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Across Delhi Corporate HQ, 419 regular executives have completed five or more continuous years. Accounting for 17 officers protected under the three-year pre-retirement practice and 1 valid exemption, 401 executives are due for rotational transfer under JRTP Clause 3.0.",
+  "display_text": "Pursuant to JRTP Clause 3.0 (Station Tenure Norms) and Clause 7.0 (Pre-Retirement Tenure Exemption), 419 regular executives have completed 5+ continuous years in Delhi (WC-DEL) [1]. Excluding 17 officers retiring within 3 years and 1 valid exemption, 401 executives are due for rotational transfer across 9 disciplines.",
+  "visual": {
+    "type": "chart",
+    "mode": "replace",
+    "title": "Delhi Station Overstay by Grade (JRTP Clause 3.0)",
+    "chart": {
+      "kind": "donut",
+      "category": "grade",
+      "value": "count",
+      "unit": "Executives",
+      "data": [
+        {
+          "grade": "E1",
+          "count": 35,
+          "exempt": 1,
+          "due": 34
+        },
+        {
+          "grade": "E2",
+          "count": 90,
+          "exempt": 1,
+          "due": 88
+        },
+        {
+          "grade": "E3",
+          "count": 87,
+          "exempt": 2,
+          "due": 85
+        },
+        {
+          "grade": "E4",
+          "count": 67,
+          "exempt": 1,
+          "due": 66
+        },
+        {
+          "grade": "E5",
+          "count": 57,
+          "exempt": 1,
+          "due": 56
+        },
+        {
+          "grade": "E6",
+          "count": 35,
+          "exempt": 0,
+          "due": 35
+        },
+        {
+          "grade": "E7",
+          "count": 33,
+          "exempt": 10,
+          "due": 23
+        },
+        {
+          "grade": "E8",
+          "count": 12,
+          "exempt": 1,
+          "due": 11
+        },
+        {
+          "grade": "E9",
+          "count": 3,
+          "exempt": 0,
+          "due": 3
+        }
+      ]
+    },
+    "kpis": [
+      {
+        "label": "Total Delhi 5+ Yr",
+        "value": 419,
+        "unit": "Executives",
+        "delta": "JRTP Clause 3.0"
+      },
+      {
+        "label": "Pre-Retirement Exempt",
+        "value": 17,
+        "unit": "Age 57+",
+        "delta": "Clause 7.0"
+      },
+      {
+        "label": "Net Due Transfer",
+        "value": 401,
+        "unit": "Officers",
+        "delta": "Rotational Norm"
+      }
+    ]
+  },
+  "insights": [
+    "419 executives have been in the Delhi office (WC-DEL) continuously for 5 years or more as of 19-Oct-2026.",
+    "Of these, 401 are due for rotational transfer under JRTP Clause 3.0; 17 are protected because they retire within 3 years (Clause 7.0) and 1 holds a valid recorded exemption.",
+    "The largest grade/discipline concentrations in Delhi HQ are E3 Finance (23), E2 Finance (22), and E2 HR (21)."
+  ],
+  "caveat": "Most current stays in posting_history start on 1-Jul-2020 (left-censored); tenure is a lower bound and list should be validated against service books before issue.",
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.v_continuous_stay",
+      "query_id": "86d1a4fc-5a0b-4f64-aea9-f5a6ff42975f",
+      "sql": "-- Answer Key SQL: C1\n-- Question: How many executives have been posted in the Delhi office for 5 years or more? Break down by grade and discipline.\n-- Type: data\n-- Semantic audit 2026-10-20: aligned with H10/X10 rotation rule. Due = current continuous stay >= 60 months at\n-- 2026-10-19 (v_continuous_stay), minus officers retiring within 3 x 365.25 days (JRTP 7.1 practice), minus officers\n-- whose current posting carries a valid exemption tag (literal 'None' = no exemption; valid_until >= 2026-10-19 or NULL).\n\nWITH cur_exempt AS (\n    SELECT emp_id, LOGICAL_OR(\n        LOWER(IFNULL(exemption_tag, 'none')) NOT IN ('none', '')\n        AND (exemption_valid_until IS NULL OR exemption_valid_until >= DATE '2026-10-19')) AS has_valid_exemption\n    FROM posting_history\n    WHERE is_current_posting\n    GROUP BY emp_id\n),\nbase AS (\n    SELECT v.grade_id, v.discipline_id, v.emp_id,\n           DATE_DIFF(v.retirement_date, DATE '2026-10-19', DAY) <= 3 * 365.25 AS retiring_3yr,\n           IFNULL(x.has_valid_exemption, FALSE) AS has_valid_exemption\n    FROM `ongc-hr-finance-agent.hrfin_gold.v_continuous_stay` v\n    LEFT JOIN cur_exempt x ON x.emp_id = v.emp_id\n    WHERE v.is_current_stay = TRUE\n      AND v.wc_id = 'WC-DEL'\n      AND v.grade_id LIKE 'E%'\n      AND v.continuous_stay_months >= 60\n)\nSELECT\n    grade_id,\n    discipline_id,\n    COUNT(DISTINCT emp_id) AS delhi_executives_ge_5yr,\n    COUNT(DISTINCT IF(retiring_3yr, emp_id, NULL)) AS exempt_retiring_3yr,\n    COUNT(DISTINCT IF(NOT retiring_3yr AND has_valid_exemption, emp_id, NULL)) AS exempt_valid_tag,\n    COUNT(DISTINCT IF(NOT retiring_3yr AND NOT has_valid_exemption, emp_id, NULL)) AS non_exempt_due_transfer\nFROM base\nGROUP BY grade_id, discipline_id\nORDER BY grade_id, discipline_id;\n"
+    },
+    {
+      "kind": "policy",
+      "doc_id": "JRTP",
+      "clause": "3.0",
+      "title": "Job Rotation & Transfer Policy - Station Tenure Norms"
+    },
+    {
+      "kind": "policy",
+      "doc_id": "JRTP",
+      "clause": "7.0",
+      "title": "Pre-Retirement & Special Exemption Norms"
+    }
+  ],
+  "suggestions": [
+    "Only E5 and above",
+    "Break down by discipline for E2\u2013E4",
+    "Draft transfer proposal"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "pdf"
+  ],
+  "status_events": [
+    "Querying hrfin_gold.v_continuous_stay...",
+    "Evaluating JRTP Clause 3.0 tenure rules...",
+    "Applying Clause 7.0 pre-retirement filters..."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "job_id": "b1c26495-bec8-420a-976a-2ded248fe5f8",
+  "total_bytes_processed": 6060737,
+  "executed_at": "2026-10-20T06:38:40.931635+00:00",
+  "elapsed_seconds": 0.75,
+  "row_count": 4,
+  "columns": [
+    "region",
+    "sanctioned",
+    "in_position",
+    "vacancies",
+    "vacancy_rate_pct",
+    "separations_fy26",
+    "voluntary_exits_fy26",
+    "transfer_ins_fy26",
+    "separations_per_100_posts",
+    "transfer_ins_per_100_posts"
+  ],
+  "rows": [
+    {
+      "region": "1. North-East",
+      "sanctioned": 4548,
+      "in_position": 4405,
+      "vacancies": 143,
+      "vacancy_rate_pct": 3.1,
+      "separations_fy26": 243,
+      "voluntary_exits_fy26": 22,
+      "transfer_ins_fy26": 103,
+      "separations_per_100_posts": 5.3,
+      "transfer_ins_per_100_posts": 2.3
+    },
+    {
+      "region": "2. Eastern Offshore (KG deepwater)",
+      "sanctioned": 1160,
+      "in_position": 1011,
+      "vacancies": 149,
+      "vacancy_rate_pct": 12.8,
+      "separations_fy26": 59,
+      "voluntary_exits_fy26": 5,
+      "transfer_ins_fy26": 73,
+      "separations_per_100_posts": 5.1,
+      "transfer_ins_per_100_posts": 6.3
+    },
+    {
+      "region": "3. Western offshore",
+      "sanctioned": 6064,
+      "in_position": 5338,
+      "vacancies": 726,
+      "vacancy_rate_pct": 12.0,
+      "separations_fy26": 339,
+      "voluntary_exits_fy26": 46,
+      "transfer_ins_fy26": 219,
+      "separations_per_100_posts": 5.6,
+      "transfer_ins_per_100_posts": 3.6
+    },
+    {
+      "region": "4. Rest of company",
+      "sanctioned": 13377,
+      "in_position": 12363,
+      "vacancies": 1014,
+      "vacancy_rate_pct": 7.6,
+      "separations_fy26": 777,
+      "voluntary_exits_fy26": 108,
+      "transfer_ins_fy26": 454,
+      "separations_per_100_posts": 5.8,
+      "transfer_ins_per_100_posts": 3.4
+    }
+  ]
+}

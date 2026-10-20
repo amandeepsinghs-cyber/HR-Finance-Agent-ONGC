@@ -1,0 +1,59 @@
+{
+  "job_id": "4c21ffbb-b5b5-4fb4-92ef-864f5675a401",
+  "total_bytes_processed": 45727451,
+  "executed_at": "2026-10-20T06:33:15.578116+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 4,
+  "columns": [
+    "mou_rating",
+    "mou_eligibility_pct",
+    "pool_factor_pct",
+    "exec_prp_pool_cr",
+    "change_vs_excellent_cr",
+    "change_vs_excellent_pct",
+    "fy26_mou_composite_score",
+    "fy27_projected_composite_score"
+  ],
+  "rows": [
+    {
+      "mou_rating": "Excellent",
+      "mou_eligibility_pct": 100,
+      "pool_factor_pct": 100.0,
+      "exec_prp_pool_cr": 316.2,
+      "change_vs_excellent_cr": 0.0,
+      "change_vs_excellent_pct": 0.0,
+      "fy26_mou_composite_score": 4.28,
+      "fy27_projected_composite_score": 3.88
+    },
+    {
+      "mou_rating": "Very Good",
+      "mou_eligibility_pct": 75,
+      "pool_factor_pct": 87.5,
+      "exec_prp_pool_cr": 276.7,
+      "change_vs_excellent_cr": -39.5,
+      "change_vs_excellent_pct": -12.5,
+      "fy26_mou_composite_score": 4.28,
+      "fy27_projected_composite_score": 3.88
+    },
+    {
+      "mou_rating": "Good",
+      "mou_eligibility_pct": 50,
+      "pool_factor_pct": 75.0,
+      "exec_prp_pool_cr": 237.2,
+      "change_vs_excellent_cr": -79.1,
+      "change_vs_excellent_pct": -25.0,
+      "fy26_mou_composite_score": 4.28,
+      "fy27_projected_composite_score": 3.88
+    },
+    {
+      "mou_rating": "Fair",
+      "mou_eligibility_pct": 25,
+      "pool_factor_pct": 62.5,
+      "exec_prp_pool_cr": 197.6,
+      "change_vs_excellent_cr": -118.6,
+      "change_vs_excellent_pct": -37.5,
+      "fy26_mou_composite_score": 4.28,
+      "fy27_projected_composite_score": 3.88
+    }
+  ]
+}

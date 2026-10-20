@@ -1,0 +1,33 @@
+{
+  "job_id": "43857f52-b933-4e18-bf2a-100c1d3d68b7",
+  "total_bytes_processed": 7337473,
+  "executed_at": "2026-10-20T06:34:40.217255+00:00",
+  "elapsed_seconds": 1.57,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 8",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 8)",
+      "quote_snippet": "7.3 The Protected Disclosure should be submitted under a covering letter signed by the Whistle Blower in a closed and secured envelope and should be super-scribed as \u201cProtected Disclosure under the Whistle Blower policy\u201d or sent through email to vigil@ongc.co.in with the caption/ subject as \u201cProtected Disclosure under the Whistle Blower policy\u201d. The Nodal Officer shall refer the protected disclosu"
+    },
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 9",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 9)",
+      "quote_snippet": "7.6 The Whistle Blower should give his name, address, contact number(s) and e-mail address in the beginning or at the end of complaint or in an attached letter so that the same can be concealed, while processing further. The identity of a Subject and the Whistle Blower will be kept confidential to the extent possible given the legitimate needs of law and the investigation. 7.7 Complaint concerning"
+    },
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 15",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 15)",
+      "quote_snippet": "13.1 No unfair treatment will be meted out to a Whistle Blower by virtue of his / her having reported a Protected Disclosure under this policy. Adequate safeguards against victimisation of complainants shall be provided. The Company, as a policy, shall ensure that no discrimination, harassment, victimization or any other unfair employment practice being adopted against Whistle Blowers. Complete pr"
+    }
+  ]
+}

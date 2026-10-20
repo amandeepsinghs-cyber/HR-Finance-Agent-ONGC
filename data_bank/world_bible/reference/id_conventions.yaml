@@ -1,0 +1,79 @@
+conventions:
+- entity: Employee
+  prefix: EMP-
+  format: EMP-######
+  regex: ^EMP-\d{6}$
+  example: EMP-102456
+  description: 6-digit CPF employee identification number.
+- entity: Work Centre
+  prefix: WC-
+  format: WC-xxx
+  regex: ^WC-[A-Z0-9\-]{2,7}$
+  example: WC-MUM
+  description: 2-to-7 character uppercase identifier for assets, basins, plants, and institutes.
+- entity: Field
+  prefix: FLD-
+  format: FLD-xxx
+  regex: ^FLD-[A-Z0-9]{2,6}$
+  example: FLD-MHN
+  description: 3-to-6 character code representing producing oil and gas fields.
+- entity: Capital Project
+  prefix: PRJ-
+  format: PRJ-xxxx
+  regex: ^PRJ-\d{4}$
+  example: PRJ-0001
+  description: 4-digit capital development or infrastructure project code.
+- entity: Cost Centre
+  prefix: CC-
+  format: CC-#####
+  regex: ^CC-\d{5}$
+  example: CC-10101
+  description: 5-digit SAP ERP standard cost centre code.
+- entity: Profit Centre
+  prefix: PC-
+  format: PC-#####
+  regex: ^PC-\d{5}$
+  example: PC-10100
+  description: 5-digit SAP CO standard profit centre code.
+- entity: Purchase Order
+  prefix: PO-
+  format: PO-##########
+  regex: ^PO-\d{10}$
+  example: PO-4500012345
+  description: 10-digit SAP MM standard purchase order numbering.
+- entity: Office Order
+  prefix: ORD/HR/
+  format: ORD/HR/yyyy/####
+  regex: ^ORD/HR/\d{4}/\d{4}$
+  example: ORD/HR/2026/0142
+  description: HR establishment transfer, promotion, or policy administrative office orders.
+- entity: Document
+  prefix: DOC-
+  format: DOC-xxx
+  regex: ^DOC-[A-Z0-9\-]{3,8}$
+  example: DOC-001
+  description: Canonical document repository identifier.
+- entity: Customer
+  prefix: CUST-
+  format: CUST-xxx
+  regex: ^CUST-[A-Z0-9]{3,6}$
+  example: CUST-IOC
+  description: 3-to-6 character code for PSU and commercial offtakers.
+- entity: Vendor
+  prefix: VEN-
+  format: VEN-xxxxx
+  regex: ^VEN-\d{5}$
+  example: VEN-00123
+  description: 5-digit vendor registration code in SAP MM vendor master.
+- entity: Departmental Promotion Committee
+  prefix: DPC-
+  format: DPC-yyyy-##
+  regex: ^DPC-\d{4}-\d{2}$
+  example: DPC-2025-01
+  description: Yearly cadence identifier for DPC cases.
+- entity: Training Programme
+  prefix: TRN-
+  format: TRN-xxxx
+  regex: ^TRN-\d{4}$
+  example: TRN-0105
+  description: 4-digit corporate training calendar course identifier.

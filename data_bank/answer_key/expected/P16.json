@@ -1,0 +1,54 @@
+{
+  "job_id": "5a64fee4-b436-41cc-9c89-143975f9cca2",
+  "total_bytes_processed": 6501902,
+  "executed_at": "2026-10-20T06:33:21.297155+00:00",
+  "elapsed_seconds": 0.79,
+  "row_count": 4,
+  "columns": [
+    "tier",
+    "value_band",
+    "approving_authority",
+    "bdp_clause",
+    "drilling_pos",
+    "drilling_po_value_cr",
+    "largest_po_cr"
+  ],
+  "rows": [
+    {
+      "tier": 1,
+      "value_band": "Up to \u20b910 cr",
+      "approving_authority": "Level 3: Asset/Basin Manager, ED heading work centre (open tender, Associate Finance concurrence)",
+      "bdp_clause": "BDP Clause 2.1",
+      "drilling_pos": 10073,
+      "drilling_po_value_cr": 7687.4,
+      "largest_po_cr": 7.26
+    },
+    {
+      "tier": 2,
+      "value_band": "\u20b910-50 cr",
+      "approving_authority": "Functional Director (drilling/well-service award) with Director (Finance) concurrence",
+      "bdp_clause": "BDP Clause 3.3",
+      "drilling_pos": 0,
+      "drilling_po_value_cr": 0.0,
+      "largest_po_cr": null
+    },
+    {
+      "tier": 3,
+      "value_band": "\u20b950-100 cr",
+      "approving_authority": "Executive Committee (CMD + all Whole-Time Directors)",
+      "bdp_clause": "BDP Clause 4.2",
+      "drilling_pos": 0,
+      "drilling_po_value_cr": 0.0,
+      "largest_po_cr": null
+    },
+    {
+      "tier": 4,
+      "value_band": "Above \u20b9100 cr",
+      "approving_authority": "Board of Directors (EC appraisal first)",
+      "bdp_clause": "BDP Clause 6.1(a)",
+      "drilling_pos": 0,
+      "drilling_po_value_cr": 0.0,
+      "largest_po_cr": null
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "job_id": "66f30cb3-1a3e-4edd-b985-39f9ebb0c7b2",
+  "total_bytes_processed": 10103620,
+  "executed_at": "2026-10-20T06:33:08.191240+00:00",
+  "elapsed_seconds": 1.17,
+  "row_count": 13,
+  "columns": [
+    "cluster_name",
+    "is_delhi",
+    "executives_in_cluster",
+    "breached_10yr_cap",
+    "exempt_retiring_3yr",
+    "non_exempt_to_rotate",
+    "executives_after_rotation",
+    "net_change_pct"
+  ],
+  "rows": [
+    {
+      "cluster_name": "Delhi National Capital Region",
+      "is_delhi": true,
+      "executives_in_cluster": 692,
+      "breached_10yr_cap": 0,
+      "exempt_retiring_3yr": 0,
+      "non_exempt_to_rotate": 0,
+      "executives_after_rotation": 692,
+      "net_change_pct": 0.0
+    },
+    {
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "is_delhi": false,
+      "executives_in_cluster": 3871,
+      "breached_10yr_cap": 243,
+      "exempt_retiring_3yr": 81,
+      "non_exempt_to_rotate": 162,
+      "executives_after_rotation": 3709,
+      "net_change_pct": -4.2
+    },
+    {
+      "cluster_name": "Ahmedabad\u2013Mehsana",
+      "is_delhi": false,
+      "executives_in_cluster": 1692,
+      "breached_10yr_cap": 80,
+      "exempt_retiring_3yr": 28,
+      "non_exempt_to_rotate": 52,
+      "executives_after_rotation": 1640,
+      "net_change_pct": -3.1
+    },
+    {
+      "cluster_name": "Cambay\u2013Ankleshwar\u2013Vadodara",
+      "is_delhi": false,
+      "executives_in_cluster": 1808,
+      "breached_10yr_cap": 40,
+      "exempt_retiring_3yr": 8,
+      "non_exempt_to_rotate": 32,
+      "executives_after_rotation": 1776,
+      "net_change_pct": -1.8
+    },
+    {
+      "cluster_name": "Rajahmundry\u2013Kakinada",
+      "is_delhi": false,
+      "executives_in_cluster": 1149,
+      "breached_10yr_cap": 27,
+      "exempt_retiring_3yr": 12,
+      "non_exempt_to_rotate": 15,
+      "executives_after_rotation": 1134,
+      "net_change_pct": -1.3
+    },
+    {
+      "cluster_name": "Nazira\u2013Jorhat\u2013Silchar",
+      "is_delhi": false,
+      "executives_in_cluster": 1334,
+      "breached_10yr_cap": 25,
+      "exempt_retiring_3yr": 13,
+      "non_exempt_to_rotate": 12,
+      "executives_after_rotation": 1322,
+      "net_change_pct": -0.9
+    },
+    {
+      "cluster_name": "Tripura Agartala",
+      "is_delhi": false,
+      "executives_in_cluster": 500,
+      "breached_10yr_cap": 6,
+      "exempt_retiring_3yr": 1,
+      "non_exempt_to_rotate": 5,
+      "executives_after_rotation": 495,
+      "net_change_pct": -1.0
+    },
+    {
+      "cluster_name": "Cauvery\u2013Chennai",
+      "is_delhi": false,
+      "executives_in_cluster": 609,
+      "breached_10yr_cap": 1,
+      "exempt_retiring_3yr": 1,
+      "non_exempt_to_rotate": 0,
+      "executives_after_rotation": 609,
+      "net_change_pct": 0.0
+    },
+    {
+      "cluster_name": "Bokaro CBM Complex",
+      "is_delhi": false,
+      "executives_in_cluster": 331,
+      "breached_10yr_cap": 1,
+      "exempt_retiring_3yr": 1,
+      "non_exempt_to_rotate": 0,
+      "executives_after_rotation": 331,
+      "net_change_pct": 0.0
+    },
+    {
+      "cluster_name": "Dehradun Complex",
+      "is_delhi": false,
+      "executives_in_cluster": 1076,
+      "breached_10yr_cap": 0,
+      "exempt_retiring_3yr": 0,
+      "non_exempt_to_rotate": 0,
+      "executives_after_rotation": 1076,
+      "net_change_pct": 0.0
+    },
+    {
+      "cluster_name": "Goa Training Complex",
+      "is_delhi": false,
+      "executives_in_cluster": 95,
+      "breached_10yr_cap": 0,
+      "exempt_retiring_3yr": 0,
+      "non_exempt_to_rotate": 0,
+      "executives_after_rotation": 95,
+      "net_change_pct": 0.0
+    },
+    {
+      "cluster_name": "Jodhpur Rajasthan",
+      "is_delhi": false,
+      "executives_in_cluster": 66,
+      "breached_10yr_cap": 0,
+      "exempt_retiring_3yr": 0,
+      "non_exempt_to_rotate": 0,
+      "executives_after_rotation": 66,
+      "net_change_pct": 0.0
+    },
+    {
+      "cluster_name": "Kolkata Hub",
+      "is_delhi": false,
+      "executives_in_cluster": 230,
+      "breached_10yr_cap": 0,
+      "exempt_retiring_3yr": 0,
+      "non_exempt_to_rotate": 0,
+      "executives_after_rotation": 230,
+      "net_change_pct": 0.0
+    }
+  ]
+}

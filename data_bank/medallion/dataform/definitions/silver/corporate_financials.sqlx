@@ -1,0 +1,38 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "corporate_financials",
+  description: "High-level standalone corporate financial performance summary matching audited Annual Reports."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`gross_revenue_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS gross_revenue_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`offshore_revenue_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS offshore_revenue_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`onshore_revenue_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS onshore_revenue_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`statutory_levies_total_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS statutory_levies_total_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`royalty_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS royalty_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`oidb_cess_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS oidb_cess_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`saed_windfall_tax_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS saed_windfall_tax_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`employee_cost_total_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS employee_cost_total_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`operating_expenses_total_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS operating_expenses_total_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`ebitda_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS ebitda_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`dda_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS dda_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`pbt_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS pbt_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`pat_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS pat_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`total_capex_spent_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS total_capex_spent_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`dividend_per_share_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS dividend_per_share_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`total_dividend_payout_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS total_dividend_payout_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`dividend_payout_ratio_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS dividend_payout_ratio_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`lifting_cost_average_usd_boe`), ''), ',', ''), '₹', '') AS NUMERIC) AS lifting_cost_average_usd_boe,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`standalone_roce_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS standalone_roce_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`consolidated_pat_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS consolidated_pat_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`consolidated_roce_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS consolidated_roce_pct
+  FROM ${ref("governance_corporate_financial_summary")}
+  WHERE NULLIF(TRIM(`fiscal_year`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY fiscal_year ORDER BY _ingest_ts DESC) = 1

@@ -1,0 +1,33 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "wells_drilled",
+  description: "Exploratory and development drilling well ledger detailing spud dates, rig types, total depth, cost, and hydrocarbon discoveries."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`well_id`) AS well_id,
+    TRIM(`well_name`) AS well_name,
+    TRIM(`field_id`) AS field_id,
+    TRIM(`asset_wc_id`) AS asset_wc_id,
+    TRIM(`basin_name`) AS basin_name,
+    TRIM(`well_type`) AS well_type,
+    TRIM(`terrain_type`) AS terrain_type,
+    TRIM(`rig_id`) AS rig_id,
+    TRIM(`rig_type`) AS rig_type,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`spud_date`), ''), 1, 10)) AS spud_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`completion_date`), ''), 1, 10)) AS completion_date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`target_depth_meters`), ''), ',', ''), '₹', '') AS NUMERIC) AS target_depth_meters,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`actual_depth_meters`), ''), ',', ''), '₹', '') AS NUMERIC) AS actual_depth_meters,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`drilling_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS drilling_cost_inr_cr,
+    TRIM(`result_status`) AS result_status,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`initial_flow_rate_boe_day`), ''), ',', ''), '₹', '') AS NUMERIC) AS initial_flow_rate_boe_day
+  FROM ${ref("db_exports_wells_drilled")}
+  WHERE NULLIF(TRIM(`well_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY well_id ORDER BY _ingest_ts DESC) = 1

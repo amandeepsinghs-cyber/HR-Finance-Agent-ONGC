@@ -1,0 +1,72 @@
+{
+  "job_id": "362b4569-f32c-4195-9819-cecd1c976c20",
+  "total_bytes_processed": 594388,
+  "executed_at": "2026-10-20T06:38:49.002142+00:00",
+  "elapsed_seconds": 0.61,
+  "row_count": 6,
+  "columns": [
+    "discipline",
+    "social_category",
+    "reserved_sanctioned",
+    "category_vacancies",
+    "backlog_vacancies",
+    "backlog_pct_of_vacancies",
+    "share_of_company_backlog_pct"
+  ],
+  "rows": [
+    {
+      "discipline": "All disciplines",
+      "social_category": "SC",
+      "reserved_sanctioned": 3753,
+      "category_vacancies": 281,
+      "backlog_vacancies": 110,
+      "backlog_pct_of_vacancies": 39.1,
+      "share_of_company_backlog_pct": 61.5
+    },
+    {
+      "discipline": "All disciplines",
+      "social_category": "ST",
+      "reserved_sanctioned": 2838,
+      "category_vacancies": 215,
+      "backlog_vacancies": 69,
+      "backlog_pct_of_vacancies": 32.1,
+      "share_of_company_backlog_pct": 38.5
+    },
+    {
+      "discipline": "Geology",
+      "social_category": "SC",
+      "reserved_sanctioned": 122,
+      "category_vacancies": 10,
+      "backlog_vacancies": 4,
+      "backlog_pct_of_vacancies": 40.0,
+      "share_of_company_backlog_pct": 2.2
+    },
+    {
+      "discipline": "Geology",
+      "social_category": "ST",
+      "reserved_sanctioned": 118,
+      "category_vacancies": 15,
+      "backlog_vacancies": 5,
+      "backlog_pct_of_vacancies": 33.3,
+      "share_of_company_backlog_pct": 2.8
+    },
+    {
+      "discipline": "Geophysics (Surface)",
+      "social_category": "SC",
+      "reserved_sanctioned": 131,
+      "category_vacancies": 9,
+      "backlog_vacancies": 3,
+      "backlog_pct_of_vacancies": 33.3,
+      "share_of_company_backlog_pct": 1.7
+    },
+    {
+      "discipline": "Geophysics (Surface)",
+      "social_category": "ST",
+      "reserved_sanctioned": 101,
+      "category_vacancies": 5,
+      "backlog_vacancies": 3,
+      "backlog_pct_of_vacancies": 60.0,
+      "share_of_company_backlog_pct": 1.7
+    }
+  ]
+}

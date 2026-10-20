@@ -1,0 +1,108 @@
+{
+  "job_id": "ad17a0e1-ff86-4c53-b776-9c694655b9b8",
+  "total_bytes_processed": 444297,
+  "executed_at": "2026-10-20T06:55:31.833842+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 10,
+  "columns": [
+    "field_name",
+    "lifting_fy25_usd_boe",
+    "lifting_fy26_usd_boe",
+    "lifting_change_pct",
+    "production_change_pct",
+    "downtime_change_hours",
+    "uptime_change_pp"
+  ],
+  "rows": [
+    {
+      "field_name": "Panna",
+      "lifting_fy25_usd_boe": 11.34,
+      "lifting_fy26_usd_boe": 11.44,
+      "lifting_change_pct": 0.9,
+      "production_change_pct": -13.5,
+      "downtime_change_hours": 1321.8,
+      "uptime_change_pp": -0.37
+    },
+    {
+      "field_name": "Mukta",
+      "lifting_fy25_usd_boe": 17.89,
+      "lifting_fy26_usd_boe": 17.97,
+      "lifting_change_pct": 0.4,
+      "production_change_pct": -10.0,
+      "downtime_change_hours": 544.7,
+      "uptime_change_pp": -0.15
+    },
+    {
+      "field_name": "B-173A / B-Series Clusters",
+      "lifting_fy25_usd_boe": 6.96,
+      "lifting_fy26_usd_boe": 6.89,
+      "lifting_change_pct": -1.0,
+      "production_change_pct": -7.7,
+      "downtime_change_hours": 94.5,
+      "uptime_change_pp": -0.08
+    },
+    {
+      "field_name": "C-Series Clusters",
+      "lifting_fy25_usd_boe": 7.09,
+      "lifting_fy26_usd_boe": 7.01,
+      "lifting_change_pct": -1.1,
+      "production_change_pct": -7.3,
+      "downtime_change_hours": 554.0,
+      "uptime_change_pp": -0.37
+    },
+    {
+      "field_name": "D-1 Field",
+      "lifting_fy25_usd_boe": 18.76,
+      "lifting_fy26_usd_boe": 18.46,
+      "lifting_change_pct": -1.6,
+      "production_change_pct": -3.5,
+      "downtime_change_hours": 1057.2,
+      "uptime_change_pp": -0.29
+    },
+    {
+      "field_name": "Bassein",
+      "lifting_fy25_usd_boe": 5.14,
+      "lifting_fy26_usd_boe": 5.01,
+      "lifting_change_pct": -2.5,
+      "production_change_pct": -8.2,
+      "downtime_change_hours": -1424.5,
+      "uptime_change_pp": 0.56
+    },
+    {
+      "field_name": "Motwan",
+      "lifting_fy25_usd_boe": 11.06,
+      "lifting_fy26_usd_boe": 10.7,
+      "lifting_change_pct": -3.3,
+      "production_change_pct": -4.5,
+      "downtime_change_hours": 233.3,
+      "uptime_change_pp": -0.14
+    },
+    {
+      "field_name": "Mumbai High North",
+      "lifting_fy25_usd_boe": 10.71,
+      "lifting_fy26_usd_boe": 10.36,
+      "lifting_change_pct": -3.3,
+      "production_change_pct": -3.5,
+      "downtime_change_hours": 1819.5,
+      "uptime_change_pp": -0.11
+    },
+    {
+      "field_name": "Mumbai High South",
+      "lifting_fy25_usd_boe": 10.63,
+      "lifting_fy26_usd_boe": 10.26,
+      "lifting_change_pct": -3.5,
+      "production_change_pct": -3.0,
+      "downtime_change_hours": -1385.2,
+      "uptime_change_pp": 0.08
+    },
+    {
+      "field_name": "Sobhasan",
+      "lifting_fy25_usd_boe": 13.11,
+      "lifting_fy26_usd_boe": 12.64,
+      "lifting_change_pct": -3.6,
+      "production_change_pct": -5.2,
+      "downtime_change_hours": 2347.4,
+      "uptime_change_pp": -0.68
+    }
+  ]
+}

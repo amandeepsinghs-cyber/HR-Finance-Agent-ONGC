@@ -1,0 +1,567 @@
+{
+  "job_id": "28ea7c47-546c-402e-9939-de8eeec3632f",
+  "total_bytes_processed": 24242,
+  "executed_at": "2026-10-20T06:44:58.708466+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 61,
+  "columns": [
+    "project_name",
+    "original_sanctioned_cost_inr_cr",
+    "rce_inr_cr",
+    "anticipated_final_cost_inr_cr",
+    "variance_vs_original_cr",
+    "variance_vs_original_pct",
+    "variance_vs_rce_cr"
+  ],
+  "rows": [
+    {
+      "project_name": "KG-DWN-98/2 Cluster-II Deepwater Development",
+      "original_sanctioned_cost_inr_cr": 34012.0,
+      "rce_inr_cr": 39113.8,
+      "anticipated_final_cost_inr_cr": 39113.8,
+      "variance_vs_original_cr": 5101.8,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Mumbai High bp TSP Redevelopment Scheme Phase-1",
+      "original_sanctioned_cost_inr_cr": 5200.0,
+      "rce_inr_cr": 5980.0,
+      "anticipated_final_cost_inr_cr": 5980.0,
+      "variance_vs_original_cr": 780.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Daman Upside Development Project (DUDP)",
+      "original_sanctioned_cost_inr_cr": 4960.0,
+      "rce_inr_cr": 5704.0,
+      "anticipated_final_cost_inr_cr": 5704.0,
+      "variance_vs_original_cr": 744.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Mumbai High South (MHS) Redevelopment Phase-IV",
+      "original_sanctioned_cost_inr_cr": 3750.0,
+      "rce_inr_cr": 4312.5,
+      "anticipated_final_cost_inr_cr": 4312.5,
+      "variance_vs_original_cr": 562.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Mumbai High North (MHN) Redevelopment Phase-IV",
+      "original_sanctioned_cost_inr_cr": 3546.0,
+      "rce_inr_cr": 4077.9,
+      "anticipated_final_cost_inr_cr": 4077.9,
+      "variance_vs_original_cr": 531.9,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Pipeline Replacement Project Phase-VII (PRP-VII)",
+      "original_sanctioned_cost_inr_cr": 3215.0,
+      "rce_inr_cr": 3697.25,
+      "anticipated_final_cost_inr_cr": 3697.25,
+      "variance_vs_original_cr": 482.25,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Development of DSF-II (Discovered Small Fields)",
+      "original_sanctioned_cost_inr_cr": 2450.0,
+      "rce_inr_cr": 2817.5,
+      "anticipated_final_cost_inr_cr": 2817.5,
+      "variance_vs_original_cr": 367.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Eastern Offshore Subsea Umbilicals, Risers & Flowlines (SURF)",
+      "original_sanctioned_cost_inr_cr": 2100.0,
+      "rce_inr_cr": 2415.0,
+      "anticipated_final_cost_inr_cr": 2415.0,
+      "variance_vs_original_cr": 315.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Heera Redevelopment Phase-III",
+      "original_sanctioned_cost_inr_cr": 2100.0,
+      "rce_inr_cr": 2415.0,
+      "anticipated_final_cost_inr_cr": 2415.0,
+      "variance_vs_original_cr": 315.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "National Seismic Programme (NSP) Onshore 2D/3D Survey",
+      "original_sanctioned_cost_inr_cr": 1800.0,
+      "rce_inr_cr": 2070.0,
+      "anticipated_final_cost_inr_cr": 2070.0,
+      "variance_vs_original_cr": 270.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Deepwater Drillship Upgrade & Refurbishment Campaign",
+      "original_sanctioned_cost_inr_cr": 1650.0,
+      "rce_inr_cr": 1897.5,
+      "anticipated_final_cost_inr_cr": 1897.5,
+      "variance_vs_original_cr": 247.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "300 MW ISTS Inter-State Captive Solar Plant Project",
+      "original_sanctioned_cost_inr_cr": 1540.0,
+      "rce_inr_cr": 1771.0,
+      "anticipated_final_cost_inr_cr": 1771.0,
+      "variance_vs_original_cr": 231.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Western Offshore Water Injection Augmentation",
+      "original_sanctioned_cost_inr_cr": 1450.0,
+      "rce_inr_cr": 1667.5,
+      "anticipated_final_cost_inr_cr": 1667.5,
+      "variance_vs_original_cr": 217.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Pipeline Replacement Project Phase-VIII Part-B (PRP-VIII B)",
+      "original_sanctioned_cost_inr_cr": 1384.0,
+      "rce_inr_cr": 1591.6,
+      "anticipated_final_cost_inr_cr": 1591.6,
+      "variance_vs_original_cr": 207.6,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Hazira Sour Gas Sweetening Plant-IV",
+      "original_sanctioned_cost_inr_cr": 1350.0,
+      "rce_inr_cr": 1552.5,
+      "anticipated_final_cost_inr_cr": 1552.5,
+      "variance_vs_original_cr": 202.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Cauvery Ultra-Deepwater Exploration Campaign",
+      "original_sanctioned_cost_inr_cr": 1250.0,
+      "rce_inr_cr": 1437.5,
+      "anticipated_final_cost_inr_cr": 1437.5,
+      "variance_vs_original_cr": 187.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Santhal Field Redevelopment Project",
+      "original_sanctioned_cost_inr_cr": 1240.0,
+      "rce_inr_cr": 1426.0,
+      "anticipated_final_cost_inr_cr": 1426.0,
+      "variance_vs_original_cr": 186.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Neelam Multi-Well Platform Installation",
+      "original_sanctioned_cost_inr_cr": 1180.0,
+      "rce_inr_cr": 1357.0,
+      "anticipated_final_cost_inr_cr": 1357.0,
+      "variance_vs_original_cr": 177.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Western Offshore Jackup Rig Life Extension Scheme",
+      "original_sanctioned_cost_inr_cr": 1120.0,
+      "rce_inr_cr": 1288.0,
+      "anticipated_final_cost_inr_cr": 1288.0,
+      "variance_vs_original_cr": 168.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Kalol Redevelopment Phase-II",
+      "original_sanctioned_cost_inr_cr": 1120.0,
+      "rce_inr_cr": 1288.0,
+      "anticipated_final_cost_inr_cr": 1288.0,
+      "variance_vs_original_cr": 168.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "TCPP Process Gas Compressors at Bassein",
+      "original_sanctioned_cost_inr_cr": 1114.0,
+      "rce_inr_cr": 1281.1,
+      "anticipated_final_cost_inr_cr": 1281.1,
+      "variance_vs_original_cr": 167.1,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "CBM Bokaro Field Development Project",
+      "original_sanctioned_cost_inr_cr": 1076.0,
+      "rce_inr_cr": 1237.4,
+      "anticipated_final_cost_inr_cr": 1237.4,
+      "variance_vs_original_cr": 161.4,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Ratna-R Series Cluster Redevelopment",
+      "original_sanctioned_cost_inr_cr": 890.0,
+      "rce_inr_cr": 1023.5,
+      "anticipated_final_cost_inr_cr": 1023.5,
+      "variance_vs_original_cr": 133.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Bengal-Fan Deepwater Seismic & Stratigraphic Test",
+      "original_sanctioned_cost_inr_cr": 860.0,
+      "rce_inr_cr": 989.0,
+      "anticipated_final_cost_inr_cr": 989.0,
+      "variance_vs_original_cr": 129.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Jharia CBM Commercial Development",
+      "original_sanctioned_cost_inr_cr": 850.0,
+      "rce_inr_cr": 977.5,
+      "anticipated_final_cost_inr_cr": 977.5,
+      "variance_vs_original_cr": 127.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "KG Onshore Gas Gathering & Processing Facility",
+      "original_sanctioned_cost_inr_cr": 820.0,
+      "rce_inr_cr": 943.0,
+      "anticipated_final_cost_inr_cr": 943.0,
+      "variance_vs_original_cr": 123.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "MHN Gas Process Booster Compressors",
+      "original_sanctioned_cost_inr_cr": 808.0,
+      "rce_inr_cr": 929.2,
+      "anticipated_final_cost_inr_cr": 929.2,
+      "variance_vs_original_cr": 121.2,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Gandhar Miscible Gas Injection EOR Scheme",
+      "original_sanctioned_cost_inr_cr": 760.0,
+      "rce_inr_cr": 874.0,
+      "anticipated_final_cost_inr_cr": 874.0,
+      "variance_vs_original_cr": 114.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Uran to Trombay Replacement Subsea Pipeline",
+      "original_sanctioned_cost_inr_cr": 720.0,
+      "rce_inr_cr": 828.0,
+      "anticipated_final_cost_inr_cr": 828.0,
+      "variance_vs_original_cr": 108.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Bechraji Polymer Flood EOR Project",
+      "original_sanctioned_cost_inr_cr": 680.0,
+      "rce_inr_cr": 782.0,
+      "anticipated_final_cost_inr_cr": 782.0,
+      "variance_vs_original_cr": 102.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Rudrasagar Heavy Investment Redevelopment Project",
+      "original_sanctioned_cost_inr_cr": 650.0,
+      "rce_inr_cr": 747.5,
+      "anticipated_final_cost_inr_cr": 747.5,
+      "variance_vs_original_cr": 97.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Hazira Plant Gas Processing Unit Upgrade",
+      "original_sanctioned_cost_inr_cr": 650.0,
+      "rce_inr_cr": 747.5,
+      "anticipated_final_cost_inr_cr": 747.5,
+      "variance_vs_original_cr": 97.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Tripura Gas Evacuation Pipeline to OTPC Palatana",
+      "original_sanctioned_cost_inr_cr": 620.0,
+      "rce_inr_cr": 713.0,
+      "anticipated_final_cost_inr_cr": 713.0,
+      "variance_vs_original_cr": 93.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Western Offshore Living Quarters Refurbishment",
+      "original_sanctioned_cost_inr_cr": 620.0,
+      "rce_inr_cr": 713.0,
+      "anticipated_final_cost_inr_cr": 713.0,
+      "variance_vs_original_cr": 93.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Geleki Low Pressure Gas Compression & Evacuation",
+      "original_sanctioned_cost_inr_cr": 580.0,
+      "rce_inr_cr": 667.0,
+      "anticipated_final_cost_inr_cr": 667.0,
+      "variance_vs_original_cr": 87.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Sobhasan Redevelopment Scheme",
+      "original_sanctioned_cost_inr_cr": 540.0,
+      "rce_inr_cr": 621.0,
+      "anticipated_final_cost_inr_cr": 621.0,
+      "variance_vs_original_cr": 81.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Cambay Basin Deep Tight Gas Exploration Scheme",
+      "original_sanctioned_cost_inr_cr": 490.0,
+      "rce_inr_cr": 563.5,
+      "anticipated_final_cost_inr_cr": 563.5,
+      "variance_vs_original_cr": 73.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Linch Field Redevelopment Scheme",
+      "original_sanctioned_cost_inr_cr": 480.0,
+      "rce_inr_cr": 552.0,
+      "anticipated_final_cost_inr_cr": 552.0,
+      "variance_vs_original_cr": 72.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Silchar Basin Exploration & Well Testing Campaign",
+      "original_sanctioned_cost_inr_cr": 480.0,
+      "rce_inr_cr": 552.0,
+      "anticipated_final_cost_inr_cr": 552.0,
+      "variance_vs_original_cr": 72.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Corporate Digital Core SAP S/4HANA Transformation",
+      "original_sanctioned_cost_inr_cr": 450.0,
+      "rce_inr_cr": 517.5,
+      "anticipated_final_cost_inr_cr": 517.5,
+      "variance_vs_original_cr": 67.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Dahej C2-C3 Plant Extraction Capacity Augmentation",
+      "original_sanctioned_cost_inr_cr": 420.0,
+      "rce_inr_cr": 483.0,
+      "anticipated_final_cost_inr_cr": 483.0,
+      "variance_vs_original_cr": 63.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Cauvery Basin Narimanam Redevelopment Project",
+      "original_sanctioned_cost_inr_cr": 410.0,
+      "rce_inr_cr": 471.5,
+      "anticipated_final_cost_inr_cr": 471.5,
+      "variance_vs_original_cr": 61.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Sobhasan Group Gathering Station (GGS) Modernisation",
+      "original_sanctioned_cost_inr_cr": 406.0,
+      "rce_inr_cr": 466.9,
+      "anticipated_final_cost_inr_cr": 466.9,
+      "variance_vs_original_cr": 60.9,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Uran Plant Booster Compressors Modernisation",
+      "original_sanctioned_cost_inr_cr": 402.0,
+      "rce_inr_cr": 462.3,
+      "anticipated_final_cost_inr_cr": 462.3,
+      "variance_vs_original_cr": 60.3,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Enterprise SCADA & Centralized Production Monitoring",
+      "original_sanctioned_cost_inr_cr": 380.0,
+      "rce_inr_cr": 437.0,
+      "anticipated_final_cost_inr_cr": 437.0,
+      "variance_vs_original_cr": 57.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Linch Group Gathering Station Upgrade",
+      "original_sanctioned_cost_inr_cr": 359.0,
+      "rce_inr_cr": 412.85,
+      "anticipated_final_cost_inr_cr": 412.85,
+      "variance_vs_original_cr": 53.85,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Frontier Basin Himalayan Foothills 2D Survey",
+      "original_sanctioned_cost_inr_cr": 340.0,
+      "rce_inr_cr": 391.0,
+      "anticipated_final_cost_inr_cr": 391.0,
+      "variance_vs_original_cr": 51.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "50 MW Onshore Wind Power Project (Gujarat)",
+      "original_sanctioned_cost_inr_cr": 340.0,
+      "rce_inr_cr": 391.0,
+      "anticipated_final_cost_inr_cr": 391.0,
+      "variance_vs_original_cr": 51.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Lakwa EOR Chemical Injection Pilot",
+      "original_sanctioned_cost_inr_cr": 320.0,
+      "rce_inr_cr": 368.0,
+      "anticipated_final_cost_inr_cr": 368.0,
+      "variance_vs_original_cr": 48.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Jodhpur Heavy Oil Thermal EOR Pilot",
+      "original_sanctioned_cost_inr_cr": 310.0,
+      "rce_inr_cr": 356.5,
+      "anticipated_final_cost_inr_cr": 356.5,
+      "variance_vs_original_cr": 46.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "North Assam Gas Gathering Station - Borholla",
+      "original_sanctioned_cost_inr_cr": 310.0,
+      "rce_inr_cr": 356.5,
+      "anticipated_final_cost_inr_cr": 356.5,
+      "variance_vs_original_cr": 46.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Nawagam Oil Gathering Facility Modernisation",
+      "original_sanctioned_cost_inr_cr": 310.0,
+      "rce_inr_cr": 356.5,
+      "anticipated_final_cost_inr_cr": 356.5,
+      "variance_vs_original_cr": 46.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Ankleshwar Effluent Treatment Plant Modernisation",
+      "original_sanctioned_cost_inr_cr": 280.0,
+      "rce_inr_cr": 322.0,
+      "anticipated_final_cost_inr_cr": 322.0,
+      "variance_vs_original_cr": 42.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "ONGC Academy Green Campus & Simulator Centre",
+      "original_sanctioned_cost_inr_cr": 240.0,
+      "rce_inr_cr": 276.0,
+      "anticipated_final_cost_inr_cr": 276.0,
+      "variance_vs_original_cr": 36.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Gandhar Carbon Capture Utilisation & Storage (CCUS) Pilot",
+      "original_sanctioned_cost_inr_cr": 210.0,
+      "rce_inr_cr": 241.5,
+      "anticipated_final_cost_inr_cr": 241.5,
+      "variance_vs_original_cr": 31.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "KDMIPE High Performance Computing Centre Upgrade",
+      "original_sanctioned_cost_inr_cr": 190.0,
+      "rce_inr_cr": 218.5,
+      "anticipated_final_cost_inr_cr": 218.5,
+      "variance_vs_original_cr": 28.5,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Solar Rooftop Programme Across 41 Establishments",
+      "original_sanctioned_cost_inr_cr": 180.0,
+      "rce_inr_cr": 207.0,
+      "anticipated_final_cost_inr_cr": 207.0,
+      "variance_vs_original_cr": 27.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "GEOPIC Subsurface Seismic Imaging Cluster",
+      "original_sanctioned_cost_inr_cr": 160.0,
+      "rce_inr_cr": 184.0,
+      "anticipated_final_cost_inr_cr": 184.0,
+      "variance_vs_original_cr": 24.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "ATI Goa Sea Survival & Well Control Simulator Upgrade",
+      "original_sanctioned_cost_inr_cr": 140.0,
+      "rce_inr_cr": 161.0,
+      "anticipated_final_cost_inr_cr": 161.0,
+      "variance_vs_original_cr": 21.0,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "CEWELL Automated Well Log Digitization & Cloud Archive",
+      "original_sanctioned_cost_inr_cr": 95.0,
+      "rce_inr_cr": 109.25,
+      "anticipated_final_cost_inr_cr": 109.25,
+      "variance_vs_original_cr": 14.25,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    },
+    {
+      "project_name": "Portfolio total (60 projects)",
+      "original_sanctioned_cost_inr_cr": 96357.0,
+      "rce_inr_cr": 110810.55,
+      "anticipated_final_cost_inr_cr": 110810.55,
+      "variance_vs_original_cr": 14453.55,
+      "variance_vs_original_pct": 15.0,
+      "variance_vs_rce_cr": 0.0
+    }
+  ]
+}

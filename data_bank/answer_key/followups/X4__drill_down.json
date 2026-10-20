@@ -1,0 +1,51 @@
+{
+  "job_id": "f8008603-eb19-4198-b0e4-f43072c86de6",
+  "total_bytes_processed": 3870,
+  "executed_at": "2026-10-20T06:37:18.709155+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 2,
+  "columns": [
+    "scheme_name",
+    "scheme_type",
+    "actuarial_liability_cr",
+    "share_of_combined_pct",
+    "plan_assets_cr",
+    "net_unfunded_cr",
+    "funded_ratio_pct",
+    "discount_rate_pct",
+    "salary_escalation_rate_pct",
+    "medical_inflation_rate_pct",
+    "active_members_covered",
+    "retiree_beneficiaries_covered"
+  ],
+  "rows": [
+    {
+      "scheme_name": "ONGC Post-Retirement Benefit Scheme (PRBS) Trust",
+      "scheme_type": "PRBS Pension",
+      "actuarial_liability_cr": 18250.0,
+      "share_of_combined_pct": 72.1,
+      "plan_assets_cr": 18250.0,
+      "net_unfunded_cr": 0.0,
+      "funded_ratio_pct": 100.0,
+      "discount_rate_pct": 7.05,
+      "salary_escalation_rate_pct": 6.0,
+      "medical_inflation_rate_pct": 0.0,
+      "active_members_covered": 23117,
+      "retiree_beneficiaries_covered": 34500
+    },
+    {
+      "scheme_name": "ONGC Post-Retirement Medical Benefit Scheme (PRMB)",
+      "scheme_type": "Post-Retirement Medical",
+      "actuarial_liability_cr": 7065.6,
+      "share_of_combined_pct": 27.9,
+      "plan_assets_cr": 6570.4,
+      "net_unfunded_cr": 495.3,
+      "funded_ratio_pct": 92.99,
+      "discount_rate_pct": 7.05,
+      "salary_escalation_rate_pct": 6.0,
+      "medical_inflation_rate_pct": 7.5,
+      "active_members_covered": 23117,
+      "retiree_beneficiaries_covered": 34500
+    }
+  ]
+}

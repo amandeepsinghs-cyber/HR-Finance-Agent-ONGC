@@ -1,0 +1,21 @@
+{
+  "job_id": "e041a2ce-4161-4633-824b-4512a9578105",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:27.753184+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 11.0",
+      "heading": "Confidentiality of Pre-Decisional Records",
+      "quote_snippet": "Document Title: ONGC Job Rotation and Transfer Policy (JRTP, Rev 4) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 11.0 - Confidentiality of Pre-Decisional Records\nDomain Vocabulary & Glossary Terms: Job Rotation and Transfer Policy (JRTP); Station Tenure Norms; Minimum Stati"
+    }
+  ]
+}

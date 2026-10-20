@@ -1,0 +1,65 @@
+{
+  "job_id": "22ccfcf3-c5fe-4a9c-9c27-6dd0a7886a9f",
+  "total_bytes_processed": 1187016,
+  "executed_at": "2026-10-20T06:33:12.579116+00:00",
+  "elapsed_seconds": 0.73,
+  "row_count": 6,
+  "columns": [
+    "category",
+    "programmes",
+    "with_prerequisite",
+    "max_prerequisite_years",
+    "my_experience_years",
+    "blocked_for_me"
+  ],
+  "rows": [
+    {
+      "category": "general_management",
+      "programmes": 6,
+      "with_prerequisite": 4,
+      "max_prerequisite_years": 5,
+      "my_experience_years": 5.2,
+      "blocked_for_me": 0
+    },
+    {
+      "category": "renewable_energy",
+      "programmes": 6,
+      "with_prerequisite": 4,
+      "max_prerequisite_years": 5,
+      "my_experience_years": 5.2,
+      "blocked_for_me": 0
+    },
+    {
+      "category": "hse",
+      "programmes": 6,
+      "with_prerequisite": 3,
+      "max_prerequisite_years": 5,
+      "my_experience_years": 5.2,
+      "blocked_for_me": 0
+    },
+    {
+      "category": "technical",
+      "programmes": 6,
+      "with_prerequisite": 3,
+      "max_prerequisite_years": 5,
+      "my_experience_years": 5.2,
+      "blocked_for_me": 0
+    },
+    {
+      "category": "finance_for_engineers",
+      "programmes": 6,
+      "with_prerequisite": 2,
+      "max_prerequisite_years": 5,
+      "my_experience_years": 5.2,
+      "blocked_for_me": 0
+    },
+    {
+      "category": "leadership",
+      "programmes": 6,
+      "with_prerequisite": 2,
+      "max_prerequisite_years": 2,
+      "my_experience_years": 5.2,
+      "blocked_for_me": 0
+    }
+  ]
+}

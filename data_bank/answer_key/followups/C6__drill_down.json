@@ -1,0 +1,108 @@
+{
+  "job_id": "8bc1c5a6-891b-4c1b-a490-84b362341f46",
+  "total_bytes_processed": 49026,
+  "executed_at": "2026-10-20T06:38:28.006011+00:00",
+  "elapsed_seconds": 0.69,
+  "row_count": 10,
+  "columns": [
+    "asset",
+    "field_name",
+    "gross_revenue_inr_cr",
+    "ebitda_inr_cr",
+    "ebitda_margin_pct",
+    "pbt_inr_cr",
+    "net_margin_pct"
+  ],
+  "rows": [
+    {
+      "asset": "Jorhat Asset",
+      "field_name": "Champang",
+      "gross_revenue_inr_cr": 329.6,
+      "ebitda_inr_cr": 26.25,
+      "ebitda_margin_pct": 8.0,
+      "pbt_inr_cr": -4.93,
+      "net_margin_pct": -1.5
+    },
+    {
+      "asset": "Jorhat Asset",
+      "field_name": "Borholla",
+      "gross_revenue_inr_cr": 350.63,
+      "ebitda_inr_cr": 36.39,
+      "ebitda_margin_pct": 10.4,
+      "pbt_inr_cr": 3.22,
+      "net_margin_pct": 0.9
+    },
+    {
+      "asset": "Jorhat Asset",
+      "field_name": "Khoraghat",
+      "gross_revenue_inr_cr": 379.86,
+      "ebitda_inr_cr": 50.29,
+      "ebitda_margin_pct": 13.2,
+      "pbt_inr_cr": 14.35,
+      "net_margin_pct": 3.8
+    },
+    {
+      "asset": "Cauvery Asset",
+      "field_name": "Kuthalam",
+      "gross_revenue_inr_cr": 442.88,
+      "ebitda_inr_cr": 201.88,
+      "ebitda_margin_pct": 45.6,
+      "pbt_inr_cr": 87.73,
+      "net_margin_pct": 19.8
+    },
+    {
+      "asset": "Cauvery Asset",
+      "field_name": "Adiyakkamangalam",
+      "gross_revenue_inr_cr": 382.21,
+      "ebitda_inr_cr": 174.85,
+      "ebitda_margin_pct": 45.7,
+      "pbt_inr_cr": 138.69,
+      "net_margin_pct": 36.3
+    },
+    {
+      "asset": "Assam Asset",
+      "field_name": "Charali",
+      "gross_revenue_inr_cr": 271.21,
+      "ebitda_inr_cr": 138.67,
+      "ebitda_margin_pct": 51.1,
+      "pbt_inr_cr": 113.01,
+      "net_margin_pct": 41.7
+    },
+    {
+      "asset": "Cauvery Asset",
+      "field_name": "Narimanam",
+      "gross_revenue_inr_cr": 528.12,
+      "ebitda_inr_cr": 270.88,
+      "ebitda_margin_pct": 51.3,
+      "pbt_inr_cr": 220.91,
+      "net_margin_pct": 41.8
+    },
+    {
+      "asset": "Assam Asset",
+      "field_name": "Lakwa",
+      "gross_revenue_inr_cr": 2673.84,
+      "ebitda_inr_cr": 1571.49,
+      "ebitda_margin_pct": 58.8,
+      "pbt_inr_cr": 1231.0,
+      "net_margin_pct": 46.0
+    },
+    {
+      "asset": "Assam Asset",
+      "field_name": "Geleki",
+      "gross_revenue_inr_cr": 2068.48,
+      "ebitda_inr_cr": 1199.4,
+      "ebitda_margin_pct": 58.0,
+      "pbt_inr_cr": 1003.71,
+      "net_margin_pct": 48.5
+    },
+    {
+      "asset": "Assam Asset",
+      "field_name": "Rudrasagar",
+      "gross_revenue_inr_cr": 2254.22,
+      "ebitda_inr_cr": 1327.73,
+      "ebitda_margin_pct": 58.9,
+      "pbt_inr_cr": 1114.46,
+      "net_margin_pct": 49.4
+    }
+  ]
+}

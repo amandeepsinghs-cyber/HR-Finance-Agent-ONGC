@@ -1,0 +1,137 @@
+{
+  "job_id": "d46aad85-4710-4454-8cf5-1ff60fb771d2",
+  "total_bytes_processed": 999486,
+  "executed_at": "2026-10-20T06:42:39.935783+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 15,
+  "columns": [
+    "asset",
+    "technical_exec_vacancy_pct",
+    "fy26_uptime_pct",
+    "downtime_hrs_per_well_month",
+    "corr_vacancy_vs_uptime",
+    "corr_vacancy_vs_downtime"
+  ],
+  "rows": [
+    {
+      "asset": "Neelam & Heera",
+      "technical_exec_vacancy_pct": 13.7,
+      "fy26_uptime_pct": 96.44,
+      "downtime_hrs_per_well_month": 26.9,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Bassein & Satellite",
+      "technical_exec_vacancy_pct": 12.3,
+      "fy26_uptime_pct": 96.52,
+      "downtime_hrs_per_well_month": 26.9,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Eastern Offshore",
+      "technical_exec_vacancy_pct": 11.9,
+      "fy26_uptime_pct": 96.63,
+      "downtime_hrs_per_well_month": 26.7,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Mumbai High",
+      "technical_exec_vacancy_pct": 11.9,
+      "fy26_uptime_pct": 96.66,
+      "downtime_hrs_per_well_month": 24.6,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Tripura Asset",
+      "technical_exec_vacancy_pct": 11.0,
+      "fy26_uptime_pct": 97.42,
+      "downtime_hrs_per_well_month": 20.7,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Ankleshwar Asset",
+      "technical_exec_vacancy_pct": 10.3,
+      "fy26_uptime_pct": 97.33,
+      "downtime_hrs_per_well_month": 19.9,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "CBM Bokaro",
+      "technical_exec_vacancy_pct": 10.3,
+      "fy26_uptime_pct": 97.69,
+      "downtime_hrs_per_well_month": 19.1,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Mehsana Asset",
+      "technical_exec_vacancy_pct": 9.3,
+      "fy26_uptime_pct": 97.11,
+      "downtime_hrs_per_well_month": 22.8,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Rajahmundry Asset",
+      "technical_exec_vacancy_pct": 8.4,
+      "fy26_uptime_pct": 96.5,
+      "downtime_hrs_per_well_month": 27.5,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Cambay Asset",
+      "technical_exec_vacancy_pct": 8.2,
+      "fy26_uptime_pct": 97.25,
+      "downtime_hrs_per_well_month": 22.0,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Rajasthan Basin",
+      "technical_exec_vacancy_pct": 8.2,
+      "fy26_uptime_pct": 97.35,
+      "downtime_hrs_per_well_month": 21.3,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Cauvery Asset",
+      "technical_exec_vacancy_pct": 7.9,
+      "fy26_uptime_pct": 97.5,
+      "downtime_hrs_per_well_month": 20.0,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Ahmedabad Asset",
+      "technical_exec_vacancy_pct": 7.8,
+      "fy26_uptime_pct": 97.46,
+      "downtime_hrs_per_well_month": 19.4,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Assam Asset",
+      "technical_exec_vacancy_pct": 0.0,
+      "fy26_uptime_pct": 97.27,
+      "downtime_hrs_per_well_month": 20.7,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    },
+    {
+      "asset": "Jorhat Asset",
+      "technical_exec_vacancy_pct": 0.0,
+      "fy26_uptime_pct": 97.18,
+      "downtime_hrs_per_well_month": 22.7,
+      "corr_vacancy_vs_uptime": -0.39,
+      "corr_vacancy_vs_downtime": 0.37
+    }
+  ]
+}

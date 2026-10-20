@@ -1,0 +1,59 @@
+{
+  "job_id": "03eac411-17f3-4d31-8fdc-c1464706abb7",
+  "total_bytes_processed": 34326311,
+  "executed_at": "2026-10-20T06:42:59.035373+00:00",
+  "elapsed_seconds": 0.78,
+  "row_count": 4,
+  "columns": [
+    "discipline_group",
+    "hc_mar21",
+    "hc_mar26",
+    "hc_change",
+    "hc_change_pct",
+    "share_mar21_pct",
+    "share_mar26_pct",
+    "declining_assets"
+  ],
+  "rows": [
+    {
+      "discipline_group": "Surface engineering",
+      "hc_mar21": 6716,
+      "hc_mar26": 5860,
+      "hc_change": -856,
+      "hc_change_pct": -12.7,
+      "share_mar21_pct": 33.7,
+      "share_mar26_pct": 38.3,
+      "declining_assets": 14
+    },
+    {
+      "discipline_group": "Other technical",
+      "hc_mar21": 1835,
+      "hc_mar26": 1508,
+      "hc_change": -327,
+      "hc_change_pct": -17.8,
+      "share_mar21_pct": 9.2,
+      "share_mar26_pct": 9.8,
+      "declining_assets": 14
+    },
+    {
+      "discipline_group": "Subsurface, drilling & production",
+      "hc_mar21": 9663,
+      "hc_mar26": 7417,
+      "hc_change": -2246,
+      "hc_change_pct": -23.2,
+      "share_mar21_pct": 48.5,
+      "share_mar26_pct": 48.4,
+      "declining_assets": 14
+    },
+    {
+      "discipline_group": "Administrative & support",
+      "hc_mar21": 1697,
+      "hc_mar26": 531,
+      "hc_change": -1166,
+      "hc_change_pct": -68.7,
+      "share_mar21_pct": 8.5,
+      "share_mar26_pct": 3.5,
+      "declining_assets": 14
+    }
+  ]
+}

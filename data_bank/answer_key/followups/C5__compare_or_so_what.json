@@ -1,0 +1,69 @@
+{
+  "job_id": "7f302057-4b33-46bf-9d2c-cc900d8595a9",
+  "total_bytes_processed": 2225160,
+  "executed_at": "2026-10-20T06:34:06.031256+00:00",
+  "elapsed_seconds": 0.75,
+  "row_count": 5,
+  "columns": [
+    "project_or_scope",
+    "host_work_centre",
+    "category",
+    "sanctioned_cost_inr_cr",
+    "completion_date",
+    "host_specialists_active",
+    "host_specialists_retiring_by_fy30",
+    "pct_retiring"
+  ],
+  "rows": [
+    {
+      "project_or_scope": "KG-DWN-98/2 Cluster-II Deepwater Development",
+      "host_work_centre": "Eastern Offshore",
+      "category": "development",
+      "sanctioned_cost_inr_cr": 34012.0,
+      "completion_date": "2026-06-30",
+      "host_specialists_active": 383,
+      "host_specialists_retiring_by_fy30": 119,
+      "pct_retiring": 31.1
+    },
+    {
+      "project_or_scope": "Cauvery Ultra-Deepwater Exploration Campaign",
+      "host_work_centre": "Cauvery Basin",
+      "category": "exploration",
+      "sanctioned_cost_inr_cr": 1250.0,
+      "completion_date": "2027-03-31",
+      "host_specialists_active": 41,
+      "host_specialists_retiring_by_fy30": 11,
+      "pct_retiring": 26.8
+    },
+    {
+      "project_or_scope": "Bengal-Fan Deepwater Seismic & Stratigraphic Test",
+      "host_work_centre": "MBA Basin",
+      "category": "exploration",
+      "sanctioned_cost_inr_cr": 860.0,
+      "completion_date": "2027-06-30",
+      "host_specialists_active": 45,
+      "host_specialists_retiring_by_fy30": 10,
+      "pct_retiring": 22.2
+    },
+    {
+      "project_or_scope": "Silchar Basin Exploration & Well Testing Campaign",
+      "host_work_centre": "Silchar Basin",
+      "category": "exploration",
+      "sanctioned_cost_inr_cr": 480.0,
+      "completion_date": "2026-11-30",
+      "host_specialists_active": 40,
+      "host_specialists_retiring_by_fy30": 17,
+      "pct_retiring": 42.5
+    },
+    {
+      "project_or_scope": "All technical specialists (company)",
+      "host_work_centre": "All",
+      "category": null,
+      "sanctioned_cost_inr_cr": null,
+      "completion_date": null,
+      "host_specialists_active": 7405,
+      "host_specialists_retiring_by_fy30": 2254,
+      "pct_retiring": 30.4
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "rti_applications",
+  description: "Right to Information (RTI) application register tracking request turnaround, 30-day statutory compliance, and Section 8 exemptions."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`rti_id`) AS rti_id,
+    TRIM(`registration_number`) AS registration_number,
+    TRIM(`applicant_category`) AS applicant_category,
+    TRIM(`operating_department`) AS operating_department,
+    TRIM(`wc_id`) AS wc_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`received_date`), ''), 1, 10)) AS received_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`disposed_date`), ''), 1, 10)) AS disposed_date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`turnaround_days`), ''), ',', ''), '₹', '') AS INT64) AS turnaround_days,
+    CASE WHEN LOWER(TRIM(`is_within_30_days_statutory`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`is_within_30_days_statutory`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_within_30_days_statutory,
+    TRIM(`status`) AS status,
+    TRIM(`rejection_grounds`) AS rejection_grounds,
+    TRIM(`subject_summary`) AS subject_summary
+  FROM ${ref("db_exports_rti_applications_export")}
+  WHERE NULLIF(TRIM(`rti_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY rti_id ORDER BY _ingest_ts DESC) = 1

@@ -1,0 +1,585 @@
+{
+  "job_id": "86d1a4fc-5a0b-4f64-aea9-f5a6ff42975f",
+  "total_bytes_processed": 13606780,
+  "executed_at": "2026-10-20T06:57:55.632356+00:00",
+  "elapsed_seconds": 2.25,
+  "row_count": 71,
+  "columns": [
+    "grade_id",
+    "discipline_id",
+    "delhi_executives_ge_5yr",
+    "exempt_retiring_3yr",
+    "exempt_valid_tag",
+    "non_exempt_due_transfer"
+  ],
+  "rows": [
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-DRL",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-FIN",
+      "delhi_executives_ge_5yr": 6,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 6
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-HR",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-HSE",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-IT",
+      "delhi_executives_ge_5yr": 4,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 4
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-LEG",
+      "delhi_executives_ge_5yr": 5,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 5
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-MED",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-MM",
+      "delhi_executives_ge_5yr": 11,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 11
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-PRD",
+      "delhi_executives_ge_5yr": 3,
+      "exempt_retiring_3yr": 1,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-DRL",
+      "delhi_executives_ge_5yr": 4,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 1,
+      "non_exempt_due_transfer": 3
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-FIN",
+      "delhi_executives_ge_5yr": 22,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 22
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-HR",
+      "delhi_executives_ge_5yr": 21,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 21
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-HSE",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-IT",
+      "delhi_executives_ge_5yr": 17,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 17
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-LEG",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-MED",
+      "delhi_executives_ge_5yr": 3,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 3
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-MM",
+      "delhi_executives_ge_5yr": 17,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 17
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-PRD",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 1,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-DRL",
+      "delhi_executives_ge_5yr": 4,
+      "exempt_retiring_3yr": 1,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 3
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-FIN",
+      "delhi_executives_ge_5yr": 23,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 23
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-HR",
+      "delhi_executives_ge_5yr": 17,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 17
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-HSE",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-IT",
+      "delhi_executives_ge_5yr": 14,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 14
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-LEG",
+      "delhi_executives_ge_5yr": 11,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 11
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-MED",
+      "delhi_executives_ge_5yr": 7,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 7
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-MM",
+      "delhi_executives_ge_5yr": 8,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 8
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-PRD",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 1,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-DRL",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-FIN",
+      "delhi_executives_ge_5yr": 20,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 20
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-HR",
+      "delhi_executives_ge_5yr": 10,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 10
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-HSE",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-IT",
+      "delhi_executives_ge_5yr": 15,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 15
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-LEG",
+      "delhi_executives_ge_5yr": 6,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 6
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-MED",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-MM",
+      "delhi_executives_ge_5yr": 7,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 7
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-PRD",
+      "delhi_executives_ge_5yr": 4,
+      "exempt_retiring_3yr": 1,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 3
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-DRL",
+      "delhi_executives_ge_5yr": 3,
+      "exempt_retiring_3yr": 1,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-FIN",
+      "delhi_executives_ge_5yr": 13,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 13
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-HR",
+      "delhi_executives_ge_5yr": 15,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 15
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-IT",
+      "delhi_executives_ge_5yr": 12,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 12
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-LEG",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-MM",
+      "delhi_executives_ge_5yr": 10,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 10
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-PRD",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-DRL",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-FIN",
+      "delhi_executives_ge_5yr": 8,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 8
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-HR",
+      "delhi_executives_ge_5yr": 6,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 6
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-HSE",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-IT",
+      "delhi_executives_ge_5yr": 6,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 6
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-LEG",
+      "delhi_executives_ge_5yr": 3,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 3
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-MED",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-MM",
+      "delhi_executives_ge_5yr": 8,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 8
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-DRL",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-FIN",
+      "delhi_executives_ge_5yr": 6,
+      "exempt_retiring_3yr": 4,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-HR",
+      "delhi_executives_ge_5yr": 8,
+      "exempt_retiring_3yr": 1,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 7
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-HSE",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 1,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 0
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-IT",
+      "delhi_executives_ge_5yr": 5,
+      "exempt_retiring_3yr": 1,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 4
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-LEG",
+      "delhi_executives_ge_5yr": 3,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 3
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-MED",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-MM",
+      "delhi_executives_ge_5yr": 6,
+      "exempt_retiring_3yr": 3,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 3
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-PRD",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-DRL",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 1,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 0
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-FIN",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-HR",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-HSE",
+      "delhi_executives_ge_5yr": 2,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 2
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-IT",
+      "delhi_executives_ge_5yr": 3,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 3
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-LEG",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-MED",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-MM",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E9",
+      "discipline_id": "DISC-HR",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E9",
+      "discipline_id": "DISC-LEG",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    },
+    {
+      "grade_id": "E9",
+      "discipline_id": "DISC-MED",
+      "delhi_executives_ge_5yr": 1,
+      "exempt_retiring_3yr": 0,
+      "exempt_valid_tag": 0,
+      "non_exempt_due_transfer": 1
+    }
+  ]
+}

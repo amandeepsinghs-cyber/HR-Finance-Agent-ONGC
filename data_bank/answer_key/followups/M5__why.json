@@ -1,0 +1,63 @@
+{
+  "job_id": "50b19210-ae50-403a-a281-b9046ae30a2e",
+  "total_bytes_processed": 171454,
+  "executed_at": "2026-10-20T06:42:21.023838+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 5,
+  "columns": [
+    "resource_data_classification",
+    "denial_reason",
+    "denials_this_week",
+    "denials_full_log",
+    "distinct_users",
+    "max_denials_by_one_user",
+    "log_first_date"
+  ],
+  "rows": [
+    {
+      "resource_data_classification": "confidential_transfer_draft",
+      "denial_reason": "Confidential draft transfer proposals under JRTP Section 8",
+      "denials_this_week": 4,
+      "denials_full_log": 25,
+      "distinct_users": 25,
+      "max_denials_by_one_user": 1,
+      "log_first_date": "2026-07-21"
+    },
+    {
+      "resource_data_classification": "confidential_dpc",
+      "denial_reason": "DPC committee deliberations classified under Regulation 14",
+      "denials_this_week": 3,
+      "denials_full_log": 20,
+      "distinct_users": 20,
+      "max_denials_by_one_user": 1,
+      "log_first_date": "2026-07-21"
+    },
+    {
+      "resource_data_classification": "confidential_salary",
+      "denial_reason": "Confidential remuneration protected under CDA Rule 5",
+      "denials_this_week": 3,
+      "denials_full_log": 19,
+      "distinct_users": 19,
+      "max_denials_by_one_user": 1,
+      "log_first_date": "2026-07-21"
+    },
+    {
+      "resource_data_classification": "confidential_vigilance",
+      "denial_reason": "Vigilance inquiries confidential under CVC guidelines",
+      "denials_this_week": 3,
+      "denials_full_log": 15,
+      "distinct_users": 15,
+      "max_denials_by_one_user": 1,
+      "log_first_date": "2026-08-01"
+    },
+    {
+      "resource_data_classification": "confidential_field_pnl",
+      "denial_reason": "Commercial sensitivity under Disclosure Policy Sec 3.2",
+      "denials_this_week": 2,
+      "denials_full_log": 23,
+      "distinct_users": 23,
+      "max_denials_by_one_user": 1,
+      "log_first_date": "2026-07-23"
+    }
+  ]
+}

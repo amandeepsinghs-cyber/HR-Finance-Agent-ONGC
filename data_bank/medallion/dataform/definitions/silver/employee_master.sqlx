@@ -1,0 +1,42 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "employee_master",
+  description: "Master employee dimension and core profile covering all active and separated personnel since FY2001."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`PERNR`) AS emp_id,
+    TRIM(`name`) AS name,
+    TRIM(`GESCH`) AS gender,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`GBDAT`), ''), 1, 10)) AS dob,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`BEGDA`), ''), 1, 10)) AS doj,
+    TRIM(`fiscal_year_joined`) AS fiscal_year_joined,
+    TRIM(`VDSK1`) AS category,
+    CASE WHEN LOWER(TRIM(`pwd_flag`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`pwd_flag`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS pwd_flag,
+    TRIM(`pwd_category`) AS pwd_category,
+    TRIM(`home_state_code`) AS home_state_code,
+    TRIM(`discipline_id`) AS discipline_id,
+    TRIM(`PERSK`) AS current_grade_id,
+    TRIM(`WERKS`) AS current_wc_id,
+    TRIM(`current_designation`) AS current_designation,
+    TRIM(`entry_mode`) AS entry_mode,
+    TRIM(`STAT2`) AS employment_status,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`separation_date`), ''), 1, 10)) AS separation_date,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`age_years`), ''), ',', ''), '₹', '') AS NUMERIC) AS age_years,
+    TRIM(`age_band`) AS age_band,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`total_tenure_years`), ''), ',', ''), '₹', '') AS NUMERIC) AS total_tenure_years,
+    TRIM(`tenure_band`) AS tenure_band,
+    CASE WHEN LOWER(TRIM(`has_hard_station_tenure`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`has_hard_station_tenure`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS has_hard_station_tenure,
+    CASE WHEN LOWER(TRIM(`has_offshore_tenure`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`has_offshore_tenure`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS has_offshore_tenure,
+    TRIM(`exemption_tag`) AS exemption_tag,
+    TRIM(`exemption_reason_code`) AS exemption_reason_code,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`retirement_date`), ''), 1, 10)) AS retirement_date
+  FROM ${ref("sap_pa0002_pa0001")}
+  WHERE NULLIF(TRIM(`PERNR`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY _ingest_ts DESC) = 1

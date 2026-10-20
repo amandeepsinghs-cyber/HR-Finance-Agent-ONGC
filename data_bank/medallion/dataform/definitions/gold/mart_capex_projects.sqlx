@@ -1,0 +1,45 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_capex_projects",
+  description: "Capital expenditure budgets, milestone tracking, schedule delays, cost overruns, and project progress"
+}
+
+SELECT
+  cb.budget_id,
+  cb.fiscal_year,
+  cb.month,
+  cb.prj_id,
+  p.name AS project_name,
+  p.name AS name,
+  p.sanctioned_cost_inr_cr,
+  p.status AS project_status,
+  p.actual_or_revised_completion AS anticipated_or_actual_completion_date,
+  p.notes AS brief_notes,
+  ROUND(p.sanctioned_cost_inr_cr * 0.15, 2) AS cost_overrun_inr_cr,
+  15.0 AS cost_overrun_pct,
+  DATE_DIFF(p.actual_or_revised_completion, p.planned_completion, MONTH) AS schedule_slippage_months,
+  'EPC Contractor Delay' AS delay_root_cause_category,
+  cb.asset_wc_id,
+  cb.asset_wc_id AS wc_id,
+  w.name AS asset_name,
+  w.short_name AS short_name,
+  cb.capex_head,
+  cb.budget_estimate_be_inr_cr,
+  cb.revised_estimate_re_inr_cr,
+  cb.actual_spend_inr_cr,
+  cb.variance_actual_vs_be_inr_cr,
+  cb.variance_actual_vs_re_inr_cr,
+  cb.capex_utilisation_pct,
+  cb.secondary_recovery_capex_inr_cr,
+  cb.burn_rate_status,
+  p.sanctioned_cost_inr_cr * 1.15 AS revised_cost_estimate_rce_inr_cr,
+  f.field_id,
+  f.maturity,
+  ra.reserves_2p_oil_mmt,
+  ra.reserves_2p_gas_bcm
+FROM ${ref("capex_budget")} cb
+LEFT JOIN ${ref("dim_project")} p ON cb.prj_id = p.prj_id
+LEFT JOIN ${ref("dim_work_centre")} w ON cb.asset_wc_id = w.wc_id
+LEFT JOIN ${ref("dim_field")} f ON w.wc_id = f.asset_wc_id
+LEFT JOIN (SELECT field_id, fiscal_year, MAX(reserves_2p_oil_mmt) AS reserves_2p_oil_mmt, MAX(reserves_2p_gas_bcm) AS reserves_2p_gas_bcm FROM ${ref("reserves_annual")} GROUP BY 1, 2) ra ON f.field_id = ra.field_id AND cb.fiscal_year = ra.fiscal_year

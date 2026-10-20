@@ -1,0 +1,21 @@
+{
+  "job_id": "e5d8edb5-ec25-4e29-b54f-e25523d3988c",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:11.400743+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 6.0",
+      "heading": "Mandatory North-East / Hard Station Tenure",
+      "quote_snippet": "Document Title: ONGC Job Rotation and Transfer Policy (JRTP, Rev 4) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 6.0 - Mandatory North-East / Hard Station Tenure\nDomain Vocabulary & Glossary Terms: Job Rotation and Transfer Policy (JRTP); Station Tenure Norms; Minimum Stati"
+    }
+  ]
+}

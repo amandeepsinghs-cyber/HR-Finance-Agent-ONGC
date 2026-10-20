@@ -1,0 +1,1274 @@
+{
+  "evaluation_timestamp": "2026-10-19T14:34:31Z",
+  "duration_seconds": 15.13,
+  "old_queries_evaluation": {
+    "label": "Old 40 Queries (Approved Label Policy)",
+    "total_queries": 40,
+    "top3_hits": 37,
+    "top3_recall_pct": 92.5,
+    "details": [
+      {
+        "query_number": 1,
+        "query": "minimum stay required at an asset before an officer can be moved",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-SCAN_c0004",
+          "JRTP_c0004",
+          "DOC-RB-JRTP-PDF_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 2,
+        "query": "how many years can an employee spend in a single city across multiple stints",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-SCAN_c0004",
+          "JRTP_c0004",
+          "DOC-RB-JRTP-PDF_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 3,
+        "query": "which offices in the National Capital Region count towards the same station limit",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-DOCX_c0005",
+          "JRTP_c0005",
+          "DOC-RB-JRTP-PDF_c0005"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 4,
+        "query": "who has the power to waive the mandatory hardship posting requirement",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-PDF_c0006",
+          "DOC-RB-JRTP-DOCX_c0006",
+          "JRTP_c0006"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 5,
+        "query": "how many days of earned leave do employees accumulate each year and what is the maximum balance",
+        "expected_keywords": [
+          "Leave",
+          "DOC-RB-LEAVE",
+          "P1-10",
+          "J-09"
+        ],
+        "top3_doc_ids": [
+          "Leave_Rules_c0003",
+          "DOC-RB-LEAVE-RULES-DOCX_c0003",
+          "DOC-RB-LEAVE-RULES-PDF_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 6,
+        "query": "who is authorized to approve half pay leave or medical leave",
+        "expected_keywords": [
+          "Leave",
+          "DOC-RB-LEAVE",
+          "P1-10",
+          "J-09"
+        ],
+        "top3_doc_ids": [
+          "Leave_Rules_c0005",
+          "DOC-RB-LEAVE-RULES-PDF_c0005",
+          "DOC-RB-LEAVE-RULES-SCAN_c0005"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 7,
+        "query": "what happens to unencashed leave when an executive separates",
+        "expected_keywords": [
+          "Leave",
+          "DOC-RB-LEAVE",
+          "P1-10",
+          "J-09"
+        ],
+        "top3_doc_ids": [
+          "Leave_Rules_c0004",
+          "DOC-RB-LEAVE-RULES-PDF_c0004",
+          "DOC-RB-LEAVE-RULES-SCAN_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 8,
+        "query": "what is the daily allowance and hardship pay for offshore platform duty",
+        "expected_keywords": [
+          "TA",
+          "Travelling",
+          "DOC-RB-TA",
+          "P1-16"
+        ],
+        "top3_doc_ids": [
+          "P1-16_c0041",
+          "P1-16_c0074",
+          "P1-16_c0036"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 9,
+        "query": "what travel class is allowed for domestic flights on official tour for junior executives",
+        "expected_keywords": [
+          "TA",
+          "Travelling",
+          "DOC-RB-TA",
+          "P1-16",
+          "P2-25"
+        ],
+        "top3_doc_ids": [
+          "P1-16_c0009",
+          "P1-16_c0007",
+          "P1-16_c0019"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 10,
+        "query": "where to submit complaints regarding sexual harassment in the workplace",
+        "expected_keywords": [
+          "POSH",
+          "ICC",
+          "DOC-RB-POSH",
+          "P1-01"
+        ],
+        "top3_doc_ids": [
+          "P1-01_c0004",
+          "P1-01_c0002",
+          "P1-01_c0005"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 11,
+        "query": "what are the eligibility benchmarks and marks required in performance appraisal for merit promotion",
+        "expected_keywords": [
+          "Promotion",
+          "RP",
+          "DOC-RB-RP",
+          "J-15"
+        ],
+        "top3_doc_ids": [
+          "R_P_Promotion_c0003",
+          "DOC-RB-RP-PROMOTION-PDF_c0003",
+          "DOC-RB-RP-PROMOTION-DOCX_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 12,
+        "query": "what is the rule for transferring executives who have stayed for a long time at corporate headquarters",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-SCAN_c0004",
+          "JRTP_c0004",
+          "DOC-RB-JRTP-PDF_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 13,
+        "query": "are executives without north east service eligible for promotion to executive director or general manager",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-PDF_c0006",
+          "DOC-RB-JRTP-DOCX_c0006",
+          "JRTP_c0006"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 14,
+        "query": "what is the statutory ceiling on employer contribution to retirement benefits",
+        "expected_keywords": [
+          "DPE",
+          "Superannuation",
+          "DOC-RB-BDP",
+          "Benefit",
+          "P13",
+          "PRBS",
+          "G-01"
+        ],
+        "top3_doc_ids": [
+          "PRBS_c0003",
+          "DOC-RB-PRBS-DOCX_c0003",
+          "DOC-RB-PRBS-PDF_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 15,
+        "query": "how does dropping from excellent to very good score in performance memorandum affect annual bonus pool",
+        "expected_keywords": [
+          "MoU",
+          "PRP",
+          "DOC-RB-BDP",
+          "P14",
+          "G-01"
+        ],
+        "top3_doc_ids": [
+          "G-05_c0015",
+          "G-05_c0028",
+          "G-05_c0063"
+        ],
+        "top3_hit": false
+      },
+      {
+        "query_number": 16,
+        "query": "what are the statutory spending guidelines for corporate social responsibility in aspirational districts",
+        "expected_keywords": [
+          "CSR",
+          "DOC-RB-BDP",
+          "P15",
+          "Companies_Act",
+          "P2-25"
+        ],
+        "top3_doc_ids": [
+          "P2-10_c0008",
+          "P2-10_c0002",
+          "P2-10_c0004"
+        ],
+        "top3_hit": false
+      },
+      {
+        "query_number": 17,
+        "query": "who has the sanction authority to approve high value drilling contracts above fifty crore rupees",
+        "expected_keywords": [
+          "Delegated",
+          "BDP",
+          "DOC-RB-BDP",
+          "P1-04"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-BDP-SUMMARY-DOCX_c0003",
+          "BDP_summary_c0003",
+          "DOC-RB-BDP-SUMMARY-SCAN_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 18,
+        "query": "what is the government directive regarding minimum dividend payout as percentage of profit after tax",
+        "expected_keywords": [
+          "DIPAM",
+          "Dividend",
+          "DOC-RB-BDP",
+          "P17",
+          "G-07"
+        ],
+        "top3_doc_ids": [
+          "P2-09_c0002",
+          "G-07_c0073",
+          "G-07_c0033"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 19,
+        "query": "guidelines for annual general transfer proposal preparation",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-TMPL-AGT-PROPOSAL_c0001",
+          "DOC-CONF-001_c0001",
+          "JRTP_c0009"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 20,
+        "query": "what are the rules governing disciplinary proceedings and minor penalty under conduct rules",
+        "expected_keywords": [
+          "CDA",
+          "Conduct",
+          "DOC-RB-CDA",
+          "P1-01"
+        ],
+        "top3_doc_ids": [
+          "P1-01_c0007",
+          "P1-01_c0005",
+          "P1-01_c0002"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 21,
+        "query": "what is the delegation of power for entering into production enhancement contracts on mature fields",
+        "expected_keywords": [
+          "BDP",
+          "Delegated",
+          "DOC-RB-BDP",
+          "P1-04"
+        ],
+        "top3_doc_ids": [
+          "DOC-CONF-004_c0001",
+          "DOC-RB-BDP-SUMMARY-PDF_c0001",
+          "BDP_summary_c0001"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 22,
+        "query": "when am I eligible for rotation and what is the tenure for executive cadre",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-SCAN_c0003",
+          "DOC-RB-JRTP-PDF_c0003",
+          "DOC-RB-JRTP-DOCX_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 23,
+        "query": "criteria and marks required for promotion from grade E2 to E3",
+        "expected_keywords": [
+          "Promotion",
+          "RP",
+          "DOC-RB-RP",
+          "J-15"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-RP-PROMOTION-PDF_c0002",
+          "R_P_Promotion_c0002",
+          "DOC-RB-RP-PROMOTION-DOCX_c0002"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 24,
+        "query": "air travel entitlement for 14 day shift duty on western offshore platforms",
+        "expected_keywords": [
+          "TA",
+          "Travelling",
+          "DOC-RB-TA",
+          "P1-16"
+        ],
+        "top3_doc_ids": [
+          "P1-16_c0010",
+          "P1-16_c0060",
+          "P1-16_c0056"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 25,
+        "query": "transfer proposal criteria from corporate headquarters to field assets in Assam and Tripura",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-CONF-001_c0001",
+          "DOC-RB-JRTP-DOCX_c0005",
+          "JRTP_c0005"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 26,
+        "query": "standard rotation timeline for Mumbai offices under regional mobility rules",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-DOCX_c0005",
+          "JRTP_c0005",
+          "DOC-RB-JRTP-PDF_c0005"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 27,
+        "query": "what are the valid grounds for DPC review delay and vigilance clearance holds",
+        "expected_keywords": [
+          "DPC",
+          "Vigilance",
+          "DOC-RB-RP",
+          "CDA",
+          "P1-01"
+        ],
+        "top3_doc_ids": [
+          "DOC-CONF-009_c0001",
+          "DOC-CONF-011_c0001",
+          "R_P_Promotion_c0007"
+        ],
+        "top3_hit": false
+      },
+      {
+        "query_number": 28,
+        "query": "financial sanction limits of asset managers versus functional directors for procurement",
+        "expected_keywords": [
+          "BDP",
+          "Delegated",
+          "DOC-RB-BDP",
+          "P1-04"
+        ],
+        "top3_doc_ids": [
+          "BDP_summary_c0002",
+          "DOC-RB-BDP-SUMMARY-PDF_c0002",
+          "DOC-RB-BDP-SUMMARY-SCAN_c0002"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 29,
+        "query": "exceptions allowed for spouses posted in the same city under transfer rules",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "P1-16_c0055",
+          "DOC-RB-JRTP-DOCX_c0007",
+          "DOC-RB-JRTP-PDF_c0007"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 30,
+        "query": "what is the medical reimbursement limit for indoor hospital treatment for retired employees",
+        "expected_keywords": [
+          "Medical",
+          "PRMB",
+          "DOC-RB-MED",
+          "P1-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-POST-RETIREMENT-MEDICAL-DOCX_c0003",
+          "DOC-RB-POST-RETIREMENT-MEDICAL-PDF_c0005",
+          "Post-retirement_medical_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 31,
+        "query": "can an officer be transferred before completing three years in case of administrative emergency",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-SCAN_c0003",
+          "DOC-RB-JRTP-PDF_c0003",
+          "DOC-RB-JRTP-DOCX_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 32,
+        "query": "does Nazira and Jorhat count as the same regional cluster for station tenure",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-DOCX_c0005",
+          "JRTP_c0005",
+          "DOC-RB-JRTP-PDF_c0005"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 33,
+        "query": "can casual leave be combined with earned leave or study leave",
+        "expected_keywords": [
+          "Leave",
+          "DOC-RB-LEAVE",
+          "P1-10",
+          "J-09"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-LEAVE-RULES-SCAN_c0002",
+          "Leave_Rules_c0002",
+          "DOC-RB-LEAVE-RULES-PDF_c0002"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 34,
+        "query": "what schemes are included within the thirty percent superannuation cap",
+        "expected_keywords": [
+          "Benefit",
+          "Superannuation",
+          "DOC-RB-BDP",
+          "P13",
+          "PRBS",
+          "G-01"
+        ],
+        "top3_doc_ids": [
+          "PRBS_c0003",
+          "DOC-RB-PRBS-DOCX_c0003",
+          "DOC-RB-PRBS-PDF_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 35,
+        "query": "is splitting of purchase orders allowed to avoid higher approval tiers",
+        "expected_keywords": [
+          "BDP",
+          "Delegated",
+          "DOC-RB-BDP",
+          "P1-04"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-BDP-SUMMARY-SCAN_c0007",
+          "BDP_summary_c0007",
+          "DOC-RB-BDP-SUMMARY-PDF_c0007"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 36,
+        "query": "monthly crude oil production and water cut for Neelam Heera asset",
+        "expected_keywords": [
+          "NEH",
+          "Neelam",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-NEH-2024-12_c0001",
+          "DOC-MIS-WC-NEH-2025-04_c0001",
+          "DOC-MIS-WC-NEH-2026-06_c0001"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 37,
+        "query": "operating expenditure and lifting cost per barrel for Mumbai High",
+        "expected_keywords": [
+          "MUM",
+          "Mumbai",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-MUM-2025-06_c0002",
+          "DOC-MIS-WC-MUM-2026-06_c0002",
+          "DOC-MIS-WC-MUM-2025-09_c0002"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 38,
+        "query": "overtime hours and overtime payout for Ahmedabad asset",
+        "expected_keywords": [
+          "AHM",
+          "Ahmedabad",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-AHM-2025-05_c0004",
+          "DOC-MIS-WC-AHM-2025-06_c0004",
+          "DOC-MIS-WC-AHM-2025-08_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 39,
+        "query": "lost time injuries and safety incident log for Assam asset",
+        "expected_keywords": [
+          "ASM",
+          "Assam",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-BOK-2026-05_c0004",
+          "DOC-MIS-WC-ASM-2026-04_c0004",
+          "DOC-MIS-WC-ASM-2025-10_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 40,
+        "query": "drilling rig downtime and active producing wells in Cambay",
+        "expected_keywords": [
+          "CAM",
+          "Cambay",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-CAM-2024-12_c0001",
+          "DOC-MIS-WC-CAM-2025-12_c0001",
+          "DOC-MIS-WC-CAM-2024-10_c0001"
+        ],
+        "top3_hit": true
+      }
+    ]
+  },
+  "fresh_queries_evaluation": {
+    "label": "Fresh 40 Queries (Re-Test Benchmark)",
+    "total_queries": 40,
+    "top3_hits": 33,
+    "top3_recall_pct": 82.5,
+    "details": [
+      {
+        "query_number": 1,
+        "query": "mandatory duration an employee must serve at an assigned station before being eligible for displacement",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-SCAN_c0003",
+          "DOC-RB-JRTP-PDF_c0003",
+          "DOC-RB-JRTP-DOCX_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 2,
+        "query": "total maximum lifetime service permitted within a single geographical territory or capital region",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-SCAN_c0004",
+          "JRTP_c0004",
+          "DOC-RB-JRTP-PDF_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 3,
+        "query": "exemption criteria for executives approaching retirement age from mandatory station transfer",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-DOCX_c0007",
+          "DOC-RB-JRTP-PDF_c0007",
+          "DOC-RB-JRTP-SCAN_c0007"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 4,
+        "query": "consequences and penalties for officers refusing to proceed on transfer to difficult remote stations",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "CDA",
+          "P1-01"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-PDF_c0006",
+          "DOC-RB-JRTP-DOCX_c0006",
+          "JRTP_c0006"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 5,
+        "query": "maximum accumulation limit for privilege leave and rules for advance annual credit",
+        "expected_keywords": [
+          "Leave",
+          "DOC-RB-LEAVE",
+          "P1-10",
+          "J-09"
+        ],
+        "top3_doc_ids": [
+          "Leave_Rules_c0003",
+          "DOC-RB-LEAVE-RULES-DOCX_c0003",
+          "DOC-RB-LEAVE-RULES-PDF_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 6,
+        "query": "conditions under which female employees are entitled to maternity leave and adoption leave",
+        "expected_keywords": [
+          "Leave",
+          "DOC-RB-LEAVE",
+          "P1-10",
+          "J-09"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-LEAVE-RULES-SCAN_c0002",
+          "Leave_Rules_c0002",
+          "DOC-RB-LEAVE-RULES-PDF_c0002"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 7,
+        "query": "encashment procedure for earned leave balance during active service and upon superannuation",
+        "expected_keywords": [
+          "Leave",
+          "DOC-RB-LEAVE",
+          "P1-10",
+          "J-09"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-LEAVE-RULES-PDF_c0004",
+          "DOC-RB-LEAVE-RULES-SCAN_c0004",
+          "DOC-RB-LEAVE-RULES-DOCX_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 8,
+        "query": "special disability leave admissibility for work-related accidents sustained during offshore operations",
+        "expected_keywords": [
+          "Leave",
+          "DOC-RB-LEAVE",
+          "P1-10"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-LEAVE-RULES-SCAN_c0002",
+          "Leave_Rules_c0002",
+          "DOC-RB-LEAVE-RULES-PDF_c0002"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 9,
+        "query": "lodging allowance and per diem entitlement for senior executives during official tours to tier one cities",
+        "expected_keywords": [
+          "TA",
+          "Travelling",
+          "DOC-RB-TA",
+          "P1-16"
+        ],
+        "top3_doc_ids": [
+          "P1-16_c0007",
+          "P1-16_c0019",
+          "P1-16_c0009"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 10,
+        "query": "mode of conveyance and baggage transportation reimbursement on permanent transfer",
+        "expected_keywords": [
+          "TA",
+          "Travelling",
+          "DOC-RB-TA",
+          "P1-16"
+        ],
+        "top3_doc_ids": [
+          "P1-16_c0051",
+          "P1-16_c0047",
+          "P1-16_c0050"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 11,
+        "query": "special offshore compensatory allowance payable for drilling rig operations and production platforms",
+        "expected_keywords": [
+          "TA",
+          "Travelling",
+          "DOC-RB-TA",
+          "P1-16"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-MUM-2025-01_c0002",
+          "DOC-MIS-WC-MUM-2026-01_c0002",
+          "DOC-MIS-WC-MUM-2025-01_c0003"
+        ],
+        "top3_hit": false
+      },
+      {
+        "query_number": 12,
+        "query": "procedure for conducting inquiry into allegations of sexual harassment by the internal committee",
+        "expected_keywords": [
+          "POSH",
+          "ICC",
+          "DOC-RB-POSH",
+          "P1-01"
+        ],
+        "top3_doc_ids": [
+          "G-06_c0033",
+          "P1-01_c0004",
+          "P1-01_c0002"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 13,
+        "query": "appraisal score weightage and minimum qualifying marks for promotion from assistant executive engineer to executive engineer",
+        "expected_keywords": [
+          "Promotion",
+          "RP",
+          "DOC-RB-RP",
+          "J-15"
+        ],
+        "top3_doc_ids": [
+          "R_P_Promotion_c0004",
+          "DOC-RB-RP-PROMOTION-PDF_c0004",
+          "DOC-RB-RP-PROMOTION-DOCX_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 14,
+        "query": "circumstances under which an executive can be superseded in promotion board review",
+        "expected_keywords": [
+          "Promotion",
+          "RP",
+          "DOC-RB-RP",
+          "J-15",
+          "P1-01"
+        ],
+        "top3_doc_ids": [
+          "J-16_c0005",
+          "J-15_c0003",
+          "G-02_c0009"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 15,
+        "query": "statutory ceiling under presidential directives on total employee retirement benefits as percentage of basic pay plus DA",
+        "expected_keywords": [
+          "DPE",
+          "Superannuation",
+          "PRBS",
+          "G-01",
+          "P13"
+        ],
+        "top3_doc_ids": [
+          "G-01_c0011",
+          "G-01_c0006",
+          "PRBS_c0003"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 16,
+        "query": "computation of performance related pay pool based on annual memorandum of understanding achievement score",
+        "expected_keywords": [
+          "MoU",
+          "PRP",
+          "G-01",
+          "P14"
+        ],
+        "top3_doc_ids": [
+          "G-05_c0014",
+          "G-05_c0015",
+          "G-05_c0019"
+        ],
+        "top3_hit": false
+      },
+      {
+        "query_number": 17,
+        "query": "statutory corporate social responsibility obligation of two percent of average net profit under company law",
+        "expected_keywords": [
+          "CSR",
+          "Companies_Act",
+          "P15",
+          "P2-25"
+        ],
+        "top3_doc_ids": [
+          "G-11_c0019",
+          "G-11_c0036",
+          "G-11_c0017"
+        ],
+        "top3_hit": false
+      },
+      {
+        "query_number": 18,
+        "query": "powers of key executives and asset heads to approve capital and revenue procurement tenders",
+        "expected_keywords": [
+          "Delegated",
+          "BDP",
+          "DOC-RB-BDP",
+          "P1-04"
+        ],
+        "top3_doc_ids": [
+          "BDP_summary_c0002",
+          "DOC-RB-BDP-SUMMARY-PDF_c0002",
+          "DOC-RB-BDP-SUMMARY-SCAN_c0002"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 19,
+        "query": "mandatory requirement of associate finance concurrence before issuing purchase orders or work contracts",
+        "expected_keywords": [
+          "BDP",
+          "Delegated",
+          "DOC-RB-BDP",
+          "P1-04"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-BDP-SUMMARY-SCAN_c0007",
+          "BDP_summary_c0007",
+          "DOC-RB-BDP-SUMMARY-PDF_c0007"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 20,
+        "query": "statutory requirement to pay minimum dividend of thirty percent of net profit to government shareholders",
+        "expected_keywords": [
+          "DIPAM",
+          "Dividend",
+          "G-07",
+          "P17"
+        ],
+        "top3_doc_ids": [
+          "G-07_c0022",
+          "P2-09_c0001",
+          "P2-09_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 21,
+        "query": "conduct rules prohibiting employees from engaging in private commercial trade or business",
+        "expected_keywords": [
+          "CDA",
+          "Conduct",
+          "DOC-RB-CDA",
+          "P1-01"
+        ],
+        "top3_doc_ids": [
+          "G-06_c0018",
+          "P1-01_c0001",
+          "G-06_c0009"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 22,
+        "query": "procedure for imposing minor penalties including censure and recovery from pay under disciplinary rules",
+        "expected_keywords": [
+          "CDA",
+          "Conduct",
+          "DOC-RB-CDA",
+          "P1-01"
+        ],
+        "top3_doc_ids": [
+          "G-06_c0038",
+          "P1-01_c0005",
+          "G-06_c0031"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 23,
+        "query": "competent authority for granting medical treatment approval in private empaneled hospitals",
+        "expected_keywords": [
+          "Medical",
+          "PRMB",
+          "DOC-RB-MED",
+          "P1-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-POST-RETIREMENT-MEDICAL-PDF_c0004",
+          "Post-retirement_medical_c0004",
+          "DOC-RB-POST-RETIREMENT-MEDICAL-DOCX_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 24,
+        "query": "post retirement medical scheme eligibility criteria for employees with minimum fifteen years of service",
+        "expected_keywords": [
+          "Medical",
+          "PRMB",
+          "DOC-RB-MED",
+          "P1-03"
+        ],
+        "top3_doc_ids": [
+          "Post-retirement_medical_c0001",
+          "DOC-RB-POST-RETIREMENT-MEDICAL-PDF_c0001",
+          "DOC-RB-POST-RETIREMENT-MEDICAL-DOCX_c0001"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 25,
+        "query": "cooling off period required between consecutive postings at arduous category C stations",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "J-03"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-SCAN_c0004",
+          "JRTP_c0004",
+          "DOC-RB-JRTP-PDF_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 26,
+        "query": "transfer eligibility of senior executives currently overstaying past five years in Delhi corporate office",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "DEL",
+          "DOC-CONF-002"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-SCAN_c0004",
+          "JRTP_c0004",
+          "DOC-RB-JRTP-PDF_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 27,
+        "query": "executives awaiting E5 review who have not fulfilled the mandatory service at hard stations",
+        "expected_keywords": [
+          "JRTP",
+          "DOC-RB-JRTP",
+          "DPC",
+          "DOC-CONF-003"
+        ],
+        "top3_doc_ids": [
+          "DOC-RB-JRTP-PDF_c0006",
+          "DOC-RB-JRTP-DOCX_c0006",
+          "JRTP_c0006"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 28,
+        "query": "succession preparedness for general managers and group general managers retiring over the next three fiscal years",
+        "expected_keywords": [
+          "Succession",
+          "DOC-CONF-001",
+          "DOC-RB-RP"
+        ],
+        "top3_doc_ids": [
+          "DOC-CONF-012_c0001",
+          "DOC-CONF-001_c0001",
+          "G-06_c0056"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 29,
+        "query": "disciplinary action and vigilance clearance impact on delayed departmental promotion committee cases",
+        "expected_keywords": [
+          "DPC",
+          "Vigilance",
+          "CDA",
+          "P1-01"
+        ],
+        "top3_doc_ids": [
+          "DOC-CONF-009_c0001",
+          "DOC-RB-RP-PROMOTION-DOCX_c0008",
+          "R_P_Promotion_c0008"
+        ],
+        "top3_hit": false
+      },
+      {
+        "query_number": 30,
+        "query": "actuarial funding deficit and plan asset valuation across post retirement employee benefit trusts",
+        "expected_keywords": [
+          "Benefit",
+          "PRBS",
+          "Superannuation",
+          "G-01"
+        ],
+        "top3_doc_ids": [],
+        "top3_hit": false
+      },
+      {
+        "query_number": 31,
+        "query": "corporate social responsibility budget allocation directed towards operational oil and gas field districts",
+        "expected_keywords": [
+          "CSR",
+          "Companies_Act",
+          "P15"
+        ],
+        "top3_doc_ids": [
+          "P2-10_c0004",
+          "P2-10_c0003",
+          "P2-10_c0002"
+        ],
+        "top3_hit": false
+      },
+      {
+        "query_number": 32,
+        "query": "capital expenditure progress variance against budget estimates on major deepwater offshore development projects",
+        "expected_keywords": [
+          "Capex",
+          "Project",
+          "DOC-CONF-006"
+        ],
+        "top3_doc_ids": [
+          "DOC-CONF-007_c0001",
+          "DOC-MIS-WC-MUM-2025-01_c0002",
+          "DOC-MIS-WC-MUM-2025-10_c0002"
+        ],
+        "top3_hit": false
+      },
+      {
+        "query_number": 33,
+        "query": "board authorization threshold required for entering into production enhancement contracts on loss making fields",
+        "expected_keywords": [
+          "BDP",
+          "Delegated",
+          "DOC-CONF-004"
+        ],
+        "top3_doc_ids": [
+          "DOC-CONF-004_c0001",
+          "DOC-TMPL-BOARD-NOTE_c0001",
+          "DOC-RB-BDP-SUMMARY-DOCX_c0006"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 34,
+        "query": "monthly crude oil extraction rate and water cut percentage for Mumbai High North",
+        "expected_keywords": [
+          "MUM",
+          "Mumbai",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-MUM-2024-11_c0001",
+          "DOC-MIS-WC-MUM-2025-10_c0001",
+          "DOC-MIS-WC-MUM-2025-01_c0001"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 35,
+        "query": "gas production volume and compressor downtime hours for Bassein offshore asset",
+        "expected_keywords": [
+          "BAS",
+          "Bassein",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-BAS-2026-06_c0001",
+          "DOC-MIS-WC-BAS-2026-02_c0001",
+          "DOC-MIS-WC-BAS-2025-04_c0001"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 36,
+        "query": "operating expenditure breakdown by chemical and workover cost heads in Ankleshwar field",
+        "expected_keywords": [
+          "ANK",
+          "Ankleshwar",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-ANK-2025-02_c0002",
+          "DOC-MIS-WC-ANK-2025-07_c0002",
+          "DOC-MIS-WC-ANK-2026-05_c0002"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 37,
+        "query": "contractor workforce deployment and monthly labor spend in Hazira processing plant",
+        "expected_keywords": [
+          "HAZ",
+          "Hazira",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-BOK-2026-05_c0004",
+          "DOC-MIS-WC-ANK-2026-07_c0004",
+          "DOC-MIS-WC-ANK-2025-01_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 38,
+        "query": "lost time injury frequency rate and safety incident count for Neelam and Heera asset",
+        "expected_keywords": [
+          "NEH",
+          "Neelam",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-NEH-2026-06_c0004",
+          "DOC-MIS-WC-NEH-2024-10_c0004",
+          "DOC-MIS-WC-NEH-2026-05_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 39,
+        "query": "regular employee headcount and overtime hours worked at Mehsana asset",
+        "expected_keywords": [
+          "MEH",
+          "Mehsana",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-MEH-2024-10_c0004",
+          "DOC-MIS-WC-MEH-2026-08_c0004",
+          "DOC-MIS-WC-MEH-2025-10_c0004"
+        ],
+        "top3_hit": true
+      },
+      {
+        "query_number": 40,
+        "query": "capex budget utilization and actual spend variance for Eastern Offshore asset",
+        "expected_keywords": [
+          "EAS",
+          "Eastern",
+          "MIS"
+        ],
+        "top3_doc_ids": [
+          "DOC-MIS-WC-EAS-2025-06_c0002",
+          "DOC-MIS-WC-EAS-2025-10_c0002",
+          "DOC-MIS-WC-EAS-2025-12_c0002"
+        ],
+        "top3_hit": true
+      }
+    ]
+  }
+}

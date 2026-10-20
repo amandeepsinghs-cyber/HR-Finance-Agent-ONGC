@@ -1,0 +1,31 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "forex_hedges",
+  description: "Treasury foreign exchange derivative contracts, dollar exposure coverage, hedge ratios, and Mark-to-Market (MTM) gains."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_0) AS hedge_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_1), ''), 1, 10)) AS deal_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_2), ''), 1, 10)) AS maturity_date,
+    TRIM(col_3) AS fiscal_year,
+    TRIM(col_4) AS currency_pair,
+    TRIM(col_5) AS underlying_contract_category,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_6), ''), ',', ''), '₹', '') AS NUMERIC) AS gross_exposure_usd,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_7), ''), ',', ''), '₹', '') AS NUMERIC) AS hedged_amount_usd,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_8), ''), ',', ''), '₹', '') AS NUMERIC) AS unhedged_exposure_usd,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_9), ''), ',', ''), '₹', '') AS NUMERIC) AS hedge_ratio_pct,
+    TRIM(col_10) AS instrument_type,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_11), ''), ',', ''), '₹', '') AS NUMERIC) AS contracted_strike_rate,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_12), ''), ',', ''), '₹', '') AS NUMERIC) AS spot_rate_at_maturity,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_13), ''), ',', ''), '₹', '') AS NUMERIC) AS mtm_gain_loss_inr_cr,
+    TRIM(col_14) AS hedge_status
+  FROM ${ref("excel_treasury_forex_hedges")}
+  WHERE _row_number >= 2 AND col_0 IS NOT NULL AND TRIM(col_0) != '' AND _sheet_name NOT IN ('Notes_and_Citations', 'Executive_Summary', '_Ref_Capex_Codes', '_Cadre_Control_Master', '_MoU_Grading_Rules', '_Schedule_VII_Themes', '_Talent_Bench_Scale', '_Court_Jurisdiction_Codes')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY hedge_id ORDER BY _ingest_ts DESC) = 1

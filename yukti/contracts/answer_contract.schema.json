@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "yukti/answer_contract.schema.json",
+  "title": "Yukti AI answer contract (agent → UI), one per agent turn",
+  "type": "object",
+  "required": ["turn_id", "language", "spoken_summary", "display_text", "access", "sources"],
+  "properties": {
+    "turn_id": {"type": "string"},
+    "language": {"enum": ["en", "hi", "hi-en"]},
+    "persona": {"enum": ["CMD", "DIR_HR", "DIR_FIN", "E2_HR", "E3_FIN"]},
+    "spoken_summary": {"type": "string", "description": "2–4 sentences for Leda to speak; Indian number system"},
+    "display_text": {"type": "string", "maxLength": 600, "description": "brief thread text with inline citation markers [1]"},
+    "visual": {
+      "type": "object",
+      "required": ["type", "mode"],
+      "properties": {
+        "type": {"enum": ["chart", "table", "kpi", "clause", "document", "map", "refusal", "none"]},
+        "mode": {"enum": ["replace", "refine", "compare", "restore"]},
+        "title": {"type": "string"},
+        "chart": {"$ref": "#/$defs/chart_spec"},
+        "table": {"type": "object", "properties": {"columns": {"type": "array", "items": {"type": "string"}}, "rows": {"type": "array"}}},
+        "kpis": {"type": "array", "items": {"type": "object", "properties": {"label": {"type": "string"}, "value": {"type": ["number", "string"]}, "unit": {"type": "string"}, "delta": {"type": "string"}}}},
+        "clause": {"type": "object", "properties": {"doc_id": {"type": "string"}, "doc_title": {"type": "string"}, "clause_ref": {"type": "string"}, "text": {"type": "string"}, "highlight": {"type": "string"}}},
+        "document": {"type": "object", "properties": {"doc_type": {"type": "string"}, "title": {"type": "string"}, "markdown": {"type": "string"}, "template_id": {"type": "string"}, "version": {"type": "integer"}}},
+        "map": {"type": "object", "properties": {"points": {"type": "array", "items": {"type": "object", "properties": {"wc_id": {"type": "string"}, "name": {"type": "string"}, "lat": {"type": "number"}, "lon": {"type": "number"}, "value": {"type": "number"}}}}}}
+      }
+    },
+    "insights": {"type": "array", "maxItems": 4, "items": {"type": "string"}},
+    "sources": {"type": "array", "items": {"type": "object", "required": ["kind"], "properties": {
+      "kind": {"enum": ["data", "policy", "document"]},
+      "object": {"type": "string"}, "query_id": {"type": "string"}, "sql": {"type": "string"},
+      "doc_id": {"type": "string"}, "clause": {"type": "string"}, "title": {"type": "string"}}}},
+    "suggestions": {"type": "array", "maxItems": 3, "items": {"type": "string"}},
+    "access": {"type": "object", "required": ["status"], "properties": {
+      "status": {"enum": ["allowed", "partial", "refused"]},
+      "reason": {"type": "string"}, "rule_ref": {"type": "string"}, "alternative": {"type": "string"}}},
+    "export_options": {"type": "array", "items": {"enum": ["sheets", "docs", "word", "pdf", "xlsx"]}},
+    "status_events": {"type": "array", "items": {"type": "string"}, "description": "e.g. 'querying postings…' shown while thinking"}
+  },
+  "$defs": {
+    "chart_spec": {
+      "type": "object",
+      "description": "Small declarative spec; the UI maps it to ECharts. No code from the model.",
+      "required": ["kind", "data"],
+      "properties": {
+        "kind": {"enum": ["donut", "bar", "hbar", "stacked_bar", "grouped_bar", "line", "area", "histogram", "box", "treemap", "heatmap", "waterfall", "bullet", "gauge", "scatter", "kpi"]},
+        "data": {"type": "array", "items": {"type": "object"}},
+        "x": {"type": "string"}, "y": {"type": "string"}, "series": {"type": "string"}, "value": {"type": "string"}, "category": {"type": "string"},
+        "unit": {"type": "string"}, "sort": {"enum": ["asc", "desc", "none"]}, "top_n": {"type": "integer"},
+        "annotations": {"type": "array", "items": {"type": "object", "properties": {"x": {}, "label": {"type": "string"}}}},
+        "target": {"type": "number"}
+      }
+    }
+  }
+}

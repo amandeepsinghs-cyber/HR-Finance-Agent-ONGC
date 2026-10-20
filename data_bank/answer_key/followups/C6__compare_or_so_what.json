@@ -1,0 +1,64 @@
+{
+  "job_id": "aab5e12c-7b9f-4ded-83a1-50481375e4bf",
+  "total_bytes_processed": 61611,
+  "executed_at": "2026-10-20T06:38:29.355387+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 4,
+  "columns": [
+    "asset",
+    "onshore_offshore",
+    "fields",
+    "gross_revenue_inr_cr",
+    "ebitda_inr_cr",
+    "pbt_inr_cr",
+    "ebitda_margin_pct",
+    "pbt_margin_pct",
+    "opex_inr_per_boe"
+  ],
+  "rows": [
+    {
+      "asset": "Ankleshwar Asset",
+      "onshore_offshore": "onshore",
+      "fields": 4,
+      "gross_revenue_inr_cr": 13870.4,
+      "ebitda_inr_cr": 9595.4,
+      "pbt_inr_cr": 7860.2,
+      "ebitda_margin_pct": 69.2,
+      "pbt_margin_pct": 56.7,
+      "opex_inr_per_boe": 542.0
+    },
+    {
+      "asset": "Bassein & Satellite",
+      "onshore_offshore": "offshore",
+      "fields": 5,
+      "gross_revenue_inr_cr": 22240.4,
+      "ebitda_inr_cr": 14269.3,
+      "pbt_inr_cr": 6477.5,
+      "ebitda_margin_pct": 64.2,
+      "pbt_margin_pct": 29.1,
+      "opex_inr_per_boe": 552.0
+    },
+    {
+      "asset": "Mumbai High",
+      "onshore_offshore": "offshore",
+      "fields": 2,
+      "gross_revenue_inr_cr": 33109.0,
+      "ebitda_inr_cr": 19221.0,
+      "pbt_inr_cr": 14104.5,
+      "ebitda_margin_pct": 58.1,
+      "pbt_margin_pct": 42.6,
+      "opex_inr_per_boe": 911.0
+    },
+    {
+      "asset": "Mehsana Asset",
+      "onshore_offshore": "onshore",
+      "fields": 7,
+      "gross_revenue_inr_cr": 5011.3,
+      "ebitda_inr_cr": 2772.0,
+      "pbt_inr_cr": 2250.0,
+      "ebitda_margin_pct": 55.3,
+      "pbt_margin_pct": 44.9,
+      "opex_inr_per_boe": 1327.0
+    }
+  ]
+}

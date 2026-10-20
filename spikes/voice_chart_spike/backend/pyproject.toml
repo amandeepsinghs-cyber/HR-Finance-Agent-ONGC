@@ -1,0 +1,25 @@
+[project]
+name = "voice-chart-spike-backend"
+version = "0.1.0"
+description = "FastAPI + ADK Gemini Live voice-to-chart backend spike for ONGC HR & Finance"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.8.0",
+    "google-adk>=2.7.0",
+    "google-genai>=1.0.0",
+    "google-cloud-bigquery>=3.25.0",
+    "google-cloud-discoveryengine>=0.13.0",
+    "websockets>=12.0",
+    "python-dotenv>=1.0.1",
+    "requests>=2.32.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

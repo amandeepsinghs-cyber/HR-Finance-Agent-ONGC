@@ -1,0 +1,245 @@
+# Semantic audit 2026-10-20 - slice P1 (P1-P10 + follow-ups). All 40 entries changed.
+# Systemic defect (all doc-retrieval entries): SQL returned SUBSTR(text,1,300) = the chunk's metadata header
+# (title / doc type / glossary list), never the clause body, so no answer contained the actual rule; MDs were
+# header quotes (or empty "Official Policy" blocks for P7/P9). Fixed by stripping the header and extracting the
+# specific sub-clauses (new `provision` column) + a narrative built from the extracted text.
+- id: P1
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "5 rows, all J-03 court judgment (B.V. Srihari Rao, disciplinary) fragments; JRTP 3.0/4.0 pushed out by LIMIT 5"
+  new_headline: "Minimum station tenure 3 completed years (JRTP 3.1); max cumulative stay 10 years per city/cluster (4.1)"
+  why: "OR'd J-03 judgment sorted before JRTP and filled LIMIT 5; snippet was header only. Now JRTP 3.1-3.2 + 4.1-4.2 bodies."
+  severity: blocking
+- id: P1__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "JRTP 3.0 / 6.0 metadata headers only"
+  new_headline: "No separate hard-station maximum; 3-yr continuous Category C tenure is a prerequisite for E4->E5; 10% BP allowance"
+  why: "Header-only snippet; added JRTP 2.1(c) hard-station list. Flags Silchar listed under Tripura (2.1c) but Assam cluster (5.2)."
+  severity: blocking
+- id: P1__why
+  defect_class: [GENERIC_TEXT]
+  old_headline: "JRTP 4.0 metadata header only"
+  new_headline: "No stand-alone rationale; cap follows Clause 1.3 objectives (multi-basin exposure, equitable arduous postings); 5/8/10-yr roster"
+  why: "Header-only snippet; added JRTP 1.3 objectives."
+  severity: important
+- id: P1__compare_or_so_what
+  defect_class: [GAP, GENERIC_TEXT]
+  old_headline: "JRTP 1.0 metadata header only"
+  new_headline: "Cannot compare: JRTP covers only E0-E9 executives; no non-executive transfer policy in corpus"
+  why: "Header-only snippet; corpus has no non-executive tenure rule - answer now says so with JRTP 1.2/1.4 and Leave Rules 1.2 scope evidence."
+  severity: important
+- id: P2
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "JRTP 5.0 header + 4 TA Regulations (P1-16) chunks unrelated to clusters"
+  new_headline: "13 JRTP clusters; largest CL-MUM (11 WCs: Mumbai, Panvel, Uran); all 13 in dim_work_centre named in JRTP 5.2"
+  why: "OR'd P1-16 (TA regs) filled the result. Now structured: dim_work_centre grouped by cluster, cross-checked against JRTP 5.2 text."
+  severity: blocking
+- id: P2__drill_down
+  defect_class: [GENERIC_TEXT]
+  old_headline: "JRTP 5.0 metadata header only (identical to parent's first row)"
+  new_headline: "Delhi (CL-DEL) and Dehradun (CL-DDN, 6 WCs) are separate; Mumbai/Uran/Panvel are one cluster CL-MUM (11 WCs)"
+  why: "Now lists every Delhi/Dehradun/Mumbai/Uran/Panvel work centre with its cluster from dim_work_centre."
+  severity: important
+- id: P2__why
+  defect_class: [GENERIC_TEXT]
+  old_headline: "JRTP 5.0 metadata header only (same as drill_down and compare)"
+  new_headline: "Intra-cluster moves don't reset station or cumulative tenure (5.3); all postings in a cluster summed (4.2)"
+  why: "All three P2 follow-ups returned the identical header row; now distinct sub-clauses."
+  severity: important
+- id: P2__compare_or_so_what
+  defect_class: [GENERIC_TEXT]
+  old_headline: "JRTP 5.0 metadata header only"
+  new_headline: "Intra-cluster move: clock keeps running; on 5/8/10-yr roster, at 10 yrs -> mandatory outstation list"
+  why: "Header-only; now 5.3 + 4.2-4.3 + 3.1-3.2."
+  severity: important
+- id: P3
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "5 rows, all J-03 court judgment fragments; JRTP 7.0 pushed out by LIMIT 5"
+  new_headline: "Yes - within 2 years of superannuation (58+) strictly exempt (JRTP 7.1); practice extends to 3 years (57+)"
+  why: "OR'd J-03 judgment filled LIMIT 5. Now JRTP 7.1-7.2 body incl. the two exceptions."
+  severity: blocking
+- id: P3__drill_down
+  defect_class: [GENERIC_TEXT]
+  old_headline: "JRTP 7.0 metadata header only"
+  new_headline: "Binding cut-off 2 years (age 58+); 3-year (57+) is practice; '2 to 3 years' recurs in 4.4(a) and 13.2(d)"
+  why: "Header-only; added 4.4 and 13.2 where the window recurs."
+  severity: important
+- id: P3__why
+  defect_class: [GENERIC_TEXT]
+  old_headline: "JRTP 7.0 metadata header only"
+  new_headline: "Near-retirees retained for pension/family/medical stability; home-town request allowed; <2.0% near-retirement transfers"
+  why: "Header-only; now 7.1-7.3."
+  severity: important
+- id: P3__compare_or_so_what
+  defect_class: [GENERIC_TEXT]
+  old_headline: "JRTP 7.0 + 8.0 metadata headers"
+  new_headline: "Retirement exemption automatic; medical needs Medical Board + SRB (valid 1-2 yrs); spouse only a TGRC ground (15 days)"
+  why: "Header-only; added Clause 13 (spouse ground lives there, not in Clause 8)."
+  severity: important
+- id: P4
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "5 rows, all J-01 court judgment (Karna Kishore Deb Barma) fragments; Leave Rules pushed out by LIMIT 5"
+  new_headline: "Accumulate up to 300 days EL; encash up to 300 days at retirement at (Basic+IDA)/30 per day"
+  why: "OR'd J-01 judgment filled LIMIT 5. Now Leave Rules 3.1-3.3 + 4.1-4.2 bodies."
+  severity: blocking
+- id: P4__drill_down
+  defect_class: [GENERIC_TEXT]
+  old_headline: "Leave Rules 3.0 / 5.0 metadata headers"
+  new_headline: "EL ceiling 300 days; HPL 20 days/yr encashable only to bridge EL shortfall to combined 300 days (2 HPL = 1 day pay)"
+  why: "Header-only snippet."
+  severity: important
+- id: P4__why
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "5 rows, all J-07 judgment (Buragohain dismissal) fragments; Leave Rules 4.0 pushed out"
+  new_headline: "Rules give no rationale; 300-day cap + HPL encashment 'subject to DPE guidelines'; income-tax cap not in corpus"
+  why: "OR'd J-07 judgment filled LIMIT 5. Income-tax exemption limit absent from corpus (GAP)."
+  severity: blocking
+- id: P4__compare_or_so_what
+  defect_class: [GAP, GENERIC_TEXT]
+  old_headline: "Leave Rules 4.0 metadata header only"
+  new_headline: "Retirement: up to 300 days lump sum; in service: max 30 days once a year keeping 30-day balance; no LFA/LTC rule in corpus"
+  why: "Header-only snippet."
+  severity: important
+- id: P5
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "5 rows, all J-08 judgment (Mahalkar, EOL) fragments; Leave Rules 6.0/7.0 pushed out by LIMIT 5"
+  new_headline: "Eligible after 5 yrs continuous service, max 24 months (36 PhD); bond: serve 3 yrs with two sureties, full refund + interest"
+  why: "OR'd J-08 judgment filled LIMIT 5. Now Leave Rules 6.1-6.4 + 7.1-7.2."
+  severity: blocking
+- id: P5__drill_down
+  defect_class: [GAP, GENERIC_TEXT]
+  old_headline: "Leave Rules 6.0 metadata header only"
+  new_headline: "Qualifying service 5 years; no approved-specialisation list in rules (only domain relevance)"
+  why: "Header-only; approved PG specialisation list not in corpus (GAP)."
+  severity: important
+- id: P5__why
+  defect_class: [GENERIC_TEXT]
+  old_headline: "Leave Rules 7.0 metadata header only"
+  new_headline: "Bond protects ONGC's investment: serve 3 yrs or refund salary/fees/travel + interest at lending rate + 2%"
+  why: "Header-only snippet."
+  severity: important
+- id: P5__compare_or_so_what
+  defect_class: [GAP, GENERIC_TEXT]
+  old_headline: "Leave Rules 6.0 metadata header only (identical to drill_down)"
+  new_headline: "Same 24-month (36 PhD) cap domestic or overseas; only sanctioning authority differs (Dir HR vs CMD); no allowance differential"
+  why: "Header-only; overseas allowance differential not in corpus (GAP)."
+  severity: important
+- id: P6
+  defect_class: [GENERIC_TEXT]
+  old_headline: "G-06 Rule 12 metadata header only"
+  new_headline: "Vendor gift above Rs 1,500 needs competent-authority sanction (Rule 12(4)); aggregate Rs 25,000/15,000 in 12 months"
+  why: "Header-only snippet; right rule, no content."
+  severity: blocking
+- id: P6__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "G-06 Rule 16 (movable/immovable property returns) header"
+  new_headline: "Ceilings: relatives Rs 25,000 exec / 15,000 non-exec; friends Rs 1,500; any other Rs 1,500 (prior sanction)"
+  why: "Cited the property-returns rule instead of the gifts rule."
+  severity: blocking
+- id: P6__why
+  defect_class: [GAP, GENERIC_TEXT]
+  old_headline: "G-06 Rule 5 (misconduct) header"
+  new_headline: "Vendor gifts treated as corruption risk: Rule 5(2)-(2A), Rule 4 obligations, hospitality note; CVC circular not in corpus"
+  why: "Header-only; CVC gift-surrender circular absent (GAP)."
+  severity: important
+- id: P6__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "G-06 Rule 4 (general integrity) header"
+  new_headline: "Friend w/o official dealings: report above Rs 1,500; business associate: prior sanction above Rs 1,500"
+  why: "Cited general integrity rule; did not address friend vs business giver. Now Rule 12 Explanation + 12(3) vs 12(4)."
+  severity: important
+- id: P7
+  defect_class: [GENERIC_TEXT]
+  old_headline: "Empty citation block ('Official Policy - Applicable Clause: \"\"')"
+  new_headline: "E2: Economy air; Mumbai (Class A) hotel ceiling Rs 4,500/day; 460 E2 Mumbai claims paid at Rs 4,500/night"
+  why: "SQL value was right but MD rendered empty quote; added Mumbai class + claims corroboration."
+  severity: important
+- id: P7__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "TA Regulations Part 1 (short title) header"
+  new_headline: "E2 Mumbai: hotel up to Rs 4,500/day; local conveyance Rs 600/day (EC 483rd revision)"
+  why: "Part 1 has no hotel/conveyance figure; now dim_grade + travel_claims + Part 19 conveyance rate."
+  severity: blocking
+- id: P7__why
+  defect_class: [GAP, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "TA Regulations Part 2 (definitions) header"
+  new_headline: "Balmer Lawrie/IRCTC not in corpus; closest rule: check-fare / most-economical booking mandate (4.2.1 h)"
+  why: "Part 2 = definitions. Premise unsupported by corpus (GAP)."
+  severity: important
+- id: P7__compare_or_so_what
+  defect_class: [GAP, WRONG_QUESTION]
+  old_headline: "dim_grade E1-E4 Cat-A lodging list (no Class-B figure at all)"
+  new_headline: "Class A Rs 4,500/night vs Class B Rs 3,000 (+50%) for E1-E3; E4 ceiling Rs 6,500 but paid Rs 4,500"
+  why: "Question compares A vs B; only Cat-A existed. Now travel_claims per-night by city class vs ceiling (GAP: no published Class-B ceiling)."
+  severity: important
+- id: P8
+  defect_class: [GENERIC_TEXT]
+  old_headline: "Whistle Blower Policy Part 1 (preface) header"
+  new_headline: "Signed written Protected Disclosure to Company Secretary / vigil@ongc.co.in within 30 days; identity concealed; no retaliation"
+  why: "Preface header only; now 7.1-7.5 + 13.1-13.3."
+  severity: blocking
+- id: P8__drill_down
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "Whistle Blower Policy Part 2 (statutory background) header"
+  new_headline: "Receiver is the Nodal Officer = Company Secretary (not CVO); Competent Authority = Director (HR); no names in corpus"
+  why: "Part 2 is background; now 4.4, 4.7-4.8, 7.1."
+  severity: important
+- id: P8__why
+  defect_class: [GENERIC_TEXT]
+  old_headline: "Whistle Blower Policy Part 3 header"
+  new_headline: "Safeguards let staff report without fear (3.2-3.3); 13.1 bars retaliatory transfer/demotion; mala fide loses protection"
+  why: "Header-only snippet."
+  severity: important
+- id: P8__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Whistle Blower Policy Part 4 (definitions) header"
+  new_headline: "Personal grievances excluded from WB (4.9); WB: screening 10 working days, investigation 120 days, Audit Committee"
+  why: "Definitions header; now 4.9, 9.3, 9.15 + HRP grievance systems."
+  severity: important
+- id: P9
+  defect_class: [GAP, GENERIC_TEXT]
+  old_headline: "Empty citation blocks; table of 46 WCs with presiding officer + external member"
+  new_headline: "File with own WC's ICC (46 active, contact e-mail each); all women-presided, >=60% women; no POSH procedure doc"
+  why: "MD rendered empty quotes. Added size/women share/contact. GAP: no POSH filing procedure in corpus; presiding officer name is a placeholder."
+  severity: important
+- id: P9__drill_down
+  defect_class: [GENERIC_TEXT]
+  old_headline: "Parent's 46-row list with NGO column swapped in"
+  new_headline: "4 external members cover all 46 ICCs (Dr. Sunita Sharma 17); presiding officers unnamed placeholder"
+  why: "Near-duplicate of parent; now external-member profile."
+  severity: cosmetic
+- id: P9__why
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "5 arbitrary CDA Rules (P1-01) disciplinary fragments"
+  new_headline: "90-day closure share fell from 100% (FY22) to 58% (FY26, max 130 days); statute text not in corpus"
+  why: "P1-01 fragments irrelevant. Now posh_cases 90-day compliance by FY (GAP: POSH Act not in corpus)."
+  severity: blocking
+- id: P9__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "5 arbitrary CDA Rules (P1-01) fragments (identical to why)"
+  new_headline: "Interim-relief rules not in corpus; Complaints Committee = inquiring authority (DPE CDA 25), zero tolerance (HRP 3.2)"
+  why: "Identical to P9__why and irrelevant; now closest provisions + explicit GAP."
+  severity: important
+- id: P10
+  defect_class: [GENERIC_TEXT]
+  old_headline: "R&P Clause 2.0 metadata header only"
+  new_headline: "E3->E4: 3-4 yrs residency, cumulative 'Very Good' (>=3.5/70%) APAR, CVO vigilance clearance; non-vacancy"
+  why: "Header-only; APAR benchmark and vigilance clearance were missing. Now 2.1-2.3, 3.1-3.2, 7.1-7.2."
+  severity: blocking
+- id: P10__drill_down
+  defect_class: [GENERIC_TEXT]
+  old_headline: "R&P Clause 3.0 metadata header only"
+  new_headline: "Residency 3-4 yrs at E3; APAR 'Very Good' >= 3.5/70%; below-Good year defers by one year"
+  why: "Header-only snippet."
+  severity: important
+- id: P10__why
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "R&P Clause 1.0 (cadre structure) header"
+  new_headline: "Vigilance clearance hard gate + sealed cover; qualifications only 10/100 in merit channel; no training rule in corpus"
+  why: "Cadre-structure clause irrelevant; now 7.x, 8.2-8.3, 4.3."
+  severity: important
+- id: P10__compare_or_so_what
+  defect_class: [GENERIC_TEXT]
+  old_headline: "R&P Clause 4.0 metadata header only"
+  new_headline: "Same criteria to E4; at E4->E5 technical cadres need 3-yr Category C tenure; same 50/30/10/10 matrix, 1:3 zone"
+  why: "Header-only snippet."
+  severity: important

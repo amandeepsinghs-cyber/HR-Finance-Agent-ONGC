@@ -1,0 +1,39 @@
+{
+  "job_id": "cdc3b399-b982-4b7f-b2d9-792566381b8d",
+  "total_bytes_processed": 178998,
+  "executed_at": "2026-10-20T06:39:03.899685+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 2,
+  "columns": [
+    "regime",
+    "fields",
+    "revenue_fy26_cr",
+    "royalty_pct_fy26",
+    "cess_pct_fy26",
+    "govt_take_pct_fy26",
+    "govt_take_pct_fy22_fy26",
+    "saed_fy22_fy26_cr"
+  ],
+  "rows": [
+    {
+      "regime": "Nomination (ONGC-operated)",
+      "fields": 51,
+      "revenue_fy26_cr": 119268.0,
+      "royalty_pct_fy26": 10.4,
+      "cess_pct_fy26": 10.1,
+      "govt_take_pct_fy26": 20.5,
+      "govt_take_pct_fy22_fy26": 20.8,
+      "saed_fy22_fy26_cr": 4017.0
+    },
+    {
+      "regime": "Joint venture / PSC (Panna-Mukta)",
+      "fields": 2,
+      "revenue_fy26_cr": 5878.0,
+      "royalty_pct_fy26": 10.6,
+      "cess_pct_fy26": 14.3,
+      "govt_take_pct_fy26": 24.9,
+      "govt_take_pct_fy22_fy26": 24.6,
+      "saed_fy22_fy26_cr": 265.0
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "job_id": "0e011a2b-4b45-43d0-a651-293bb32584d5",
+  "total_bytes_processed": 1405,
+  "executed_at": "2026-10-20T06:37:18.071191+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "prbs_pension_liability_cr",
+    "prmb_medical_liability_cr",
+    "combined_liability_cr",
+    "combined_plan_assets_cr",
+    "combined_net_unfunded_cr",
+    "combined_funded_pct"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "prbs_pension_liability_cr": 14731.71,
+      "prmb_medical_liability_cr": 5155.13,
+      "combined_liability_cr": 19886.84,
+      "combined_plan_assets_cr": 19525.54,
+      "combined_net_unfunded_cr": 361.3,
+      "combined_funded_pct": 98.2
+    },
+    {
+      "fiscal_year": "FY23",
+      "prbs_pension_liability_cr": 15541.95,
+      "prmb_medical_liability_cr": 5577.86,
+      "combined_liability_cr": 21119.81,
+      "combined_plan_assets_cr": 20728.88,
+      "combined_net_unfunded_cr": 390.93,
+      "combined_funded_pct": 98.1
+    },
+    {
+      "fiscal_year": "FY24",
+      "prbs_pension_liability_cr": 16396.76,
+      "prmb_medical_liability_cr": 6035.24,
+      "combined_liability_cr": 22432.0,
+      "combined_plan_assets_cr": 22009.01,
+      "combined_net_unfunded_cr": 422.99,
+      "combined_funded_pct": 98.1
+    },
+    {
+      "fiscal_year": "FY25",
+      "prbs_pension_liability_cr": 17298.58,
+      "prmb_medical_liability_cr": 6530.13,
+      "combined_liability_cr": 23828.71,
+      "combined_plan_assets_cr": 23371.04,
+      "combined_net_unfunded_cr": 457.67,
+      "combined_funded_pct": 98.1
+    },
+    {
+      "fiscal_year": "FY26",
+      "prbs_pension_liability_cr": 18250.0,
+      "prmb_medical_liability_cr": 7065.6,
+      "combined_liability_cr": 25315.6,
+      "combined_plan_assets_cr": 24820.4,
+      "combined_net_unfunded_cr": 495.3,
+      "combined_funded_pct": 98.0
+    }
+  ]
+}

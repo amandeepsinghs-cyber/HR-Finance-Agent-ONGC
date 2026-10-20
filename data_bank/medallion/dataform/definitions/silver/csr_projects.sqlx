@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "csr_projects",
+  description: "Corporate Social Responsibility (CSR) project ledger tracking statutory 2% mandate, aspirational districts, and priority themes."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_1) AS csr_project_id,
+    TRIM(col_2) AS project_name,
+    TRIM(col_3) AS fiscal_year,
+    TRIM(col_4) AS state_code,
+    TRIM(col_5) AS district_name,
+    CASE WHEN LOWER(TRIM(col_6)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_6)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_aspirational_district,
+    CASE WHEN LOWER(TRIM(col_7)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_7)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_operational_field_area,
+    TRIM(col_8) AS wc_id,
+    TRIM(col_9) AS csr_theme,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_10), ''), ',', ''), '₹', '') AS NUMERIC) AS sanctioned_budget_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_11), ''), ',', ''), '₹', '') AS NUMERIC) AS actual_disbursed_inr_cr,
+    TRIM(col_12) AS implementing_agency,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_13), ''), ',', ''), '₹', '') AS INT64) AS beneficiaries_count,
+    CASE WHEN LOWER(TRIM(col_14)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_14)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS statutory_2pct_mandate_met_flag
+  FROM ${ref("excel_csr_projects_tracker")}
+  WHERE _row_number >= 7 AND _sheet_name NOT IN ('_Schedule_VII_Themes') AND col_1 IS NOT NULL AND TRIM(col_1) != '' AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Subtotal|^Total|^Summary)') AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Mandate Note:|^Note:|^Confidential)')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY csr_project_id ORDER BY _ingest_ts DESC) = 1

@@ -1,0 +1,33 @@
+{
+  "job_id": "97a4e78d-87ff-492e-8cae-9336e85c123e",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:26.550018+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 11.0",
+      "heading": "Confidentiality of Pre-Decisional Records",
+      "quote_snippet": "Document Title: ONGC Job Rotation and Transfer Policy (JRTP, Rev 4) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 11.0 - Confidentiality of Pre-Decisional Records\nDomain Vocabulary & Glossary Terms: Job Rotation and Transfer Policy (JRTP); Station Tenure Norms; Minimum Stati"
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 3.0",
+      "heading": "Station Tenure Norms",
+      "quote_snippet": "Document Title: ONGC Job Rotation and Transfer Policy (JRTP, Rev 4) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 3.0 - Station Tenure Norms\nDomain Vocabulary & Glossary Terms: Job Rotation and Transfer Policy (JRTP); Station Tenure Norms; Minimum Station Tenure; Normal Rota"
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 9.0",
+      "heading": "Annual Transfer Calendar & Notification Procedure",
+      "quote_snippet": "Document Title: ONGC Job Rotation and Transfer Policy (JRTP, Rev 4) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 9.0 - Annual Transfer Calendar & Notification Procedure\nDomain Vocabulary & Glossary Terms: Job Rotation and Transfer Policy (JRTP); Station Tenure Norms; Minimu"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "job_id": "90b2430b-7b9a-4a82-ae11-f7a13fff5a37",
+  "total_bytes_processed": 10291535,
+  "executed_at": "2026-10-20T06:38:33.933613+00:00",
+  "elapsed_seconds": 0.93,
+  "row_count": 3,
+  "columns": [
+    "grade_band",
+    "executives_over_3y",
+    "active_executives_in_band",
+    "pct_of_band_over_3y",
+    "share_of_over_3y_pct"
+  ],
+  "rows": [
+    {
+      "grade_band": "2. E1-E4 (junior/middle)",
+      "executives_over_3y": 7761,
+      "active_executives_in_band": 9053,
+      "pct_of_band_over_3y": 85.7,
+      "share_of_over_3y_pct": 66.9
+    },
+    {
+      "grade_band": "3. E5 (DGM)",
+      "executives_over_3y": 1839,
+      "active_executives_in_band": 2128,
+      "pct_of_band_over_3y": 86.4,
+      "share_of_over_3y_pct": 15.9
+    },
+    {
+      "grade_band": "4. E6-E9 (senior management)",
+      "executives_over_3y": 1994,
+      "active_executives_in_band": 2272,
+      "pct_of_band_over_3y": 87.8,
+      "share_of_over_3y_pct": 17.2
+    }
+  ]
+}

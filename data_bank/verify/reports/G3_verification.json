@@ -1,0 +1,136 @@
+{
+  "timestamp": "2026-10-19T13:04:24Z",
+  "excel_audit": [
+    {
+      "workbook": "capex_be_re_actuals.xlsx",
+      "target_table": "capex_budget",
+      "rows_clean": 7572,
+      "rows_messy": 7572,
+      "rows_match": true,
+      "cols_match": true,
+      "sums_match": true,
+      "metric_summary": "BE: \u20b9274,126.81 cr, Actual: \u20b9261,498.59 cr",
+      "extra_metrics": {
+        "total_be_cr": 274126.81,
+        "total_actual_cr": 261498.59
+      },
+      "status": "PASS"
+    },
+    {
+      "workbook": "manpower_plan.xlsx",
+      "target_table": "sanctioned_posts",
+      "rows_clean": 12901,
+      "rows_messy": 12901,
+      "rows_match": true,
+      "cols_match": true,
+      "sums_match": true,
+      "metric_summary": "FY26 In-position: 23,117",
+      "extra_metrics": {
+        "fy26_in_position": 23117
+      },
+      "status": "PASS"
+    },
+    {
+      "workbook": "dpe_mou_scorecard.xlsx",
+      "target_table": "mou_targets",
+      "rows_clean": 27,
+      "rows_messy": 27,
+      "rows_match": true,
+      "cols_match": true,
+      "sums_match": true,
+      "metric_summary": "FY26 Composite Score: 4.28",
+      "extra_metrics": {
+        "fy26_composite_score": 4.28
+      },
+      "status": "PASS"
+    },
+    {
+      "workbook": "csr_projects_tracker.xlsx",
+      "target_table": "csr_projects",
+      "rows_clean": 241,
+      "rows_messy": 241,
+      "rows_match": true,
+      "cols_match": true,
+      "sums_match": true,
+      "metric_summary": "FY26 Disbursed: \u20b9949.00 cr, All-years: \u20b96,190.00 cr",
+      "extra_metrics": {
+        "fy26_disbursed_cr": 949.0,
+        "all_years_disbursed_cr": 6190.0
+      },
+      "status": "PASS"
+    },
+    {
+      "workbook": "succession_planning.xlsx",
+      "target_table": "succession_plan",
+      "rows_clean": 105,
+      "rows_messy": 105,
+      "rows_match": true,
+      "cols_match": true,
+      "sums_match": true,
+      "metric_summary": "Critical Roles: 105",
+      "extra_metrics": {
+        "critical_roles": 105
+      },
+      "status": "PASS"
+    },
+    {
+      "workbook": "legal_cases_tracker.xlsx",
+      "target_table": "grievances_litigation",
+      "rows_clean": 420,
+      "rows_messy": 420,
+      "rows_match": true,
+      "cols_match": true,
+      "sums_match": true,
+      "metric_summary": "Active Cases: 420",
+      "extra_metrics": {
+        "active_cases": 420
+      },
+      "status": "PASS"
+    }
+  ],
+  "provenance_sql_audit": {
+    "total_with_sql": 558,
+    "executed_non_empty": 549,
+    "executed_empty": 9,
+    "errors_count": 0,
+    "errors": []
+  },
+  "office_orders_audit": {
+    "total_office_orders": 130,
+    "missing_employees_count": 0,
+    "missing_work_centres_count": 0,
+    "status": "PASS"
+  },
+  "agt_eligibility_audit": {
+    "delhi_dehradun_eligible_overstay_non_exempt": 844,
+    "status": "PASS"
+  },
+  "divestment_notes_audit": {
+    "negative_pbt_or_pec_fields_count": 2,
+    "fields_identified": [
+      "FLD-CHP",
+      "FLD-BOR"
+    ],
+    "doc_linked_entities": "FLD-CHP;FLD-BOR;WC-JOR",
+    "status": "PASS"
+  },
+  "ls2067_audit": {
+    "grounding_text_exists": true,
+    "provenance_sql_matches_figures": true,
+    "status": "PASS"
+  },
+  "pq_mp_names_audit": {
+    "total_synthetic_pqs_audited": 36,
+    "csv_violations_count": 0,
+    "doc_violations_count": 0,
+    "status": "PASS"
+  },
+  "policy_coverage_audit": {
+    "total_target_questions": 30,
+    "covered_questions_count": 30,
+    "coverage_pct": 100.0,
+    "status": "PASS"
+  },
+  "defects": [],
+  "duration_seconds": 25.35
+}

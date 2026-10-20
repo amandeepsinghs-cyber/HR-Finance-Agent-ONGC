@@ -1,0 +1,2137 @@
+{
+  "job_id": "bd9f1d4d-6532-4a73-a6d1-f29490dec0a5",
+  "total_bytes_processed": 47127,
+  "executed_at": "2026-10-20T06:38:49.443481+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 265,
+  "columns": [
+    "field_name",
+    "fiscal_year",
+    "gross_revenue_inr_cr",
+    "total_opex_inr_cr",
+    "ebitda_inr_cr",
+    "pbt_inr_cr"
+  ],
+  "rows": [
+    {
+      "field_name": "Adiyakkamangalam",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 406.5,
+      "total_opex_inr_cr": 143.48,
+      "ebitda_inr_cr": 181.86,
+      "pbt_inr_cr": 140.84
+    },
+    {
+      "field_name": "Adiyakkamangalam",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 427.81,
+      "total_opex_inr_cr": 138.77,
+      "ebitda_inr_cr": 203.81,
+      "pbt_inr_cr": 163.54
+    },
+    {
+      "field_name": "Adiyakkamangalam",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 456.85,
+      "total_opex_inr_cr": 136.97,
+      "ebitda_inr_cr": 228.85,
+      "pbt_inr_cr": 189.68
+    },
+    {
+      "field_name": "Adiyakkamangalam",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 424.79,
+      "total_opex_inr_cr": 136.46,
+      "ebitda_inr_cr": 186.38,
+      "pbt_inr_cr": 148.98
+    },
+    {
+      "field_name": "Adiyakkamangalam",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 382.21,
+      "total_opex_inr_cr": 127.77,
+      "ebitda_inr_cr": 174.85,
+      "pbt_inr_cr": 138.69
+    },
+    {
+      "field_name": "Agartala Dome",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 214.88,
+      "total_opex_inr_cr": 161.94,
+      "ebitda_inr_cr": 33.6,
+      "pbt_inr_cr": -115.82
+    },
+    {
+      "field_name": "Agartala Dome",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 483.81,
+      "total_opex_inr_cr": 155.74,
+      "ebitda_inr_cr": 284.53,
+      "pbt_inr_cr": 136.29
+    },
+    {
+      "field_name": "Agartala Dome",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 519.34,
+      "total_opex_inr_cr": 150.6,
+      "ebitda_inr_cr": 322.0,
+      "pbt_inr_cr": 178.1
+    },
+    {
+      "field_name": "Agartala Dome",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 473.08,
+      "total_opex_inr_cr": 145.34,
+      "ebitda_inr_cr": 286.11,
+      "pbt_inr_cr": 156.78
+    },
+    {
+      "field_name": "Agartala Dome",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 471.07,
+      "total_opex_inr_cr": 135.79,
+      "ebitda_inr_cr": 287.7,
+      "pbt_inr_cr": 166.29
+    },
+    {
+      "field_name": "Ankleshwar",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 1440.29,
+      "total_opex_inr_cr": 206.63,
+      "ebitda_inr_cr": 946.13,
+      "pbt_inr_cr": 800.81
+    },
+    {
+      "field_name": "Ankleshwar",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 1511.59,
+      "total_opex_inr_cr": 203.9,
+      "ebitda_inr_cr": 1006.53,
+      "pbt_inr_cr": 864.22
+    },
+    {
+      "field_name": "Ankleshwar",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 1628.68,
+      "total_opex_inr_cr": 201.52,
+      "ebitda_inr_cr": 1102.64,
+      "pbt_inr_cr": 963.0
+    },
+    {
+      "field_name": "Ankleshwar",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 1506.08,
+      "total_opex_inr_cr": 198.0,
+      "ebitda_inr_cr": 946.61,
+      "pbt_inr_cr": 814.01
+    },
+    {
+      "field_name": "Ankleshwar",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 1349.16,
+      "total_opex_inr_cr": 191.88,
+      "ebitda_inr_cr": 876.33,
+      "pbt_inr_cr": 748.68
+    },
+    {
+      "field_name": "B-173A / B-Series Clusters",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 1184.62,
+      "total_opex_inr_cr": 550.06,
+      "ebitda_inr_cr": 453.5,
+      "pbt_inr_cr": -485.26
+    },
+    {
+      "field_name": "B-173A / B-Series Clusters",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 2148.49,
+      "total_opex_inr_cr": 543.93,
+      "ebitda_inr_cr": 1324.01,
+      "pbt_inr_cr": 401.77
+    },
+    {
+      "field_name": "B-173A / B-Series Clusters",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 2275.72,
+      "total_opex_inr_cr": 533.73,
+      "ebitda_inr_cr": 1444.6,
+      "pbt_inr_cr": 561.26
+    },
+    {
+      "field_name": "B-173A / B-Series Clusters",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 2061.36,
+      "total_opex_inr_cr": 507.68,
+      "ebitda_inr_cr": 1272.71,
+      "pbt_inr_cr": 477.09
+    },
+    {
+      "field_name": "B-173A / B-Series Clusters",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 1951.23,
+      "total_opex_inr_cr": 484.54,
+      "ebitda_inr_cr": 1207.51,
+      "pbt_inr_cr": 472.91
+    },
+    {
+      "field_name": "Baghewala",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 508.32,
+      "total_opex_inr_cr": 100.51,
+      "ebitda_inr_cr": 306.33,
+      "pbt_inr_cr": 255.04
+    },
+    {
+      "field_name": "Baghewala",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 532.11,
+      "total_opex_inr_cr": 99.49,
+      "ebitda_inr_cr": 326.6,
+      "pbt_inr_cr": 276.51
+    },
+    {
+      "field_name": "Baghewala",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 572.91,
+      "total_opex_inr_cr": 97.93,
+      "ebitda_inr_cr": 360.83,
+      "pbt_inr_cr": 311.71
+    },
+    {
+      "field_name": "Baghewala",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 530.06,
+      "total_opex_inr_cr": 98.57,
+      "ebitda_inr_cr": 304.27,
+      "pbt_inr_cr": 257.6
+    },
+    {
+      "field_name": "Baghewala",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 474.8,
+      "total_opex_inr_cr": 93.69,
+      "ebitda_inr_cr": 282.24,
+      "pbt_inr_cr": 237.32
+    },
+    {
+      "field_name": "Balol",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 507.58,
+      "total_opex_inr_cr": 126.88,
+      "ebitda_inr_cr": 279.37,
+      "pbt_inr_cr": 228.16
+    },
+    {
+      "field_name": "Balol",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 535.02,
+      "total_opex_inr_cr": 125.88,
+      "ebitda_inr_cr": 302.55,
+      "pbt_inr_cr": 252.18
+    },
+    {
+      "field_name": "Balol",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 575.74,
+      "total_opex_inr_cr": 128.19,
+      "ebitda_inr_cr": 332.83,
+      "pbt_inr_cr": 283.47
+    },
+    {
+      "field_name": "Balol",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 532.97,
+      "total_opex_inr_cr": 130.69,
+      "ebitda_inr_cr": 274.37,
+      "pbt_inr_cr": 227.44
+    },
+    {
+      "field_name": "Balol",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 477.54,
+      "total_opex_inr_cr": 125.83,
+      "ebitda_inr_cr": 252.27,
+      "pbt_inr_cr": 207.09
+    },
+    {
+      "field_name": "Baramura",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 304.07,
+      "total_opex_inr_cr": 230.58,
+      "ebitda_inr_cr": 46.12,
+      "pbt_inr_cr": -165.33
+    },
+    {
+      "field_name": "Baramura",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 672.43,
+      "total_opex_inr_cr": 219.58,
+      "ebitda_inr_cr": 392.33,
+      "pbt_inr_cr": 186.29
+    },
+    {
+      "field_name": "Baramura",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 708.3,
+      "total_opex_inr_cr": 210.13,
+      "ebitda_inr_cr": 434.42,
+      "pbt_inr_cr": 238.16
+    },
+    {
+      "field_name": "Baramura",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 640.38,
+      "total_opex_inr_cr": 202.12,
+      "ebitda_inr_cr": 381.91,
+      "pbt_inr_cr": 206.84
+    },
+    {
+      "field_name": "Baramura",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 626.19,
+      "total_opex_inr_cr": 187.13,
+      "ebitda_inr_cr": 375.81,
+      "pbt_inr_cr": 214.41
+    },
+    {
+      "field_name": "Bassein",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 8540.9,
+      "total_opex_inr_cr": 3053.8,
+      "ebitda_inr_cr": 4181.66,
+      "pbt_inr_cr": -2586.62
+    },
+    {
+      "field_name": "Bassein",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 15543.34,
+      "total_opex_inr_cr": 3018.04,
+      "ebitda_inr_cr": 10495.67,
+      "pbt_inr_cr": 3823.89
+    },
+    {
+      "field_name": "Bassein",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 16543.98,
+      "total_opex_inr_cr": 2940.32,
+      "ebitda_inr_cr": 11441.64,
+      "pbt_inr_cr": 5020.15
+    },
+    {
+      "field_name": "Bassein",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 14972.9,
+      "total_opex_inr_cr": 2725.87,
+      "ebitda_inr_cr": 10206.11,
+      "pbt_inr_cr": 4426.87
+    },
+    {
+      "field_name": "Bassein",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 14092.95,
+      "total_opex_inr_cr": 2548.76,
+      "ebitda_inr_cr": 9672.22,
+      "pbt_inr_cr": 4366.37
+    },
+    {
+      "field_name": "Bechraji",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 639.53,
+      "total_opex_inr_cr": 142.74,
+      "ebitda_inr_cr": 369.12,
+      "pbt_inr_cr": 304.6
+    },
+    {
+      "field_name": "Bechraji",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 675.89,
+      "total_opex_inr_cr": 142.04,
+      "ebitda_inr_cr": 399.19,
+      "pbt_inr_cr": 335.56
+    },
+    {
+      "field_name": "Bechraji",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 726.45,
+      "total_opex_inr_cr": 144.54,
+      "ebitda_inr_cr": 437.16,
+      "pbt_inr_cr": 374.87
+    },
+    {
+      "field_name": "Bechraji",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 671.12,
+      "total_opex_inr_cr": 146.34,
+      "ebitda_inr_cr": 363.71,
+      "pbt_inr_cr": 304.62
+    },
+    {
+      "field_name": "Bechraji",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 600.42,
+      "total_opex_inr_cr": 141.02,
+      "ebitda_inr_cr": 334.37,
+      "pbt_inr_cr": 277.56
+    },
+    {
+      "field_name": "Borholla",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 381.87,
+      "total_opex_inr_cr": 288.08,
+      "ebitda_inr_cr": 17.56,
+      "pbt_inr_cr": -20.97
+    },
+    {
+      "field_name": "Borholla",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 402.79,
+      "total_opex_inr_cr": 273.14,
+      "ebitda_inr_cr": 49.4,
+      "pbt_inr_cr": 11.48
+    },
+    {
+      "field_name": "Borholla",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 428.28,
+      "total_opex_inr_cr": 265.14,
+      "ebitda_inr_cr": 77.8,
+      "pbt_inr_cr": 41.08
+    },
+    {
+      "field_name": "Borholla",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 393.02,
+      "total_opex_inr_cr": 255.61,
+      "ebitda_inr_cr": 43.08,
+      "pbt_inr_cr": 8.48
+    },
+    {
+      "field_name": "Borholla",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 350.63,
+      "total_opex_inr_cr": 241.23,
+      "ebitda_inr_cr": 36.39,
+      "pbt_inr_cr": 3.22
+    },
+    {
+      "field_name": "C-Series Clusters",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 1122.05,
+      "total_opex_inr_cr": 529.7,
+      "ebitda_inr_cr": 420.85,
+      "pbt_inr_cr": -468.3
+    },
+    {
+      "field_name": "C-Series Clusters",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 2042.49,
+      "total_opex_inr_cr": 525.22,
+      "ebitda_inr_cr": 1250.56,
+      "pbt_inr_cr": 373.84
+    },
+    {
+      "field_name": "C-Series Clusters",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 2163.62,
+      "total_opex_inr_cr": 515.71,
+      "ebitda_inr_cr": 1365.16,
+      "pbt_inr_cr": 525.34
+    },
+    {
+      "field_name": "C-Series Clusters",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 1949.39,
+      "total_opex_inr_cr": 489.43,
+      "ebitda_inr_cr": 1194.24,
+      "pbt_inr_cr": 441.82
+    },
+    {
+      "field_name": "C-Series Clusters",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 1853.35,
+      "total_opex_inr_cr": 468.83,
+      "ebitda_inr_cr": 1138.34,
+      "pbt_inr_cr": 440.57
+    },
+    {
+      "field_name": "CBM Bokaro",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 335.8,
+      "total_opex_inr_cr": 249.68,
+      "ebitda_inr_cr": 55.9,
+      "pbt_inr_cr": -177.62
+    },
+    {
+      "field_name": "CBM Bokaro",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 755.41,
+      "total_opex_inr_cr": 239.94,
+      "ebitda_inr_cr": 447.48,
+      "pbt_inr_cr": 216.01
+    },
+    {
+      "field_name": "CBM Bokaro",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 811.01,
+      "total_opex_inr_cr": 234.22,
+      "ebitda_inr_cr": 503.8,
+      "pbt_inr_cr": 279.08
+    },
+    {
+      "field_name": "CBM Bokaro",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 742.7,
+      "total_opex_inr_cr": 225.61,
+      "ebitda_inr_cr": 451.73,
+      "pbt_inr_cr": 248.7
+    },
+    {
+      "field_name": "CBM Bokaro",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 735.79,
+      "total_opex_inr_cr": 211.44,
+      "ebitda_inr_cr": 450.04,
+      "pbt_inr_cr": 260.4
+    },
+    {
+      "field_name": "Cambay",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 328.84,
+      "total_opex_inr_cr": 203.1,
+      "ebitda_inr_cr": 96.14,
+      "pbt_inr_cr": -132.54
+    },
+    {
+      "field_name": "Cambay",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 728.64,
+      "total_opex_inr_cr": 196.51,
+      "ebitda_inr_cr": 466.55,
+      "pbt_inr_cr": 243.29
+    },
+    {
+      "field_name": "Cambay",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 771.52,
+      "total_opex_inr_cr": 188.4,
+      "ebitda_inr_cr": 513.68,
+      "pbt_inr_cr": 299.9
+    },
+    {
+      "field_name": "Cambay",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 692.66,
+      "total_opex_inr_cr": 175.5,
+      "ebitda_inr_cr": 456.21,
+      "pbt_inr_cr": 266.86
+    },
+    {
+      "field_name": "Cambay",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 680.99,
+      "total_opex_inr_cr": 161.28,
+      "ebitda_inr_cr": 450.93,
+      "pbt_inr_cr": 275.41
+    },
+    {
+      "field_name": "Champang",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 363.66,
+      "total_opex_inr_cr": 282.04,
+      "ebitda_inr_cr": 9.02,
+      "pbt_inr_cr": -27.67
+    },
+    {
+      "field_name": "Champang",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 380.08,
+      "total_opex_inr_cr": 266.13,
+      "ebitda_inr_cr": 38.22,
+      "pbt_inr_cr": 2.44
+    },
+    {
+      "field_name": "Champang",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 404.82,
+      "total_opex_inr_cr": 258.48,
+      "ebitda_inr_cr": 65.68,
+      "pbt_inr_cr": 30.97
+    },
+    {
+      "field_name": "Champang",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 372.04,
+      "total_opex_inr_cr": 249.24,
+      "ebitda_inr_cr": 33.51,
+      "pbt_inr_cr": 0.75
+    },
+    {
+      "field_name": "Champang",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 329.6,
+      "total_opex_inr_cr": 234.71,
+      "ebitda_inr_cr": 26.25,
+      "pbt_inr_cr": -4.93
+    },
+    {
+      "field_name": "Charali",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 298.18,
+      "total_opex_inr_cr": 88.61,
+      "ebitda_inr_cr": 150.04,
+      "pbt_inr_cr": 119.95
+    },
+    {
+      "field_name": "Charali",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 310.83,
+      "total_opex_inr_cr": 84.49,
+      "ebitda_inr_cr": 164.42,
+      "pbt_inr_cr": 135.16
+    },
+    {
+      "field_name": "Charali",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 332.49,
+      "total_opex_inr_cr": 82.42,
+      "ebitda_inr_cr": 183.82,
+      "pbt_inr_cr": 155.31
+    },
+    {
+      "field_name": "Charali",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 304.93,
+      "total_opex_inr_cr": 79.86,
+      "ebitda_inr_cr": 151.89,
+      "pbt_inr_cr": 125.04
+    },
+    {
+      "field_name": "Charali",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 271.21,
+      "total_opex_inr_cr": 76.07,
+      "ebitda_inr_cr": 138.67,
+      "pbt_inr_cr": 113.01
+    },
+    {
+      "field_name": "D-1 Field",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 2778.7,
+      "total_opex_inr_cr": 712.92,
+      "ebitda_inr_cr": 1372.5,
+      "pbt_inr_cr": 914.58
+    },
+    {
+      "field_name": "D-1 Field",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 2936.4,
+      "total_opex_inr_cr": 711.11,
+      "ebitda_inr_cr": 1494.25,
+      "pbt_inr_cr": 1042.74
+    },
+    {
+      "field_name": "D-1 Field",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 3149.24,
+      "total_opex_inr_cr": 716.42,
+      "ebitda_inr_cr": 1648.71,
+      "pbt_inr_cr": 1207.67
+    },
+    {
+      "field_name": "D-1 Field",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 2917.97,
+      "total_opex_inr_cr": 721.94,
+      "ebitda_inr_cr": 1350.58,
+      "pbt_inr_cr": 930.95
+    },
+    {
+      "field_name": "D-1 Field",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 2619.69,
+      "total_opex_inr_cr": 715.78,
+      "ebitda_inr_cr": 1204.83,
+      "pbt_inr_cr": 799.99
+    },
+    {
+      "field_name": "Daman",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 755.72,
+      "total_opex_inr_cr": 410.51,
+      "ebitda_inr_cr": 229.7,
+      "pbt_inr_cr": -369.21
+    },
+    {
+      "field_name": "Daman",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 1500.53,
+      "total_opex_inr_cr": 429.57,
+      "ebitda_inr_cr": 875.02,
+      "pbt_inr_cr": 230.96
+    },
+    {
+      "field_name": "Daman",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 1730.58,
+      "total_opex_inr_cr": 446.06,
+      "ebitda_inr_cr": 1058.36,
+      "pbt_inr_cr": 386.61
+    },
+    {
+      "field_name": "Daman",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 1683.99,
+      "total_opex_inr_cr": 446.16,
+      "ebitda_inr_cr": 1008.29,
+      "pbt_inr_cr": 358.29
+    },
+    {
+      "field_name": "Daman",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 1723.19,
+      "total_opex_inr_cr": 447.9,
+      "ebitda_inr_cr": 1046.4,
+      "pbt_inr_cr": 397.66
+    },
+    {
+      "field_name": "Gandhar",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 9074.78,
+      "total_opex_inr_cr": 1325.83,
+      "ebitda_inr_cr": 6078.15,
+      "pbt_inr_cr": 4399.01
+    },
+    {
+      "field_name": "Gandhar",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 11054.38,
+      "total_opex_inr_cr": 1308.47,
+      "ebitda_inr_cr": 7851.41,
+      "pbt_inr_cr": 6212.36
+    },
+    {
+      "field_name": "Gandhar",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 11874.51,
+      "total_opex_inr_cr": 1281.94,
+      "ebitda_inr_cr": 8550.91,
+      "pbt_inr_cr": 6964.58
+    },
+    {
+      "field_name": "Gandhar",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 10896.63,
+      "total_opex_inr_cr": 1211.24,
+      "ebitda_inr_cr": 7473.25,
+      "pbt_inr_cr": 6022.41
+    },
+    {
+      "field_name": "Gandhar",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 10043.62,
+      "total_opex_inr_cr": 1154.41,
+      "ebitda_inr_cr": 7075.78,
+      "pbt_inr_cr": 5702.6
+    },
+    {
+      "field_name": "Geleki",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 2169.5,
+      "total_opex_inr_cr": 496.98,
+      "ebitda_inr_cr": 1239.42,
+      "pbt_inr_cr": 1020.53
+    },
+    {
+      "field_name": "Geleki",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 2291.03,
+      "total_opex_inr_cr": 478.29,
+      "ebitda_inr_cr": 1356.29,
+      "pbt_inr_cr": 1140.6
+    },
+    {
+      "field_name": "Geleki",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 2476.46,
+      "total_opex_inr_cr": 468.6,
+      "ebitda_inr_cr": 1514.41,
+      "pbt_inr_cr": 1302.07
+    },
+    {
+      "field_name": "Geleki",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 2307.66,
+      "total_opex_inr_cr": 458.89,
+      "ebitda_inr_cr": 1294.94,
+      "pbt_inr_cr": 1091.77
+    },
+    {
+      "field_name": "Geleki",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 2068.48,
+      "total_opex_inr_cr": 438.34,
+      "ebitda_inr_cr": 1199.4,
+      "pbt_inr_cr": 1003.71
+    },
+    {
+      "field_name": "Heera",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 2393.5,
+      "total_opex_inr_cr": 737.97,
+      "ebitda_inr_cr": 1058.36,
+      "pbt_inr_cr": 663.89
+    },
+    {
+      "field_name": "Heera",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 2524.87,
+      "total_opex_inr_cr": 714.84,
+      "ebitda_inr_cr": 1181.44,
+      "pbt_inr_cr": 793.21
+    },
+    {
+      "field_name": "Heera",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 2726.52,
+      "total_opex_inr_cr": 700.06,
+      "ebitda_inr_cr": 1347.6,
+      "pbt_inr_cr": 965.77
+    },
+    {
+      "field_name": "Heera",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 2522.45,
+      "total_opex_inr_cr": 677.04,
+      "ebitda_inr_cr": 1114.55,
+      "pbt_inr_cr": 751.78
+    },
+    {
+      "field_name": "Heera",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 2276.71,
+      "total_opex_inr_cr": 655.94,
+      "ebitda_inr_cr": 1013.22,
+      "pbt_inr_cr": 661.36
+    },
+    {
+      "field_name": "Jhalora",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 560.65,
+      "total_opex_inr_cr": 121.65,
+      "ebitda_inr_cr": 327.08,
+      "pbt_inr_cr": 270.51
+    },
+    {
+      "field_name": "Jhalora",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 590.45,
+      "total_opex_inr_cr": 117.82,
+      "ebitda_inr_cr": 354.99,
+      "pbt_inr_cr": 299.4
+    },
+    {
+      "field_name": "Jhalora",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 633.26,
+      "total_opex_inr_cr": 114.67,
+      "ebitda_inr_cr": 392.41,
+      "pbt_inr_cr": 338.11
+    },
+    {
+      "field_name": "Jhalora",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 589.35,
+      "total_opex_inr_cr": 112.64,
+      "ebitda_inr_cr": 335.26,
+      "pbt_inr_cr": 283.37
+    },
+    {
+      "field_name": "Jhalora",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 524.76,
+      "total_opex_inr_cr": 105.88,
+      "ebitda_inr_cr": 309.61,
+      "pbt_inr_cr": 259.96
+    },
+    {
+      "field_name": "Jharia CBM",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 379.98,
+      "total_opex_inr_cr": 293.93,
+      "ebitda_inr_cr": 51.85,
+      "pbt_inr_cr": -212.39
+    },
+    {
+      "field_name": "Jharia CBM",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 853.73,
+      "total_opex_inr_cr": 282.1,
+      "ebitda_inr_cr": 494.79,
+      "pbt_inr_cr": 233.2
+    },
+    {
+      "field_name": "Jharia CBM",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 912.0,
+      "total_opex_inr_cr": 274.56,
+      "ebitda_inr_cr": 555.36,
+      "pbt_inr_cr": 302.65
+    },
+    {
+      "field_name": "Jharia CBM",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 839.4,
+      "total_opex_inr_cr": 265.64,
+      "ebitda_inr_cr": 499.89,
+      "pbt_inr_cr": 270.42
+    },
+    {
+      "field_name": "Jharia CBM",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 826.87,
+      "total_opex_inr_cr": 248.15,
+      "ebitda_inr_cr": 495.21,
+      "pbt_inr_cr": 282.08
+    },
+    {
+      "field_name": "Jotana",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 455.28,
+      "total_opex_inr_cr": 120.23,
+      "ebitda_inr_cr": 244.16,
+      "pbt_inr_cr": 198.22
+    },
+    {
+      "field_name": "Jotana",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 478.72,
+      "total_opex_inr_cr": 119.38,
+      "ebitda_inr_cr": 263.97,
+      "pbt_inr_cr": 218.9
+    },
+    {
+      "field_name": "Jotana",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 516.26,
+      "total_opex_inr_cr": 121.78,
+      "ebitda_inr_cr": 291.62,
+      "pbt_inr_cr": 247.35
+    },
+    {
+      "field_name": "Jotana",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 476.1,
+      "total_opex_inr_cr": 124.11,
+      "ebitda_inr_cr": 237.72,
+      "pbt_inr_cr": 195.8
+    },
+    {
+      "field_name": "Jotana",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 427.63,
+      "total_opex_inr_cr": 119.23,
+      "ebitda_inr_cr": 219.35,
+      "pbt_inr_cr": 178.89
+    },
+    {
+      "field_name": "KG-DWN-98/2 Cluster-II",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 0.0,
+      "total_opex_inr_cr": 638.32,
+      "ebitda_inr_cr": -638.32,
+      "pbt_inr_cr": -638.32
+    },
+    {
+      "field_name": "KG-DWN-98/2 Cluster-II",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 0.0,
+      "total_opex_inr_cr": 654.76,
+      "ebitda_inr_cr": -654.76,
+      "pbt_inr_cr": -654.76
+    },
+    {
+      "field_name": "KG-DWN-98/2 Cluster-II",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 389.22,
+      "total_opex_inr_cr": 731.06,
+      "ebitda_inr_cr": -406.05,
+      "pbt_inr_cr": -495.1
+    },
+    {
+      "field_name": "KG-DWN-98/2 Cluster-II",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 6676.23,
+      "total_opex_inr_cr": 1286.35,
+      "ebitda_inr_cr": 4170.58,
+      "pbt_inr_cr": 2669.35
+    },
+    {
+      "field_name": "KG-DWN-98/2 Cluster-II",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 11506.51,
+      "total_opex_inr_cr": 1686.13,
+      "ebitda_inr_cr": 7824.99,
+      "pbt_inr_cr": 5230.72
+    },
+    {
+      "field_name": "Kalol",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 1655.46,
+      "total_opex_inr_cr": 317.51,
+      "ebitda_inr_cr": 1007.47,
+      "pbt_inr_cr": 840.45
+    },
+    {
+      "field_name": "Kalol",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 1752.31,
+      "total_opex_inr_cr": 309.13,
+      "ebitda_inr_cr": 1094.06,
+      "pbt_inr_cr": 929.1
+    },
+    {
+      "field_name": "Kalol",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 1877.03,
+      "total_opex_inr_cr": 301.67,
+      "ebitda_inr_cr": 1201.35,
+      "pbt_inr_cr": 1040.42
+    },
+    {
+      "field_name": "Kalol",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 1734.98,
+      "total_opex_inr_cr": 293.61,
+      "ebitda_inr_cr": 1024.97,
+      "pbt_inr_cr": 872.22
+    },
+    {
+      "field_name": "Kalol",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 1558.02,
+      "total_opex_inr_cr": 278.43,
+      "ebitda_inr_cr": 955.15,
+      "pbt_inr_cr": 807.76
+    },
+    {
+      "field_name": "Kathana",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 1705.92,
+      "total_opex_inr_cr": 336.95,
+      "ebitda_inr_cr": 1028.42,
+      "pbt_inr_cr": 856.3
+    },
+    {
+      "field_name": "Kathana",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 1800.45,
+      "total_opex_inr_cr": 328.96,
+      "ebitda_inr_cr": 1112.78,
+      "pbt_inr_cr": 943.29
+    },
+    {
+      "field_name": "Kathana",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 1936.9,
+      "total_opex_inr_cr": 322.67,
+      "ebitda_inr_cr": 1228.29,
+      "pbt_inr_cr": 1062.22
+    },
+    {
+      "field_name": "Kathana",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 1782.59,
+      "total_opex_inr_cr": 315.23,
+      "ebitda_inr_cr": 1039.54,
+      "pbt_inr_cr": 882.59
+    },
+    {
+      "field_name": "Kathana",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 1598.15,
+      "total_opex_inr_cr": 298.48,
+      "ebitda_inr_cr": 966.88,
+      "pbt_inr_cr": 815.69
+    },
+    {
+      "field_name": "Kesanapalli",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 639.85,
+      "total_opex_inr_cr": 180.33,
+      "ebitda_inr_cr": 331.78,
+      "pbt_inr_cr": 267.21
+    },
+    {
+      "field_name": "Kesanapalli",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 675.62,
+      "total_opex_inr_cr": 172.48,
+      "ebitda_inr_cr": 368.53,
+      "pbt_inr_cr": 304.92
+    },
+    {
+      "field_name": "Kesanapalli",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 727.69,
+      "total_opex_inr_cr": 168.32,
+      "ebitda_inr_cr": 414.38,
+      "pbt_inr_cr": 351.98
+    },
+    {
+      "field_name": "Kesanapalli",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 673.25,
+      "total_opex_inr_cr": 164.32,
+      "ebitda_inr_cr": 347.35,
+      "pbt_inr_cr": 288.06
+    },
+    {
+      "field_name": "Kesanapalli",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 600.92,
+      "total_opex_inr_cr": 154.41,
+      "ebitda_inr_cr": 321.38,
+      "pbt_inr_cr": 264.51
+    },
+    {
+      "field_name": "Khoraghat",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 411.9,
+      "total_opex_inr_cr": 298.56,
+      "ebitda_inr_cr": 31.11,
+      "pbt_inr_cr": -10.45
+    },
+    {
+      "field_name": "Khoraghat",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 433.56,
+      "total_opex_inr_cr": 282.56,
+      "ebitda_inr_cr": 64.62,
+      "pbt_inr_cr": 23.8
+    },
+    {
+      "field_name": "Khoraghat",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 462.41,
+      "total_opex_inr_cr": 274.55,
+      "ebitda_inr_cr": 95.72,
+      "pbt_inr_cr": 56.07
+    },
+    {
+      "field_name": "Khoraghat",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 424.75,
+      "total_opex_inr_cr": 265.11,
+      "ebitda_inr_cr": 57.69,
+      "pbt_inr_cr": 20.29
+    },
+    {
+      "field_name": "Khoraghat",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 379.86,
+      "total_opex_inr_cr": 250.46,
+      "ebitda_inr_cr": 50.29,
+      "pbt_inr_cr": 14.35
+    },
+    {
+      "field_name": "Konaban",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 392.5,
+      "total_opex_inr_cr": 238.57,
+      "ebitda_inr_cr": 118.61,
+      "pbt_inr_cr": -154.34
+    },
+    {
+      "field_name": "Konaban",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 881.01,
+      "total_opex_inr_cr": 229.89,
+      "ebitda_inr_cr": 571.83,
+      "pbt_inr_cr": 301.88
+    },
+    {
+      "field_name": "Konaban",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 947.33,
+      "total_opex_inr_cr": 222.73,
+      "ebitda_inr_cr": 639.34,
+      "pbt_inr_cr": 376.85
+    },
+    {
+      "field_name": "Konaban",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 865.05,
+      "total_opex_inr_cr": 213.34,
+      "ebitda_inr_cr": 575.59,
+      "pbt_inr_cr": 339.1
+    },
+    {
+      "field_name": "Konaban",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 859.83,
+      "total_opex_inr_cr": 199.17,
+      "ebitda_inr_cr": 573.82,
+      "pbt_inr_cr": 352.21
+    },
+    {
+      "field_name": "Kosamba",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 2123.56,
+      "total_opex_inr_cr": 262.47,
+      "ebitda_inr_cr": 1437.16,
+      "pbt_inr_cr": 1222.89
+    },
+    {
+      "field_name": "Kosamba",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 2239.0,
+      "total_opex_inr_cr": 256.69,
+      "ebitda_inr_cr": 1536.22,
+      "pbt_inr_cr": 1325.43
+    },
+    {
+      "field_name": "Kosamba",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 2407.4,
+      "total_opex_inr_cr": 254.76,
+      "ebitda_inr_cr": 1672.95,
+      "pbt_inr_cr": 1466.53
+    },
+    {
+      "field_name": "Kosamba",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 2215.65,
+      "total_opex_inr_cr": 249.98,
+      "ebitda_inr_cr": 1433.91,
+      "pbt_inr_cr": 1238.83
+    },
+    {
+      "field_name": "Kosamba",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 1990.07,
+      "total_opex_inr_cr": 241.16,
+      "ebitda_inr_cr": 1334.5,
+      "pbt_inr_cr": 1146.22
+    },
+    {
+      "field_name": "Kuthalam",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 212.91,
+      "total_opex_inr_cr": 239.15,
+      "ebitda_inr_cr": -45.4,
+      "pbt_inr_cr": -193.45
+    },
+    {
+      "field_name": "Kuthalam",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 472.79,
+      "total_opex_inr_cr": 229.98,
+      "ebitda_inr_cr": 200.26,
+      "pbt_inr_cr": 55.39
+    },
+    {
+      "field_name": "Kuthalam",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 500.34,
+      "total_opex_inr_cr": 224.24,
+      "ebitda_inr_cr": 231.07,
+      "pbt_inr_cr": 92.44
+    },
+    {
+      "field_name": "Kuthalam",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 451.56,
+      "total_opex_inr_cr": 215.41,
+      "ebitda_inr_cr": 196.41,
+      "pbt_inr_cr": 72.96
+    },
+    {
+      "field_name": "Kuthalam",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 442.88,
+      "total_opex_inr_cr": 196.27,
+      "ebitda_inr_cr": 201.88,
+      "pbt_inr_cr": 87.73
+    },
+    {
+      "field_name": "Lakwa",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 2515.57,
+      "total_opex_inr_cr": 724.21,
+      "ebitda_inr_cr": 1318.49,
+      "pbt_inr_cr": 905.7
+    },
+    {
+      "field_name": "Lakwa",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 2970.39,
+      "total_opex_inr_cr": 695.41,
+      "ebitda_inr_cr": 1747.43,
+      "pbt_inr_cr": 1342.91
+    },
+    {
+      "field_name": "Lakwa",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 3212.26,
+      "total_opex_inr_cr": 679.44,
+      "ebitda_inr_cr": 1960.81,
+      "pbt_inr_cr": 1566.2
+    },
+    {
+      "field_name": "Lakwa",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 2936.58,
+      "total_opex_inr_cr": 640.68,
+      "ebitda_inr_cr": 1675.18,
+      "pbt_inr_cr": 1314.15
+    },
+    {
+      "field_name": "Lakwa",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 2673.84,
+      "total_opex_inr_cr": 603.09,
+      "ebitda_inr_cr": 1571.49,
+      "pbt_inr_cr": 1231.0
+    },
+    {
+      "field_name": "Lanwa",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 434.16,
+      "total_opex_inr_cr": 117.78,
+      "ebitda_inr_cr": 229.71,
+      "pbt_inr_cr": 185.9
+    },
+    {
+      "field_name": "Lanwa",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 461.05,
+      "total_opex_inr_cr": 117.53,
+      "ebitda_inr_cr": 251.67,
+      "pbt_inr_cr": 208.26
+    },
+    {
+      "field_name": "Lanwa",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 492.76,
+      "total_opex_inr_cr": 119.37,
+      "ebitda_inr_cr": 275.2,
+      "pbt_inr_cr": 232.95
+    },
+    {
+      "field_name": "Lanwa",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 453.7,
+      "total_opex_inr_cr": 121.24,
+      "ebitda_inr_cr": 223.57,
+      "pbt_inr_cr": 183.62
+    },
+    {
+      "field_name": "Lanwa",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 407.39,
+      "total_opex_inr_cr": 116.78,
+      "ebitda_inr_cr": 205.77,
+      "pbt_inr_cr": 167.23
+    },
+    {
+      "field_name": "Linch",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 691.49,
+      "total_opex_inr_cr": 172.52,
+      "ebitda_inr_cr": 384.65,
+      "pbt_inr_cr": 294.7
+    },
+    {
+      "field_name": "Linch",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 770.72,
+      "total_opex_inr_cr": 170.81,
+      "ebitda_inr_cr": 454.51,
+      "pbt_inr_cr": 366.12
+    },
+    {
+      "field_name": "Linch",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 826.0,
+      "total_opex_inr_cr": 172.94,
+      "ebitda_inr_cr": 497.0,
+      "pbt_inr_cr": 411.24
+    },
+    {
+      "field_name": "Linch",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 758.32,
+      "total_opex_inr_cr": 172.95,
+      "ebitda_inr_cr": 413.92,
+      "pbt_inr_cr": 334.3
+    },
+    {
+      "field_name": "Linch",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 685.13,
+      "total_opex_inr_cr": 165.35,
+      "ebitda_inr_cr": 384.33,
+      "pbt_inr_cr": 308.53
+    },
+    {
+      "field_name": "Mori",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 331.43,
+      "total_opex_inr_cr": 146.4,
+      "ebitda_inr_cr": 118.86,
+      "pbt_inr_cr": 85.41
+    },
+    {
+      "field_name": "Mori",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 349.33,
+      "total_opex_inr_cr": 139.39,
+      "ebitda_inr_cr": 140.34,
+      "pbt_inr_cr": 107.45
+    },
+    {
+      "field_name": "Mori",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 376.42,
+      "total_opex_inr_cr": 135.25,
+      "ebitda_inr_cr": 166.16,
+      "pbt_inr_cr": 133.88
+    },
+    {
+      "field_name": "Mori",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 346.28,
+      "total_opex_inr_cr": 131.8,
+      "ebitda_inr_cr": 131.38,
+      "pbt_inr_cr": 100.88
+    },
+    {
+      "field_name": "Mori",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 311.07,
+      "total_opex_inr_cr": 123.36,
+      "ebitda_inr_cr": 122.93,
+      "pbt_inr_cr": 93.49
+    },
+    {
+      "field_name": "Motwan",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 520.89,
+      "total_opex_inr_cr": 82.82,
+      "ebitda_inr_cr": 334.08,
+      "pbt_inr_cr": 281.53
+    },
+    {
+      "field_name": "Motwan",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 550.07,
+      "total_opex_inr_cr": 81.81,
+      "ebitda_inr_cr": 358.66,
+      "pbt_inr_cr": 306.87
+    },
+    {
+      "field_name": "Motwan",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 591.53,
+      "total_opex_inr_cr": 80.99,
+      "ebitda_inr_cr": 392.67,
+      "pbt_inr_cr": 341.95
+    },
+    {
+      "field_name": "Motwan",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 548.65,
+      "total_opex_inr_cr": 80.04,
+      "ebitda_inr_cr": 336.93,
+      "pbt_inr_cr": 288.62
+    },
+    {
+      "field_name": "Motwan",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 487.52,
+      "total_opex_inr_cr": 77.19,
+      "ebitda_inr_cr": 308.81,
+      "pbt_inr_cr": 262.68
+    },
+    {
+      "field_name": "Mukta",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 2327.0,
+      "total_opex_inr_cr": 701.97,
+      "ebitda_inr_cr": 1044.94,
+      "pbt_inr_cr": 658.29
+    },
+    {
+      "field_name": "Mukta",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 2495.35,
+      "total_opex_inr_cr": 683.1,
+      "ebitda_inr_cr": 1192.0,
+      "pbt_inr_cr": 806.02
+    },
+    {
+      "field_name": "Mukta",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 2741.0,
+      "total_opex_inr_cr": 672.46,
+      "ebitda_inr_cr": 1386.95,
+      "pbt_inr_cr": 1001.26
+    },
+    {
+      "field_name": "Mukta",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 2844.49,
+      "total_opex_inr_cr": 675.85,
+      "ebitda_inr_cr": 1346.3,
+      "pbt_inr_cr": 934.37
+    },
+    {
+      "field_name": "Mukta",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 2386.47,
+      "total_opex_inr_cr": 638.28,
+      "ebitda_inr_cr": 1112.5,
+      "pbt_inr_cr": 741.79
+    },
+    {
+      "field_name": "Mumbai High North",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 17041.63,
+      "total_opex_inr_cr": 2677.4,
+      "ebitda_inr_cr": 10112.37,
+      "pbt_inr_cr": 7303.99
+    },
+    {
+      "field_name": "Mumbai High North",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 18100.08,
+      "total_opex_inr_cr": 2646.74,
+      "ebitda_inr_cr": 10947.16,
+      "pbt_inr_cr": 8164.03
+    },
+    {
+      "field_name": "Mumbai High North",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 19495.22,
+      "total_opex_inr_cr": 2615.91,
+      "ebitda_inr_cr": 12025.28,
+      "pbt_inr_cr": 9295.21
+    },
+    {
+      "field_name": "Mumbai High North",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 18255.22,
+      "total_opex_inr_cr": 2578.53,
+      "ebitda_inr_cr": 10387.41,
+      "pbt_inr_cr": 7762.07
+    },
+    {
+      "field_name": "Mumbai High North",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 16397.73,
+      "total_opex_inr_cr": 2515.44,
+      "ebitda_inr_cr": 9506.45,
+      "pbt_inr_cr": 6972.39
+    },
+    {
+      "field_name": "Mumbai High South",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 17203.71,
+      "total_opex_inr_cr": 2689.39,
+      "ebitda_inr_cr": 10222.02,
+      "pbt_inr_cr": 7386.86
+    },
+    {
+      "field_name": "Mumbai High South",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 18373.16,
+      "total_opex_inr_cr": 2664.78,
+      "ebitda_inr_cr": 11134.21,
+      "pbt_inr_cr": 8309.15
+    },
+    {
+      "field_name": "Mumbai High South",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 19828.68,
+      "total_opex_inr_cr": 2637.1,
+      "ebitda_inr_cr": 12254.51,
+      "pbt_inr_cr": 9477.82
+    },
+    {
+      "field_name": "Mumbai High South",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 18516.01,
+      "total_opex_inr_cr": 2594.76,
+      "ebitda_inr_cr": 10556.39,
+      "pbt_inr_cr": 7893.77
+    },
+    {
+      "field_name": "Mumbai High South",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 16711.24,
+      "total_opex_inr_cr": 2537.23,
+      "ebitda_inr_cr": 9714.51,
+      "pbt_inr_cr": 7132.1
+    },
+    {
+      "field_name": "Nandej",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 632.84,
+      "total_opex_inr_cr": 130.07,
+      "ebitda_inr_cr": 376.43,
+      "pbt_inr_cr": 312.58
+    },
+    {
+      "field_name": "Nandej",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 662.18,
+      "total_opex_inr_cr": 125.59,
+      "ebitda_inr_cr": 404.66,
+      "pbt_inr_cr": 342.32
+    },
+    {
+      "field_name": "Nandej",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 716.55,
+      "total_opex_inr_cr": 123.09,
+      "ebitda_inr_cr": 450.68,
+      "pbt_inr_cr": 389.25
+    },
+    {
+      "field_name": "Nandej",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 660.33,
+      "total_opex_inr_cr": 119.98,
+      "ebitda_inr_cr": 381.87,
+      "pbt_inr_cr": 323.73
+    },
+    {
+      "field_name": "Nandej",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 589.87,
+      "total_opex_inr_cr": 113.12,
+      "ebitda_inr_cr": 353.91,
+      "pbt_inr_cr": 298.1
+    },
+    {
+      "field_name": "Narimanam",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 559.86,
+      "total_opex_inr_cr": 164.43,
+      "ebitda_inr_cr": 283.66,
+      "pbt_inr_cr": 227.17
+    },
+    {
+      "field_name": "Narimanam",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 590.88,
+      "total_opex_inr_cr": 159.22,
+      "ebitda_inr_cr": 313.94,
+      "pbt_inr_cr": 258.31
+    },
+    {
+      "field_name": "Narimanam",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 636.56,
+      "total_opex_inr_cr": 157.7,
+      "ebitda_inr_cr": 352.02,
+      "pbt_inr_cr": 297.44
+    },
+    {
+      "field_name": "Narimanam",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 587.17,
+      "total_opex_inr_cr": 156.75,
+      "ebitda_inr_cr": 289.5,
+      "pbt_inr_cr": 237.8
+    },
+    {
+      "field_name": "Narimanam",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 528.12,
+      "total_opex_inr_cr": 147.27,
+      "ebitda_inr_cr": 270.88,
+      "pbt_inr_cr": 220.91
+    },
+    {
+      "field_name": "Nawagam",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 1464.9,
+      "total_opex_inr_cr": 295.67,
+      "ebitda_inr_cr": 876.79,
+      "pbt_inr_cr": 728.99
+    },
+    {
+      "field_name": "Nawagam",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 1545.93,
+      "total_opex_inr_cr": 286.53,
+      "ebitda_inr_cr": 951.4,
+      "pbt_inr_cr": 805.86
+    },
+    {
+      "field_name": "Nawagam",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 1655.87,
+      "total_opex_inr_cr": 279.07,
+      "ebitda_inr_cr": 1046.86,
+      "pbt_inr_cr": 904.87
+    },
+    {
+      "field_name": "Nawagam",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 1538.98,
+      "total_opex_inr_cr": 273.71,
+      "ebitda_inr_cr": 895.92,
+      "pbt_inr_cr": 760.42
+    },
+    {
+      "field_name": "Nawagam",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 1373.61,
+      "total_opex_inr_cr": 257.85,
+      "ebitda_inr_cr": 829.73,
+      "pbt_inr_cr": 699.77
+    },
+    {
+      "field_name": "Neelam",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 3396.63,
+      "total_opex_inr_cr": 712.37,
+      "ebitda_inr_cr": 1836.81,
+      "pbt_inr_cr": 1277.06
+    },
+    {
+      "field_name": "Neelam",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 3571.89,
+      "total_opex_inr_cr": 688.3,
+      "ebitda_inr_cr": 1994.34,
+      "pbt_inr_cr": 1445.08
+    },
+    {
+      "field_name": "Neelam",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 3844.46,
+      "total_opex_inr_cr": 672.41,
+      "ebitda_inr_cr": 2214.84,
+      "pbt_inr_cr": 1676.43
+    },
+    {
+      "field_name": "Neelam",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 3603.31,
+      "total_opex_inr_cr": 648.94,
+      "ebitda_inr_cr": 1910.35,
+      "pbt_inr_cr": 1392.17
+    },
+    {
+      "field_name": "Neelam",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 3225.87,
+      "total_opex_inr_cr": 626.45,
+      "ebitda_inr_cr": 1738.58,
+      "pbt_inr_cr": 1240.06
+    },
+    {
+      "field_name": "Panna",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 3054.93,
+      "total_opex_inr_cr": 888.88,
+      "ebitda_inr_cr": 1448.52,
+      "pbt_inr_cr": 655.02
+    },
+    {
+      "field_name": "Panna",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 3593.2,
+      "total_opex_inr_cr": 856.74,
+      "ebitda_inr_cr": 1937.91,
+      "pbt_inr_cr": 1162.0
+    },
+    {
+      "field_name": "Panna",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 3921.66,
+      "total_opex_inr_cr": 833.57,
+      "ebitda_inr_cr": 2210.22,
+      "pbt_inr_cr": 1454.29
+    },
+    {
+      "field_name": "Panna",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 4134.14,
+      "total_opex_inr_cr": 857.87,
+      "ebitda_inr_cr": 2224.44,
+      "pbt_inr_cr": 1399.45
+    },
+    {
+      "field_name": "Panna",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 3491.21,
+      "total_opex_inr_cr": 782.01,
+      "ebitda_inr_cr": 1882.57,
+      "pbt_inr_cr": 1169.11
+    },
+    {
+      "field_name": "Pasarlapudi",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 554.0,
+      "total_opex_inr_cr": 265.26,
+      "ebitda_inr_cr": 217.41,
+      "pbt_inr_cr": -51.42
+    },
+    {
+      "field_name": "Pasarlapudi",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 1002.22,
+      "total_opex_inr_cr": 253.72,
+      "ebitda_inr_cr": 635.82,
+      "pbt_inr_cr": 372.4
+    },
+    {
+      "field_name": "Pasarlapudi",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 1055.28,
+      "total_opex_inr_cr": 242.24,
+      "ebitda_inr_cr": 694.32,
+      "pbt_inr_cr": 443.5
+    },
+    {
+      "field_name": "Pasarlapudi",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 941.53,
+      "total_opex_inr_cr": 226.09,
+      "ebitda_inr_cr": 603.99,
+      "pbt_inr_cr": 381.46
+    },
+    {
+      "field_name": "Pasarlapudi",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 888.18,
+      "total_opex_inr_cr": 207.1,
+      "ebitda_inr_cr": 575.48,
+      "pbt_inr_cr": 370.72
+    },
+    {
+      "field_name": "Ratna & R-Series",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 3369.92,
+      "total_opex_inr_cr": 756.62,
+      "ebitda_inr_cr": 1772.51,
+      "pbt_inr_cr": 1217.15
+    },
+    {
+      "field_name": "Ratna & R-Series",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 3576.6,
+      "total_opex_inr_cr": 734.28,
+      "ebitda_inr_cr": 1951.89,
+      "pbt_inr_cr": 1401.96
+    },
+    {
+      "field_name": "Ratna & R-Series",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 3850.77,
+      "total_opex_inr_cr": 717.55,
+      "ebitda_inr_cr": 2174.43,
+      "pbt_inr_cr": 1635.17
+    },
+    {
+      "field_name": "Ratna & R-Series",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 3560.44,
+      "total_opex_inr_cr": 689.36,
+      "ebitda_inr_cr": 1839.48,
+      "pbt_inr_cr": 1327.46
+    },
+    {
+      "field_name": "Ratna & R-Series",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 3189.51,
+      "total_opex_inr_cr": 665.82,
+      "ebitda_inr_cr": 1672.55,
+      "pbt_inr_cr": 1179.64
+    },
+    {
+      "field_name": "Rokhia",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 313.76,
+      "total_opex_inr_cr": 232.3,
+      "ebitda_inr_cr": 53.22,
+      "pbt_inr_cr": -164.96
+    },
+    {
+      "field_name": "Rokhia",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 703.35,
+      "total_opex_inr_cr": 222.89,
+      "ebitda_inr_cr": 417.16,
+      "pbt_inr_cr": 201.64
+    },
+    {
+      "field_name": "Rokhia",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 752.7,
+      "total_opex_inr_cr": 215.16,
+      "ebitda_inr_cr": 469.8,
+      "pbt_inr_cr": 261.24
+    },
+    {
+      "field_name": "Rokhia",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 689.35,
+      "total_opex_inr_cr": 208.13,
+      "ebitda_inr_cr": 420.56,
+      "pbt_inr_cr": 232.11
+    },
+    {
+      "field_name": "Rokhia",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 686.09,
+      "total_opex_inr_cr": 194.44,
+      "ebitda_inr_cr": 422.35,
+      "pbt_inr_cr": 245.51
+    },
+    {
+      "field_name": "Rudrasagar",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 2379.22,
+      "total_opex_inr_cr": 525.27,
+      "ebitda_inr_cr": 1378.98,
+      "pbt_inr_cr": 1138.94
+    },
+    {
+      "field_name": "Rudrasagar",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 2506.83,
+      "total_opex_inr_cr": 503.62,
+      "ebitda_inr_cr": 1503.77,
+      "pbt_inr_cr": 1267.77
+    },
+    {
+      "field_name": "Rudrasagar",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 2690.31,
+      "total_opex_inr_cr": 491.72,
+      "ebitda_inr_cr": 1662.53,
+      "pbt_inr_cr": 1431.86
+    },
+    {
+      "field_name": "Rudrasagar",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 2503.67,
+      "total_opex_inr_cr": 479.55,
+      "ebitda_inr_cr": 1423.24,
+      "pbt_inr_cr": 1202.8
+    },
+    {
+      "field_name": "Rudrasagar",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 2254.22,
+      "total_opex_inr_cr": 457.07,
+      "ebitda_inr_cr": 1327.73,
+      "pbt_inr_cr": 1114.46
+    },
+    {
+      "field_name": "Sanand",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 1393.84,
+      "total_opex_inr_cr": 287.18,
+      "ebitda_inr_cr": 828.4,
+      "pbt_inr_cr": 687.77
+    },
+    {
+      "field_name": "Sanand",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 1466.51,
+      "total_opex_inr_cr": 278.09,
+      "ebitda_inr_cr": 896.23,
+      "pbt_inr_cr": 758.17
+    },
+    {
+      "field_name": "Sanand",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 1576.72,
+      "total_opex_inr_cr": 271.2,
+      "ebitda_inr_cr": 991.36,
+      "pbt_inr_cr": 856.16
+    },
+    {
+      "field_name": "Sanand",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 1458.6,
+      "total_opex_inr_cr": 265.57,
+      "ebitda_inr_cr": 842.96,
+      "pbt_inr_cr": 714.54
+    },
+    {
+      "field_name": "Sanand",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 1301.39,
+      "total_opex_inr_cr": 249.84,
+      "ebitda_inr_cr": 780.55,
+      "pbt_inr_cr": 657.42
+    },
+    {
+      "field_name": "Santhal",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 535.83,
+      "total_opex_inr_cr": 130.16,
+      "ebitda_inr_cr": 298.71,
+      "pbt_inr_cr": 244.65
+    },
+    {
+      "field_name": "Santhal",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 567.27,
+      "total_opex_inr_cr": 129.56,
+      "ebitda_inr_cr": 324.69,
+      "pbt_inr_cr": 271.29
+    },
+    {
+      "field_name": "Santhal",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 607.26,
+      "total_opex_inr_cr": 131.58,
+      "ebitda_inr_cr": 354.68,
+      "pbt_inr_cr": 302.61
+    },
+    {
+      "field_name": "Santhal",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 561.32,
+      "total_opex_inr_cr": 134.02,
+      "ebitda_inr_cr": 292.58,
+      "pbt_inr_cr": 243.16
+    },
+    {
+      "field_name": "Santhal",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 503.66,
+      "total_opex_inr_cr": 128.91,
+      "ebitda_inr_cr": 269.87,
+      "pbt_inr_cr": 222.22
+    },
+    {
+      "field_name": "Sobhasan",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 1910.31,
+      "total_opex_inr_cr": 453.27,
+      "ebitda_inr_cr": 1088.22,
+      "pbt_inr_cr": 827.5
+    },
+    {
+      "field_name": "Sobhasan",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 2153.33,
+      "total_opex_inr_cr": 450.15,
+      "ebitda_inr_cr": 1301.63,
+      "pbt_inr_cr": 1045.52
+    },
+    {
+      "field_name": "Sobhasan",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 2305.03,
+      "total_opex_inr_cr": 453.12,
+      "ebitda_inr_cr": 1421.36,
+      "pbt_inr_cr": 1173.41
+    },
+    {
+      "field_name": "Sobhasan",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 2113.87,
+      "total_opex_inr_cr": 450.37,
+      "ebitda_inr_cr": 1191.68,
+      "pbt_inr_cr": 962.26
+    },
+    {
+      "field_name": "Sobhasan",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 1909.48,
+      "total_opex_inr_cr": 430.06,
+      "ebitda_inr_cr": 1106.05,
+      "pbt_inr_cr": 888.49
+    },
+    {
+      "field_name": "Tatipaka",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 253.97,
+      "total_opex_inr_cr": 199.81,
+      "ebitda_inr_cr": 31.3,
+      "pbt_inr_cr": -145.31
+    },
+    {
+      "field_name": "Tatipaka",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 561.1,
+      "total_opex_inr_cr": 189.98,
+      "ebitda_inr_cr": 320.62,
+      "pbt_inr_cr": 148.69
+    },
+    {
+      "field_name": "Tatipaka",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 593.88,
+      "total_opex_inr_cr": 182.23,
+      "ebitda_inr_cr": 358.2,
+      "pbt_inr_cr": 193.64
+    },
+    {
+      "field_name": "Tatipaka",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 535.08,
+      "total_opex_inr_cr": 171.21,
+      "ebitda_inr_cr": 316.78,
+      "pbt_inr_cr": 170.5
+    },
+    {
+      "field_name": "Tatipaka",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 523.83,
+      "total_opex_inr_cr": 157.36,
+      "ebitda_inr_cr": 313.56,
+      "pbt_inr_cr": 178.55
+    },
+    {
+      "field_name": "Viraj",
+      "fiscal_year": "FY22",
+      "gross_revenue_inr_cr": 563.35,
+      "total_opex_inr_cr": 121.72,
+      "ebitda_inr_cr": 329.17,
+      "pbt_inr_cr": 272.33
+    },
+    {
+      "field_name": "Viraj",
+      "fiscal_year": "FY23",
+      "gross_revenue_inr_cr": 594.83,
+      "total_opex_inr_cr": 118.2,
+      "ebitda_inr_cr": 358.12,
+      "pbt_inr_cr": 302.12
+    },
+    {
+      "field_name": "Viraj",
+      "fiscal_year": "FY24",
+      "gross_revenue_inr_cr": 638.51,
+      "total_opex_inr_cr": 115.35,
+      "ebitda_inr_cr": 395.93,
+      "pbt_inr_cr": 341.18
+    },
+    {
+      "field_name": "Viraj",
+      "fiscal_year": "FY25",
+      "gross_revenue_inr_cr": 588.71,
+      "total_opex_inr_cr": 112.32,
+      "ebitda_inr_cr": 335.1,
+      "pbt_inr_cr": 283.27
+    },
+    {
+      "field_name": "Viraj",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 526.09,
+      "total_opex_inr_cr": 105.86,
+      "ebitda_inr_cr": 310.67,
+      "pbt_inr_cr": 260.9
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "parliament_questions",
+  description: "Index of Lok Sabha and Rajya Sabha parliamentary questions and certified ministerial replies on vacancies and production."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`pq_id`) AS pq_id,
+    TRIM(`house`) AS house,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`session_year`), ''), ',', ''), '₹', '') AS INT64) AS session_year,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`question_number`), ''), ',', ''), '₹', '') AS INT64) AS question_number,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`question_date`), ''), 1, 10)) AS question_date,
+    TRIM(`question_type`) AS question_type,
+    TRIM(`ministry`) AS ministry,
+    TRIM(`mp_name`) AS mp_name,
+    TRIM(`subject_theme`) AS subject_theme,
+    TRIM(`work_centre_filter`) AS work_centre_filter,
+    TRIM(`state_code`) AS state_code,
+    TRIM(`brief_text`) AS brief_text,
+    TRIM(`reply_summary`) AS reply_summary,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`sanctioned_strength_reported`), ''), ',', ''), '₹', '') AS INT64) AS sanctioned_strength_reported,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`in_position_strength_reported`), ''), ',', ''), '₹', '') AS INT64) AS in_position_strength_reported,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`vacancies_reported`), ''), ',', ''), '₹', '') AS INT64) AS vacancies_reported,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`reserved_vacancies_sc`), ''), ',', ''), '₹', '') AS INT64) AS reserved_vacancies_sc,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`reserved_vacancies_st`), ''), ',', ''), '₹', '') AS INT64) AS reserved_vacancies_st,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`reserved_vacancies_obc`), ''), ',', ''), '₹', '') AS INT64) AS reserved_vacancies_obc,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`reserved_vacancies_ews`), ''), ',', ''), '₹', '') AS INT64) AS reserved_vacancies_ews,
+    TRIM(`special_recruitment_drives_mentioned`) AS special_recruitment_drives_mentioned
+  FROM ${ref("governance_parliament_questions_index")}
+  WHERE NULLIF(TRIM(`pq_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY pq_id ORDER BY _ingest_ts DESC) = 1

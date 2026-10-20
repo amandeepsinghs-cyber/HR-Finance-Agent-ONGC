@@ -1,0 +1,268 @@
+version: '1.0'
+description: Parsing specifications for realistic messy ONGC Excel sources (Step 3.5)
+workbooks:
+  capex_be_re_actuals.xlsx:
+    target_table: capex_budget
+    sheet_strategy:
+      mode: all_visible
+      exclude_sheets:
+      - _Ref_Capex_Codes
+    header_row: 5
+    unit_row: 6
+    data_start_row: 7
+    drop_columns:
+    - 'Unnamed: 0'
+    subtotal_filter:
+      column: budget_id
+      patterns:
+      - ^Subtotal
+      - ^Total
+      - ^Summary
+    footer_filter:
+      column: budget_id
+      patterns:
+      - '^Note:'
+      - ^Confidential
+      - '^Status:'
+    numeric_columns:
+      budget_estimate_be_inr_cr: float
+      revised_estimate_re_inr_cr: float
+      actual_spend_inr_cr: float
+    boolean_columns: []
+    integer_columns: []
+    string_columns:
+    - budget_id
+    - prj_id
+    - project_name
+    - asset_wc_id
+    - month
+    - fiscal_year
+    - capex_head
+    primary_key:
+    - budget_id
+  manpower_plan.xlsx:
+    target_table: sanctioned_posts
+    sheet_strategy:
+      mode: named
+      sheet_name: manpower_plan
+      exclude_sheets:
+      - _Cadre_Control_Master
+    header_row: 5
+    unit_row: 6
+    data_start_row: 7
+    drop_columns:
+    - 'Unnamed: 0'
+    subtotal_filter:
+      column: sanction_id
+      patterns:
+      - ^Subtotal
+      - ^Total
+      - ^Summary
+    footer_filter:
+      column: sanction_id
+      patterns:
+      - '^Note:'
+      - ^Confidential
+    numeric_columns:
+      vacancy_rate_pct: float
+      special_drive_target_vacancies: float
+    integer_columns:
+    - sanctioned_strength
+    - in_position_strength
+    - vacancy_count
+    - backlog_vacancies
+    boolean_columns:
+    - special_drive_flag
+    string_columns:
+    - sanction_id
+    - fiscal_year
+    - wc_id
+    - discipline_id
+    - grade_id
+    - grade_band
+    - social_category
+    - gender
+    - pwd_category
+    - age_band
+    - tenure_band
+    - special_drive_name
+    primary_key:
+    - sanction_id
+  dpe_mou_scorecard.xlsx:
+    target_table: mou_targets
+    sheet_strategy:
+      mode: all_visible
+      exclude_sheets:
+      - _MoU_Grading_Rules
+    header_row: 5
+    unit_row: 6
+    data_start_row: 7
+    drop_columns:
+    - 'Unnamed: 0'
+    subtotal_filter:
+      column: mou_record_id
+      patterns:
+      - ^Subtotal
+      - ^Total
+      - ^Summary
+    footer_filter:
+      column: mou_record_id
+      patterns:
+      - '^Status:'
+      - '^Note:'
+      - ^Confidential
+    numeric_columns:
+      excellent_target: float
+      very_good_target: float
+      good_target: float
+      fair_target: float
+      poor_target: float
+      actual_achievement: float
+      weighted_score: float
+      composite_score: float
+      projected_composite_score: float
+    integer_columns:
+    - weightage
+    boolean_columns: []
+    string_columns:
+    - mou_record_id
+    - fiscal_year
+    - parameter_id
+    - parameter_name
+    - parameter_category
+    - unit_of_measure
+    - achieved_rating
+    - notes_and_exceptions
+    primary_key:
+    - mou_record_id
+  csr_projects_tracker.xlsx:
+    target_table: csr_projects
+    sheet_strategy:
+      mode: all_visible
+      exclude_sheets:
+      - _Schedule_VII_Themes
+    header_row: 5
+    unit_row: 6
+    data_start_row: 7
+    drop_columns:
+    - 'Unnamed: 0'
+    subtotal_filter:
+      column: csr_project_id
+      patterns:
+      - ^Subtotal
+      - ^Total
+      - ^Summary
+    footer_filter:
+      column: csr_project_id
+      patterns:
+      - '^Mandate Note:'
+      - '^Note:'
+      - ^Confidential
+    numeric_columns:
+      sanctioned_budget_inr_cr: float
+      actual_disbursed_inr_cr: float
+    integer_columns:
+    - beneficiaries_count
+    boolean_columns:
+    - is_aspirational_district
+    - is_operational_field_area
+    - statutory_2pct_mandate_met_flag
+    string_columns:
+    - csr_project_id
+    - project_name
+    - fiscal_year
+    - state_code
+    - district_name
+    - wc_id
+    - csr_theme
+    - implementing_agency
+    primary_key:
+    - csr_project_id
+  succession_planning.xlsx:
+    target_table: succession_plan
+    sheet_strategy:
+      mode: named
+      sheet_name: succession_plan
+      exclude_sheets:
+      - _Talent_Bench_Scale
+    header_row: 5
+    unit_row: 6
+    data_start_row: 7
+    drop_columns:
+    - 'Unnamed: 0'
+    subtotal_filter:
+      column: position_id
+      patterns:
+      - ^Subtotal
+      - ^Total
+      - ^Summary
+    footer_filter:
+      column: position_id
+      patterns:
+      - ^Strictly Confidential
+      - '^Note:'
+    numeric_columns: {}
+    integer_columns: []
+    boolean_columns:
+    - successor_1_has_ne_hard_station
+    - successor_2_has_ne_hard_station
+    string_columns:
+    - position_id
+    - role_title
+    - wc_id
+    - discipline_id
+    - criticality_tier
+    - incumbent_emp_id
+    - incumbent_retire_date
+    - fiscal_year
+    - successor_1_emp_id
+    - successor_1_readiness
+    - successor_2_emp_id
+    - successor_2_readiness
+    - readiness_gap_reason
+    primary_key:
+    - position_id
+  legal_cases_tracker.xlsx:
+    target_table: grievances_litigation
+    sheet_strategy:
+      mode: named
+      sheet_name: legal_cases
+      exclude_sheets:
+      - _Court_Jurisdiction_Codes
+    header_row: 5
+    unit_row: 6
+    data_start_row: 7
+    drop_columns:
+    - 'Unnamed: 0'
+    subtotal_filter:
+      column: case_id
+      patterns:
+      - ^Subtotal
+      - ^Total
+      - ^Summary
+    footer_filter:
+      column: case_id
+      patterns:
+      - ^Privileged
+      - '^Note:'
+    numeric_columns:
+      age_years: float
+    integer_columns:
+    - age_days
+    boolean_columns:
+    - interim_stay_granted
+    - is_aged_over_3_years
+    string_columns:
+    - case_id
+    - emp_id
+    - wc_id
+    - case_type
+    - case_category
+    - forum
+    - filing_date
+    - fiscal_year
+    - status
+    - next_hearing_date
+    - subject_summary
+    primary_key:
+    - case_id

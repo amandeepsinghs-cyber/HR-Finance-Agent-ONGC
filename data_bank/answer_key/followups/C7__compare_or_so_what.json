@@ -1,0 +1,42 @@
+{
+  "job_id": "5c429142-7e43-4bf5-92f0-8bb505ffeac8",
+  "total_bytes_processed": 62492,
+  "executed_at": "2026-10-20T06:47:15.381540+00:00",
+  "elapsed_seconds": 0.74,
+  "row_count": 2,
+  "columns": [
+    "development",
+    "reserves_2p_mmtoe_fy26",
+    "rrr_2p_fy26",
+    "rrr_2p_fy22_fy26",
+    "accretion_fy22_fy26_mmtoe",
+    "dev_cost_usd_boe_fy26",
+    "finding_cost_usd_boe_fy26",
+    "project_revised_cost_cr",
+    "project_capex_usd_per_boe_added"
+  ],
+  "rows": [
+    {
+      "development": "KG-DWN-98/2 Cluster-II",
+      "reserves_2p_mmtoe_fy26": 126.0,
+      "rrr_2p_fy26": 1.17,
+      "rrr_2p_fy22_fy26": 1.15,
+      "accretion_fy22_fy26_mmtoe": 7.13,
+      "dev_cost_usd_boe_fy26": 23.12,
+      "finding_cost_usd_boe_fy26": 5.67,
+      "project_revised_cost_cr": 39114.0,
+      "project_capex_usd_per_boe_added": 84.73
+    },
+    {
+      "development": "Mumbai High Redevelopment (MHN + MHS)",
+      "reserves_2p_mmtoe_fy26": 148.9,
+      "rrr_2p_fy26": 1.17,
+      "rrr_2p_fy22_fy26": 1.13,
+      "accretion_fy22_fy26_mmtoe": 45.38,
+      "dev_cost_usd_boe_fy26": 10.07,
+      "finding_cost_usd_boe_fy26": 2.9,
+      "project_revised_cost_cr": 8390.0,
+      "project_capex_usd_per_boe_added": 2.86
+    }
+  ]
+}

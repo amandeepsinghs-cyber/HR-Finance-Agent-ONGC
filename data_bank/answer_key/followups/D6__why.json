@@ -1,0 +1,33 @@
+{
+  "job_id": "ef2dc7ec-69f7-4470-a399-9dc624d0c585",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:48.398636+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 9",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 9)",
+      "quote_snippet": "7.6 The Whistle Blower should give his name, address, contact number(s) and e-mail address in the beginning or at the end of complaint or in an attached letter so that the same can be concealed, while processing further. The identity of a Subject and the Whistle Blower will be kept confidential to the extent possible given the legitimate needs of law and the investigation. 7.7 Complaint concerning"
+    },
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 12",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 12)",
+      "quote_snippet": "9.7 The Competent Authority or the Chairman of Audit Committee, if deems fit, may call for further information or particulars from the complainant/ whistle blower and at their discretion, involve any other/ additional Officer of the Company and/ or Committee and/ or an outside agency for the purpose of investigation. 9.8 Subject will normally be informed of the allegations at the outset of a forma"
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 8.0",
+      "heading": "Confidentiality of DPC Proceedings & Sealed Cover",
+      "quote_snippet": "8.1 Strict Secrecy of DPC Deliberations: The proceedings, minutes, individual candidate scoring sheets, and recommendations of the Departmental Promotion Committee are top-secret privileged documents. No candidate or third party has any right to inspect or access DPC deliberations prior to official release of the promotion panel. 8.2 Sealed Cover Procedure: Where an officer eligible for promotion "
+    }
+  ]
+}

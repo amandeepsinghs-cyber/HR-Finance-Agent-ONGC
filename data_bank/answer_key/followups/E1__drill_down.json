@@ -1,0 +1,33 @@
+{
+  "job_id": "df232819-4962-46b8-8a5a-8249d67c59fb",
+  "total_bytes_processed": 27172950,
+  "executed_at": "2026-10-20T06:33:01.904041+00:00",
+  "elapsed_seconds": 0.77,
+  "row_count": 3,
+  "columns": [
+    "leave_type",
+    "fiscal_year",
+    "closing_balance_days",
+    "recorded_in_ledger"
+  ],
+  "rows": [
+    {
+      "leave_type": "Casual_Leave_CL",
+      "fiscal_year": null,
+      "closing_balance_days": null,
+      "recorded_in_ledger": false
+    },
+    {
+      "leave_type": "Earned_Leave_EL",
+      "fiscal_year": "FY26",
+      "closing_balance_days": 78.0,
+      "recorded_in_ledger": true
+    },
+    {
+      "leave_type": "Half_Pay_Leave_HPL",
+      "fiscal_year": null,
+      "closing_balance_days": null,
+      "recorded_in_ledger": false
+    }
+  ]
+}

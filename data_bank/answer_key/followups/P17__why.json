@@ -1,0 +1,75 @@
+{
+  "job_id": "3f0b42fd-3688-4ee3-936d-8978a359400f",
+  "total_bytes_processed": 860,
+  "executed_at": "2026-10-20T06:33:25.266524+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "pat_inr_cr",
+    "dda_inr_cr",
+    "dividend_cr",
+    "capex_cr",
+    "accruals_after_dividend_cr",
+    "funding_surplus_cr",
+    "capex_pct_of_accruals",
+    "dividend_payout_ratio_pct"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY26",
+      "pat_inr_cr": 32894.0,
+      "dda_inr_cr": 25197.01,
+      "dividend_cr": 16669.0,
+      "capex_cr": 35878.0,
+      "accruals_after_dividend_cr": 41422.0,
+      "funding_surplus_cr": 5544.0,
+      "capex_pct_of_accruals": 61.8,
+      "dividend_payout_ratio_pct": 50.68
+    },
+    {
+      "fiscal_year": "FY25",
+      "pat_inr_cr": 35610.0,
+      "dda_inr_cr": 25501.51,
+      "dividend_cr": 15411.0,
+      "capex_cr": 62057.0,
+      "accruals_after_dividend_cr": 45701.0,
+      "funding_surplus_cr": -16356.0,
+      "capex_pct_of_accruals": 101.5,
+      "dividend_payout_ratio_pct": 43.28
+    },
+    {
+      "fiscal_year": "FY24",
+      "pat_inr_cr": 40526.0,
+      "dda_inr_cr": 25604.37,
+      "dividend_cr": 15411.0,
+      "capex_cr": 37494.0,
+      "accruals_after_dividend_cr": 50719.0,
+      "funding_surplus_cr": 13225.0,
+      "capex_pct_of_accruals": 56.7,
+      "dividend_payout_ratio_pct": 38.03
+    },
+    {
+      "fiscal_year": "FY23",
+      "pat_inr_cr": 40096.0,
+      "dda_inr_cr": 28770.65,
+      "dividend_cr": 14153.0,
+      "capex_cr": 30208.0,
+      "accruals_after_dividend_cr": 54714.0,
+      "funding_surplus_cr": 24506.0,
+      "capex_pct_of_accruals": 43.9,
+      "dividend_payout_ratio_pct": 35.3
+    },
+    {
+      "fiscal_year": "FY22",
+      "pat_inr_cr": 40306.0,
+      "dda_inr_cr": 20413.83,
+      "dividend_cr": 13209.0,
+      "capex_cr": 27741.0,
+      "accruals_after_dividend_cr": 47511.0,
+      "funding_surplus_cr": 19770.0,
+      "capex_pct_of_accruals": 45.7,
+      "dividend_payout_ratio_pct": 32.77
+    }
+  ]
+}

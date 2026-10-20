@@ -1,0 +1,3 @@
+prod_id,field_id,asset_wc_id,fiscal_year,month,oil_production_mt,gas_production_mmscm
+PRD-001,FLD-MHN,WC-MUM,FY26,2025-04,150000.0,120.0
+PRD-002,FLD-MHN,WC-MUM,FY26,2025-05,155000.0,125.0

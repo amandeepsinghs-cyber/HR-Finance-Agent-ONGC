@@ -1,0 +1,12 @@
+# Answer Key: H9__why
+
+**Question:** What institutional delays in the internal grievance redressal mechanism contributed to cases escalating to litigation?
+**Type:** `data` | **Result Count:** `1` rows | **Execution:** `0.56s`
+
+## Executive Synthesis
+The corpus has no general employee-grievance redressal policy, so institutional delays cannot be traced to a written timeline breach except for transfers (partial data gap). The applicable provision is JRTP Clause 13.0 (Transfer Grievance Redressal Mechanism): "13.1 Representation Timeline: Any executive aggrieved by a transfer order may submit a formal representation to the Transfer Grievance Redressal Committee (TGRC) within 15 (fifteen) calendar days from the date of official publication of the transfer order on the intranet portal. 13.2 Grounds for Representation: Representations shall be entertained strictly on specified grounds: (a) genuine medical emergency certified by Medical Board; (b) child appearing in Class X or XII Board examination in the current academic year; (c) spouse working in central/state government or CPSE at the current station (DOPT guidelines); or (d) superannuation within 2–3 years. 13.3 Time-Bound Disposal: The TGRC, ch" Transfer challenges reaching CAT/High Courts (see H9 drill-down) therefore indicate representations not disposed within the 30-day TGRC window or stays not granted in writing.
+
+### Summary Result Table
+| doc_id | clause_ref | heading | quote_snippet |
+| --- | --- | --- | --- |
+| JRTP | Clause 13.0 | Transfer Grievance Redressal Mechanism | 13.1 Representation Timeline: Any executive aggrieved by a transfer order may submit a formal representation to the Transfer Grievance Redressal Committee (TGRC) within 15 (fifteen) calendar days from the date of official publication of the transfer order on the intranet portal. 13.2 Grounds for Representation: Representations shall be entertained strictly on specified grounds: (a) genuine medical emergency certified by Medical Board; (b) child appearing in Class X or XII Board examination in the current academic year; (c) spouse working in central/state government or CPSE at the current station (DOPT guidelines); or (d) superannuation within 2–3 years. 13.3 Time-Bound Disposal: The TGRC, ch |

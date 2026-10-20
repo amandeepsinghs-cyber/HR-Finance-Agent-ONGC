@@ -1,0 +1,79 @@
+{
+  "job_id": "65de3e63-fad4-4cf6-bd35-929d361aab5f",
+  "total_bytes_processed": 24930457,
+  "executed_at": "2026-10-20T06:29:05.798854+00:00",
+  "elapsed_seconds": 0.87,
+  "row_count": 4,
+  "columns": [
+    "short_name",
+    "field_maturity",
+    "hc_mar21",
+    "hc_mar26",
+    "hc_change",
+    "mmboe_fy21",
+    "mmboe_fy26",
+    "boe_growth_pct",
+    "oil_mmt_fy21",
+    "oil_mmt_fy26",
+    "gas_bcm_fy21",
+    "gas_bcm_fy26"
+  ],
+  "rows": [
+    {
+      "short_name": "Eastern Offshore",
+      "field_maturity": "growth",
+      "hc_mar21": 960,
+      "hc_mar26": 1011,
+      "hc_change": 51,
+      "mmboe_fy21": 0.0,
+      "mmboe_fy26": 28.13,
+      "boe_growth_pct": null,
+      "oil_mmt_fy21": 0.0,
+      "oil_mmt_fy26": 0.883,
+      "gas_bcm_fy21": 0.0,
+      "gas_bcm_fy26": 2.757
+    },
+    {
+      "short_name": "Cambay Asset",
+      "field_maturity": "mature",
+      "hc_mar21": 718,
+      "hc_mar26": 508,
+      "hc_change": -210,
+      "mmboe_fy21": 7.42,
+      "mmboe_fy26": 5.79,
+      "boe_growth_pct": -22.0,
+      "oil_mmt_fy21": 0.412,
+      "oil_mmt_fy26": 0.358,
+      "gas_bcm_fy21": 0.6,
+      "gas_bcm_fy26": 0.431
+    },
+    {
+      "short_name": "Mehsana Asset",
+      "field_maturity": "mature",
+      "hc_mar21": 1790,
+      "hc_mar26": 1559,
+      "hc_change": -231,
+      "mmboe_fy21": 11.1,
+      "mmboe_fy26": 9.24,
+      "boe_growth_pct": -16.7,
+      "oil_mmt_fy21": 1.215,
+      "oil_mmt_fy26": 1.058,
+      "gas_bcm_fy21": 0.299,
+      "gas_bcm_fy26": 0.204
+    },
+    {
+      "short_name": "Rajahmundry Asset",
+      "field_maturity": "mature",
+      "hc_mar21": 1213,
+      "hc_mar26": 845,
+      "hc_change": -368,
+      "mmboe_fy21": 10.13,
+      "mmboe_fy26": 7.55,
+      "boe_growth_pct": -25.5,
+      "oil_mmt_fy21": 0.235,
+      "oil_mmt_fy26": 0.205,
+      "gas_bcm_fy21": 1.1,
+      "gas_bcm_fy26": 0.792
+    }
+  ]
+}

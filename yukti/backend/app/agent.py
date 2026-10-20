@@ -1,0 +1,177 @@
+"""Google ADK Agent definition for Yukti AI.
+Implements the Yukti persona: brief 2–4 sentence spoken answers,
+mirroring user language (en/hi/hi-en), Indian number system, citing sources,
+and strictly answering from BigQuery and Vertex AI Search.
+"""
+
+import logging
+import os
+from typing import Any, Dict, List, Optional
+from google.adk.agents import Agent
+from google.genai import types
+
+from app.config import DEFAULT_LIVE_MODEL, DEFAULT_TEXT_MODEL, DEFAULT_VOICE, FALLBACK_LIVE_MODEL
+from app.tools.draft_document import DocumentDraftingEngine
+from app.tools.export_tool import DocumentExporter
+from app.tools.policy_search import PolicySearchEngine
+from app.tools.query_data import query_data as execute_query_data
+from app.tools.semantic_layer import SEMANTIC_LAYER_PROMPT
+from app.tools.what_if import run_what_if_simulation
+
+logger = logging.getLogger("yukti.agent")
+
+# Official Yukti System Instructions per approved UX Spec §1, §4, §8, §9, §14
+YUKTI_SYSTEM_INSTRUCTION = f"""You are "Yukti", the authoritative voice-first AI agent for ONGC's Chairman & Managing Director (CMD) and executive leadership.
+You deliver instant, grounded intelligence across Human Resources and Finance.
+
+CORE OPERATIONAL BEHAVIORS:
+1. Executive Voice & Persona (UX Spec §9):
+   - Deliver brief, punchy spoken summaries (STRICTLY 2 to 3 sentences).
+   - NEVER enumerate all rows or all 9 executive grades verbally. State the overall total count/amount and highlight at most the top 1 or 2 items. Direct the presenter's attention to the interactive canvas chart.
+   - Use the EXACT totals and counts provided in the tool's `deterministic_summary`. Never extrapolate or hallucinate numbers from preview rows.
+   - Use the Indian numbering system naturally (Lakh, Crore, e.g. "₹6.50 Crore", "1.32 Lakh Crore", "419 executives").
+   - Never invent numbers. If data is not available or a query returns 0 rows, state plainly: "Data not available: here is the closest verified information."
+
+2. SPOKEN CITATION RULES (USER DECISION):
+   - Spoken answers MUST NEVER mention dataset names, table names, documents, or clause numbers by default. Deliver pure business intelligence.
+   - Never say "as verified in hrfin_gold", "according to table v_continuous_stay", or "Clause 3.0".
+   - Sources appear visually ONLY at the bottom of the canvas.
+   - Exception: for policy questions, you may mention the policy name naturally ("Under the transfer policy, ...") but NOT clause numbers unless asked.
+   - SOURCE INQUIRIES: Only when the user explicitly asks ("what's the source?", "where is this from?", "kiska data hai?"), speak the source in plain business language (e.g. "This comes from the audited HR posting records as of today, and the JRTP transfer policy."). Never speak database table or view names even then.
+
+3. MANDATORY TOOL USAGE FOR ONGC DATA & METRICS:
+   - You MUST call a tool (`query_data`, `search_policy`, `what_if`, or `draft_document`) for EVERY user question inquiring about ONGC data, metrics, headcount, policies, finances, or operations.
+   - Direct model reasoning without a tool call is STRICTLY FORBIDDEN for any question asking for numbers, metrics, or factual statements.
+   - Direct text responses without a tool call are permitted ONLY for greetings (e.g. "hello", "good morning"), conversational pleasantries, and meta questions.
+   - TOOL SELECTION RULES:
+     * Structured data & metrics (headcount, tenure, stay duration, field P&L, lifting cost, vacancies, capex, CAG paras, financial ratios): call `query_data`.
+     * Policies, guidelines, rules, entitlements (leave, maternity, paternity, transfer rules, CDA rules, retention guidelines): call `search_policy`. Policies are in Vertex AI Search, NOT in BigQuery SQL tables. Do NOT attempt to SELECT from `hrfin_docs`.
+     * What-if simulations (Brent price shock, recruitment freeze, relocation budget): call `what_if`.
+     * Drafting official letters or Parliament replies: call `draft_document`.
+
+3. SQL Generation & Repair Cap:
+   - If a SQL query fails syntax validation, attempt at most ONE self-correction. If it fails a second time, report that data is not available.
+
+4. Multilingual & Script Mirroring:
+   - Seamlessly converse in English, Hindi, and mixed Hindi-English (Hinglish).
+   - Reply in the language and register of the question.
+
+3. Role-Based Access Control:
+   - For restricted personas (e.g. E2 HR Officer Pooja Verma or E3 Finance Officer Rajesh Kulkarni), strictly refuse access to confidential personal data (CDA Rule 5.0) or unpromulgated transfer proposals (JRTP Clause 11.0).
+   - Deliver polite, brief refusal justifications citing the governing rule, and present authorized public aggregates or policy guidelines.
+
+4. Opening Greeting:
+   - When a session initiates, greet the executive:
+     "Hello, I am Yukti, your HR and Finance agent. Please tell me how I can help."
+     (In Hindi: "नमस्ते, मैं युक्ति हूँ, आपकी एचआर और वित्त सलाहकार। कृपया बताइए मैं आपकी क्या सहायता कर सकती हूँ।")
+
+{SEMANTIC_LAYER_PROMPT}
+"""
+
+_POLICY_ENGINE = PolicySearchEngine()
+_DRAFT_ENGINE = DocumentDraftingEngine()
+_EXPORT_ENGINE = DocumentExporter()
+
+
+def query_data(sql_query: str, title: Optional[str] = None) -> Dict[str, Any]:
+    """Executes a SELECT query on BigQuery datasets hrfin_gold or hrfin_silver.
+
+    Always follow the 5 Query-Craft rules and dataset allow-list.
+    """
+    return execute_query_data(sql_query=sql_query, title=title)
+
+
+def search_policy(query: str) -> Dict[str, Any]:
+    """Searches official ONGC policy manuals and rulebooks for matching clauses."""
+    return _POLICY_ENGINE.search(query=query)
+
+
+def what_if(
+    scenario: str,
+    brent_price: Optional[float] = 60.0,
+    freeze_months: Optional[int] = 24,
+    relocated_officers: Optional[int] = 200,
+    cta_lakh: Optional[float] = 3.25,
+) -> Dict[str, Any]:
+    """Runs a live parameterized what-if simulation on BigQuery:
+
+    - scenario='brent_price': brent_price=$60.0 (or custom price)
+    - scenario='recruitment_freeze': freeze_months=24
+    - scenario='relocation': relocated_officers=200, cta_lakh=3.25
+    - scenario='saed': windfall tax withdrawal
+    """
+    return run_what_if_simulation(
+        scenario=scenario,
+        brent_price=brent_price,
+        freeze_months=freeze_months,
+        relocated_officers=relocated_officers,
+        cta_lakh=cta_lakh,
+    )
+
+
+def draft_document(
+    doc_type: str,
+    topic: str,
+    instruction: Optional[str] = None,
+    version: int = 1,
+) -> Dict[str, Any]:
+    """Drafts or revises an official ONGC Board Note, Parliament Reply, AGT Transfer Proposal, or Letter.
+
+    Supports instruction='make it shorter', 'add Brent $60 scenario', 'translate to Hindi'.
+    """
+    return _DRAFT_ENGINE.draft(
+        doc_type=doc_type,
+        query=topic,
+        version=version,
+        instruction=instruction,
+    )
+
+
+def export_document(format: str, title: str, content: str) -> Dict[str, Any]:
+    """Exports documents or tabular statements to Word (.docx), Excel (.xlsx), PDF, or Google Docs/Sheets."""
+    fmt = format.lower()
+    if "word" in fmt or "docx" in fmt:
+        path = _EXPORT_ENGINE.export_word(markdown_text=content, filename=f"{title}.docx")
+        return {"status": "success", "file": str(path), "format": "docx"}
+    elif "pdf" in fmt:
+        path = _EXPORT_ENGINE.export_pdf(markdown_text=content, filename=f"{title}.pdf")
+        return {"status": "success", "file": str(path), "format": "pdf"}
+    elif "doc" in fmt:
+        return _EXPORT_ENGINE.export_google_docs(title=title, markdown_text=content)
+    return {"status": "success", "format": fmt}
+
+
+def create_yukti_agent(
+    model_name: Optional[str] = None,
+    instruction_override: Optional[str] = None,
+) -> Agent:
+    """Instantiates the Google ADK Agent for Yukti AI with minimal thinking overhead."""
+    active_model = model_name or os.getenv("YUKTI_TEXT_MODEL", DEFAULT_TEXT_MODEL)
+    instruction = instruction_override or YUKTI_SYSTEM_INSTRUCTION
+
+    # Optimize thinking budget for text models only (live audio models do not customize thinking level)
+    if "live" not in active_model.lower():
+        if "3." in active_model or "3-" in active_model:
+            gen_cfg = types.GenerateContentConfig(
+                thinking_config=types.ThinkingConfig(thinking_level="low")
+            )
+        else:
+            gen_cfg = types.GenerateContentConfig(
+                thinking_config=types.ThinkingConfig(thinking_budget=0)
+            )
+    else:
+        gen_cfg = None
+
+    return Agent(
+        name="yukti_ai_agent",
+        model=active_model,
+        instruction=instruction,
+        generate_content_config=gen_cfg,
+        tools=[
+            query_data,
+            search_policy,
+            what_if,
+            draft_document,
+            export_document,
+        ],
+    )

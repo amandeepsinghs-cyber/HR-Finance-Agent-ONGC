@@ -1,0 +1,86 @@
+{
+  "job_id": "588f5483-4370-469e-ab8f-7202c7c0c1c1",
+  "total_bytes_processed": 9954,
+  "executed_at": "2026-10-20T06:39:02.562175+00:00",
+  "elapsed_seconds": 0.59,
+  "row_count": 6,
+  "columns": [
+    "month",
+    "gross_realisation_usd_bbl",
+    "oidb_cess_usd_bbl",
+    "cess_pct_of_realisation",
+    "cess_at_rs10000_per_mt_usd_bbl",
+    "royalty_usd_bbl",
+    "royalty_pct_of_realisation",
+    "cess_plus_royalty_usd_bbl",
+    "inr_usd_fx_rate"
+  ],
+  "rows": [
+    {
+      "month": "2026-04",
+      "gross_realisation_usd_bbl": 66.8,
+      "oidb_cess_usd_bbl": 13.36,
+      "cess_pct_of_realisation": 20.0,
+      "cess_at_rs10000_per_mt_usd_bbl": 15.33,
+      "royalty_usd_bbl": 8.52,
+      "royalty_pct_of_realisation": 12.8,
+      "cess_plus_royalty_usd_bbl": 21.88,
+      "inr_usd_fx_rate": 89.0
+    },
+    {
+      "month": "2026-05",
+      "gross_realisation_usd_bbl": 67.55,
+      "oidb_cess_usd_bbl": 13.51,
+      "cess_pct_of_realisation": 20.0,
+      "cess_at_rs10000_per_mt_usd_bbl": 15.34,
+      "royalty_usd_bbl": 8.61,
+      "royalty_pct_of_realisation": 12.7,
+      "cess_plus_royalty_usd_bbl": 22.12,
+      "inr_usd_fx_rate": 88.95
+    },
+    {
+      "month": "2026-06",
+      "gross_realisation_usd_bbl": 68.1,
+      "oidb_cess_usd_bbl": 13.62,
+      "cess_pct_of_realisation": 20.0,
+      "cess_at_rs10000_per_mt_usd_bbl": 15.36,
+      "royalty_usd_bbl": 8.68,
+      "royalty_pct_of_realisation": 12.7,
+      "cess_plus_royalty_usd_bbl": 22.3,
+      "inr_usd_fx_rate": 88.8
+    },
+    {
+      "month": "2026-07",
+      "gross_realisation_usd_bbl": 68.3,
+      "oidb_cess_usd_bbl": 13.66,
+      "cess_pct_of_realisation": 20.0,
+      "cess_at_rs10000_per_mt_usd_bbl": 15.4,
+      "royalty_usd_bbl": 8.71,
+      "royalty_pct_of_realisation": 12.8,
+      "cess_plus_royalty_usd_bbl": 22.37,
+      "inr_usd_fx_rate": 88.6
+    },
+    {
+      "month": "2026-08",
+      "gross_realisation_usd_bbl": 68.1,
+      "oidb_cess_usd_bbl": 13.62,
+      "cess_pct_of_realisation": 20.0,
+      "cess_at_rs10000_per_mt_usd_bbl": 15.43,
+      "royalty_usd_bbl": 8.68,
+      "royalty_pct_of_realisation": 12.7,
+      "cess_plus_royalty_usd_bbl": 22.3,
+      "inr_usd_fx_rate": 88.4
+    },
+    {
+      "month": "2026-09",
+      "gross_realisation_usd_bbl": 67.55,
+      "oidb_cess_usd_bbl": 13.51,
+      "cess_pct_of_realisation": 20.0,
+      "cess_at_rs10000_per_mt_usd_bbl": 15.46,
+      "royalty_usd_bbl": 8.61,
+      "royalty_pct_of_realisation": 12.7,
+      "cess_plus_royalty_usd_bbl": 22.12,
+      "inr_usd_fx_rate": 88.25
+    }
+  ]
+}

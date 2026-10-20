@@ -1,0 +1,59 @@
+{
+  "job_id": "eea63727-3594-4ba4-8dbb-6ce4382435c6",
+  "total_bytes_processed": 44306,
+  "executed_at": "2026-10-20T06:39:08.585615+00:00",
+  "elapsed_seconds": 0.72,
+  "row_count": 4,
+  "columns": [
+    "field_name",
+    "asset_name",
+    "revenue_fy26_cr",
+    "manpower_cost_fy26_cr",
+    "manpower_pct_revenue",
+    "regular_employee_headcount",
+    "asset_manpower_pct_revenue",
+    "asset_revenue_fy26_cr"
+  ],
+  "rows": [
+    {
+      "field_name": "Champang",
+      "asset_name": "Jorhat Asset",
+      "revenue_fy26_cr": 329.6,
+      "manpower_cost_fy26_cr": 157.2,
+      "manpower_pct_revenue": 47.7,
+      "regular_employee_headcount": 430,
+      "asset_manpower_pct_revenue": 45.7,
+      "asset_revenue_fy26_cr": 1060.0
+    },
+    {
+      "field_name": "Borholla",
+      "asset_name": "Jorhat Asset",
+      "revenue_fy26_cr": 350.6,
+      "manpower_cost_fy26_cr": 161.1,
+      "manpower_pct_revenue": 45.9,
+      "regular_employee_headcount": 440,
+      "asset_manpower_pct_revenue": 45.7,
+      "asset_revenue_fy26_cr": 1060.0
+    },
+    {
+      "field_name": "Khoraghat",
+      "asset_name": "Jorhat Asset",
+      "revenue_fy26_cr": 379.9,
+      "manpower_cost_fy26_cr": 166.4,
+      "manpower_pct_revenue": 43.8,
+      "regular_employee_headcount": 455,
+      "asset_manpower_pct_revenue": 45.7,
+      "asset_revenue_fy26_cr": 1060.0
+    },
+    {
+      "field_name": "Kuthalam",
+      "asset_name": "Cauvery Asset",
+      "revenue_fy26_cr": 442.9,
+      "manpower_cost_fy26_cr": 113.3,
+      "manpower_pct_revenue": 25.6,
+      "regular_employee_headcount": 289,
+      "asset_manpower_pct_revenue": 19.6,
+      "asset_revenue_fy26_cr": 1353.0
+    }
+  ]
+}

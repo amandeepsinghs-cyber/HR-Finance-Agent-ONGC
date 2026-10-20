@@ -1,0 +1,30 @@
+# Derived historical stock-flow planning parameters for ONGC HR lifecycle (FY13-FY26)
+separations_plan:
+  FY14: 1200
+  FY15: 1400
+  FY16: 1400
+  FY17: 1400
+  FY18: 1500
+  FY19: 1500
+  FY20: 1400
+  FY21: 1800
+  FY22: 1500
+  FY23: 1500
+  FY24: 1300
+  FY25: 1600
+  FY26: 1418
+
+active_survivors:
+  FY14: 1400
+  FY15: 450
+  FY16: 1500
+  FY17: 850
+  FY18: 80
+  FY19: 240
+  FY20: 350
+  FY21: 140
+  FY22: 150
+  FY23: 280
+  FY24: 950
+  FY25: 110
+  FY26: 167

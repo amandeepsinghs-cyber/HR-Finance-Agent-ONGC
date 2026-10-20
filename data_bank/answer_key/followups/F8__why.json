@@ -1,0 +1,86 @@
+{
+  "job_id": "3e6c80ec-1419-4040-8aaf-503e3564a3b4",
+  "total_bytes_processed": 449921,
+  "executed_at": "2026-10-20T06:39:11.159488+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 6,
+  "columns": [
+    "basin_name",
+    "terrain",
+    "exploratory_wells",
+    "dry_holes",
+    "dry_hole_rate_pct",
+    "dry_hole_cost_cr",
+    "total_exploratory_cost_cr",
+    "avg_cost_per_well_cr",
+    "avg_depth_m"
+  ],
+  "rows": [
+    {
+      "basin_name": "Krishna Godavari",
+      "terrain": "deepwater",
+      "exploratory_wells": 13,
+      "dry_holes": 8,
+      "dry_hole_rate_pct": 61.5,
+      "dry_hole_cost_cr": 2264.0,
+      "total_exploratory_cost_cr": 3883.0,
+      "avg_cost_per_well_cr": 298.7,
+      "avg_depth_m": 5055.0
+    },
+    {
+      "basin_name": "Western Offshore",
+      "terrain": "shallow_offshore",
+      "exploratory_wells": 120,
+      "dry_holes": 49,
+      "dry_hole_rate_pct": 40.8,
+      "dry_hole_cost_cr": 6142.0,
+      "total_exploratory_cost_cr": 14934.0,
+      "avg_cost_per_well_cr": 124.5,
+      "avg_depth_m": 3470.0
+    },
+    {
+      "basin_name": "Cambay",
+      "terrain": "onshore",
+      "exploratory_wells": 97,
+      "dry_holes": 44,
+      "dry_hole_rate_pct": 45.4,
+      "dry_hole_cost_cr": 1677.0,
+      "total_exploratory_cost_cr": 3741.0,
+      "avg_cost_per_well_cr": 38.6,
+      "avg_depth_m": 2730.0
+    },
+    {
+      "basin_name": "Assam Arakan",
+      "terrain": "onshore",
+      "exploratory_wells": 52,
+      "dry_holes": 19,
+      "dry_hole_rate_pct": 36.5,
+      "dry_hole_cost_cr": 737.0,
+      "total_exploratory_cost_cr": 1988.0,
+      "avg_cost_per_well_cr": 38.2,
+      "avg_depth_m": 2747.0
+    },
+    {
+      "basin_name": "Cauvery",
+      "terrain": "onshore",
+      "exploratory_wells": 11,
+      "dry_holes": 4,
+      "dry_hole_rate_pct": 36.4,
+      "dry_hole_cost_cr": 136.0,
+      "total_exploratory_cost_cr": 412.0,
+      "avg_cost_per_well_cr": 37.5,
+      "avg_depth_m": 2749.0
+    },
+    {
+      "basin_name": "MBA",
+      "terrain": "onshore",
+      "exploratory_wells": 2,
+      "dry_holes": 1,
+      "dry_hole_rate_pct": 50.0,
+      "dry_hole_cost_cr": 32.0,
+      "total_exploratory_cost_cr": 56.0,
+      "avg_cost_per_well_cr": 28.0,
+      "avg_depth_m": 2783.0
+    }
+  ]
+}

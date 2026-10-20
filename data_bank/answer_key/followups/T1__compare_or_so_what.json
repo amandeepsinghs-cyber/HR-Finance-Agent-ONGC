@@ -1,0 +1,45 @@
+{
+  "job_id": "055faf08-a633-40cf-bfe3-1407f9439bcc",
+  "total_bytes_processed": 277621,
+  "executed_at": "2026-10-20T06:42:24.232499+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 1,
+  "columns": [
+    "field_id",
+    "field_name",
+    "asset_wc_id",
+    "fy26_revenue_inr_cr",
+    "fy26_ebitda_inr_cr",
+    "fy26_pbt_inr_cr",
+    "status_quo_5yr_pbt_inr_cr",
+    "divest_pec_5yr_payoff_inr_cr",
+    "estimated_annual_opex_savings_inr_cr",
+    "estimated_annual_capex_savings_inr_cr",
+    "divest_advantage_vs_status_quo_5yr_inr_cr",
+    "breakeven_annual_pbt_uplift_for_secondary_recovery_inr_cr",
+    "breakeven_uplift_pct_of_fy26_revenue",
+    "is_divestment_candidate",
+    "pec_monetisation_potential_flag",
+    "asset_secondary_recovery_capex_fy26_inr_cr"
+  ],
+  "rows": [
+    {
+      "field_id": "FLD-CHP",
+      "field_name": "Champang",
+      "asset_wc_id": "WC-JOR",
+      "fy26_revenue_inr_cr": 329.6,
+      "fy26_ebitda_inr_cr": 26.25,
+      "fy26_pbt_inr_cr": -4.93,
+      "status_quo_5yr_pbt_inr_cr": -24.65,
+      "divest_pec_5yr_payoff_inr_cr": 410.74,
+      "estimated_annual_opex_savings_inr_cr": 105.62,
+      "estimated_annual_capex_savings_inr_cr": 152.56,
+      "divest_advantage_vs_status_quo_5yr_inr_cr": 435.39,
+      "breakeven_annual_pbt_uplift_for_secondary_recovery_inr_cr": 87.08,
+      "breakeven_uplift_pct_of_fy26_revenue": 26.4,
+      "is_divestment_candidate": false,
+      "pec_monetisation_potential_flag": true,
+      "asset_secondary_recovery_capex_fy26_inr_cr": 0.0
+    }
+  ]
+}

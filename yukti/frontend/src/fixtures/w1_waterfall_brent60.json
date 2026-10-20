@@ -1,0 +1,91 @@
+{
+  "turn_id": "turn_w1_005",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "If Brent falls to sixty dollars per barrel, two fields go EBITDA-negative (Champang and Borholla) and three fields go PBT-negative including Khoraghat under our simulation model.",
+  "display_text": "Simulation Finding across 53 field records [1]: At $60 Brent, 2 fields go EBITDA-negative (Champang at -15.04 Cr, Borholla at -7.54 Cr) and 3 fields go PBT-negative (Champang at -46.22 Cr, Borholla at -40.71 Cr, Khoraghat at -33.24 Cr).",
+  "visual": {
+    "type": "chart",
+    "mode": "replace",
+    "title": "Enterprise Earnings Sensitivity: Brent Crude at $60.00 / bbl (Waterfall in \u20b9 Cr)",
+    "chart": {
+      "kind": "waterfall",
+      "x": "stage",
+      "value": "amount_cr",
+      "unit": "\u20b9 Crore",
+      "data": [
+        {
+          "stage": "Champang Sim PBT",
+          "amount_cr": -46.22,
+          "type": "loss"
+        },
+        {
+          "stage": "Borholla Sim PBT",
+          "amount_cr": -40.71,
+          "type": "loss"
+        },
+        {
+          "stage": "Khoraghat Sim PBT",
+          "amount_cr": -33.24,
+          "type": "loss"
+        },
+        {
+          "stage": "Mori Sim PBT",
+          "amount_cr": 54.52,
+          "type": "gain"
+        },
+        {
+          "stage": "Charali Sim PBT",
+          "amount_cr": 79.03,
+          "type": "gain"
+        }
+      ]
+    },
+    "kpis": [
+      {
+        "label": "Champang Sim PBT",
+        "value": -46.22,
+        "unit": "\u20b9 Cr",
+        "delta": "EBITDA & PBT Negative"
+      },
+      {
+        "label": "Borholla Sim PBT",
+        "value": -40.71,
+        "unit": "\u20b9 Cr",
+        "delta": "EBITDA & PBT Negative"
+      },
+      {
+        "label": "Khoraghat Sim PBT",
+        "value": -33.24,
+        "unit": "\u20b9 Cr",
+        "delta": "PBT Negative"
+      }
+    ]
+  },
+  "insights": [
+    "Model Parameters: Scenario Brent Price $60.00/bbl; fixed APM gas at $6.50/MMBtu; opex and DD&A fixed per FY26 baseline.",
+    "Simulation Finding: At $60 Brent, 2 fields go EBITDA-negative (Champang -15.04 Cr, Borholla -7.54 Cr).",
+    "Three fields go PBT-negative: Champang (-46.22 Cr), Borholla (-40.71 Cr), and Khoraghat (-33.24 Cr)."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.v_field_pnl",
+      "query_id": "5c6a8d5c-67c7-4f36-9caa-f405abc4c7e6",
+      "sql": "-- Answer Key SQL: W1\n-- Question: If Brent falls to $60/bbl, which fields go into loss?\n-- Type: what_if\n\nWITH price_params AS (\n    SELECT\n        AVG(brent_usd_bbl) AS avg_brent,\n        AVG(ongc_crude_net_realisation_usd_bbl) AS avg_realisation,\n        AVG(brent_usd_bbl - ongc_crude_net_realisation_usd_bbl) AS avg_discount\n    FROM `ongc-hr-finance-agent.hrfin_silver.price_fx_monthly`\n    WHERE fiscal_year IN ('FY26', '2026')\n),\nsim_brent60 AS (\n    SELECT\n        pnl.field_id,\n        f.name AS field_name,\n        f.onshore_offshore,\n        pnl.gross_revenue_inr_cr AS base_revenue_cr,\n        pnl.total_opex_inr_cr AS base_opex_cr,\n        pnl.dda_depreciation_inr_cr AS base_dda_cr,\n        (pnl.oil_revenue_inr_cr * ((60.0 - params.avg_discount) / params.avg_realisation) + pnl.gas_revenue_inr_cr) AS sim_gross_rev_cr,\n        SAFE_DIVIDE(pnl.statutory_royalty_inr_cr, NULLIF(pnl.gross_revenue_inr_cr, 0)) AS eff_royalty_rate,\n        SAFE_DIVIDE(pnl.statutory_cess_inr_cr, NULLIF(pnl.gross_revenue_inr_cr, 0)) AS eff_cess_rate\n    FROM `ongc-hr-finance-agent.hrfin_silver.field_pnl_annual` pnl\n    JOIN `ongc-hr-finance-agent.hrfin_silver.dim_field` f ON pnl.field_id = f.field_id\n    CROSS JOIN price_params params\n    WHERE pnl.fiscal_year IN ('FY26', '2026') AND pnl.line_type = 'field'\n)\nSELECT\n    field_id,\n    field_name,\n    onshore_offshore,\n    ROUND(sim_gross_rev_cr, 2) AS sim_gross_revenue_inr_cr,\n    ROUND(base_opex_cr, 2) AS total_opex_inr_cr,\n    ROUND(sim_gross_rev_cr * (1.0 - eff_royalty_rate - eff_cess_rate) - base_opex_cr, 2) AS sim_ebitda_inr_cr,\n    ROUND(sim_gross_rev_cr * (1.0 - eff_royalty_rate - eff_cess_rate) - base_opex_cr - base_dda_cr, 2) AS sim_pbt_inr_cr,\n    CASE WHEN (sim_gross_rev_cr * (1.0 - eff_royalty_rate - eff_cess_rate) - base_opex_cr) < 0 THEN TRUE ELSE FALSE END AS is_ebitda_negative,\n    CASE WHEN (sim_gross_rev_cr * (1.0 - eff_royalty_rate - eff_cess_rate) - base_opex_cr - base_dda_cr) < 0 THEN TRUE ELSE FALSE END AS is_pbt_negative\nFROM sim_brent60\nORDER BY sim_pbt_inr_cr ASC;\n"
+    }
+  ],
+  "suggestions": [
+    "Test extreme downside scenario at $50/bbl",
+    "View Khoraghat opex breakdown",
+    "Show impact on FY27 capex plan"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "pdf"
+  ]
+}

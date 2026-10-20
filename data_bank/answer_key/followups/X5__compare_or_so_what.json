@@ -1,0 +1,57 @@
+{
+  "job_id": "712b3d88-0889-49f6-9083-b543df7eccdc",
+  "total_bytes_processed": 700,
+  "executed_at": "2026-10-20T06:37:22.548209+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "standalone_roce_pct",
+    "consolidated_roce_pct",
+    "consolidated_minus_standalone_pp",
+    "standalone_pat_cr",
+    "consolidated_pat_cr"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "standalone_roce_pct": 67.78,
+      "consolidated_roce_pct": 59.65,
+      "consolidated_minus_standalone_pp": -8.13,
+      "standalone_pat_cr": 40306.0,
+      "consolidated_pat_cr": 54413.1
+    },
+    {
+      "fiscal_year": "FY23",
+      "standalone_roce_pct": 89.22,
+      "consolidated_roce_pct": 78.51,
+      "consolidated_minus_standalone_pp": -10.71,
+      "standalone_pat_cr": 40096.0,
+      "consolidated_pat_cr": 54129.6
+    },
+    {
+      "fiscal_year": "FY24",
+      "standalone_roce_pct": 66.44,
+      "consolidated_roce_pct": 58.47,
+      "consolidated_minus_standalone_pp": -7.97,
+      "standalone_pat_cr": 40526.0,
+      "consolidated_pat_cr": 54710.1
+    },
+    {
+      "fiscal_year": "FY25",
+      "standalone_roce_pct": 42.69,
+      "consolidated_roce_pct": 37.57,
+      "consolidated_minus_standalone_pp": -5.12,
+      "standalone_pat_cr": 35610.0,
+      "consolidated_pat_cr": 48073.5
+    },
+    {
+      "fiscal_year": "FY26",
+      "standalone_roce_pct": 63.24,
+      "consolidated_roce_pct": 55.65,
+      "consolidated_minus_standalone_pp": -7.59,
+      "standalone_pat_cr": 32894.0,
+      "consolidated_pat_cr": 49793.0
+    }
+  ]
+}

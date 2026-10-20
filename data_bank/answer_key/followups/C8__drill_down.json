@@ -1,0 +1,109 @@
+{
+  "job_id": "353f5c6d-7d9f-43c7-9d19-003444a5790f",
+  "total_bytes_processed": 29225,
+  "executed_at": "2026-10-20T06:38:30.696373+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 9,
+  "columns": [
+    "asset",
+    "field_name",
+    "ebitda_fy24",
+    "ebitda_fy25",
+    "ebitda_fy26",
+    "negative_ebitda_years",
+    "negative_3_consecutive_years",
+    "min_ebitda_fy24_fy26"
+  ],
+  "rows": [
+    {
+      "asset": "Jorhat Asset",
+      "field_name": "Champang",
+      "ebitda_fy24": 65.68,
+      "ebitda_fy25": 33.51,
+      "ebitda_fy26": 26.25,
+      "negative_ebitda_years": 0,
+      "negative_3_consecutive_years": false,
+      "min_ebitda_fy24_fy26": 26.25
+    },
+    {
+      "asset": "Jorhat Asset",
+      "field_name": "Borholla",
+      "ebitda_fy24": 77.8,
+      "ebitda_fy25": 43.08,
+      "ebitda_fy26": 36.39,
+      "negative_ebitda_years": 0,
+      "negative_3_consecutive_years": false,
+      "min_ebitda_fy24_fy26": 36.39
+    },
+    {
+      "asset": "Jorhat Asset",
+      "field_name": "Khoraghat",
+      "ebitda_fy24": 95.72,
+      "ebitda_fy25": 57.69,
+      "ebitda_fy26": 50.29,
+      "negative_ebitda_years": 0,
+      "negative_3_consecutive_years": false,
+      "min_ebitda_fy24_fy26": 50.29
+    },
+    {
+      "asset": "Assam Asset",
+      "field_name": "Charali",
+      "ebitda_fy24": 183.82,
+      "ebitda_fy25": 151.89,
+      "ebitda_fy26": 138.67,
+      "negative_ebitda_years": 0,
+      "negative_3_consecutive_years": false,
+      "min_ebitda_fy24_fy26": 138.67
+    },
+    {
+      "asset": "Cambay Asset",
+      "field_name": "Cambay",
+      "ebitda_fy24": 513.68,
+      "ebitda_fy25": 456.21,
+      "ebitda_fy26": 450.93,
+      "negative_ebitda_years": 0,
+      "negative_3_consecutive_years": false,
+      "min_ebitda_fy24_fy26": 450.93
+    },
+    {
+      "asset": "Cambay Asset",
+      "field_name": "Kathana",
+      "ebitda_fy24": 1228.29,
+      "ebitda_fy25": 1039.54,
+      "ebitda_fy26": 966.88,
+      "negative_ebitda_years": 0,
+      "negative_3_consecutive_years": false,
+      "min_ebitda_fy24_fy26": 966.88
+    },
+    {
+      "asset": "Assam Asset",
+      "field_name": "Geleki",
+      "ebitda_fy24": 1514.41,
+      "ebitda_fy25": 1294.94,
+      "ebitda_fy26": 1199.4,
+      "negative_ebitda_years": 0,
+      "negative_3_consecutive_years": false,
+      "min_ebitda_fy24_fy26": 1199.4
+    },
+    {
+      "asset": "Assam Asset",
+      "field_name": "Rudrasagar",
+      "ebitda_fy24": 1662.53,
+      "ebitda_fy25": 1423.24,
+      "ebitda_fy26": 1327.73,
+      "negative_ebitda_years": 0,
+      "negative_3_consecutive_years": false,
+      "min_ebitda_fy24_fy26": 1327.73
+    },
+    {
+      "asset": "Assam Asset",
+      "field_name": "Lakwa",
+      "ebitda_fy24": 1960.81,
+      "ebitda_fy25": 1675.18,
+      "ebitda_fy26": 1571.49,
+      "negative_ebitda_years": 0,
+      "negative_3_consecutive_years": false,
+      "min_ebitda_fy24_fy26": 1571.49
+    }
+  ]
+}

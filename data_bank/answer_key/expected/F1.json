@@ -1,0 +1,185 @@
+{
+  "job_id": "00e3285b-17b9-4137-b9f7-8228256cd71e",
+  "total_bytes_processed": 42731,
+  "executed_at": "2026-10-20T06:38:48.113523+00:00",
+  "elapsed_seconds": 1.38,
+  "row_count": 15,
+  "columns": [
+    "asset_wc_id",
+    "asset_name",
+    "onshore_offshore",
+    "production_mmboe",
+    "opex_inr_cr",
+    "lifting_cost_usd_boe",
+    "lifting_cost_inr_boe",
+    "company_avg_usd_boe",
+    "above_company_avg"
+  ],
+  "rows": [
+    {
+      "asset_wc_id": "WC-JOR",
+      "asset_name": "Jorhat Asset",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 1.78,
+      "opex_inr_cr": 726.4,
+      "lifting_cost_usd_boe": 46.3,
+      "lifting_cost_inr_boe": 4089.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": true
+    },
+    {
+      "asset_wc_id": "WC-CAU",
+      "asset_name": "Cauvery Asset",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 3.55,
+      "opex_inr_cr": 471.3,
+      "lifting_cost_usd_boe": 15.04,
+      "lifting_cost_inr_boe": 1329.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": true
+    },
+    {
+      "asset_wc_id": "WC-MEH",
+      "asset_name": "Mehsana Asset",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 9.24,
+      "opex_inr_cr": 1227.2,
+      "lifting_cost_usd_boe": 15.03,
+      "lifting_cost_inr_boe": 1327.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": true
+    },
+    {
+      "asset_wc_id": "WC-NEH",
+      "asset_name": "Neelam & Heera",
+      "onshore_offshore": "offshore",
+      "production_mmboe": 26.32,
+      "opex_inr_cr": 3368.5,
+      "lifting_cost_usd_boe": 14.48,
+      "lifting_cost_inr_boe": 1280.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": true
+    },
+    {
+      "asset_wc_id": "WC-RAJ-BSN",
+      "asset_name": "Rajasthan Basin",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 0.8,
+      "opex_inr_cr": 93.7,
+      "lifting_cost_usd_boe": 13.33,
+      "lifting_cost_inr_boe": 1178.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": true
+    },
+    {
+      "asset_wc_id": "WC-ASM",
+      "asset_name": "Assam Asset",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 13.73,
+      "opex_inr_cr": 1574.6,
+      "lifting_cost_usd_boe": 12.98,
+      "lifting_cost_inr_boe": 1147.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": true
+    },
+    {
+      "asset_wc_id": "WC-AHM",
+      "asset_name": "Ahmedabad Asset",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 9.84,
+      "opex_inr_cr": 1111.0,
+      "lifting_cost_usd_boe": 12.78,
+      "lifting_cost_inr_boe": 1129.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": true
+    },
+    {
+      "asset_wc_id": "WC-MUM",
+      "asset_name": "Mumbai High",
+      "onshore_offshore": "offshore",
+      "production_mmboe": 55.49,
+      "opex_inr_cr": 5052.7,
+      "lifting_cost_usd_boe": 10.31,
+      "lifting_cost_inr_boe": 911.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": true
+    },
+    {
+      "asset_wc_id": "WC-RAJ",
+      "asset_name": "Rajahmundry Asset",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 7.55,
+      "opex_inr_cr": 642.2,
+      "lifting_cost_usd_boe": 9.64,
+      "lifting_cost_inr_boe": 851.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": true
+    },
+    {
+      "asset_wc_id": "WC-CAM",
+      "asset_name": "Cambay Asset",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 5.79,
+      "opex_inr_cr": 459.8,
+      "lifting_cost_usd_boe": 8.99,
+      "lifting_cost_inr_boe": 795.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": false
+    },
+    {
+      "asset_wc_id": "WC-BOK",
+      "asset_name": "CBM Bokaro",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 7.13,
+      "opex_inr_cr": 459.6,
+      "lifting_cost_usd_boe": 7.29,
+      "lifting_cost_inr_boe": 644.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": false
+    },
+    {
+      "asset_wc_id": "WC-EAS",
+      "asset_name": "Eastern Offshore",
+      "onshore_offshore": "offshore",
+      "production_mmboe": 28.13,
+      "opex_inr_cr": 1686.1,
+      "lifting_cost_usd_boe": 6.79,
+      "lifting_cost_inr_boe": 599.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": false
+    },
+    {
+      "asset_wc_id": "WC-TRI",
+      "asset_name": "Tripura Asset",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 12.07,
+      "opex_inr_cr": 716.5,
+      "lifting_cost_usd_boe": 6.73,
+      "lifting_cost_inr_boe": 594.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": false
+    },
+    {
+      "asset_wc_id": "WC-BAS",
+      "asset_name": "Bassein & Satellite",
+      "onshore_offshore": "offshore",
+      "production_mmboe": 84.5,
+      "opex_inr_cr": 4665.8,
+      "lifting_cost_usd_boe": 6.25,
+      "lifting_cost_inr_boe": 552.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": false
+    },
+    {
+      "asset_wc_id": "WC-ANK",
+      "asset_name": "Ankleshwar Asset",
+      "onshore_offshore": "onshore",
+      "production_mmboe": 30.73,
+      "opex_inr_cr": 1664.6,
+      "lifting_cost_usd_boe": 6.13,
+      "lifting_cost_inr_boe": 542.0,
+      "company_avg_usd_boe": 9.13,
+      "above_company_avg": false
+    }
+  ]
+}

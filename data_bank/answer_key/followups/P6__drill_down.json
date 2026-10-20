@@ -1,0 +1,37 @@
+{
+  "job_id": "afa950a7-c99d-45d9-8413-0d2164f0b731",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:20.859428+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "G-06",
+      "clause_ref": "12. Gifts",
+      "heading": "DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts",
+      "provision": "DPE CDA Rule 12(2) (near relatives)",
+      "quote_snippet": "2. On occasions such as weddings, anniversaries, funerals or religious functions, when the making of gifts is in conformity with the prevailing religious or social practices, an employee of the CPSE may accept gifts, from his/her near relatives but employee shall make a report to the competent authority if the value of the gift exceeds (i) rupees twenty five thousand in the case of Executives; (ii) rupees fifteen thousand in the case of an Non-Executives;"
+    },
+    {
+      "doc_id": "G-06",
+      "clause_ref": "12. Gifts",
+      "heading": "DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts",
+      "provision": "DPE CDA Rule 12(3) (personal friends)",
+      "quote_snippet": "3. On such occasions as are specified in sub-rule (2), an employee of the CPSE may accept gifts from his/her personal friends having no official dealings with the employee, but employee shall make a report to the competent authority if the value of any such gift exceeds rupees one thousand five hundred in the case of Executives and Non-Executives;"
+    },
+    {
+      "doc_id": "G-06",
+      "clause_ref": "12. Gifts",
+      "heading": "DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts",
+      "provision": "DPE CDA Rule 12(4) (any other case / aggregate)",
+      "quote_snippet": "4. In any other case, an employee of the CPSE shall not accept or permit any other member of his/her family or any other person acting on his/her behalf to accept any gifts without the sanction of the competent authority if the value thereof exceeds rupees one thousand five hundred in the case of Executives and Non-Executives; Provided that when more than one gift has been received from the same person/firm within a period of 12 months, the matter shall be reported to the competent authority if the aggregate value of the gifts exceeds Rs.25,000/- and Rs.15000/-in case of Executives and Non-Executives respec- tively."
+    }
+  ]
+}

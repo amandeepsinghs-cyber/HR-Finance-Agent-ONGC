@@ -1,0 +1,57 @@
+{
+  "job_id": "3abfc0af-e716-47d0-acb5-94dec5daccfe",
+  "total_bytes_processed": 10103620,
+  "executed_at": "2026-10-20T06:33:05.158434+00:00",
+  "elapsed_seconds": 2.01,
+  "row_count": 3,
+  "columns": [
+    "staff_population",
+    "in_jrtp_scope",
+    "currently_in_delhi_cluster",
+    "max_cumulative_years",
+    "approaching_cap_8yr_plus",
+    "breached_10yr_cap",
+    "breached_exempt_retiring_3yr",
+    "breached_due_transfer",
+    "retiring_within_2yr",
+    "retiring_within_3yr"
+  ],
+  "rows": [
+    {
+      "staff_population": "Executives E0-E9 (JRTP scope)",
+      "in_jrtp_scope": true,
+      "currently_in_delhi_cluster": 692,
+      "max_cumulative_years": 8.39,
+      "approaching_cap_8yr_plus": 4,
+      "breached_10yr_cap": 0,
+      "breached_exempt_retiring_3yr": 0,
+      "breached_due_transfer": 0,
+      "retiring_within_2yr": 9,
+      "retiring_within_3yr": 22
+    },
+    {
+      "staff_population": "Board - CMD/Directors (outside JRTP)",
+      "in_jrtp_scope": false,
+      "currently_in_delhi_cluster": 3,
+      "max_cumulative_years": 11.79,
+      "approaching_cap_8yr_plus": 1,
+      "breached_10yr_cap": 1,
+      "breached_exempt_retiring_3yr": 1,
+      "breached_due_transfer": 0,
+      "retiring_within_2yr": 2,
+      "retiring_within_3yr": 3
+    },
+    {
+      "staff_population": "Non-executives Group B/C/D (outside JRTP)",
+      "in_jrtp_scope": false,
+      "currently_in_delhi_cluster": 248,
+      "max_cumulative_years": 36.16,
+      "approaching_cap_8yr_plus": 211,
+      "breached_10yr_cap": 200,
+      "breached_exempt_retiring_3yr": 0,
+      "breached_due_transfer": 200,
+      "retiring_within_2yr": 0,
+      "retiring_within_3yr": 0
+    }
+  ]
+}

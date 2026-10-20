@@ -1,0 +1,1905 @@
+                                                            MOST IMMEDIATE
+                               No. 18(8)/2005-GM
+                               Government of India
+               Ministry of Heavy Industries and Public Enterprises
+                        Department of Public Enterprises
+                                                    Block No.14, CGO Complex,
+                                                 Lodi Road, New Delhi - 110003
+                                                      Dated, the 14th May, 2010
+
+                            OFFICE MEMORANDUM
+
+Subject:   Guidelines on Corporate    Governance    for Central   Public    Sector
+           Enterprises (CPSEs)
+
+      The undersigned is directed to state that the Guidelines on Corporate
+Governance for CPSEs were issued in June, 2007 for an experimental phase of
+one year. The CPSEs have implemented these Guidelines, which were
+voluntary in nature, for the full year 2008-09.
+
+2.     The Government has reviewed the above matter and in light of
+experiences gained and also the need to adopt good corporate governance
+practices in CPSEs, decided to continue these Guidelines on a mandatory
+basis with minor modifications.
+
+3.   The revised Guidelines on Corporate Governance for CPSEs are available
+on DPE website (url- http://dpe.nic.in/newsite/gcgcpse2010.pdf).
+
+4.    All administrative Ministries/Departments are requested to take note of
+the above and issue suitable directions to all CPSEs under their respective
+administrative jurisdiction to comply with the revised Guidelines on Corporate
+Governance on a mandatory basis and also to submit quarterly progress
+reports with regard to compliance in the prescribed format within 15 days from
+the close of each quarter.
+
+5.    The Administrative Ministries are also requested to consolidate the
+information obtained from the CPSEs and furnish a comprehensive report to
+the Department of Public Enterprises by 31 st May of every financial year on the
+status of compliance of Corporate Governance Guidelines.
+
+6.    This issues with the approval of Minister of Heavy Industries     & Public
+Enterprises.                                                               ..~
+
+                                                                            ~ IlfJ:'t:J
+                                                               (Rakesh Sarwal)
+                                     Joint Secretary to the Goverrtrnent of India
+                                                                Tel: 2436-3411
+To,
+
+Secretaries of all administrative Ministries/Departments
+
+
+
+                                                                                 .... 2
+                                      -    2-
+
+Copy to :- Chief Executives of all CPSEs
+
+
+Copy also to :-
+
+   (i) Secretary, Department of Personnel & Training, North Block, New Delhi.
+   (ii) Secretary, Ministry of Corporate Affairs, Shastri Bhavan, New Delhi.
+   (iii)Secretary, Department of Expenditure, North Block, New Delhi.
+   (iv)Secretary, Planning Commission, Yojna Bhavan, New Delhi.
+   (v) Prime Minister's Office (Ms. Pallavi Jain, Director), South Block, New
+        Delhi.
+   (vi)Shri K.L. Sharma, Director (Cabinet), Rashtrapati Bhavan, New Delhi -
+        w.r.t. Cabinet Secretariat   communication     tio.] 14/CM/2010(i)   dated
+         29.3.2010.
+   (vii) PS to Minister (HI & PE)
+   (viii) PS to MOS (HI & PE)
+   (ix) PS to Secretary (PE)
+   (x) PS to Secretary(BRPSE)
+   (xi)PS to AS & FA (HI & PEl
+   (xii) PS to Adviser (PE)
+
+
+
+                                                                           fe ,c..O'"
+                                                                (Rakesh Sarwal)
+                                     Joint Secretary to the Government ofIndia
+           Guidelines on
+       Corporate Governance
+for Central Public Sector Enterprises
+                  2010
+
+
+
+
+         Government of India
+Ministry of Heavy Industries and Public
+              Enterprises
+  Department of Public Enterprises
+ Block 14, CGO Complex, Lodi Road,
+          New Delhi – 110 003
+
+          Website: www.dpe.nic.in
+             May 2010
+
+
+
+
+                     1
+                             Contents
+ Chapter                             Subject                           Page
+    1      Introduction                                                   3
+    2      Applicability of Guidelines                                    5
+    3      Board of Directors                                             6
+    4      Audit Committee                                               11
+    5      Remuneration Committee                                        16
+    6      Subsidiary Companies                                          17
+    7      Disclosures                                                   18
+    8      Report, Compliance and Schedule of Implementation             21
+
+
+Annexes
+     I     Guidelines on Composition of Board of Directors of CPSEs      22
+    II     Guidelines on Composition of Board of Directors of listed     27
+           CPSEs
+   III     Definition of term „relative‟                                 29
+   IV      Information to be placed before Board of Directors            30
+   V       Suggested list of items to be included in the Code of         31
+           Conduct
+   VI      Model Code of Business Conduct and Ethics for Board           32
+           Members and Senior Management
+   VII     Suggested list of items to be included in the Annual          42
+           Report of CPSEs
+   VIII    Format of Quarterly Compliance Report by CPSEs to             44
+           nodal Administrative Ministries/Departments
+
+
+
+
+                                   2
+                    CHAPTER 1 - INTRODUCTION
+
+
+1.1    Corporate Governance involves a set of relationships between a
+company‟s management, its Board, its shareholders and other stakeholders.
+Corporate Governance provides a principled process and structure through
+which the objectives of the company, the means of attaining the objectives and
+systems of monitoring performance are also set. Corporate Governance is a set
+of accepted principles by management of the inalienable rights of the
+shareholders as a true owner of the corporation and of their own role as
+trustees on behalf of the shareholders. It is about commitment to values, ethical
+business conduct, transparency and makes a distinction between personal and
+corporate funds in the management of a company.
+
+1.2    There are about 250 Central Public Sector Enterprises (CPSEs). Majority
+of these CPSEs, including Maharatnas, Navratnas and Miniratnas, are earning
+profit and have improved their financial performance over the years. In the
+context of the policy of the government to grant more autonomy to the CPSEs
+and encourage them to access the capital markets for their fund requirement,
+Corporate Governance has become even more important. Under the recently
+introduced Maharatna Scheme, CPSEs are expected to expand international
+operations and become global giants, for which effective Corporate
+Governance is imperative.
+
+1.3    These guidelines on Corporate Governance are formulated with the
+objective that the CPSEs follow the guidelines in their functioning. Proper
+implementation of these guidelines would protect the interest of shareholders
+and relevant stakeholders.
+
+1.4    The Department of Public Enterprises (DPE) had issued guidelines on
+composition of Board of Directors of Central Public Sector Enterprises (CPSEs)
+in 1992 (Annex-I). According to these guidelines at least one-third of the
+Directors on the Board of a CPSE should be non-official Directors. The
+Maharatna, Navratna and Miniratna schemes provide that exercise of the
+enhanced powers delegated to these CPSEs is subject to the condition that their
+Boards are professionalised by inducting adequate number of non-official
+Directors, with minimum of four in case of Maharatna, Navratnas and
+minimum of three in case of Miniratnas. The schemes for Maharatna, Navratna
+and Miniratna CPSEs also provide for setting up of Audit Committees.
+
+
+
+
+                                       3
+1.5     In November 2001, DPE issued further guidelines on the composition of
+Board of Directors of listed CPSEs (Annex-II). It provided that the number of
+Independent Directors should be at least one-third of the Board if the
+Chairman is non-executive, and not less than 50% if the Board has an executive
+Chairman. Relevant extracts of Clause 49 of the Listing Agreement with Stock
+Exchanges issued by Securities and Exchange Board of India (SEBI) forms part
+of the said guidelines.
+
+1.6     To bring in more transparency and accountability in the functioning of
+CPSEs, the Government in June, 2007 introduced, for an experimental period
+of one year, the Guidelines on Corporate Governance for CPSEs. These
+Guidelines were of voluntary nature. Since the issue of these guidelines, the
+CPSEs have had the opportunity to implement them for the whole of the
+financial year 2008-09. These Guidelines have been modified and improved
+upon based on the experience gained during the experimental period of one
+year. The Government have felt the need for continuing the adoption of good
+Corporate Governance Guidelines by CPSEs for ensuring higher level of
+transparency and decided to make these Guidelines mandatory and applicable
+to all CPSEs.
+
+1.7     Apart from these instructions of DPE, the CPSEs are governed by the
+Companies Act, 1956 and regulations of various authorities like Comptroller
+and Auditor General of India (C&AG), Central Vigilance Commission (CVC),
+Administrative Ministries, other nodal Ministries, etc. The Right to Information
+Act 2005 is also applicable to the CPSEs. The CPSEs fall under the definition of
+„State‟ as provided in Article 12 of the Constitution of India. Further, some
+principles of Corporate Governance are already in vogue in public sector
+because (a) the Chairman, Managing Director and Directors are appointed
+independently through a prescribed procedure; (b) Statutory auditors are
+appointed independently by the C&AG; (c) Arbitrary actions, if any, of the
+Management can be challenged through writ petitions; (d) Remuneration of
+Directors, employees, etc. are determined on the basis of recommendations of
+Pay Committees constituted for this purpose; etc.
+
+                                     *****
+
+
+
+
+                                       4
+         CHAPTER 2 - APPLICABILITY OF GUIDELINES
+
+2.1    For the purpose of evolving Guidelines on Corporate Governance,
+CPSEs have been categorised into two groups, namely, (i) those listed on the
+Stock Exchanges; (ii) those not listed on the Stock Exchanges.
+
+CPSEs listed on Stock Exchanges:
+
+
+2.2    In so far as listed CPSEs are concerned, they have to follow the SEBI
+Guidelines on Corporate Governance. In addition, they shall follow those
+provisions in these Guidelines which do not exist in the SEBI Guidelines and
+also do not contradict any of the provisions of the SEBI Guidelines.
+
+Non-listed CPSEs:
+
+
+2.3 Each CPSE should strive to institutionalize good Corporate Governance
+practices broadly in conformity with the SEBI Guidelines. The listing of the
+non-listed CPSEs on the stock exchanges may also be considered within a
+reasonable time frame to be set by the Administrative Ministry concerned in
+consultation with the CPSEs concerned. The non-listed CPSEs shall follow the
+Guidelines on Corporate Governance given in the subsequent chapters, which
+are mandatory.
+
+2.4    The guidelines on Corporate Governance for listed and unlisted CPSEs
+are being dealt in the succeeding chapters under the following headings.
+
+      Board of Directors
+      Audit Committee
+      Remuneration Committee
+      Subsidiary Companies
+      Disclosures
+      Report, Compliance and Schedule of Implementation
+
+                                         *****
+
+
+
+
+                                     5
+               CHAPTER 3 - BOARD OF DIRECTORS
+
+3.1     Composition of Board
+
+
+3.1.1 The Board of Directors of the company shall have an optimum
+combination of Functional, Nominee and Independent Directors.
+
+3.1.2 The number of Functional Directors (including CMD/MD) should not
+exceed 50% of the actual strength of the Board.
+
+3.1.3 The number of Nominee Directors appointed by Government/other
+CPSEs shall be restricted to a maximum of two.
+
+3.1.4 In case of a CPSE listed on the Stock Exchanges and whose Board of
+Directors is headed by an Executive Chairman, the number of Independent
+Directors shall be at least 50% of Board Members; and in case of all other CPSEs
+(i.e. listed on Stock Exchange but without an Executive Chairman, or not listed
+CPSEs), at least one-third of the Board Members should be Independent
+Directors. The expression „Independent Director‟ shall mean a part-time
+Director of the company who:
+
+
+(a) apart from receiving Director‟s remuneration, does not have any material
+    pecuniary relationship or transaction with the company, its Directors, its
+    senior management or its holding company, its subsidiaries and associates
+    which may affect independence of the Director;
+(b) is not related to persons occupying management positions at the Board
+    level or at one level below the Board;
+(c) has not been a senior executive or managerial personnel of the company
+    in the immediately preceding three financial years;
+(d) Is not a partner or an executive, or was not a partner or an executive
+    during the preceding three years, of any of the following:
+      i) the statutory audit firm or the internal audit firm or tax audit firm or
+          energy audit firm or management audit firm or risk audit firm or
+          insurance audit firm that is associated with the company, and
+      ii) the panel advocate(s) or legal firm(s) or consultant(s) and consulting
+          firm(s) or expert(s) that have a material association with the
+          company.
+
+                                       6
+(e) is not a material supplier, service provider or customer or a lessor or lessee
+    of the company, which may affect independence of the director;
+(f) is not a substantial shareholder of the company i.e. owning two percent or
+    more of the block of voting shares.
+
+Explanation
+For the purposes of the sub-clause 3.1.4:
+(i)    “Associate” shall mean a company which is an “associate” as defined in
+Accounting Standard 23 (AS-23), “Accounting for Investments in Associates in
+Consolidated Financial Statements”, issued by the Institute of Chartered
+Accountants of India.
+(ii)   “Senior management” shall mean personnel of the company who are
+members of its core management team excluding Board of Directors. Normally,
+this would comprise all members of management one level below the
+Functional Directors, including all functional heads.
+(iii) “Relative” shall mean “relative” as defined in Section 2(41) and Section
+6 read with Schedule IA of the Companies Act, 1956 (Extract from the
+Companies Act is at Annex III).
+
+3.1.5 Nominee Directors appointed by an institution which has invested in or
+lent to the company shall be deemed to be Independent Directors.
+
+Explanation:
+
+“Institution” for this purpose means a public financial institution as defined in
+Section 4A of the Companies Act, 1956 or a “corresponding new bank” as
+defined in section 2(d) of the Banking Companies (Acquisition and Transfer of
+Undertakings) Act, 1970 or the Banking Companies (Acquisition and Transfer
+of Undertakings) Act, 1980 [both Acts].”
+
+3.2     Part-time Directors’ compensation and disclosures
+
+
+All fees/compensation, if any, paid to part-time Directors, including
+Independent Directors, shall be fixed by the Board of Directors subject to the
+provisions in the DPE guidelines and the Companies Act, 1956.
+
+3.3     Other provisions as to Board and Committees
+
+
+3.3.1 Number of Board meetings:- The Board shall meet at least once in every
+three months and at least four such meetings shall be held every year. Further,
+the time gap between any two meetings should not be more than three months.
+
+
+                                        7
+The minimum information to be made available to the Board is given in
+Annex-IV.
+
+3.3.2 A Director shall not be a member in more than 10 committees or act as
+Chairman of more than five committees across all companies in which he is a
+Director. Furthermore it should be a mandatory annual requirement for every
+Director to inform the company about the committee positions he occupies in
+other companies and notify changes as and when they take place.
+
+Explanation:
+
+  a.   For the purpose of considering the limit of the committees on which a
+       Director can serve, all public limited companies, whether listed or not,
+       shall be included.
+  b.   For the purpose of reckoning the limit under this sub-clause,
+       Chairmanship/membership of the Audit Committee and the
+       Shareholders‟ Grievance Committee alone shall be considered.
+
+3.3.3 Compliance of Laws to be reviewed:- The Board shall periodically
+review compliance reports of all laws applicable to the company, prepared by
+the company as well as steps taken by the company to rectify instances of non-
+compliances.
+
+3.4     Code of Conduct
+
+
+3.4.1 The Board shall lay down a code of conduct for all Board members and
+senior management of the company. The code of conduct shall be circulated
+and also posted on the website of the company.
+
+3.4.2 All Board members and senior management personnel shall affirm
+compliance with the code on an annual basis. The Annual Report of the
+company shall contain a declaration to this effect signed by its Chief Executive.
+
+3.4.3 Guidelines and policies evolved by the Central Government with
+respect to the structure, composition, selection, appointment and service
+conditions of Boards of Directors and senior management personnel shall be
+strictly followed.
+
+3.4.4 There shall be no extravagance in expenditure on the part of Board
+members and senior management personnel. CPSEs executives shall be
+accountable for their performance in conformity with established norms of
+
+                                       8
+conduct.
+
+Explanation: For this purpose, the term “senior management” shall mean
+personnel of the company who are members of its core management team,
+excluding Board of Directors. Normally, this would comprise all members of
+management one level below the Functional Directors, including all functional
+heads.
+
+3.4.5 Any external/internal changes made from time to time, due to addition
+of or amendment to laws/regulatory rules, applicable to CPSEs, need to be
+dealt with carefully by the respective Boards/senior management personnel.
+
+3.4.6 A suggested list of items to be included in the code of conduct is given at
+Annex-V. Further, to assist the CPSEs in the formulation of the code, a model
+Code of Business Conduct and Ethics for Board Members and Senior
+Management is given at Annex-VI.
+
+3.5   Functional Role Clarity between Board of Directors and Management
+
+
+A clear definition of the roles and the division of responsibilities between the
+Board and the Management is necessary to enable the Board to effectively
+perform its role. The Board should have a formal statement of Board Charter
+which clearly defines the roles and responsibilities of the Board and individual
+Directors. The Board of each CPSE may be encouraged to articulate its
+Corporate Governance objectives and approach (within the broad parameters
+of these guidelines and the general perception of business risk) to satisfy the
+expectations of its majority shareholders and other stakeholders.
+
+3.6   Risk Management
+
+
+Enterprise risk management helps management in achieving CPSE's
+performance and profitability targets. It helps to ensure effective reporting and
+compliance with laws and regulations, and helps avoid damage to the entity‟s
+reputation and associated consequences. Considering the significance of risk
+management in the scheme of corporate management strategies, its oversight
+should be one of the main responsibilities of the Board/Management. The
+Board should ensure the integration and alignment of the risk management
+system with the corporate and operational objectives and also that risk
+management is undertaken as a part of normal business practice and not as a
+separate task at set times.
+
+
+                                       9
+3.7   Training of Directors
+
+
+The company concerned shall undertake training programme for its new Board
+members (Functional, Government, Nominee and Independent) in the business
+model of the company including risk profile of the business of company,
+responsibility of respective Directors and the manner in which such
+responsibilities are to be discharged. They shall also be imparted training on
+Corporate Governance, model code of business ethics and conduct applicable
+for the respective Directors.
+
+                                     ****
+
+
+
+
+                                     10
+                  CHAPTER 4 - AUDIT COMMITTEE
+
+
+4.1      Qualified and Independent Audit Committee
+
+
+A qualified and independent Audit Committee shall be set up, giving the terms
+of reference.
+
+4.1.1 The Audit Committee shall have minimum three Directors as members.
+Two-thirds of the members of audit committee shall be Independent Directors.
+
+4.1.2   The Chairman of the Audit Committee shall be an Independent Director.
+
+4.1.3 All members of Audit Committee shall have knowledge of financial
+matters of Company, and at least one member shall have good knowledge of
+accounting and related financial management expertise.
+
+Explanation 1: The term “knowledge of financial matters of Company” means
+the ability to read and understand basic financial procedures and statements
+i.e. balance sheet, profit and loss account, and statement of cash flows.
+
+Explanation 2: A member will be considered to have accounting and related
+financial management expertise if he or she possesses experience in finance or
+accounting, or requisite professional certification in accounting, or any other
+comparable experience or background which results in the individual‟s
+financial sophistication, including being or having been a chief executive
+officer, chief financial officer or other senior officer with financial oversight
+responsibilities.
+
+4.1.4 The Chairman of the Audit Committee shall be present at Annual
+General Meeting to answer shareholder queries; provided that in case the
+Chairman is unable to attend due to unavoidable reasons, he may nominate
+any member of the Audit Committee.
+
+4.1.5 The Audit Committee may invite such of the executives, as it considers
+appropriate (and particularly the head of the finance function) to be present at
+the meetings of the Committee. The Audit Committee may also meet without
+the presence of any executives of the company. The Finance Director, Head of
+Internal Audit and a representative of the Statutory Auditor may be specifically
+invited to be present as invitees for the meetings of the Audit Committee as
+may be decided by the Chairman of the Audit Committee.
+
+                                       11
+4.1.6 The Company Secretary shall act as the Secretary to the Audit
+Committee.
+
+4.2   Role of Audit Committee: The role of the Audit Committee shall
+include the following:
+
+4.2.1 Oversight of the company‟s financial reporting process and the
+disclosure of its financial information to ensure that the financial statement is
+correct, sufficient and credible.
+
+4.2.2   Recommending to the Board the fixation of audit fees.
+
+4.2.3 Approval of payment to statutory auditors for any other services
+rendered by the statutory auditors.
+
+4.2.4 Reviewing, with the management, the annual financial statements
+before submission to the Board for approval, with particular reference to:
+  a. Matters required to be included in the Directors‟ Responsibility
+       Statement to be included in the Board‟s report in terms of clause (2AA)
+       of section 217 of the Companies Act, 1956;
+  b. Changes, if any, in accounting policies and practices and reasons for the
+       same;
+  c. Major accounting entries involving estimates based on the exercise of
+       judgment by management;
+  d. Significant adjustments made in the financial statements arising out of
+       audit findings;
+  e. Compliance with legal requirements relating to financial statements;
+  f.    Disclosure of any related party transactions; and
+  g. Qualifications in the draft audit report.
+
+4.2.5 Reviewing, with the management, the quarterly financial statements
+before submission to the Board for approval.
+
+4.2.6 Reviewing, with the management, performance of internal auditors and
+adequacy of the internal control systems.
+
+4.2.7 Reviewing the adequacy of internal audit function, if any, including the
+structure of the internal audit department, staffing and seniority of the official
+heading the department, reporting structure, coverage and frequency of
+internal audit.
+
+
+                                       12
+4.2.8 Discussion with internal auditors and/or auditors any significant
+findings and follow up there on.
+
+4.2.9 Reviewing the findings of any internal investigations by the internal
+auditors/auditors/agencies into matters where there is suspected fraud or
+irregularity or a failure of internal control systems of a material nature and
+reporting the matter to the Board.
+
+4.2.10 Discussion with statutory auditors before the audit commences, about
+the nature and scope of audit as well as post-audit discussion to ascertain any
+area of concern.
+
+4.2.11 To look into the reasons for substantial defaults in the payment to the
+depositors, debenture holders, shareholders (in case of non payment of
+declared dividends) and creditors.
+
+4.2.12 To review the functioning of the Whistle Blower Mechanism.
+
+4.2.13 To review the follow up action on the audit observations of the C&AG
+audit.
+
+4.2.14 To review the follow up action taken on the recommendations of
+Committee on Public Undertakings (COPU) of the Parliament.
+
+4.2.15 Provide an open avenue of communication between the independent
+auditor, internal auditor and the Board of Directors
+
+4.2.16 Review all related party transactions in the company. For this purpose,
+the Audit Committee may designate a member who shall be responsible for
+reviewing related party transactions.
+
+Explanation: The term “related party transactions” shall have the same
+meaning as contained in the Accounting Standard 18, issued by the Institute of
+Chartered Accountants of India.
+
+4.2.17 Review with the independent auditor the co-ordination of audit efforts
+to assure completeness of coverage, reduction of redundant efforts, and the
+effective use of all audit resources.
+
+4.2.18 Consider and review the following with the independent auditor and
+
+                                      13
+the management:
+      -The adequacy of internal controls including computerized information
+      system controls and security, and
+      -Related findings and recommendations of the independent auditor and
+      internal auditor, together with the management responses.
+
+4.2.19 Consider and review the following with the management, internal
+auditor and the independent auditor:
+       -Significant findings during the year, including the status of previous
+       audit recommendations
+       -Any difficulties encountered during audit work including any
+       restrictions on the scope of activities or access to required information,
+
+Explanation: If the company has set up an Audit Committee pursuant to
+provision of the Companies Act, the said Audit Committee shall have such
+additional functions/features as contained in these guidelines.
+
+ Carrying out any other function as is mentioned in the terms of
+reference of the Audit Committee.
+
+4.3     Powers of Audit Committee
+
+
+Commensurate with its role, the Audit Committee should be invested by the
+Board of Directors with sufficient powers, which should include the following:
+
+(i)     To investigate any activity within its terms of reference.
+(ii)    To seek information on and from any employee.
+(iii)   To obtain outside legal or other professional advice, subject to the
+        approval of the Board of Directors.
+(iv)    To secure attendance of outsiders with relevant expertise, if it considers
+        necessary.
+(v)     To protect whistle blowers.
+
+4.4      Meeting of Audit Committee
+
+
+The Audit Committee should meet at least four times in a year and not more
+than four months shall elapse between two meetings. The quorum shall be
+either two members or one third of the members of the Audit Committee
+whichever is greater, but a minimum of two independent members must be
+present.
+
+
+                                        14
+4.5      Review of information by Audit Committee
+
+
+The Audit Committee shall review the following information:
+
+     Management discussion and analysis of financial condition and results
+        of operations;
+    Statement of related party transactions submitted by management;
+(iii)   Management letters / letters of internal control weaknesses issued by
+        the statutory auditors;
+(iv)    Internal audit reports relating to internal control weaknesses;
+(v)     The appointment and removal of the Chief Internal Auditor shall be
+        placed before the Audit Committee; and
+(vi)    Certification/declaration of financial statements by the Chief
+        Executive/Chief Finance Officer.
+
+                                       *****
+
+
+
+
+                                      15
+             CHAPTER 5 – REMUNERATION COMMITTEE
+
+
+5.1       Each CPSE shall constitute a Remuneration Committee comprising of at
+least three Directors, all of whom should be part-time Directors (i.e Nominee
+Directors or Independent Directors). The Committee should be headed by an
+Independent Director. CPSE will not be eligible for Performance Related Pay
+unless the Independent Directors are on its Board. Remuneration Committee
+will decide the annual bonus/variable pay pool and policy for its distribution
+across the executives and non unionized supervisors, within the prescribed
+limits.
+
+
+                                      *****
+
+
+
+
+                                       16
+             CHAPTER 6 - SUBSIDIARY COMPANIES
+
+
+6.1   At least one Independent Director on the Board of Directors of the
+holding company shall be a Director on the Board of Directors of its subsidiary
+company.
+
+6.2    The Audit Committee of the holding company shall also review the
+financial statements of its subsidiary company.
+
+6.3    The minutes of the Board meetings of the subsidiary company shall be
+placed at the Board meeting of the holding company. The management should
+periodically bring to the attention of the Board of Directors of the holding
+company, a statement of all significant transactions and arrangements entered
+into by its subsidiary company.
+
+Explanation: For the purpose of these guidelines, only those subsidiaries
+whose turnover or net worth is not less than 20% of the turnover or net worth
+respectively of the Holding company in the immediate preceding accounting
+year may be treated as subsidiary companies.
+
+                                     *****
+
+
+
+
+                                      17
+                     CHAPTER 7 - DISCLOSURES
+
+7.1   Transactions
+
+
+7.1.1 A statement in summary form of transactions with related parties in the
+normal and ordinary course of business shall be placed periodically before the
+Audit Committee.
+
+7.1.2 Details of material individual transactions with related parties, which
+are not in the normal and ordinary course of business, shall be placed before
+the Audit Committee.
+
+7.1.3 Details of material individual transactions with related parties or others,
+which are not on an arm‟s length basis should be placed before the Audit
+Committee, together with Management‟s justification for the same.
+
+7.2   Accounting Standards
+
+7.2.1 Where in the preparation of financial statements, a treatment different
+from that prescribed in an Accounting Standard has been followed, the fact
+shall be disclosed in the financial statements, together with the management‟s
+explanation in the Corporate Governance Report as to why it believes such
+alternative treatment is more representative of the true and fair view of the
+underlying business transaction.
+
+7.2.2 The Companies Act, 1956 as well as many other statutes require that
+financial statements of an enterprise should give a true and fair view of its
+financial position and working results. That requirement is implicit even in the
+absence of a specific detailed provision to this effect. However, what
+constitutes a true and fair view has not been defined either in the Companies
+Act, 1956 or in any other statute. The Accounting Standards as well as other
+transactions of the Institute of Chartered Accountants of India on accounting
+matters seek to prescribe the accounting principles and the methods of
+applying these principles in preparation and presentation of financial
+statements so that they give a true and fair view.
+
+7.2.3 Consolidated financial statements present financial information about
+the parent company, its subsidiaries, its associates and joint ventures as an
+economic entity to show the economic resources controlled by the group, the
+obligation of the group and the results the group achieved with its resources,
+
+                                       18
+which is not determinable from individual financial statements of parent,
+subsidiaries, associates and joint ventures. All CPSEs shall prepare
+consolidated financial statements as per Accounting Standards, namely, AS21,
+AS23 and AS27 issued by the Institute of Chartered Accountants of India
+(ICAI) in relation to the Consolidation of Financial Statements.
+
+7.2.4 Many CPSEs provide groups of products and services or operate in
+geographical areas that are subject to differing rates of profitability,
+opportunities for growth, future prospects, and risks which may not be
+determinable from the aggregated data. Reporting of segment information is
+widely regarded as necessary for meeting the needs of users of financial
+statements. Hence, all CPSEs are required to publish segment wise profit and
+loss as per Accounting Standard 17 “Segment Reporting” issued by ICAI.
+
+7.3   Board Disclosures – Risk management
+
+7.3.1 The company shall lay down procedures to inform Board members
+about the risk assessment and minimization procedures. These procedures
+shall be periodically reviewed to ensure that executive management controls
+risk through means of a properly defined framework. Procedure will be laid
+down for internal risk management also.
+
+7.3.2 The Board should implement policies and procedures which should
+include:
+      (a) staff responsibilities in relation to fraud prevention and
+          identification
+      (b) responsibility of fraud investigation once a fraud has been identified
+      (c) process of reporting on fraud related matters to management
+      (d) reporting and recording processes to be followed to record
+          allegations of fraud
+      (e) requirements of training to be conducted on fraud prevention and
+          identification.
+
+7.4     Remuneration of Directors
+
+
+7.4.1 All pecuniary relationship or transactions of the part-time Directors vis-
+à-vis the company shall be disclosed in the Annual Report.
+
+7.4.2 Further the following disclosures on the remuneration of Directors shall
+be made in the section on the Corporate Governance of the Annual Report.
+  a. All elements of remuneration package of all the directors i.e. salary,
+
+
+                                      19
+       benefits, bonuses, stock options, pension, etc.
+  b.    Details of fixed component and performance linked incentives, along
+       with the performance criteria.
+  c.   Service contracts, notice period, severance fees.
+  d.   Stock option details, if any – and whether issued at a discount as well as
+       the period over which accrued and over which exercisable.
+
+7.5    Management
+
+7.5.1 As part of the Directors‟ Report or as an addition thereto, a Management
+Discussion and Analysis Report should form part of the Annual Report. This
+Management Discussion and Analysis should include discussion on the
+following matters within the limits set by the company‟s competitive position:
+
+  i.    Industry structure and developments
+  ii. Strength and weakness
+   iii. Opportunities and Threats
+  iv. Segment–wise or product-wise performance
+  v. Outlook
+   vi. Risks and concerns
+   vii. Internal control systems and their adequacy
+  viii. Discussion on financial performance with respect to operational
+        performance
+  ix. Material developments in Human Resources, Industrial Relations front,
+        including number of people employed.
+  x. Environmental          Protection   and    Conservation, Technological
+        conservation, Renewable energy developments, Foreign Exchange
+        conservation
+   xi. Corporate social responsibility
+
+7.5.2 Senior management shall make disclosures to the board relating to all
+material financial and commercial transactions, where they have personal
+interest that may have a potential conflict with the interest of the company (e.g.
+dealing in company shares, commercial dealings with bodies, which have
+shareholding of management and their relatives, etc.)
+
+Explanation: For this purpose, the term “senior management” shall mean
+personnel of the company who are members of its core management team
+excluding Board of Directors. Normally, this would comprise all members of
+management one level below the Functional Directors, including all functional
+heads.
+                                  *****
+
+                                       20
+            CHAPTER 8 - REPORT, COMPLIANCE AND
+              SCHEDULE OF IMPLEMENTATION
+
+8.1    Report on Corporate Governance
+
+
+There shall be a separate section on Corporate Governance in each Annual
+Report of company, with details of compliance on Corporate Governance. The
+suggested list of items to be included in the report on Corporate Governance is
+in Annex-VII.
+
+8.2    Compliance
+
+8.2.1 The company shall obtain a certificate from either the auditors or
+practicing Company Secretary regarding compliance of conditions of
+Corporate Governance as stipulated in these Guidelines and Annexes. The
+aforesaid certificate with the Directors‟ Report, which is sent annually to all the
+shareholders of the company, should also be included in the Annual Report.
+
+8.2.2 Chairman‟s speech in Annual General Meeting (AGM) should also carry
+a section on compliance with Corporate Governance guidelines/norms and
+should form part of the Annual Reports of the concerned CPSE.
+
+8.2.3 The grading of CPSEs may be done by DPE on the basis of the
+compliance with Corporate Governance guidelines/norms.
+
+8.3    Schedule of implementation
+
+These Guidelines on Corporate Governance are now mandatory. The CPSEs
+shall submit quarterly progress reports, within 15 days from the close of each
+quarter, in the format (Annex VIII) to respective Administrative Ministries/
+Departments. The Administrative Ministries will consolidate the information
+obtained from the CPSEs and furnish a comprehensive report to the DPE by
+31st May of every financial year on the status of compliance of Corporate
+Governance Guidelines during the previous financial year by the CPSEs under
+their jurisdiction.
+
+8.4    DPE will, from time to time, make suitable modifications to these
+Guidelines in order to bring them in line with prevailing laws, regulations,
+acts, etc., DPE may also issue clarifications to the concerned Administrative
+Ministries/CPSEs on issues relating to the implementation of these Guidelines.
+
+                                      ******
+
+                                        21
+                                                                      ANNEX-I
+
+GUIDELINES ON COMPOSITION OF BOARD OF DIRECTORS OF CPSEs
+
+I.    Composition of Board of Directors of Public Sector Enterprises.
+
+      The question of Composition of the Board of Directors of PSEs has been
+considered from time to time and various guidelines have been issued in this
+regard by the Bureau of Public Enterprises. The Members of the Board of PSEs
+generally consist of the following three categories:–
+
+i. Functional Directors:– These are full time operational Directors responsible
+for day to day functioning of the enterprise. The Economic Administrative
+Reform Commission (EARC) had recommended that each Board should have
+an adequate number of Functional Directors on it. This was considered by the
+Govt. and the Bureau of Public Enterprises had issued guidelines in 1984 that
+the posts of Director (Finance) and Director (Personnel) be created in all
+Schedule „A‟ and Schedule „B‟ enterprises and on a selective basis in Schedule
+„C‟ Companies. Apart from these two functions, the enterprises could have
+representation at Board level for other disciplines such as production,
+marketing, project, planning etc. It is, however, observed that these guidelines
+are not being followed by the Administrative Ministries while constituting the
+Boards of PSEs. While in some cases the Boards are functioning without a
+single Functional Director, in others there is preponderance of such Directors.
+
+ii. Government Directors:– These are appointed by the Administrative
+Ministries and are generally the officers dealing with the concerned enterprise.
+In most cases there are two such Directors on a Board; the Joint Secretary or
+Additional Secretary dealing with particular enterprise and the Financial
+Adviser of the Ministry. The question of representation of Government
+Directors on the Boards of PSEs was examined by the Arjun Sengupta
+Committee and following its recommendation, the Bureau of Public
+Enterprises have issued guidelines in 1986 that the Administrative Ministry
+concerned should not have more than one nominee Director on the Board of a
+PSE. In case of PSEs engaged in trading or dealing with important and
+exclusive items the number of Government Directors could be two. It is,
+however, noticed that in actual practice the number of Government Directors
+on the Boards of PSEs continues to be large.
+
+iii. Non-Official Directors:– The induction of Non-Official Directors on the
+Boards of PSEs has been considered essential by various Committees and
+Commissions in order to make the Boards more professional. They are to be
+drawn from the public men, technocrats, management experts and consultants,
+and professional managers in industry and trade with a high degree of proven
+ability. The Bureau of Public Enterprises have issued guidelines in 1983 that the
+number of such Directors on a Board should be one-third of its total strength.
+
+                                       22
+This input is considered very important as it plays a complementary role in
+providing professional and managerial advice to the Board. It has, however,
+been the experience that the vacancies of these Directors are not filled up to
+stipulated levels in many enterprises by the Ministries.
+
+2.     The Department of Public Enterprises has recently considered the
+question of professionalization of the Boards of PSEs in pursuance of the New
+Industrial policy Statement made in the parliament on 24th July, 1991 and it
+has been decided that the composition of the Boards of Directors in PSEs
+should be broadly on following lines:–
+
+(A)    Functional Directors:
+       Every Board should have some full time Functional Directors. The
+number of such Directors on a Board should not exceed 50% of the actual
+strength of the Board.
+  i.   In cases where the number of Functional Directors on the Board is more
+       than the 50% of its actual strength (not sanctioned strength),
+       Administrative Ministries will immediately undertake a review of the
+       strength of the Board in consultation with Department of Public
+       Enterprises and PESB.
+  ii.   On such Boards where the posts of Functional Directors do not exist,
+       Administrative Ministries will take immediate steps to create such posts
+       in accordance with the prescribed guidelines.
+
+(B) Government Directors:
+       The number of the Government Directors on the Board of Directors of an
+enterprise should not exceed one-sixth of the actual strength of the Board.
+  i.   It will be preferable to have only one Government Director from the
+       concerned Administrative Ministry on each Board. The choice of the
+       nominee Director would vest with the Secretary of the concerned
+       Department.
+   ii. In case of PSEs where it is considered essential to give representation
+        on      the    Boards      to     other      concerned       Government
+        agencies/Ministries/State Governments, only one representation from
+        the Group could also be appointed on the Board as part-time
+        Government Director.
+  iii. The number of Government Directors on a Board should in no case
+       exceed two.
+
+(C)     Non official Directors
+  i.    The number of Non-Official Part-time Directors on a Board should be at
+        least one-third of its actual strength. Wherever there is under
+        representation of such Directors on the Board the concerned Ministries
+        should take immediate steps to fill up the vacancies to stipulated level.
+  ii.   A Panel of suitable persons who could be considered for appointment as
+        Non-Official Part-Time Director on the Boards of PSEs will be
+        maintained centrally by Department of Public Enterprises. This Panel
+
+                                       23
+      will be prepared in consultation with PESB and the Secretary of the
+      concerned Administrative Ministry.
+
+            (DPE O.M. No. 18 (6)/91-GM dated 16th March, 1992.)
+
+
+II. Composition of Board of Directors of Public Sector Enterprises.
+      Reference is invited to this Department‟s O.M. of even number dated the
+16th March, 1992 on the above mentioned subject. In para 2 (B) (ii) of the said
+O.M., it was, inter-alia, mentioned that the choice of the Nominee Director
+would vest with the Secretary of the concerned Department. The matter was
+reconsidered in this Department and it has now been decided that the choice of
+the Nominee Director would vest with the administrative Ministry of the
+concerned Department.
+
+       (DPE O.M. No. 18 (6)/91-DPE (GM) dated 13th November, 1995)
+
+III. Age of retirement of part-time Chairmen and criteria for appointment of
+       part-time non-official Directors in Central PSUs.
+
+      The question of prescribing age of retirement for part-time Chairmen of
+Central Public Sector Enterprises as also laying down requisite criteria for
+appointment of part-time nonofficial Directors on the Boards of PSUs were
+under consideration of the Government.
+
+2.    Government have now decided that the age of retirement of part-time
+Chairmen of public enterprises should be 62 years.
+
+3. As regards the selection and appointment of part-time non-official Directors,
+the following criteria will come into force forthwith:
+(a) Qualification: Minimum qualification for part-time non-official Directors
+     would be graduate degree from a recognized university.
+
+(b) Experience: Not less than 10 years at the level of Joint Secretary and above
+     in the Government; CMD/MD in Corporate Sector/PSU; Professor level in
+     an Academic Institution or professionals of repute like eminent Chartered
+     Accountants/Cost Accountants at the level of Directors of
+     Institutes/Heads of Department.
+
+    In selecting academics at the level of Professors, these academics should be
+    in fields relevant to the company‟s area of operation, e.g. management,
+    finance, marketing, technology, human resources, or law, as Professors of
+    some other disciplines may have little to contribute.
+
+(c) Age: The age band should be between 45-65 years (minimum/maximum
+    limit). This could however, be relaxed for eminent professionals, for
+    reasons to be recorded, being limited to 70 years.
+
+                                      24
+4. It has also been decided that the above criteria should be applied for
+Navratna/Miniratna enterprises in such a way as to ensure that they could be
+globally competitive and have a level playing field with the Corporates.
+
+       (DPE O.M. No. 18(10)/2003-GM-GL-55 dated 11th March, 2004)
+
+IV    Criteria for appointment of non-official (Independent) Directors in
+      Central PSEs.
+
+      The undersigned is directed to refer to this Department‟s O.M. of even
+number dated 11th March, 2004 wherein the criteria for appointment of part-
+time non-official Directors in Central PSEs were laid down.
+
+2.    The criterion relating to „Experience‟ has been reviewed by the
+Government and para 3(b) of the above referred OM has been modified as
+under:-
+
+      “(b)   Experience: Not less than 10 years at the level of Joint Secretary
+             and above in the Government; CMD/MD in Corporate
+             Sector/PSE; Professor level in an Academic Institution or
+             professionals of repute like eminent Chartered Accountants/
+             Cost Accountants at the level of Directors of Institutes/ Heads of
+             Department; persons of eminence with proven track record from
+             Industry, Business or Agriculture.”
+
+3.    All the administrative Ministries/Departments are requested to take
+note of the above modifications in the criteria for appointment of non-official
+(Independent) Directors for guidance and compliance.
+
+     (DPE O.M. No. 18(10)/2003-GM-GL-75 dated 10th November, 2005)
+
+V. Turning selected Public Sector Enterprises into Global Giants –
+    Operational and Administrative modalities – Restructuring of the
+    Boards.
+
+       The Common Minimum Programme of the Government states, inter-
+alia, that Government will identify public sector enterprises that have
+comparative advantages and support them in their drive to become global
+giants. In pursuance of these objectives, the government have decided to grant
+enhanced autonomy and delegation of powers to nine selected public sector
+enterprises, namely BHEL, BPCL, HPCL, IOC, IPCL, NTPC, ONGC, SAIL and
+VSNL.
+
+2.     The exercise of the enhanced autonomy and authority shall be
+exercisable only after the Boards have been restructured, as indicated below. It
+must be ensured that each of these PSEs inducts in the first instance at least
+four non-official part-time Directors of an impeccable stature and background.
+
+                                      25
+This number should be more for those PSEs which have a very large number of
+Functional Directors. It should also be ensured that within six months, the
+number of non-official part-time Directors in increased to reach at least 1/3rd of
+the total strength of the Board.
+
+3.    The above is in partial modification to the general guidelines issued by
+the Department of Public Enterprises vide OM No.18(6)/91-GM dated 16th
+March, 1992.
+
+4.      While selection of full-time Directors and part-time Government
+nominees Directors would continue to be done as per the existing procedures,
+for selection of the non-official part time Directors in these companies, a Search
+committee comprising Chairman-PESB, Secretary-DPE, Secretary of the
+Administrative Ministry and an eminent person (s) to be nominated by
+Industry Minister has been set up.
+
+            (DPE OM No.DPE/11(2)/97-Fin. dated 22nd July, 1997)
+
+
+
+
+                                       26
+                                                                     ANNEX-II
+
+             COMPOSITION OF BOARD OF DIRECTORS OF
+            LISTED CENTRAL PUBLIC SECTOR ENTERPRISES
+
+        According to the existing policy, as contained in this Department‟s O.M.
+No. 18(6)/91-GM dated 16.3.1992, the Board of Directors of Public Sector
+Undertakings should consist of (i) Full time Functional Directors whose
+number should not exceed 50% of the actual strength of the Board; (ii)
+Government Directors whose number should not exceed one-sixth of the actual
+strength of the Board subject to the condition that in no case the number should
+exceed two; and (iii) Non-official part-time Directors whose number should be
+at least one-third of the actual strength of the Board.
+
+2.     The Securities & Exchange Board of India (SEBI) has issued guidelines
+regarding Listing Agreements with Stock Exchanges, which include a new
+Clause 49 on Corporate Governance, an extract of which is enclosed
+(Annexure-I). It provides that in the cases of companies with non-Executive
+Chairmen at least one-third of the Board should comprise Independent
+Directors and in the cases of companies with Executive Chairmen at least half
+of the Board should comprise Independent Directors. The definition of
+Independent Directors is also given under the Clause 49. The SEBI has clarified
+that in the case of Public Sector Undertakings the Government nominee
+Directors cannot be considered as Independent Directors for the purpose of
+constitution of Board of Directors. The SEBI has, however, subsequently agreed
+that the nominees of Financial Institutions would be treated as Independent
+Directors for listed public sector companies. A schedule of implementation is
+also enclosed (Annexure-II).
+
+3.     As all listed companies including PSUs have to comply with the SEBI
+guidelines, there may be a need to reconstitute the Boards of Directors of some
+of the listed PSUs so that the requisite number of Independent Directors is
+inducted in order to avoid de-listing.
+
+4.     All the administrative Ministries/Departments are, therefore, requested
+to take appropriate action, if not already taken, to reconstitute the Board of
+Directors of listed PSEs in accordance with the SEBI guidelines within the time
+schedule prescribed. In case there is a need to increase the maximum number
+of Directors permissible under the Articles of Association, the respective PSEs
+may be advised to take steps to amend the relevant Article suitably.
+
+         (DPE O.M. No. 18(6)/2000-GM dated 26th November, 2001)
+
+ANNEXURE-I of O.M. dated 26.11.2001 - Clause 49: Corporate Governance -
+Board of Directors
+ A. The company agrees that the board of directors of the company shall have
+    an optimum combination of executive and non-executive directors with
+
+                                      27
+     not less than fifty percent of the board of directors comprising of non-
+     executive directors. The number of independent directors would depend
+     whether the Chairman is executive or nonexecutive. In case of a non-
+     executive chairman, at least one-third of board should comprise of
+     independent directors and in case of an executive chairman, at least half of
+     board should comprise of independent directors.
+     Explanation: For the purpose of this clause the expression „independent
+     directors‟ means directors who apart from receiving director‟s
+     remuneration, do not have any other material pecuniary relationship or
+     transactions with the company, its promoters, its management or its
+     subsidiaries, which in judgement of the board may affect independence of
+     judgement of the director. Except in the case of government companies,
+     institutional directors on the boards of companies should be considered as
+     independent directors whether the institution is an investing institution or
+     a lending institution.
+  B. The company agrees that all pecuniary relationship or transactions of the
+       non-executive directors vis-à-vis the company should be disclosed in the
+       Annual Report.
+
+ANNEXURE-II of O.M. dated 26.11.2001 -
+
+Schedule of Implementation
+
+       The above amendments to the listing agreement have to be implemented
+as per schedule of implementation given below:
+    By all entities seeking listing for the first time, at the time of listing.
+    Within financial year 2000-2001, but not later than March 31, 2001 by all
+       entities, which are included either in Group „A‟ of the BSE or in S&P
+       CNX Nifty index as on January 1, 2000. However to comply with the
+       recommendations, these companies may have to begin the process of
+       implementation as early as possible.
+    Within financial year 2001-2002, but not later than March 31, 2002 by all
+       the entities which are presently listed, with paid up share capital of
+       Rs.10/- crore and above, or networth of Rs.25 crore or more any time in
+       the history of the company.
+    Within financial year 2002-2003, but not later than March 31, 2003 by all
+       other entities, which are presently listed, with paid up share capital of
+       Rs.3 crore and above.
+    As regards the non-mandatory requirement given in Annexure-3, they
+       shall be implemented as per the discretion of the company. However,
+       the disclosures of the adoption/non-adoption of the non-mandatory
+       requirements shall be made in the section on corporate governance of
+       the Annual Report.
+
+
+
+
+                                      28
+                                                                     ANNEX-III
+
+               EXTRACTS FROM THE COMPANIES ACT, 1956
+
+Section 2 (41) “relative” means, with reference to any person, any one who is
+related to such person in any of the ways specified in section 6, and no others;
+
+Section 6 - Meaning of “relative”
+A person shall be deemed to be a relative of another, if, and only if, -
+  (a) they are members of a Hindu undivided family; or
+  (b) they are husband and wife; or
+  (c) the one is related to the other in the manner indicated in Schedule IA.]
+
+[SCHEDULE IA) [See section 6(c)]
+List of Relatives
+
+1.    Father.
+2.    Mother (including step-mother).
+3.    Son (including step-son).
+4.    Son‟s wife.
+5.    Daughter (including step-daughter).
+6.    Father‟s father.
+7.    Father‟s mother.
+8.    Mother‟s mother.
+9.    Mother‟s father.
+10.   Son‟s son.
+11.   Son‟s Son‟s wife.
+12.   Son‟s daughter.
+13.   Son‟s daughter‟s husband.
+14.   Daughter‟s husband.
+15.   Daughter‟s son.
+16.   Daughter‟s son‟s wife.
+17.   Daughter‟s daughter.
+18.   Daughter‟s daughter‟s husband.
+19.   Brother (including step-brother).
+20.   Brother‟s wife.
+21.   Sister (including step-sister).
+22.   Sister‟s husband.
+
+
+
+
+                                       29
+                                                                     ANNEX-IV
+
+   INFORMATION TO BE PLACED BEFORE BOARD OF DIRECTORS
+
+1. Annual operating plans and budgets and any updates.
+2. Capital budgets and any updates.
+3. Quarterly results for the company and its operating divisions or business
+    segments.
+4. Minutes of meetings of audit committee and other committees of the board.
+5. The information on recruitment and remuneration of senior officers just
+    below the board level, including appointment or removal of Chief Financial
+    Officer and the Company Secretary.
+6. Show cause, demand, prosecution notices and penalty notices which are
+    materially important.
+7. Fatal or serious accidents, dangerous occurrences, any material effluent or
+    pollution problems.
+8. Any material default in financial obligations to and by the company, or
+    substantial nonpayment for goods sold by the company.
+9. Any issue, which involves possible public or product liability claims of
+    substantial nature, including any judgment or order which, may have
+    passed strictures on the conduct of the company or taken an adverse view
+    regarding another enterprise that can have negative implications on the
+    company.
+10. Details of any joint venture or collaboration agreement.
+11. Transactions that involve substantial payment towards goodwill, brand
+    equity, or intellectual property.
+12. Significant labour problems and their proposed solutions. Any significant
+    development in Human Resources/Industrial Relations Front like signing
+    of wage agreement, implementation of Voluntary Retirement Scheme, etc.
+13. Sale of material nature, of investments, subsidiaries, assets, which is not in
+    normal course of business.
+14. Quarterly details of foreign exchange exposures and the steps taken by
+    management to limit the risks of adverse exchange rate movement, if
+    material.
+15. Non-compliance of any regulatory, statutory or listing requirements and
+    shareholders service such as nonpayment of dividend, delay in share
+    transfer, etc.
+
+
+
+
+                                       30
+                                                                       ANNEX-V
+                   SUGGESTED LIST OF ITEMS TO BE
+                 INCLUDED IN THE CODE OF CONDUCT
+
+        The Board of Directors of the company will formulate the code of
+conduct for the Directors and senior Management Personnel and while doing
+so the code of conduct would, inter alia, include the following:
+    1. Act in the best interests of, and fulfill their fiduciary obligations to the
+        Company
+    2. Act honestly, fairly, ethically and with integrity;
+    3. Conduct themselves in a professional, courteous and respectful manner
+        and not take improper advantage of the position of Director;
+    4. Act in a socially responsible manner, within the applicable laws, rules
+        and regulations, customs and traditions of the countries in which the
+        Company operates.
+    5. Comply with communication and other policies of the Company;
+    6. Act in good faith, responsibly, with due care, competence and diligence,
+        without allowing their independent judgment to be subordinated;
+    7. Not to use the Company‟s property or position for personal gain;
+    8. Not to use any information or opportunity received by them in their
+        capacity as Directors in a manner that would be detrimental to the
+        Company‟s interests;
+    9. Act in a manner to enhance and maintain the reputation of the
+        Company;
+    10. Disclose any personal interest that they may have regarding any matters
+        that may come before the Board and abstain from discussion, voting or
+        otherwise influencing a decision on any matter in which the concerned
+        Director has or may have such an interest;
+    11. Abstain from discussion, voting or otherwise influencing a decision on
+        any matters that may come before the board in which they may have a
+        conflict or potential conflict of interest;
+    12. Respect the confidentiality of information relating to the affairs of the
+        Company acquired in the course of their service as Directors, except
+        when authorized or legally required to disclose such information;
+    13. Not to use confidential information acquired in the course of their
+        service as Directors for their personal advantage or for the advantage of
+        any other entity;
+    14. Help create and maintain a culture of high ethical standards and
+        commitment to compliance;
+    15. Keep the Board informed in an appropriate and timely manner any
+        information in the knowledge of the member which is related to the
+        decision making or is otherwise critical for the company.
+    16. Treat the other members of the Board and other persons connected with
+        the Company with respect, dignity, fairness and courtesy.
+
+
+
+                                        31
+                                                                  ANNEX-VI
+
+  MODEL CODE OF BUSINESS CONDUCT AND ETHICS FOR BOARD
+           MEMBERS AND SENIOR MANAGEMENT
+
+1.0   Introduction
+1.1   This Code shall be called “The Code of Business Conduct & Ethics for
+      Board         Members           and        Senior       Management”
+      of……………………………….(hereinafter referred to as “the Company”)
+1.2   The purpose of this Code is to enhance ethical and transparent process
+      in managing the affairs of the Company.
+1.3   This Code for Board Members and Senior Management has been framed
+      specially in compliance of the provisions of Clause 49 of the Listing
+      Agreement with Stock Exchanges and as per the Guidelines of DPE.
+1.4   It shall come into force with effect from the ……………………….(year
+      and month).
+
+2.0   Definitions and Interpretations:
+2.1   The term “Board Members” shall mean Directors on the Board of
+      Directors of the Company
+2.2   The term “Whole-time Directors” or “Functional Directors” shall be the
+      Directors on the Board of Directors of the Company who are in whole-
+      time employment of the company.
+2.3   The term “Part-time Directors” shall mean Directors on the Board of
+      Directors of the Company who are not in whole time employment of the
+      Company.
+2.4   The term “Relative” shall have the same meaning as defined in Section 6
+      of the Companies Act, 1956.
+2.5   The term “Senior Management” shall mean personnel of the Company
+      who are members of its core management team excluding Board of
+      Directors and would comprise all members of management one level
+      below the Whole time Directors, including all functional heads.
+2.6   The term “the Company” shall mean …………………(name of the
+      Company)
+
+Note: In this Code, words importing the masculine gender shall include
+      feminine gender and words importing singular shall include the plural
+      or vice-versa.
+
+3.0   Applicability
+
+3.1   This code shall be applicable to the following personnel:
+
+      a)    All Whole-time Directors including the Chairman & Managing
+            Director of the Company.
+
+
+                                      32
+          b)    All Part-time Directors including Independent Directors under
+                the provisions of law.
+          c)    Senior Management
+3.2       The Whole-time Directors and Senior Management should continue to
+          comply with other applicable/to be applicable policies, rules and
+          procedures of the Company.
+
+4.0       Contents of Code
+
+Part I         General Moral Imperatives
+
+Part II        Specific Professional Responsibilities
+
+Part III       Specific Additional Provisions for Board Members and Senior
+               Management
+
+This code is intended to serve as a basis for ethical decision making in the
+conduct of professional work. It may also serve as a basis for judging the merit
+of a formal complaint pertaining to violation of professional ethical standards.
+
+It is understood that some words and phrases in the code of ethics and conduct
+document are subject to varying interpretations. In case of any conflict, the
+decision of the Board shall be final.
+
+
+
+
+                                            33
+                            PART – I
+
+5.0     General Moral Imperatives
+
+5.1     Contribute to society and human well being
+
+5.1.1 This principle concerning the quality of life of all people, affirms an
+       obligation to protect fundamental human rights and to respect the
+       diversity of all cultures. We must attempt to ensure that the products of
+       our efforts will be used in socially responsible ways, will meet social
+       needs and will avoid harmful effects to health and welfare of others. In
+       addition to a safe social environment, human well being includes a safe
+       natural environment.
+
+5.1.2 Therefore, all Board Members and Senior Management who are
+      accountable for the design, development, manufacture and promotion of
+      company‟s products, must be alert to, and make others aware of, both a
+      legal and a moral responsibility for the safety and the protection of
+      human life and environment.
+
+
+5.2     Be honest and trustworthy & practice integrity
+
+5.2.1   Integrity and honesty are essential components of trust. Without trust an
+        organization cannot function effectively.
+
+5.2.2 All Board Members and Senior Management are expected to act in
+       accordance with highest standards of personal and professional
+       integrity, honesty and ethical conduct, while conducting business of the
+       Public Enterprise.
+
+5.3     Be fair and take action not to discriminate
+
+5.3.1 The values of equality, tolerance, respect for others, and the principles of
+       equity & justice govern this imperative. Discrimination, on the basis of
+       race, sex, religion, caste, age, disability, national origins or other such
+       factors, is an explicit violation of this Code.
+
+5.4     Honour confidentiality
+
+5.4.1 The principle of honesty extends to issues of confidentiality of
+      information. The ethical concern is to respect all obligations of
+      confidentiality to all stakeholders unless discharged from such
+      obligations by requirements of the law or other principles of this Code.
+
+
+
+
+                                        34
+5.4.2   All Board Members and Senior Management, therefore, shall maintain
+        the confidentiality of all confidential unpublished information about
+        business and affairs of the CPSE.
+
+5.5     Pledge & Practice
+
+5.5.1   To strive continuously to bring about integrity and transparency in all
+        spheres of the activities.
+
+5.5.2   Work unstintingly for eradication of corruption in all spheres of life.
+
+5.5.3   Remain vigilant and work towards growth and reputation of the
+        Company.
+
+5.5.4   Bring pride to the organization and provide value-based services to
+        Company‟s stakeholders.
+
+5.5.5   Do duty conscientiously and without fear or favour.
+
+
+
+
+                                         35
+                                   PART II
+
+6.0   Specific Professional Responsibilities
+
+6.1   Live the Vision, Mission and Values of CPSE – each day
+
+      Live the Vision, Mission and Values of ………….(name of CPSE) each
+      day. For quick reference they are as under:
+
+      Vision
+      [Incorporate here vision of the CPSE – for example - A World-class
+      Engineering Enterprise committed to enhancing Stakeholder Value]
+
+      Mission
+      [Incorporate here the mission of the CPSE – for example To be an Indian
+      Multinational Engineering Enterprise providing total business solutions
+      through quality products, systems and services in the fields of
+      ……………………… and other potential areas]
+
+      Values
+                         Zeal to excel and zest for change
+           Integrity and fairness in all matters
+           Respect for dignity and potential of individuals
+           Strict adherence to commitments
+           Ensure speed of response
+           Foster learning, creativity and team-work
+           Loyalty and pride in the CPSE
+
+6.1   Strive to achieve the highest quality, effectiveness and dignity in both
+      the processes and products of professional work: - Excellence is
+      perhaps the most important obligation of a professional. Everyone,
+      therefore, should strive to achieve the highest quality, effectiveness and
+      dignity in their professional work.
+
+6.2   Acquire and maintain professional competence: Excellence depends on
+      individuals who take responsibility for acquiring and maintaining
+      professional competence. All are, therefore, expected to participate in
+      setting standards for appropriate levels of competence, and strive to
+      achieve those standards.
+
+6.4   Compliance with Laws:- The Board Members and Senior Management
+      of the CPSE shall comply with all the applicable provisions of existing
+      local, state, national, and international laws. They should also follow
+      and obey the policies, procedures, rules and regulations relating to
+      business of the CPSE.
+
+
+
+                                      36
+6.5    Accept and provide appropriate professional review: Quality
+       professional work depends on professional review and comments.
+       Whenever appropriate, individual members should seek and utilize peer
+       review as well as provide critical review of the work of theirs.
+
+6.6    Manage personnel and resources to enhance the quality of working
+       life:- Organizational leaders are responsible for ensuring that a
+       conducive working and business environment is created for fellow
+       employees to enable them delivering their best. The Board Members and
+       Senior Management would be responsible for ensuring human dignity
+       of all employees, would encourage and support the professional
+       development of the employees of the CPSE by providing them all
+       necessary assistance and cooperation, thus enhancing the quality of
+       working.
+
+6.7    Be upright and avoid any inducements:- The Board Members and
+       Senior Management shall not, directly or indirectly through their family
+       and other connections, solicit any personal fee, commission or other
+       form of remuneration arising out of transactions involving Company.
+       This includes gifts or other benefits of significant value, which might be
+       extended at times, to influence business for the organization or
+       awarding a contract to an agency, etc.
+
+6.8    Observe Corporate Discipline:- The flow of communication within the
+       CPSE is not rigid and people are free to express themselves at all levels.
+       Though there is a free exchange of opinions in the process of arriving at
+       a decision, but after the debate is over and a policy consensus has been
+       established, all are expected to adhere and abide by it, even when in
+       certain instances one may not agree with it individually. In some cases
+       policies act as a guide to action, in others they are designed to put a
+       constraint on action. All must learn to recognize the difference and
+       appreciate why they need to observe them.
+
+6.9    Conduct in a manner that reflects credit to the Company:- All are
+       expected to conduct themselves, both on and off duty, in a manner that
+       reflects credit to the Company. The sum total of their personal attitude
+       and behaviour has a bearing on the standing of Company and the way
+       in which it is perceived within the organization and by the public at
+       large.
+
+6.10   Be accountable to Company’s stakeholders:- All of those whom we
+       serve, be it our Customers, without whom the Company will not be in
+       business, the Shareholders, who have an important stake in its business,
+       the Employees, who have a vested interest in making it all happen, the
+       Vendors, who support the Company to deliver in time and Society to
+       which Company is responsible for its actions – are stakeholders of the
+       Company. All, therefore, must keep in mind at all times that they are
+
+                                       37
+       accountable to Company‟s stakeholders.
+
+6.11   Prevention of Insider Trading:- The Board Members and Senior
+       Management shall comply with the code of Internal Procedures and
+       conduct for prevention of Insider Trading in dealing with Securities of
+       the Company.
+
+6.12   Identify, mitigate and manage business risks:- It is everybody‟s
+       responsibility to follow the Risk Management Framework of the
+       Company to identify the business risks that surround function or area of
+       operation of the Company and to assist in the company-wide process of
+       managing such risks, so that Company may achieve its wider business
+       objectives.
+
+6.13   Protect properties of the Company:- The Board Members and Senior
+       Management shall protect the assets including physical assets,
+       information and intellectual rights of the Company and shall not use the
+       same for personal gains.
+
+
+
+
+                                      38
+                                    PART – III
+
+7.0     Specific Additional Provisions for Board Members and Senior
+        Management
+
+7.1     As Board Members and Senior Management: They shall undertake to
+        actively participate in the meetings of the Board and Committees on
+        which they serve.
+
+7.2     As Board Members
+
+7.2.1   Undertake to inform the Chairman and Managing Director/ Company
+        Secretary of the Company of any changes in their other Board positions,
+        relationship with other business and other events/ circumstances /
+        conditions that may interfere with their ability to perform Board/ Board
+        Committee duties or may impact the judgement of the Board as to
+        whether they meet the independence requirements of Listing
+        Agreement with Stock Exchanges and the Guidelines of DPE.
+
+7.2.2   Undertake that without prior approval of the disinterested members of
+        the Board, they will avoid apparent conflict of interest. Conflict of
+        interest may exist when they have personal interest that may have a
+        potential conflict with the interest of the Company. Illustrative cases can
+        be:
+
+          Related Party Transactions: Entering into any transactions or
+          relationship with Company or its subsidiaries in which they have a
+          financial or other personal interest (either directly or indirectly such
+          as through a family member or relation or other person or other
+          organization with which they are associated).
+
+          Outside Directorship: Accepting Directorship on the Board of any
+          other Company that competes with the business of the Company.
+
+          Consultancy/Business/Employment: Engaging in any activity (be it
+          in the nature of providing consultancy service, carrying on business,
+          accepting employment) which is likely to interfere or conflict with
+          their duties/ responsibilities towards Company. They should not
+          invest or associate themselves in any other manner with any supplier,
+          service provider or customer of the company.
+
+          Use of Official position for personal gains: Should not use their
+          official position for personal gains.
+
+
+
+
+                                        39
+7.3     Compliance with the Code of Business Conduct and Ethics
+
+7.3.1   All Members of the Board and Senior Management of Company shall
+        uphold and promote the principles of this code.
+
+        The future of the organization depends on both technical and ethical
+        excellence. Not only it is important for Board Members and Senior
+        Management to adhere to the principles expressed in this Code, each of
+        them should also encourage and support adherence by others.
+
+7.3.2   Treat violations of this code as inconsistent association with the
+        organization
+
+        Adherence of professionals to a code of ethics is largely and generally a
+        voluntary matter. However, if any of Board Members and Senior
+        Management does not follow this Code, the matter would be reviewed
+        by the Board and its decision shall be final. The Company reserves the
+        right to take appropriate action against the defaulter.
+
+7.3     Miscellaneous Points
+
+7.4.1   Continual updation of Code
+
+        This Code is subject to continuous review and updation in line with any
+        changes in law, changes in Company‟s philosophy, vision, business
+        plans or otherwise as may be deemed necessary by the Board and all
+        such amendments / modifications shall take effect prospectively from
+        the date stated therein.
+
+7.4.2   Where to seek clarifications
+
+        Any member of Board or Senior Management requiring any clarification
+        regarding this code of conduct may contact Director (HR)/ Company
+        Secretary/ any officer specifically designated by the Board of Directors.
+
+
+
+
+                                       40
+               ACKNOWLEDGEMENT OF RECEIPT OF
+             CODE OF BUSINESS CONDUCT AND ETHICS FOR
+            BOARD MEMBERS AND SENIOR MANAGEMENT
+
+I have received and read the code of Business Conduct and Ethics for Board
+Members and Senior Management of ……………………… (name of the
+Company) I understand the standards and policies contained in the said Code
+of Business Conduct and Ethics and understand that there may be additional
+policies or laws specific to my job. I further agree to comply with the said Code
+of Business Conduct and Ethics.
+
+If I have questions concerning the meaning or application of the said Code of
+Business Conduct and Ethics, any policies of the CPSE or the legal and
+regulatory requirements applicable to my job, I know I can consult Director or
+Company Secretary concerned the CPSE knowing that my questions or reports
+will be maintained in confidence.
+
+Further, I undertake to provide following Affirmation on an Annual basis to
+the Company within 30 days from the end of 31st March every year.
+
+                          AFFIRMATION
+
+(By Board Members/ Senior Management of the Company on Annual basis by
+30th April of every year)
+I,…………………………………(name),…………………..(designation),                        having
+read and understood the Code of Business Conduct and Ethics for Board
+Members and Senior Management, hereby solemnly affirm that I have
+complied with and has not violated any of the provisions of the Code during
+the year ended 31st March ………..
+                                 Signature
+                                          ____________________
+                                    Name
+                                          ____________________
+                               Designation
+                                          ____________________
+Place:                   Employment Number
+                                          ____________________
+                             Telephone No.
+                                          ____________________
+Date:
+
+
+
+
+                                       41
+                                                                    ANNEX-VII
+
+              SUGGESTED LIST OF ITEMS TO BE INCLUDED IN
+              THE REPORT ON CORPORATE GOVERNANCE IN
+                  THE ANNUAL REPORT OF COMPANIES
+
+1.    A brief statement on company‟s philosophy on Guidelines on
+Corporate Governance.
+
+2.         Board of Directors:
+     i. Composition and category of directors, for example, promoter, executive,
+         non-executive, independent nonexecutive, nominee director.
+     ii. Attendance of each director at the Board meetings and the last AGM.
+     iii. Number of other Boards or Board Committees in which he/she is a
+           member or Chairperson
+      iv. Number of Board meetings held, dates on which held.
+       v. In case of appointment of new Director/re-appointment of a Director
+           following information may be provided:
+           a. brief resume of Director
+           b. nature of his expertise in specific functional areas; and
+           c. names of companies in which the person holds the Directorship and
+                the membership of committees of the Board.
+
+3.          Audit Committee:
+      i. Brief description of terms of reference
+     ii. Composition, name of members and Chairperson
+     iii. Meetings and attendance during the year
+
+4.        Remuneration Committee:
+     i. Brief description of terms of reference
+     ii. Composition, name of members and Chairperson
+     iii. Meetings and attendance during the year
+     iv. Remuneration policy/Details of remuneration to all the Directors
+
+5.       General Body meetings:
+  i.     Date, Time and Venue of the last three AGMs
+ ii.     Whether any special resolutions passed in the previous three AGMs
+iii.     AGM of the current year: Date, Time and Venue
+
+6.          Disclosures:
+     i. Disclosures on materially significant related party transactions that may
+          have potential conflict with the interests of company at large.
+     ii. Details of non-compliance by the company, penalties, strictures imposed
+          on the company by any statutory authority, on any matter related to any
+          guidelines issued by Government, during the last three years.
+     iii. Whistle Blower policy and affirmation that no personnel has been denied
+           access to the Audit Committee.
+
+                                        42
+     iv. Details of compliance with the requirements of these guidelines
+     v. Details of Presidential Directives issued by the Central Government and
+         their compliance during the year and also in the last three years.
+     vi. Items of expenditure debited in books of accounts, which are not for the
+          purposes of the business.
+     vii. Expenses incurred which are personal in nature and incurred for the
+           Board of Directors and Top Management.
+     viii. Details of Administrative and office expenses as a percentage of total
+           expenses vis-a-vis financial expenses and reasons for increase.
+
+7.       Means of communication:
+
+     i. Quarterly results
+     ii. Newspapers wherein results normally published
+     iii.
+     Any website, where displayed
+     iv. Whether it also displays official news releases;
+
+8.   Audit qualifications:
+Company may move towards a regime of unqualified financial statements.
+
+9.     Training of Board Members:
+A company may train its Board members (Functional, Government Nominee
+and Independent) in the business model of the company as well as the risk
+profile of the business parameters of the company, their responsibilities as
+directors, and the best ways to discharge them.
+
+10.    Whistle Blower Policy:
+The company may establish a mechanism for employees to report to the
+management concerns about unethical behaviour, actual or suspected fraud, or
+violation of the company‟s General guidelines on conduct or ethics policy. This
+mechanism could also provide for adequate safeguards against victimization of
+employees who avail of the mechanism and also provide for direct access to the
+Chairman of the Audit Committee in exceptional cases. Once established, the
+existence of the mechanism may be appropriately communicated within the
+organization.
+
+
+
+
+                                         43
+                                                                                                  ANNEX-VIII
+
+    Format of Quarterly Compliance Report by CPSEs to nodal Administrative
+     Ministries/Departments under Para 8.3 of DPE’s Guidelines on Corporate
+                             Governance for CPSEs
+
+Name of the CPSE:
+Administrative Ministry/Department:
+Whether listed or unlisted:
+Quarter ending on:
+
+    S. No.                     Activity                            CG                   Status of        Remarks
+                                                                Guidelines            compliance
+                                                                 Clause1             with the CG
+                                                                                       guidelines
+                                                                                    (Yes/No/NA)
+
+      1                       2                                        3                      4             5
+I              Board of Directors
+1.             Composition of Board                            3.1
+2.             Non-official Directors                          3.1
+3.             Part-time              directors                3.2
+               compensation and disclosures
+4.             Number of Board meetings                        3.3.1
+5.             Review of compliance of laws                    3.3.3
+6.             Code of Conduct                                 3.4
+7.             Risk management                                 3.6
+8.             Training for new Board                          3.7
+               members
+II             Audit Committee
+9.             Constitution      of      Audit                 4.1
+               Committee
+10.            Audit Committee assigned                        4.2
+               due role
+11.            Audit     Committee      vested                 4.3
+               adequate powers
+12.            Meetings of Audit Committee                     4.4
+13.            Review of information by                        4.5
+               Audit Committee
+III            Remuneration Committee
+14.            Constitution of remuneration                    5.1
+               Committee
+
+1         Refers to the relevant provision in the Guidelines on Corporate Governance issued by DPE
+
+
+
+
+                                                        44
+IV       Subsidiary Companies
+15.      Board of subsidiary companies    6.1
+16.      Review of financial statements   6.2
+         of subsidiary by Audit
+         Committee
+17.      Review of performance of         6.3
+         subsidiary by Board
+V        Disclosures
+18.      Transactions                     7.1
+19.      Accounting Standards             7.2.1
+20.      Consolidated         financial   7.2.3
+         statements
+21.      Segment-wise profit and loss     7.2.4
+         statement
+22.      Board Disclosures - Risk         7.3
+         management
+23.      Remuneration of directors        7.4
+24.      Management Discussion and        7.5
+         Analysis
+25.      Disclosures    by       Senior   7.5.2
+         management.
+VI       Report and Compliance
+26.      Report     on       Corporate 8.1
+         Governance
+27.      Compliance Certificate        8.2.1
+28.      Chairman‟ speech in AGM 8.2.2
+         and annual report
+29.      Holding of AGM, Adoption of
+         audited accounts and filing of
+         adopted accounts with the
+         Registrar of Companies within
+         the stipulated time@
+30.      Timely       submission     of 8.3
+         Compliance report
+
+@ Information in respect of this item should be furnished at the end of the
+relevant quarter of the relevant year.
+
+
+
+
+                                (Name and Signature of the Chief Executive)
+
+Date:-
+
+                                    45
+

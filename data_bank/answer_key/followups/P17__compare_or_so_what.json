@@ -1,0 +1,54 @@
+{
+  "job_id": "a4a1da95-cb4f-47b4-847d-69a47e38598e",
+  "total_bytes_processed": 540,
+  "executed_at": "2026-10-20T06:33:25.880256+00:00",
+  "elapsed_seconds": 0.61,
+  "row_count": 4,
+  "columns": [
+    "fiscal_year",
+    "dividend_per_share_inr",
+    "dps_change_inr",
+    "dps_change_pct",
+    "dividend_cr",
+    "pat_inr_cr",
+    "payout_pct_of_pat"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY23",
+      "dividend_per_share_inr": 11.25,
+      "dps_change_inr": 0.75,
+      "dps_change_pct": 7.1,
+      "dividend_cr": 14153.0,
+      "pat_inr_cr": 40096.0,
+      "payout_pct_of_pat": 35.3
+    },
+    {
+      "fiscal_year": "FY24",
+      "dividend_per_share_inr": 12.25,
+      "dps_change_inr": 1.0,
+      "dps_change_pct": 8.9,
+      "dividend_cr": 15411.0,
+      "pat_inr_cr": 40526.0,
+      "payout_pct_of_pat": 38.0
+    },
+    {
+      "fiscal_year": "FY25",
+      "dividend_per_share_inr": 12.25,
+      "dps_change_inr": 0.0,
+      "dps_change_pct": 0.0,
+      "dividend_cr": 15411.0,
+      "pat_inr_cr": 35610.0,
+      "payout_pct_of_pat": 43.3
+    },
+    {
+      "fiscal_year": "FY26",
+      "dividend_per_share_inr": 13.25,
+      "dps_change_inr": 1.0,
+      "dps_change_pct": 8.2,
+      "dividend_cr": 16669.0,
+      "pat_inr_cr": 32894.0,
+      "payout_pct_of_pat": 50.7
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "job_id": "a49833e0-2d21-4b50-b3df-7e0bb7d757fc",
+  "total_bytes_processed": 123806463,
+  "executed_at": "2026-10-20T06:33:03.186459+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 1,
+  "columns": [
+    "payslip_month",
+    "basic_pay_inr",
+    "da_inr",
+    "leave_salary_per_day_inr",
+    "days_requested",
+    "gross_value_30_days_inr",
+    "el_balance_days",
+    "ledger_encashable_days",
+    "gross_value_ledger_cap_inr"
+  ],
+  "rows": [
+    {
+      "payslip_month": "2026-09",
+      "basic_pay_inr": 79227.42,
+      "da_inr": 35493.88,
+      "leave_salary_per_day_inr": 3824.04,
+      "days_requested": 30,
+      "gross_value_30_days_inr": 114721.3,
+      "el_balance_days": 78.0,
+      "ledger_encashable_days": 18.0,
+      "gross_value_ledger_cap_inr": 68832.78
+    }
+  ]
+}

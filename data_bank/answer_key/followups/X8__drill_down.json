@@ -1,0 +1,58 @@
+{
+  "job_id": "4580a6de-c081-455b-9bb9-75b4177c4a4d",
+  "total_bytes_processed": 4107,
+  "executed_at": "2026-10-20T06:37:29.093632+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 6,
+  "columns": [
+    "operating_department",
+    "open_paras",
+    "financial_implication_cr",
+    "avg_age_years",
+    "paras_over_3_years"
+  ],
+  "rows": [
+    {
+      "operating_department": "Offshore Logistics",
+      "open_paras": 11,
+      "financial_implication_cr": 490.12,
+      "avg_age_years": 3.0,
+      "paras_over_3_years": 5
+    },
+    {
+      "operating_department": "Procurement / Materials Management",
+      "open_paras": 10,
+      "financial_implication_cr": 436.66,
+      "avg_age_years": 3.4,
+      "paras_over_3_years": 5
+    },
+    {
+      "operating_department": "Human Resources",
+      "open_paras": 6,
+      "financial_implication_cr": 274.97,
+      "avg_age_years": 3.1,
+      "paras_over_3_years": 3
+    },
+    {
+      "operating_department": "Drilling Operations",
+      "open_paras": 4,
+      "financial_implication_cr": 194.5,
+      "avg_age_years": 4.2,
+      "paras_over_3_years": 4
+    },
+    {
+      "operating_department": "Marketing & Commercial",
+      "open_paras": 3,
+      "financial_implication_cr": 216.42,
+      "avg_age_years": 3.4,
+      "paras_over_3_years": 2
+    },
+    {
+      "operating_department": "Finance & Accounts",
+      "open_paras": 2,
+      "financial_implication_cr": 85.93,
+      "avg_age_years": 3.2,
+      "paras_over_3_years": 1
+    }
+  ]
+}

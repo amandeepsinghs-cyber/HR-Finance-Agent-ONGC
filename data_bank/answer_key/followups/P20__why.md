@@ -1,0 +1,20 @@
+# Answer Key: P20__why
+
+**Question:** Why are specific Board agenda notes and divestment deliberations restricted to Finance and the CMD?
+**Type:** `refusal` | **Result Count:** `1` rows | **Execution:** `0.65s`
+
+## Executive Determination: REFUSAL
+> [!CAUTION]
+> **Access Restricted:** Board agenda memoranda, internal valuation sheets, and commercial deliberations on asset divestment are strictly confidential Board documents.
+
+**Policy / Statutory Justification:** Companies Act 2013 Section 118 / ONGC Board Secretariat Governance Norms.
+
+**Permitted Alternative:** Government policy guidelines for Discovered Small Fields (DSF) and the Production Enhancement Contract (PEC) framework for mature fields.
+
+### Authorized Aggregate Data
+| doc_id | clause_ref | heading | quote_snippet |
+| --- | --- | --- | --- |
+| BDP summary | Clause 8.0 | Commercial Confidentiality of Operational Schedules | Document Title: ONGC Book of Delegated Powers (BDP 2015 - Governance Summary) (Official Native PDF)
+Document Type: rulebook
+Clause / Section: Clause 8.0 - Commercial Confidentiality of Operational Schedules
+Domain Vocabulary & Glossary Terms: Book of Delegated Powers 2015; Delegated Financial Powers |

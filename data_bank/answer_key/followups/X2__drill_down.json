@@ -1,0 +1,108 @@
+{
+  "job_id": "75b7a998-a4a5-4307-b32e-34714d75fb99",
+  "total_bytes_processed": 138286,
+  "executed_at": "2026-10-20T06:37:13.433426+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 8,
+  "columns": [
+    "state",
+    "short_name",
+    "wc_type",
+    "is_core_activity",
+    "drilling_contract_months_fy26",
+    "processing_contract_months_fy26",
+    "drilling_person_months_fy26",
+    "processing_person_months_fy26",
+    "avg_monthly_drilling_processing_contract_workers"
+  ],
+  "rows": [
+    {
+      "state": "Assam",
+      "short_name": "Jorhat Asset",
+      "wc_type": "asset",
+      "is_core_activity": true,
+      "drilling_contract_months_fy26": 2,
+      "processing_contract_months_fy26": 2,
+      "drilling_person_months_fy26": 3024,
+      "processing_person_months_fy26": 3003,
+      "avg_monthly_drilling_processing_contract_workers": 502.0
+    },
+    {
+      "state": "Gujarat",
+      "short_name": "Ankleshwar Asset",
+      "wc_type": "asset",
+      "is_core_activity": true,
+      "drilling_contract_months_fy26": 4,
+      "processing_contract_months_fy26": 1,
+      "drilling_person_months_fy26": 4172,
+      "processing_person_months_fy26": 1028,
+      "avg_monthly_drilling_processing_contract_workers": 433.0
+    },
+    {
+      "state": "Gujarat",
+      "short_name": "Mehsana Asset",
+      "wc_type": "asset",
+      "is_core_activity": true,
+      "drilling_contract_months_fy26": 2,
+      "processing_contract_months_fy26": 0,
+      "drilling_person_months_fy26": 3528,
+      "processing_person_months_fy26": 0,
+      "avg_monthly_drilling_processing_contract_workers": 294.0
+    },
+    {
+      "state": "Gujarat",
+      "short_name": "Dahej Plant",
+      "wc_type": "plant",
+      "is_core_activity": true,
+      "drilling_contract_months_fy26": 1,
+      "processing_contract_months_fy26": 2,
+      "drilling_person_months_fy26": 826,
+      "processing_person_months_fy26": 1612,
+      "avg_monthly_drilling_processing_contract_workers": 203.0
+    },
+    {
+      "state": "Assam",
+      "short_name": "Assam Asset",
+      "wc_type": "asset",
+      "is_core_activity": true,
+      "drilling_contract_months_fy26": 0,
+      "processing_contract_months_fy26": 1,
+      "drilling_person_months_fy26": 0,
+      "processing_person_months_fy26": 2121,
+      "avg_monthly_drilling_processing_contract_workers": 177.0
+    },
+    {
+      "state": "Gujarat",
+      "short_name": "Hazira Plant",
+      "wc_type": "plant",
+      "is_core_activity": true,
+      "drilling_contract_months_fy26": 0,
+      "processing_contract_months_fy26": 2,
+      "drilling_person_months_fy26": 0,
+      "processing_person_months_fy26": 1671,
+      "avg_monthly_drilling_processing_contract_workers": 139.0
+    },
+    {
+      "state": "Gujarat",
+      "short_name": "Cambay Asset",
+      "wc_type": "asset",
+      "is_core_activity": true,
+      "drilling_contract_months_fy26": 1,
+      "processing_contract_months_fy26": 1,
+      "drilling_person_months_fy26": 560,
+      "processing_person_months_fy26": 566,
+      "avg_monthly_drilling_processing_contract_workers": 94.0
+    },
+    {
+      "state": "Gujarat",
+      "short_name": "Ahmedabad Asset",
+      "wc_type": "asset",
+      "is_core_activity": true,
+      "drilling_contract_months_fy26": 0,
+      "processing_contract_months_fy26": 0,
+      "drilling_person_months_fy26": 0,
+      "processing_person_months_fy26": 0,
+      "avg_monthly_drilling_processing_contract_workers": 0.0
+    }
+  ]
+}

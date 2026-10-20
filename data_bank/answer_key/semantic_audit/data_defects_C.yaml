@@ -1,0 +1,62 @@
+# Semantic audit 2026-10-20 - slice C data defects (reported, not fixed)
+
+- table: hrfin_silver.posting_history / employee_master
+  issue: "exemption_tag / exemption_reason_code / exemption_approved_by store the literal string 'None' instead of NULL (198,846 of 198,880 posting rows)."
+  evidence: "SELECT exemption_tag, COUNT(*) FROM posting_history GROUP BY 1 -> 'None' 198,846; Impending_Retirement 34."
+  impact_on_ids: [C1__why, C2__why]
+- table: hrfin_silver.posting_history
+  issue: "Transfer costs are uniform: every E3-E5 rotation/hard-station posting FY24-FY26 has transfer grant 1,20,000, CTA 1,50,000, baggage 50,000 (total 3,20,000) - no variation by distance, grade or family size."
+  evidence: "AVG = MIN = MAX = 320000 over 1,444 postings."
+  impact_on_ids: [C13, C13__why]
+- table: hrfin_silver.posting_history
+  issue: "FY21 has an implausible spike of 19,481 executive postings (vs ~1,600-3,700 in FY22-FY26), including 2,432 into and 3,821 out of NE - looks like a backfill/reorg artefact."
+  evidence: "COUNTIF(grade_id LIKE 'E%') by fiscal_year."
+  impact_on_ids: [C2__why]
+- table: hrfin_silver.succession_plan
+  issue: "Stale incumbents: positions still list separated incumbents (e.g. EMP-105466 GM N&H retired 2026-08-31; EMP-101212 CGM Dehradun separated)."
+  evidence: "JOIN employee_master ON incumbent_emp_id WHERE employment_status = 'Separated'."
+  impact_on_ids: [C4, C4__why, C4__drill_down]
+- table: hrfin_silver.dpc_cases
+  issue: "accelerated_merit_benchmark_score is a constant 85 for all 1,520 E6->E7 rows; all statuses 'completed'; cannot discriminate who meets the benchmark."
+  evidence: "MIN = AVG = MAX = 85."
+  impact_on_ids: [C4__compare_or_so_what]
+- table: hrfin_silver.employee_master
+  issue: "Every core-technical executive who joined in FY19-FY25 (132 people) is Separated, while overall FY19-FY25 joiners are ~80% active; active E1/E2 officers include joiners from 1987-88 (decades without promotion)."
+  evidence: "still_active = 0 for fiscal_year_joined FY19..FY25 in DRL/GEO/GPS/GPW/RES/PRD; MIN(doj) of active E1 = 1988-01-05."
+  impact_on_ids: [C5__why, C5]
+- table: hrfin_silver.sanctioned_posts
+  issue: "Sanctioned strength equals in-position exactly (zero vacancy in every discipline) at Assam Asset, Jorhat Asset, Silchar, A&AA Basin, INBIGS, Frontier Basin, ONGC Academy - suggests sanctions were back-filled from in-position rather than recorded; only FY26 exists, so no sanction history."
+  evidence: "SUM(vacancy_count) = 0 for those WCs (E-grades)."
+  impact_on_ids: [C2, C2__drill_down, C2__why, C13, C13__drill_down]
+- table: hrfin_silver.production_monthly
+  issue: "active_producing_wells is static per asset (identical FY21 and FY26 monthly averages, e.g. Cambay 54/54, Mehsana 154/154) and Eastern Offshore shows 15 producing wells in FY21 with zero production."
+  evidence: "AVG monthly SUM(active_producing_wells) by asset, FY21 vs FY26."
+  impact_on_ids: [C3__why]
+- table: hrfin_silver.reserves_annual
+  issue: "6 footnote rows loaded as data (reserve_id holds text like '6. FY26 Company 2P RRR = 1.17...', all other columns NULL)."
+  evidence: "WHERE fiscal_year IS NULL -> 6 rows."
+  impact_on_ids: [C7, C7__why, C7__compare_or_so_what]
+- table: hrfin_silver.capex_budget
+  issue: "(a) FY17-FY24 actual capex totals ~Rs18.2k cr/yr vs corporate_financials total_capex 26.9k-72.9k (only FY25/FY26 reconcile); (b) Rs18,365 cr FY22-FY26 at WC-DAH (Dahej C2-C3 plant) has NULL prj_id and is tagged secondary_tertiary_recovery; (c) capex heads are implausible for projects (e.g. 50 MW wind project tagged development/exploratory drilling); (d) no development_drilling line at all for Bassein, Eastern Offshore, N&H, Assam, Tripura."
+  evidence: "SUM(actual_spend_inr_cr) by FY vs corporate_financials; WC-DAH rows with prj_id IS NULL; capex_head by prj."
+  impact_on_ids: [C7, C7__drill_down, C7__why]
+- table: hrfin_silver.project_progress
+  issue: "Every one of the 60 projects has exactly 15.0% cost overrun; RCE = anticipated final cost and original = current sanction for all; milestones M4-M6 are 'delayed_critical_path' for every slipped project (even compressor/GGS projects get 'Platform Jacket & Topsides Fabrication'); delay_root_cause populated for projects with zero slippage."
+  evidence: "COUNT(DISTINCT cost_overrun_pct) = 1; variance_vs_rce = 0 for all."
+  impact_on_ids: [C9, C9__why, C9__compare_or_so_what, C9__drill_down]
+- table: hrfin_silver.field_pnl_annual
+  issue: "Monetisation estimates look implausible: Champang + Borholla estimated annual CAPEX savings Rs309 cr/yr, ~3.4x the whole Jorhat Asset's average annual capex (~Rs90 cr); estimates exist for only 2 of 53 fields; contractor_headcount exceeds regular headcount in the weakest fields."
+  evidence: "estimated_annual_capex_savings_inr_cr 152.56 + 156.8 vs capex_budget WC-JOR FY22-FY26 = Rs452 cr."
+  impact_on_ids: [C8__compare_or_so_what, C14, C14__compare_or_so_what]
+- table: hrfin_silver.wells_drilled
+  issue: "No FY27 records (latest completion 2026-03-31), although MoU FY27 projects 485 wells."
+  evidence: "COUNT(*) WHERE fiscal_year = 'FY27' = 0."
+  impact_on_ids: [C10__why]
+- table: hrfin_silver.mou_targets
+  issue: "FY27 actual_achievement is a full-year projection (H1 x 2, e.g. crude 19.051 = 2 x 9.525 MMT) but is stored in the 'actual' column without a flag."
+  evidence: "production_monthly FY27 (6 months) oil = 9.525 MMT."
+  impact_on_ids: [C10, C10__drill_down]
+- table: hrfin_silver.headcount_snapshot
+  issue: "Administrative & support headcount at the 14 production-declining assets fell 1,697 -> 531 (-68.7%) between Mar-21 and Mar-26, while Delhi HQ grew +191 - plausible centralisation but extreme; worth validating."
+  evidence: "C11__why result."
+  impact_on_ids: [C11__why, C3]

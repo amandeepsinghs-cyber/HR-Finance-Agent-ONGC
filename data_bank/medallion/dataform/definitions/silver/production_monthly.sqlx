@@ -1,0 +1,36 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "production_monthly",
+  description: "Monthly oil, gas, and condensate production by field, including water cut, gas flaring vs utilization, and well counts."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`prod_id`) AS prod_id,
+    TRIM(`month`) AS month,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`field_id`) AS field_id,
+    TRIM(`asset_wc_id`) AS asset_wc_id,
+    TRIM(`operatorship`) AS operatorship,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`oil_production_mt`), ''), ',', ''), '₹', '') AS NUMERIC) AS oil_production_mt,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`gas_production_mmscm`), ''), ',', ''), '₹', '') AS NUMERIC) AS gas_production_mmscm,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`condensate_production_mt`), ''), ',', ''), '₹', '') AS NUMERIC) AS condensate_production_mt,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`total_production_boe`), ''), ',', ''), '₹', '') AS NUMERIC) AS total_production_boe,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`water_cut_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS water_cut_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`water_produced_m3`), ''), ',', ''), '₹', '') AS NUMERIC) AS water_produced_m3,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`gas_sales_mmscm`), ''), ',', ''), '₹', '') AS NUMERIC) AS gas_sales_mmscm,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`gas_flared_mmscm`), ''), ',', ''), '₹', '') AS NUMERIC) AS gas_flared_mmscm,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`gas_internal_consumption_mmscm`), ''), ',', ''), '₹', '') AS NUMERIC) AS gas_internal_consumption_mmscm,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`gas_utilisation_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS gas_utilisation_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`active_producing_wells`), ''), ',', ''), '₹', '') AS INT64) AS active_producing_wells,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`active_injection_wells`), ''), ',', ''), '₹', '') AS INT64) AS active_injection_wells,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`well_downtime_hours`), ''), ',', ''), '₹', '') AS NUMERIC) AS well_downtime_hours,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`operational_uptime_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS operational_uptime_pct
+  FROM ${ref("db_exports_production_monthly")}
+  WHERE NULLIF(TRIM(`prod_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY prod_id ORDER BY _ingest_ts DESC) = 1

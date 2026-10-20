@@ -1,0 +1,37 @@
+{
+  "job_id": "6e7fc4d0-84c6-4c39-b10f-c169213fc7e7",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:08.577491+00:00",
+  "elapsed_seconds": 0.82,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 1.0",
+      "heading": "Short Title, Commencement and Scope",
+      "provision": "JRTP 1.2 (applicability: executives only)",
+      "quote_snippet": "1.2 It shall apply to all regular executives across all disciplines in Grades E0 through E9 posted across all work centres, plants, basins, offshore installations, and corporate offices of the Corporation."
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 1.0",
+      "heading": "Short Title, Commencement and Scope",
+      "provision": "JRTP 1.4 (transfer liability)",
+      "quote_snippet": "1.4 Transfer is an incident of service in ONGC. Every executive is liable to be transferred to any work centre, onshore basin, offshore installation, institute, subsidiary, or joint venture of the Corporation within India or abroad."
+    },
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 1.0",
+      "heading": "Short Title and Commencement",
+      "provision": "Leave Rules 1.2 (applies to executives and non-executives)",
+      "quote_snippet": "1.2 They shall apply to all regular employees (executives and non-executives) of the Corporation across all establishments in India."
+    }
+  ]
+}

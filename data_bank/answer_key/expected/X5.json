@@ -1,0 +1,57 @@
+{
+  "job_id": "d558ff6e-c166-4d07-b701-25ae73e54c60",
+  "total_bytes_processed": 2750,
+  "executed_at": "2026-10-20T06:37:20.615750+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 3,
+  "columns": [
+    "entity_code",
+    "entity_name",
+    "ongc_equity_holding_pct",
+    "pat_cr",
+    "ongc_share_of_pat_cr",
+    "share_of_group_pat_pct",
+    "dividend_received_by_ongc_cr",
+    "dividend_as_pct_of_ongc_standalone_pat",
+    "group_consolidated_pat_cr",
+    "ongc_standalone_pat_cr"
+  ],
+  "rows": [
+    {
+      "entity_code": "HPCL",
+      "entity_name": "Hindustan Petroleum Corporation Limited",
+      "ongc_equity_holding_pct": 54.9,
+      "pat_cr": 17175.0,
+      "ongc_share_of_pat_cr": 9429.1,
+      "share_of_group_pat_pct": 18.9,
+      "dividend_received_by_ongc_cr": 2113.65,
+      "dividend_as_pct_of_ongc_standalone_pat": 6.4,
+      "group_consolidated_pat_cr": 49793.0,
+      "ongc_standalone_pat_cr": 32894.0
+    },
+    {
+      "entity_code": "MRPL",
+      "entity_name": "Mangalore Refinery and Petrochemicals Limited",
+      "ongc_equity_holding_pct": 71.63,
+      "pat_cr": 1931.0,
+      "ongc_share_of_pat_cr": 1383.2,
+      "share_of_group_pat_pct": 2.8,
+      "dividend_received_by_ongc_cr": 376.06,
+      "dividend_as_pct_of_ongc_standalone_pat": 1.1,
+      "group_consolidated_pat_cr": 49793.0,
+      "ongc_standalone_pat_cr": 32894.0
+    },
+    {
+      "entity_code": "OVL",
+      "entity_name": "ONGC Videsh Limited",
+      "ongc_equity_holding_pct": 100.0,
+      "pat_cr": 1152.0,
+      "ongc_share_of_pat_cr": 1152.0,
+      "share_of_group_pat_pct": 2.3,
+      "dividend_received_by_ongc_cr": 350.0,
+      "dividend_as_pct_of_ongc_standalone_pat": 1.1,
+      "group_consolidated_pat_cr": 49793.0,
+      "ongc_standalone_pat_cr": 32894.0
+    }
+  ]
+}

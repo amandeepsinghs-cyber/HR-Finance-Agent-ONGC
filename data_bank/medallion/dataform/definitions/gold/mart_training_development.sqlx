@@ -1,0 +1,43 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_training_development",
+  description: "Employee training records, corporate academy course offerings, compliance hours, and technical certifications"
+}
+
+SELECT
+  tr.training_record_id,
+  tr.emp_id,
+  e.name AS emp_name,
+  e.name AS name,
+  e.gender,
+  e.current_grade_id,
+  e.current_grade_id AS grade_id,
+  e.discipline_id,
+  tr.programme_id,
+  tr.programme_name,
+  tr.wc_id,
+  w.name AS wc_name,
+  tr.institute,
+  tr.category,
+  tr.start_date,
+  tr.end_date,
+  tr.fiscal_year,
+  tr.training_hours,
+  tr.training_days,
+  tr.training_days AS duration_days,
+  tr.completion_status,
+  tr.is_renewable_reskilling,
+  tc.location_city,
+  tc.seats_capacity,
+  tc.prerequisite_experience_years,
+  tc.category AS training_category,
+  'mandatory' AS posting_type,
+  mou.parameter_name,
+  mou.excellent_target,
+  mou.actual_achievement
+FROM ${ref("training_records")} tr
+JOIN ${ref("employee_master")} e ON tr.emp_id = e.emp_id
+LEFT JOIN ${ref("dim_work_centre")} w ON tr.wc_id = w.wc_id
+LEFT JOIN (SELECT programme_id, location_city, seats_capacity, prerequisite_experience_years, category FROM ${ref("training_calendar")}) tc ON tr.programme_id = tc.programme_id
+LEFT JOIN (SELECT fiscal_year, parameter_name, excellent_target, actual_achievement FROM ${ref("mou_targets")} WHERE parameter_id LIKE '%TRAIN%' OR parameter_category = 'HR') mou ON tr.fiscal_year = mou.fiscal_year

@@ -1,0 +1,279 @@
+{
+  "job_id": "b554fd94-6498-4b81-a5fd-2f4215c9ae0a",
+  "total_bytes_processed": 1932127,
+  "executed_at": "2026-10-20T06:39:06.555675+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 26,
+  "columns": [
+    "customer",
+    "customer_type",
+    "segment",
+    "over_90d_cr",
+    "over_180d_cr",
+    "invoices",
+    "oldest_days",
+    "disputed_cr"
+  ],
+  "rows": [
+    {
+      "customer": "GNFC",
+      "customer_type": "State PSU",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 132.9,
+      "over_180d_cr": 23.4,
+      "invoices": 12,
+      "oldest_days": 226,
+      "disputed_cr": 132.9
+    },
+    {
+      "customer": "Deepak Fertilisers",
+      "customer_type": "Private",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 93.9,
+      "over_180d_cr": 37.7,
+      "invoices": 9,
+      "oldest_days": 204,
+      "disputed_cr": 93.9
+    },
+    {
+      "customer": "NFL",
+      "customer_type": "PSU",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 90.0,
+      "over_180d_cr": 23.3,
+      "invoices": 9,
+      "oldest_days": 205,
+      "disputed_cr": 90.0
+    },
+    {
+      "customer": "Gujarat Gas",
+      "customer_type": "State PSU",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 87.1,
+      "over_180d_cr": 40.3,
+      "invoices": 8,
+      "oldest_days": 209,
+      "disputed_cr": 87.1
+    },
+    {
+      "customer": "GSFC",
+      "customer_type": "State PSU",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 86.6,
+      "over_180d_cr": 20.9,
+      "invoices": 8,
+      "oldest_days": 219,
+      "disputed_cr": 86.6
+    },
+    {
+      "customer": "Adani Total Gas",
+      "customer_type": "Private",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 86.1,
+      "over_180d_cr": 31.3,
+      "invoices": 7,
+      "oldest_days": 226,
+      "disputed_cr": 86.1
+    },
+    {
+      "customer": "APL",
+      "customer_type": "State PSU",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 81.5,
+      "over_180d_cr": 47.2,
+      "invoices": 7,
+      "oldest_days": 234,
+      "disputed_cr": 81.5
+    },
+    {
+      "customer": "RIL",
+      "customer_type": "Private",
+      "segment": "OMC / refiner (crude)",
+      "over_90d_cr": 76.8,
+      "over_180d_cr": 20.9,
+      "invoices": 7,
+      "oldest_days": 216,
+      "disputed_cr": 76.8
+    },
+    {
+      "customer": "Nayara",
+      "customer_type": "Private",
+      "segment": "OMC / refiner (crude)",
+      "over_90d_cr": 75.6,
+      "over_180d_cr": 19.8,
+      "invoices": 7,
+      "oldest_days": 238,
+      "disputed_cr": 75.6
+    },
+    {
+      "customer": "Torrent Gas",
+      "customer_type": "Private",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 71.0,
+      "over_180d_cr": 41.2,
+      "invoices": 6,
+      "oldest_days": 215,
+      "disputed_cr": 71.0
+    },
+    {
+      "customer": "OPaL",
+      "customer_type": "Joint Venture / Subsidiary",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 70.8,
+      "over_180d_cr": 8.1,
+      "invoices": 6,
+      "oldest_days": 230,
+      "disputed_cr": 70.8
+    },
+    {
+      "customer": "Tata Power",
+      "customer_type": "Private",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 64.1,
+      "over_180d_cr": 34.1,
+      "invoices": 6,
+      "oldest_days": 232,
+      "disputed_cr": 64.1
+    },
+    {
+      "customer": "BPCL",
+      "customer_type": "PSU",
+      "segment": "OMC / refiner (crude)",
+      "over_90d_cr": 61.7,
+      "over_180d_cr": 8.1,
+      "invoices": 7,
+      "oldest_days": 220,
+      "disputed_cr": 61.7
+    },
+    {
+      "customer": "IOCL",
+      "customer_type": "PSU",
+      "segment": "OMC / refiner (crude)",
+      "over_90d_cr": 60.7,
+      "over_180d_cr": 19.9,
+      "invoices": 5,
+      "oldest_days": 221,
+      "disputed_cr": 60.7
+    },
+    {
+      "customer": "OTPC",
+      "customer_type": "Joint Venture",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 58.1,
+      "over_180d_cr": 40.7,
+      "invoices": 6,
+      "oldest_days": 193,
+      "disputed_cr": 58.1
+    },
+    {
+      "customer": "NRL",
+      "customer_type": "PSU",
+      "segment": "OMC / refiner (crude)",
+      "over_90d_cr": 57.8,
+      "over_180d_cr": 28.7,
+      "invoices": 6,
+      "oldest_days": 236,
+      "disputed_cr": 57.8
+    },
+    {
+      "customer": "MRPL",
+      "customer_type": "PSU / Subsidiary",
+      "segment": "OMC / refiner (crude)",
+      "over_90d_cr": 54.0,
+      "over_180d_cr": 30.9,
+      "invoices": 4,
+      "oldest_days": 240,
+      "disputed_cr": 54.0
+    },
+    {
+      "customer": "CPCL",
+      "customer_type": "PSU",
+      "segment": "OMC / refiner (crude)",
+      "over_90d_cr": 49.8,
+      "over_180d_cr": 30.0,
+      "invoices": 4,
+      "oldest_days": 192,
+      "disputed_cr": 49.8
+    },
+    {
+      "customer": "MGL",
+      "customer_type": "City Gas JV",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 48.5,
+      "over_180d_cr": 0.0,
+      "invoices": 5,
+      "oldest_days": 168,
+      "disputed_cr": 48.5
+    },
+    {
+      "customer": "IGL",
+      "customer_type": "City Gas JV",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 46.4,
+      "over_180d_cr": 31.5,
+      "invoices": 4,
+      "oldest_days": 240,
+      "disputed_cr": 46.4
+    },
+    {
+      "customer": "BCPL",
+      "customer_type": "PSU",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 35.6,
+      "over_180d_cr": 6.0,
+      "invoices": 4,
+      "oldest_days": 186,
+      "disputed_cr": 35.6
+    },
+    {
+      "customer": "Chambal Fertilisers",
+      "customer_type": "Private",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 29.7,
+      "over_180d_cr": 29.7,
+      "invoices": 2,
+      "oldest_days": 215,
+      "disputed_cr": 29.7
+    },
+    {
+      "customer": "NTPC",
+      "customer_type": "PSU",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 27.4,
+      "over_180d_cr": 13.7,
+      "invoices": 3,
+      "oldest_days": 184,
+      "disputed_cr": 27.4
+    },
+    {
+      "customer": "RCF",
+      "customer_type": "PSU",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 26.4,
+      "over_180d_cr": 0.0,
+      "invoices": 2,
+      "oldest_days": 165,
+      "disputed_cr": 26.4
+    },
+    {
+      "customer": "HPCL",
+      "customer_type": "PSU / Subsidiary",
+      "segment": "OMC / refiner (crude)",
+      "over_90d_cr": 16.1,
+      "over_180d_cr": 0.0,
+      "invoices": 3,
+      "oldest_days": 160,
+      "disputed_cr": 16.1
+    },
+    {
+      "customer": "GAIL",
+      "customer_type": "PSU",
+      "segment": "Gas / other consumer",
+      "over_90d_cr": 5.9,
+      "over_180d_cr": 5.9,
+      "invoices": 1,
+      "oldest_days": 189,
+      "disputed_cr": 5.9
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_hse_incident",
+  description: "Occupational safety, HSE incident logs, shift hours, lost-time injuries (LTI), and environmental process-safety metrics"
+}
+
+SELECT
+  hi.incident_id,
+  hi.wc_id,
+  w.name AS wc_name,
+  w.name AS name,
+  w.short_name AS short_name,
+  w.onshore_offshore,
+  hi.emp_id,
+  hi.grade_id,
+  hi.discipline_id,
+  hi.installation_name,
+  hi.incident_date,
+  hi.month,
+  hi.fiscal_year,
+  hi.incident_type,
+  hi.lost_time_injury_flag,
+  hi.days_lost,
+  hi.severity_tier,
+  hi.monthly_overtime_hours_per_worker,
+  hi.fatigue_factor_flag,
+  hi.workforce_category_involved,
+  hi.total_manhours_worked,
+  hi.calculated_ltifr,
+  hi.brief_description,
+  mou.parameter_name,
+  mou.excellent_target,
+  mou.actual_achievement,
+  COALESCE(env.env_incident_count, 0) AS env_incident_count,
+  COALESCE(env.env_tier1_count, 0) AS env_tier1_count,
+  COALESCE(env.oil_spill_volume_bbl, 0.0) AS oil_spill_volume_bbl
+FROM ${ref("hse_incidents")} hi
+LEFT JOIN ${ref("dim_work_centre")} w ON hi.wc_id = w.wc_id
+LEFT JOIN (SELECT fiscal_year, parameter_name, excellent_target, actual_achievement FROM ${ref("mou_targets")} WHERE parameter_id LIKE '%HSE%' OR parameter_id LIKE '%SAFETY%') mou ON hi.fiscal_year = mou.fiscal_year
+LEFT JOIN (SELECT wc_id, fiscal_year, COUNT(DISTINCT incident_id) AS env_incident_count, COUNT(DISTINCT CASE WHEN severity = 'Tier_1' THEN incident_id END) AS env_tier1_count, SUM(CASE WHEN incident_type = 'oil_spill' THEN volume_released ELSE 0 END) AS oil_spill_volume_bbl FROM ${ref("env_incidents")} GROUP BY 1, 2) env ON hi.wc_id = env.wc_id AND hi.fiscal_year = env.fiscal_year

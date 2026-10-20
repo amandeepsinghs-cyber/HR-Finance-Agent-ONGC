@@ -1,0 +1,59 @@
+- table: hrfin_silver.posting_history / employee_master
+  issue: exemption_tag (and exemption_approved_by) store the literal string 'None' instead of SQL NULL for ~198,846 posting rows and 42,137 employee rows.
+  evidence: "SELECT exemption_tag, COUNT(*) FROM posting_history GROUP BY 1 -> 'None' 198,846 / 'Impending_Retirement' 34. IS NOT NULL / COALESCE treat every officer as having an exemption."
+  impact_on_ids: [T2, T2__why, C1, P11, any query using COALESCE/IS NULL on exemption_tag]
+
+- table: hrfin_gold.v_cluster_cumulative_tenure (+ P-slice P11 answer)
+  issue: The 201 'executives' breaching the CL-DEL 10-year cumulative cap are 151 GRP-C + 49 GRP-D non-executives and the CMD; no executive (E-grade) currently in Delhi has more than 8.4 cumulative years. The view does not filter cadre, and P11's SQL/prose calls them executives.
+  evidence: "CL-DEL is_currently_in_cluster AND has_breached_cluster_10yr_cap grouped by current_grade_id -> CMD 1, GRP-C 151, GRP-D 49; executive max cumulative_cluster_years = 8.4."
+  impact_on_ids: [T2__why, P11 (other slice), C-series Delhi tenure questions]
+
+- table: hrfin_silver.employee_master
+  issue: Non-executive age is capped at 55.6 years - no active non-executive retires before 2031-04-30, so retirement projections show zero non-executive attrition.
+  evidence: "Active GRP-B/C/D: MAX(age_years)=55.6, MIN(retirement_date)=2031-04-30, 0 with age>=58 (executives: 1,369 aged 58+)."
+  impact_on_ids: [W2, W2__compare_or_so_what]
+
+- table: hrfin_silver.employee_master
+  issue: Grade is weakly related to age/tenure - E1-E6 technical officers average 43-45 years and retire at ~12-14% within 2 years, while E7-E9 average ~52 and retire at ~3%. Some E6 succession candidates are 25-27 years old with 3-5 years' service.
+  evidence: "W2__why rows (E1 avg_age 43.4, E7 52.1); T3__why successors e.g. EMP-100827 E6 age 25.5 tenure 3.5y, EMP-101102 E6 age 26.1 tenure 3.0y."
+  impact_on_ids: [W2__why, T3__why, T3__compare_or_so_what]
+
+- table: hrfin_silver.succession_plan
+  issue: Succession plan covers only 4 of 12 active GMs retiring in calendar 2027 and 8 of 39 E7+ officers retiring by Mar-2029; it also still lists a separated incumbent (POS-0100, retired 2026-08-31).
+  evidence: "employee_master E7 active retiring 2027 = 12; LEFT JOIN succession_plan -> 8 with no position. POS-0100 incumbent EMP-105466 employment_status=Separated."
+  impact_on_ids: [T3, T3__drill_down]
+
+- table: hrfin_silver.price_fx_monthly
+  issue: ongc_crude_net_realisation_usd_bbl is net of SAED in FY23 (Brent-realisation gap ~$19.6) but gross of SAED in FY24-FY25 (gap ~$2.3-2.4 while SAED was $4-12/bbl), so the series is internally inconsistent.
+  evidence: "2022-07: Brent 97.2, realisation 77.3, SAED 18.5; 2023-07: Brent 85.0, realisation 82.27, SAED 12.0; 2024-07: Brent 81.0, realisation 78.4, SAED 5.5."
+  impact_on_ids: [W4, W4__drill_down, W4__why, W4__compare_or_so_what, W1 (discount parameter)]
+
+- table: hrfin_silver.corporate_financials vs price_fx_monthly x production_monthly
+  issue: Reported SAED paid is 64-71% of SAED implied by monthly rate x crude+condensate barrels (7.33 bbl/t).
+  evidence: "Implied FY23 15,387 cr vs reported 10,964; FY24 13,472 vs 8,634; FY25 4,228 vs 3,948."
+  impact_on_ids: [W4, W4__why]
+
+- table: hrfin_silver.access_audit_log
+  issue: Non-executive staff (GRP-C/GRP-D) carry user_role 'HR_Officer'/'Finance_Officer'; no account has more than one denial in 91 days (no repeat-offender signal), and there is no Operations department.
+  evidence: "This week's denials include GRP-C/GRP-D 'HR_Officer' users; MAX(denials per user) = 1 across 102 denials since 2026-07-21."
+  impact_on_ids: [M5, M5__drill_down, M5__why]
+
+- table: hrfin_silver.sanctioned_posts
+  issue: Assam and Jorhat assets show zero executive vacancies (sanctioned = in-position in every band) while all other assets carry 5-14% executive vacancy - implausible for NE hard stations that the question set treats as deficit stations.
+  evidence: "WC-ASM E0_E2/E3_E5/E6_E9 vacancy 0; WC-JOR 0 in all bands; WC-TRI 62 executive vacancies."
+  impact_on_ids: [T2__drill_down, T2__compare_or_so_what, W3, W3__why]
+
+- table: hrfin_silver.posting_history
+  issue: Transfer costs are a flat constant (CTA 1.5 lakh + transfer grant 1.2 lakh + baggage 0.5 lakh = 3.2 lakh) for every rotation/hard-station posting, regardless of grade or distance. The legacy W3 constant of 3.25 lakh / 6.50 cr did not match this.
+  evidence: "FY25-FY26 rotation & hard_station: AVG = MIN = MAX = 320,000 INR."
+  impact_on_ids: [W3, W3__drill_down, W3__compare_or_so_what, T2__compare_or_so_what]
+
+- table: hrfin_silver.capex_budget vs corporate_financials
+  issue: capex_budget totals for FY17-FY24 (~18,1xx cr/yr, identical BE every year) are well below corporate_financials total_capex_spent (26,859-72,902 cr); they reconcile only for FY25-FY26.
+  evidence: "capex_budget FY24 actual 18,160 cr vs corporate 37,494 cr; FY26 35,878 vs 35,878."
+  impact_on_ids: [M2 family (FY27 YTD only, unaffected), any multi-year capex trend]
+
+- table: hrfin_docs.silver_chunks
+  issue: Old answer-key citations quoted SUBSTR(text,1,300), which is only the chunk header boilerplate (title/type/glossary), never the clause text. G-08 (Make-in-India procurement order) was cited for RBAC/confidentiality questions; there is no clause on HR-vs-Finance functional access to aggregate data.
+  evidence: "M1__why / M3__why rows were G-08 'Rule 130 of GFR' chunks; quote_snippet began 'Document Title: ...'."
+  impact_on_ids: [M1__why, M2__why, M3__drill_down, M3__why, M4__why]

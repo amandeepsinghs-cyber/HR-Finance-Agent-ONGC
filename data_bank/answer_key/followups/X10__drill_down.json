@@ -1,0 +1,119 @@
+{
+  "job_id": "762df1f1-730d-45fd-a0d1-5d8d2564ed0c",
+  "total_bytes_processed": 36732,
+  "executed_at": "2026-10-20T06:55:31.134826+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 9,
+  "columns": [
+    "project_name",
+    "project_status",
+    "slippage_months",
+    "scheduled_completion",
+    "anticipated_completion",
+    "completion_delay_days",
+    "cost_overrun_cr",
+    "delay_root_cause",
+    "critical_path_milestones_delayed"
+  ],
+  "rows": [
+    {
+      "project_name": "Pipeline Replacement Project Phase-VIII Part-B (PRP-VIII B)",
+      "project_status": "delayed",
+      "slippage_months": 19,
+      "scheduled_completion": "2025-05-31",
+      "anticipated_completion": "2026-12-31",
+      "completion_delay_days": 579,
+      "cost_overrun_cr": 207.6,
+      "delay_root_cause": "fabrication_delay_yard",
+      "critical_path_milestones_delayed": 3
+    },
+    {
+      "project_name": "TCPP Process Gas Compressors at Bassein",
+      "project_status": "delayed",
+      "slippage_months": 17,
+      "scheduled_completion": "2024-10-31",
+      "anticipated_completion": "2026-03-31",
+      "completion_delay_days": 516,
+      "cost_overrun_cr": 167.1,
+      "delay_root_cause": "contractor_standby",
+      "critical_path_milestones_delayed": 3
+    },
+    {
+      "project_name": "MHN Gas Process Booster Compressors",
+      "project_status": "delayed",
+      "slippage_months": 17,
+      "scheduled_completion": "2025-01-31",
+      "anticipated_completion": "2026-06-30",
+      "completion_delay_days": 515,
+      "cost_overrun_cr": 121.2,
+      "delay_root_cause": "contractor_standby",
+      "critical_path_milestones_delayed": 3
+    },
+    {
+      "project_name": "Sobhasan Group Gathering Station (GGS) Modernisation",
+      "project_status": "delayed",
+      "slippage_months": 16,
+      "scheduled_completion": "2024-12-31",
+      "anticipated_completion": "2026-04-30",
+      "completion_delay_days": 485,
+      "cost_overrun_cr": 60.9,
+      "delay_root_cause": "contractor_standby",
+      "critical_path_milestones_delayed": 3
+    },
+    {
+      "project_name": "Uran Plant Booster Compressors Modernisation",
+      "project_status": "delayed",
+      "slippage_months": 16,
+      "scheduled_completion": "2025-04-30",
+      "anticipated_completion": "2026-08-31",
+      "completion_delay_days": 488,
+      "cost_overrun_cr": 60.3,
+      "delay_root_cause": "contractor_standby",
+      "critical_path_milestones_delayed": 3
+    },
+    {
+      "project_name": "KG-DWN-98/2 Cluster-II Deepwater Development",
+      "project_status": "ongoing",
+      "slippage_months": 15,
+      "scheduled_completion": "2025-03-31",
+      "anticipated_completion": "2026-06-30",
+      "completion_delay_days": 456,
+      "cost_overrun_cr": 5101.8,
+      "delay_root_cause": "subsea_commissioning",
+      "critical_path_milestones_delayed": 3
+    },
+    {
+      "project_name": "Linch Group Gathering Station Upgrade",
+      "project_status": "delayed",
+      "slippage_months": 15,
+      "scheduled_completion": "2025-02-28",
+      "anticipated_completion": "2026-05-31",
+      "completion_delay_days": 457,
+      "cost_overrun_cr": 53.9,
+      "delay_root_cause": "contractor_standby",
+      "critical_path_milestones_delayed": 3
+    },
+    {
+      "project_name": "Daman Upside Development Project (DUDP)",
+      "project_status": "completed",
+      "slippage_months": 1,
+      "scheduled_completion": "2026-02-28",
+      "anticipated_completion": "2026-03-31",
+      "completion_delay_days": 31,
+      "cost_overrun_cr": 744.0,
+      "delay_root_cause": "engineering_drawing_approval",
+      "critical_path_milestones_delayed": 3
+    },
+    {
+      "project_name": "Pipeline Replacement Project Phase-VII (PRP-VII)",
+      "project_status": "completed",
+      "slippage_months": 1,
+      "scheduled_completion": "2024-12-31",
+      "anticipated_completion": "2025-01-31",
+      "completion_delay_days": 31,
+      "cost_overrun_cr": 482.3,
+      "delay_root_cause": "fabrication_delay_yard",
+      "critical_path_milestones_delayed": 3
+    }
+  ]
+}

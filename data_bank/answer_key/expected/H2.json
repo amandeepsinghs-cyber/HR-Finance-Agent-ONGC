@@ -1,0 +1,159 @@
+{
+  "job_id": "ad00ad50-0e80-4673-b753-d454e2f967a0",
+  "total_bytes_processed": 5100134,
+  "executed_at": "2026-10-20T06:38:36.557512+00:00",
+  "elapsed_seconds": 0.69,
+  "row_count": 14,
+  "columns": [
+    "cadre",
+    "grade_id",
+    "never_served_hard_station",
+    "active_employees",
+    "pct_of_grade",
+    "company_never_hard",
+    "company_active",
+    "executives_never_hard"
+  ],
+  "rows": [
+    {
+      "cadre": "executive",
+      "grade_id": "E1",
+      "never_served_hard_station": 187,
+      "active_employees": 1449,
+      "pct_of_grade": 12.9,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "executive",
+      "grade_id": "E2",
+      "never_served_hard_station": 202,
+      "active_employees": 2209,
+      "pct_of_grade": 9.1,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "executive",
+      "grade_id": "E3",
+      "never_served_hard_station": 128,
+      "active_employees": 2826,
+      "pct_of_grade": 4.5,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "executive",
+      "grade_id": "E4",
+      "never_served_hard_station": 122,
+      "active_employees": 2569,
+      "pct_of_grade": 4.7,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "executive",
+      "grade_id": "E5",
+      "never_served_hard_station": 95,
+      "active_employees": 2128,
+      "pct_of_grade": 4.5,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "executive",
+      "grade_id": "E6",
+      "never_served_hard_station": 98,
+      "active_employees": 1146,
+      "pct_of_grade": 8.6,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "executive",
+      "grade_id": "E7",
+      "never_served_hard_station": 7,
+      "active_employees": 839,
+      "pct_of_grade": 0.8,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "executive",
+      "grade_id": "E8",
+      "never_served_hard_station": 3,
+      "active_employees": 238,
+      "pct_of_grade": 1.3,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "executive",
+      "grade_id": "E9",
+      "never_served_hard_station": 0,
+      "active_employees": 49,
+      "pct_of_grade": 0.0,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "non_executive",
+      "grade_id": "GRP-B",
+      "never_served_hard_station": 0,
+      "active_employees": 166,
+      "pct_of_grade": 0.0,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "non_executive",
+      "grade_id": "GRP-C",
+      "never_served_hard_station": 3084,
+      "active_employees": 7220,
+      "pct_of_grade": 42.7,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "non_executive",
+      "grade_id": "GRP-D",
+      "never_served_hard_station": 1023,
+      "active_employees": 1956,
+      "pct_of_grade": 52.3,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "board",
+      "grade_id": "DIR",
+      "never_served_hard_station": 0,
+      "active_employees": 2,
+      "pct_of_grade": 0.0,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    },
+    {
+      "cadre": "board",
+      "grade_id": "CMD",
+      "never_served_hard_station": 0,
+      "active_employees": 1,
+      "pct_of_grade": 0.0,
+      "company_never_hard": 4949,
+      "company_active": 22798,
+      "executives_never_hard": 842
+    }
+  ]
+}

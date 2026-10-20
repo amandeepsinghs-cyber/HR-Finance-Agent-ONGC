@@ -1,0 +1,41 @@
+{
+  "job_id": "995507c0-0794-4a18-a21d-5186236e662d",
+  "total_bytes_processed": 26740,
+  "executed_at": "2026-10-20T06:39:10.510918+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 3,
+  "columns": [
+    "basin_name",
+    "trailing_3yr_finding_cost_usd_boe",
+    "fc_fy24_usd_boe",
+    "fc_fy25_usd_boe",
+    "fc_fy26_usd_boe",
+    "accretion_3yr_mmtoe"
+  ],
+  "rows": [
+    {
+      "basin_name": "Krishna Godavari",
+      "trailing_3yr_finding_cost_usd_boe": 7.38,
+      "fc_fy24_usd_boe": 9.73,
+      "fc_fy25_usd_boe": 9.02,
+      "fc_fy26_usd_boe": 5.67,
+      "accretion_3yr_mmtoe": 10.97
+    },
+    {
+      "basin_name": "Western Offshore",
+      "trailing_3yr_finding_cost_usd_boe": 2.63,
+      "fc_fy24_usd_boe": 2.38,
+      "fc_fy25_usd_boe": 2.64,
+      "fc_fy26_usd_boe": 2.9,
+      "accretion_3yr_mmtoe": 82.34
+    },
+    {
+      "basin_name": "Assam Arakan",
+      "trailing_3yr_finding_cost_usd_boe": 2.17,
+      "fc_fy24_usd_boe": 2.01,
+      "fc_fy25_usd_boe": 2.18,
+      "fc_fy26_usd_boe": 2.33,
+      "accretion_3yr_mmtoe": 13.68
+    }
+  ]
+}

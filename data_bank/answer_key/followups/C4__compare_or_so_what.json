@@ -1,0 +1,45 @@
+{
+  "job_id": "cbe224a7-f98d-4dc3-97f2-f7db6f04713a",
+  "total_bytes_processed": 9156238,
+  "executed_at": "2026-10-20T06:31:52.735968+00:00",
+  "elapsed_seconds": 0.8,
+  "row_count": 3,
+  "columns": [
+    "cadre_family",
+    "e6_with_fy26_apar",
+    "benchmark_score",
+    "meet_dpc_benchmark",
+    "pct_meet_benchmark",
+    "outstanding_accelerated",
+    "pct_outstanding"
+  ],
+  "rows": [
+    {
+      "cadre_family": "Engineering (Chief Engineer)",
+      "e6_with_fy26_apar": 715,
+      "benchmark_score": 7.5,
+      "meet_dpc_benchmark": 565,
+      "pct_meet_benchmark": 79.0,
+      "outstanding_accelerated": 113,
+      "pct_outstanding": 15.8
+    },
+    {
+      "cadre_family": "Geoscience (Chief Geologist / Geophysicist / Reservoir)",
+      "e6_with_fy26_apar": 231,
+      "benchmark_score": 7.5,
+      "meet_dpc_benchmark": 178,
+      "pct_meet_benchmark": 77.1,
+      "outstanding_accelerated": 45,
+      "pct_outstanding": 19.5
+    },
+    {
+      "cadre_family": "All technical E6",
+      "e6_with_fy26_apar": 946,
+      "benchmark_score": 7.5,
+      "meet_dpc_benchmark": 743,
+      "pct_meet_benchmark": 78.5,
+      "outstanding_accelerated": 158,
+      "pct_outstanding": 16.7
+    }
+  ]
+}

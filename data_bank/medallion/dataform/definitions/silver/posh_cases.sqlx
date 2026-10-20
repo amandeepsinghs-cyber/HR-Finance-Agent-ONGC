@@ -1,0 +1,27 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "posh_cases",
+  description: "Prevention of Sexual Harassment (POSH) complaint ledger tracking complaints received by Internal Complaints Committees (ICC), inquiry timelines, outcomes, and annual report disclosures."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_0) AS case_id,
+    TRIM(col_1) AS wc_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_2), ''), 1, 10)) AS date_received,
+    TRIM(col_3) AS fiscal_year,
+    TRIM(col_4) AS complainant_cadre,
+    TRIM(col_5) AS respondent_grade_band,
+    TRIM(col_6) AS committee_id,
+    TRIM(col_7) AS status,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_8), ''), ',', ''), '₹', '') AS INT64) AS inquiry_days,
+    TRIM(col_9) AS outcome_category,
+    CASE WHEN LOWER(TRIM(col_10)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_10)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS annual_report_disclosed
+  FROM ${ref("excel_posh_register")}
+  WHERE _row_number >= 2 AND col_0 IS NOT NULL AND TRIM(col_0) != '' AND _sheet_name NOT IN ('Notes_and_Citations', 'Executive_Summary', '_Ref_Capex_Codes', '_Cadre_Control_Master', '_MoU_Grading_Rules', '_Schedule_VII_Themes', '_Talent_Bench_Scale', '_Court_Jurisdiction_Codes')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY case_id ORDER BY _ingest_ts DESC) = 1

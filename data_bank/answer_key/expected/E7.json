@@ -1,0 +1,21 @@
+{
+  "job_id": "af34fbee-5d0a-4b21-b53c-a76bb314c230",
+  "total_bytes_processed": 220,
+  "executed_at": "2026-10-20T06:32:48.651676+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 1,
+  "columns": [
+    "fiscal_year",
+    "pat_inr_cr",
+    "prior_year_pat_inr_cr",
+    "yoy_change_pct"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY26",
+      "pat_inr_cr": 32894.0,
+      "prior_year_pat_inr_cr": 35610.0,
+      "yoy_change_pct": -7.6
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "job_id": "ce10581e-049c-4c3f-8af4-643a3e1e5acc",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:42.202910+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "HR Manual",
+      "clause_ref": "Clause 5.0",
+      "heading": "Confidentiality of Individual Compensation",
+      "quote_snippet": "5.1 Colleague Data Privacy: The individual salary details, net pay, allowances, deductions, bank accounts, income tax records, and performance ratings of colleagues and supervisors are protected personal information under corporate data privacy rules and Section 8(1)(j) of the Right to Information Act, 2005. 5.2 Strict Prohibition against Queries: Employees, automated systems, and corporate tools "
+    },
+    {
+      "doc_id": "HR Manual",
+      "clause_ref": "Clause 2.0",
+      "heading": "IDA Pay Scales by Grade",
+      "quote_snippet": "2.1 3rd PRC Pay Revision Scales: In accordance with DPE OM No. W-02/0028/2017-DPE(WC)-GL-XIII/17 dated 03.08.2017, the revised IDA pay scales for executive grades in ONGC are: \u2022 Grade E0: \u20b930,000 \u2013 \u20b91,20,000 (Annual increment 3%) \u2022 Grade E1: \u20b960,000 \u2013 \u20b91,80,000 (Entry Grade for Graduate Trainees via GATE) \u2022 Grade E2: \u20b970,000 \u2013 \u20b92,00,000 \u2022 Grade E3: \u20b980,000 \u2013 \u20b92,20,000 \u2022 Grade E4: \u20b990,000 \u2013 \u20b92,40,0"
+    }
+  ]
+}

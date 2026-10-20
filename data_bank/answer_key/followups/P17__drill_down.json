@@ -1,0 +1,63 @@
+{
+  "job_id": "5780a1aa-0f9f-43a6-8ce8-d085526389fe",
+  "total_bytes_processed": 380,
+  "executed_at": "2026-10-20T06:33:24.645957+00:00",
+  "elapsed_seconds": 0.73,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "pat_inr_cr",
+    "dipam_floor_30pct_pat_cr",
+    "actual_dividend_cr",
+    "above_floor_cr",
+    "payout_pct_of_pat",
+    "net_worth_5pct_leg_cr"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY26",
+      "pat_inr_cr": 32894.0,
+      "dipam_floor_30pct_pat_cr": 9868.0,
+      "actual_dividend_cr": 16669.0,
+      "above_floor_cr": 6801.0,
+      "payout_pct_of_pat": 50.7,
+      "net_worth_5pct_leg_cr": null
+    },
+    {
+      "fiscal_year": "FY25",
+      "pat_inr_cr": 35610.0,
+      "dipam_floor_30pct_pat_cr": 10683.0,
+      "actual_dividend_cr": 15411.0,
+      "above_floor_cr": 4728.0,
+      "payout_pct_of_pat": 43.3,
+      "net_worth_5pct_leg_cr": null
+    },
+    {
+      "fiscal_year": "FY24",
+      "pat_inr_cr": 40526.0,
+      "dipam_floor_30pct_pat_cr": 12158.0,
+      "actual_dividend_cr": 15411.0,
+      "above_floor_cr": 3253.0,
+      "payout_pct_of_pat": 38.0,
+      "net_worth_5pct_leg_cr": null
+    },
+    {
+      "fiscal_year": "FY23",
+      "pat_inr_cr": 40096.0,
+      "dipam_floor_30pct_pat_cr": 12029.0,
+      "actual_dividend_cr": 14153.0,
+      "above_floor_cr": 2124.0,
+      "payout_pct_of_pat": 35.3,
+      "net_worth_5pct_leg_cr": null
+    },
+    {
+      "fiscal_year": "FY22",
+      "pat_inr_cr": 40306.0,
+      "dipam_floor_30pct_pat_cr": 12092.0,
+      "actual_dividend_cr": 13209.0,
+      "above_floor_cr": 1117.0,
+      "payout_pct_of_pat": 32.8,
+      "net_worth_5pct_leg_cr": null
+    }
+  ]
+}

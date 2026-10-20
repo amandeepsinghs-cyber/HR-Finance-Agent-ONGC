@@ -1,0 +1,37 @@
+{
+  "job_id": "a6becd6b-336c-4c5b-95c9-9f312e898c91",
+  "total_bytes_processed": 491338,
+  "executed_at": "2026-10-20T06:37:27.757759+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 3,
+  "columns": [
+    "region",
+    "sanctioned",
+    "in_position",
+    "vacancies",
+    "vacancy_rate_pct"
+  ],
+  "rows": [
+    {
+      "region": "North-East (Assam + Tripura)",
+      "sanctioned": 4548,
+      "in_position": 4405,
+      "vacancies": 143,
+      "vacancy_rate_pct": 3.14
+    },
+    {
+      "region": "ONGC national",
+      "sanctioned": 25149,
+      "in_position": 23117,
+      "vacancies": 2032,
+      "vacancy_rate_pct": 8.08
+    },
+    {
+      "region": "Rest of India",
+      "sanctioned": 20601,
+      "in_position": 18712,
+      "vacancies": 1889,
+      "vacancy_rate_pct": 9.17
+    }
+  ]
+}

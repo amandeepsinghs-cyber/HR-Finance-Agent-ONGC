@@ -1,0 +1,29 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "cost_ledger",
+  description: "Granular monthly general ledger cost entries by SAP cost centre, cost element (GL), and operational cost head."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`ledger_id`) AS ledger_id,
+    TRIM(`cost_centre_id`) AS cost_centre_id,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`field_id`) AS field_id,
+    TRIM(`month`) AS month,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`cost_element_code`) AS cost_element_code,
+    TRIM(`cost_element_name`) AS cost_element_name,
+    TRIM(`cost_head`) AS cost_head,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`amount_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS amount_inr,
+    TRIM(`currency`) AS currency,
+    TRIM(`debit_credit_indicator`) AS debit_credit_indicator,
+    TRIM(`document_no`) AS document_no
+  FROM ${ref("sap_cosp_coss")}
+  WHERE NULLIF(TRIM(`ledger_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY ledger_id ORDER BY _ingest_ts DESC) = 1

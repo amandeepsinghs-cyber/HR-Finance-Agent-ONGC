@@ -1,0 +1,27 @@
+{
+  "job_id": "75139dff-1204-4d15-b337-5e4f014ff595",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:38:51.842031+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "P1-03",
+      "clause_ref": "Part 4",
+      "heading": "ONGC Medical Examination of Employees Rules, 2026 (Part 4)",
+      "quote_snippet": "NOTE: For women candidates, a female medical officer will conduct the examination. If a female medical officer is not available at the work center, the examination may be conducted by a male medical officer in the presence of a female nurse or attendant."
+    },
+    {
+      "doc_id": "P1-03",
+      "clause_ref": "Part 28",
+      "heading": "ONGC Medical Examination of Employees Rules, 2026 (Part 28)",
+      "quote_snippet": "In case of female candidate, medical examination will be carried out by a female medical officer. In case of non-availability of female medical officer, a Staff Nurse or a Female Attendant will be present when female candidates are examined by male medical officer."
+    }
+  ]
+}

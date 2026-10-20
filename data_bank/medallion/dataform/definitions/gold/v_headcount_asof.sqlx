@@ -1,0 +1,35 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "v_headcount_asof",
+  description: "As-of point-in-time enterprise headcount aggregation across all fiscal years"
+}
+
+SELECT
+  d AS as_of_date,
+  e.current_wc_id AS wc_id,
+  w.name AS wc_name,
+  w.sector,
+  w.cluster_id,
+  w.hard_station_cat,
+  e.current_grade_id AS grade_id,
+  g.cadre,
+  g.group,
+  e.discipline_id,
+  d_ref.name AS discipline_name,
+  e.gender,
+  e.category,
+  e.pwd_flag,
+  COUNT(DISTINCT e.emp_id) AS active_headcount
+FROM UNNEST([
+  DATE '2013-03-31', DATE '2014-03-31', DATE '2015-03-31', DATE '2016-03-31',
+  DATE '2017-03-31', DATE '2018-03-31', DATE '2019-03-31', DATE '2020-03-31',
+  DATE '2021-03-31', DATE '2022-03-31', DATE '2023-03-31', DATE '2024-03-31',
+  DATE '2025-03-31', DATE '2026-03-31', DATE '2026-10-19'
+]) d
+CROSS JOIN ${ref("employee_master")} e
+JOIN ${ref("dim_work_centre")} w ON e.current_wc_id = w.wc_id
+JOIN ${ref("dim_grade")} g ON e.current_grade_id = g.grade_id
+JOIN ${ref("dim_discipline")} d_ref ON e.discipline_id = d_ref.discipline_id
+WHERE e.doj <= d AND (e.separation_date IS NULL OR e.separation_date > d)
+GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14

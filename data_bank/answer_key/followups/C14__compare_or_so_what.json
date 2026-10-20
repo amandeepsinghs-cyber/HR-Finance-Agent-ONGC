@@ -1,0 +1,58 @@
+{
+  "job_id": "74d68a71-57db-496f-8a3a-e77ce894b67f",
+  "total_bytes_processed": 24017,
+  "executed_at": "2026-10-20T06:40:03.033130+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 6,
+  "columns": [
+    "field_name",
+    "pbt_fy26_inr_cr",
+    "inhouse_5yr_pbt_flat_inr_cr",
+    "pec_farmout_payoff_5yr_inr_cr",
+    "pec_advantage_5yr_inr_cr"
+  ],
+  "rows": [
+    {
+      "field_name": "Champang",
+      "pbt_fy26_inr_cr": -4.93,
+      "inhouse_5yr_pbt_flat_inr_cr": -24.65,
+      "pec_farmout_payoff_5yr_inr_cr": 410.74,
+      "pec_advantage_5yr_inr_cr": 435.39
+    },
+    {
+      "field_name": "Borholla",
+      "pbt_fy26_inr_cr": 3.22,
+      "inhouse_5yr_pbt_flat_inr_cr": 16.1,
+      "pec_farmout_payoff_5yr_inr_cr": 422.15,
+      "pec_advantage_5yr_inr_cr": 406.05
+    },
+    {
+      "field_name": "Khoraghat",
+      "pbt_fy26_inr_cr": 14.35,
+      "inhouse_5yr_pbt_flat_inr_cr": 71.75,
+      "pec_farmout_payoff_5yr_inr_cr": null,
+      "pec_advantage_5yr_inr_cr": null
+    },
+    {
+      "field_name": "Kuthalam",
+      "pbt_fy26_inr_cr": 87.73,
+      "inhouse_5yr_pbt_flat_inr_cr": 438.65,
+      "pec_farmout_payoff_5yr_inr_cr": null,
+      "pec_advantage_5yr_inr_cr": null
+    },
+    {
+      "field_name": "Mori",
+      "pbt_fy26_inr_cr": 93.49,
+      "inhouse_5yr_pbt_flat_inr_cr": 467.45,
+      "pec_farmout_payoff_5yr_inr_cr": null,
+      "pec_advantage_5yr_inr_cr": null
+    },
+    {
+      "field_name": "Fields with a PEC estimate (total)",
+      "pbt_fy26_inr_cr": -1.71,
+      "inhouse_5yr_pbt_flat_inr_cr": -8.55,
+      "pec_farmout_payoff_5yr_inr_cr": 832.89,
+      "pec_advantage_5yr_inr_cr": 841.44
+    }
+  ]
+}

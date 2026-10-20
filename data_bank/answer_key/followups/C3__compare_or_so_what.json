@@ -1,0 +1,196 @@
+{
+  "job_id": "0c23a1ad-4097-474b-8cce-a36408726358",
+  "total_bytes_processed": 24976344,
+  "executed_at": "2026-10-20T06:29:06.586030+00:00",
+  "elapsed_seconds": 0.79,
+  "row_count": 16,
+  "columns": [
+    "short_name",
+    "hc_mar21",
+    "hc_mar26",
+    "hc_growth_pct",
+    "oil_condensate_growth_pct",
+    "gas_growth_pct",
+    "boe_growth_pct",
+    "mmboe_fy21",
+    "mmboe_fy26"
+  ],
+  "rows": [
+    {
+      "short_name": "Eastern Offshore",
+      "hc_mar21": 960,
+      "hc_mar26": 1011,
+      "hc_growth_pct": 5.3,
+      "oil_condensate_growth_pct": null,
+      "gas_growth_pct": null,
+      "boe_growth_pct": null,
+      "mmboe_fy21": 0.0,
+      "mmboe_fy26": 28.13
+    },
+    {
+      "short_name": "Bassein & Satellite",
+      "hc_mar21": 1928,
+      "hc_mar26": 1855,
+      "hc_growth_pct": -3.8,
+      "oil_condensate_growth_pct": -18.7,
+      "gas_growth_pct": -23.1,
+      "boe_growth_pct": -22.6,
+      "mmboe_fy21": 109.18,
+      "mmboe_fy26": 84.5
+    },
+    {
+      "short_name": "Mehsana Asset",
+      "hc_mar21": 1790,
+      "hc_mar26": 1559,
+      "hc_growth_pct": -12.9,
+      "oil_condensate_growth_pct": -13.0,
+      "gas_growth_pct": -31.9,
+      "boe_growth_pct": -16.7,
+      "mmboe_fy21": 11.1,
+      "mmboe_fy26": 9.24
+    },
+    {
+      "short_name": "Mumbai High",
+      "hc_mar21": 1703,
+      "hc_mar26": 1359,
+      "hc_growth_pct": -20.2,
+      "oil_condensate_growth_pct": -9.6,
+      "gas_growth_pct": -29.0,
+      "boe_growth_pct": -10.0,
+      "mmboe_fy21": 61.67,
+      "mmboe_fy26": 55.49
+    },
+    {
+      "short_name": "Ankleshwar Asset",
+      "hc_mar21": 1169,
+      "hc_mar26": 925,
+      "hc_growth_pct": -20.9,
+      "oil_condensate_growth_pct": -11.2,
+      "gas_growth_pct": -29.6,
+      "boe_growth_pct": -19.5,
+      "mmboe_fy21": 38.19,
+      "mmboe_fy26": 30.73
+    },
+    {
+      "short_name": "Rajasthan Basin",
+      "hc_mar21": 117,
+      "hc_mar26": 91,
+      "hc_growth_pct": -22.2,
+      "oil_condensate_growth_pct": -12.6,
+      "gas_growth_pct": -31.4,
+      "boe_growth_pct": -13.1,
+      "mmboe_fy21": 0.92,
+      "mmboe_fy26": 0.8
+    },
+    {
+      "short_name": "Assam Asset",
+      "hc_mar21": 2480,
+      "hc_mar26": 1822,
+      "hc_growth_pct": -26.5,
+      "oil_condensate_growth_pct": -11.9,
+      "gas_growth_pct": -30.6,
+      "boe_growth_pct": -16.3,
+      "mmboe_fy21": 16.39,
+      "mmboe_fy26": 13.73
+    },
+    {
+      "short_name": "Cauvery Asset",
+      "hc_mar21": 920,
+      "hc_mar26": 675,
+      "hc_growth_pct": -26.6,
+      "oil_condensate_growth_pct": -12.6,
+      "gas_growth_pct": -27.7,
+      "boe_growth_pct": -22.1,
+      "mmboe_fy21": 4.55,
+      "mmboe_fy26": 3.55
+    },
+    {
+      "short_name": "Tripura Asset",
+      "hc_mar21": 1156,
+      "hc_mar26": 844,
+      "hc_growth_pct": -27.0,
+      "oil_condensate_growth_pct": null,
+      "gas_growth_pct": -24.0,
+      "boe_growth_pct": -24.0,
+      "mmboe_fy21": 15.88,
+      "mmboe_fy26": 12.07
+    },
+    {
+      "short_name": "Jorhat Asset",
+      "hc_mar21": 1815,
+      "hc_mar26": 1325,
+      "hc_growth_pct": -27.0,
+      "oil_condensate_growth_pct": -15.5,
+      "gas_growth_pct": -33.7,
+      "boe_growth_pct": -15.9,
+      "mmboe_fy21": 2.11,
+      "mmboe_fy26": 1.78
+    },
+    {
+      "short_name": "CBM Bokaro",
+      "hc_mar21": 769,
+      "hc_mar26": 557,
+      "hc_growth_pct": -27.6,
+      "oil_condensate_growth_pct": null,
+      "gas_growth_pct": -22.9,
+      "boe_growth_pct": -22.9,
+      "mmboe_fy21": 9.25,
+      "mmboe_fy26": 7.13
+    },
+    {
+      "short_name": "Ahmedabad Asset",
+      "hc_mar21": 1697,
+      "hc_mar26": 1223,
+      "hc_growth_pct": -27.9,
+      "oil_condensate_growth_pct": -13.1,
+      "gas_growth_pct": -31.8,
+      "boe_growth_pct": -13.6,
+      "mmboe_fy21": 11.39,
+      "mmboe_fy26": 9.84
+    },
+    {
+      "short_name": "Neelam & Heera",
+      "hc_mar21": 2436,
+      "hc_mar26": 1728,
+      "hc_growth_pct": -29.1,
+      "oil_condensate_growth_pct": -8.8,
+      "gas_growth_pct": -20.7,
+      "boe_growth_pct": -10.6,
+      "mmboe_fy21": 29.44,
+      "mmboe_fy26": 26.32
+    },
+    {
+      "short_name": "Cambay Asset",
+      "hc_mar21": 718,
+      "hc_mar26": 508,
+      "hc_growth_pct": -29.2,
+      "oil_condensate_growth_pct": -13.0,
+      "gas_growth_pct": -28.2,
+      "boe_growth_pct": -22.0,
+      "mmboe_fy21": 7.42,
+      "mmboe_fy26": 5.79
+    },
+    {
+      "short_name": "Rajahmundry Asset",
+      "hc_mar21": 1213,
+      "hc_mar26": 845,
+      "hc_growth_pct": -30.3,
+      "oil_condensate_growth_pct": -15.5,
+      "gas_growth_pct": -28.0,
+      "boe_growth_pct": -25.5,
+      "mmboe_fy21": 10.13,
+      "mmboe_fy26": 7.55
+    },
+    {
+      "short_name": "All producing assets",
+      "hc_mar21": 20871,
+      "hc_mar26": 16327,
+      "hc_growth_pct": -21.8,
+      "oil_condensate_growth_pct": -6.3,
+      "gas_growth_pct": -12.5,
+      "boe_growth_pct": -9.5,
+      "mmboe_fy21": 327.61,
+      "mmboe_fy26": 296.64
+    }
+  ]
+}

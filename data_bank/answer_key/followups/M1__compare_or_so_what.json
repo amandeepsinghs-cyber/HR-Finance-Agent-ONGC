@@ -1,0 +1,36 @@
+{
+  "job_id": "ee04373b-3766-4cbb-9bf3-e5c2b450134c",
+  "total_bytes_processed": 24456181,
+  "executed_at": "2026-10-20T06:42:11.061608+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 2,
+  "columns": [
+    "asset_group",
+    "assets",
+    "asset_names",
+    "hc_31mar2021",
+    "hc_31mar2026",
+    "hc_30sep2026",
+    "change_mar21_to_mar26_pct"
+  ],
+  "rows": [
+    {
+      "asset_group": "Western Onshore",
+      "assets": 4,
+      "asset_names": "Cambay Asset, Mehsana Asset, Ahmedabad Asset, Ankleshwar Asset",
+      "hc_31mar2021": 5374,
+      "hc_31mar2026": 4215,
+      "hc_30sep2026": 4164,
+      "change_mar21_to_mar26_pct": -21.6
+    },
+    {
+      "asset_group": "Eastern Offshore",
+      "assets": 1,
+      "asset_names": "Eastern Offshore",
+      "hc_31mar2021": 960,
+      "hc_31mar2026": 1011,
+      "hc_30sep2026": 1003,
+      "change_mar21_to_mar26_pct": 5.3
+    }
+  ]
+}

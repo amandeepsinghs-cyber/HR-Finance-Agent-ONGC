@@ -1,0 +1,30 @@
+{
+  "job_id": "9662706a-4dc7-426f-a2b5-927e878c3f8b",
+  "total_bytes_processed": 838951,
+  "executed_at": "2026-10-20T06:38:43.694320+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 2,
+  "columns": [
+    "exit_interview_reason",
+    "voluntary_exits",
+    "mid_career_e3_e5",
+    "exits_fy26",
+    "share_pct"
+  ],
+  "rows": [
+    {
+      "exit_interview_reason": "career_progression",
+      "voluntary_exits": 357,
+      "mid_career_e3_e5": 146,
+      "exits_fy26": 142,
+      "share_pct": 90.2
+    },
+    {
+      "exit_interview_reason": "compensation_gap_private_ep",
+      "voluntary_exits": 39,
+      "mid_career_e3_e5": 29,
+      "exits_fy26": 39,
+      "share_pct": 9.8
+    }
+  ]
+}

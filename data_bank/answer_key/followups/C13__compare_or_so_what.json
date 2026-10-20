@@ -1,0 +1,49 @@
+{
+  "job_id": "a167cdea-689a-4380-9e47-7cef30bbd153",
+  "total_bytes_processed": 81474494,
+  "executed_at": "2026-10-20T06:51:37.105909+00:00",
+  "elapsed_seconds": 0.84,
+  "row_count": 3,
+  "columns": [
+    "scope",
+    "executives_before",
+    "executives_after",
+    "exec_change_pct",
+    "payroll_moved_out_cr",
+    "non_exec_per_exec_before",
+    "non_exec_per_exec_after",
+    "avg_uptime_pct_fy26"
+  ],
+  "rows": [
+    {
+      "scope": "Dehradun Tel Bhavan",
+      "executives_before": 595,
+      "executives_after": 503,
+      "exec_change_pct": -15.5,
+      "payroll_moved_out_cr": 30.54,
+      "non_exec_per_exec_before": null,
+      "non_exec_per_exec_after": null,
+      "avg_uptime_pct_fy26": null
+    },
+    {
+      "scope": "Delhi HQ",
+      "executives_before": 692,
+      "executives_after": 584,
+      "exec_change_pct": -15.6,
+      "payroll_moved_out_cr": 36.35,
+      "non_exec_per_exec_before": null,
+      "non_exec_per_exec_after": null,
+      "avg_uptime_pct_fy26": null
+    },
+    {
+      "scope": "Receiving field assets",
+      "executives_before": 7647,
+      "executives_after": 7847,
+      "exec_change_pct": 2.6,
+      "payroll_moved_out_cr": null,
+      "non_exec_per_exec_before": 0.69,
+      "non_exec_per_exec_after": 0.68,
+      "avg_uptime_pct_fy26": 97.04
+    }
+  ]
+}

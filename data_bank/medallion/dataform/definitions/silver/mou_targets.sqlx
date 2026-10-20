@@ -1,0 +1,34 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "mou_targets",
+  description: "Annual performance contract with Ministry of Petroleum & Natural Gas / DPE detailing MoU parameter targets, actuals, and scores."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_1) AS mou_record_id,
+    TRIM(col_2) AS fiscal_year,
+    TRIM(col_3) AS parameter_id,
+    TRIM(col_4) AS parameter_name,
+    TRIM(col_5) AS parameter_category,
+    TRIM(col_6) AS unit_of_measure,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_7), ''), ',', ''), '₹', '') AS NUMERIC) AS weightage,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_8), ''), ',', ''), '₹', '') AS NUMERIC) AS excellent_target,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_9), ''), ',', ''), '₹', '') AS NUMERIC) AS very_good_target,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_10), ''), ',', ''), '₹', '') AS NUMERIC) AS good_target,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_11), ''), ',', ''), '₹', '') AS NUMERIC) AS fair_target,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_12), ''), ',', ''), '₹', '') AS NUMERIC) AS poor_target,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_13), ''), ',', ''), '₹', '') AS NUMERIC) AS actual_achievement,
+    TRIM(col_14) AS achieved_rating,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_15), ''), ',', ''), '₹', '') AS NUMERIC) AS weighted_score,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_16), ''), ',', ''), '₹', '') AS NUMERIC) AS composite_score,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_17), ''), ',', ''), '₹', '') AS NUMERIC) AS projected_composite_score,
+    TRIM(col_18) AS notes_and_exceptions
+  FROM ${ref("excel_dpe_mou_scorecard")}
+  WHERE _row_number >= 7 AND _sheet_name NOT IN ('_MoU_Grading_Rules') AND col_1 IS NOT NULL AND TRIM(col_1) != '' AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Subtotal|^Total|^Summary)') AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Status:|^Note:|^Confidential)')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY mou_record_id ORDER BY _ingest_ts DESC) = 1

@@ -1,0 +1,21 @@
+{
+  "job_id": "7cf69c91-d4a1-4d1b-853b-f78e662f761b",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:54.098230+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 6.0",
+      "heading": "Mandatory North-East / Hard Station Tenure",
+      "quote_snippet": "6.3 Incentives & Allowances: Officers serving in Category 'C' North-East and hard stations are entitled to Special Hard Station Allowance (10% of BP), retention of family accommodation at the last station, additional casual leave, and subsidized travel concession (STC) per TA Regulations. (6.1) Mandatory 3-Year Hard Stint: Three years Category C hard station service required before E5 promotion. ("
+    }
+  ]
+}

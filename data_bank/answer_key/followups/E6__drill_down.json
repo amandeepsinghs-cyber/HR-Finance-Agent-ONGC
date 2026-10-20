@@ -1,0 +1,113 @@
+{
+  "job_id": "b8d930ba-b655-45f5-a3c0-b6f411ffd564",
+  "total_bytes_processed": 1848097,
+  "executed_at": "2026-10-20T06:33:11.846263+00:00",
+  "elapsed_seconds": 0.8,
+  "row_count": 12,
+  "columns": [
+    "programme_name",
+    "institute",
+    "location_city",
+    "start_date",
+    "still_open",
+    "discipline_listed"
+  ],
+  "rows": [
+    {
+      "programme_name": "Finance For Engineers Excellence - ONGC Academy Dehradun (FY27)",
+      "institute": "ONGC_Academy_Dehradun",
+      "location_city": "New Delhi",
+      "start_date": "2026-04-15",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "General Management Excellence - IOGPT Navi Mumbai (FY27)",
+      "institute": "IOGPT_Navi_Mumbai",
+      "location_city": "Dehradun",
+      "start_date": "2026-04-19",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "Hse Excellence - IOGPT Navi Mumbai (FY27)",
+      "institute": "IOGPT_Navi_Mumbai",
+      "location_city": "Dehradun",
+      "start_date": "2026-05-04",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "Leadership Excellence - ONGC Academy Dehradun (FY27)",
+      "institute": "ONGC_Academy_Dehradun",
+      "location_city": "New Delhi",
+      "start_date": "2026-05-16",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "Renewable Energy Excellence - ONGC Academy Dehradun (FY27)",
+      "institute": "ONGC_Academy_Dehradun",
+      "location_city": "New Delhi",
+      "start_date": "2026-06-03",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "General Management Excellence - ONGC Academy Dehradun (FY27)",
+      "institute": "ONGC_Academy_Dehradun",
+      "location_city": "New Delhi",
+      "start_date": "2026-06-05",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "Leadership Excellence - IOGPT Navi Mumbai (FY27)",
+      "institute": "IOGPT_Navi_Mumbai",
+      "location_city": "Dehradun",
+      "start_date": "2026-06-07",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "Renewable Energy Excellence - IOGPT Navi Mumbai (FY27)",
+      "institute": "IOGPT_Navi_Mumbai",
+      "location_city": "Dehradun",
+      "start_date": "2026-06-20",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "Hse Excellence - ONGC Academy Dehradun (FY27)",
+      "institute": "ONGC_Academy_Dehradun",
+      "location_city": "New Delhi",
+      "start_date": "2026-07-09",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "Finance For Engineers Excellence - IOGPT Navi Mumbai (FY27)",
+      "institute": "IOGPT_Navi_Mumbai",
+      "location_city": "Dehradun",
+      "start_date": "2026-08-10",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "Technical Excellence - ONGC Academy Dehradun (FY27)",
+      "institute": "ONGC_Academy_Dehradun",
+      "location_city": "New Delhi",
+      "start_date": "2026-08-14",
+      "still_open": false,
+      "discipline_listed": false
+    },
+    {
+      "programme_name": "Technical Excellence - IOGPT Navi Mumbai (FY27)",
+      "institute": "IOGPT_Navi_Mumbai",
+      "location_city": "Dehradun",
+      "start_date": "2026-09-11",
+      "still_open": false,
+      "discipline_listed": false
+    }
+  ]
+}

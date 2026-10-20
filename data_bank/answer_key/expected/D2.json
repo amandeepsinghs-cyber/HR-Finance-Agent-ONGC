@@ -1,0 +1,783 @@
+{
+  "job_id": "32566d32-7e7d-48da-8594-ea83a937fc5a",
+  "total_bytes_processed": 13607265,
+  "executed_at": "2026-10-20T06:59:12.764658+00:00",
+  "elapsed_seconds": 2.22,
+  "row_count": 128,
+  "columns": [
+    "grade_id",
+    "discipline_id",
+    "mumbai_executives_ge_3yr",
+    "due_rotation"
+  ],
+  "rows": [
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-CHM",
+      "mumbai_executives_ge_3yr": 16,
+      "due_rotation": 13
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-DRL",
+      "mumbai_executives_ge_3yr": 54,
+      "due_rotation": 29
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-ELE",
+      "mumbai_executives_ge_3yr": 23,
+      "due_rotation": 18
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-FIN",
+      "mumbai_executives_ge_3yr": 8,
+      "due_rotation": 7
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-GEO",
+      "mumbai_executives_ge_3yr": 14,
+      "due_rotation": 8
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-GPS",
+      "mumbai_executives_ge_3yr": 21,
+      "due_rotation": 11
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-HR",
+      "mumbai_executives_ge_3yr": 11,
+      "due_rotation": 9
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-HSE",
+      "mumbai_executives_ge_3yr": 11,
+      "due_rotation": 9
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-INS",
+      "mumbai_executives_ge_3yr": 20,
+      "due_rotation": 15
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-IT",
+      "mumbai_executives_ge_3yr": 2,
+      "due_rotation": 2
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-LEG",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-MEC",
+      "mumbai_executives_ge_3yr": 38,
+      "due_rotation": 33
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-MED",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-MM",
+      "mumbai_executives_ge_3yr": 5,
+      "due_rotation": 4
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-PRD",
+      "mumbai_executives_ge_3yr": 72,
+      "due_rotation": 54
+    },
+    {
+      "grade_id": "E1",
+      "discipline_id": "DISC-RES",
+      "mumbai_executives_ge_3yr": 25,
+      "due_rotation": 17
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-CHM",
+      "mumbai_executives_ge_3yr": 16,
+      "due_rotation": 11
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-DRL",
+      "mumbai_executives_ge_3yr": 97,
+      "due_rotation": 52
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-ELE",
+      "mumbai_executives_ge_3yr": 41,
+      "due_rotation": 32
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-FIN",
+      "mumbai_executives_ge_3yr": 23,
+      "due_rotation": 17
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-GEO",
+      "mumbai_executives_ge_3yr": 25,
+      "due_rotation": 15
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-GPS",
+      "mumbai_executives_ge_3yr": 35,
+      "due_rotation": 23
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-HR",
+      "mumbai_executives_ge_3yr": 9,
+      "due_rotation": 6
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-HSE",
+      "mumbai_executives_ge_3yr": 19,
+      "due_rotation": 16
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-INS",
+      "mumbai_executives_ge_3yr": 27,
+      "due_rotation": 21
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-IT",
+      "mumbai_executives_ge_3yr": 6,
+      "due_rotation": 6
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-LEG",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 0
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-MEC",
+      "mumbai_executives_ge_3yr": 50,
+      "due_rotation": 40
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-MED",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-MM",
+      "mumbai_executives_ge_3yr": 23,
+      "due_rotation": 19
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-PRD",
+      "mumbai_executives_ge_3yr": 122,
+      "due_rotation": 79
+    },
+    {
+      "grade_id": "E2",
+      "discipline_id": "DISC-RES",
+      "mumbai_executives_ge_3yr": 50,
+      "due_rotation": 32
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-CHM",
+      "mumbai_executives_ge_3yr": 29,
+      "due_rotation": 27
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-DRL",
+      "mumbai_executives_ge_3yr": 115,
+      "due_rotation": 72
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-ELE",
+      "mumbai_executives_ge_3yr": 48,
+      "due_rotation": 39
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-FIN",
+      "mumbai_executives_ge_3yr": 21,
+      "due_rotation": 18
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-GEO",
+      "mumbai_executives_ge_3yr": 49,
+      "due_rotation": 34
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-GPS",
+      "mumbai_executives_ge_3yr": 39,
+      "due_rotation": 24
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-HR",
+      "mumbai_executives_ge_3yr": 18,
+      "due_rotation": 16
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-HSE",
+      "mumbai_executives_ge_3yr": 14,
+      "due_rotation": 9
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-INS",
+      "mumbai_executives_ge_3yr": 31,
+      "due_rotation": 28
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-IT",
+      "mumbai_executives_ge_3yr": 11,
+      "due_rotation": 10
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-LEG",
+      "mumbai_executives_ge_3yr": 5,
+      "due_rotation": 5
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-MEC",
+      "mumbai_executives_ge_3yr": 83,
+      "due_rotation": 68
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-MED",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-MM",
+      "mumbai_executives_ge_3yr": 27,
+      "due_rotation": 21
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-PRD",
+      "mumbai_executives_ge_3yr": 155,
+      "due_rotation": 102
+    },
+    {
+      "grade_id": "E3",
+      "discipline_id": "DISC-RES",
+      "mumbai_executives_ge_3yr": 48,
+      "due_rotation": 30
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-CHM",
+      "mumbai_executives_ge_3yr": 25,
+      "due_rotation": 20
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-DRL",
+      "mumbai_executives_ge_3yr": 106,
+      "due_rotation": 64
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-ELE",
+      "mumbai_executives_ge_3yr": 42,
+      "due_rotation": 35
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-FIN",
+      "mumbai_executives_ge_3yr": 31,
+      "due_rotation": 27
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-GEO",
+      "mumbai_executives_ge_3yr": 46,
+      "due_rotation": 27
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-GPS",
+      "mumbai_executives_ge_3yr": 40,
+      "due_rotation": 24
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-HR",
+      "mumbai_executives_ge_3yr": 20,
+      "due_rotation": 18
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-HSE",
+      "mumbai_executives_ge_3yr": 27,
+      "due_rotation": 23
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-INS",
+      "mumbai_executives_ge_3yr": 34,
+      "due_rotation": 28
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-IT",
+      "mumbai_executives_ge_3yr": 5,
+      "due_rotation": 4
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-LEG",
+      "mumbai_executives_ge_3yr": 4,
+      "due_rotation": 3
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-MEC",
+      "mumbai_executives_ge_3yr": 68,
+      "due_rotation": 59
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-MED",
+      "mumbai_executives_ge_3yr": 3,
+      "due_rotation": 3
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-MM",
+      "mumbai_executives_ge_3yr": 17,
+      "due_rotation": 15
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-PRD",
+      "mumbai_executives_ge_3yr": 150,
+      "due_rotation": 90
+    },
+    {
+      "grade_id": "E4",
+      "discipline_id": "DISC-RES",
+      "mumbai_executives_ge_3yr": 53,
+      "due_rotation": 34
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-CHM",
+      "mumbai_executives_ge_3yr": 15,
+      "due_rotation": 14
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-DRL",
+      "mumbai_executives_ge_3yr": 86,
+      "due_rotation": 52
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-ELE",
+      "mumbai_executives_ge_3yr": 33,
+      "due_rotation": 26
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-FIN",
+      "mumbai_executives_ge_3yr": 15,
+      "due_rotation": 13
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-GEO",
+      "mumbai_executives_ge_3yr": 33,
+      "due_rotation": 22
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-GPS",
+      "mumbai_executives_ge_3yr": 33,
+      "due_rotation": 24
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-HR",
+      "mumbai_executives_ge_3yr": 16,
+      "due_rotation": 13
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-HSE",
+      "mumbai_executives_ge_3yr": 16,
+      "due_rotation": 12
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-INS",
+      "mumbai_executives_ge_3yr": 34,
+      "due_rotation": 24
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-IT",
+      "mumbai_executives_ge_3yr": 11,
+      "due_rotation": 11
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-LEG",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-MEC",
+      "mumbai_executives_ge_3yr": 52,
+      "due_rotation": 48
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-MED",
+      "mumbai_executives_ge_3yr": 2,
+      "due_rotation": 2
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-MM",
+      "mumbai_executives_ge_3yr": 19,
+      "due_rotation": 16
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-PRD",
+      "mumbai_executives_ge_3yr": 124,
+      "due_rotation": 68
+    },
+    {
+      "grade_id": "E5",
+      "discipline_id": "DISC-RES",
+      "mumbai_executives_ge_3yr": 31,
+      "due_rotation": 23
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-CHM",
+      "mumbai_executives_ge_3yr": 6,
+      "due_rotation": 5
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-DRL",
+      "mumbai_executives_ge_3yr": 43,
+      "due_rotation": 22
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-ELE",
+      "mumbai_executives_ge_3yr": 23,
+      "due_rotation": 17
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-FIN",
+      "mumbai_executives_ge_3yr": 6,
+      "due_rotation": 6
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-GEO",
+      "mumbai_executives_ge_3yr": 24,
+      "due_rotation": 16
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-GPS",
+      "mumbai_executives_ge_3yr": 16,
+      "due_rotation": 10
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-HR",
+      "mumbai_executives_ge_3yr": 8,
+      "due_rotation": 6
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-HSE",
+      "mumbai_executives_ge_3yr": 9,
+      "due_rotation": 9
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-INS",
+      "mumbai_executives_ge_3yr": 8,
+      "due_rotation": 7
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-IT",
+      "mumbai_executives_ge_3yr": 5,
+      "due_rotation": 5
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-LEG",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-MEC",
+      "mumbai_executives_ge_3yr": 24,
+      "due_rotation": 20
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-MM",
+      "mumbai_executives_ge_3yr": 8,
+      "due_rotation": 7
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-PRD",
+      "mumbai_executives_ge_3yr": 67,
+      "due_rotation": 36
+    },
+    {
+      "grade_id": "E6",
+      "discipline_id": "DISC-RES",
+      "mumbai_executives_ge_3yr": 26,
+      "due_rotation": 16
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-CHM",
+      "mumbai_executives_ge_3yr": 4,
+      "due_rotation": 4
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-DRL",
+      "mumbai_executives_ge_3yr": 37,
+      "due_rotation": 31
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-ELE",
+      "mumbai_executives_ge_3yr": 10,
+      "due_rotation": 9
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-FIN",
+      "mumbai_executives_ge_3yr": 7,
+      "due_rotation": 7
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-GEO",
+      "mumbai_executives_ge_3yr": 20,
+      "due_rotation": 14
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-GPS",
+      "mumbai_executives_ge_3yr": 12,
+      "due_rotation": 11
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-HR",
+      "mumbai_executives_ge_3yr": 9,
+      "due_rotation": 8
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-HSE",
+      "mumbai_executives_ge_3yr": 9,
+      "due_rotation": 7
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-INS",
+      "mumbai_executives_ge_3yr": 14,
+      "due_rotation": 11
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-LEG",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-MEC",
+      "mumbai_executives_ge_3yr": 18,
+      "due_rotation": 12
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-MM",
+      "mumbai_executives_ge_3yr": 7,
+      "due_rotation": 6
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-PRD",
+      "mumbai_executives_ge_3yr": 50,
+      "due_rotation": 43
+    },
+    {
+      "grade_id": "E7",
+      "discipline_id": "DISC-RES",
+      "mumbai_executives_ge_3yr": 16,
+      "due_rotation": 13
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-DRL",
+      "mumbai_executives_ge_3yr": 18,
+      "due_rotation": 17
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-ELE",
+      "mumbai_executives_ge_3yr": 7,
+      "due_rotation": 5
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-FIN",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-GEO",
+      "mumbai_executives_ge_3yr": 4,
+      "due_rotation": 4
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-GPS",
+      "mumbai_executives_ge_3yr": 3,
+      "due_rotation": 3
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-HR",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 0
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-HSE",
+      "mumbai_executives_ge_3yr": 4,
+      "due_rotation": 3
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-INS",
+      "mumbai_executives_ge_3yr": 2,
+      "due_rotation": 2
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-IT",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-MEC",
+      "mumbai_executives_ge_3yr": 6,
+      "due_rotation": 5
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-MM",
+      "mumbai_executives_ge_3yr": 5,
+      "due_rotation": 5
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-PRD",
+      "mumbai_executives_ge_3yr": 15,
+      "due_rotation": 12
+    },
+    {
+      "grade_id": "E8",
+      "discipline_id": "DISC-RES",
+      "mumbai_executives_ge_3yr": 5,
+      "due_rotation": 4
+    },
+    {
+      "grade_id": "E9",
+      "discipline_id": "DISC-DRL",
+      "mumbai_executives_ge_3yr": 3,
+      "due_rotation": 2
+    },
+    {
+      "grade_id": "E9",
+      "discipline_id": "DISC-ELE",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 0
+    },
+    {
+      "grade_id": "E9",
+      "discipline_id": "DISC-GEO",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E9",
+      "discipline_id": "DISC-INS",
+      "mumbai_executives_ge_3yr": 1,
+      "due_rotation": 1
+    },
+    {
+      "grade_id": "E9",
+      "discipline_id": "DISC-MEC",
+      "mumbai_executives_ge_3yr": 2,
+      "due_rotation": 2
+    },
+    {
+      "grade_id": "E9",
+      "discipline_id": "DISC-PRD",
+      "mumbai_executives_ge_3yr": 3,
+      "due_rotation": 2
+    }
+  ]
+}

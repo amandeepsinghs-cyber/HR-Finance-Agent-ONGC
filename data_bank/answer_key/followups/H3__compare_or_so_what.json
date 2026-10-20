@@ -1,0 +1,44 @@
+{
+  "job_id": "0122751c-e650-4d1c-b293-817515aa75f1",
+  "total_bytes_processed": 555185,
+  "executed_at": "2026-10-20T06:38:41.680168+00:00",
+  "elapsed_seconds": 0.75,
+  "row_count": 4,
+  "columns": [
+    "work_centre",
+    "exec_sanctioned",
+    "exec_in_position",
+    "exec_vacancies",
+    "exec_vacancy_rate_pct"
+  ],
+  "rows": [
+    {
+      "work_centre": "Mehsana Asset",
+      "exec_sanctioned": 1013,
+      "exec_in_position": 922,
+      "exec_vacancies": 91,
+      "exec_vacancy_rate_pct": 9.0
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "exec_sanctioned": 787,
+      "exec_in_position": 726,
+      "exec_vacancies": 61,
+      "exec_vacancy_rate_pct": 7.8
+    },
+    {
+      "work_centre": "All work centres",
+      "exec_sanctioned": 14941,
+      "exec_in_position": 13778,
+      "exec_vacancies": 1163,
+      "exec_vacancy_rate_pct": 7.8
+    },
+    {
+      "work_centre": "Assam Asset",
+      "exec_sanctioned": 692,
+      "exec_in_position": 692,
+      "exec_vacancies": 0,
+      "exec_vacancy_rate_pct": 0.0
+    }
+  ]
+}

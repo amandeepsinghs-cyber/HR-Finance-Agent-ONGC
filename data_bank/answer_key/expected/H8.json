@@ -1,0 +1,179 @@
+{
+  "job_id": "d611096f-5405-4bb7-96bd-6304a2146ecc",
+  "total_bytes_processed": 4215533,
+  "executed_at": "2026-10-20T06:38:53.195504+00:00",
+  "elapsed_seconds": 0.69,
+  "row_count": 16,
+  "columns": [
+    "discipline",
+    "executives",
+    "trained_executives",
+    "total_hours",
+    "hours_per_executive",
+    "hours_per_trained_executive",
+    "company_hours_per_executive",
+    "below_company_average"
+  ],
+  "rows": [
+    {
+      "discipline": "Materials Management (MM)",
+      "executives": 683,
+      "trained_executives": 415,
+      "total_hours": 9328.6,
+      "hours_per_executive": 13.7,
+      "hours_per_trained_executive": 22.5,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": true
+    },
+    {
+      "discipline": "Mechanical",
+      "executives": 1141,
+      "trained_executives": 691,
+      "total_hours": 15761.5,
+      "hours_per_executive": 13.8,
+      "hours_per_trained_executive": 22.8,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": true
+    },
+    {
+      "discipline": "Geology",
+      "executives": 890,
+      "trained_executives": 554,
+      "total_hours": 12368.2,
+      "hours_per_executive": 13.9,
+      "hours_per_trained_executive": 22.3,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": true
+    },
+    {
+      "discipline": "Electrical",
+      "executives": 828,
+      "trained_executives": 510,
+      "total_hours": 11498.5,
+      "hours_per_executive": 13.9,
+      "hours_per_trained_executive": 22.5,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": true
+    },
+    {
+      "discipline": "Finance & Accounts (F&A)",
+      "executives": 774,
+      "trained_executives": 486,
+      "total_hours": 10742.1,
+      "hours_per_executive": 13.9,
+      "hours_per_trained_executive": 22.1,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": true
+    },
+    {
+      "discipline": "Drilling",
+      "executives": 1977,
+      "trained_executives": 1241,
+      "total_hours": 28024.4,
+      "hours_per_executive": 14.2,
+      "hours_per_trained_executive": 22.6,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": true
+    },
+    {
+      "discipline": "Geophysics (Surface)",
+      "executives": 771,
+      "trained_executives": 494,
+      "total_hours": 10926.1,
+      "hours_per_executive": 14.2,
+      "hours_per_trained_executive": 22.1,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": true
+    },
+    {
+      "discipline": "Environment & Safety (HSE)",
+      "executives": 409,
+      "trained_executives": 255,
+      "total_hours": 5814.9,
+      "hours_per_executive": 14.2,
+      "hours_per_trained_executive": 22.8,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": true
+    },
+    {
+      "discipline": "Chemistry",
+      "executives": 455,
+      "trained_executives": 277,
+      "total_hours": 6491.8,
+      "hours_per_executive": 14.3,
+      "hours_per_trained_executive": 23.4,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": false
+    },
+    {
+      "discipline": "Reservoir",
+      "executives": 1048,
+      "trained_executives": 677,
+      "total_hours": 15102.7,
+      "hours_per_executive": 14.4,
+      "hours_per_trained_executive": 22.3,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": false
+    },
+    {
+      "discipline": "Information Technology",
+      "executives": 420,
+      "trained_executives": 269,
+      "total_hours": 6058.4,
+      "hours_per_executive": 14.4,
+      "hours_per_trained_executive": 22.5,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": false
+    },
+    {
+      "discipline": "Production",
+      "executives": 3047,
+      "trained_executives": 1940,
+      "total_hours": 44429.5,
+      "hours_per_executive": 14.6,
+      "hours_per_trained_executive": 22.9,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": false
+    },
+    {
+      "discipline": "Legal",
+      "executives": 167,
+      "trained_executives": 106,
+      "total_hours": 2433.7,
+      "hours_per_executive": 14.6,
+      "hours_per_trained_executive": 23.0,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": false
+    },
+    {
+      "discipline": "Medical Services",
+      "executives": 104,
+      "trained_executives": 67,
+      "total_hours": 1519.6,
+      "hours_per_executive": 14.6,
+      "hours_per_trained_executive": 22.7,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": false
+    },
+    {
+      "discipline": "Instrumentation",
+      "executives": 568,
+      "trained_executives": 375,
+      "total_hours": 8479.5,
+      "hours_per_executive": 14.9,
+      "hours_per_trained_executive": 22.6,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": false
+    },
+    {
+      "discipline": "Human Resources (HR)",
+      "executives": 596,
+      "trained_executives": 388,
+      "total_hours": 8920.8,
+      "hours_per_executive": 15.0,
+      "hours_per_trained_executive": 23.0,
+      "company_hours_per_executive": 14.3,
+      "below_company_average": false
+    }
+  ]
+}

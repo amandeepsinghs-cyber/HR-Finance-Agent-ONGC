@@ -1,0 +1,65 @@
+{
+  "job_id": "706a5059-e57f-438f-8085-46f64518768a",
+  "total_bytes_processed": 279032,
+  "executed_at": "2026-10-20T06:42:20.364863+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 7,
+  "columns": [
+    "user_department",
+    "resource_data_classification",
+    "requested_resource",
+    "denial_count",
+    "distinct_users"
+  ],
+  "rows": [
+    {
+      "user_department": "HR",
+      "resource_data_classification": "confidential_transfer_draft",
+      "requested_resource": "draft_transfer_list",
+      "denial_count": 4,
+      "distinct_users": 4
+    },
+    {
+      "user_department": "Governance",
+      "resource_data_classification": "confidential_vigilance",
+      "requested_resource": "vigilance_inquiry",
+      "denial_count": 3,
+      "distinct_users": 3
+    },
+    {
+      "user_department": "HR",
+      "resource_data_classification": "confidential_dpc",
+      "requested_resource": "dpc_proceedings",
+      "denial_count": 3,
+      "distinct_users": 3
+    },
+    {
+      "user_department": "HR",
+      "resource_data_classification": "confidential_salary",
+      "requested_resource": "individual_salary_record",
+      "denial_count": 2,
+      "distinct_users": 2
+    },
+    {
+      "user_department": "Finance",
+      "resource_data_classification": "confidential_field_pnl",
+      "requested_resource": "field_pnl_summary",
+      "denial_count": 1,
+      "distinct_users": 1
+    },
+    {
+      "user_department": "Finance",
+      "resource_data_classification": "confidential_salary",
+      "requested_resource": "individual_salary_record",
+      "denial_count": 1,
+      "distinct_users": 1
+    },
+    {
+      "user_department": "HR",
+      "resource_data_classification": "confidential_field_pnl",
+      "requested_resource": "field_pnl_summary",
+      "denial_count": 1,
+      "distinct_users": 1
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "job_id": "0a135c2e-bbc4-443b-9886-b1ed83bbe594",
+  "total_bytes_processed": 10938861,
+  "executed_at": "2026-10-20T06:26:56.983515+00:00",
+  "elapsed_seconds": 0.76,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "executives_posted_into_ne",
+    "executives_posted_out_of_ne",
+    "net_flow_into_ne",
+    "cumulative_net_flow",
+    "ne_exec_sanctioned_fy26",
+    "ne_exec_in_position_fy26",
+    "ne_exec_vacancy_fy26"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "executives_posted_into_ne": 110,
+      "executives_posted_out_of_ne": 182,
+      "net_flow_into_ne": -72,
+      "cumulative_net_flow": -72,
+      "ne_exec_sanctioned_fy26": 1921,
+      "ne_exec_in_position_fy26": 1859,
+      "ne_exec_vacancy_fy26": 62
+    },
+    {
+      "fiscal_year": "FY23",
+      "executives_posted_into_ne": 94,
+      "executives_posted_out_of_ne": 178,
+      "net_flow_into_ne": -84,
+      "cumulative_net_flow": -156,
+      "ne_exec_sanctioned_fy26": 1921,
+      "ne_exec_in_position_fy26": 1859,
+      "ne_exec_vacancy_fy26": 62
+    },
+    {
+      "fiscal_year": "FY24",
+      "executives_posted_into_ne": 79,
+      "executives_posted_out_of_ne": 161,
+      "net_flow_into_ne": -82,
+      "cumulative_net_flow": -238,
+      "ne_exec_sanctioned_fy26": 1921,
+      "ne_exec_in_position_fy26": 1859,
+      "ne_exec_vacancy_fy26": 62
+    },
+    {
+      "fiscal_year": "FY25",
+      "executives_posted_into_ne": 86,
+      "executives_posted_out_of_ne": 146,
+      "net_flow_into_ne": -60,
+      "cumulative_net_flow": -298,
+      "ne_exec_sanctioned_fy26": 1921,
+      "ne_exec_in_position_fy26": 1859,
+      "ne_exec_vacancy_fy26": 62
+    },
+    {
+      "fiscal_year": "FY26",
+      "executives_posted_into_ne": 89,
+      "executives_posted_out_of_ne": 164,
+      "net_flow_into_ne": -75,
+      "cumulative_net_flow": -373,
+      "ne_exec_sanctioned_fy26": 1921,
+      "ne_exec_in_position_fy26": 1859,
+      "ne_exec_vacancy_fy26": 62
+    }
+  ]
+}

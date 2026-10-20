@@ -1,0 +1,37 @@
+{
+  "job_id": "beca1ff2-fd42-47ce-8ee5-e197a60b8d75",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:12.796644+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 7.0",
+      "heading": "Pre-Retirement Tenure Exemption",
+      "provision": "JRTP 7.1",
+      "quote_snippet": "7.1 Superannuation Settlement Protection: Executives who are within 2 (two) years of superannuation (age 58 years and above) shall be strictly exempt from mandatory outstation transfers. In organizational practice and annual transfer planning, executives with 3 years or less remaining until superannuation (age 57 years and above) shall ordinarily not be transferred out of their current station, to enable smooth superannuation transition, pension settlement, family stabilization, and medical management."
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 4.0",
+      "heading": "Cumulative Stay Cap",
+      "provision": "JRTP 4.4(a)",
+      "quote_snippet": "4.4 Retention Exceptions: Retention beyond the 10-year cumulative cap can only be granted under exceptional circumstances: (a) impending superannuation within 2 to 3 years; (b) certified severe medical conditions approved by the Special Review Board; or (c) explicit CMD approval for vital national hydrocarbon projects."
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 13.0",
+      "heading": "Transfer Grievance Redressal Mechanism",
+      "provision": "JRTP 13.2(d)",
+      "quote_snippet": "13.2 Grounds for Representation: Representations shall be entertained strictly on specified grounds: (a) genuine medical emergency certified by Medical Board; (b) child appearing in Class X or XII Board examination in the current academic year; (c) spouse working in central/state government or CPSE at the current station (DOPT guidelines); or (d) superannuation within 2\u20133 years."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+# Semantic audit 2026-10-20 — slice H data defects (reported, not fixed)
+- table: hrfin_silver.posting_history
+  issue: "exemption_tag holds the literal string 'None' instead of NULL for non-exempt postings (exemption_reason_code is correctly NULL)."
+  evidence: "Current postings: 22,764 rows with exemption_tag='None' vs 34 'Impending_Retirement'. Any `IS NOT NULL` test treats everyone as exempt (old H1__why returned 20,387 'exempt')."
+  impact_on_ids: [H1, H1__why, H10, H10__drill_down, H10__compare_or_so_what]
+- table: hrfin_silver.posting_history
+  issue: "Implausible concentration of current-station start dates on 2020-07-01."
+  evidence: "9,236 of 13,453 active executives' continuous current-station stay began 2020-07-01 (next largest date: 820); hrfin_gold.v_continuous_stay inherits it. Drives 86% of executives being >3 yrs at station (JRTP 3.4 says median stint is 3.0–3.5 yrs) and 7,720 of the 8,457 executives due under the >=5y rule (H10). Posting history looks left-censored/defaulted at 2020-07-01."
+  impact_on_ids: [H1, H1__drill_down, H1__why, H1__compare_or_so_what, H10, H10__drill_down, H10__compare_or_so_what, C1, X10]
+- table: hrfin_silver.dpc_cases
+  issue: "delay_months is stale relative to due_date and the 2026-10-19 as-of date."
+  evidence: "All 228 delayed cases are due 2025-06-30 or 2025-07-31 (15–16 months overdue on 2026-10-19) but delay_months is 7–10. One duplicate dpc_id in the delayed set (n=13, distinct=12)."
+  impact_on_ids: [H5, H5__drill_down, H5__why, H5__compare_or_so_what]
+- table: hrfin_silver.grievances_litigation
+  issue: "Filing dates after the as-of date; no disposal date; forum and case_type contradict."
+  evidence: "11 open cases filed after 2026-10-19 (max 2026-12-28, negative age_days). Closed cases' age_days = days since filing (no disposal_date column). case_type 'grievance_internal' appears at Supreme_Court/High_Court/CAT forums and 'special_leave_supreme_court' at internal_grievance_cell."
+  impact_on_ids: [H9, H9__drill_down, H9__compare_or_so_what]
+- table: hrfin_silver.separations
+  issue: "FY25 voluntary exits implausibly low versus adjacent years; E4+ grades have zero resignations before FY26."
+  evidence: "Resignations FY23 48, FY24 204, FY25 11, FY26 181; E4–E9 voluntary exits FY24 = FY25 = 0."
+  impact_on_ids: [H4, H4__drill_down, H4__why, H4__compare_or_so_what]
+- table: hrfin_silver.training_records vs hrfin_silver.mou_targets
+  issue: "MoU reported training person-days cannot be reconciled to training records."
+  evidence: "FY26 MoU actual_achievement 58,200 person-days vs SUM(training_days) 42,573; FY25 62,500 vs 49,671. Training programme hours/days are near-uniform (13.2/19.7/26.3/32.9 h buckets), one record per employee per FY."
+  impact_on_ids: [H8, H8__compare_or_so_what]
+- table: hrfin_silver.employee_master
+  issue: "Women concentrated implausibly in Ahmedabad Asset."
+  evidence: "418 of 1,199 active Ahmedabad Asset employees are female (34.9%) = 23% of all 1,848 active women; next highest asset is ~10%."
+  impact_on_ids: [H7]
+- table: hrfin_silver.sanctioned_posts / dim_discipline
+  issue: "Marine / Naval Architecture discipline exists in dim_discipline but has no sanctioned posts; only FY26 roster exists."
+  evidence: "sanctioned_posts covers 17 disciplines, FY26 only; no Marine rows."
+  impact_on_ids: [H6__why]
+- table: hrfin_docs.silver_chunks
+  issue: "No policy text on (a) offshore accommodation/facilities for women, (b) a general employee grievance-redressal charter (60-day), (c) an approved annual transfer budget."
+  evidence: "Regex searches over silver_chunks for women+offshore/accommodation, grievance redressal, 'transfer budget' return only P1-03 medical-exam passages and JRTP 13.0 (transfer grievances); DOC-TMPL-AGT-PROPOSAL is an empty template."
+  impact_on_ids: [H7__why, H9__why, H9__compare_or_so_what, H10__compare_or_so_what]
+- table: hrfin_silver.posting_history vs employee_master.retirement_date
+  issue: "EX-RET3Y (Impending_Retirement) exemption tagged on an executive whose retirement is more than 3 years away."
+  evidence: "EMP-100697 (E2, WC-DEL, 75-month stay) exemption valid to 2029-10-31 = retirement date, 1,108 days after 2026-10-19 (> 3*365.25). Causes C1 (402 due) vs H10/X10 rule (401 due) difference at WC-DEL."
+  impact_on_ids: [H10, C1, X10]

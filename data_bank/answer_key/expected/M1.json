@@ -1,0 +1,159 @@
+{
+  "job_id": "4e33f49a-5161-4641-9c39-a8c2296f856a",
+  "total_bytes_processed": 24456181,
+  "executed_at": "2026-10-20T06:42:09.081353+00:00",
+  "elapsed_seconds": 1.38,
+  "row_count": 14,
+  "columns": [
+    "wc_id",
+    "asset",
+    "sector",
+    "onshore_offshore",
+    "headcount_30sep2026",
+    "headcount_31mar2026",
+    "pct_of_company",
+    "company_hc_sep26"
+  ],
+  "rows": [
+    {
+      "wc_id": "WC-BAS",
+      "asset": "Bassein & Satellite",
+      "sector": "Western",
+      "onshore_offshore": "offshore",
+      "headcount_30sep2026": 1833,
+      "headcount_31mar2026": 1855,
+      "pct_of_company": 8.0,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-ASM",
+      "asset": "Assam Asset",
+      "sector": "NE",
+      "onshore_offshore": "onshore",
+      "headcount_30sep2026": 1823,
+      "headcount_31mar2026": 1822,
+      "pct_of_company": 8.0,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-NEH",
+      "asset": "Neelam & Heera",
+      "sector": "Western",
+      "onshore_offshore": "offshore",
+      "headcount_30sep2026": 1705,
+      "headcount_31mar2026": 1728,
+      "pct_of_company": 7.5,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-MEH",
+      "asset": "Mehsana Asset",
+      "sector": "Western",
+      "onshore_offshore": "onshore",
+      "headcount_30sep2026": 1537,
+      "headcount_31mar2026": 1559,
+      "pct_of_company": 6.7,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-MUM",
+      "asset": "Mumbai High",
+      "sector": "Western",
+      "onshore_offshore": "offshore",
+      "headcount_30sep2026": 1349,
+      "headcount_31mar2026": 1359,
+      "pct_of_company": 5.9,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-JOR",
+      "asset": "Jorhat Asset",
+      "sector": "NE",
+      "onshore_offshore": "onshore",
+      "headcount_30sep2026": 1320,
+      "headcount_31mar2026": 1325,
+      "pct_of_company": 5.8,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-AHM",
+      "asset": "Ahmedabad Asset",
+      "sector": "Western",
+      "onshore_offshore": "onshore",
+      "headcount_30sep2026": 1199,
+      "headcount_31mar2026": 1223,
+      "pct_of_company": 5.3,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-EAS",
+      "asset": "Eastern Offshore",
+      "sector": "Eastern",
+      "onshore_offshore": "offshore",
+      "headcount_30sep2026": 1003,
+      "headcount_31mar2026": 1011,
+      "pct_of_company": 4.4,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-ANK",
+      "asset": "Ankleshwar Asset",
+      "sector": "Western",
+      "onshore_offshore": "onshore",
+      "headcount_30sep2026": 919,
+      "headcount_31mar2026": 925,
+      "pct_of_company": 4.0,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-RAJ",
+      "asset": "Rajahmundry Asset",
+      "sector": "Southern",
+      "onshore_offshore": "onshore",
+      "headcount_30sep2026": 843,
+      "headcount_31mar2026": 845,
+      "pct_of_company": 3.7,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-TRI",
+      "asset": "Tripura Asset",
+      "sector": "NE",
+      "onshore_offshore": "onshore",
+      "headcount_30sep2026": 838,
+      "headcount_31mar2026": 844,
+      "pct_of_company": 3.7,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-CAU",
+      "asset": "Cauvery Asset",
+      "sector": "Southern",
+      "onshore_offshore": "onshore",
+      "headcount_30sep2026": 671,
+      "headcount_31mar2026": 675,
+      "pct_of_company": 2.9,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-BOK",
+      "asset": "CBM Bokaro",
+      "sector": "Eastern",
+      "onshore_offshore": "onshore",
+      "headcount_30sep2026": 550,
+      "headcount_31mar2026": 557,
+      "pct_of_company": 2.4,
+      "company_hc_sep26": 22803
+    },
+    {
+      "wc_id": "WC-CAM",
+      "asset": "Cambay Asset",
+      "sector": "Western",
+      "onshore_offshore": "onshore",
+      "headcount_30sep2026": 509,
+      "headcount_31mar2026": 508,
+      "pct_of_company": 2.2,
+      "company_hc_sep26": 22803
+    }
+  ]
+}

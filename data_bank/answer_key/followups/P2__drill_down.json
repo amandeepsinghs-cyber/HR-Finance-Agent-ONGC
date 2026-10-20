@@ -1,0 +1,161 @@
+{
+  "job_id": "f83bb814-74d5-4f40-9088-66cf8226d003",
+  "total_bytes_processed": 3141,
+  "executed_at": "2026-10-20T06:33:10.126318+00:00",
+  "elapsed_seconds": 0.71,
+  "row_count": 18,
+  "columns": [
+    "city",
+    "wc_id",
+    "short_name",
+    "cluster_id",
+    "cluster_name",
+    "hard_station_cat"
+  ],
+  "rows": [
+    {
+      "city": "Dehradun",
+      "wc_id": "WC-ACA",
+      "short_name": "ONGC Academy",
+      "cluster_id": "CL-DDN",
+      "cluster_name": "Dehradun Complex",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "Dehradun",
+      "wc_id": "WC-DDN",
+      "short_name": "Dehradun Tel Bhavan",
+      "cluster_id": "CL-DDN",
+      "cluster_name": "Dehradun Complex",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "Dehradun",
+      "wc_id": "WC-FRB",
+      "short_name": "Frontier Basin",
+      "cluster_id": "CL-DDN",
+      "cluster_name": "Dehradun Complex",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "Dehradun",
+      "wc_id": "WC-GEO",
+      "short_name": "GEOPIC",
+      "cluster_id": "CL-DDN",
+      "cluster_name": "Dehradun Complex",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "Dehradun",
+      "wc_id": "WC-IDW",
+      "short_name": "IDWE",
+      "cluster_id": "CL-DDN",
+      "cluster_name": "Dehradun Complex",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "Dehradun",
+      "wc_id": "WC-KDM",
+      "short_name": "KDMIPE",
+      "cluster_id": "CL-DDN",
+      "cluster_name": "Dehradun Complex",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "New Delhi",
+      "wc_id": "WC-DEL",
+      "short_name": "Delhi HQ",
+      "cluster_id": "CL-DEL",
+      "cluster_name": "Delhi National Capital Region",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "Mumbai",
+      "wc_id": "WC-BAS",
+      "short_name": "Bassein & Satellite",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "C"
+    },
+    {
+      "city": "Mumbai",
+      "wc_id": "WC-DRL",
+      "short_name": "Drilling Services",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "B"
+    },
+    {
+      "city": "Mumbai",
+      "wc_id": "WC-LOG",
+      "short_name": "Offshore Logistics",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "B"
+    },
+    {
+      "city": "Mumbai",
+      "wc_id": "WC-MUM",
+      "short_name": "Mumbai High",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "C"
+    },
+    {
+      "city": "Mumbai",
+      "wc_id": "WC-NEH",
+      "short_name": "Neelam & Heera",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "C"
+    },
+    {
+      "city": "Mumbai",
+      "wc_id": "WC-ROM",
+      "short_name": "RO Mumbai",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "Mumbai",
+      "wc_id": "WC-WOB",
+      "short_name": "Western Offshore Basin",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "Panvel",
+      "wc_id": "WC-IEO",
+      "short_name": "IEOT",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "Panvel",
+      "wc_id": "WC-IOG",
+      "short_name": "IOGPT",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "A"
+    },
+    {
+      "city": "Panvel",
+      "wc_id": "WC-WEL",
+      "short_name": "Well Services",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "B"
+    },
+    {
+      "city": "Uran",
+      "wc_id": "WC-URN",
+      "short_name": "Uran Plant",
+      "cluster_id": "CL-MUM",
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "hard_station_cat": "B"
+    }
+  ]
+}

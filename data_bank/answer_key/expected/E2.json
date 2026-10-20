@@ -1,0 +1,37 @@
+{
+  "job_id": "a7c4e599-a98c-4455-8051-b3daaeb5e5e2",
+  "total_bytes_processed": 7801438,
+  "executed_at": "2026-10-20T06:32:45.203001+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 1,
+  "columns": [
+    "emp_id",
+    "wc_id",
+    "work_centre",
+    "cluster_id",
+    "grade_id",
+    "station_since",
+    "tenure_months",
+    "rotation_window_opens",
+    "rotation_window_closes",
+    "rotation_status",
+    "next_agt_effective_by",
+    "exemption_tag"
+  ],
+  "rows": [
+    {
+      "emp_id": "EMP-102451",
+      "wc_id": "WC-DEL",
+      "work_centre": "Corporate HQ Delhi (Deendayal Urja Bhawan)",
+      "cluster_id": "CL-DEL",
+      "grade_id": "E2",
+      "station_since": "2021-08-16",
+      "tenure_months": 62,
+      "rotation_window_opens": "2024-08-16",
+      "rotation_window_closes": "2026-08-16",
+      "rotation_status": "beyond 5-year window - due in next AGT",
+      "next_agt_effective_by": "2027-07-01",
+      "exemption_tag": "None"
+    }
+  ]
+}

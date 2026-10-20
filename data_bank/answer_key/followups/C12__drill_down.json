@@ -1,0 +1,99 @@
+{
+  "job_id": "84a199d6-0bdd-46b2-8c06-03619702ff50",
+  "total_bytes_processed": 79671029,
+  "executed_at": "2026-10-20T06:41:45.937257+00:00",
+  "elapsed_seconds": 1.12,
+  "row_count": 8,
+  "columns": [
+    "asset",
+    "cadre",
+    "employees_paid",
+    "payroll_inr_cr",
+    "mmboe_fy26",
+    "payroll_inr_per_boe",
+    "payroll_usd_per_boe",
+    "pct_of_asset_payroll"
+  ],
+  "rows": [
+    {
+      "asset": "Ahmedabad Asset",
+      "cadre": "executive",
+      "employees_paid": 856,
+      "payroll_inr_cr": 309.4,
+      "mmboe_fy26": 9.84,
+      "payroll_inr_per_boe": 314.0,
+      "payroll_usd_per_boe": 3.56,
+      "pct_of_asset_payroll": 75.3
+    },
+    {
+      "asset": "Ahmedabad Asset",
+      "cadre": "non_executive",
+      "employees_paid": 515,
+      "payroll_inr_cr": 101.7,
+      "mmboe_fy26": 9.84,
+      "payroll_inr_per_boe": 103.0,
+      "payroll_usd_per_boe": 1.17,
+      "pct_of_asset_payroll": 24.7
+    },
+    {
+      "asset": "Assam Asset",
+      "cadre": "executive",
+      "employees_paid": 822,
+      "payroll_inr_cr": 312.1,
+      "mmboe_fy26": 13.73,
+      "payroll_inr_per_boe": 227.0,
+      "payroll_usd_per_boe": 2.57,
+      "pct_of_asset_payroll": 55.1
+    },
+    {
+      "asset": "Assam Asset",
+      "cadre": "non_executive",
+      "employees_paid": 1172,
+      "payroll_inr_cr": 253.9,
+      "mmboe_fy26": 13.73,
+      "payroll_inr_per_boe": 185.0,
+      "payroll_usd_per_boe": 2.09,
+      "pct_of_asset_payroll": 44.9
+    },
+    {
+      "asset": "Neelam & Heera",
+      "cadre": "executive",
+      "employees_paid": 1179,
+      "payroll_inr_cr": 748.8,
+      "mmboe_fy26": 26.32,
+      "payroll_inr_per_boe": 284.0,
+      "payroll_usd_per_boe": 3.22,
+      "pct_of_asset_payroll": 73.6
+    },
+    {
+      "asset": "Neelam & Heera",
+      "cadre": "non_executive",
+      "employees_paid": 734,
+      "payroll_inr_cr": 268.1,
+      "mmboe_fy26": 26.32,
+      "payroll_inr_per_boe": 102.0,
+      "payroll_usd_per_boe": 1.15,
+      "pct_of_asset_payroll": 26.4
+    },
+    {
+      "asset": "Mumbai High",
+      "cadre": "executive",
+      "employees_paid": 938,
+      "payroll_inr_cr": 591.8,
+      "mmboe_fy26": 55.49,
+      "payroll_inr_per_boe": 107.0,
+      "payroll_usd_per_boe": 1.21,
+      "pct_of_asset_payroll": 73.8
+    },
+    {
+      "asset": "Mumbai High",
+      "cadre": "non_executive",
+      "employees_paid": 576,
+      "payroll_inr_cr": 210.0,
+      "mmboe_fy26": 55.49,
+      "payroll_inr_per_boe": 38.0,
+      "payroll_usd_per_boe": 0.43,
+      "pct_of_asset_payroll": 26.2
+    }
+  ]
+}

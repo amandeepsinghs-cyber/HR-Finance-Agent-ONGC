@@ -1,0 +1,99 @@
+{
+  "job_id": "2eb4b031-959e-4396-b4ff-fcf5dc8e6b79",
+  "total_bytes_processed": 34598,
+  "executed_at": "2026-10-20T06:37:32.398164+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 8,
+  "columns": [
+    "state_name",
+    "district_name",
+    "project_name",
+    "csr_theme",
+    "is_aspirational_district",
+    "state_has_ongc_operations",
+    "spend_cr",
+    "sponsoring_wc"
+  ],
+  "rows": [
+    {
+      "state_name": "Jammu & Kashmir",
+      "district_name": "Anantnag",
+      "project_name": "Specialized Equipment for District Civil Hospitals in Anantnag",
+      "csr_theme": "Healthcare",
+      "is_aspirational_district": false,
+      "state_has_ongc_operations": false,
+      "spend_cr": 48.85,
+      "sponsoring_wc": "WC-DEL"
+    },
+    {
+      "state_name": "Jammu & Kashmir",
+      "district_name": "Baramulla",
+      "project_name": "Community RO Drinking Water Plants in Water-Stressed Villages in Baramulla",
+      "csr_theme": "Sanitation & Safe Drinking Water",
+      "is_aspirational_district": true,
+      "state_has_ongc_operations": false,
+      "spend_cr": 43.84,
+      "sponsoring_wc": "WC-DEL"
+    },
+    {
+      "state_name": "Uttar Pradesh",
+      "district_name": "Varanasi",
+      "project_name": "Scholarships and Educational Support for Underprivileged Students in Varanasi",
+      "csr_theme": "Education",
+      "is_aspirational_district": false,
+      "state_has_ongc_operations": false,
+      "spend_cr": 40.65,
+      "sponsoring_wc": "WC-DEL"
+    },
+    {
+      "state_name": "Jammu & Kashmir",
+      "district_name": "Kupwara",
+      "project_name": "All-Weather Village Connectivity Road and Culvert Construction in Kupwara",
+      "csr_theme": "Rural Development",
+      "is_aspirational_district": true,
+      "state_has_ongc_operations": false,
+      "spend_cr": 39.91,
+      "sponsoring_wc": "WC-DEL"
+    },
+    {
+      "state_name": "Uttar Pradesh",
+      "district_name": "Balrampur",
+      "project_name": "Solar Powered Potable Water Purification Systems in Balrampur",
+      "csr_theme": "Sanitation & Safe Drinking Water",
+      "is_aspirational_district": true,
+      "state_has_ongc_operations": false,
+      "spend_cr": 39.1,
+      "sponsoring_wc": "WC-DEL"
+    },
+    {
+      "state_name": "Uttar Pradesh",
+      "district_name": "Sonbhadra",
+      "project_name": "Upgradation of School Infrastructure and Science Laboratories in Sonbhadra",
+      "csr_theme": "Education",
+      "is_aspirational_district": true,
+      "state_has_ongc_operations": false,
+      "spend_cr": 38.6,
+      "sponsoring_wc": "WC-DEL"
+    },
+    {
+      "state_name": "Uttar Pradesh",
+      "district_name": "Chandauli",
+      "project_name": "Construction of Household and Community Sanitation Blocks in Chandauli",
+      "csr_theme": "Sanitation & Safe Drinking Water",
+      "is_aspirational_district": true,
+      "state_has_ongc_operations": false,
+      "spend_cr": 36.65,
+      "sponsoring_wc": "WC-DEL"
+    },
+    {
+      "state_name": "Uttarakhand",
+      "district_name": "Haridwar",
+      "project_name": "Agricultural Value Addition and Organic Farming Training in Haridwar",
+      "csr_theme": "Skill Development & Livelihoods",
+      "is_aspirational_district": true,
+      "state_has_ongc_operations": true,
+      "spend_cr": 24.07,
+      "sponsoring_wc": "WC-DDN"
+    }
+  ]
+}

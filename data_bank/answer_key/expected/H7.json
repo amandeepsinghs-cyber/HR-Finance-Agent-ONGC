@@ -1,0 +1,329 @@
+{
+  "job_id": "feeb7196-8f77-4d9a-93f7-9cfd9e035432",
+  "total_bytes_processed": 31794378,
+  "executed_at": "2026-10-20T06:38:50.504018+00:00",
+  "elapsed_seconds": 0.86,
+  "row_count": 39,
+  "columns": [
+    "dimension",
+    "label",
+    "sort_key",
+    "women",
+    "total",
+    "women_pct"
+  ],
+  "rows": [
+    {
+      "dimension": "1. Company",
+      "label": "All active employees",
+      "sort_key": 0,
+      "women": 1848,
+      "total": 22798,
+      "women_pct": 8.1
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "E1",
+      "sort_key": 2,
+      "women": 149,
+      "total": 1449,
+      "women_pct": 10.3
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "E2",
+      "sort_key": 3,
+      "women": 214,
+      "total": 2209,
+      "women_pct": 9.7
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "E3",
+      "sort_key": 4,
+      "women": 299,
+      "total": 2826,
+      "women_pct": 10.6
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "E4",
+      "sort_key": 5,
+      "women": 238,
+      "total": 2569,
+      "women_pct": 9.3
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "E5",
+      "sort_key": 6,
+      "women": 220,
+      "total": 2128,
+      "women_pct": 10.3
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "E6",
+      "sort_key": 7,
+      "women": 124,
+      "total": 1146,
+      "women_pct": 10.8
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "E7",
+      "sort_key": 8,
+      "women": 77,
+      "total": 839,
+      "women_pct": 9.2
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "E8",
+      "sort_key": 9,
+      "women": 21,
+      "total": 238,
+      "women_pct": 8.8
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "E9",
+      "sort_key": 10,
+      "women": 0,
+      "total": 49,
+      "women_pct": 0.0
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "GRP-B",
+      "sort_key": 11,
+      "women": 6,
+      "total": 166,
+      "women_pct": 3.6
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "GRP-C",
+      "sort_key": 12,
+      "women": 376,
+      "total": 7220,
+      "women_pct": 5.2
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "GRP-D",
+      "sort_key": 13,
+      "women": 124,
+      "total": 1956,
+      "women_pct": 6.3
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "DIR",
+      "sort_key": 14,
+      "women": 0,
+      "total": 2,
+      "women_pct": 0.0
+    },
+    {
+      "dimension": "2. Grade",
+      "label": "CMD",
+      "sort_key": 15,
+      "women": 0,
+      "total": 1,
+      "women_pct": 0.0
+    },
+    {
+      "dimension": "3. Location class",
+      "label": "corporate",
+      "sort_key": 0,
+      "women": 584,
+      "total": 3863,
+      "women_pct": 15.1
+    },
+    {
+      "dimension": "3. Location class",
+      "label": "offshore",
+      "sort_key": 0,
+      "women": 92,
+      "total": 6279,
+      "women_pct": 1.5
+    },
+    {
+      "dimension": "3. Location class",
+      "label": "onshore",
+      "sort_key": 0,
+      "women": 1172,
+      "total": 12656,
+      "women_pct": 9.3
+    },
+    {
+      "dimension": "4. Offshore trend (headcount snapshot)",
+      "label": "2021-03",
+      "sort_key": 0,
+      "women": 312,
+      "total": 7518,
+      "women_pct": 4.2
+    },
+    {
+      "dimension": "4. Offshore trend (headcount snapshot)",
+      "label": "2022-03",
+      "sort_key": 0,
+      "women": 260,
+      "total": 7240,
+      "women_pct": 3.6
+    },
+    {
+      "dimension": "4. Offshore trend (headcount snapshot)",
+      "label": "2023-03",
+      "sort_key": 0,
+      "women": 216,
+      "total": 6972,
+      "women_pct": 3.1
+    },
+    {
+      "dimension": "4. Offshore trend (headcount snapshot)",
+      "label": "2024-03",
+      "sort_key": 0,
+      "women": 192,
+      "total": 6961,
+      "women_pct": 2.8
+    },
+    {
+      "dimension": "4. Offshore trend (headcount snapshot)",
+      "label": "2025-03",
+      "sort_key": 0,
+      "women": 139,
+      "total": 6656,
+      "women_pct": 2.1
+    },
+    {
+      "dimension": "4. Offshore trend (headcount snapshot)",
+      "label": "2026-03",
+      "sort_key": 0,
+      "women": 88,
+      "total": 6349,
+      "women_pct": 1.4
+    },
+    {
+      "dimension": "4. Offshore trend (headcount snapshot)",
+      "label": "2026-09",
+      "sort_key": 0,
+      "women": 92,
+      "total": 6279,
+      "women_pct": 1.5
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Ahmedabad Asset",
+      "sort_key": 0,
+      "women": 418,
+      "total": 1199,
+      "women_pct": 34.9
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Ankleshwar Asset",
+      "sort_key": 0,
+      "women": 39,
+      "total": 919,
+      "women_pct": 4.2
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Assam Asset",
+      "sort_key": 0,
+      "women": 94,
+      "total": 1823,
+      "women_pct": 5.2
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Bassein & Satellite",
+      "sort_key": 0,
+      "women": 21,
+      "total": 1833,
+      "women_pct": 1.1
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "CBM Bokaro",
+      "sort_key": 0,
+      "women": 47,
+      "total": 550,
+      "women_pct": 8.5
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Cambay Asset",
+      "sort_key": 0,
+      "women": 28,
+      "total": 509,
+      "women_pct": 5.5
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Cauvery Asset",
+      "sort_key": 0,
+      "women": 68,
+      "total": 671,
+      "women_pct": 10.1
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Eastern Offshore",
+      "sort_key": 0,
+      "women": 15,
+      "total": 1003,
+      "women_pct": 1.5
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Jorhat Asset",
+      "sort_key": 0,
+      "women": 116,
+      "total": 1320,
+      "women_pct": 8.8
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Mehsana Asset",
+      "sort_key": 0,
+      "women": 62,
+      "total": 1537,
+      "women_pct": 4.0
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Mumbai High",
+      "sort_key": 0,
+      "women": 25,
+      "total": 1349,
+      "women_pct": 1.9
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Neelam & Heera",
+      "sort_key": 0,
+      "women": 26,
+      "total": 1705,
+      "women_pct": 1.5
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Rajahmundry Asset",
+      "sort_key": 0,
+      "women": 80,
+      "total": 843,
+      "women_pct": 9.5
+    },
+    {
+      "dimension": "5. Asset",
+      "label": "Tripura Asset",
+      "sort_key": 0,
+      "women": 64,
+      "total": 838,
+      "women_pct": 7.6
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+# --- Dependencies / build output ---
+node_modules/
+.next/
+out/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+.dataform/
+dataform/node_modules/
+
+# --- Secrets / credentials / local config ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*.json
+.df-credentials.json
+service-account*.json
+
+# --- Heavy generated data (regenerate via data_bank/generators; backed up in gs://ongc-hr-finance-agent-landing) ---
+data_bank/landing/**
+!data_bank/landing/**/
+!data_bank/landing/**/*.yaml
+!data_bank/landing/**/*.yml
+!data_bank/landing/documents/DOC_MANIFEST*.csv
+!data_bank/landing/documents/rulebooks_clause_index.csv
+!data_bank/landing/documents/_provenance/**/*.sql
+data_bank/verify/*.duckdb
+*.duckdb
+*.duckdb.wal
+data_bank/archive_rejected/
+
+# --- Heavy public source documents (re-download from links in MANIFEST.md / FACTS.md) ---
+knowledge/public_sources/grounding_data/raw/
+knowledge/public_sources/policies/raw/
+
+# --- Runtime artifacts ---
+yukti/backend/exports/
+**/exports/*.docx
+**/exports/*.pdf
+**/exports/*.xlsx
+*.log
+.DS_Store

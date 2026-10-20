@@ -1,0 +1,352 @@
+{
+  "job_id": "6d4bb241-44d2-41fa-946e-67f925623bc7",
+  "total_bytes_processed": 4060523,
+  "executed_at": "2026-10-20T06:38:53.860106+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 48,
+  "columns": [
+    "institute",
+    "discipline",
+    "participants",
+    "man_days",
+    "man_days_per_participant"
+  ],
+  "rows": [
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Information Technology",
+      "participants": 50,
+      "man_days": 170,
+      "man_days_per_participant": 3.4
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Instrumentation",
+      "participants": 60,
+      "man_days": 204,
+      "man_days_per_participant": 3.4
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Chemistry",
+      "participants": 47,
+      "man_days": 159,
+      "man_days_per_participant": 3.38
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Geology",
+      "participants": 96,
+      "man_days": 324,
+      "man_days_per_participant": 3.38
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Reservoir",
+      "participants": 140,
+      "man_days": 473,
+      "man_days_per_participant": 3.38
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Human Resources (HR)",
+      "participants": 57,
+      "man_days": 192,
+      "man_days_per_participant": 3.37
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Environment & Safety (HSE)",
+      "participants": 36,
+      "man_days": 121,
+      "man_days_per_participant": 3.36
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Production",
+      "participants": 308,
+      "man_days": 1031,
+      "man_days_per_participant": 3.35
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Electrical",
+      "participants": 88,
+      "man_days": 294,
+      "man_days_per_participant": 3.34
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Drilling",
+      "participants": 231,
+      "man_days": 764,
+      "man_days_per_participant": 3.31
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Materials Management (MM)",
+      "participants": 71,
+      "man_days": 235,
+      "man_days_per_participant": 3.31
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Geophysics (Surface)",
+      "participants": 74,
+      "man_days": 244,
+      "man_days_per_participant": 3.3
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Legal",
+      "participants": 20,
+      "man_days": 66,
+      "man_days_per_participant": 3.3
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Finance & Accounts (F&A)",
+      "participants": 79,
+      "man_days": 260,
+      "man_days_per_participant": 3.29
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Mechanical",
+      "participants": 89,
+      "man_days": 290,
+      "man_days_per_participant": 3.26
+    },
+    {
+      "institute": "IOGPT_Navi_Mumbai",
+      "discipline": "Medical Services",
+      "participants": 9,
+      "man_days": 26,
+      "man_days_per_participant": 2.89
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Chemistry",
+      "participants": 39,
+      "man_days": 142,
+      "man_days_per_participant": 3.64
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Electrical",
+      "participants": 72,
+      "man_days": 250,
+      "man_days_per_participant": 3.47
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Instrumentation",
+      "participants": 65,
+      "man_days": 224,
+      "man_days_per_participant": 3.45
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Legal",
+      "participants": 22,
+      "man_days": 75,
+      "man_days_per_participant": 3.41
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Drilling",
+      "participants": 199,
+      "man_days": 676,
+      "man_days_per_participant": 3.4
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Environment & Safety (HSE)",
+      "participants": 52,
+      "man_days": 176,
+      "man_days_per_participant": 3.38
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Production",
+      "participants": 325,
+      "man_days": 1092,
+      "man_days_per_participant": 3.36
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Human Resources (HR)",
+      "participants": 62,
+      "man_days": 208,
+      "man_days_per_participant": 3.35
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Finance & Accounts (F&A)",
+      "participants": 77,
+      "man_days": 253,
+      "man_days_per_participant": 3.29
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Materials Management (MM)",
+      "participants": 76,
+      "man_days": 249,
+      "man_days_per_participant": 3.28
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Geophysics (Surface)",
+      "participants": 82,
+      "man_days": 266,
+      "man_days_per_participant": 3.24
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Mechanical",
+      "participants": 124,
+      "man_days": 400,
+      "man_days_per_participant": 3.23
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Medical Services",
+      "participants": 18,
+      "man_days": 58,
+      "man_days_per_participant": 3.22
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Information Technology",
+      "participants": 40,
+      "man_days": 128,
+      "man_days_per_participant": 3.2
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Reservoir",
+      "participants": 105,
+      "man_days": 331,
+      "man_days_per_participant": 3.15
+    },
+    {
+      "institute": "KDMIPE",
+      "discipline": "Geology",
+      "participants": 95,
+      "man_days": 295,
+      "man_days_per_participant": 3.11
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Medical Services",
+      "participants": 11,
+      "man_days": 41,
+      "man_days_per_participant": 3.73
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Environment & Safety (HSE)",
+      "participants": 34,
+      "man_days": 119,
+      "man_days_per_participant": 3.5
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Production",
+      "participants": 295,
+      "man_days": 1022,
+      "man_days_per_participant": 3.46
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Information Technology",
+      "participants": 40,
+      "man_days": 138,
+      "man_days_per_participant": 3.45
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Legal",
+      "participants": 25,
+      "man_days": 85,
+      "man_days_per_participant": 3.4
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Mechanical",
+      "participants": 104,
+      "man_days": 354,
+      "man_days_per_participant": 3.4
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Electrical",
+      "participants": 92,
+      "man_days": 312,
+      "man_days_per_participant": 3.39
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Geophysics (Surface)",
+      "participants": 98,
+      "man_days": 332,
+      "man_days_per_participant": 3.39
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Materials Management (MM)",
+      "participants": 70,
+      "man_days": 237,
+      "man_days_per_participant": 3.39
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Geology",
+      "participants": 92,
+      "man_days": 308,
+      "man_days_per_participant": 3.35
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Human Resources (HR)",
+      "participants": 72,
+      "man_days": 240,
+      "man_days_per_participant": 3.33
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Instrumentation",
+      "participants": 60,
+      "man_days": 198,
+      "man_days_per_participant": 3.3
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Drilling",
+      "participants": 198,
+      "man_days": 650,
+      "man_days_per_participant": 3.28
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Chemistry",
+      "participants": 55,
+      "man_days": 177,
+      "man_days_per_participant": 3.22
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Reservoir",
+      "participants": 99,
+      "man_days": 318,
+      "man_days_per_participant": 3.21
+    },
+    {
+      "institute": "ONGC_Academy_Dehradun",
+      "discipline": "Finance & Accounts (F&A)",
+      "participants": 89,
+      "man_days": 276,
+      "man_days_per_participant": 3.1
+    }
+  ]
+}

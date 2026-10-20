@@ -1,0 +1,21 @@
+{
+  "job_id": "9e4a4e91-03e9-48e8-874e-9842df8397bd",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:56:43.233706+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 10.0",
+      "heading": "Replacement & Cadre Balancing Norms",
+      "quote_snippet": "10.1 Discipline-for-Discipline Matching: In critical operational disciplines (Drilling, Production, Reservoir, Geology, Geophysics, Electrical, Mechanical, and Instrumentation), no executive shall be relieved from an operational asset until a qualified replacement of matching discipline and comparable seniority has reported or been placed on the mobilization schedule. 10.2 Asset Head Concurrence: Asset Managers and Basin In-charges must certify that replacement arrangements are in place to prevent production disruption. (10.1) One-for-One Matching: Mandatory replacement in specialized technical cadres before release. (10.2) Asset Continuity Certification: Asset Manager must sign off on relie"
+    }
+  ]
+}

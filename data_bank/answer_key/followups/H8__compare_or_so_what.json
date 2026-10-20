@@ -1,0 +1,48 @@
+{
+  "job_id": "003cc3af-c0a6-4b39-b3d3-00affb5b09ce",
+  "total_bytes_processed": 17651318,
+  "executed_at": "2026-10-20T06:38:55.126064+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 2,
+  "columns": [
+    "fiscal_year",
+    "good_target",
+    "very_good_target",
+    "excellent_target",
+    "mou_reported_person_days",
+    "achieved_rating",
+    "records_person_days",
+    "fy_end_headcount",
+    "mou_person_days_per_employee",
+    "records_person_days_per_employee",
+    "very_good_target_per_employee"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY25",
+      "good_target": 50000.0,
+      "very_good_target": 55000.0,
+      "excellent_target": 60000.0,
+      "mou_reported_person_days": 62500.0,
+      "achieved_rating": "Excellent",
+      "records_person_days": 49671,
+      "fy_end_headcount": 24368,
+      "mou_person_days_per_employee": 2.56,
+      "records_person_days_per_employee": 2.04,
+      "very_good_target_per_employee": 2.26
+    },
+    {
+      "fiscal_year": "FY26",
+      "good_target": 50000.0,
+      "very_good_target": 55000.0,
+      "excellent_target": 60000.0,
+      "mou_reported_person_days": 58200.0,
+      "achieved_rating": "Very Good",
+      "records_person_days": 42573,
+      "fy_end_headcount": 23117,
+      "mou_person_days_per_employee": 2.52,
+      "records_person_days_per_employee": 1.84,
+      "very_good_target_per_employee": 2.38
+    }
+  ]
+}

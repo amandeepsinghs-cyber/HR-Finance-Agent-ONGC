@@ -1,0 +1,454 @@
+      POLICY FOR DEALING WITH UNCLAIMED AMOUNT TOWARDS
+         INTEREST/ DIVIDEND/ REDEMPTION ON LISTED NON-
+                    CONVERTIBLE SECURITIES
+
+
+
+
+Adopted: 22.07.2025 (395th Board Meeting)
+
+
+
+
+                                            1
+Sl. No.                                        Index                                          Page No.
+   1    PREAMBLE                                                                                 3
+   2    PURPOSE OF POLICY                                                                        3
+  3    APPLICABILITY                                                                             3
+  4    DEFINITION                                                                                3
+  5    OBLIGATION OF THE COMPANY                                                                4-5
+
+       5.1 Transfer of unclaimed amounts to Escrow Account
+       5.2 Interest in case of default
+       5.3 Transfer of Unclaimed Amount to IEPF
+       5.4 Contact details of Nodal Officer
+
+  6    PROCEDURE FOR CLAIMING UNCLAIMED INTEREST/REDEMPTION AMOUNT BY                           5-6
+       INVESTORS FROM ESCROW ACCOUNT
+       6.1 Display of information w.r.t. relating to unclaimed amounts on company’s website
+       6.2 Procedure for filing of claim
+
+  7    PROCEDURE FOR CLAIMING UNCLAIMED INTEREST/REDEMPTION AMOUNT BY                            6
+       INVESTORS BEFORE TRANSFER TO IEPF
+  8    AMENDMENT                                                                                  6
+  9    DISCLOSURE OF THE POLICY                                                                   6
+ 10    ANNEXURE I                                                                                 7
+ 11    ANNEXURE II                                                                                8
+ 12    ANNEXURE III                                                                             9-10
+
+
+
+
+                                                   2
+1. PREAMBLE:
+ Oil and Natural Gas Corporation Limited (ONGC/ the Company), a Maharatna, Central Public Sector
+ Enterprise, under the administrative control of the Ministry of Petroleum and Natural Gas, Government of
+ India, is the leading Exploration and Production Company in India with presence in refining and marketing
+ of petroleum products through subsidiaries and joint ventures.
+
+ ONGC is a Public Limited Company and having its equity shares listed with BSE Ltd. and National Stock
+ Exchange of India Limited. The Company has also issued Non-Convertible Debentures (NCDs) and said
+ NCDs are listed with BSE Ltd. Being a Listed Company, it is governed by the provisions of the Companies
+ Act, 2013 (Act) and/ or guidelines/ Regulations of Securities and Exchange Board of India (SEBI) as
+ applicable for equity and Non-Convertible Securities.
+
+ Pursuant to the requirements of Regulation 61(A)(2) of the SEBI (Listing Obligations and Disclosure
+ Requirements) Regulations, 2015 (“Listing Regulations”) read with SEBI Circular dated 8 th November
+ 2023, the Company has framed the Policy for Dealing with Unclaimed amount towards Interest/ Dividend/
+ Redemption on Listed Non-Convertible Securities (hereinafter referred to as “the Policy”).
+
+ As per the Listing Regulations where any interest/ dividend/ redemption amount has not been claimed by
+ any Non-convertible Security/ Debenture holders (“Investors”) within thirty days from the due date of
+ interest/ dividend/ redemption payment, the said unpaid/ unclaimed amount shall be transferred, within
+ seven days from the date of expiry of thirty days, to an escrow account to be opened by the listed entity in
+ any scheduled bank in accordance with Regulation 61(A)(2) of the Listing Regulations. Further, any
+ amount transferred to the escrow account that remains unclaimed/ unpaid for seven years shall be
+ transferred to the ‘Investor Education and Protection Fund’ (“IEPF”) constituted in terms of Section 125 of
+ the Companies Act, 2013 (the “Act”).
+
+2. PURPOSE OF POLICY
+
+
+This Policy specifies the process for dealing with unclaimed amounts i.e. Interest, Dividend, Redemption
+proceeds lying with the Company in respect of non-convertible debentures/ securities for transfer of such
+amounts to Escrow Account and subsequently to the Investor Education and Protection Fund including the
+steps to be undertaken by the Company for processing claims of investors.
+
+3. APPLICABILITY:
+
+This Policy shall apply to any interest/ dividend/ redemption amount that has not been claimed by Investors
+within thirty days from the due date of payment for interest/ dividend/ redemption amount.
+
+
+4. DEFINITION:
+4.1    “ONGC /Company” means Oil and Natural Gas Corporation Limited.
+
+4.2    “Depositories” shall mean National Securities Depository Ltd (NSDL) and Central Depository
+       Services Ltd (CDSL) or any other Depository as may be notified by SEBI from time to time.
+
+4.3    “Depository Participants (DPs)” shall mean a registered intermediary between the investors and
+       depositories in India.
+
+
+
+
+                                                   3
+4.4      “Escrow Account” shall mean special Bank Account opened by the Company in a Scheduled
+         Bank in which unclaimed interest/ dividend/ redemption amount of Listed Non-Convertible
+         Securities shall be transferred.
+
+4.5      “Investor Education and Protection Fund” (IEPF) shall mean fund established in terms of
+         Section 125 of the Companies Act, 2013.
+
+4.6      “Non-Convertible Securities (NCS)” shall mean debt securities, non-convertible redeemable
+         preference shares and any other securities as issued or may be issued by the Company from time
+         to time.
+
+4.7      “Listing Regulations” shall mean the Securities and Exchange Board of India (Listing Obligations
+         and Disclosure Requirements) Regulations, 2015, as amended from time to time.
+
+4.8      “Stock Exchanges” means recognised stock exchange as defined under clause (f) of section 2 of
+         the Securities Contracts (Regulation) Act, 1956 and where non-convertible securities of the
+         Company are listed.
+
+4.9      “Unclaimed Amounts” shall mean amount of interest/ dividend/ redemption proceeds payable on
+         non-convertible securities and has not been claimed within thirty days from the due date of interest
+         / dividend / redemption payment.
+
+      Meaning and Interpretation: All other terms used in this Policy but not defined herein shall have the
+      same meaning as assigned to such term in the Act (including Rules issued thereunder)/ SEBI Listing
+      Regulations and SEBI (Issue and Listing of Non-Convertible Securities) Regulations, 2021, as
+      amended from time to time.
+
+      In case of any conflict between this Policy and applicable laws, the applicable law shall prevail.
+
+5. OBLIGATION OF THE COMPANY:
+
+  5.1 Transfer of unclaimed amounts to Escrow Account:
+
+        In terms of regulation 61A (2) of the Listing Regulations, the Company shall transfer the unclaimed
+        amount(s) to an Escrow Account within 7 (seven) days from the date of expiry of the 30 (thirty) days
+        from the due date of interest/ dividend/ redemption.
+
+  5.2 Interest in case of default:
+
+        In case, a default is made in transferring the full or part amount to the Escrow Account, as referred
+        to in paragraph 5.1 above, the said transfer shall be dealt as per framework for transfer of unclaimed
+        amounts of applicable circular/ guidelines issued under the Listing Regulations.
+
+  5.3 Transfer of Unclaimed Amount to IEPF:
+
+       Amount remained unclaimed in the Escrow Account for a period of 7 (seven) years from the date it
+       became due for payment/ transfer to Escrow Account, shall be transferred by the Company to the
+       ‘Investor Education and Protection Fund’ as per applicable provisions and in the manner as prescribed
+       under the Companies Act, 2013.
+
+
+                                                     4
+    5.4 Contact details of Nodal Officer:
+
+            Nodal Officer:
+            Company Secretary is designated as ‘Nodal Officer’ and shall be the point of contact for investors
+            entitled to claim their unclaimed amounts. Investor(s) may submit their claim of grievances, if
+            any, at the below-mentioned address/ Email:
+            Company Secretary,
+            Oil and Natural Gas Corporation Ltd.
+            Plot No. 5A- 5B Nelson Mandela Road,
+            Vasant Kunj, New Delhi -110070
+            Phone: 011-26754073/ 85,
+            Email: secretariat@ongc.co.in, treasury@ongc.co.in
+
+
+6. PROCEDURE FOR CLAIMING UNCLAIMED INTEREST /DIVIDEND/ REDEMPTION AMOUNT BY
+   INVESTORS FROM ESCROW ACCOUNT
+
+
+  6.1 Display of information w.r.t. unclaimed amounts on Company’s website:
+
+        The Company, shall, within a period of 30 (thirty) days of transferring the unclaimed amount to Escrow
+        Account, shall prepare and upload details of said unclaimed amount(s) in such form, manner and
+        other particulars as may be prescribed under the Listing Regulations.
+
+        Search facility for investor
+
+        The Company shall provide details of unclaimed amount deposited in escrow account with search
+        facility based on combinations of Name and PAN for convenience of investor(s) to verify if there is
+        any unclaimed amount due and lying in the Escrow Account of the investor concerned.
+
+  6.2 Procedure for filing of claim:
+
+   a. Manner of submission of claim
+
+      Investors (including legal heir/ successor/ nominee of such investor) shall send a duly signed request
+      letter to the Nodal Officer, in the format prescribed at “Annexure I” along with all necessary enclosures
+      as mentioned therein.
+
+   b. Timeline and process for verification of claim
+
+      Upon transfer of unclaimed amount to the Escrow account, investor(s) may file request letter along with
+      prescribed documents to the Nodal Officer seeking claim of unpaid amount.
+
+      The Company shall verify the claim upon receipt of original request letter along with prescribed
+      documents. During verification, details of investors as available to the Company would be matched
+      with claim documents. Reasons for change in particulars and supporting documents for change, if any,
+      would be examined for approval or rejection of claim. The Company may seek additional information
+      or clarification, if required. Investors shall provide the said information/ clarifications within the specified
+      timeline. Failure to provide requisite information in stipulated timeline, may be liable for rejection of
+      claim. However, rejection of claim does not debar an investor from filing a fresh claim.
+
+                                                        5
+ c. Timeline for processing of Claim:
+
+     The Company shall process the claim within 30 (thirty) days of receipt of a claim documents and/or
+     additional documents/ information furnished by investor and remit the payment to the investor using
+     electronic modes of fund transfer.
+
+ d. Maintenance of Records:
+
+     The Company shall maintain documents as per requirements of applicable laws. Claim approval
+     documents would be preserved for 3 (three) years from the date of settlement of claim.
+
+ e. Display of Claims details on website:
+
+     The Company shall display the details of the number of claims received, processed, pending, etc. on its
+     website and any change in the information uploaded on the website shall be updated as per requirements.
+
+
+ 7. PROCEDURE FOR CLAIMING UNCLAIMED INTEREST/ REDEMPTION AMOUNT BY INVESTORS, IN
+    CASE THE SAME HAS BEEN TRANSFERRED TO IEPF:
+
+
+     Once unclaimed amount is transferred to the Investor Education and Protection Fund (IEPF), procedure
+     as prescribed by IEPF Authority on its website i.e. www.iepf.gov.in needs to be followed for claiming
+     refund.
+
+8.   AMENDMENT TO THE POLICY
+     Amendment in Policy shall be made as under:
+
+      i.       Amendment required due to statutory modifications on account of change in law including
+               circular/ clarifications issued by the Competent Authority under the Companies Act, 2013 and/or SEBI
+               LODR Regulations, such modifications shall be appropriately factored in the Policy with the approval of
+               the Chairman/ CMD of the Company; and
+
+      ii.      Amendment proposal not covered as per clause (i) above, shall be subject to approval of the
+               Board of Directors of the Company.
+
+9. Disclosure of the Policy
+            This Policy will be uploaded on the website of the Company.
+
+
+
+
+                                                          6
+                                                                                                                ANNEXURE I
+
+Date:
+The Company Secretary,
+Oil and Natural Gas Corporation Ltd.
+Plot No. 5A- 5B Nelson Mandela Road,
+Vasant Kunj New Delhi - 110070
+
+                 Sub: Request letter for release of unclaimed amount from escrow account
+
+ Name of Investor(s)                                                   :
+ Name of Claimant                                                      :
+ (in case of legal heir/ successor/ nominee)
+ Date of Claim                                                         :
+ ISIN of Security                                                      :
+ Name of Security                                                      :
+ Description of claim (Interest/Dividend/Redemption)                   :
+ Date when amount became due                                           :
+ Details of Security                                                   :
+ Amount unclaimed                                                      :
+ PAN of investor and also Claimant                                     :
+ Address                                                               :
+ Contact No.                                                           :
+ Email Id                                                              :
+ Bank Name                                                             :
+ (In case the Claimant is not the investor, please give bank details
+ of Legal heir/successor/nominee)
+ Bank Account No.                                                      :
+ Bank IFSC                                                             :
+ Name of Account Holder                                                :
+ DP ID                                                                 :
+ Client ID                                                             :
+ LEI No. (in case unclaimed amount is more than ₹50 Crore)             :
+
+I/We affirm that the claim is genuine, and the prescribed self-certified documents are enclosed.
+
+                                                                           (Name and Signature Investors/ Claimants)
+Enclosure:
+1. Permanent Account Number (PAN) and in case of joint holding please enclose copy of PAN card of all joint holders;
+2. Aadhaar Card and in case of joint holding please enclose copy of Aadhaar card of all joint holders;
+3. Copy of Cancelled Cheque/Bank Mandate (duly attested by Bank) – matching to Client Master List issued by Depository
+   Participant (DP);
+4. Copy of Updated Client Master Report attested by DP;
+5. Passport, OCI and PIO card in case of foreigners and NRI;
+6. Authorization Letter/Power of Attorney (if investor is non-individual);
+7. Copy of LEI no. in case unclaimed amount is more than ₹ 50 Crore;
+8. Proof of entitlement (Holding statement as on Record Date for the purpose; and
+9. Attachment as per applicability:
+   a. Notarised copy of death certificate;
+   b. Notarised succession certificate/Probate/Will;
+   c. No Objection Certificate from other holder as per Annexure-II;
+   d. Notarised Indemnity Bond in case of Transmission case for Transmission as per Annexure-III;
+   e. Affidavit in form of surety
+
+In case of Joint Applicants/ holders, the aforesaid documents need to be self-attested by both the applicants/ holders.
+
+
+                                                                 7
+                                                                                                    ANNEXURE II
+
+     NO OBJECTION CERTIFICATE (IN THE FORM OF AN AFFIDAVIT ON STAMP PAPER OF ₹10/-)
+
+     (To be executed by all the legal heirs of the deceased investor(s) on a non-judicial stamp paper and
+                                                    notarised)
+
+I/We, the legal heir(s) of late Mr. / Ms _______ (name of the deceased holder) declare as follows:
+
+1.   That Mr./ Mrs. ______ (Original Investor) died on ___________and was holding …… (in words) on non-
+     convertible debentures/ security of the Oil and Natural Gas Corporation Limited, a copy of holding
+     statement as issued by Depository Participant is enclosed.
+
+2.   We, the claimant(s), are entitle to claim dividend/ interest/ redemption amount of Original Investor as per
+     Legal Heir Certificate/ Probate/ Court Order (copy enclosed).
+
+3.   That ___________ (hereinafter referred to as “Claimant”) has approached the Company and requested to
+     release the unclaimed interest/ redemption/ dividend amount (strike out the options which are not
+     applicable) payable to the Original Investor.
+
+4.   That the deceased (original investor) did not leave behind any other heir except those whose names are
+     given at Clause 2 above and there is no dispute or pending litigation as to the claimant of dividend/ interest/
+     redemption amount of Non-convertible security of ONGC held by the deceased.
+
+5.  That in the event the information / statements contained in above paragraphs is subsequently found to be
+    incorrect, I/We agree/undertake to indemnify and keep indemnified the Company, its successors and
+    assigns, and its directors, manager, secretary and shareholders from and against all actions, suits,
+    proceedings, accounts, claims and demands of whatsoever nature for or on account of the said securities
+    or any part thereof or otherwise in connection with the same, and from and against all losses, costs, claims,
+    actions, demands, risks, charges, expenses, damages and losses of any nature whatsoever arising from
+    or in relation to the act of payment of unclaimed interest/ dividend/ redemption amount for non-convertible
+    securities to the Claimant by the company .
+                                                                                      Signature of Legal Heir(s)
+                                                                                                     (Deponent)
+VERIFICATION:
+
+6.   I/ We, the above named Deponent, do hereby verify that the contents of Para 1 to 4 of the above affidavit
+     are true and correct to my knowledge and no portion is false and that the said affidavit conceals nothing
+     which is relevant to the matter.
+7.   Para 5 is indemnification to the Company.
+
+     Solemnly affirmed at ________________________________
+
+                                                                                           Signature of Legal Heir
+                                                                                                      (Deponent)
+     Place :
+     Date :
+                                                               Signed before me
+                                                                                               (Signature of Notary)
+                                                                             Official Stamp and the Seal
+                                                                             Notary and Registration No.
+
+                                                         8
+                                                                                                ANNEXURE III
+                                          INDEMNITY BOND WITH SURETY
+                 (To be executed by all the Claimant on a non-judicial stamp paper and notarised)
+
+ THIS DEED OF INDEMNITY is made at ________ this _______ day of ________ of_____________
+
+ By
+
+ Mr./Ms.___________________________ wife/son/daughter of Mr./Ms. _____________ resident of
+ __________________ ____________________________( hereinafter referred to as the ‘Claimant/
+ Indemnifier, which expression shall unless excluded by or repugnant to the meaning or context thereof, shall
+ mean and include his/their/ heirs, administrators and legal representatives) of the ONE PART.
+
+ IN FAVOUR OF:
+
+ Oil and Natural Gas Corporation Limited, a Public Limited Company having its Registered Office situated at
+ Plot No. 5A-5B, Nelson Mandela Road, Vasant Kunj, New Delhi-110070 (hereinafter called as the “ONGC/
+ Company” which expression shall include unless repugnant to the subject or context be deemed to include their
+ successors, permitted assigns, representatives) on the OTHER PART.
+
+ WHEREAS:
+
+1.    Mr./ Ms. _______________________ holds _____________( Non-Convertible Securities) in the ONGC and
+      the interest/ redemption/ dividend (strike out the options which are not applicable) remains unclaimed
+      with respect to said security.
+
+
+2.    That Mr./ Ms. ________________________ has passed away on _______________.
+
+3.    That I ______________________________ (hereinafter referred as “Claimant”), being the legal heir of the
+      deceased have requested the Company for release of the unclaimed interest/ redemption/ dividend amount
+      (hereinafter referred to as “Unclaimed amount”) due to the ____________________________ (name of
+      original investor) lying with the Company.
+
+4.    That in support of the above said request, I have enclosed the following documents :
+
+      a. ___________________
+      b. ___________________
+      c. __________________
+
+
+ NOW, THEREFORE, THIS INDEMNITY BOND WITNESSETH as under:
+
+
+1.    In consideration of the above having agreed to comply with my request on my executing an indemnity bond
+      in favour of the Company, I, the Claimant, hereunder for myself, my heirs, executors, administrators and
+      assigns do hereby agree to indemnify and keep indemnified the Company, its successors, directors,
+      manager and their heirs, executors and assigns from and against all actions, suits, proceedings, accounts,
+      claims and demands whatsoever for or on account of the said securities or any part thereof or otherwise
+
+
+                                                        9
+       arising out of release of said unclaimed amount in my favour and from and against all losses, costs, claims,
+       actions, demands, risks, charges, expenses, damages and losses arising in any manner whatsoever
+
+2.     I hereby solemnly affirm and certify that the statements contained in above paragraphs are true to the best
+       of my knowledge, information and belief and that nothing material has been concealed from being disclosed
+       and are binding on me.
+
+
+3.     I hereby also confirm that all the documents submitted to the Company are true and correct.
+
+     IN WITNESS WHEREOF the Obligor and the Surety/Sureties hereto have set and subscribed their
+     respective hands hereunto on the day, month and year above-written.
+
+     IN WITNESS whereof, the Claimant and the Surety/ Sureties hereto have executed the Indemnity Bond on
+     this ____ day of _____, 20______.
+
+      Signature                          :    _____________________________
+      Name of Applicant                  :    _____________________________
+
+
+ SURETY
+
+ We, the undersigned surety certify that the above facts are true to the best of our knowledge and bind ourselves
+ as Surety to make good claims / charges, costs, damages, demands, expenses and losses which the company
+ its successors and assigns may sustain, incur or be liable for in consequences of complying with the request
+ contained above of the claimant herein and the said company, its successors, assignee will be entitled to claim
+ and release all claims, charges, costs, damages, demands, expenses and losses from us or from our properties
+ as the case may be.
+
+
+     Sl. No.   Name and Address of Sureties                                    Signature of Surety
+         1
+         2
+
+ Sureties should have attained majority and copy of Income Tax Return of previous financial year should
+ be accompanied along with the Indemnity Bond.
+
+
+
+     Signed before me
+                                                                                 (Signature of Notary)
+     Official Stamp and the Seal
+     Notary and Registration No.
+
+
+
+
+                                                          10
+

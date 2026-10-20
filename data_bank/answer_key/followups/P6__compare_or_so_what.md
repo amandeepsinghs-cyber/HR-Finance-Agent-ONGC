@@ -1,0 +1,14 @@
+# Answer Key: P6__compare_or_so_what
+
+**Question:** How does the gift acceptance policy differ between festive occasions with personal friends and business associates?
+**Type:** `policy` | **Result Count:** `3` rows | **Execution:** `0.71s`
+
+## Executive Synthesis
+It turns on official dealings: a personal friend with no official dealings may give a festive gift that is reportable only above rupees one thousand five hundred (Rule 12(3)), whereas a business associate falls outside that exception and any gift above rupees one thousand five hundred needs prior sanction (12(4)). The Explanation makes the test explicit - free transport, board, lodging or any pecuniary advantage from anyone other than a near relative or a personal friend without official dealings counts as a gift. So the same Diwali hamper is a reporting matter from a friend but a sanction matter from a vendor.
+
+### Summary Result Table
+| doc_id | clause_ref | heading | provision | quote_snippet |
+| --- | --- | --- | --- | --- |
+| G-06 | 12. Gifts | DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts | DPE CDA Rule 12 Explanation (who is a giver) | Explanation - The expression “gift”, shall include free transport, board, lodging or other service or any other pecuniary advantage when provided by any person other than a near relative or a personal friend having no official dealings with the employee. |
+| G-06 | 12. Gifts | DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts | DPE CDA Rule 12(3) (personal friends, festive) | 3. On such occasions as are specified in sub-rule (2), an employee of the CPSE may accept gifts from his/her personal friends having no official dealings with the employee, but employee shall make a report to the competent authority if the value of any such gift exceeds rupees one thousand five hundred in the case of Executives and Non-Executives; |
+| G-06 | 12. Gifts | DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts | DPE CDA Rule 12(4) (business associates / any other) | 4. In any other case, an employee of the CPSE shall not accept or permit any other member of his/her family or any other person acting on his/her behalf to accept any gifts without the sanction of the competent authority if the value thereof exceeds rupees one thousand five hundred in the case of Executives and Non-Executives; Provided that when more than one gift has been received from the same person/firm within a period of 12 months, the matter shall be reported to the competent authority if the aggregate value of the gifts exceeds Rs.25,000/- and Rs.15000/-in case of Executives and Non-Executives respec- tively. |

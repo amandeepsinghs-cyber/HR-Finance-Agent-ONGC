@@ -1,0 +1,21 @@
+{
+  "job_id": "c96a24e0-cc25-4e35-b608-70bba3d24afb",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:14.144709+00:00",
+  "elapsed_seconds": 0.57,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "PRBS",
+      "clause_ref": "Clause 3.0",
+      "heading": "Contribution Rates & 30% Superannuation Cap",
+      "quote_snippet": "Document Title: ONGC Self-Contributory Post-Retirement & Death-in-Service Benefit Scheme (PRBS) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 3.0 - Contribution Rates & 30% Superannuation Cap\nDomain Vocabulary & Glossary Terms: Post Retirement Benefit Scheme (PRBS); Defined "
+    }
+  ]
+}

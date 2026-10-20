@@ -1,0 +1,90 @@
+{
+  "job_id": "4181f7bf-3bc5-481e-844c-65a1a1d2afe4",
+  "total_bytes_processed": 117798,
+  "executed_at": "2026-10-20T06:38:56.666890+00:00",
+  "elapsed_seconds": 1.56,
+  "row_count": 8,
+  "columns": [
+    "asset_name",
+    "asset_lifting_cost_usd_boe",
+    "component",
+    "cost_inr_cr",
+    "component_usd_boe",
+    "share_of_opex_pct",
+    "total_opex_inr_cr"
+  ],
+  "rows": [
+    {
+      "asset_name": "Jorhat Asset",
+      "asset_lifting_cost_usd_boe": 46.3,
+      "component": "manpower_allocated",
+      "cost_inr_cr": 484.7,
+      "component_usd_boe": 30.9,
+      "share_of_opex_pct": 66.7,
+      "total_opex_inr_cr": 726.4
+    },
+    {
+      "asset_name": "Jorhat Asset",
+      "asset_lifting_cost_usd_boe": 46.3,
+      "component": "power_fuel",
+      "cost_inr_cr": 83.3,
+      "component_usd_boe": 5.31,
+      "share_of_opex_pct": 11.5,
+      "total_opex_inr_cr": 726.4
+    },
+    {
+      "asset_name": "Jorhat Asset",
+      "asset_lifting_cost_usd_boe": 46.3,
+      "component": "contractor",
+      "cost_inr_cr": 58.8,
+      "component_usd_boe": 3.75,
+      "share_of_opex_pct": 8.1,
+      "total_opex_inr_cr": 726.4
+    },
+    {
+      "asset_name": "Jorhat Asset",
+      "asset_lifting_cost_usd_boe": 46.3,
+      "component": "other_opex",
+      "cost_inr_cr": 44.3,
+      "component_usd_boe": 2.83,
+      "share_of_opex_pct": 6.1,
+      "total_opex_inr_cr": 726.4
+    },
+    {
+      "asset_name": "Jorhat Asset",
+      "asset_lifting_cost_usd_boe": 46.3,
+      "component": "workover_repairs",
+      "cost_inr_cr": 29.0,
+      "component_usd_boe": 1.85,
+      "share_of_opex_pct": 4.0,
+      "total_opex_inr_cr": 726.4
+    },
+    {
+      "asset_name": "Jorhat Asset",
+      "asset_lifting_cost_usd_boe": 46.3,
+      "component": "water_handling",
+      "cost_inr_cr": 18.1,
+      "component_usd_boe": 1.15,
+      "share_of_opex_pct": 2.5,
+      "total_opex_inr_cr": 726.4
+    },
+    {
+      "asset_name": "Jorhat Asset",
+      "asset_lifting_cost_usd_boe": 46.3,
+      "component": "chemicals_consumables",
+      "cost_inr_cr": 4.6,
+      "component_usd_boe": 0.29,
+      "share_of_opex_pct": 0.6,
+      "total_opex_inr_cr": 726.4
+    },
+    {
+      "asset_name": "Jorhat Asset",
+      "asset_lifting_cost_usd_boe": 46.3,
+      "component": "logistics_osv_chopper",
+      "cost_inr_cr": 3.5,
+      "component_usd_boe": 0.23,
+      "share_of_opex_pct": 0.5,
+      "total_opex_inr_cr": 726.4
+    }
+  ]
+}

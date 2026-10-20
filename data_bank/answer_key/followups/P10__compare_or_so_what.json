@@ -1,0 +1,37 @@
+{
+  "job_id": "9fec1ffa-968e-4e48-9b16-dc1f89134a1a",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:33.694273+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 5.0",
+      "heading": "Mandatory Hard-Station Prerequisite for Promotion",
+      "provision": "R&P 5.1-5.2 (hard-station prerequisite, technical cadres)",
+      "quote_snippet": "5.1 Prerequisite for Consideration to Grade E5: No executive belonging to technical cadres (Drilling, Production, Reservoir, Geology, Geophysics, Engineering) shall be considered eligible for empanelment or promotion from Grade E4 to Grade E5 (Deputy General Manager) unless they have successfully completed at least one full tenure of 3 (three) years in a designated Category 'C' Hard Station or North-East work centre (Assam Asset, Tripura Asset, Bokaro CBM, Rajasthan Jodhpur, or 14/14 Offshore Production Duty). 5.2 Strict Enforcement: Officers who have reached eligibility residency at E4 but have never completed a Category 'C' hard station posting shall be bypassed in the DPC merit review until such mandatory hard-station tenure is completed."
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 4.0",
+      "heading": "Merit Promotion Channel (E4\u2192E5, E5\u2192E6)",
+      "provision": "R&P 4.1-4.3 (merit channel, same for all disciplines)",
+      "quote_snippet": "4.1 Selection by Merit: Promotions from Superintending Engineer / Chief Manager (Grade E4) to Deputy General Manager (Grade E5), and through higher grades (E6, E7, E8, E9), are strictly vacancy-based and governed by the Merit Promotion Channel through a Departmental Promotion Committee (DPC). 4.2 Zone of Consideration: The zone of consideration of eligible candidates shall be determined in the ratio of 1:3 of declared vacancies based on inter-se seniority within the respective discipline. 4.3 Evaluation Matrix: DPC evaluation shall be based on a 100-point composite matrix: (a) APAR Track Record (last 5 years): 50 Points; (b) Professional Competency & Technical Assessment / Interview: 30 Points; (c) Educational Qualifications & Specialized Certifications: 10 Points; (d) Seniority & Experience Weighting: 10 Points."
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 2.0",
+      "heading": "Time-Bound Promotion Channel (E1\u2192E4)",
+      "provision": "R&P 2.2 (time-bound, non-vacancy)",
+      "quote_snippet": "2.2 Non-Vacancy Based Progression: In the time-bound channel, promotions are not constrained by fixed budgetary post vacancies; all officers who complete the qualifying residency and achieve the required performance rating and vigilance clearance shall be promoted."
+    }
+  ]
+}

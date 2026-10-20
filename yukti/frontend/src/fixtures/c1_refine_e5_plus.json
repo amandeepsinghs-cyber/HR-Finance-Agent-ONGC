@@ -1,0 +1,108 @@
+{
+  "turn_id": "turn_c1_refine_002",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Filtering for senior management from E5 through E7, there are 125 officers with continuous stay of five or more years in Delhi, with the highest concentrations in Human Resources (29) and Finance & Accounts (27).",
+  "display_text": "Senior cadre breakdown (E5 Senior Manager to E7 Deputy General Manager): 125 officers across 9 disciplines have continuous stay >= 5 years in Delhi (WC-DEL) [1].",
+  "visual": {
+    "type": "chart",
+    "mode": "refine",
+    "title": "Senior Management (E5\u2013E7) Delhi Overstay by Discipline",
+    "chart": {
+      "kind": "bar",
+      "x": "discipline",
+      "y": "due",
+      "unit": "Executives",
+      "data": [
+        {
+          "discipline": "Human Resources (HR)",
+          "due": 29
+        },
+        {
+          "discipline": "Finance & Accounts (F&A)",
+          "due": 27
+        },
+        {
+          "discipline": "Materials Management (MM)",
+          "due": 24
+        },
+        {
+          "discipline": "Information Technology",
+          "due": 23
+        },
+        {
+          "discipline": "Legal",
+          "due": 8
+        },
+        {
+          "discipline": "Drilling",
+          "due": 6
+        },
+        {
+          "discipline": "Medical Services",
+          "due": 3
+        },
+        {
+          "discipline": "Production",
+          "due": 3
+        },
+        {
+          "discipline": "Environment & Safety (HSE)",
+          "due": 2
+        }
+      ]
+    },
+    "kpis": [
+      {
+        "label": "E5\u2013E7 Overstay Total",
+        "value": 125,
+        "unit": "Executives",
+        "delta": "Refined View"
+      },
+      {
+        "label": "Disciplines Tracked",
+        "value": 9,
+        "unit": "Cadres",
+        "delta": "E5 to E7"
+      },
+      {
+        "label": "HR Concentration",
+        "value": 29,
+        "unit": "Officers",
+        "delta": "Highest Discipline"
+      }
+    ]
+  },
+  "insights": [
+    "Analysis across 9 discipline cohorts indicates 125 senior executives (E5\u2013E7) overdue for rotation in Delhi.",
+    "Human Resources (29), Finance & Accounts (27), and Materials Management (24) form 64% of HQ senior overstay.",
+    "Senior rotational deployment balances technical and administrative leadership across operational work centres."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.v_continuous_stay",
+      "query_id": "01483068-39c6-4aa6-9c45-008161ec97f2",
+      "sql": "-- Answer Key Follow-up SQL: C1__drill_down\n-- Question: Which specific disciplines in Delhi (e.g. F&A, HR, MM, Legal) have the highest concentration of E5\u2013E7 officers past 5 years?\n-- Type: data\n-- Semantic audit 2026-10-20: previously returned grade x discipline rows ordered by grade, which does not\n-- rank disciplines by concentration. Now one row per discipline: E5-E7 officers in Delhi HQ (WC-DEL) with\n-- >=60 months continuous stay, the discipline's total current E5-E7 strength in Delhi, the concentration\n-- (share past 5 years) and the share of all Delhi E5-E7 officers past 5 years; ranked by count.\n\nWITH d AS (\n    SELECT\n        v.discipline_id,\n        COUNT(DISTINCT v.emp_id) AS e5_e7_in_delhi,\n        COUNT(DISTINCT CASE WHEN v.continuous_stay_months >= 60 THEN v.emp_id END) AS e5_e7_past_5yr,\n        COUNT(DISTINCT CASE WHEN v.continuous_stay_months >= 60 AND v.grade_id = 'E5' THEN v.emp_id END) AS e5_past_5yr,\n        COUNT(DISTINCT CASE WHEN v.continuous_stay_months >= 60 AND v.grade_id = 'E6' THEN v.emp_id END) AS e6_past_5yr,\n        COUNT(DISTINCT CASE WHEN v.continuous_stay_months >= 60 AND v.grade_id = 'E7' THEN v.emp_id END) AS e7_past_5yr\n    FROM `ongc-hr-finance-agent.hrfin_gold.v_continuous_stay` v\n    WHERE v.is_current_stay = TRUE\n      AND v.wc_id = 'WC-DEL'\n      AND v.grade_id IN ('E5', 'E6', 'E7')\n    GROUP BY v.discipline_id\n)\nSELECT\n    d.discipline_id,\n    dd.name AS discipline_name,\n    d.e5_e7_past_5yr,\n    d.e5_past_5yr,\n    d.e6_past_5yr,\n    d.e7_past_5yr,\n    d.e5_e7_in_delhi,\n    ROUND(d.e5_e7_past_5yr * 100.0 / NULLIF(d.e5_e7_in_delhi, 0), 1) AS pct_of_discipline_past_5yr,\n    ROUND(d.e5_e7_past_5yr * 100.0 / NULLIF(SUM(d.e5_e7_past_5yr) OVER (), 0), 1) AS share_of_delhi_e5_e7_past_5yr\nFROM d\nJOIN dim_discipline dd ON d.discipline_id = dd.discipline_id\nWHERE d.e5_e7_past_5yr > 0\nORDER BY d.e5_e7_past_5yr DESC, pct_of_discipline_past_5yr DESC;\n"
+    },
+    {
+      "kind": "policy",
+      "doc_id": "JRTP",
+      "clause": "3.0",
+      "title": "Job Rotation & Transfer Policy - Station Tenure Norms"
+    }
+  ],
+  "suggestions": [
+    "Draft transfer proposal for E5+ cohort",
+    "Compare with Dehradun Tel Bhavan HQ",
+    "Show operational deficit stations"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "pdf"
+  ]
+}

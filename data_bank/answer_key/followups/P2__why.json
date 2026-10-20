@@ -1,0 +1,37 @@
+{
+  "job_id": "c1a42a9e-821f-44b8-b83f-db8a582ecef0",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:10.791858+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 5.0",
+      "heading": "Geographic Clusters",
+      "provision": "JRTP 5.1 (cluster definition)",
+      "quote_snippet": "5.1 Contiguous stations within a defined industrial or urban agglomeration shall constitute a single Geographic Cluster."
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 5.0",
+      "heading": "Geographic Clusters",
+      "provision": "JRTP 5.3 (no tenure reset within cluster)",
+      "quote_snippet": "5.3 Intra-Cluster Transfer Effect: Transfer between work centres within the same Geographic Cluster (e.g. from New Delhi to Noida, or from Ahmedabad Asset to IRS Chandkheda, or from Mumbai WOB to Uran Plant) shall NOT constitute an outstation transfer for the purpose of resetting station tenure or cumulative cluster tenure."
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 4.0",
+      "heading": "Cumulative Stay Cap",
+      "provision": "JRTP 4.2 (cumulative computation)",
+      "quote_snippet": "4.2 Computation of Cumulative Stay: Cumulative stay shall be computed as the mathematical sum of all historical postings (SCD2 records) served at work centres belonging to the same station or cluster, irrespective of breaks between postings or promotions in place."
+    }
+  ]
+}

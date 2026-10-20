@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "energy_transition",
+  description: "Renewable energy, green hydrogen, and carbon abatement projects advancing the ONGC Net Zero 2038 Roadmap."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_0) AS transition_project_id,
+    TRIM(col_1) AS project_name,
+    TRIM(col_2) AS fiscal_year,
+    TRIM(col_3) AS technology_type,
+    TRIM(col_4) AS location_state_code,
+    TRIM(col_5) AS wc_id,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_6), ''), ',', ''), '₹', '') AS NUMERIC) AS installed_capacity_mw,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_7), ''), ',', ''), '₹', '') AS NUMERIC) AS generation_gwh,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_8), ''), ',', ''), '₹', '') AS NUMERIC) AS annual_capex_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_9), ''), ',', ''), '₹', '') AS NUMERIC) AS cumulative_capex_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_10), ''), ',', ''), '₹', '') AS NUMERIC) AS scope1_avoided_emissions_mtco2e,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_11), ''), ',', ''), '₹', '') AS NUMERIC) AS scope2_avoided_emissions_mtco2e,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_12), ''), ',', ''), '₹', '') AS INT64) AS engineers_reskilled_count,
+    CASE WHEN LOWER(TRIM(col_13)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_13)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS net_zero_2038_roadmap_milestone_met
+  FROM ${ref("excel_energy_transition_progress")}
+  WHERE _row_number >= 2 AND col_0 IS NOT NULL AND TRIM(col_0) != '' AND _sheet_name NOT IN ('Notes_and_Citations', 'Executive_Summary', '_Ref_Capex_Codes', '_Cadre_Control_Master', '_MoU_Grading_Rules', '_Schedule_VII_Themes', '_Talent_Bench_Scale', '_Court_Jurisdiction_Codes')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY transition_project_id ORDER BY _ingest_ts DESC) = 1

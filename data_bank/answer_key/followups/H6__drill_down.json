@@ -1,0 +1,369 @@
+{
+  "job_id": "4f9532a0-7a4f-4627-9023-e3566066ec53",
+  "total_bytes_processed": 634800,
+  "executed_at": "2026-10-20T06:38:48.390551+00:00",
+  "elapsed_seconds": 0.72,
+  "row_count": 35,
+  "columns": [
+    "grade_id",
+    "category",
+    "reserved_sanctioned",
+    "in_position",
+    "representation_pct",
+    "norm_pct",
+    "category_vacancies",
+    "backlog_vacancies"
+  ],
+  "rows": [
+    {
+      "grade_id": "E1",
+      "category": "OBC",
+      "reserved_sanctioned": 453,
+      "in_position": 414,
+      "representation_pct": 29.7,
+      "norm_pct": 27.0,
+      "category_vacancies": 39,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E1",
+      "category": "SC",
+      "reserved_sanctioned": 233,
+      "in_position": 218,
+      "representation_pct": 15.6,
+      "norm_pct": 15.0,
+      "category_vacancies": 15,
+      "backlog_vacancies": 7
+    },
+    {
+      "grade_id": "E1",
+      "category": "EWS",
+      "reserved_sanctioned": 67,
+      "in_position": 64,
+      "representation_pct": 4.6,
+      "norm_pct": 10.0,
+      "category_vacancies": 3,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E1",
+      "category": "ST",
+      "reserved_sanctioned": 144,
+      "in_position": 134,
+      "representation_pct": 9.6,
+      "norm_pct": 7.5,
+      "category_vacancies": 10,
+      "backlog_vacancies": 2
+    },
+    {
+      "grade_id": "E1",
+      "category": "PwD",
+      "reserved_sanctioned": 32,
+      "in_position": 31,
+      "representation_pct": 2.2,
+      "norm_pct": 4.0,
+      "category_vacancies": 1,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E2",
+      "category": "OBC",
+      "reserved_sanctioned": 670,
+      "in_position": 613,
+      "representation_pct": 26.7,
+      "norm_pct": 27.0,
+      "category_vacancies": 57,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E2",
+      "category": "SC",
+      "reserved_sanctioned": 369,
+      "in_position": 340,
+      "representation_pct": 14.8,
+      "norm_pct": 15.0,
+      "category_vacancies": 29,
+      "backlog_vacancies": 9
+    },
+    {
+      "grade_id": "E2",
+      "category": "EWS",
+      "reserved_sanctioned": 115,
+      "in_position": 106,
+      "representation_pct": 4.6,
+      "norm_pct": 10.0,
+      "category_vacancies": 9,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E2",
+      "category": "ST",
+      "reserved_sanctioned": 278,
+      "in_position": 260,
+      "representation_pct": 11.3,
+      "norm_pct": 7.5,
+      "category_vacancies": 18,
+      "backlog_vacancies": 8
+    },
+    {
+      "grade_id": "E2",
+      "category": "PwD",
+      "reserved_sanctioned": 57,
+      "in_position": 52,
+      "representation_pct": 2.3,
+      "norm_pct": 4.0,
+      "category_vacancies": 5,
+      "backlog_vacancies": 1
+    },
+    {
+      "grade_id": "E3",
+      "category": "OBC",
+      "reserved_sanctioned": 870,
+      "in_position": 795,
+      "representation_pct": 27.2,
+      "norm_pct": 27.0,
+      "category_vacancies": 75,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E3",
+      "category": "SC",
+      "reserved_sanctioned": 477,
+      "in_position": 438,
+      "representation_pct": 15.0,
+      "norm_pct": 15.0,
+      "category_vacancies": 39,
+      "backlog_vacancies": 15
+    },
+    {
+      "grade_id": "E3",
+      "category": "EWS",
+      "reserved_sanctioned": 165,
+      "in_position": 156,
+      "representation_pct": 5.3,
+      "norm_pct": 10.0,
+      "category_vacancies": 9,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E3",
+      "category": "ST",
+      "reserved_sanctioned": 392,
+      "in_position": 369,
+      "representation_pct": 12.6,
+      "norm_pct": 7.5,
+      "category_vacancies": 23,
+      "backlog_vacancies": 10
+    },
+    {
+      "grade_id": "E3",
+      "category": "PwD",
+      "reserved_sanctioned": 68,
+      "in_position": 65,
+      "representation_pct": 2.2,
+      "norm_pct": 4.0,
+      "category_vacancies": 3,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E4",
+      "category": "OBC",
+      "reserved_sanctioned": 799,
+      "in_position": 731,
+      "representation_pct": 27.4,
+      "norm_pct": 27.0,
+      "category_vacancies": 68,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E4",
+      "category": "SC",
+      "reserved_sanctioned": 417,
+      "in_position": 395,
+      "representation_pct": 14.8,
+      "norm_pct": 15.0,
+      "category_vacancies": 22,
+      "backlog_vacancies": 6
+    },
+    {
+      "grade_id": "E4",
+      "category": "EWS",
+      "reserved_sanctioned": 134,
+      "in_position": 125,
+      "representation_pct": 4.7,
+      "norm_pct": 10.0,
+      "category_vacancies": 9,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E4",
+      "category": "ST",
+      "reserved_sanctioned": 330,
+      "in_position": 301,
+      "representation_pct": 11.3,
+      "norm_pct": 7.5,
+      "category_vacancies": 29,
+      "backlog_vacancies": 14
+    },
+    {
+      "grade_id": "E4",
+      "category": "PwD",
+      "reserved_sanctioned": 60,
+      "in_position": 55,
+      "representation_pct": 2.1,
+      "norm_pct": 4.0,
+      "category_vacancies": 5,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E5",
+      "category": "OBC",
+      "reserved_sanctioned": 642,
+      "in_position": 596,
+      "representation_pct": 27.3,
+      "norm_pct": 27.0,
+      "category_vacancies": 46,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E5",
+      "category": "SC",
+      "reserved_sanctioned": 337,
+      "in_position": 312,
+      "representation_pct": 14.3,
+      "norm_pct": 15.0,
+      "category_vacancies": 25,
+      "backlog_vacancies": 14
+    },
+    {
+      "grade_id": "E5",
+      "category": "EWS",
+      "reserved_sanctioned": 105,
+      "in_position": 96,
+      "representation_pct": 4.4,
+      "norm_pct": 10.0,
+      "category_vacancies": 9,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E5",
+      "category": "ST",
+      "reserved_sanctioned": 285,
+      "in_position": 265,
+      "representation_pct": 12.2,
+      "norm_pct": 7.5,
+      "category_vacancies": 20,
+      "backlog_vacancies": 4
+    },
+    {
+      "grade_id": "E5",
+      "category": "PwD",
+      "reserved_sanctioned": 57,
+      "in_position": 53,
+      "representation_pct": 2.4,
+      "norm_pct": 4.0,
+      "category_vacancies": 4,
+      "backlog_vacancies": 1
+    },
+    {
+      "grade_id": "E6",
+      "category": "OBC",
+      "reserved_sanctioned": 337,
+      "in_position": 320,
+      "representation_pct": 27.3,
+      "norm_pct": 27.0,
+      "category_vacancies": 17,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E6",
+      "category": "SC",
+      "reserved_sanctioned": 198,
+      "in_position": 189,
+      "representation_pct": 16.1,
+      "norm_pct": 15.0,
+      "category_vacancies": 9,
+      "backlog_vacancies": 3
+    },
+    {
+      "grade_id": "E6",
+      "category": "EWS",
+      "reserved_sanctioned": 67,
+      "in_position": 62,
+      "representation_pct": 5.3,
+      "norm_pct": 10.0,
+      "category_vacancies": 5,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E6",
+      "category": "ST",
+      "reserved_sanctioned": 165,
+      "in_position": 148,
+      "representation_pct": 12.6,
+      "norm_pct": 7.5,
+      "category_vacancies": 17,
+      "backlog_vacancies": 4
+    },
+    {
+      "grade_id": "E6",
+      "category": "PwD",
+      "reserved_sanctioned": 29,
+      "in_position": 28,
+      "representation_pct": 2.4,
+      "norm_pct": 4.0,
+      "category_vacancies": 1,
+      "backlog_vacancies": 1
+    },
+    {
+      "grade_id": "E7",
+      "category": "OBC",
+      "reserved_sanctioned": 241,
+      "in_position": 228,
+      "representation_pct": 26.8,
+      "norm_pct": 27.0,
+      "category_vacancies": 13,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E7",
+      "category": "SC",
+      "reserved_sanctioned": 129,
+      "in_position": 123,
+      "representation_pct": 14.5,
+      "norm_pct": 15.0,
+      "category_vacancies": 6,
+      "backlog_vacancies": 3
+    },
+    {
+      "grade_id": "E7",
+      "category": "EWS",
+      "reserved_sanctioned": 41,
+      "in_position": 40,
+      "representation_pct": 4.7,
+      "norm_pct": 10.0,
+      "category_vacancies": 1,
+      "backlog_vacancies": 0
+    },
+    {
+      "grade_id": "E7",
+      "category": "ST",
+      "reserved_sanctioned": 106,
+      "in_position": 98,
+      "representation_pct": 11.5,
+      "norm_pct": 7.5,
+      "category_vacancies": 8,
+      "backlog_vacancies": 3
+    },
+    {
+      "grade_id": "E7",
+      "category": "PwD",
+      "reserved_sanctioned": 26,
+      "in_position": 25,
+      "representation_pct": 2.9,
+      "norm_pct": 4.0,
+      "category_vacancies": 1,
+      "backlog_vacancies": 0
+    }
+  ]
+}

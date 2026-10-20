@@ -1,0 +1,31 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "access_audit_log",
+  description: "Security access audit log recording all user queries, Role-Based Access Control (RBAC) enforcement, and authorization denials."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`log_id`) AS log_id,
+    SAFE_CAST(NULLIF(TRIM(`timestamp`), '') AS TIMESTAMP) AS timestamp,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`date`), ''), 1, 10)) AS date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`user_id`) AS user_id,
+    TRIM(`user_role`) AS user_role,
+    TRIM(`user_department`) AS user_department,
+    TRIM(`user_grade`) AS user_grade,
+    TRIM(`user_wc_id`) AS user_wc_id,
+    TRIM(`requested_resource`) AS requested_resource,
+    TRIM(`resource_domain`) AS resource_domain,
+    TRIM(`resource_data_classification`) AS resource_data_classification,
+    TRIM(`access_decision`) AS access_decision,
+    TRIM(`denial_reason`) AS denial_reason,
+    TRIM(`client_ip`) AS client_ip
+  FROM ${ref("db_exports_access_audit_log")}
+  WHERE NULLIF(TRIM(`log_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY log_id ORDER BY _ingest_ts DESC) = 1

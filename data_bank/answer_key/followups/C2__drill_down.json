@@ -1,0 +1,252 @@
+{
+  "job_id": "acc15ae2-4915-4111-a267-937a2bd3839f",
+  "total_bytes_processed": 2560175,
+  "executed_at": "2026-10-20T06:26:56.227258+00:00",
+  "elapsed_seconds": 0.83,
+  "row_count": 26,
+  "columns": [
+    "short_name",
+    "discipline_name",
+    "exec_sanctioned",
+    "exec_in_position",
+    "exec_deficit",
+    "deficit_pct",
+    "active_executives_today"
+  ],
+  "rows": [
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Production",
+      "exec_sanctioned": 166,
+      "exec_in_position": 147,
+      "exec_deficit": 19,
+      "deficit_pct": 11.4,
+      "active_executives_today": 143
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Electrical",
+      "exec_sanctioned": 52,
+      "exec_in_position": 42,
+      "exec_deficit": 10,
+      "deficit_pct": 19.2,
+      "active_executives_today": 43
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Drilling",
+      "exec_sanctioned": 100,
+      "exec_in_position": 91,
+      "exec_deficit": 9,
+      "deficit_pct": 9.0,
+      "active_executives_today": 89
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Mechanical",
+      "exec_sanctioned": 54,
+      "exec_in_position": 48,
+      "exec_deficit": 6,
+      "deficit_pct": 11.1,
+      "active_executives_today": 50
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Geology",
+      "exec_sanctioned": 30,
+      "exec_in_position": 26,
+      "exec_deficit": 4,
+      "deficit_pct": 13.3,
+      "active_executives_today": 23
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Instrumentation",
+      "exec_sanctioned": 36,
+      "exec_in_position": 32,
+      "exec_deficit": 4,
+      "deficit_pct": 11.1,
+      "active_executives_today": 32
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Environment & Safety (HSE)",
+      "exec_sanctioned": 14,
+      "exec_in_position": 12,
+      "exec_deficit": 2,
+      "deficit_pct": 14.3,
+      "active_executives_today": 12
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Geophysics (Surface)",
+      "exec_sanctioned": 24,
+      "exec_in_position": 22,
+      "exec_deficit": 2,
+      "deficit_pct": 8.3,
+      "active_executives_today": 22
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Materials Management (MM)",
+      "exec_sanctioned": 21,
+      "exec_in_position": 19,
+      "exec_deficit": 2,
+      "deficit_pct": 9.5,
+      "active_executives_today": 19
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Reservoir",
+      "exec_sanctioned": 45,
+      "exec_in_position": 43,
+      "exec_deficit": 2,
+      "deficit_pct": 4.4,
+      "active_executives_today": 42
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Finance & Accounts (F&A)",
+      "exec_sanctioned": 13,
+      "exec_in_position": 12,
+      "exec_deficit": 1,
+      "deficit_pct": 7.7,
+      "active_executives_today": 12
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Human Resources (HR)",
+      "exec_sanctioned": 6,
+      "exec_in_position": 5,
+      "exec_deficit": 1,
+      "deficit_pct": 16.7,
+      "active_executives_today": 5
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Chemistry",
+      "exec_sanctioned": 15,
+      "exec_in_position": 15,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 16
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Drilling",
+      "exec_sanctioned": 132,
+      "exec_in_position": 132,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 126
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Electrical",
+      "exec_sanctioned": 57,
+      "exec_in_position": 57,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 58
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Environment & Safety (HSE)",
+      "exec_sanctioned": 16,
+      "exec_in_position": 16,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 16
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Finance & Accounts (F&A)",
+      "exec_sanctioned": 15,
+      "exec_in_position": 15,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 15
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Geology",
+      "exec_sanctioned": 34,
+      "exec_in_position": 34,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 34
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Geophysics (Surface)",
+      "exec_sanctioned": 35,
+      "exec_in_position": 35,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 34
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Human Resources (HR)",
+      "exec_sanctioned": 7,
+      "exec_in_position": 7,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 7
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Instrumentation",
+      "exec_sanctioned": 27,
+      "exec_in_position": 27,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 27
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Materials Management (MM)",
+      "exec_sanctioned": 24,
+      "exec_in_position": 24,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 24
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Mechanical",
+      "exec_sanctioned": 66,
+      "exec_in_position": 66,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 67
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Production",
+      "exec_sanctioned": 209,
+      "exec_in_position": 209,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 207
+    },
+    {
+      "short_name": "Assam Asset",
+      "discipline_name": "Reservoir",
+      "exec_sanctioned": 55,
+      "exec_in_position": 55,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 56
+    },
+    {
+      "short_name": "Tripura Asset",
+      "discipline_name": "Chemistry",
+      "exec_sanctioned": 8,
+      "exec_in_position": 8,
+      "exec_deficit": 0,
+      "deficit_pct": 0.0,
+      "active_executives_today": 8
+    }
+  ]
+}

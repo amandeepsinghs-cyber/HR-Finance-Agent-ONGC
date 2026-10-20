@@ -1,0 +1,27 @@
+demo_anchor_date: '2026-10-19'
+current_fiscal_year: FY27
+current_quarter: Q3
+current_month: 2026-10
+hr_lifecycle_window:
+  start_date: '2001-04-01'
+  end_date: '2026-10-19'
+  span_years: 25.5
+  description: Covers 25-year service horizons allowing authentic tenure, seniority, and superannuation simulations.
+finance_operations_window:
+  start_date: '2016-04-01'
+  end_date: '2026-09-30'
+  span_months: 126
+  closed_fiscal_years:
+  - FY17
+  - FY18
+  - FY19
+  - FY20
+  - FY21
+  - FY22
+  - FY23
+  - FY24
+  - FY25
+  - FY26
+  in_progress_fiscal_year: FY27
+  closed_months_count: 126
+  description: 10.5 years of continuous monthly production, financial P&L, capex, and treasury series.

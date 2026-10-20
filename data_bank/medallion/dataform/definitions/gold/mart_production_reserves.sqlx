@@ -1,0 +1,49 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_production_reserves",
+  description: "Field and asset hydrocarbon production (crude oil, natural gas), 2P reserves, and drilling operations"
+}
+
+SELECT
+  pm.prod_id,
+  pm.month,
+  pm.fiscal_year,
+  pm.field_id,
+  f.name AS field_name,
+  f.basin,
+  f.basin AS basin_name,
+  f.onshore_offshore,
+  pm.asset_wc_id,
+  pm.asset_wc_id AS wc_id,
+  w.name AS asset_name,
+  pm.operatorship,
+  pm.oil_production_mt,
+  pm.gas_production_mmscm,
+  pm.condensate_production_mt,
+  (pm.oil_production_mt + pm.condensate_production_mt) AS total_liquids_production_mt,
+  pm.total_production_boe,
+  pm.water_cut_pct,
+  pm.water_produced_m3,
+  pm.gas_sales_mmscm,
+  pm.gas_flared_mmscm,
+  pm.gas_internal_consumption_mmscm,
+  pm.gas_utilisation_pct,
+  pm.active_producing_wells,
+  pm.active_injection_wells,
+  pm.well_downtime_hours,
+  pm.operational_uptime_pct,
+  ra.reserves_2p_total_mmtoe,
+  ra.reserve_replacement_ratio_rrr_2p,
+  ra.finding_cost_usd_per_boe,
+  ra.development_cost_usd_per_boe,
+  wll.well_type,
+  wll.result_status,
+  wll.drilling_cost_inr_cr,
+  wll.drilling_cost_inr_cr AS actual_spend_inr_cr,
+  0 AS vacancy_count
+FROM ${ref("production_monthly")} pm
+LEFT JOIN ${ref("dim_field")} f ON pm.field_id = f.field_id
+LEFT JOIN ${ref("dim_work_centre")} w ON pm.asset_wc_id = w.wc_id
+LEFT JOIN ${ref("reserves_annual")} ra ON pm.field_id = ra.field_id AND pm.fiscal_year = ra.fiscal_year
+LEFT JOIN (SELECT field_id, fiscal_year, MAX(well_type) AS well_type, MAX(result_status) AS result_status, SUM(drilling_cost_inr_cr) AS drilling_cost_inr_cr FROM ${ref("wells_drilled")} GROUP BY 1, 2) wll ON pm.field_id = wll.field_id AND pm.fiscal_year = wll.fiscal_year

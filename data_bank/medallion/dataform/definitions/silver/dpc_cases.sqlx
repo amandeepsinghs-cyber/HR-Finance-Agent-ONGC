@@ -1,0 +1,32 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "dpc_cases",
+  description: "Departmental Promotion Committee (DPC) tracker tracking candidate officers under promotion review and panel delays."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_0) AS dpc_id,
+    TRIM(col_1) AS emp_id,
+    TRIM(col_2) AS fiscal_year,
+    TRIM(col_3) AS wc_id,
+    TRIM(col_4) AS from_grade_id,
+    TRIM(col_5) AS to_grade_id,
+    TRIM(col_6) AS discipline_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_7), ''), 1, 10)) AS due_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_8), ''), 1, 10)) AS held_date,
+    TRIM(col_9) AS status,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_10), ''), ',', ''), '₹', '') AS INT64) AS eligible_candidates_count,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_11), ''), ',', ''), '₹', '') AS INT64) AS recommended_candidates_count,
+    TRIM(col_12) AS pending_reason,
+    TRIM(col_13) AS delay_bottleneck_reason,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_14), ''), ',', ''), '₹', '') AS INT64) AS delay_months,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_15), ''), ',', ''), '₹', '') AS NUMERIC) AS accelerated_merit_benchmark_score
+  FROM ${ref("excel_dpc_tracker")}
+  WHERE _row_number >= 2 AND col_0 IS NOT NULL AND TRIM(col_0) != '' AND _sheet_name NOT IN ('Notes_and_Citations', 'Executive_Summary', '_Ref_Capex_Codes', '_Cadre_Control_Master', '_MoU_Grading_Rules', '_Schedule_VII_Themes', '_Talent_Bench_Scale', '_Court_Jurisdiction_Codes')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY dpc_id, emp_id ORDER BY _ingest_ts DESC) = 1

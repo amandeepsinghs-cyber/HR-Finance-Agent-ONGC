@@ -1,0 +1,43 @@
+# entity_forcing_whitelist.yaml
+# Whitelist of standard unit, calendar, and legitimate calibration constants.
+# NOTE: This file is editable ONLY by the lead. Generators must NOT modify this file.
+# The integrity of this file is protected by a SHA-256 checksum assert in test_no_entity_forcing.py.
+
+unit_and_calendar_constants:
+  - 6
+  - 7
+  - 12
+  - 24
+  - 28
+  - 29
+  - 30
+  - 31
+  - 52
+  - 60
+  - 90
+  - 120
+  - 180
+  - 365
+  - 366
+  - 1000
+  - 100000
+  - 1000000
+  - 10000000
+  - 7.33
+  - 7330
+
+aging_buckets:
+  - 30
+  - 60
+  - 90
+  - 180
+  - 365
+
+allowed_personas:
+  - EMP-000001
+  - EMP-000002
+  - EMP-000003
+  - EMP-102451
+  - EMP-103892
+
+additional_whitelisted_numbers: []

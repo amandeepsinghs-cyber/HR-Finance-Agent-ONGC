@@ -1,0 +1,27 @@
+{
+  "job_id": "a9c8a007-2a20-4bf4-944f-d021d8a9e897",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:53.457804+00:00",
+  "elapsed_seconds": 1.05,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 6.0",
+      "heading": "Mandatory North-East / Hard Station Tenure",
+      "quote_snippet": "6.1 Mandatory Prerequisite for Executive Leadership: Every executive belonging to technical and general operational disciplines must successfully complete at least one full tenure of 3 (three) continuous years in a Category 'C' Hard Station or North-East work centre (Assam Asset, Tripura Asset, Bokaro CBM, Rajasthan Jodhpur, or 14/14 Offshore Duty) prior to consideration for merit promotion from S"
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 5.0",
+      "heading": "Mandatory Hard-Station Prerequisite for Promotion",
+      "quote_snippet": "5.1 Prerequisite for Consideration to Grade E5: No executive belonging to technical cadres (Drilling, Production, Reservoir, Geology, Geophysics, Engineering) shall be considered eligible for empanelment or promotion from Grade E4 to Grade E5 (Deputy General Manager) unless they have successfully completed at least one full tenure of 3 (three) years in a designated Category 'C' Hard Station or Nor"
+    }
+  ]
+}

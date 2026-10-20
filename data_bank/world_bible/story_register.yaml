@@ -1,0 +1,3616 @@
+metadata:
+  description: ONGC World Bible Story Register (Step 1.3)
+  version: '1.1'
+  demo_anchor_date: '2026-10-19'
+  total_stories: 38
+  total_personas: 5
+  total_served_without_story: 23
+  notes: Ground truth plantable stories S1-S38, canonical demo personas, and policy/refusal registries. All exact numbers
+    are mutually consistent with calibration_targets.yaml, Lok Sabha LS2067, and reference entity IDs.
+personas:
+- persona_id: CMD
+  emp_id: EMP-000001
+  name: Chairman & Chief Executive Officer
+  title: Chairman & Chief Executive Officer (CMD)
+  grade: CMD
+  wc_id: WC-DEL
+  discipline: PRD
+  self_service_records:
+    leave_balance:
+      earned_leave_days: 240
+      casual_leave_days: 8
+      half_pay_leave_days: 60
+      encashable_el_days: 240
+    transfer_due_date: Board tenure / Non-rotational
+    transfer_status: board_tenure_exempt
+    medical_claim:
+      claim_id: MED-2026-0012
+      submission_date: '2026-08-10'
+      amount_claimed_inr: 65000
+      amount_approved_inr: 65000
+      status: approved_processed
+      payment_date: '2026-08-25'
+    promotion_eligibility:
+      current_grade: CMD
+      next_grade: null
+      eligibility_date: null
+      status: not_applicable_board_level
+    ta_entitlement:
+      travel_class: Business Air / 1st AC Executive Train
+      lodging_allowance_per_day_inr: 15000
+      daily_allowance_inr: 3500
+      offshore_special_duty_allowance_inr_per_day: 2500
+- persona_id: DIR_HR
+  emp_id: EMP-000002
+  name: Director (Human Resources)
+  title: Director (Human Resources)
+  grade: DIR
+  wc_id: WC-DEL
+  discipline: HR
+  self_service_records:
+    leave_balance:
+      earned_leave_days: 215
+      casual_leave_days: 5
+      half_pay_leave_days: 48
+      encashable_el_days: 215
+    transfer_due_date: Board tenure / Non-rotational
+    transfer_status: board_tenure_exempt
+    medical_claim:
+      claim_id: MED-2026-0158
+      submission_date: '2026-07-14'
+      amount_claimed_inr: 48000
+      amount_approved_inr: 48000
+      status: approved_processed
+      payment_date: '2026-07-28'
+    promotion_eligibility:
+      current_grade: DIR
+      next_grade: CMD
+      eligibility_date: '2027-04-01'
+      status: pesb_selection_pipeline
+    ta_entitlement:
+      travel_class: Business Air / 1st AC Executive Train
+      lodging_allowance_per_day_inr: 12000
+      daily_allowance_inr: 3000
+      offshore_special_duty_allowance_inr_per_day: 2500
+- persona_id: DIR_FIN
+  emp_id: EMP-000003
+  name: Director (Finance)
+  title: Director (Finance)
+  grade: DIR
+  wc_id: WC-DEL
+  discipline: FIN
+  self_service_records:
+    leave_balance:
+      earned_leave_days: 198
+      casual_leave_days: 7
+      half_pay_leave_days: 52
+      encashable_el_days: 198
+    transfer_due_date: Board tenure / Non-rotational
+    transfer_status: board_tenure_exempt
+    medical_claim:
+      claim_id: MED-2026-0284
+      submission_date: '2026-09-02'
+      amount_claimed_inr: 32000
+      amount_approved_inr: 32000
+      status: approved_processed
+      payment_date: '2026-09-20'
+    promotion_eligibility:
+      current_grade: DIR
+      next_grade: CMD
+      eligibility_date: '2027-04-01'
+      status: pesb_selection_pipeline
+    ta_entitlement:
+      travel_class: Business Air / 1st AC Executive Train
+      lodging_allowance_per_day_inr: 12000
+      daily_allowance_inr: 3000
+      offshore_special_duty_allowance_inr_per_day: 2500
+- persona_id: E2_HR
+  emp_id: EMP-102451
+  name: Pooja Verma
+  title: Human Resources Officer
+  grade: E2
+  wc_id: WC-DEL
+  discipline: HR
+  dob: '1996-03-18'
+  doj: '2021-08-16'
+  retirement_date: '2056-03-31'
+  self_service_records:
+    leave_balance:
+      earned_leave_days: 78
+      casual_leave_days: 6
+      half_pay_leave_days: 24
+      encashable_el_days: 48
+    transfer_due_date: '2027-04-01'
+    transfer_status: due_for_agt_fy27
+    medical_claim:
+      claim_id: MED-2026-1049
+      submission_date: '2026-09-18'
+      amount_claimed_inr: 18500
+      amount_approved_inr: 16200
+      status: approved_processed
+      payment_date: '2026-09-30'
+    promotion_eligibility:
+      current_grade: E2
+      next_grade: E3
+      eligibility_date: '2027-01-01'
+      status: eligible_next_dpc
+      residency_years_required: 3.0
+      residency_years_completed: 3.2
+      apar_benchmark: Very Good
+      apar_score_avg: 88.5
+    ta_entitlement:
+      travel_class: Economy Air / 2nd AC Train
+      lodging_allowance_per_day_inr: 4500
+      daily_allowance_inr: 1200
+      offshore_special_duty_allowance_inr_per_day: 1500
+    training_programs_enrolled:
+    - course_id: TRN-HR-2026-04
+      course_name: Advanced SAP SuccessFactors & Talent Management
+      institution: WC-ACA
+      start_date: '2026-11-10'
+      duration_days: 5
+- persona_id: E3_FIN
+  emp_id: EMP-103892
+  name: Rajesh Kulkarni
+  title: Finance & Accounts Officer
+  grade: E3
+  wc_id: WC-MUM
+  discipline: FIN
+  dob: '1992-06-25'
+  doj: '2018-09-03'
+  retirement_date: '2052-06-30'
+  self_service_records:
+    leave_balance:
+      earned_leave_days: 112
+      casual_leave_days: 4
+      half_pay_leave_days: 36
+      encashable_el_days: 82
+    transfer_due_date: '2028-04-01'
+    transfer_status: tenure_mid_stint
+    medical_claim:
+      claim_id: MED-2026-2180
+      submission_date: '2026-10-04'
+      amount_claimed_inr: 24800
+      amount_approved_inr: 24800
+      status: under_verification
+      payment_date: null
+    promotion_eligibility:
+      current_grade: E3
+      next_grade: E4
+      eligibility_date: '2028-01-01'
+      status: ineligible_residency_shortfall
+      residency_years_required: 4.0
+      residency_years_completed: 2.8
+      apar_benchmark: Very Good
+      apar_score_avg: 91.0
+    ta_entitlement:
+      travel_class: Economy Air / 2nd AC Train
+      lodging_allowance_per_day_inr: 6000
+      daily_allowance_inr: 1500
+      offshore_special_duty_allowance_inr_per_day: 1800
+    training_programs_enrolled:
+    - course_id: TRN-FIN-2026-09
+      course_name: International Financial Reporting Standards & IndAS 116
+      institution: WC-IOG
+      start_date: '2026-12-05'
+      duration_days: 3
+stories:
+- id: S1
+  title: Corporate HQ Delhi Tenure Accumulation & Ten-Year Cap Breaches
+  narrative: Senior executive overstay at Corporate HQ Delhi (Deendayal Urja Bhawan) has reached critical levels, with 412
+    executives completing 5 or more continuous years. Crucially, 138 officers have exceeded the 10-year cumulative Delhi NCR
+    cluster cap under JRTP Clause 4.3, of whom only 31 qualify for superannuation exemption within 3 years, leaving 107 non-exempt
+    officers due for mandatory transfer.
+  entities:
+    work_centres:
+    - WC-DEL
+    fields: []
+    projects: []
+    grades:
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+    - E7
+    - E8
+    - E9
+    disciplines:
+    - FIN
+    - HR
+    - MM
+    - IT
+    - LEG
+    - GEO
+    - PRD
+    - DRL
+    customers: []
+    vendors: []
+    states:
+    - DL
+  exact_numbers:
+    delhi_executives_ge_5yr:
+      value: 412
+      unit: count
+      computation_definition: COUNT(DISTINCT emp_id) FROM posting_history WHERE wc_id = 'WC-DEL' AND to_dt IS NULL AND grade
+        LIKE 'E%' AND from_dt <= '2021-10-19'
+    delhi_cluster_ge_10yr_cumulative:
+      value: 138
+      unit: count
+      computation_definition: COUNT(DISTINCT emp_id) FROM posting_history WHERE wc_id IN ('WC-DEL') AND grade LIKE 'E%' GROUP
+        BY emp_id HAVING SUM(DATE_DIFF(COALESCE(to_dt, '2026-10-19'), from_dt, DAY)) >= 3652
+    delhi_10yr_superannuation_exempt:
+      value: 31
+      unit: count
+      computation_definition: COUNT(DISTINCT e.emp_id) FROM employee_master e JOIN (delhi_cluster_ge_10yr) d ON e.emp_id =
+        d.emp_id WHERE e.dob <= '1969-10-19' -- age >= 57, retiring on or before 2029-10-19
+    delhi_mandatory_transfer_due:
+      value: 107
+      unit: count
+      computation_definition: 138 cumulative overstay officers minus 31 superannuation-exempt officers
+  who: Exact list of 412 executives stationed at WC-DEL where continuous active posting started on or before 19-Oct-2021.
+    Filtered subset of 138 officers with cumulative tenure >= 10 years across Delhi NCR postings, and sub-list of 107 non-exempt
+    officers due for AGT FY27 transfer orders.
+  why: 'Table H2 (posting_history) driver columns: `posting_type` (''rotation'', ''request'', ''deputation''), `exemption_reason`
+    (''competent_authority_extension'', ''medical_ground_spouse'', ''project_continuity''), and `cluster_id` (''NCR_DELHI'').
+    Historical inertia and project retention extensions granted between 2020-2024.'
+  compare: At Corporate HQ Delhi, 80.0% of in-position executives (412 of 515) have >= 5 continuous years, compared to 34.2%
+    at Tel Bhavan Dehradun (WC-DDN) and a company-wide field average of 18.5%.
+  so_what: Violates ONGC Job Rotation & Transfer Policy (JRTP) 2018 Clause 4.3 (maximum 10-year cumulative city tenure) and
+    DPE guidelines. Directly drives the FY27 Annual General Transfer (AGT) proposal sheet.
+  tables:
+  - H1
+  - H2
+  - H7
+  questions_served:
+  - C1
+  - C1:drill_down
+  - C1:why
+  - C1:compare_or_so_what
+  - P11
+  - P11:drill_down
+  - P11:why
+  - P11:compare_or_so_what
+  - T2
+  - T2:drill_down
+  - T2:why
+  - T2:compare_or_so_what
+  consistency_constraints: The 412 Delhi long-tenure executives and 515 total Delhi executives are strictly contained within
+    the 13,781 regular executive total (CAL-HR-STR-EXEC) and Delhi modelled allocation (600-900 total employees). Exempt count
+    (31) aligns with age band >50 (CAL-HR-AGE-GT50-FY26).
+  test_sql_hint: SELECT COUNT(*) = 412 FROM silver_posting_history WHERE wc_id = 'WC-DEL' AND to_dt IS NULL AND from_dt <=
+    '2021-10-19' AND grade IN ('E1','E2','E3','E4','E5','E6','E7','E8','E9');
+- id: S2
+  title: North-East Executive Deployment Deficit & Hard Station Avoidance
+  narrative: Operational readiness across North-East assets exhibits an operational manpower-norm shortfall of 191 executives
+    (9.01% gap against the technical staffing plan of 2,120, with 1,929 in-position). Formal sanctioned vacancies in Assam
+    strictly equal 30 non-executives (24 Grp C, 6 Grp D) and 0 executives per Lok Sabha LS2067. Meanwhile, 260 mid-career
+    executives (E3–E5) company-wide have evaded mandatory hard/remote station service required under JRTP Clause 6.1.
+  entities:
+    work_centres:
+    - WC-ASM
+    - WC-JOR
+    - WC-TRI
+    - WC-SIL
+    fields:
+    - FLD-GEL
+    - FLD-LAK
+    - FLD-RDS
+    - FLD-BOR
+    - FLD-ROK
+    - FLD-AGT
+    projects: []
+    grades:
+    - E3
+    - E4
+    - E5
+    disciplines:
+    - DRL
+    - PRD
+    - RES
+    - GEO
+    - GPS
+    - MEC
+    - ELE
+    customers: []
+    vendors: []
+    states:
+    - AS
+    - TR
+  exact_numbers:
+    ne_executive_manpower_norm:
+      value: 2120
+      unit: count
+      computation_definition: SUM(required_strength_norm) FROM manpower_planning WHERE wc_id IN ('WC-ASM','WC-JOR','WC-TRI','WC-SIL')
+        AND cadre = 'executive'
+    ne_executive_in_position:
+      value: 1929
+      unit: count
+      computation_definition: COUNT(emp_id) FROM employee_master WHERE current_wc_id IN ('WC-ASM','WC-JOR','WC-TRI','WC-SIL')
+        AND cadre = 'executive'
+    ne_executive_norm_shortfall:
+      value: 191
+      unit: count
+      computation_definition: 2120 operational norm minus 1929 in-position executives
+    ne_executive_norm_shortfall_pct:
+      value: 9.01
+      unit: percentage
+      computation_definition: (191 / 2120) * 100
+    assam_formal_sanctioned_vacancies_total:
+      value: 30
+      unit: count
+      computation_definition: CAL-GOV-PARL-ASSAM-VAC (official Lok Sabha LS2067 reported vacancies)
+    assam_formal_executive_vacancies:
+      value: 0
+      unit: count
+      computation_definition: Formal sanctioned executive vacancies in Assam per LS2067
+    assam_formal_non_executive_vacancies:
+      value: 30
+      unit: count
+      computation_definition: Group C (24) + Group D (6) formal vacancies per LS2067
+    e3_to_e5_never_hard_station:
+      value: 260
+      unit: count
+      computation_definition: COUNT(DISTINCT e.emp_id) FROM employee_master e WHERE e.grade IN ('E3','E4','E5') AND e.emp_id
+        NOT IN (SELECT DISTINCT emp_id FROM posting_history WHERE is_hard_station = TRUE)
+  who: Operational manpower deployment registers tracking the 191 executive deployment deficit across Assam Asset (85), Jorhat
+    (40), Tripura (44), and Silchar (22); paired with the nominative list of 260 E3–E5 officers (112 in E3, 88 in E4, 60 in
+    E5) without hard station history.
+  why: Table H6 (sanctioned_posts vs manpower_norm) and H1 (employee_master). Reluctance of officers to accept NE postings,
+    frequent medical exemption requests, and preference for urban hubs. Formal sanctioned posts are tightly controlled (Assam
+    formal vacancies = 30), but operational deployment norms require higher technical coverage.
+  compare: Operational executive deficit in NE (9.01%) is more than double Western Offshore (3.8%) and Gujarat Onshore (4.2%).
+    Among technical disciplines (DRL/PRD), NE operational deficit reaches 14.5%.
+  so_what: Breaches JRTP Clause 6.1 (mandatory 2-year NE/hard-station tenure prior to consideration for promotion to E5).
+    Forms the primary recipient pool for transfers generated under S1.
+  tables:
+  - H1
+  - H2
+  - H6
+  - H7
+  questions_served:
+  - C2
+  - C2:drill_down
+  - C2:why
+  - C2:compare_or_so_what
+  - H2
+  - H2:drill_down
+  - H2:why
+  - H2:compare_or_so_what
+  - P12
+  - P12:drill_down
+  - P12:why
+  - P12:compare_or_so_what
+  consistency_constraints: 'Total Assam state headcount across all regular employees strictly equals 3,561 (CAL-HR-LOC-ASSAM-TOT:
+    1,518 executives + 2,043 non-executives). Formal sanctioned vacancies in Assam sum to exactly 30 (0 executive, 24 Group
+    C, 6 Group D per CAL-GOV-PARL-ASSAM-VAC). The 1,929 NE executives combine Assam state (1,518) and Tripura (411).'
+  test_sql_hint: SELECT (2120 - COUNT(*)) = 191 FROM silver_employee_master WHERE current_wc_id IN ('WC-ASM','WC-JOR','WC-TRI','WC-SIL')
+    AND grade LIKE 'E%';
+- id: S3
+  title: 'Headcount Divergence: Deepwater Expansion vs Mature Basin Contraction'
+  narrative: Over the 5-year period FY21–FY26, regular employee deployment shifted sharply toward eastern deepwater hubs.
+    Eastern Offshore (WC-EAS) and Rajahmundry (WC-RAJ) expanded headcount by 33.87% and 22.02% respectively to support KG-DWN-98/2
+    commissioning, whereas mature onshore assets Mehsana (-12.39%) and Cauvery (-12.29%) contracted.
+  entities:
+    work_centres:
+    - WC-EAS
+    - WC-RAJ
+    - WC-MEH
+    - WC-CAU
+    fields:
+    - FLD-KG982
+    - FLD-PAS
+    - FLD-SNT
+    - FLD-NAR
+    projects:
+    - PRJ-0001
+    grades:
+    - E0
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+    - E7
+    - GRP-B
+    - GRP-C
+    - GRP-D
+    disciplines:
+    - PRD
+    - DRL
+    - RES
+    - INS
+    - MEC
+    customers: []
+    vendors: []
+    states:
+    - AP
+    - GJ
+    - TN
+  exact_numbers:
+    eastern_offshore_hc_fy21:
+      value: 620
+      unit: count
+      computation_definition: Headcount at WC-EAS at 31-Mar-2021
+    eastern_offshore_hc_fy26:
+      value: 830
+      unit: count
+      computation_definition: Headcount at WC-EAS at 31-Mar-2026
+    eastern_offshore_growth_pct:
+      value: 33.87
+      unit: percentage
+      computation_definition: ((830 - 620) / 620) * 100
+    rajahmundry_hc_fy21:
+      value: 840
+      unit: count
+      computation_definition: Headcount at WC-RAJ at 31-Mar-2021
+    rajahmundry_hc_fy26:
+      value: 1025
+      unit: count
+      computation_definition: Headcount at WC-RAJ at 31-Mar-2026
+    rajahmundry_growth_pct:
+      value: 22.02
+      unit: percentage
+      computation_definition: ((1025 - 840) / 840) * 100
+    mehsana_hc_fy21:
+      value: 2340
+      unit: count
+      computation_definition: Headcount at WC-MEH at 31-Mar-2021
+    mehsana_hc_fy26:
+      value: 2050
+      unit: count
+      computation_definition: Headcount at WC-MEH at 31-Mar-2026
+    mehsana_change_pct:
+      value: -12.39
+      unit: percentage
+      computation_definition: ((2050 - 2340) / 2340) * 100
+    cauvery_hc_fy21:
+      value: 1180
+      unit: count
+      computation_definition: Headcount at WC-CAU at 31-Mar-2021
+    cauvery_hc_fy26:
+      value: 1035
+      unit: count
+      computation_definition: Headcount at WC-CAU at 31-Mar-2026
+    cauvery_change_pct:
+      value: -12.29
+      unit: percentage
+      computation_definition: ((1035 - 1180) / 1180) * 100
+  who: Complete employee movement registers tracking transfers into WC-EAS (+210 net) and WC-RAJ (+185 net), offset by natural
+    attrition and non-replacement at WC-MEH (-290 net) and WC-CAU (-145 net).
+  why: Table H2 (posting_history) and project manpower sanctions for PRJ-0001. Redeployment of subsea production, drilling
+    fluids, and instrumentation specialists from declining onshore wells to offshore floating facilities.
+  compare: Company-wide regular employee headcount declined by 18.20% from 28,260 in FY21 to 23,117 in FY26. Eastern Offshore
+    and Rajahmundry were the only two production assets exhibiting positive net growth.
+  so_what: Directs strategic manpower allocation and succession planning for deepwater operations. Highlights asset-level
+    strain where mature fields lose experience while deepwater assets experience onboarding friction.
+  tables:
+  - H1
+  - H2
+  - H7
+  - F8
+  questions_served:
+  - C3
+  - C3:drill_down
+  - C3:why
+  - C3:compare_or_so_what
+  - M1
+  - M1:drill_down
+  - M1:why
+  - M1:compare_or_so_what
+  consistency_constraints: 'All asset headcount figures reconcile with historical calibration targets (CAL-HR-HC-FY21: 28,260;
+    CAL-HR-HC-FY26: 23,117). Asset sums stay strictly within asset_level_headcount modelled assumptions.'
+  test_sql_hint: SELECT (SELECT COUNT(*) FROM silver_employee_master WHERE current_wc_id = 'WC-EAS') = 830, (SELECT COUNT(*)
+    FROM silver_employee_master WHERE current_wc_id = 'WC-MEH') = 2050;
+- id: S4
+  title: General Manager (E7+) Retirement Cliff & Critical Succession Vacuum
+  narrative: 'A demographic retirement wave threatens leadership continuity: 47 General Managers and above (E7–E9) will retire
+    between FY27 and FY29. Among their posts, 11 mission-critical operational roles lack any ready (''Ready Now'') successor
+    in the succession pipeline, posing acute operational risks for deepwater, drilling, and process safety.'
+  entities:
+    work_centres:
+    - WC-MUM
+    - WC-EAS
+    - WC-JOR
+    - WC-HAZ
+    - WC-KDM
+    - WC-DEL
+    fields:
+    - FLD-MHN
+    - FLD-KG982
+    projects:
+    - PRJ-0001
+    - PRJ-0005
+    grades:
+    - E7
+    - E8
+    - E9
+    disciplines:
+    - DRL
+    - PRD
+    - GEO
+    - GPS
+    - HSE
+    - MEC
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - MH
+    - AP
+    - AS
+    - GJ
+    - UK
+  exact_numbers:
+    total_e7_plus_in_position:
+      value: 1142
+      unit: count
+      computation_definition: COUNT(emp_id) FROM employee_master WHERE grade IN ('E7','E8','E9') AND status = 'active'
+    e7_plus_retiring_fy27_to_fy29:
+      value: 47
+      unit: count
+      computation_definition: COUNT(emp_id) FROM employee_master WHERE grade IN ('E7','E8','E9') AND dob BETWEEN '1966-04-01'
+        AND '1969-03-31' -- retiring between 2026-04-01 and 2029-03-31
+    e7_plus_retiring_fy27:
+      value: 18
+      unit: count
+      computation_definition: E7+ retiring in FY27
+    e7_plus_retiring_fy28:
+      value: 16
+      unit: count
+      computation_definition: E7+ retiring in FY28
+    e7_plus_retiring_fy29:
+      value: 13
+      unit: count
+      computation_definition: E7+ retiring in FY29
+    critical_roles_with_no_ready_successor:
+      value: 11
+      unit: count
+      computation_definition: COUNT(DISTINCT role_id) FROM succession_plan WHERE incumbent_retiring_fy <= 'FY29' AND ready_now_count
+        = 0
+  who: 'Nominative roster of the 47 retiring senior officers, highlighting the 11 critical vacant positions: Asset Manager
+    Cauvery, Chief Drilling Services Jorhat, Head Geophysics KDMIPE, Head Process Safety Hazira, Head Subsea Systems Eastern
+    Offshore, Chief Reservoir Engineer Mumbai, among others.'
+  why: 'Table H1 (employee_master: dob, grade) and H10 (succession_plan: readiness_rating). Legacy recruitment pauses during
+    the late 1990s created a hollowed-out pipeline of E5/E6 officers with requisite technical vintage.'
+  compare: Retirement rate in E7–E9 over next 3 years is 4.1% annually, but in critical operational disciplines (DRL, HSE),
+    the turnover of Key Leadership Personnel exceeds 18%.
+  so_what: Urgent input for the Departmental Promotion Committee (DPC) and PESB selection schedules. Requires targeted fast-tracking
+    of high-potential E5/E6 officers under the Leadership Development Program (LDP).
+  tables:
+  - H1
+  - H3
+  - H10
+  questions_served:
+  - C4
+  - C4:drill_down
+  - C4:why
+  - C4:compare_or_so_what
+  - T3
+  - T3:drill_down
+  - T3:why
+  - T3:compare_or_so_what
+  consistency_constraints: Total E7–E9 count of 1,142 conforms to the modelled assumptions pyramid (7–10% of 13,781 executives
+    = 964–1,378). Annual retirements reconcile with public separation benchmarks (~1,350–1,420 total company separations).
+  test_sql_hint: SELECT COUNT(*) = 47 FROM silver_employee_master WHERE grade IN ('E7','E8','E9') AND dob >= '1966-04-01'
+    AND dob <= '1969-03-31';
+- id: S5
+  title: Technical Skill Cliff by 2030 in Drilling & Geoscience
+  narrative: By 2030, ONGC will face a severe technical skill deficit in Drilling and Geoscience. Of 6,420 core technical
+    executives, 2,215 (34.50%) reach mandatory retirement age of 60 by FY30. In Drilling (DRL), 38.21% of supervisors will
+    retire, producing a projected net shortage of 415 drilling specialists under current recruitment levels.
+  entities:
+    work_centres:
+    - WC-DRL
+    - WC-GLS
+    - WC-DDN
+    - WC-MUM
+    - WC-AHM
+    fields: []
+    projects: []
+    grades:
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+    - E7
+    - E8
+    - E9
+    disciplines:
+    - DRL
+    - GEO
+    - GPS
+    - RES
+    - PRD
+    customers: []
+    vendors: []
+    states:
+    - UK
+    - MH
+    - GJ
+    - AS
+  exact_numbers:
+    core_technical_executives_fy26:
+      value: 6420
+      unit: count
+      computation_definition: COUNT(emp_id) FROM employee_master WHERE discipline IN ('DRL','GEO','GPS','RES','PRD') AND cadre
+        = 'executive'
+    technical_retirements_by_2030:
+      value: 2215
+      unit: count
+      computation_definition: COUNT(emp_id) FROM employee_master WHERE discipline IN ('DRL','GEO','GPS','RES','PRD') AND dob
+        <= '1970-03-31' -- reaches age 60 on or before 31-Mar-2030
+    drilling_executives_fy26:
+      value: 1680
+      unit: count
+      computation_definition: DRL executive count at 31-Mar-2026
+    drilling_retirements_by_2030:
+      value: 642
+      unit: count
+      computation_definition: DRL executives reaching age 60 by 31-Mar-2030
+    drilling_retirement_pct:
+      value: 38.21
+      unit: percentage
+      computation_definition: (642 / 1680) * 100
+    geoscience_executives_fy26:
+      value: 1840
+      unit: count
+      computation_definition: GEO + GPS executive count
+    geoscience_retirements_by_2030:
+      value: 635
+      unit: count
+      computation_definition: GEO + GPS executives reaching age 60 by 31-Mar-2030
+    geoscience_retirement_pct:
+      value: 34.51
+      unit: percentage
+      computation_definition: (635 / 1840) * 100
+    projected_drilling_net_deficit_2030:
+      value: 415
+      unit: count
+      computation_definition: 642 retirements minus projected 227 new-hire intake at current rates
+  who: Complete age and discipline cohort profiles for all 6,420 technical executives, tracking years to retirement and certification
+    levels (Well Control, Subsea Completion, Petrel/Geographix).
+  why: Constrained recruitment in FY26 (only 167 total hires company-wide per CAL-HR-FLOW-HIRES-FY26), combined with high
+    concentration of staff in the 50+ age bracket (24.4% of workforce per CAL-HR-AGE-GT50-FY26).
+  compare: Technical retirement cliff (34.5%) significantly outpaces administrative disciplines (HR/FIN retirement rate of
+    26.2%), creating an operational bottleneck that cannot be bridged by non-specialist transfers.
+  so_what: 'Mandates a strategic workforce replenishment plan: lifting recruitment caps for Graduate Trainees (GTs), expanding
+    apprenticeship programs, and modeling hiring freeze impacts (Question W2).'
+  tables:
+  - H1
+  - H6
+  - H7
+  - H11
+  questions_served:
+  - C5
+  - C5:drill_down
+  - C5:why
+  - C5:compare_or_so_what
+  - W2
+  - W2:drill_down
+  - W2:why
+  - W2:compare_or_so_what
+  consistency_constraints: Reconciles strictly with age band distribution (24.4% >50 years = 5,640 employees across all cadres)
+    and the 167 recruitment cap in FY26 (CAL-HR-FLOW-HIRES-FY26). Core technical total (6,420) is 46.6% of 13,781 executives.
+  test_sql_hint: SELECT COUNT(*) = 642 FROM silver_employee_master WHERE discipline = 'DRL' AND dob <= '1970-03-31' AND grade
+    LIKE 'E%';
+- id: S6
+  title: Marginal Mature Field Losses & Production Enhancement Contract Candidates
+  narrative: 'Field economic screening reveals that two mature onshore fields operated at an outright EBITDA loss in FY26:
+    Borholla (FLD-BOR) in Jorhat (-₹66 cr EBITDA) and Adiyakkamangalam (FLD-ADI) in Cauvery (-₹36 cr EBITDA). Concurrently,
+    Lakwa (FLD-LAK) in Assam generated an EBIT loss of -₹45 cr despite ₹1,420 cr in cumulative 5-year capex.'
+  entities:
+    work_centres:
+    - WC-JOR
+    - WC-CAU
+    - WC-ASM
+    fields:
+    - FLD-BOR
+    - FLD-ADI
+    - FLD-LAK
+    projects:
+    - PRJ-0024
+    grades: []
+    disciplines:
+    - PRD
+    - RES
+    - FIN
+    customers:
+    - CUST-IOC
+    - CUST-HPC
+    - CUST-CPC
+    vendors: []
+    states:
+    - AS
+    - TN
+  exact_numbers:
+    borholla_oil_production_mmt:
+      value: 0.042
+      unit: MMT
+      computation_definition: FY26 crude oil production at FLD-BOR
+    borholla_revenue_inr_cr:
+      value: 182.0
+      unit: INR_Crore
+      computation_definition: FY26 gross revenue from operations at FLD-BOR
+    borholla_opex_inr_cr:
+      value: 248.0
+      unit: INR_Crore
+      computation_definition: FY26 direct lifting + field opex at FLD-BOR
+    borholla_ebitda_inr_cr:
+      value: -66.0
+      unit: INR_Crore
+      computation_definition: 182.0 revenue minus 248.0 opex
+    adiyakkamangalam_oil_production_mmt:
+      value: 0.018
+      unit: MMT
+      computation_definition: FY26 crude production at FLD-ADI
+    adiyakkamangalam_revenue_inr_cr:
+      value: 78.0
+      unit: INR_Crore
+      computation_definition: FY26 revenue at FLD-ADI
+    adiyakkamangalam_opex_inr_cr:
+      value: 114.0
+      unit: INR_Crore
+      computation_definition: FY26 opex at FLD-ADI
+    adiyakkamangalam_ebitda_inr_cr:
+      value: -36.0
+      unit: INR_Crore
+      computation_definition: 78.0 revenue minus 114.0 opex
+    lakwa_5yr_capex_inr_cr:
+      value: 1420.0
+      unit: INR_Crore
+      computation_definition: Sum of capex spend FY22-FY26 at FLD-LAK
+    lakwa_revenue_inr_cr:
+      value: 1120.0
+      unit: INR_Crore
+      computation_definition: FY26 revenue at FLD-LAK
+    lakwa_opex_depr_inr_cr:
+      value: 1165.0
+      unit: INR_Crore
+      computation_definition: FY26 opex + depreciation at FLD-LAK
+    lakwa_ebit_inr_cr:
+      value: -45.0
+      unit: INR_Crore
+      computation_definition: 1120.0 revenue minus 1165.0 opex+depr
+  who: Staffing rosters assigned to Borholla (112 regular + 185 contract staff), Adiyakkamangalam (54 regular + 78 contract),
+    and Lakwa (420 regular + 680 contract).
+  why: Table F5 (co_pa_pnl) and F6 (co_cost_ledger). Severe reservoir water-cut (>88%), high workover frequencies, and sub-scale
+    artificial lift operations inflating unit lifting cost above net crude realization.
+  compare: Lifting cost at Borholla is $24.80/boe and Adiyakkamangalam is $26.40/boe, compared to the company onshore average
+    of $13.20/boe and Mumbai High of $6.80/boe.
+  so_what: Identifies primary candidates for Production Enhancement Contracts (PEC), farm-out, or marginal field divestment.
+    Drives the one-page Board Note required for CMD decision-making (Question C14, T1).
+  tables:
+  - F1
+  - F3
+  - F5
+  - F6
+  - F7
+  questions_served:
+  - C6
+  - C6:drill_down
+  - C6:why
+  - C6:compare_or_so_what
+  - C8
+  - C8:drill_down
+  - C8:why
+  - C8:compare_or_so_what
+  - C14
+  - C14:drill_down
+  - C14:why
+  - C14:compare_or_so_what
+  - F3
+  - F3:drill_down
+  - F3:why
+  - F3:compare_or_so_what
+  - F10
+  - F10:drill_down
+  - F10:why
+  - F10:compare_or_so_what
+  - T1
+  - T1:drill_down
+  - T1:why
+  - T1:compare_or_so_what
+  consistency_constraints: Field revenues and opex aggregate strictly into audited Onshore Segment Revenue (₹40,102 cr) and
+    Onshore Segment Profit (₹6,246 cr) per CAL-FIN-SEG-REV-ONSHORE and CAL-FIN-SEG-PBIT-ONSHORE.
+  test_sql_hint: SELECT (revenue_inr_cr - opex_inr_cr) = -66.0 FROM silver_field_pnl WHERE field_id = 'FLD-BOR' AND fiscal_year
+    = 'FY26';
+- id: S7
+  title: 'Headcount-Production Decoupling: Cambay Efficiency Collapse'
+  narrative: While corporate manpower shrank by 18.2%, Cambay Asset (WC-CAM) expanded regular headcount by 14.20% (from 514
+    in FY21 to 587 in FY26) despite hydrocarbon production declining by 9.09% (from 0.242 MMTOE to 0.220 MMTOE). This inverse
+    relationship triggered an unsustainable surge in operating overhead per barrel.
+  entities:
+    work_centres:
+    - WC-CAM
+    fields:
+    - FLD-CAM
+    - FLD-KAT
+    projects: []
+    grades:
+    - E0
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - GRP-B
+    - GRP-C
+    - GRP-D
+    disciplines:
+    - PRD
+    - DRL
+    - MEC
+    - ELE
+    customers:
+    - CUST-IOC
+    - CUST-GAL
+    vendors: []
+    states:
+    - GJ
+  exact_numbers:
+    cambay_headcount_fy21:
+      value: 514
+      unit: count
+      computation_definition: Headcount at WC-CAM at 31-Mar-2021
+    cambay_headcount_fy26:
+      value: 587
+      unit: count
+      computation_definition: Headcount at WC-CAM at 31-Mar-2026
+    cambay_headcount_growth_pct:
+      value: 14.2
+      unit: percentage
+      computation_definition: ((587 - 514) / 514) * 100
+    cambay_production_fy21_mmtoe:
+      value: 0.242
+      unit: MMTOE
+      computation_definition: Total hydrocarbon production FY21 at WC-CAM
+    cambay_production_fy26_mmtoe:
+      value: 0.22
+      unit: MMTOE
+      computation_definition: Total hydrocarbon production FY26 at WC-CAM
+    cambay_production_change_pct:
+      value: -9.09
+      unit: percentage
+      computation_definition: ((0.220 - 0.242) / 0.242) * 100
+  who: Roster of 587 employees at Cambay Asset, including 73 net additions absorbed from rig decommissionings in Western Onshore
+    and local court-directed non-executive regularisations.
+  why: Table H2 (posting_history) and F1 (production_monthly). Inflow of surplus drilling and logistics personnel reassigned
+    from mature rigs without offsetting retirements, coinciding with natural reservoir depletion.
+  compare: Across ONGC, average employee productivity is 1,681 TOE/employee. At Cambay, productivity collapsed from 471 TOE/employee
+    in FY21 to 375 TOE/employee in FY26 (77.7% below company average).
+  so_what: Exposes organizational inertia and misaligned labor deployment. Establishes the business case for rebalancing surplus
+    personnel from Cambay to deficit assets in the North-East or Eastern Offshore.
+  tables:
+  - H1
+  - H7
+  - F1
+  - F5
+  questions_served:
+  - C11
+  - C11:drill_down
+  - C11:why
+  - C11:compare_or_so_what
+  consistency_constraints: Cambay headcount (587) and production (0.220 MMTOE) aggregate into Gujarat Onshore totals (5,000-6,000
+    employees) and national production (38.865 MMTOE total hydrocarbon per CAL-OPS-CRUDE-TOTAL-FY26 and CAL-OPS-GAS-TOTAL-FY26).
+  test_sql_hint: SELECT (SELECT COUNT(*) FROM silver_employee_master WHERE current_wc_id = 'WC-CAM') = 587, (SELECT SUM(oil_production_mmt
+    + gas_production_bcm) FROM silver_production_monthly WHERE wc_id = 'WC-CAM' AND fiscal_year = 'FY26') = 0.220;
+- id: S8
+  title: 'Manpower Cost per BOE Disparity: Mumbai High vs Cambay Asset'
+  narrative: Reflecting extreme scale disparities, manpower cost per barrel of oil equivalent (BOE) ranges from a low of ₹244.8/boe
+    ($2.85/boe) at offshore flagship Mumbai High (WC-MUM) to an exorbitant ₹1,788.8/boe ($20.80/boe) at Cambay Asset (WC-CAM).
+    At Cambay, employee cost consumes 30.64% of total revenue, vs 4.41% at Mumbai High.
+  entities:
+    work_centres:
+    - WC-MUM
+    - WC-CAM
+    fields:
+    - FLD-MHN
+    - FLD-MHS
+    - FLD-CAM
+    projects: []
+    grades: []
+    disciplines:
+    - FIN
+    - PRD
+    customers: []
+    vendors: []
+    states:
+    - MH
+    - GJ
+  exact_numbers:
+    company_avg_employee_cost_per_boe:
+      value: 358.4
+      unit: INR_per_BOE
+      computation_definition: ₹10,211 cr employee expense / 284.9 million BOE total production
+    company_avg_employee_cost_usd_boe:
+      value: 4.17
+      unit: USD_per_BOE
+      computation_definition: 358.4 / 86.0 INR/USD
+    mumbai_high_manpower_cost_inr_cr:
+      value: 1875.0
+      unit: INR_Crore
+      computation_definition: Allocated employee cost for WC-MUM
+    mumbai_high_production_mmtoe:
+      value: 10.45
+      unit: MMTOE
+      computation_definition: FY26 production at WC-MUM (76.60 mn BOE)
+    mumbai_high_manpower_cost_per_boe_inr:
+      value: 244.8
+      unit: INR_per_BOE
+      computation_definition: ₹1,875 cr / 76.60 mn BOE
+    mumbai_high_manpower_cost_per_boe_usd:
+      value: 2.85
+      unit: USD_per_BOE
+      computation_definition: 244.8 / 86.0
+    mumbai_high_emp_cost_pct_revenue:
+      value: 4.41
+      unit: percentage
+      computation_definition: (₹1,875 cr / ₹42,500 cr) * 100
+    cambay_manpower_cost_inr_cr:
+      value: 288.0
+      unit: INR_Crore
+      computation_definition: Allocated employee cost for WC-CAM
+    cambay_production_mmtoe:
+      value: 0.22
+      unit: MMTOE
+      computation_definition: FY26 production at WC-CAM (1.61 mn BOE)
+    cambay_manpower_cost_per_boe_inr:
+      value: 1788.8
+      unit: INR_per_BOE
+      computation_definition: ₹288 cr / 1.61 mn BOE
+    cambay_manpower_cost_per_boe_usd:
+      value: 20.8
+      unit: USD_per_BOE
+      computation_definition: 1788.8 / 86.0
+    cambay_emp_cost_pct_revenue:
+      value: 30.64
+      unit: percentage
+      computation_definition: (₹288 cr / ₹940 cr) * 100
+  who: Work centre payroll and manpower allocation records linking 3,000 employees at Mumbai High and 587 employees at Cambay
+    to cost centres in COSP/CO-PA.
+  why: Table H8 (payroll) linked to F1 (production_monthly) and F5 (co_pa_pnl). Fixed staff cost structures remain inflexible
+    regardless of well depletion, causing unit manpower costs to escalate in depleted fields.
+  compare: Cambay manpower cost per BOE ($20.80/boe) is 7.30x higher than Mumbai High ($2.85/boe) and 4.99x higher than the
+    company average ($4.17/boe). Company-wide employee cost is 7.71% of total revenue.
+  so_what: Drives asset restructuring discussions and highlights the urgency of outsourcing maintenance or transitioning mature
+    onshore fields to revenue-sharing contracts.
+  tables:
+  - H8
+  - F1
+  - F5
+  - F6
+  - F7
+  questions_served:
+  - C12
+  - C12:drill_down
+  - C12:why
+  - C12:compare_or_so_what
+  - F1
+  - F1:drill_down
+  - F1:why
+  - F1:compare_or_so_what
+  - F7
+  - F7:drill_down
+  - F7:why
+  - F7:compare_or_so_what
+  consistency_constraints: Allocated payroll sums across all work centres must equal total employee benefits expense of ₹10,211
+    cr (CAL-FIN-EMP-EXP-FY26). Total company production equals 38.865 MMTOE (284.9 mn BOE).
+  test_sql_hint: SELECT ROUND(cambay_cost / cambay_boe, 1) = 1788.8, ROUND(mh_cost / mh_boe, 1) = 244.8 FROM silver_asset_manpower_economics;
+- id: S9
+  title: 'Major Capex Slippage: KG-DWN-98/2 Delays & PRP-VIII Pipeline Cost Overrun'
+  narrative: 'Two flagship capital projects account for massive cost and schedule deviations: KG-DWN-98/2 Cluster-II (PRJ-0001)
+    experienced a 47-month schedule delay and a ₹5,438 cr cost escalation (revised to ₹39,450 cr). Meanwhile, the offshore
+    Pipeline Replacement Project Phase-VIII Part-B (PRJ-0015) incurred a ₹1,100 cr overrun (+79.48%).'
+  entities:
+    work_centres:
+    - WC-EAS
+    - WC-BAS
+    - WC-MUM
+    fields:
+    - FLD-KG982
+    - FLD-BAS
+    projects:
+    - PRJ-0001
+    - PRJ-0015
+    grades: []
+    disciplines:
+    - PRD
+    - DRL
+    - FIN
+    - MM
+    customers: []
+    vendors:
+    - VEN-00006
+    - VEN-00009
+    states:
+    - AP
+    - MH
+  exact_numbers:
+    kg982_sanctioned_cost_cr:
+      value: 34012.0
+      unit: INR_Crore
+      computation_definition: Original sanctioned cost of PRJ-0001
+    kg982_revised_cost_cr:
+      value: 39450.0
+      unit: INR_Crore
+      computation_definition: Revised projected cost of PRJ-0001
+    kg982_cost_overrun_cr:
+      value: 5438.0
+      unit: INR_Crore
+      computation_definition: 39450.0 minus 34012.0
+    kg982_cost_overrun_pct:
+      value: 15.99
+      unit: percentage
+      computation_definition: (5438.0 / 34012.0) * 100
+    kg982_delay_months:
+      value: 47
+      unit: months
+      computation_definition: Planned completion June 2020 to actual/revised May 2024
+    prp8b_sanctioned_cost_cr:
+      value: 1384.0
+      unit: INR_Crore
+      computation_definition: Original sanctioned cost of PRJ-0015
+    prp8b_revised_cost_cr:
+      value: 2484.0
+      unit: INR_Crore
+      computation_definition: Revised estimated cost of PRJ-0015
+    prp8b_cost_overrun_cr:
+      value: 1100.0
+      unit: INR_Crore
+      computation_definition: 2484.0 minus 1384.0
+    prp8b_cost_overrun_pct:
+      value: 79.48
+      unit: percentage
+      computation_definition: (1100.0 / 1384.0) * 100
+    prp8b_delay_months:
+      value: 35
+      unit: months
+      computation_definition: Planned completion April 2023 to March 2026
+  who: Project steering committee dossiers and contractor dispute filings naming prime execution contractors and project directorates.
+  why: 'Table F8 (project_master: sanctioned_cost, revised_cost, status) and F7 (be_re_capex). Global supply chain disruptions,
+    harsh deepwater currents in the Godavari basin, pipe-lay contractor insolvency, and subsea cable rerouting.'
+  compare: Across ONGC's active major project portfolio (₹35,878 cr annual capex), average cost overrun is 8.4%. PRJ-0015's
+    overrun of 79.48% represents the single highest percentage variance in the upstream portfolio.
+  so_what: Mandates revised Board approval for expenditure beyond delegated powers and triggers formal MoPNG / DPE quarterly
+    review explanations (Question C9, C7, F2).
+  tables:
+  - F7
+  - F8
+  - F9
+  questions_served:
+  - C7
+  - C7:drill_down
+  - C7:why
+  - C7:compare_or_so_what
+  - C9
+  - C9:drill_down
+  - C9:why
+  - C9:compare_or_so_what
+  - F2
+  - F2:drill_down
+  - F2:why
+  - F2:compare_or_so_what
+  - M2
+  - M2:drill_down
+  - M2:why
+  - M2:compare_or_so_what
+  consistency_constraints: 'Total cumulative project spend integrates into total annual capex of ₹35,878 cr (CAL-FIN-CAPEX-FY26)
+    and project master records in reference/projects.yaml (PRJ-0001: ₹34,012 cr; PRJ-0015: ₹1,384 cr sanctioned).'
+  test_sql_hint: SELECT (revised_cost_inr_cr - sanctioned_cost_inr_cr) = 1100.0 FROM silver_project_master WHERE prj_id =
+    'PRJ-0015';
+- id: S10
+  title: 'MoU Performance Lags in FY27 H1: Production & Capex Slippages'
+  narrative: 'Mid-year tracking against the annual performance MoU with MoPNG/DPE shows ONGC is off-track on 2 core parameters:
+    Crude Oil Production (H1 actual 9.42 MMT vs target 10.15 MMT, 92.81% achievement) and Capex Milestone Spending (H1 actual
+    ₹14,800 cr vs target ₹17,200 cr, 86.05% achievement), threatening a rating downgrade from ''Excellent''.'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-MUM
+    - WC-EAS
+    fields:
+    - FLD-MHN
+    - FLD-KG982
+    projects:
+    - PRJ-0001
+    grades: []
+    disciplines:
+    - PRD
+    - FIN
+    - DRL
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - MH
+    - AP
+  exact_numbers:
+    mou_crude_target_h1_mmt:
+      value: 10.15
+      unit: MMT
+      computation_definition: H1 target for standalone crude production under MoU
+    mou_crude_actual_h1_mmt:
+      value: 9.42
+      unit: MMT
+      computation_definition: H1 actual standalone crude production
+    mou_crude_achievement_pct:
+      value: 92.81
+      unit: percentage
+      computation_definition: (9.42 / 10.15) * 100
+    mou_capex_target_h1_cr:
+      value: 17200.0
+      unit: INR_Crore
+      computation_definition: H1 milestone target for capex expenditure
+    mou_capex_actual_h1_cr:
+      value: 14800.0
+      unit: INR_Crore
+      computation_definition: H1 actual capex spend recorded
+    mou_capex_achievement_pct:
+      value: 86.05
+      unit: percentage
+      computation_definition: (14800.0 / 17200.0) * 100
+    projected_composite_score:
+      value: 83.5
+      unit: score_out_of_100
+      computation_definition: Projected full-year weighted MoU score based on H1 performance
+  who: Corporate Planning & MoU monitoring committee records tracking monthly parameter weights, thresholds, and scoring tables.
+  why: 'Table F13 (mou_targets: parameter_name, target, actual, weight, score). Delayed gas ramp-up from KG-98/2 deepwater
+    wells and weather-induced offshore jack-up rig downtime during the southwest monsoon.'
+  compare: In FY25 and FY26, ONGC achieved an overall composite score of 91.2 and 90.8 ('Excellent' rating, threshold >= 90).
+    The projected score of 83.5 drops ONGC into the 'Very Good' band (75–89).
+  so_what: Directly impacts corporate Performance-Related Pay (PRP) distribution (Story S27 / Question P14) and triggers quarterly
+    performance compliance summons from the Ministry.
+  tables:
+  - F1
+  - F7
+  - F13
+  questions_served:
+  - C10
+  - C10:drill_down
+  - C10:why
+  - C10:compare_or_so_what
+  consistency_constraints: Annual targets reconcile with FY26 production (20.501 MMT oil / 19.966 BCM gas) and full-year capex
+    of ₹35,878 cr (CAL-OPS-CRUDE-TOTAL-FY26, CAL-FIN-CAPEX-FY26).
+  test_sql_hint: SELECT achievement_pct = 92.81 FROM silver_mou_tracking WHERE parameter_id = 'MOU-PROD-CRUDE-H1';
+- id: S11
+  title: Departmental Promotion Committee (DPC) Backlog in Technical Cadres
+  narrative: 'A backlog of 186 promotion cases delayed by more than 6 months has accumulated in two core technical cadres:
+    Drilling (112 cases, median delay 8.2 months) and Production (74 cases, median delay 6.8 months). Delays stem from missing
+    vigilance clearances and non-receipt of APAR grading sheets from offshore shifts.'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DRL
+    - WC-MUM
+    - WC-AHM
+    fields: []
+    projects: []
+    grades:
+    - E3
+    - E4
+    - E5
+    disciplines:
+    - DRL
+    - PRD
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - MH
+    - GJ
+  exact_numbers:
+    total_pending_dpc_gt_6mo:
+      value: 186
+      unit: count
+      computation_definition: COUNT(case_id) FROM dpc_cases WHERE status = 'pending' AND DATEDIFF('2026-10-19', due_dt) >
+        180
+    drilling_pending_dpc_count:
+      value: 112
+      unit: count
+      computation_definition: Pending DPC cases >6mo in discipline DRL
+    drilling_median_delay_months:
+      value: 8.2
+      unit: months
+      computation_definition: MEDIAN(DATEDIFF('2026-10-19', due_dt)/30.4) for DRL
+    production_pending_dpc_count:
+      value: 74
+      unit: count
+      computation_definition: Pending DPC cases >6mo in discipline PRD
+    production_median_delay_months:
+      value: 6.8
+      unit: months
+      computation_definition: MEDIAN(DATEDIFF('2026-10-19', due_dt)/30.4) for PRD
+  who: Nominative roster of 186 affected officers awaiting promotion (e.g. E3->E4 and E4->E5), with specific pending clearance
+    tags assigned to each officer.
+  why: 'Table H4 (dpc_cases: due_dt, status, pending_reason) and H9 (apar_records). Offshore shift rotations and delayed reporting
+    officer reviews leading to incomplete 3-year APAR dossiers and delayed vigilance scrutiny.'
+  compare: In commercial cadres (F&A, HR, MM), average DPC processing latency is 1.8 months with only 12 cases pending >6
+    months. Technical cadres suffer 4.5x greater promotion processing delays.
+  so_what: Causes widespread employee dissatisfaction, dampens field morale, and fuels voluntary resignations among mid-career
+    technical officers (Story S12 / Question H4).
+  tables:
+  - H1
+  - H3
+  - H4
+  - H9
+  questions_served:
+  - H5
+  - H5:drill_down
+  - H5:why
+  - H5:compare_or_so_what
+  consistency_constraints: Total eligible officers evaluated by DPCs conform to promotion velocity norms (3-year residency
+    in E2/E3, 4-year residency in E4). All cases trace to valid active employees in employee_master.
+  test_sql_hint: SELECT COUNT(*) = 186 FROM silver_dpc_cases WHERE status = 'pending' AND due_dt <= '2026-04-19' AND discipline
+    IN ('DRL','PRD');
+- id: S12
+  title: 'Mid-Career Brain Drain: Surging E3–E5 Resignations in IT & Finance'
+  narrative: 'Voluntary exits among regular executives rose to 182 in FY26, heavily concentrated in mid-career cohorts: executives
+    in grades E3–E5 accounted for 124 resignations (68.13%). The brain drain is most acute in Information Technology (8.40%
+    attrition) and Finance (6.10% attrition), driven by private tech hubs and global capability centres.'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    - WC-MUM
+    fields: []
+    projects: []
+    grades:
+    - E3
+    - E4
+    - E5
+    disciplines:
+    - IT
+    - FIN
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - UK
+    - MH
+  exact_numbers:
+    total_executive_resignations_fy26:
+      value: 182
+      unit: count
+      computation_definition: COUNT(emp_id) FROM employee_master WHERE separation_reason = 'resignation' AND fy_separated
+        = 'FY26'
+    e3_to_e5_resignations_fy26:
+      value: 124
+      unit: count
+      computation_definition: COUNT(emp_id) FROM employee_master WHERE separation_reason = 'resignation' AND grade IN ('E3','E4','E5')
+    e3_to_e5_resignation_share_pct:
+      value: 68.13
+      unit: percentage
+      computation_definition: (124 / 182) * 100
+    it_resignation_count_fy26:
+      value: 42
+      unit: count
+      computation_definition: IT executive resignations in E3-E5 in FY26
+    it_resignation_rate_pct:
+      value: 8.4
+      unit: percentage
+      computation_definition: (42 / 500 total IT executives) * 100
+    finance_resignation_count_fy26:
+      value: 38
+      unit: count
+      computation_definition: FIN executive resignations in E3-E5 in FY26
+    finance_resignation_rate_pct:
+      value: 6.1
+      unit: percentage
+      computation_definition: (38 / 623 total FIN executives) * 100
+  who: List of 124 separated mid-career officers with separation interviews, average tenure at ONGC (6.4 years), and destination
+    industry tags (GCCs, private energy MNCs, consulting firms).
+  why: Table H1 (separation_reason, separation_date) and exit interview logs. Wage compression under DPE IDA scales relative
+    to private tech compensation, rigid promotion timelines, and lack of remote work options.
+  compare: Company-wide executive voluntary resignation rate is 1.32% (182 of 13,781). The IT attrition rate of 8.40% is 6.36x
+    higher than the corporate baseline.
+  so_what: Erodes digital transformation capability (SAP S/4HANA migration, cloud analytics, OT cybersecurity) and forces
+    ONGC to rely increasingly on third-party IT contractors at higher costs.
+  tables:
+  - H1
+  - H7
+  questions_served:
+  - H4
+  - H4:drill_down
+  - H4:why
+  - H4:compare_or_so_what
+  consistency_constraints: Resignations (182) form part of total regular employee separations (~1,390) in FY26, alongside
+    retirements (~1,150) and deaths/others (~58), perfectly matching calibration target turnover benchmarks.
+  test_sql_hint: SELECT COUNT(*) = 124 FROM silver_employee_separations WHERE grade IN ('E3','E4','E5') AND reason = 'resignation'
+    AND fiscal_year = 'FY26';
+- id: S13
+  title: Contractor Workforce Inversion at Gas Processing Plants
+  narrative: Downstream processing installations exhibit an inverted labor model where outsourced contract laborers vastly
+    outnumber regular permanent staff. At Hazira Plant (WC-HAZ), contract labor stands at 2,450 vs 1,120 regular staff (2.19x
+    inversion), and at Uran Plant (WC-URN), contract labor stands at 1,890 vs 940 regular staff (2.01x).
+  entities:
+    work_centres:
+    - WC-HAZ
+    - WC-URN
+    fields: []
+    projects: []
+    grades: []
+    disciplines:
+    - PRD
+    - MEC
+    - ELE
+    - HSE
+    - SEC
+    customers:
+    - CUST-GAL
+    - CUST-IOC
+    - CUST-BPC
+    vendors:
+    - VEN-00005
+    - VEN-00007
+    states:
+    - GJ
+    - MH
+  exact_numbers:
+    hazira_regular_headcount:
+      value: 1120
+      unit: count
+      computation_definition: Permanent regular employee strength at WC-HAZ
+    hazira_contract_headcount:
+      value: 2450
+      unit: count
+      computation_definition: Active outsourced contract personnel at WC-HAZ
+    hazira_contract_to_regular_ratio:
+      value: 2.19
+      unit: ratio
+      computation_definition: 2450 / 1120
+    hazira_contract_cost_fy26_cr:
+      value: 412.0
+      unit: INR_Crore
+      computation_definition: Outsourced services spend FY26 at WC-HAZ
+    uran_regular_headcount:
+      value: 940
+      unit: count
+      computation_definition: Permanent regular employee strength at WC-URN
+    uran_contract_headcount:
+      value: 1890
+      unit: count
+      computation_definition: Active outsourced contract personnel at WC-URN
+    uran_contract_to_regular_ratio:
+      value: 2.01
+      unit: ratio
+      computation_definition: 1890 / 940
+    uran_contract_cost_fy26_cr:
+      value: 318.0
+      unit: INR_Crore
+      computation_definition: Outsourced services spend FY26 at WC-URN
+    total_company_contract_workforce:
+      value: 31500
+      unit: count
+      computation_definition: Total deployed contractor personnel across all ONGC installations
+  who: Service contracts register tracking deployed vendor headcount under manpower supply (VEN-00005) and industrial security
+    (VEN-00007) across Hazira and Uran gas processing complexes.
+  why: 'Table H16 (contract_workforce: vendor_id, role, deployment_count) and F6 (co_cost_ledger). Statutory regular recruitment
+    restrictions led to widespread outsourcing of plant maintenance, loading terminals, and utilities.'
+  compare: Across upstream exploration and corporate offices, contract-to-regular ratio is 0.85x. At the gas processing plants,
+    the ratio is 2.45x higher than corporate baseline, creating core operational dependencies.
+  so_what: Presents industrial relations, safety compliance, and legal regularisation risks under the Contract Labour (Regulation
+    and Abolition) Act, 1970. Key finding for Director (HR) and CMD review (Questions X1, X2).
+  tables:
+  - H1
+  - H16
+  - F6
+  - F9
+  questions_served:
+  - X1
+  - X1:drill_down
+  - X1:why
+  - X1:compare_or_so_what
+  - X2
+  - X2:drill_down
+  - X2:why
+  - X2:compare_or_so_what
+  consistency_constraints: Total contract workforce of 31,500 aligns with modelled_assumptions (28,000–35,000) and reconciles
+    with audited Note 35.2 contract expenses (contractual drilling ₹5,538 cr, hire charges ₹7,622 cr, security ₹1,038 cr).
+  test_sql_hint: SELECT (contract_count / regular_count) >= 2.0 FROM silver_plant_workforce WHERE wc_id IN ('WC-HAZ','WC-URN');
+- id: S14
+  title: Offshore Shift Overextension & Lost-Time Injury (LTI) Correlation
+  narrative: At Neelam & Heera Asset (WC-NEH), severe technician shortages and monsoon logistics constraints extended offshore
+    rotations beyond the statutory 14-day limit to 28–35 days, driving average overtime to 48.6 hours/month. Consequently,
+    WC-NEH suffered 4 Lost-Time Injuries (LTIFR 0.42 vs target 0.30), all involving fatigued crew on day 18+ of deployment.
+  entities:
+    work_centres:
+    - WC-NEH
+    fields:
+    - FLD-HEE
+    - FLD-NEE
+    - FLD-RAT
+    projects: []
+    grades:
+    - E1
+    - E2
+    - E3
+    - GRP-C
+    disciplines:
+    - PRD
+    - MEC
+    - ELE
+    - HSE
+    customers: []
+    vendors: []
+    states:
+    - MH
+  exact_numbers:
+    neh_avg_monthly_overtime_hours:
+      value: 48.6
+      unit: hours_per_month
+      computation_definition: AVG(overtime_hours) per offshore technician at WC-NEH in FY26
+    company_offshore_avg_overtime_hours:
+      value: 18.2
+      unit: hours_per_month
+      computation_definition: Company-wide average monthly offshore overtime hours
+    neh_lost_time_injuries_fy26:
+      value: 4
+      unit: count
+      computation_definition: Total count of recordable Lost Time Injuries at WC-NEH in FY26
+    neh_ltifr_fy26:
+      value: 0.42
+      unit: rate_per_million_manhours
+      computation_definition: (4 LTIs / 9.52 million offshore manhours) * 1,000,000
+    company_ltifr_target:
+      value: 0.3
+      unit: rate_per_million_manhours
+      computation_definition: Annual safety MoU target
+    company_actual_internal_ltifr:
+      value: 0.15
+      unit: rate_per_million_manhours
+      computation_definition: Audited standalone regular LTIFR
+    lti_occurring_after_day_14:
+      value: 4
+      unit: count
+      computation_definition: Count of LTIs occurring on shift day >= 15
+  who: HSE incident logs tracking 4 specific LTI incidents at Heera Process Complex and Neelam Process platform, naming affected
+    technicians, shift duration at time of incident, and medical leave granted.
+  why: 'Table H17 (hse_incidents: incident_id, severity, shift_day, duty_hours) and H8 (payroll: overtime_hours). Chopper
+    flight cancellations, marine vessel maintenance, and technician shortages prolonging platform stays.'
+  compare: Neelam-Heera's LTIFR of 0.42 is 2.80x the company internal baseline (0.15 per CAL-GOV-SAFETY-LTIFR-FY26) and exceeds
+    the statutory MoU ceiling of 0.30.
+  so_what: Violates DGMS (Directorate General of Mines Safety) guidelines and OISD-105 standards. Demands immediate enforcement
+    of mandatory 14-day crew changes and deployment of reserve offshore relief pools.
+  tables:
+  - H8
+  - H17
+  questions_served:
+  - X3
+  - X3:drill_down
+  - X3:why
+  - X3:compare_or_so_what
+  consistency_constraints: Total company safety LTIFR reflects published dual reporting (0.15 regular internal per CAL-GOV-SAFETY-LTIFR-FY26,
+    0.25 inclusive of contract labor). NEH manhours (9.52M) reconcile with offshore workforce strength.
+  test_sql_hint: SELECT COUNT(*) = 4 FROM silver_hse_incidents WHERE wc_id = 'WC-NEH' AND incident_type = 'LTI' AND shift_day
+    > 14;
+- id: S15
+  title: 'Crude Price Stress Simulation: $60/bbl Brent Pushes 6 More Fields into Losses'
+  narrative: A sensitivity stress test modeling a decline in Brent crude from base $75.4/bbl to $60.0/bbl (net crude realization
+    falling to $52.80/bbl post-levies) pushes 6 additional mature onshore fields into operating EBITDA losses, generating
+    an aggregate incremental operating cash burn of -₹420 cr/year across Western Onshore and Cauvery.
+  entities:
+    work_centres:
+    - WC-CAM
+    - WC-ANK
+    - WC-CAU
+    - WC-ASM
+    fields:
+    - FLD-CAM
+    - FLD-KAT
+    - FLD-MOT
+    - FLD-KOS
+    - FLD-NAR
+    - FLD-RDS
+    projects: []
+    grades: []
+    disciplines:
+    - FIN
+    - PRD
+    - RES
+    customers:
+    - CUST-IOC
+    - CUST-HPC
+    vendors: []
+    states:
+    - GJ
+    - TN
+    - AS
+  exact_numbers:
+    baseline_brent_price_usd:
+      value: 75.4
+      unit: USD_per_bbl
+      computation_definition: FY26 baseline average Brent crude price
+    stressed_brent_price_usd:
+      value: 60.0
+      unit: USD_per_bbl
+      computation_definition: Hypothetical stress scenario Brent price
+    stressed_net_realization_usd:
+      value: 52.8
+      unit: USD_per_bbl
+      computation_definition: Net crude realization per bbl at $60 Brent after royalty and cess
+    fields_in_loss_at_baseline:
+      value: 2
+      unit: count
+      computation_definition: Borholla and Adiyakkamangalam (Story S6)
+    additional_loss_making_fields_at_60usd:
+      value: 6
+      unit: count
+      computation_definition: Cambay, Kathana, Motwan, Kosamba, Narimanam, Rudrasagar
+    total_loss_making_fields_at_60usd:
+      value: 8
+      unit: count
+      computation_definition: 2 baseline + 6 newly unprofitable
+    incremental_annual_loss_inr_cr:
+      value: -420.0
+      unit: INR_Crore
+      computation_definition: Combined operating EBITDA deficit of the 6 newly stressed fields
+  who: Field operational managers and production teams associated with the 6 marginal fields across Gujarat, Tamil Nadu, and
+    Assam.
+  why: Table F4 (prices_fx) combined with F5 (co_pa_pnl). Fixed lifting costs and statutory levies compress operating margins
+    when gross realizations drop below $55/bbl.
+  compare: At $75.4 Brent, these 6 fields contributed a combined positive EBITDA of +₹185 cr. A 20.4% decline in Brent erodes
+    operating margins by 327%, flipping them from cash generators to cash drains.
+  so_what: 'Critical decision support for executive management: triggers contingency triggers for shutting in stripper wells,
+    halting uneconomic workovers, and prioritizing marginal field farm-outs (Question W1, C8).'
+  tables:
+  - F1
+  - F4
+  - F5
+  - F6
+  questions_served:
+  - W1
+  - W1:drill_down
+  - W1:why
+  - W1:compare_or_so_what
+  consistency_constraints: Baseline prices tie directly to reference/prices_fx.yaml and CAL-FIN-REALIZ-CRUDE-FY26 ($75.40/bbl).
+    Total field counts (53) and production match operational totals.
+  test_sql_hint: SELECT COUNT(*) = 8 FROM silver_field_stress_sim WHERE scenario_brent_usd = 60.0 AND projected_ebitda_cr
+    < 0;
+- id: S16
+  title: 'Affirmative Action Compliance: Senior Grade Shortfalls & ST Roster Backlog'
+  narrative: While ONGC achieves company-wide compliance with statutory reservation percentages (SC 15.02%, ST 11.35%, PwD
+    523), significant representation deficits persist in senior executive cadres (E7–E9), where ST representation stands at
+    only 6.83% (78 of 1,142) and OBC at 14.19%. A cumulative backlog of 142 unfilled ST and 188 OBC technical posts remains
+    open in direct recruitment rosters.
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    - WC-MUM
+    fields: []
+    projects: []
+    grades:
+    - E0
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+    - E7
+    - E8
+    - E9
+    - GRP-B
+    - GRP-C
+    - GRP-D
+    disciplines:
+    - DRL
+    - PRD
+    - GEO
+    - FIN
+    - HR
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - UK
+    - MH
+  exact_numbers:
+    total_regular_headcount:
+      value: 23117
+      unit: count
+      computation_definition: CAL-HR-HC-FY26
+    total_sc_pct:
+      value: 15.02
+      unit: percentage
+      computation_definition: CAL-HR-DIV-SC-PCT
+    total_sc_headcount:
+      value: 3472
+      unit: count
+      computation_definition: 23,117 * 15.02%
+    total_st_pct:
+      value: 11.35
+      unit: percentage
+      computation_definition: CAL-HR-DIV-ST-PCT
+    total_st_headcount:
+      value: 2624
+      unit: count
+      computation_definition: 23,117 * 11.35%
+    total_obc_headcount:
+      value: 5178
+      unit: count
+      computation_definition: 22.40% of regular workforce per modelled_assumptions
+    total_obc_pct:
+      value: 22.4
+      unit: percentage
+      computation_definition: (5178 / 23117) * 100
+    total_pwd_headcount:
+      value: 523
+      unit: count
+      computation_definition: CAL-HR-DIV-PWD-TOT
+    senior_exec_st_count:
+      value: 78
+      unit: count
+      computation_definition: ST officers in grades E7, E8, E9
+    senior_exec_st_pct:
+      value: 6.83
+      unit: percentage
+      computation_definition: (78 / 1142 total E7-E9) * 100
+    group_a_st_backlog_vacancies:
+      value: 142
+      unit: count
+      computation_definition: Unfilled ST roster points in Group A
+    group_a_obc_backlog_vacancies:
+      value: 188
+      unit: count
+      computation_definition: Unfilled OBC roster points in Group A
+  who: Roster registers (200-point post-based reservation rosters) maintained across all work centres for direct recruit and
+    promotional cadres.
+  why: 'Table H1 (category: Gen/SC/ST/OBC/EWS, pwd, grade). Pre-1993 vintage effects where senior officers joined prior to
+    OBC reservation, and non-availability of qualified ST candidates in specialized geoscience disciplines.'
+  compare: In junior executive grades (E0–E2), OBC representation is 26.8% (conforming to the 27% quota), but drops by nearly
+    half to 14.19% in senior management (E7–E9).
+  so_what: Forms the core factual grounding for parliamentary replies and the National Commission for Scheduled Tribes (NCST)
+    compliance reviews (Question H6, X7).
+  tables:
+  - H1
+  - H6
+  - H7
+  questions_served:
+  - H6
+  - H6:drill_down
+  - H6:why
+  - H6:compare_or_so_what
+  consistency_constraints: 'Exact totals match calibration targets: SC 15.02% (CAL-HR-DIV-SC-PCT), ST 11.35% (CAL-HR-DIV-ST-PCT),
+    PwD 523 (CAL-HR-DIV-PWD-TOT). Total regular headcount is exactly 23,117.'
+  test_sql_hint: SELECT COUNT(*) = 3472 FROM silver_employee_master WHERE category = 'SC' AND status = 'active';
+- id: S17
+  title: Gender Representation Disparity & Offshore Shift Exclusion
+  narrative: 'Female employees comprise 8.20% (1,885 of 23,117) of ONGC''s regular workforce, but deployment is overwhelmingly
+    concentrated in administrative centres: Corporate HQ Delhi (21.39%) and Dehradun (18.58%). In offshore production assets
+    (Mumbai High, Bassein, Neelam-Heera), women account for only 1.20% (78 of 6,500 personnel), with zero women stationed
+    on unmanned offshore installations.'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    - WC-MUM
+    - WC-BAS
+    - WC-NEH
+    fields:
+    - FLD-MHN
+    - FLD-BAS
+    - FLD-HEE
+    projects: []
+    grades:
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+    - E7
+    - E8
+    - E9
+    - GRP-B
+    - GRP-C
+    - GRP-D
+    disciplines:
+    - HR
+    - FIN
+    - GEO
+    - PRD
+    - CHM
+    - MED
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - UK
+    - MH
+  exact_numbers:
+    total_female_headcount:
+      value: 1885
+      unit: count
+      computation_definition: CAL-HR-DIV-WOMEN-TOT
+    total_female_pct:
+      value: 8.2
+      unit: percentage
+      computation_definition: CAL-HR-DIV-WOMEN-PCT
+    delhi_female_headcount:
+      value: 154
+      unit: count
+      computation_definition: Women regular employees at WC-DEL
+    delhi_female_pct:
+      value: 21.39
+      unit: percentage
+      computation_definition: (154 / 720 total Delhi employees) * 100
+    dehradun_female_headcount:
+      value: 418
+      unit: count
+      computation_definition: Women regular employees at WC-DDN
+    dehradun_female_pct:
+      value: 18.58
+      unit: percentage
+      computation_definition: (418 / 2250 total Dehradun employees) * 100
+    offshore_assets_female_headcount:
+      value: 78
+      unit: count
+      computation_definition: Women posted to WC-MUM, WC-BAS, WC-NEH
+    offshore_assets_female_pct:
+      value: 1.2
+      unit: percentage
+      computation_definition: (78 / 6500 offshore regular personnel) * 100
+    unmanned_platforms_female_count:
+      value: 0
+      unit: count
+      computation_definition: Women deployed on unmanned wellhead platforms
+  who: Nominative roster of all 1,885 female employees, detailing work centre assignments, grades, and shift duty profiles.
+  why: 'Table H1 (gender, current_wc_id) and H2 (posting_history: posting_type). Statutory restrictions on night shifts under
+    the Mines Act, 1952, and legacy offshore platform living quarters lacking segregated female accommodations.'
+  compare: Female representation in corporate administration (21.39%) is 17.8x higher than in offshore operational units (1.20%).
+    Median executive female remuneration (₹37.50L) is 13.4% lower than male (₹43.30L) due to lower offshore allowances.
+  so_what: Key input for BRSR (Business Responsibility and Sustainability Report) disclosures and Board-level ESG targets.
+    Drives capital retrofitting of offshore living quarters on process platforms.
+  tables:
+  - H1
+  - H2
+  - H7
+  - H8
+  questions_served:
+  - H7
+  - H7:drill_down
+  - H7:why
+  - H7:compare_or_so_what
+  consistency_constraints: 'Reconciles strictly with published public figures: female total 1,885 (CAL-HR-DIV-WOMEN-TOT: 1,377
+    exec + 508 non-exec, 8.20% per CAL-HR-DIV-WOMEN-PCT), Executive Female median remuneration ₹37.50L vs Male ₹43.30L (CAL-HR-PAY-MED-EXEC-F).'
+  test_sql_hint: SELECT COUNT(*) = 1885 FROM silver_employee_master WHERE gender = 'F' AND status = 'active';
+- id: S18
+  title: Technical Training Deficit in Continuous Shift Cadres
+  narrative: 'Executive training averaged 32.40 hours/executive in FY26, falling short of the annual DPE/MoU mandate of 40.0
+    hours. While corporate cadres logged extensive hours (HR 46.2 hrs, Finance 44.8 hrs), core field cadres suffered an acute
+    training deficit: Drilling (18.5 hrs) and Production (21.2 hrs), where 4,120 field engineers completed <20 hours.'
+  entities:
+    work_centres:
+    - WC-ACA
+    - WC-ATI
+    - WC-IDW
+    - WC-DRL
+    fields: []
+    projects: []
+    grades:
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    disciplines:
+    - DRL
+    - PRD
+    - HR
+    - FIN
+    - HSE
+    customers: []
+    vendors: []
+    states:
+    - UK
+    - GA
+  exact_numbers:
+    company_avg_training_hours:
+      value: 32.4
+      unit: hours_per_exec
+      computation_definition: Total executive training hours / 13,781 executives
+    dpe_mou_training_target_hours:
+      value: 40.0
+      unit: hours_per_exec
+      computation_definition: Mandated annual training target under MoU
+    drilling_avg_training_hours:
+      value: 18.5
+      unit: hours_per_exec
+      computation_definition: Average annual training hours for DRL executives
+    drilling_training_shortfall_pct:
+      value: 53.75
+      unit: percentage
+      computation_definition: ((40.0 - 18.5) / 40.0) * 100
+    production_avg_training_hours:
+      value: 21.2
+      unit: hours_per_exec
+      computation_definition: Average annual training hours for PRD executives
+    hr_avg_training_hours:
+      value: 46.2
+      unit: hours_per_exec
+      computation_definition: Average annual training hours for HR executives
+    finance_avg_training_hours:
+      value: 44.8
+      unit: hours_per_exec
+      computation_definition: Average annual training hours for FIN executives
+    field_executives_below_20_hours:
+      value: 4120
+      unit: count
+      computation_definition: COUNT(emp_id) in DRL/PRD/MEC with <20 training hours logged in FY26
+  who: Learning management system (LMS) transcripts for all 13,781 executives, detailing courses taken at ONGC Academy (WC-ACA)
+    and ATI Goa (WC-ATI).
+  why: 'Table H11 (training_records: hours, course_type, institute) and H1. Operational rig schedules (14-day rotational shift
+    cycles) prevent field personnel from attending scheduled residential training.'
+  compare: Corporate executives (HR/FIN) surpassed the MoU target by +15.5% (average 45.5 hours), while drilling and production
+    personnel missed the target by 50.4%.
+  so_what: Directly threatens technical competency, contributes to DPC qualification delays, and exposes personnel to higher
+    operational safety risks on high-pressure rigs (Question H8, E6).
+  tables:
+  - H1
+  - H11
+  questions_served:
+  - H8
+  - H8:drill_down
+  - H8:why
+  - H8:compare_or_so_what
+  - E6
+  - E6:drill_down
+  - E6:why
+  - E6:compare_or_so_what
+  consistency_constraints: Aggregate training hours match corporate MoU reporting. Total participating executive pool ties
+    exactly to the 13,781 regular executive population.
+  test_sql_hint: SELECT ROUND(AVG(training_hours), 1) = 18.5 FROM silver_training_records WHERE discipline = 'DRL' AND fiscal_year
+    = 'FY26';
+- id: S19
+  title: Service Litigations, Employee Grievances & Unresolved CAG Audit Paras
+  narrative: Corporate governance registers record 312 active employee grievances, with 142 cases (45.51%) unresolved for
+    >1 year, alongside 84 service litigations pending across High Courts and CAT (57.1% concerning seniority and DPC disputes).
+    In financial oversight, 38 CAG audit paras remain open (oldest dating back 4 years) alongside 124 pending RTI appeals.
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    - WC-MUM
+    fields: []
+    projects: []
+    grades:
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+    - E7
+    disciplines:
+    - HR
+    - FIN
+    - DRL
+    - LEG
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - UK
+    - MH
+  exact_numbers:
+    active_employee_grievances:
+      value: 312
+      unit: count
+      computation_definition: Total active recorded grievances in FY26
+    grievances_pending_gt_1yr:
+      value: 142
+      unit: count
+      computation_definition: Grievances pending for >365 days without final order
+    grievances_pending_gt_1yr_pct:
+      value: 45.51
+      unit: percentage
+      computation_definition: (142 / 312) * 100
+    active_service_litigations:
+      value: 84
+      unit: count
+      computation_definition: Active court cases filed by employees against ONGC
+    seniority_promotion_litigations:
+      value: 48
+      unit: count
+      computation_definition: Litigations challenging DPC, promotion, or seniority rosters
+    open_cag_audit_paras:
+      value: 38
+      unit: count
+      computation_definition: Open Comptroller and Auditor General audit objections
+    pending_rti_second_appeals:
+      value: 124
+      unit: count
+      computation_definition: Pending RTI appeals before Central Information Commission (CIC)
+  who: Legal register entries and grievance committee trackers detailing petitioner emp_ids, courts of jurisdiction, and impugned
+    administrative orders.
+  why: Table H14 (grievances), H15 (litigations), G2 (cag_paras), and G3 (rti_applications). Stalled DPC proceedings (S11),
+    contested quota promotions, and contract variation disputes during mega-project execution (S9).
+  compare: Litigation rate is highest in Northern and Western regions (72.6% of cases). Seniority and promotion cases take
+    an average of 3.8 years to resolve in Central Administrative Tribunals.
+  so_what: Creates contingent financial liabilities, exposes management to judicial strictures, and demands structured alternative
+    dispute resolution (ADR) fast-tracking (Questions H9, X8).
+  tables:
+  - H14
+  - H15
+  - G2
+  - G3
+  questions_served:
+  - H9
+  - H9:drill_down
+  - H9:why
+  - H9:compare_or_so_what
+  - X8
+  - X8:drill_down
+  - X8:why
+  - X8:compare_or_so_what
+  consistency_constraints: All cited litigation petitioners exist in employee_master. Open CAG audit paras include audited
+    project overruns consistent with S9 and statutory cess disputes.
+  test_sql_hint: SELECT COUNT(*) = 142 FROM silver_employee_grievances WHERE status = 'pending' AND DATEDIFF('2026-10-19',
+    filed_dt) > 365;
+- id: S20
+  title: 'Annual General Transfer Proposal FY27: Automated Rebalancing Engine'
+  narrative: The draft Annual General Transfer (AGT) proposal for FY27 synthesizes rotation requirements into an actionable
+    operational transfer order of 210 executives. It mobilizes 107 overstaying executives from Corporate HQ Delhi (S1) and
+    48 from Dehradun, allocating 112 to eliminate North-East deficits (S2) and 46 to offshore production shifts.
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    - WC-ASM
+    - WC-JOR
+    - WC-TRI
+    - WC-SIL
+    - WC-MUM
+    - WC-NEH
+    fields: []
+    projects: []
+    grades:
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+    disciplines:
+    - FIN
+    - HR
+    - MM
+    - IT
+    - DRL
+    - PRD
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - UK
+    - AS
+    - TR
+    - MH
+  exact_numbers:
+    total_agt_proposed_transfers:
+      value: 210
+      unit: count
+      computation_definition: Total executive transfer proposals in Draft AGT FY27 sheet
+    transfers_out_of_delhi:
+      value: 107
+      unit: count
+      computation_definition: Non-exempt overstaying executives transferred from WC-DEL
+    transfers_out_of_dehradun:
+      value: 48
+      unit: count
+      computation_definition: Executives transferred from WC-DDN
+    transfers_into_north_east:
+      value: 112
+      unit: count
+      computation_definition: Executives posted to WC-ASM, WC-JOR, WC-TRI, WC-SIL
+    transfers_into_offshore:
+      value: 46
+      unit: count
+      computation_definition: Executives posted to WC-MUM, WC-NEH, WC-BAS
+    transfers_other_assets:
+      value: 52
+      unit: count
+      computation_definition: Executives posted to Gujarat, Cauvery, Rajasthan
+  who: Complete draft Excel spreadsheet rows specifying emp_id, employee name, current station, proposed station, grade, discipline,
+    continuous station tenure, and administrative replacement tag.
+  why: Automated execution of JRTP rotation rules resolving S1 (107 Delhi overstays) and directly addressing S2 (191 North-East
+    operational deficits).
+  compare: Proposed transfer volume of 210 officers represents 1.52% of executive strength, fully aligned with the historical
+    AGT norm of 200–250 annual rotations.
+  so_what: Generates the mandatory confidential artifact required for Director (HR) review and CMD sign-off prior to April
+    2027 order issuance (Question H10, T2).
+  tables:
+  - H1
+  - H2
+  - H6
+  questions_served:
+  - H10
+  - H10:drill_down
+  - H10:why
+  - H10:compare_or_so_what
+  consistency_constraints: The 107 Delhi transfers exactly equal the net non-exempt overstaying officers identified in Story
+    S1. All transfer recipients match active manpower planning deficits in Story S2.
+  test_sql_hint: SELECT COUNT(*) = 210 FROM silver_draft_transfer_proposals WHERE proposal_cycle = 'AGT-FY27';
+- id: S21
+  title: 'Fiscal Realization Dynamics: Statutory Levies & SAED Windfall Removal Dividend'
+  narrative: Statutory levies heavily impacted crude revenues in FY26, with OIDB cess (₹13,034 cr) and Royalty (₹12,965 cr)
+    reducing net realization by $22.40/bbl. However, the formal cessation of the Special Additional Excise Duty (SAED / Windfall
+    Tax) in December 2024 generated a post-tax realization boost of +$6.80/bbl (₹3,450 cr annual EBITDA uplift).
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-MUM
+    - WC-AHM
+    fields:
+    - FLD-MHN
+    - FLD-GAN
+    projects: []
+    grades: []
+    disciplines:
+    - FIN
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - MH
+    - GJ
+  exact_numbers:
+    oidb_cess_fy26_cr:
+      value: 13034.0
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LEVY-CESS-FY26
+    royalty_fy26_cr:
+      value: 12965.0
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LEVY-ROYALTY-FY26
+    saed_windfall_fy26_cr:
+      value: 0.0
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LEVY-SAED-FY26 (ended Dec 2024)
+    saed_windfall_fy25_cr:
+      value: 5123.0
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LEVY-SAED-FY25
+    saed_windfall_fy24_cr:
+      value: 6948.0
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LEVY-SAED-FY24
+    total_statutory_levies_per_bbl_usd:
+      value: 22.4
+      unit: USD_per_bbl
+      computation_definition: Total cess + royalty / total oil barrels produced
+    post_saed_realization_boost_usd:
+      value: 6.8
+      unit: USD_per_bbl
+      computation_definition: Incremental net realization following SAED zeroing
+    annualized_ebitda_boost_saed_cr:
+      value: 3450.0
+      unit: INR_Crore
+      computation_definition: Net annual EBITDA expansion resulting from SAED removal
+  who: Corporate Finance taxation ledger entries tracking monthly cess remittance to OIDB, royalty payments to state governments
+    (Gujarat, Assam, Rajasthan) and MoPNG.
+  why: Table F4 (prices_fx) and F6 (co_cost_ledger). Cess levied at 20% ad-valorem under OIDB Act; royalty levied at 20% for
+    onshore and 10% for offshore.
+  compare: Statutory levies consumed 19.62% of gross operational revenue in FY26. Cess and royalty combined exceed total employee
+    expenditure (₹10,211 cr) by 2.55x.
+  so_what: Demonstrates the significant financial relief unlocked by the removal of the windfall tax (SAED) and informs corporate
+    fiscal representations to the Ministry of Finance (Questions F4, W4).
+  tables:
+  - F4
+  - F5
+  - F6
+  - F17
+  questions_served:
+  - F4
+  - F4:drill_down
+  - F4:why
+  - F4:compare_or_so_what
+  - W4
+  - W4:drill_down
+  - W4:why
+  - W4:compare_or_so_what
+  consistency_constraints: 'Levy figures match calibration targets exactly: Cess ₹13,034 cr (CAL-FIN-LEVY-CESS-FY26), Royalty
+    ₹12,965 cr (CAL-FIN-LEVY-ROYALTY-FY26), SAED ₹0 cr (CAL-FIN-LEVY-SAED-FY26).'
+  test_sql_hint: SELECT (cess_cr + royalty_cr) = 25999.0 FROM silver_corporate_tax_levies WHERE fiscal_year = 'FY26';
+- id: S22
+  title: Vendor Spend Concentration & Major Contract Price Variations
+  narrative: 'Procurement spend displays severe concentration: the top 10 prime contractors account for 62.40% (₹22,388 cr)
+    of total corporate spend across capex and operational service contracts. Furthermore, 3 major contracts (deepwater rig
+    hire, subsea installation, and TSP technical services) recorded cumulative price variations of ₹1,840 cr.'
+  entities:
+    work_centres:
+    - WC-MUM
+    - WC-EAS
+    - WC-DEL
+    fields:
+    - FLD-MHN
+    - FLD-KG982
+    projects:
+    - PRJ-0001
+    - PRJ-0005
+    - PRJ-0015
+    grades: []
+    disciplines:
+    - MM
+    - DRL
+    - FIN
+    customers: []
+    vendors:
+    - VEN-00006
+    - VEN-00009
+    - VEN-00002
+    - VEN-00005
+    states:
+    - MH
+    - AP
+    - DL
+  exact_numbers:
+    total_procurement_spend_cr:
+      value: 35878.0
+      unit: INR_Crore
+      computation_definition: Total capital spend baseline for FY26
+    top_10_vendors_spend_cr:
+      value: 22388.0
+      unit: INR_Crore
+      computation_definition: SUM(purchase_order_value) for top 10 vendors
+    top_10_vendor_share_pct:
+      value: 62.4
+      unit: percentage
+      computation_definition: (22388.0 / 35878.0) * 100
+    contracts_with_gt_15pct_variation:
+      value: 3
+      unit: count
+      computation_definition: Number of contracts with >15% approved variations
+    total_price_variation_amount_cr:
+      value: 1840.0
+      unit: INR_Crore
+      computation_definition: Cumulative cost variation across the 3 contracts
+    deepwater_rig_variation_cr:
+      value: 920.0
+      unit: INR_Crore
+      computation_definition: Contract variation for Master Deepwater Rigs (VEN-00006)
+    pipelay_variation_cr:
+      value: 610.0
+      unit: INR_Crore
+      computation_definition: Contract variation for Palla Ocean Logistics (VEN-00009)
+    tsp_technical_variation_cr:
+      value: 310.0
+      unit: INR_Crore
+      computation_definition: Contract variation under bp TSP Redevelopment Scheme
+  who: SAP MM purchase order registers (EKKO/EKPO) tracking contract awards, amendment orders, and vendor performance ratings
+    for 2,000 active vendors.
+  why: 'Table F9 (purchase_orders: vendor_id, sanctioned_val, actual_val, variation_reason). Global deepwater rig rate inflation,
+    scope additions in subsea tie-backs, and currency exchange adjustment clauses.'
+  compare: While MSME vendor registrations grew by 14%, MSME spend accounted for only 8.4% of total procurement, overshadowed
+    by high-value foreign offshore and rig service conglomerates.
+  so_what: Highlights contract management risks and single-supplier exposure. Requires enhanced scrutiny by the Board Tender
+    Committee and commercial audit (Question F5).
+  tables:
+  - F8
+  - F9
+  questions_served:
+  - F5
+  - F5:drill_down
+  - F5:why
+  - F5:compare_or_so_what
+  consistency_constraints: Vendor IDs resolve cleanly to reference/vendors.yaml (VEN-00006, VEN-00009). Total spend matches
+    corporate capex and service contract expenditure totals.
+  test_sql_hint: SELECT ROUND(SUM(spend_cr), 1) = 22388.0 FROM silver_top_vendor_spend;
+- id: S23
+  title: 'Trade Receivable Ageing: Contested OMC Offtake Settlements'
+  narrative: 'Total outstanding trade receivables stand at ₹13,168 cr (debtor turnover: 36.27 days). However, ageing analysis
+    reveals that ₹2,840 cr (21.57%) has remained overdue beyond 90 days, primarily tied up in contested pricing differentials
+    and transit losses with public-sector refiners: IOCL (₹1,650 cr) and HPCL (₹890 cr).'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-MUM
+    fields: []
+    projects: []
+    grades: []
+    disciplines:
+    - FIN
+    - LEG
+    customers:
+    - CUST-IOC
+    - CUST-HPC
+    - CUST-GAL
+    vendors: []
+    states:
+    - DL
+    - MH
+  exact_numbers:
+    total_trade_receivables_cr:
+      value: 13168.0
+      unit: INR_Crore
+      computation_definition: CAL-FIN-REC-TRADE-FY26
+    receivables_less_than_30d_cr:
+      value: 7850.0
+      unit: INR_Crore
+      computation_definition: Current receivables <30 days old
+    receivables_30_to_90d_cr:
+      value: 2478.0
+      unit: INR_Crore
+      computation_definition: Receivables aged between 30 and 90 days
+    receivables_gt_90d_cr:
+      value: 2840.0
+      unit: INR_Crore
+      computation_definition: Overdue receivables >90 days old
+    overdue_gt_90d_share_pct:
+      value: 21.57
+      unit: percentage
+      computation_definition: (2840.0 / 13168.0) * 100
+    iocl_disputed_receivable_cr:
+      value: 1650.0
+      unit: INR_Crore
+      computation_definition: Disputed dues from Indian Oil Corp (CUST-IOC)
+    hpcl_disputed_receivable_cr:
+      value: 890.0
+      unit: INR_Crore
+      computation_definition: Disputed dues from Hindustan Petroleum (CUST-HPC)
+    gail_disputed_receivable_cr:
+      value: 300.0
+      unit: INR_Crore
+      computation_definition: Disputed dues from GAIL India (CUST-GAL)
+  who: SAP FI-AR debtor sub-ledger (BSID) tracking outstanding monthly invoices, credit terms, and commercial dispute dockets
+    with downstream buyers.
+  why: 'Table F10 (trade_receivables: customer_id, invoice_dt, amount, dispute_tag). Offtake disputes over offshore BS&W (basic
+    sediment & water) testing protocols and pipeline gas CV (calorific value) billing adjustments.'
+  compare: Private refiners and domestic gas buyers exhibit 98.4% on-time settlement (<30 days). In contrast, public-sector
+    OMC dispute backlogs drag overall debtor days from 24.2 days to 36.27 days.
+  so_what: Locks up liquid working capital and incurs non-productive carrying costs. Requires intervention by the Secretary
+    MoPNG for inter-CPSE administrative dispute resolution (PMA mechanism) (Question F6).
+  tables:
+  - F10
+  - F17
+  questions_served:
+  - F6
+  - F6:drill_down
+  - F6:why
+  - F6:compare_or_so_what
+  consistency_constraints: Total trade receivables match calibration target ₹13,168 cr exactly (CAL-FIN-REC-TRADE-FY26). Customer
+    IDs resolve to reference/customers.yaml (CUST-IOC, CUST-HPC, CUST-GAL).
+  test_sql_hint: SELECT SUM(amount_inr_cr) = 13168.0 FROM silver_trade_receivables WHERE fiscal_year = 'FY26';
+- id: S24
+  title: Finding & Development (F&D) Cost Disparity & Reserve Replacement Ratio
+  narrative: 'ONGC maintained a robust Reserve Replacement Ratio (2P RRR) of 1.17 in FY26, replacing 45.47 MMTOE against annual
+    production of 38.865 MMTOE. However, Finding & Development (F&D) costs diverge wildly across basins: Western Offshore
+    remains highly cost-effective at $8.20/boe, whereas deepwater KG-PG Basin stands at $18.50/boe.'
+  entities:
+    work_centres:
+    - WC-WOB
+    - WC-KGB
+    - WC-WNB
+    - WC-AAB
+    fields:
+    - FLD-MHN
+    - FLD-KG982
+    - FLD-ANK
+    - FLD-GEL
+    projects:
+    - PRJ-0001
+    - PRJ-0003
+    grades: []
+    disciplines:
+    - GEO
+    - GPS
+    - RES
+    - FIN
+    customers: []
+    vendors: []
+    states:
+    - MH
+    - AP
+    - GJ
+    - AS
+  exact_numbers:
+    reserve_replacement_ratio_2p:
+      value: 1.17
+      unit: ratio
+      computation_definition: CAL-OPS-RES-RRR-2P-FY26
+    total_2p_reserves_mmtoe:
+      value: 709.32
+      unit: MMTOE
+      computation_definition: CAL-OPS-RES-2P-TOTAL-FY26
+    company_avg_f_and_d_cost_usd_boe:
+      value: 10.4
+      unit: USD_per_BOE
+      computation_definition: Weighted average Finding & Development cost
+    western_offshore_f_and_d_usd_boe:
+      value: 8.2
+      unit: USD_per_BOE
+      computation_definition: 3-year average F&D cost in Western Offshore Basin
+    kg_pg_basin_f_and_d_usd_boe:
+      value: 18.5
+      unit: USD_per_BOE
+      computation_definition: 3-year average F&D cost in KG-PG Deepwater Basin
+    cambay_basin_f_and_d_usd_boe:
+      value: 14.2
+      unit: USD_per_BOE
+      computation_definition: 3-year average F&D cost in Cambay Basin
+    assam_basin_f_and_d_usd_boe:
+      value: 11.8
+      unit: USD_per_BOE
+      computation_definition: 3-year average F&D cost in Assam Basin
+  who: Subsurface reserves accounting records certified by DeGolyer and MacNaughton (D&M) and internal Reservoir Studies institute
+    (WC-IRS).
+  why: Table F2 (reserves) and F7 (be_re_capex). Ultra-deepwater water depths (>1,000m), harsh seabed topography, and expensive
+    subsea tree installations driving up capital intensity per barrel added in KG-PG.
+  compare: Western Offshore produces reserve additions at less than half the unit cost ($8.20/boe) of deepwater East Coast
+    ($18.50/boe), proving the superior capital efficiency of mature offshore redevelopment.
+  so_what: Guides capital allocation across exploratory blocks and Open Acreage Licensing Policy (OALP) bidding rounds (Question
+    F8).
+  tables:
+  - F1
+  - F2
+  - F7
+  questions_served:
+  - F8
+  - F8:drill_down
+  - F8:why
+  - F8:compare_or_so_what
+  consistency_constraints: 2P reserves (709.32 MMTOE) and 2P RRR (1.17) reconcile with audited calibration targets CAL-OPS-RES-2P-TOTAL-FY26
+    and CAL-OPS-RES-RRR-2P-FY26.
+  test_sql_hint: SELECT rrr_2p = 1.17, reserves_2p_mmtoe = 709.32 FROM silver_reserves_master WHERE fiscal_year = 'FY26';
+- id: S25
+  title: 'Forex Exposure: Natural Operational Hedge & Mark-to-Market Debt Drag'
+  narrative: ONGC carries $1.85 billion in foreign currency borrowings. While USD-denominated crude oil sales provide an 82%
+    natural operational hedge, non-USD equipment supplier obligations (€420 million) and JPY debt generated an adverse mark-to-market
+    (MTM) translation loss of ₹320 cr in FY26 due to INR depreciation.
+  entities:
+    work_centres:
+    - WC-DEL
+    fields: []
+    projects: []
+    grades: []
+    disciplines:
+    - FIN
+    customers: []
+    vendors: []
+    states:
+    - DL
+  exact_numbers:
+    total_foreign_currency_debt_usd_bn:
+      value: 1.85
+      unit: USD_Billion
+      computation_definition: Total outstanding foreign currency loans
+    natural_hedge_coverage_pct:
+      value: 82.0
+      unit: percentage
+      computation_definition: Share of FC debt debt-serviced via USD crude invoicing
+    euro_equipment_exposure_mn:
+      value: 420.0
+      unit: EUR_Million
+      computation_definition: Unhedged Euro capital commitments
+    jpy_bilateral_loan_bn:
+      value: 18.0
+      unit: JPY_Billion
+      computation_definition: Unhedged Yen supplier credits
+    fy26_mtm_forex_translation_loss_cr:
+      value: -320.0
+      unit: INR_Crore
+      computation_definition: Mark-to-market currency translation loss in P&L
+  who: Treasury division records at Corporate Office New Delhi managing overseas bond covenants, cross-currency swaps, and
+    export credit agency (ECA) lines.
+  why: 'Table F11 (forex_hedges: instrument, currency, exposure, mtm_pnl) and F17. Exchange rate fluctuations (INR depreciating
+    from 83.1 to 86.0 against USD) affecting non-dollar loan tranches.'
+  compare: While standalone earnings benefited from a ₹3,150 cr positive translation in gross USD crude billings, unhedged
+    third-party European subsea equipment contracts partially offset gains by ₹320 cr.
+  so_what: Drives Board audit committee mandate to execute structured derivative hedges (options/swaps) on non-USD capital
+    procurements exceeding €50 million (Question F9).
+  tables:
+  - F4
+  - F11
+  - F17
+  questions_served:
+  - F9
+  - F9:drill_down
+  - F9:why
+  - F9:compare_or_so_what
+  consistency_constraints: 'Exchange rates align with reference/prices_fx.yaml (closing FX: ₹86.0/USD). P&L translation losses
+    reconcile with audited Note 40 finance expense line items.'
+  test_sql_hint: SELECT SUM(mtm_loss_cr) = -320.0 FROM silver_forex_hedges WHERE fiscal_year = 'FY26';
+- id: S26
+  title: 'DPE Superannuation Ceiling: 30% Benefit Cap & Available Headroom'
+  narrative: Under DPE 3rd PRC guidelines, employer retirement contributions are capped at 30.00% of Basic Pay + DA. ONGC's
+    actual contributions total 28.40% (PF 12.00%, Gratuity 4.16%, PRMB 3.84%, PRBS Pension Trust 8.40%), leaving an unutilized
+    headroom of 1.60% (₹163.4 cr annually across regular payroll) available for post-retirement benefit expansion.
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    fields: []
+    projects: []
+    grades:
+    - E0
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+    - E7
+    - E8
+    - E9
+    disciplines:
+    - HR
+    - FIN
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - UK
+  exact_numbers:
+    dpe_superannuation_cap_pct:
+      value: 30.0
+      unit: percentage
+      computation_definition: Statutory ceiling under DPE OM 3-Aug-2017
+    provident_fund_contribution_pct:
+      value: 12.0
+      unit: percentage
+      computation_definition: Employer PF contribution on Basic+DA
+    gratuity_contribution_pct:
+      value: 4.16
+      unit: percentage
+      computation_definition: Actuarial gratuity funding percentage
+    prmb_medical_contribution_pct:
+      value: 3.84
+      unit: percentage
+      computation_definition: Post-retirement medical scheme funding
+    prbs_pension_contribution_pct:
+      value: 8.4
+      unit: percentage
+      computation_definition: Defined contribution pension trust funding
+    total_actual_contribution_pct:
+      value: 28.4
+      unit: percentage
+      computation_definition: 12.00 + 4.16 + 3.84 + 8.40
+    unutilized_headroom_pct:
+      value: 1.6
+      unit: percentage
+      computation_definition: 30.00 minus 28.40
+    annual_headroom_amount_cr:
+      value: 163.4
+      unit: INR_Crore
+      computation_definition: 1.60% applied to total eligible Basic+DA wage base
+  who: Corporate Payroll and Employee Benefits trust administration accounts covering all 23,117 regular employees.
+  why: Table H8 (payroll) and F14 (actuarial_liabilities). Conservative funding of the defined-contribution pension trust
+    (PRBS) kept employer contributions deliberately below the DPE ceiling to buffer against actuarial medical spikes.
+  compare: Peer Maharatna CPSEs (IOCL, NTPC) contribute 29.5% to 30.0%, fully utilizing available DPE headroom. ONGC maintains
+    the largest unutilized buffer among Maharatna energy enterprises.
+  so_what: Provides Director (HR) with fiscal justification to enhance employee pension benefits or raise outpatient medical
+    reimbursement limits without violating DPE ceilings (Question P13).
+  tables:
+  - H8
+  - F14
+  questions_served:
+  - P13
+  - P13:drill_down
+  - P13:why
+  - P13:compare_or_so_what
+  consistency_constraints: Basic+DA payroll base ties directly to employee expense of ₹10,211 cr (CAL-FIN-EMP-EXP-FY26). Actuarial
+    rates reconcile with PRBS Trust disclosures in AR26 Note 34.
+  test_sql_hint: SELECT (30.00 - SUM(contrib_pct)) = 1.60 FROM silver_superannuation_benefits WHERE fy = 'FY26';
+- id: S27
+  title: 'MoU Rating Sensitivity: PRP Pool Contraction Under Downgrade'
+  narrative: Executive Performance-Related Pay (PRP) is tied to the annual DPE MoU composite score. Under an 'Excellent' rating
+    (score >= 90), the distributable PRP pool is 100% (₹1,200 cr). A downgrade to 'Very Good' (score 75–89), caused by FY27
+    H1 production and capex lags (S10), restricts the pool to 80% (₹960 cr), a collective loss of ₹240 cr across 13,781 executives.
+  entities:
+    work_centres:
+    - WC-DEL
+    fields: []
+    projects: []
+    grades:
+    - E0
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+    - E7
+    - E8
+    - E9
+    disciplines:
+    - HR
+    - FIN
+    customers: []
+    vendors: []
+    states:
+    - DL
+  exact_numbers:
+    prp_pool_excellent_cr:
+      value: 1200.0
+      unit: INR_Crore
+      computation_definition: Maximum eligible PRP pool at 100% factor
+    prp_factor_excellent:
+      value: 1.0
+      unit: factor
+      computation_definition: DPE PRP factor for 'Excellent' MoU rating
+    prp_pool_very_good_cr:
+      value: 960.0
+      unit: INR_Crore
+      computation_definition: PRP pool at 80% factor for 'Very Good'
+    prp_factor_very_good:
+      value: 0.8
+      unit: factor
+      computation_definition: DPE PRP factor for 'Very Good' MoU rating
+    prp_pool_reduction_cr:
+      value: 240.0
+      unit: INR_Crore
+      computation_definition: 1200.0 minus 960.0
+    avg_prp_loss_per_executive_lakh:
+      value: 1.74
+      unit: INR_Lakh
+      computation_definition: ₹240 cr / 13,781 executives
+  who: Corporate remuneration model calculating grade-wise PRP ceilings (from 40% of Basic Pay at E0 to 150% at E9/ED level).
+  why: Table F13 (mou_targets) and H8 (payroll). DPE OM dated 3-Aug-2017 mandating strict linkage between CPSE MoU performance
+    scorecards and executive variable bonuses.
+  compare: Under an 'Excellent' rating, average executive payout is ₹8.70 lakh. A downgrade to 'Very Good' cuts the average
+    payout to ₹6.96 lakh, representing a 20.0% loss in annual incentive compensation.
+  so_what: Provides vital context for executive committee meetings, motivating remedial actions to accelerate H2 drilling
+    and capex spend to preserve the 'Excellent' rating (Question P14).
+  tables:
+  - H8
+  - F13
+  - F17
+  questions_served:
+  - P14
+  - P14:drill_down
+  - P14:why
+  - P14:compare_or_so_what
+  consistency_constraints: Executive count matches 13,781 (CAL-HR-STR-EXEC). PRP pool integrates into employee expense of
+    ₹10,211 cr (CAL-FIN-EMP-EXP-FY26) and aligns with MoU scores from Story S10.
+  test_sql_hint: SELECT (excellent_pool_cr - very_good_pool_cr) = 240.0 FROM silver_prp_sensitivity WHERE fy = 'FY27';
+- id: S28
+  title: CSR Statutory Compliance & Spatial Allocation Disparity
+  narrative: 'ONGC satisfied its statutory 2% CSR obligation by spending ₹949.0 cr in FY26 against the mandated benchmark
+    of ₹912.4 cr (+₹36.6 cr surplus). However, spend exhibits spatial disparity: top 3 states UP (₹155.0 cr), Maharashtra
+    (₹137.6 cr), and J&K (₹132.6 cr) absorbed 44.81% of funds (₹425.2 cr), while core operational states Assam (₹82 cr) and
+    Gujarat (₹76 cr) received lower allocations, and 48 Aspirational Districts received ₹63.6 cr.'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    - WC-MUM
+    - WC-ASM
+    - WC-AHM
+    fields: []
+    projects: []
+    grades: []
+    disciplines:
+    - CSR
+    - CC
+    - FIN
+    customers: []
+    vendors: []
+    states:
+    - UP
+    - MH
+    - JK
+    - AS
+    - GJ
+  exact_numbers:
+    statutory_csr_obligation_cr:
+      value: 912.4
+      unit: INR_Crore
+      computation_definition: 2% of average net profit of preceding 3 fiscal years
+    actual_csr_spend_fy26_cr:
+      value: 949.0
+      unit: INR_Crore
+      computation_definition: CAL-CORP-CSR-TOT-FY26
+    csr_spend_surplus_cr:
+      value: 36.6
+      unit: INR_Crore
+      computation_definition: 949.0 minus 912.4
+    uttar_pradesh_csr_spend_cr:
+      value: 155.0
+      unit: INR_Crore
+      computation_definition: CAL-CORP-CSR-STATE-UP
+    maharashtra_csr_spend_cr:
+      value: 137.6
+      unit: INR_Crore
+      computation_definition: CAL-CORP-CSR-STATE-MH
+    jammu_kashmir_csr_spend_cr:
+      value: 132.6
+      unit: INR_Crore
+      computation_definition: CAL-CORP-CSR-STATE-JK
+    top_3_states_share_pct:
+      value: 44.81
+      unit: percentage
+      computation_definition: ((155.0 + 137.6 + 132.6) / 949.0) * 100
+    assam_csr_spend_cr:
+      value: 82.0
+      unit: INR_Crore
+      computation_definition: CSR spend in Assam operational areas
+    gujarat_csr_spend_cr:
+      value: 76.0
+      unit: INR_Crore
+      computation_definition: CSR spend in Gujarat operational areas
+    aspirational_districts_spend_cr:
+      value: 63.6
+      unit: INR_Crore
+      computation_definition: CAL-CORP-CSR-ASP-DIST-FY26
+  who: ONGC Foundation project manifests and Board CSR Committee sanction registers detailing 1,420 discrete development projects.
+  why: 'Table F12 (csr_projects: project_id, state_code, theme, spend_cr). High-visibility national flagship programs (hospitals,
+    educational infrastructure) and central ministry mandates concentrating spend in northern states.'
+  compare: Uttar Pradesh alone received 1.89x the CSR investment of Assam (₹155.0 cr vs ₹82.0 cr), despite Assam hosting 3,561
+    regular employees and significant onshore hydrocarbon production.
+  so_what: Complies fully with Section 135 of the Companies Act, but triggers local community agitation and political scrutiny
+    in operational field assets regarding local area development (Questions P15, X9).
+  tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - P15:drill_down
+  - P15:why
+  - P15:compare_or_so_what
+  - X9
+  - X9:drill_down
+  - X9:why
+  - X9:compare_or_so_what
+  consistency_constraints: Total CSR spend of ₹949.0 cr matches calibration target CAL-CORP-CSR-TOT-FY26. State allocations
+    match CAL-CORP-CSR-STATE-UP (₹155.0 cr), CAL-CORP-CSR-STATE-MH (₹137.6 cr), CAL-CORP-CSR-STATE-JK (₹132.6 cr), and CAL-CORP-CSR-ASP-DIST-FY26
+    (₹63.6 cr).
+  test_sql_hint: SELECT SUM(spend_inr_cr) = 949.0 FROM silver_csr_projects WHERE fiscal_year = 'FY26';
+- id: S29
+  title: 'Delegation of Financial Powers (BODP): Escalation Thresholds for Drilling Tenders'
+  narrative: A review of the Book of Delegated Powers (BODP Clause 4.2) for approving a ₹50.0 cr offshore drilling rig charter
+    establishes that the tender breaches the approval limits of Level-1 Asset Managers (limit ₹25.0 cr) and Level-2 Functional
+    Directors (Director TFS/Drilling limit ₹40.0 cr), mandating escalation to CMD (limit ₹75.0 cr).
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-MUM
+    fields: []
+    projects: []
+    grades:
+    - CMD
+    - DIR
+    - E9
+    disciplines:
+    - DRL
+    - MM
+    - FIN
+    customers: []
+    vendors:
+    - VEN-00006
+    states:
+    - DL
+    - MH
+  exact_numbers:
+    drilling_contract_value_cr:
+      value: 50.0
+      unit: INR_Crore
+      computation_definition: Value of proposed offshore drilling charter
+    level_1_asset_manager_limit_cr:
+      value: 25.0
+      unit: INR_Crore
+      computation_definition: Sanctioning ceiling for Level-1 Key Executive / ED
+    level_2_functional_director_limit_cr:
+      value: 40.0
+      unit: INR_Crore
+      computation_definition: Sanctioning ceiling for Functional Director (TFS/Drilling)
+    cmd_sanctioning_limit_cr:
+      value: 75.0
+      unit: INR_Crore
+      computation_definition: Sanctioning ceiling for Chairman & CEO (CMD)
+    board_tender_committee_threshold_cr:
+      value: 75.0
+      unit: INR_Crore
+      computation_definition: Threshold beyond which full Board / BTC approval is mandatory
+  who: Commercial tender docket for Master Deepwater Rigs charter detailing technical evaluation, commercial bids, and competency
+    escalation notes.
+  why: BODP Governance manual and procurement rules. Financial powers are strictly partitioned by cadre and committee to enforce
+    vigilance oversight and internal controls.
+  compare: Routine production workover contracts (<₹10 cr) are fully disposable at Asset Manager level. A ₹50 cr offshore
+    charter requires two levels of governance escalation due to risk exposure.
+  so_what: Answers procedural and regulatory inquiries regarding procurement authority, preventing audit strictures by CAG
+    under Section 619 of the Companies Act (Question P16).
+  tables:
+  - F9
+  - G4
+  questions_served:
+  - P16
+  - P16:drill_down
+  - P16:why
+  - P16:compare_or_so_what
+  consistency_constraints: Thresholds strictly mirror the summary Book of Delegated Powers and Board committee governance
+    charters. Vendor ID resolves to reference/vendors.yaml.
+  test_sql_hint: SELECT competent_authority = 'CMD' FROM silver_delegated_powers WHERE tender_category = 'drilling_rig_hire'
+    AND amount_inr_cr = 50.0;
+- id: S30
+  title: Dividend Payout Capacity vs Free Cash Flow & Capex Commitments
+  narrative: In FY26, ONGC declared a total dividend of ₹13.25/share (₹16,669 cr total payout, representing 50.68% of standalone
+    PAT), comfortably exceeding the DIPAM mandatory threshold of 30% of PAT. For FY27, with budgeted capex of ₹35,878 cr and
+    projected Free Cash Flow of ₹18,400 cr, expanding dividends beyond ₹14.00/share would require incremental debt.
+  entities:
+    work_centres:
+    - WC-DEL
+    fields: []
+    projects: []
+    grades: []
+    disciplines:
+    - FIN
+    customers: []
+    vendors: []
+    states:
+    - DL
+  exact_numbers:
+    fy26_dividend_per_share_inr:
+      value: 13.25
+      unit: INR_per_share
+      computation_definition: CAL-CORP-DIV-DPS-FY26
+    fy26_total_dividend_paid_cr:
+      value: 16669.0
+      unit: INR_Crore
+      computation_definition: CAL-CORP-DIV-TOT-FY26
+    fy26_standalone_pat_cr:
+      value: 32894.0
+      unit: INR_Crore
+      computation_definition: CAL-FIN-PAT-FY26
+    fy26_dividend_payout_ratio_pct:
+      value: 50.68
+      unit: percentage
+      computation_definition: CAL-CORP-DIV-PAYOUT-FY26
+    dipam_minimum_payout_pct:
+      value: 30.0
+      unit: percentage
+      computation_definition: Statutory minimum CPSE dividend floor
+    dipam_statutory_minimum_dividend_cr:
+      value: 9868.2
+      unit: INR_Crore
+      computation_definition: 30% of ₹32,894 cr PAT
+    fy27_budgeted_capex_cr:
+      value: 35878.0
+      unit: INR_Crore
+      computation_definition: Planned annual capital outlay
+    projected_fy27_free_cash_flow_cr:
+      value: 18400.0
+      unit: INR_Crore
+      computation_definition: Operating cash flow minus capex
+    maximum_prudent_dividend_ceiling_cr:
+      value: 17613.0
+      unit: INR_Crore
+      computation_definition: ₹14.00/share payout ceiling
+  who: Investor relations and Board dividend recommendation papers evaluating cash generation, capex commitments, and government
+    receipt expectations.
+  why: 'Table F17 (corporate_financials: pat, capex, ocf, fcf, dividend). DIPAM dividend guidelines require CPSEs to balance
+    dividend returns to the exchequer against national energy security capex.'
+  compare: ONGC's payout ratio of 50.68% exceeds the upstream CPSE peer average of 42.5%. Dividend yield on average market
+    capitalization was an attractive 5.4% in FY26.
+  so_what: Essential guidance for Director (Finance) and CMD during pre-budget consultations with the Ministry of Finance
+    regarding special or interim dividend demands (Question P17).
+  tables:
+  - F17
+  questions_served:
+  - P17
+  - P17:drill_down
+  - P17:why
+  - P17:compare_or_so_what
+  consistency_constraints: 'Figures reconcile exactly with calibration targets: PAT ₹32,894 cr (CAL-FIN-PAT-FY26), DPS ₹13.25
+    (CAL-CORP-DIV-DPS-FY26), total dividend ₹16,669 cr (CAL-CORP-DIV-TOT-FY26), and Capex ₹35,878 cr (CAL-FIN-CAPEX-FY26).'
+  test_sql_hint: SELECT (total_dividend_cr / pat_cr) * 100 = 50.68 FROM silver_corporate_financials WHERE fiscal_year = 'FY26';
+- id: S31
+  title: Corporate-to-Field Executive Rebalancing Simulation
+  narrative: A strategic simulation models the redeployment of 200 non-essential executives (E2–E5) from corporate headquarters
+    (120 from Delhi, 80 from Dehradun) to frontline operational assets (100 to Assam, 60 to Western Offshore, 40 to Cambay).
+    The move incurs a one-time relocation cost of ₹12.4 cr, but yields recurring annual lease/allowance savings of ₹18.5 cr
+    and eliminates over half of the North-East technical deployment deficit.
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    - WC-ASM
+    - WC-MUM
+    - WC-CAM
+    fields:
+    - FLD-GEL
+    - FLD-MHN
+    - FLD-CAM
+    projects: []
+    grades:
+    - E2
+    - E3
+    - E4
+    - E5
+    disciplines:
+    - FIN
+    - HR
+    - MM
+    - IT
+    - DRL
+    - PRD
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - UK
+    - AS
+    - MH
+    - GJ
+  exact_numbers:
+    simulated_rebalanced_headcount:
+      value: 200
+      unit: count
+      computation_definition: Executives redeployed in simulation
+    transferred_from_delhi_count:
+      value: 120
+      unit: count
+      computation_definition: Officers shifted from WC-DEL
+    transferred_from_dehradun_count:
+      value: 80
+      unit: count
+      computation_definition: Officers shifted from WC-DDN
+    received_by_assam_count:
+      value: 100
+      unit: count
+      computation_definition: Officers posted to WC-ASM
+    received_by_western_offshore_count:
+      value: 60
+      unit: count
+      computation_definition: Officers posted to WC-MUM
+    received_by_cambay_count:
+      value: 40
+      unit: count
+      computation_definition: Officers posted to WC-CAM
+    one_time_relocation_grant_cost_cr:
+      value: 12.4
+      unit: INR_Crore
+      computation_definition: ₹6.2 lakh avg transfer TA/DA per officer * 200
+    recurring_annual_overhead_savings_cr:
+      value: 18.5
+      unit: INR_Crore
+      computation_definition: Corporate Delhi/Dehradun leased office & housing allowance savings
+    ne_deficit_reduction_count:
+      value: 100
+      unit: count
+      computation_definition: NE executive norm deficit reduced from 191 to 91
+  who: Simulation scenario roster modeling specific officer grades, disciplines, and transfer cost computations.
+  why: Scenario simulation module evaluating structural solutions to S1 (Delhi overstay) and S2 (NE deployment deficit).
+  compare: Net payback period on the relocation expenditure is only 8.0 months (₹12.4 cr cost / ₹18.5 cr annual savings),
+    delivering permanent recurring operational value.
+  so_what: Demonstrates the quantifiable financial and operational advantages of administrative de-layering to CMD and Board
+    HR committee (Questions C13, W3).
+  tables:
+  - H1
+  - H2
+  - H6
+  - H8
+  questions_served:
+  - C13
+  - C13:drill_down
+  - C13:why
+  - C13:compare_or_so_what
+  - W3
+  - W3:drill_down
+  - W3:why
+  - W3:compare_or_so_what
+  consistency_constraints: The 120 Delhi transfers fit cleanly within the 138 cumulative overstay officers from Story S1.
+    The 100 Assam allocations respect the 191 operational norm deficit in Story S2.
+  test_sql_hint: SELECT (savings_annual_cr - cost_onetime_cr) = 6.1 FROM silver_sim_rebalancing WHERE sim_id = 'SIM-200-EXEC';
+- id: S32
+  title: 'Actuarial Superannuation Obligations: Gratuity, PRMB & PF Trusts'
+  narrative: 'Actuarial valuations reveal major employee retirement benefit obligations totaling ₹22,200.4 cr at 31-Mar-2026:
+    Provident Fund trust obligation of ₹13,266.9 cr (plan assets ₹13,414.6 cr), Post-Retirement Medical Benefits (PRMB) obligation
+    of ₹7,065.6 cr (plan assets ₹6,570.4 cr, net liability ₹495.3 cr), and Gratuity obligation of ₹1,867.9 cr (plan assets
+    ₹1,753.7 cr, net liability ₹114.2 cr). PRBS defined contribution pension expense was ₹263.1 cr.'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    fields: []
+    projects: []
+    grades: []
+    disciplines:
+    - FIN
+    - HR
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - UK
+  exact_numbers:
+    gratuity_obligation_cr:
+      value: 1867.9
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LIAB-GRAT-OBL (audited Note 34)
+    gratuity_plan_assets_cr:
+      value: 1753.7
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LIAB-GRAT-ASSETS
+    gratuity_net_liability_cr:
+      value: 114.2
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LIAB-GRAT-NET (1867.9 minus 1753.7)
+    prmb_obligation_cr:
+      value: 7065.6
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LIAB-PRMB-OBL (audited Note 34)
+    prmb_plan_assets_cr:
+      value: 6570.4
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LIAB-PRMB-ASSETS
+    prmb_net_liability_cr:
+      value: 495.3
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LIAB-PRMB-NET (7065.6 minus 6570.4)
+    pf_trust_obligation_cr:
+      value: 13266.9
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LIAB-PF-OBL (audited Note 34)
+    pf_trust_plan_assets_cr:
+      value: 13414.6
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LIAB-PF-ASSETS
+    prbs_pension_defined_contribution_expense_cr:
+      value: 263.1
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LIAB-PRBS-EXP (audited Note 34)
+    prbs_contribution_paid_to_trust_cr:
+      value: 692.2
+      unit: INR_Crore
+      computation_definition: CAL-FIN-LIAB-PRBS-CONTRIB
+    total_retirement_benefit_obligations_cr:
+      value: 22200.4
+      unit: INR_Crore
+      computation_definition: 1867.9 Gratuity + 7065.6 PRMB + 13266.9 PF Obligation
+  who: Independent actuary certified valuation reports and Trust financial statements for ONGC Gratuity, PRMB, Provident Fund,
+    and PRBS Pension trusts covering 23,117 active employees and 42,000+ retired beneficiaries.
+  why: 'Table F14 (actuarial_liabilities: benefit_type, obligation_pv, plan_assets, discount_rate). High demographic aging
+    of regular workforce (24.4% >50 years) and medical inflation driving healthcare claims.'
+  compare: Plan assets fully cover 101.1% of PF liabilities (₹13,414.6 cr vs ₹13,266.9 cr), 93.0% of PRMB liabilities (₹6,570.4
+    cr vs ₹7,065.6 cr), and 93.9% of Gratuity (₹1,753.7 cr vs ₹1,867.9 cr), demonstrating strong solvency.
+  so_what: Essential for balance sheet de-risking, funding allocations to external asset managers (LIC/SBI Pension Funds),
+    and compliance with IndAS 19 (Employee Benefits) disclosures (Question X4).
+  tables:
+  - F14
+  - F17
+  questions_served:
+  - X4
+  - X4:drill_down
+  - X4:why
+  - X4:compare_or_so_what
+  consistency_constraints: 'Matches audited Annual Report Note 34 calibration targets exactly: Gratuity obligation ₹1,867.9
+    cr (CAL-FIN-LIAB-GRAT-OBL), PRMB obligation ₹7,065.6 cr (CAL-FIN-LIAB-PRMB-OBL), PF obligation ₹13,266.9 cr (CAL-FIN-LIAB-PF-OBL),
+    and PRBS pension expense ₹263.1 cr (CAL-FIN-LIAB-PRBS-EXP).'
+  test_sql_hint: SELECT (gratuity_obl + prmb_obl + pf_obl) = 22200.4 FROM silver_actuarial_liabilities WHERE fiscal_year =
+    'FY26';
+- id: S33
+  title: 'Subsidiary Performance: Downstream Earnings Cushion & OPaL Operations'
+  narrative: 'In FY26, ONGC recorded a standalone PAT of ₹32,894 cr and a consolidated Group PAT of ₹49,793 cr (+₹16,899 cr
+    net group increment). Downstream refining and international E&P provided massive earnings: HPCL delivered ₹17,175 cr PAT
+    (ONGC 54.90%), MRPL delivered ₹1,931 cr PAT (ONGC 71.63%), and ONGC Videsh (OVL) delivered ₹1,152 cr PAT. Petrochemical
+    associate OPaL turned around to positive operational EBITDA of ₹1,207 cr on revenue of ₹14,214 cr (reversing its FY25
+    EBITDA of -₹203 cr).'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-MUM
+    fields: []
+    projects: []
+    grades: []
+    disciplines:
+    - FIN
+    customers:
+    - CUST-HPC
+    - CUST-MRP
+    - CUST-OPL
+    vendors: []
+    states:
+    - DL
+    - MH
+  exact_numbers:
+    standalone_pat_fy26_cr:
+      value: 32894.0
+      unit: INR_Crore
+      computation_definition: CAL-FIN-PAT-FY26
+    group_consolidated_pat_fy26_cr:
+      value: 49793.0
+      unit: INR_Crore
+      computation_definition: CAL-CORP-GRP-PAT-FY26
+    group_net_pat_increment_cr:
+      value: 16899.0
+      unit: INR_Crore
+      computation_definition: 49793.0 minus 32894.0
+    hpcl_standalone_pat_cr:
+      value: 17175.0
+      unit: INR_Crore
+      computation_definition: CAL-CORP-SUB-HPCL-PAT
+    mrpl_standalone_pat_cr:
+      value: 1931.0
+      unit: INR_Crore
+      computation_definition: CAL-CORP-SUB-MRPL-PAT
+    ovl_consolidated_pat_cr:
+      value: 1152.0
+      unit: INR_Crore
+      computation_definition: CAL-CORP-SUB-OVL-PAT
+    opal_ebitda_cr:
+      value: 1207.0
+      unit: INR_Crore
+      computation_definition: CAL-CORP-SUB-OPAL-EBITDA
+    opal_revenue_cr:
+      value: 14214.0
+      unit: INR_Crore
+      computation_definition: OPaL standalone revenue from operations (FACTS §E)
+    opal_fy25_ebitda_cr:
+      value: -203.0
+      unit: INR_Crore
+      computation_definition: OPaL prior-year standalone EBITDA turnaround (FACTS §E)
+  who: Group Consolidation financial statements (AR26 p.240-245) tracking equity stakes, share of profit of associates, and
+    inter-company dividend cash flows.
+  why: 'Table F15 (subsidiary_performance: sub_id, name, equity_pct, pat_cr, dividend_cr) and F17. Historic high refining
+    margins and marketing recovery driving HPCL''s ₹17,175 cr PAT, contrasted with high debt servicing burdens at OPaL.'
+  compare: Subsidiaries and joint ventures transformed ONGC's bottom line, expanding Group PAT by 51.37% over standalone earnings
+    (₹49,793 cr vs ₹32,894 cr).
+  so_what: Informs Board capital allocation strategy regarding the financial restructuring and capital infusion into OPaL
+    (Question X5).
+  tables:
+  - F15
+  - F17
+  questions_served:
+  - X5
+  - X5:drill_down
+  - X5:why
+  - X5:compare_or_so_what
+  consistency_constraints: 'Reconciles exactly with audited calibration targets: Standalone PAT ₹32,894 cr (CAL-FIN-PAT-FY26),
+    Group Consolidated PAT ₹49,793 cr (CAL-CORP-GRP-PAT-FY26), HPCL PAT ₹17,175 cr (CAL-CORP-SUB-HPCL-PAT), MRPL PAT ₹1,931
+    cr (CAL-CORP-SUB-MRPL-PAT), OVL PAT ₹1,152 cr (CAL-CORP-SUB-OVL-PAT), and OPaL EBITDA ₹1,207 cr (CAL-CORP-SUB-OPAL-EBITDA).'
+  test_sql_hint: SELECT (consolidated_pat_cr - standalone_pat_cr) = 16899.0 FROM silver_group_financials WHERE fiscal_year
+    = 'FY26';
+- id: S34
+  title: Energy Transition Capex & Green Hydrogen / CCUS Reskilling
+  narrative: 'Towards its Net Zero 2038 roadmap (Scope 1 & 2), ONGC deployed ₹1,850 cr in transition capex in FY26 via subsidiary
+    ONGC Green Ltd, progressing a 1.2 GW renewable capacity pipeline. Concurrently, HR executed structured reskilling: 450
+    petroleum and reservoir engineers completed certified retraining in CCUS, Geothermal, and Green Hydrogen technologies.'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    - WC-ACA
+    fields: []
+    projects: []
+    grades:
+    - E2
+    - E3
+    - E4
+    - E5
+    disciplines:
+    - RES
+    - GEO
+    - PRD
+    - CHM
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - UK
+    - RJ
+  exact_numbers:
+    transition_capex_fy26_cr:
+      value: 1850.0
+      unit: INR_Crore
+      computation_definition: CAL-CORP-NZ-CAPEX-2030
+    renewable_capacity_pipeline_gw:
+      value: 1.2
+      unit: Gigawatts
+      computation_definition: CAL-CORP-NZ-TARGET-YEAR
+    reskilled_engineers_count:
+      value: 450
+      unit: count
+      computation_definition: Petroleum engineers certified in green technologies
+    ccus_reskilled_count:
+      value: 210
+      unit: count
+      computation_definition: Engineers certified in Carbon Capture, Utilization & Storage
+    geothermal_reskilled_count:
+      value: 140
+      unit: count
+      computation_definition: Engineers certified in Geothermal energy (Ladakh project)
+    green_hydrogen_reskilled_count:
+      value: 100
+      unit: count
+      computation_definition: Engineers certified in Green Hydrogen production
+  who: ONGC Green Ltd capital expenditure ledger and ONGC Academy (WC-ACA) professional certification registers.
+  why: 'Table F16 (energy_transition: project_id, tech_type, spend_cr) and H11 (training_records). Corporate commitment to
+    invest ₹1,00,000 cr by 2038 to achieve Net Zero Scope 1 and 2 emissions.'
+  compare: Transition capex accounted for 5.16% of total corporate capex in FY26, up from 1.8% in FY24, tracking the exponential
+    ramp-up required under the Board-approved Net Zero charter.
+  so_what: Validates compliance with BRSR environmental commitments and protects institutional shareholder ESG ratings (Question
+    X6).
+  tables:
+  - F7
+  - F16
+  - H11
+  questions_served:
+  - X6
+  - X6:drill_down
+  - X6:why
+  - X6:compare_or_so_what
+  consistency_constraints: Transition capex (₹1,850 cr) is an integral component of total capex of ₹35,878 cr (CAL-FIN-CAPEX-FY26).
+    Matches CAL-CORP-NZ-CAPEX-2030 and CAL-CORP-NZ-TARGET-YEAR.
+  test_sql_hint: SELECT spend_cr = 1850.0 FROM silver_energy_transition WHERE fiscal_year = 'FY26';
+- id: S35
+  title: 'Parliament Reply: North-East Formal Vacancy Alignment & Manpower Norms'
+  narrative: 'Official documentation prepared for a Lok Sabha question strictly reconciles with statutory figures: formal
+    sanctioned vacancies across ONGC installations in Assam STATE total exactly 30 (all non-executive: 24 Group C, 6 Group
+    D; exactly 0 executive vacancies) per Lok Sabha LS2067. In Tripura Asset, formal vacancies total 45 (5 executive, 40 non-executive).
+    Concurrently, operational manpower planning tracks an operational deployment norm deficit of 191 executives across the
+    North-East.'
+  entities:
+    work_centres:
+    - WC-ASM
+    - WC-JOR
+    - WC-TRI
+    - WC-SIL
+    fields:
+    - FLD-GEL
+    - FLD-LAK
+    - FLD-BOR
+    - FLD-ROK
+    projects: []
+    grades:
+    - E0
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+    - GRP-B
+    - GRP-C
+    - GRP-D
+    disciplines:
+    - PRD
+    - DRL
+    - MEC
+    - ELE
+    customers: []
+    vendors: []
+    states:
+    - AS
+    - TR
+  exact_numbers:
+    assam_formal_total_vacancies:
+      value: 30
+      unit: count
+      computation_definition: CAL-GOV-PARL-ASSAM-VAC (official Lok Sabha LS2067 figure)
+    assam_formal_executive_vacancies:
+      value: 0
+      unit: count
+      computation_definition: Group A formal sanctioned vacancies in Assam per LS2067
+    assam_formal_group_c_vacancies:
+      value: 24
+      unit: count
+      computation_definition: Group C formal sanctioned vacancies in Assam per LS2067
+    assam_formal_group_d_vacancies:
+      value: 6
+      unit: count
+      computation_definition: Group D formal sanctioned vacancies in Assam per LS2067
+    tripura_formal_executive_vacancies:
+      value: 5
+      unit: count
+      computation_definition: Formal sanctioned executive vacancies in Tripura Asset
+    tripura_formal_non_exec_vacancies:
+      value: 40
+      unit: count
+      computation_definition: Formal sanctioned non-executive vacancies in Tripura Asset
+    total_ne_region_formal_vacancies:
+      value: 75
+      unit: count
+      computation_definition: 30 Assam formal vacancies + 45 Tripura formal vacancies
+    ne_executive_manpower_norm_deficit:
+      value: 191
+      unit: count
+      computation_definition: 2,120 technical norm minus 1,929 in-position executives (Story S2)
+  who: Parliament question response annexure approved by Director (HR) for submission to the Ministry of Petroleum & Natural
+    Gas.
+  why: 'Table H6 (sanctioned_posts: wc_id, cadre, group, sanctioned, in_position) and G1 (parliament_questions). Strict adherence
+    to official Lok Sabha reply LS2067 reporting 30 formal vacancies in Assam.'
+  compare: In Assam, formal sanctioned vacancies are 100% non-executive (30 posts, 0 executive). In contrast, operational
+    manpower planning identifies a 191-executive technical coverage deficit across the North-East.
+  so_what: Provides the authoritative, audit-proof response for Parliament Q&A and drives Special Recruitment Drives (SRDs)
+    for SC/ST youth in Assam and Tripura (Questions X7, H3).
+  tables:
+  - H1
+  - H6
+  - G1
+  questions_served:
+  - X7
+  - X7:drill_down
+  - X7:why
+  - X7:compare_or_so_what
+  - H3
+  - H3:drill_down
+  - H3:why
+  - H3:compare_or_so_what
+  consistency_constraints: 'In-position personnel counts strictly reconcile with statutory Assam state total of 3,561 (CAL-HR-LOC-ASSAM-TOT:
+    1,352 Grp A, 166 Grp B, 1,796 Grp C, 247 Grp D). Formal vacancies in Assam strictly match CAL-GOV-PARL-ASSAM-VAC (30).'
+  test_sql_hint: SELECT (exec_vac + non_exec_vac) = 30 FROM silver_parliament_assam_vacancies WHERE state = 'Assam';
+- id: S36
+  title: 'Operational Early Warning Triggers: Project Milestones, Rotations & Lifting Costs'
+  narrative: 'An unprompted executive intelligence exception trigger flags 3 simultaneous operational vulnerabilities requiring
+    CMD intervention: (1) 3 critical EPC project milestones slipped in the past fortnight (PRJ-0001 subsea risers, PRJ-0012
+    Sobhasan revamp, PRJ-0024 Rudrasagar); (2) 42 executives have exceeded station tenure by >2 years with pending relief;
+    and (3) Geleki field (FLD-GEL) lifting cost escalated 12.4% MoM.'
+  entities:
+    work_centres:
+    - WC-EAS
+    - WC-MEH
+    - WC-ASM
+    fields:
+    - FLD-KG982
+    - FLD-SOB
+    - FLD-GEL
+    projects:
+    - PRJ-0001
+    - PRJ-0012
+    - PRJ-0024
+    grades:
+    - E4
+    - E5
+    - E6
+    disciplines:
+    - PRD
+    - DRL
+    - MM
+    customers: []
+    vendors:
+    - VEN-00006
+    states:
+    - AP
+    - GJ
+    - AS
+  exact_numbers:
+    slipped_project_milestones_count:
+      value: 3
+      unit: count
+      computation_definition: Milestones with status 'slipped' in last fortnight
+    overdue_executives_pending_relief:
+      value: 42
+      unit: count
+      computation_definition: Executives with tenure > station_cap + 2 years and transfer order pending relief
+    geleki_mom_lifting_cost_escalation_pct:
+      value: 12.4
+      unit: percentage
+      computation_definition: ((12.70 - 11.30) / 11.30) * 100
+    geleki_prior_month_lifting_cost_usd:
+      value: 11.3
+      unit: USD_per_BOE
+      computation_definition: Geleki lifting cost prior month
+    geleki_current_month_lifting_cost_usd:
+      value: 12.7
+      unit: USD_per_BOE
+      computation_definition: Geleki lifting cost current month
+    geleki_water_cut_increase_pct:
+      value: 4.5
+      unit: percentage
+      computation_definition: Water cut increased from 86.5% to 91.0%
+  who: Automated exception alert logs synthesized daily from SAP PM (plant maintenance), PS (project systems), and HCM modules.
+  why: Table F8 (project_master), H2 (posting_history), and F5 (co_pa_pnl). Offshore weather halts, delayed relief hand-overs,
+    and sudden water-breakthrough in Geleki mature wells.
+  compare: Normal monthly project milestone slippage is <1.0. A simultaneous cluster of 3 slips across independent assets
+    indicates enterprise execution friction.
+  so_what: Provides automated, unprompted decision support on the CMD's morning executive dashboard, preempting downstream
+    production losses (Question X10).
+  tables:
+  - H2
+  - F5
+  - F8
+  questions_served:
+  - X10
+  - X10:drill_down
+  - X10:why
+  - X10:compare_or_so_what
+  consistency_constraints: Project IDs (PRJ-0001, PRJ-0012, PRJ-0024) and Field ID (FLD-GEL) resolve strictly to reference
+    files. Overdue officers fit within the overstay cohort of Story S1.
+  test_sql_hint: SELECT count_milestones = 3, count_overdue = 42, cost_pct = 12.4 FROM silver_early_warning_alerts;
+- id: S37
+  title: Enterprise Information Security & Refusal Audit Log
+  narrative: 'Information security and RBAC gateway audit logs demonstrate robust governance: 14 unauthorized query attempts
+    initiated by junior personnel (E1–E4 officers) attempting to access sensitive corporate records (peer salaries, draft
+    transfer lists, DPC promotion slates, and marginal field divestment board notes) were intercepted and refused.'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-DDN
+    - WC-MUM
+    fields: []
+    projects: []
+    grades:
+    - E1
+    - E2
+    - E3
+    - E4
+    disciplines:
+    - HR
+    - FIN
+    - IT
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - UK
+    - MH
+  exact_numbers:
+    total_unauthorized_attempts_logged:
+      value: 14
+      unit: count
+      computation_definition: COUNT(attempt_id) in access audit log flagged as refusal
+    salary_access_refusal_count:
+      value: 4
+      unit: count
+      computation_definition: Attempts to query individual reporting officer salaries (Question D1, M3)
+    draft_transfer_access_refusal_count:
+      value: 3
+      unit: count
+      computation_definition: Attempts to query unapproved draft transfer orders (Question D2, P18)
+    dpc_promotion_access_refusal_count:
+      value: 3
+      unit: count
+      computation_definition: Attempts to query confidential DPC proceedings (Question D3)
+    board_note_access_refusal_count:
+      value: 2
+      unit: count
+      computation_definition: Attempts to access confidential field divestment board notes (Question D4, P20, M4)
+    vigilance_access_refusal_count:
+      value: 2
+      unit: count
+      computation_definition: Attempts to query live vigilance inquiry registers (Question D6)
+    security_refusal_enforcement_pct:
+      value: 100.0
+      unit: percentage
+      computation_definition: (14 / 14) * 100 enforced refusals
+  who: 'Access control audit trail (G5: access_audit_log) capturing timestamp, requesting emp_id, target entity, query category,
+    and enforced policy refusal rule.'
+  why: 'Table G5 (access_audit_log: emp_id, target_category, policy_code, action_taken). Strict enforcement of ONGC Information
+    Security Policy, Vigilance Manual, and RTI Section 8(1)(j) privacy exemptions.'
+  compare: Refusal enforcement achieved 100.0% accuracy with zero security leaks or unauthorized payload disclosures across
+    4,500 total daily agent interactions.
+  so_what: Verifies enterprise safety and guardrail integrity for CMD and Chief Vigilance Officer (CVO) review (Questions
+    M5, D1-D6, P18-P20, M3-M4).
+  tables:
+  - G5
+  questions_served:
+  - M5
+  - M5:drill_down
+  - M5:why
+  - M5:compare_or_so_what
+  consistency_constraints: All requesting user IDs match valid employees in employee_master. Refusal categories map 1:1 to
+    the 11 refusal questions defined in questions.yaml (D1–D6, P18–P20, M3, M4).
+  test_sql_hint: SELECT COUNT(*) = 14 FROM silver_access_audit_log WHERE action_taken = 'REFUSED';
+- id: S38
+  title: Employee Self-Service Lifecycle, Claims & Entitlement Profiles
+  narrative: 'Verification of end-to-end self-service functionality across the 5 demo personas demonstrates exact, deterministic
+    state consistency: E2 HR Officer (EMP-102451) possesses 78 earned leave days (48 encashable), is due for AGT FY27 transfer
+    following 5 years in Delhi, and has an approved medical reimbursement claim of ₹16,200. E3 Finance Officer (EMP-103892)
+    holds 112 EL days with a transfer due in April 2028.'
+  entities:
+    work_centres:
+    - WC-DEL
+    - WC-MUM
+    fields: []
+    projects: []
+    grades:
+    - CMD
+    - DIR
+    - E2
+    - E3
+    disciplines:
+    - PRD
+    - HR
+    - FIN
+    customers: []
+    vendors: []
+    states:
+    - DL
+    - MH
+  exact_numbers:
+    demo_personas_count:
+      value: 5
+      unit: count
+      computation_definition: Count of canonical fictional demo profiles
+    e2_hr_earned_leave_balance:
+      value: 78
+      unit: days
+      computation_definition: Active earned leave balance for EMP-102451
+    e2_hr_encashable_el_days:
+      value: 48
+      unit: days
+      computation_definition: Encashable leave days for EMP-102451 (leaves > 30)
+    e2_hr_medical_claimed_inr:
+      value: 18500
+      unit: INR
+      computation_definition: Medical reimbursement claimed by EMP-102451
+    e2_hr_medical_approved_inr:
+      value: 16200
+      unit: INR
+      computation_definition: Medical claim approved after ₹2,300 non-admissible deductions
+    e3_fin_earned_leave_balance:
+      value: 112
+      unit: days
+      computation_definition: Earned leave balance for EMP-103892
+    e3_fin_medical_claimed_inr:
+      value: 24800
+      unit: INR
+      computation_definition: Medical claim submitted by EMP-103892
+  who: 'Individual personnel profiles for the 5 demo personas: Chairman & CEO (EMP-000001), Director HR (EMP-000002), Director
+    Finance (EMP-000003), Pooja Verma (E2 HR, EMP-102451), and Rajesh Kulkarni (E3 Fin, EMP-103892).'
+  why: Table H1 (employee_master), H12 (leave_records), H13 (medical_claims), and H2 (posting_history). Deterministic personal
+    records grounded in SAP Infotypes PA2001 and PA0001.
+  compare: Leave encashment entitlement and travel allowance scales strictly mirror official DPE and ONGC TA rules (E2 Economy
+    Air / ₹4,500 lodging vs CMD Business Air / ₹15,000 lodging).
+  so_what: Enables live, personalized conversational self-service testing for all employee-facing questions without data hallucination
+    or missing records (Questions E1, E2, E3, E6, E7, H1).
+  tables:
+  - H1
+  - H2
+  - H12
+  - H13
+  questions_served:
+  - E1
+  - E1:drill_down
+  - E1:why
+  - E1:compare_or_so_what
+  - E2
+  - E2:drill_down
+  - E2:why
+  - E2:compare_or_so_what
+  - E3
+  - E3:drill_down
+  - E3:why
+  - E3:compare_or_so_what
+  - E7
+  - E7:drill_down
+  - E7:why
+  - E7:compare_or_so_what
+  - H1
+  - H1:drill_down
+  - H1:why
+  - H1:compare_or_so_what
+  consistency_constraints: All 5 persona emp_ids, grades, work centres, and dates conform strictly to reference/grades.yaml,
+    reference/work_centres.yaml, and reference/disciplines.yaml. Personas are part of the total employee count.
+  test_sql_hint: SELECT leave_balance_days = 78, medical_approved_inr = 16200 FROM silver_employee_self_service WHERE emp_id
+    = 'EMP-102451';
+served_without_story:
+- question_id: E4
+  type: policy
+  policy_doc: DOC-RP-RULES
+  clause: Clause 8.1
+  reason: Pure policy query regarding E2 to E3 promotion criteria. Answered deterministically from ONGC Modified R&P Rules
+    2019 (3-year residency in E2, screening-based DPC, minimum 'Good' APAR benchmark).
+- question_id: E5
+  type: policy
+  policy_doc: DOC-TA-RULES
+  clause: Clause 8.3 & Offshore Allowance Circular 2021
+  reason: Pure policy query regarding offshore TA/DA entitlements. Answered from ONGC TA/DA Rules Table 4 and Offshore Allowance
+    circular (₹1,500/day offshore special duty allowance, complimentary boarding/lodging on platform).
+- question_id: P1
+  type: policy
+  policy_doc: DOC-JRTP
+  clause: Clause 4.1 & Clause 4.3
+  reason: Pure policy query regarding minimum station tenure (3 years) and maximum cumulative stay (10 years) under JRTP 2018.
+- question_id: P2
+  type: policy
+  policy_doc: DOC-JRTP
+  clause: Clause 5.2
+  reason: Pure policy query regarding contiguous urban cluster definitions (Delhi NCR cluster = Delhi, Noida, Gurgaon; Mumbai
+    cluster = Mumbai, Panvel, Nhava, Uran).
+- question_id: P3
+  type: policy
+  policy_doc: DOC-JRTP
+  clause: Clause 7.2
+  reason: Pure policy query regarding superannuation exemption. Officers within 2 years of superannuation (expanded to 3 years
+    on medical/compassionate approval) are exempt from rotational transfer.
+- question_id: P4
+  type: policy
+  policy_doc: DOC-LEAVE-RULES
+  clause: Rule 14.1 & Rule 14.3
+  reason: Pure policy query regarding earned leave accumulation (maximum 300 days) and encashment ceiling at retirement.
+- question_id: P5
+  type: policy
+  policy_doc: DOC-STUDY-LEAVE
+  clause: Clause 6.1 & Clause 6.4
+  reason: Pure policy query regarding study leave eligibility (minimum 5 years continuous regular service, maximum 24 months,
+    3-year mandatory return service bond).
+- question_id: P6
+  type: policy
+  policy_doc: DOC-CDA-RULES
+  clause: Rule 13.2
+  reason: Pure policy query regarding gift acceptance from commercial entities under ONGC Conduct, Discipline and Appeal (CDA)
+    Rules (strictly zero from commercial vendors; maximum ₹5,000 from personal friends/relatives on ceremonial occasions).
+- question_id: P7
+  type: policy
+  policy_doc: DOC-TA-RULES
+  clause: Clause 4.2, Table 2
+  reason: Pure policy query regarding travel entitlements for E2 officer to Mumbai (Economy class air travel / 2nd AC train,
+    lodging ceiling ₹4,500/day in A-class city).
+- question_id: P8
+  type: policy
+  policy_doc: DOC-WHISTLE-BLOWER
+  clause: Clause 5.1 & Clause 7.2
+  reason: Pure policy query regarding confidential reporting channels and anti-victimisation protections under ONGC Whistle
+    Blower Policy.
+- question_id: P9
+  type: policy
+  policy_doc: DOC-POSH-POLICY
+  clause: Clause 4.1 & Clause 6.2
+  reason: Pure policy query regarding filing a Prevention of Sexual Harassment (POSH) complaint and station Internal Complaints
+    Committee (ICC) composition.
+- question_id: P10
+  type: policy
+  policy_doc: DOC-RP-RULES
+  clause: Clause 9.2
+  reason: Pure policy query regarding E3 to E4 promotion criteria (4 years residency, merit-cum-seniority evaluation, 'Very
+    Good' APAR benchmark).
+- question_id: D1
+  type: refusal
+  policy_doc: DOC-INFOSEC-POLICY / RTI Section 8(1)(j)
+  clause: Personal Remuneration Privacy
+  reason: Individual peer or supervisor salary records are confidential personal data protected under privacy law.
+- question_id: D2
+  type: refusal
+  policy_doc: DOC-JRTP / HR Confidentiality Guidelines
+  clause: Pre-decisional Transfer Drafts
+  reason: Draft transfer proposals are unapproved internal working drafts inaccessible to general employees prior to formal
+    notification.
+- question_id: D3
+  type: refusal
+  policy_doc: DOC-RP-RULES
+  clause: Confidential DPC Proceedings
+  reason: Departmental Promotion Committee deliberations and candidate rankings are classified confidential until executive
+    orders issue.
+- question_id: D4
+  type: refusal
+  policy_doc: DOC-FIN-SECURITY
+  clause: Commercial Field Economics
+  reason: Field-level profitability, lifting cost, and forward capital budgets are restricted to E5+ leadership and Board
+    members.
+- question_id: D5
+  type: refusal
+  policy_doc: DOC-INFOSEC-POLICY
+  clause: Bulk Personnel Profiling
+  reason: Bulk extraction of employee station tenures and demographic rosters by non-HR personnel is prohibited to prevent
+    administrative profiling.
+- question_id: D6
+  type: refusal
+  policy_doc: DOC-VIGILANCE-MANUAL / CVC Guidelines
+  clause: Vigilance Case Confidentiality
+  reason: Live vigilance inquiries, disciplinary investigations, and agreed lists are classified secret under Central Vigilance
+    Commission directives.
+- question_id: P18
+  type: refusal
+  policy_doc: DOC-JRTP
+  clause: Pre-Notification Transfer Security
+  reason: Draft FY27 Annual General Transfer Order is a classified pre-decisional document inaccessible until formal promulgation.
+- question_id: P19
+  type: refusal
+  policy_doc: DOC-BODP
+  clause: Comprehensive Commercial Delegations
+  reason: Full internal financial delegation registers containing commercial and tender ceilings are restricted to authorized
+    finance and audit controllers.
+- question_id: P20
+  type: refusal
+  policy_doc: DOC-BOARD-GOVERNANCE / SEBI (PIT) Reg 2015
+  clause: Unpublished Price-Sensitive Information (UPSI)
+  reason: Board agenda notes on marginal field divestments constitute unpublished price-sensitive information under SEBI Insider
+    Trading regulations.
+- question_id: M3
+  type: refusal
+  policy_doc: DOC-INFOSEC-POLICY
+  clause: Individual Performance Appraisal (APAR) Privacy
+  reason: Individual APAR gradings and salary slips are private personnel data accessible solely to the employee and designated
+    reporting authorities.
+- question_id: M4
+  type: refusal
+  policy_doc: DOC-FIN-SECURITY
+  clause: Commercially Sensitive P&L Access
+  reason: Granular field-by-field profitability metrics are inaccessible to junior self-service users, requiring Level-1 management
+    authorization.

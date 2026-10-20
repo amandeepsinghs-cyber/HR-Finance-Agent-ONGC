@@ -1,0 +1,41 @@
+{
+  "job_id": "3366c5f8-f435-494e-b55b-c52147989075",
+  "total_bytes_processed": 2370,
+  "executed_at": "2026-10-20T06:37:21.254665+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 3,
+  "columns": [
+    "entity_code",
+    "entity_name",
+    "pat_cr",
+    "dividend_declared_cr",
+    "payout_ratio_pct",
+    "dividend_received_by_ongc_cr"
+  ],
+  "rows": [
+    {
+      "entity_code": "HPCL",
+      "entity_name": "Hindustan Petroleum Corporation Limited",
+      "pat_cr": 17175.0,
+      "dividend_declared_cr": 3850.0,
+      "payout_ratio_pct": 22.4,
+      "dividend_received_by_ongc_cr": 2113.65
+    },
+    {
+      "entity_code": "MRPL",
+      "entity_name": "Mangalore Refinery and Petrochemicals Limited",
+      "pat_cr": 1931.0,
+      "dividend_declared_cr": 525.0,
+      "payout_ratio_pct": 27.2,
+      "dividend_received_by_ongc_cr": 376.06
+    },
+    {
+      "entity_code": "OVL",
+      "entity_name": "ONGC Videsh Limited",
+      "pat_cr": 1152.0,
+      "dividend_declared_cr": 350.0,
+      "payout_ratio_pct": 30.4,
+      "dividend_received_by_ongc_cr": 350.0
+    }
+  ]
+}

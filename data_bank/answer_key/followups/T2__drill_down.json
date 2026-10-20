@@ -1,0 +1,54 @@
+{
+  "job_id": "ebcc856e-b96e-40e7-b4ac-178ce60b7aa9",
+  "total_bytes_processed": 14141513,
+  "executed_at": "2026-10-20T06:42:26.649704+00:00",
+  "elapsed_seconds": 1.2,
+  "row_count": 4,
+  "columns": [
+    "discipline_id",
+    "discipline_name",
+    "delhi_5yr_execs",
+    "movable_non_exempt",
+    "assam_exec_vacancies",
+    "tripura_exec_vacancies",
+    "needed_in_assam_or_tripura"
+  ],
+  "rows": [
+    {
+      "discipline_id": "DISC-DRL",
+      "discipline_name": "Drilling",
+      "delhi_5yr_execs": 19,
+      "movable_non_exempt": 16,
+      "assam_exec_vacancies": 0,
+      "tripura_exec_vacancies": 9,
+      "needed_in_assam_or_tripura": true
+    },
+    {
+      "discipline_id": "DISC-PRD",
+      "discipline_name": "Production",
+      "delhi_5yr_execs": 14,
+      "movable_non_exempt": 10,
+      "assam_exec_vacancies": 0,
+      "tripura_exec_vacancies": 19,
+      "needed_in_assam_or_tripura": true
+    },
+    {
+      "discipline_id": "DISC-HSE",
+      "discipline_name": "Environment & Safety (HSE)",
+      "delhi_5yr_execs": 10,
+      "movable_non_exempt": 9,
+      "assam_exec_vacancies": 0,
+      "tripura_exec_vacancies": 2,
+      "needed_in_assam_or_tripura": true
+    },
+    {
+      "discipline_id": "DISC-IT",
+      "discipline_name": "Information Technology",
+      "delhi_5yr_execs": 76,
+      "movable_non_exempt": 75,
+      "assam_exec_vacancies": 0,
+      "tripura_exec_vacancies": 0,
+      "needed_in_assam_or_tripura": false
+    }
+  ]
+}

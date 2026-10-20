@@ -1,0 +1,40 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Amandeep Saini", email = "amandeepsinghs@google.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.141.1",
+    "google-adk>=2.12.0",
+    "google-cloud-bigquery>=3.46.2",
+    "google-cloud-discoveryengine>=0.20.5",
+    "google-genai>=2.31.0",
+    "jinja2>=3.1.6",
+    "jsonschema>=4.26.0",
+    "openpyxl>=3.1.5",
+    "pydantic>=2.14.1",
+    "python-docx>=1.2.0",
+    "python-dotenv>=1.2.4",
+    "pyyaml>=6.0.3",
+    "reportlab>=5.0.1",
+    "requests>=2.34.2",
+    "uvicorn[standard]>=0.54.0",
+    "websockets>=15.0.1",
+]
+
+[project.scripts]
+backend = "backend:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]

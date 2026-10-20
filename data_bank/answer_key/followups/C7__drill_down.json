@@ -1,0 +1,39 @@
+{
+  "job_id": "d7b635c0-d409-433a-a9e3-6275e501bff8",
+  "total_bytes_processed": 227664,
+  "executed_at": "2026-10-20T06:47:13.875487+00:00",
+  "elapsed_seconds": 0.82,
+  "row_count": 2,
+  "columns": [
+    "region",
+    "fy22_cr",
+    "fy23_cr",
+    "fy24_cr",
+    "fy25_cr",
+    "fy26_cr",
+    "cumulative_5yr_cr",
+    "pct_of_company_5yr_capex"
+  ],
+  "rows": [
+    {
+      "region": "Eastern Offshore (KG Basin)",
+      "fy22_cr": 6679.0,
+      "fy23_cr": 6708.0,
+      "fy24_cr": 6624.0,
+      "fy25_cr": 15956.0,
+      "fy26_cr": 12987.0,
+      "cumulative_5yr_cr": 48955.0,
+      "pct_of_company_5yr_capex": 32.1
+    },
+    {
+      "region": "Western Offshore (MH, B&S)",
+      "fy22_cr": 5453.0,
+      "fy23_cr": 5428.0,
+      "fy24_cr": 5438.0,
+      "fy25_cr": 13099.0,
+      "fy26_cr": 10774.0,
+      "cumulative_5yr_cr": 40191.0,
+      "pct_of_company_5yr_capex": 26.3
+    }
+  ]
+}

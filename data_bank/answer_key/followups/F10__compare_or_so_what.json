@@ -1,0 +1,185 @@
+{
+  "job_id": "cc2be3ab-8838-43ae-95d8-b999ccfe1d3c",
+  "total_bytes_processed": 13008258,
+  "executed_at": "2026-10-20T06:39:16.220165+00:00",
+  "elapsed_seconds": 0.72,
+  "row_count": 15,
+  "columns": [
+    "asset_name",
+    "ebitda_q1_cr",
+    "ebitda_q2_cr",
+    "ebitda_q3_cr",
+    "ebitda_q4_cr",
+    "ebitda_fy26_cr",
+    "ebitda_fy25_cr",
+    "change_vs_fy25_pct",
+    "operating_plan_be"
+  ],
+  "rows": [
+    {
+      "asset_name": "Mumbai High",
+      "ebitda_q1_cr": 4867.1,
+      "ebitda_q2_cr": 4814.5,
+      "ebitda_q3_cr": 4852.8,
+      "ebitda_q4_cr": 4686.6,
+      "ebitda_fy26_cr": 19221.0,
+      "ebitda_fy25_cr": 20943.8,
+      "change_vs_fy25_pct": -8.2,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Bassein & Satellite",
+      "ebitda_q1_cr": 3554.1,
+      "ebitda_q2_cr": 3513.2,
+      "ebitda_q3_cr": 3628.7,
+      "ebitda_q4_cr": 3573.4,
+      "ebitda_fy26_cr": 14269.3,
+      "ebitda_fy25_cr": 15031.9,
+      "change_vs_fy25_pct": -5.1,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Ankleshwar Asset",
+      "ebitda_q1_cr": 2431.6,
+      "ebitda_q2_cr": 2440.7,
+      "ebitda_q3_cr": 2387.8,
+      "ebitda_q4_cr": 2335.3,
+      "ebitda_fy26_cr": 9595.4,
+      "ebitda_fy25_cr": 10190.7,
+      "change_vs_fy25_pct": -5.8,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Eastern Offshore",
+      "ebitda_q1_cr": 1975.3,
+      "ebitda_q2_cr": 1933.3,
+      "ebitda_q3_cr": 1988.7,
+      "ebitda_q4_cr": 1927.7,
+      "ebitda_fy26_cr": 7825.0,
+      "ebitda_fy25_cr": 4170.6,
+      "change_vs_fy25_pct": 87.6,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Neelam & Heera",
+      "ebitda_q1_cr": 1867.0,
+      "ebitda_q2_cr": 1839.2,
+      "ebitda_q3_cr": 1886.8,
+      "ebitda_q4_cr": 1826.5,
+      "ebitda_fy26_cr": 7419.4,
+      "ebitda_fy25_cr": 8435.1,
+      "change_vs_fy25_pct": -12.0,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Assam Asset",
+      "ebitda_q1_cr": 1072.1,
+      "ebitda_q2_cr": 1093.0,
+      "ebitda_q3_cr": 1051.0,
+      "ebitda_q4_cr": 1021.2,
+      "ebitda_fy26_cr": 4237.3,
+      "ebitda_fy25_cr": 4545.3,
+      "change_vs_fy25_pct": -6.8,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Ahmedabad Asset",
+      "ebitda_q1_cr": 900.6,
+      "ebitda_q2_cr": 909.5,
+      "ebitda_q3_cr": 878.7,
+      "ebitda_q4_cr": 850.8,
+      "ebitda_fy26_cr": 3539.6,
+      "ebitda_fy25_cr": 3816.1,
+      "change_vs_fy25_pct": -7.2,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Mehsana Asset",
+      "ebitda_q1_cr": 702.5,
+      "ebitda_q2_cr": 715.7,
+      "ebitda_q3_cr": 684.1,
+      "ebitda_q4_cr": 669.7,
+      "ebitda_fy26_cr": 2772.0,
+      "ebitda_fy25_cr": 2997.6,
+      "change_vs_fy25_pct": -7.5,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Tripura Asset",
+      "ebitda_q1_cr": 415.2,
+      "ebitda_q2_cr": 419.2,
+      "ebitda_q3_cr": 416.6,
+      "ebitda_q4_cr": 408.6,
+      "ebitda_fy26_cr": 1659.7,
+      "ebitda_fy25_cr": 1664.2,
+      "change_vs_fy25_pct": -0.3,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Cambay Asset",
+      "ebitda_q1_cr": 360.1,
+      "ebitda_q2_cr": 363.6,
+      "ebitda_q3_cr": 351.2,
+      "ebitda_q4_cr": 342.9,
+      "ebitda_fy26_cr": 1417.8,
+      "ebitda_fy25_cr": 1495.8,
+      "change_vs_fy25_pct": -5.2,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Rajahmundry Asset",
+      "ebitda_q1_cr": 335.4,
+      "ebitda_q2_cr": 329.1,
+      "ebitda_q3_cr": 338.9,
+      "ebitda_q4_cr": 329.9,
+      "ebitda_fy26_cr": 1333.4,
+      "ebitda_fy25_cr": 1399.5,
+      "change_vs_fy25_pct": -4.7,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "CBM Bokaro",
+      "ebitda_q1_cr": 236.6,
+      "ebitda_q2_cr": 238.6,
+      "ebitda_q3_cr": 236.8,
+      "ebitda_q4_cr": 233.2,
+      "ebitda_fy26_cr": 945.2,
+      "ebitda_fy25_cr": 951.6,
+      "change_vs_fy25_pct": -0.7,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Cauvery Asset",
+      "ebitda_q1_cr": 162.7,
+      "ebitda_q2_cr": 167.2,
+      "ebitda_q3_cr": 161.8,
+      "ebitda_q4_cr": 155.8,
+      "ebitda_fy26_cr": 647.6,
+      "ebitda_fy25_cr": 672.3,
+      "change_vs_fy25_pct": -3.7,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Rajasthan Basin",
+      "ebitda_q1_cr": 72.3,
+      "ebitda_q2_cr": 72.0,
+      "ebitda_q3_cr": 70.1,
+      "ebitda_q4_cr": 67.8,
+      "ebitda_fy26_cr": 282.2,
+      "ebitda_fy25_cr": 304.3,
+      "change_vs_fy25_pct": -7.2,
+      "operating_plan_be": "not available"
+    },
+    {
+      "asset_name": "Jorhat Asset",
+      "ebitda_q1_cr": 29.1,
+      "ebitda_q2_cr": 33.3,
+      "ebitda_q3_cr": 27.1,
+      "ebitda_q4_cr": 23.4,
+      "ebitda_fy26_cr": 112.9,
+      "ebitda_fy25_cr": 134.3,
+      "change_vs_fy25_pct": -15.9,
+      "operating_plan_be": "not available"
+    }
+  ]
+}

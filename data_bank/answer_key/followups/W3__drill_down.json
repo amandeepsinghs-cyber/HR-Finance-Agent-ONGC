@@ -1,0 +1,39 @@
+{
+  "job_id": "d1231028-0123-4154-9319-6a3462ea6ba3",
+  "total_bytes_processed": 9420804,
+  "executed_at": "2026-10-20T06:42:39.263294+00:00",
+  "elapsed_seconds": 0.72,
+  "row_count": 4,
+  "columns": [
+    "component",
+    "per_officer_inr",
+    "total_for_200_inr_cr",
+    "fy26_transfers_sampled"
+  ],
+  "rows": [
+    {
+      "component": "Composite Transfer Grant (CTA)",
+      "per_officer_inr": 150000.0,
+      "total_for_200_inr_cr": 3.0,
+      "fy26_transfers_sampled": 849
+    },
+    {
+      "component": "Transfer grant",
+      "per_officer_inr": 120000.0,
+      "total_for_200_inr_cr": 2.4,
+      "fy26_transfers_sampled": 849
+    },
+    {
+      "component": "Baggage transport",
+      "per_officer_inr": 50000.0,
+      "total_for_200_inr_cr": 1.0,
+      "fy26_transfers_sampled": 849
+    },
+    {
+      "component": "Total",
+      "per_officer_inr": 320000.0,
+      "total_for_200_inr_cr": 6.4,
+      "fy26_transfers_sampled": 849
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+{
+  "turn_id": "turn_map_009",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Geographic deployment across operating work centres from hrfin_gold.v_headcount_asof as of March 31, 2026. Company total headcount is 23,117, with Bassein and Satellite holding 1,855 personnel and Assam Asset holding 1,822.",
+  "display_text": "Pan-India deployment from hrfin_gold.v_headcount_asof as of 31-March-2026 [1]. Total company regular headcount stands at 23,117. Bassein & Satellite (1,855) and Assam Asset (1,822) maintain key operational workforce contingents.",
+  "visual": {
+    "type": "map",
+    "mode": "replace",
+    "title": "ONGC Asset Workforce Distribution (v_headcount_asof 31-Mar-2026)",
+    "map": {
+      "points": [
+        {
+          "wc_id": "WC-BAS",
+          "name": "Bassein & Satellite",
+          "lat": 19.3,
+          "lon": 71.85,
+          "value": 1855,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Offshore"
+        },
+        {
+          "wc_id": "WC-ASM",
+          "name": "Assam Asset",
+          "lat": 26.9157,
+          "lon": 94.7314,
+          "value": 1822,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Hard Station"
+        },
+        {
+          "wc_id": "WC-NEH",
+          "name": "Neelam & Heera",
+          "lat": 18.75,
+          "lon": 72.3,
+          "value": 1728,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Offshore"
+        },
+        {
+          "wc_id": "WC-MEH",
+          "name": "Mehsana Asset",
+          "lat": 23.588,
+          "lon": 72.3693,
+          "value": 1559,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Onshore"
+        },
+        {
+          "wc_id": "WC-MUM",
+          "name": "Mumbai High",
+          "lat": 18.922,
+          "lon": 72.8347,
+          "value": 1359,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Offshore"
+        },
+        {
+          "wc_id": "WC-JOR",
+          "name": "Jorhat Asset",
+          "lat": 26.7509,
+          "lon": 94.2037,
+          "value": 1325,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Hard Station"
+        },
+        {
+          "wc_id": "WC-AHM",
+          "name": "Ahmedabad Asset",
+          "lat": 23.0225,
+          "lon": 72.5714,
+          "value": 1223,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Onshore"
+        },
+        {
+          "wc_id": "WC-EAS",
+          "name": "Eastern Offshore (Kakinada)",
+          "lat": 16.9891,
+          "lon": 82.2475,
+          "value": 1011,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Offshore"
+        },
+        {
+          "wc_id": "WC-DEL",
+          "name": "Corporate HQ Delhi",
+          "lat": 28.6139,
+          "lon": 77.209,
+          "value": 948,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Corporate"
+        },
+        {
+          "wc_id": "WC-DDN",
+          "name": "Tel Bhavan Dehradun",
+          "lat": 30.3165,
+          "lon": 78.0322,
+          "value": 948,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Corporate"
+        },
+        {
+          "wc_id": "WC-ANK",
+          "name": "Ankleshwar Asset",
+          "lat": 21.6264,
+          "lon": 73.0033,
+          "value": 925,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Onshore"
+        },
+        {
+          "wc_id": "WC-RAJ",
+          "name": "Rajahmundry Asset",
+          "lat": 17.0005,
+          "lon": 81.804,
+          "value": 845,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Onshore"
+        },
+        {
+          "wc_id": "WC-TRI",
+          "name": "Tripura Asset",
+          "lat": 23.8315,
+          "lon": 91.2868,
+          "value": 844,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Hard Station"
+        },
+        {
+          "wc_id": "WC-CAU",
+          "name": "Cauvery Asset",
+          "lat": 10.9254,
+          "lon": 79.838,
+          "value": 675,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Onshore"
+        },
+        {
+          "wc_id": "WC-BOK",
+          "name": "CBM Bokaro",
+          "lat": 23.6693,
+          "lon": 86.1511,
+          "value": 557,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Onshore"
+        },
+        {
+          "wc_id": "WC-HAZ",
+          "name": "Hazira Gas Plant",
+          "lat": 21.1702,
+          "lon": 72.8311,
+          "value": 515,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Downstream"
+        },
+        {
+          "wc_id": "WC-CAM",
+          "name": "Cambay Asset",
+          "lat": 22.3,
+          "lon": 72.6,
+          "value": 508,
+          "metricLabel": "Headcount (31-Mar-2026)",
+          "status": "Onshore"
+        }
+      ]
+    },
+    "kpis": [
+      {
+        "label": "Company Headcount",
+        "value": 23117,
+        "unit": "Employees",
+        "delta": "31-Mar-2026"
+      },
+      {
+        "label": "Top Asset (Bassein)",
+        "value": 1855,
+        "unit": "Personnel",
+        "delta": "Offshore"
+      },
+      {
+        "label": "Frontier Assam Asset",
+        "value": 1822,
+        "unit": "Personnel",
+        "delta": "Category C"
+      }
+    ]
+  },
+  "insights": [
+    "Total regular employee headcount across ONGC is 23,117 as of 31-March-2026 (hrfin_gold.v_headcount_asof).",
+    "Bassein & Satellite (1,855), Assam Asset (1,822), and Neelam & Heera (1,728) hold the largest single-snapshot staffing.",
+    "Cambay Asset (508) and Hazira Plant (515) represent downstream and regional onshore operations."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.v_headcount_asof",
+      "query_id": "q_headcount_asof_20260331",
+      "sql": "SELECT wc_id, count(*) AS headcount FROM hrfin_gold.v_headcount_asof WHERE snapshot_date = '2026-03-31' GROUP BY 1"
+    }
+  ],
+  "suggestions": [
+    "Show Assam Asset detailed vacancy",
+    "Compare Mumbai vs Eastern Offshore productivity",
+    "View station tenure overstay by location"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "pdf"
+  ]
+}

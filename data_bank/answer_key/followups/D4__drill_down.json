@@ -1,0 +1,27 @@
+{
+  "job_id": "44230c58-0c6e-428e-b32a-1ad8a86d2d02",
+  "total_bytes_processed": 527562,
+  "executed_at": "2026-10-20T06:32:55.835129+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 1,
+  "columns": [
+    "fiscal_year",
+    "crude_oil_mmt",
+    "condensate_mmt",
+    "natural_gas_bcm",
+    "total_mmboe",
+    "total_mmtoe",
+    "months_covered"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY26",
+      "crude_oil_mmt": 19.525,
+      "condensate_mmt": 0.977,
+      "natural_gas_bcm": 19.967,
+      "total_mmboe": 296.64,
+      "total_mmtoe": 40.47,
+      "months_covered": 12
+    }
+  ]
+}

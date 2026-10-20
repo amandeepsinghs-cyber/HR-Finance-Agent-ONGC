@@ -1,0 +1,33 @@
+{
+  "job_id": "0591bbf9-9208-4193-9b1d-b1e7128a764e",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:40.894169+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 2.0",
+      "heading": "Time-Bound Promotion Channel (E1\u2192E4)",
+      "quote_snippet": "2.1 Qualifying Residency Requirements: Promotions within the junior executive ranks (E1 through E4) shall be governed by the Time-Bound Promotion Channel subject to completing prescribed residency and meeting the APAR benchmark: (a) Promotion from E1 to E2: 3 (three) completed years of qualifying residency service at Grade E1. (b) Promotion from E2 to E3: 3 (three) completed years of qualifying re"
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 3.0",
+      "heading": "APAR Benchmark for Time-Bound Promotion",
+      "quote_snippet": "3.1 Performance Benchmark Threshold: To qualify for time-bound promotion, an executive must maintain a consistent track record of satisfactory performance across the qualifying residency years: (a) For E1\u2192E2: Minimum cumulative rating of 'Good' (score \u2265 3.0 / 60%) in the annual e-APAR ratings for the preceding 3 years. (b) For E2\u2192E3: Minimum cumulative rating of 'Good' to 'Very Good' (score \u2265 3.5 "
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 7.0",
+      "heading": "Vigilance Clearance as Pre-Condition",
+      "quote_snippet": "7.1 Mandatory Vigilance Clearance: Clear and unconditional vigilance clearance from the Chief Vigilance Officer (CVO) is a non-negotiable mandatory prerequisite for placing any officer on the promotion panel or releasing promotion orders. 7.2 Disqualifying Vigilance Status: An officer shall not be granted promotion if: (a) under suspension; (b) a charge-sheet for major penalty disciplinary proceed"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "job_id": "3de08121-b151-4cd1-bccb-6eb1d811d319",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:26.585764+00:00",
+  "elapsed_seconds": 0.79,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 5",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 5)",
+      "provision": "WBP 4.7-4.8 (Investigators incl. CVO; Nodal Officer)",
+      "quote_snippet": "4.7 \u201cInvestigator(s)\u201d mean those person(s) authorised, appointed, consulted or approached by the Competent Authority/ the Chairman of Audit Committee in connection with conducting investigation into a Protected Disclosure/ complaint and includes the Chief Vigilance Officer, Employees and Auditors of the Company, external person(s) of eminence and the Police or such other law enforcement authorities. 4.8 \u201cNodal Officer\u201d means the Company Secretary."
+    },
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 4",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 4)",
+      "provision": "WBP 4.4 (Competent Authority)",
+      "quote_snippet": "4.4 \u201cCompetent Authority\u201d shall mean the Director (HR) or any Functional Director as may be nominated by the CMD to receive and deal with complaints under this policy from time to time."
+    },
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 7",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 7)",
+      "provision": "WBP 7.1 (address)",
+      "quote_snippet": "7.1 All Protected Disclosures should be addressed only to the Nodal Officer at the following address\u2013 The Company Secretary Oil and Natural Gas Corporation Limited Deendayal Urja Bhawan 5, Nelson Mandela Marg, Vasant Kunj, New Delhi \u2013 110070 E-mail: vigil@ongc.co.in"
+    }
+  ]
+}

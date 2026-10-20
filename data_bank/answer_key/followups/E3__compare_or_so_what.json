@@ -1,0 +1,39 @@
+{
+  "job_id": "59884c08-5c61-4219-b969-936f053ac429",
+  "total_bytes_processed": 1921839,
+  "executed_at": "2026-10-20T06:33:07.136648+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 2,
+  "columns": [
+    "claim_id",
+    "claim_status",
+    "submission_date",
+    "settlement_date",
+    "days_elapsed",
+    "still_open",
+    "sla_days",
+    "sla_breached"
+  ],
+  "rows": [
+    {
+      "claim_id": "CLM-P001",
+      "claim_status": "approved_paid",
+      "submission_date": "2026-05-10",
+      "settlement_date": "2026-05-24",
+      "days_elapsed": 14,
+      "still_open": false,
+      "sla_days": 15,
+      "sla_breached": false
+    },
+    {
+      "claim_id": "CLM-P002",
+      "claim_status": "pending_scrutiny",
+      "submission_date": "2026-09-18",
+      "settlement_date": null,
+      "days_elapsed": 31,
+      "still_open": true,
+      "sla_days": 15,
+      "sla_breached": true
+    }
+  ]
+}

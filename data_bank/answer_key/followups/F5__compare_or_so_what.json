@@ -1,0 +1,129 @@
+{
+  "job_id": "221076e4-78a7-4e0c-be72-241a10d89b92",
+  "total_bytes_processed": 11121902,
+  "executed_at": "2026-10-20T06:39:05.892694+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 11,
+  "columns": [
+    "service_contract_category",
+    "engineers_estimate_cr",
+    "original_po_cr",
+    "revised_po_cr",
+    "actual_paid_cr",
+    "po_vs_estimate_pct",
+    "paid_pct_of_original_po",
+    "paid_pct_of_estimate"
+  ],
+  "rows": [
+    {
+      "service_contract_category": "ALL CATEGORIES",
+      "engineers_estimate_cr": 16306.0,
+      "original_po_cr": 16638.8,
+      "revised_po_cr": 16713.8,
+      "actual_paid_cr": 15878.1,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 95.4,
+      "paid_pct_of_estimate": 97.4
+    },
+    {
+      "service_contract_category": "Offshore Subsea EPC & Pipe-laying",
+      "engineers_estimate_cr": 1685.0,
+      "original_po_cr": 1719.4,
+      "revised_po_cr": 1736.6,
+      "actual_paid_cr": 1650.4,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 96.0,
+      "paid_pct_of_estimate": 97.9
+    },
+    {
+      "service_contract_category": "Workover Rigless Services",
+      "engineers_estimate_cr": 1685.1,
+      "original_po_cr": 1719.5,
+      "revised_po_cr": 1723.4,
+      "actual_paid_cr": 1637.6,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 95.2,
+      "paid_pct_of_estimate": 97.2
+    },
+    {
+      "service_contract_category": "Technical Service Provider (TSP)",
+      "engineers_estimate_cr": 1657.6,
+      "original_po_cr": 1691.4,
+      "revised_po_cr": 1708.7,
+      "actual_paid_cr": 1622.8,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 95.9,
+      "paid_pct_of_estimate": 97.9
+    },
+    {
+      "service_contract_category": "Civil Infrastructure & Road Construction",
+      "engineers_estimate_cr": 1642.7,
+      "original_po_cr": 1676.3,
+      "revised_po_cr": 1679.8,
+      "actual_paid_cr": 1595.2,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 95.2,
+      "paid_pct_of_estimate": 97.1
+    },
+    {
+      "service_contract_category": "Aviation & Helicopter Charter",
+      "engineers_estimate_cr": 1642.0,
+      "original_po_cr": 1675.5,
+      "revised_po_cr": 1679.2,
+      "actual_paid_cr": 1594.9,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 95.2,
+      "paid_pct_of_estimate": 97.1
+    },
+    {
+      "service_contract_category": "Charter Hire Drilling Rigs",
+      "engineers_estimate_cr": 1613.3,
+      "original_po_cr": 1646.3,
+      "revised_po_cr": 1661.8,
+      "actual_paid_cr": 1579.2,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 95.9,
+      "paid_pct_of_estimate": 97.9
+    },
+    {
+      "service_contract_category": "Central IT & ERP Services",
+      "engineers_estimate_cr": 1607.6,
+      "original_po_cr": 1640.4,
+      "revised_po_cr": 1643.9,
+      "actual_paid_cr": 1562.4,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 95.2,
+      "paid_pct_of_estimate": 97.2
+    },
+    {
+      "service_contract_category": "Tubulars, Casing & Wellheads",
+      "engineers_estimate_cr": 1603.3,
+      "original_po_cr": 1636.0,
+      "revised_po_cr": 1639.4,
+      "actual_paid_cr": 1557.0,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 95.2,
+      "paid_pct_of_estimate": 97.1
+    },
+    {
+      "service_contract_category": "Chemicals & Demulsifiers",
+      "engineers_estimate_cr": 1585.5,
+      "original_po_cr": 1617.8,
+      "revised_po_cr": 1620.9,
+      "actual_paid_cr": 1539.8,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 95.2,
+      "paid_pct_of_estimate": 97.1
+    },
+    {
+      "service_contract_category": "Offshore Supply Vessels (OSV)",
+      "engineers_estimate_cr": 1584.0,
+      "original_po_cr": 1616.3,
+      "revised_po_cr": 1620.1,
+      "actual_paid_cr": 1538.9,
+      "po_vs_estimate_pct": 2.04,
+      "paid_pct_of_original_po": 95.2,
+      "paid_pct_of_estimate": 97.2
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "job_id": "625995cd-24c5-4c4b-b7a8-2af537e3a151",
+  "total_bytes_processed": 225408,
+  "executed_at": "2026-10-20T06:37:16.168981+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 2,
+  "columns": [
+    "installation_name",
+    "short_name",
+    "overtime_hours_per_worker_month_fy26",
+    "ltis_fy26",
+    "million_manhours_fy26",
+    "ltifr_fy26"
+  ],
+  "rows": [
+    {
+      "installation_name": "Mumbai High Installation",
+      "short_name": "Mumbai High",
+      "overtime_hours_per_worker_month_fy26": 54.0,
+      "ltis_fy26": 3,
+      "million_manhours_fy26": 6.87,
+      "ltifr_fy26": 0.437
+    },
+    {
+      "installation_name": "Neelam & Heera Installation",
+      "short_name": "Neelam & Heera",
+      "overtime_hours_per_worker_month_fy26": 54.0,
+      "ltis_fy26": 2,
+      "million_manhours_fy26": 8.72,
+      "ltifr_fy26": 0.229
+    }
+  ]
+}

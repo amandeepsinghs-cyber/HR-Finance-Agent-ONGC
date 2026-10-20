@@ -1,0 +1,61 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "v_continuous_stay",
+  description: "Gaps-and-islands continuous stay calculation over consecutive same-station postings"
+}
+
+WITH numbered_postings AS (
+  SELECT
+    p.emp_id,
+    p.wc_id,
+    p.grade_id,
+    p.discipline_id,
+    p.from_date,
+    p.to_date,
+    p.is_current_posting,
+    ROW_NUMBER() OVER (PARTITION BY p.emp_id ORDER BY p.from_date, p.posting_id) -
+    ROW_NUMBER() OVER (PARTITION BY p.emp_id, p.wc_id ORDER BY p.from_date, p.posting_id) AS island_id
+  FROM ${ref("posting_history")} p
+),
+islands AS (
+  SELECT
+    emp_id,
+    wc_id,
+    island_id,
+    MIN(from_date) AS continuous_from_date,
+    MAX(COALESCE(to_date, DATE '2026-10-19')) AS continuous_to_date,
+    LOGICAL_OR(to_date IS NULL OR is_current_posting) AS is_current_stay,
+    MAX(grade_id) AS current_grade_id,
+    MAX(discipline_id) AS current_discipline_id,
+    DATE_DIFF(DATE '2026-10-19', MIN(from_date), MONTH) AS continuous_stay_months,
+    ROUND(DATE_DIFF(DATE '2026-10-19', MIN(from_date), DAY) / 365.25, 2) AS continuous_stay_years
+  FROM numbered_postings
+  GROUP BY emp_id, wc_id, island_id
+)
+SELECT
+  i.emp_id,
+  e.name AS emp_name,
+  e.gender,
+  e.category,
+  e.dob,
+  e.retirement_date,
+  i.wc_id,
+  w.name AS wc_name,
+  w.sector,
+  w.cluster_id,
+  w.cluster_name,
+  w.hard_station_cat,
+  w.is_corporate_hq,
+  i.current_grade_id AS grade_id,
+  i.current_discipline_id AS discipline_id,
+  i.continuous_from_date,
+  i.continuous_to_date,
+  i.continuous_stay_months,
+  i.continuous_stay_years,
+  i.is_current_stay,
+  CASE WHEN i.continuous_stay_years >= 5.0 AND i.is_current_stay THEN TRUE ELSE FALSE END AS is_continuous_5yr_plus,
+  CASE WHEN DATE_DIFF(e.retirement_date, DATE '2026-10-19', YEAR) <= 2 THEN TRUE ELSE FALSE END AS is_superannuation_exempt
+FROM islands i
+JOIN ${ref("employee_master")} e ON i.emp_id = e.emp_id
+JOIN ${ref("dim_work_centre")} w ON i.wc_id = w.wc_id

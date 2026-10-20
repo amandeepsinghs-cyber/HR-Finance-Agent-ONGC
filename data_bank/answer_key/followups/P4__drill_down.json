@@ -1,0 +1,37 @@
+{
+  "job_id": "045e87b0-5de5-4a34-849e-e0bc8c8c78cb",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:15.576168+00:00",
+  "elapsed_seconds": 0.8,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 3.0",
+      "heading": "Earned Leave Accrual & Accumulation",
+      "provision": "Leave Rules 3.3-3.4",
+      "quote_snippet": "3.3 Maximum Accumulation Ceiling: Earned Leave may be accumulated up to a strict maximum ceiling of 300 (three hundred) days. 3.4 Treatment of Excess Accrual: Where an employee has 300 days of EL at the beginning of a half-year, the advance credit of 15 days shall be maintained in a separate reserve. If the employee does not utilize leave during that half-year, the excess beyond 300 days shall lapse on 30th June / 31st December, unless encashed in accordance with encashment rules."
+    },
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 5.0",
+      "heading": "Half Pay Leave (HPL) Accrual & Encashment",
+      "provision": "Leave Rules 5.1",
+      "quote_snippet": "5.1 Accrual Rate: Half Pay Leave (HPL) shall be credited at the rate of 20 (twenty) days for each completed year of service, credited in advance as 10 days on 1st January and 10 days on 1st July."
+    },
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 5.0",
+      "heading": "Half Pay Leave (HPL) Accrual & Encashment",
+      "provision": "Leave Rules 5.3",
+      "quote_snippet": "5.3 Encashment of HPL at Retirement: Where the accumulated Earned Leave at retirement falls short of the 300-day ceiling, unutilized HPL may be encashed to bridge the deficit up to the combined aggregate ceiling of 300 days, subject to DPE guidelines. For such encashment, two days of HPL shall equal one day of cash salary (equivalent to half pay)."
+    }
+  ]
+}

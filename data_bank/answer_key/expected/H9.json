@@ -1,0 +1,69 @@
+{
+  "job_id": "e9d202bd-4c32-4c57-9f1c-56c1854fbf21",
+  "total_bytes_processed": 17658,
+  "executed_at": "2026-10-20T06:38:55.755971+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 4,
+  "columns": [
+    "case_type",
+    "open_cases",
+    "of_which_stayed",
+    "aged_under_1y",
+    "aged_1_to_3y",
+    "aged_over_3y",
+    "future_dated_filings",
+    "avg_age_years",
+    "total_open",
+    "total_over_3y"
+  ],
+  "rows": [
+    {
+      "case_type": "special_leave_supreme_court",
+      "open_cases": 69,
+      "of_which_stayed": 18,
+      "aged_under_1y": 13,
+      "aged_1_to_3y": 26,
+      "aged_over_3y": 27,
+      "future_dated_filings": 3,
+      "avg_age_years": 2.7,
+      "total_open": 208,
+      "total_over_3y": 70
+    },
+    {
+      "case_type": "writ_petition_high_court",
+      "open_cases": 69,
+      "of_which_stayed": 18,
+      "aged_under_1y": 25,
+      "aged_1_to_3y": 15,
+      "aged_over_3y": 26,
+      "future_dated_filings": 3,
+      "avg_age_years": 2.4,
+      "total_open": 208,
+      "total_over_3y": 70
+    },
+    {
+      "case_type": "service_litigation_cat",
+      "open_cases": 52,
+      "of_which_stayed": 32,
+      "aged_under_1y": 13,
+      "aged_1_to_3y": 20,
+      "aged_over_3y": 17,
+      "future_dated_filings": 2,
+      "avg_age_years": 2.4,
+      "total_open": 208,
+      "total_over_3y": 70
+    },
+    {
+      "case_type": "grievance_internal",
+      "open_cases": 18,
+      "of_which_stayed": 0,
+      "aged_under_1y": 14,
+      "aged_1_to_3y": 1,
+      "aged_over_3y": 0,
+      "future_dated_filings": 3,
+      "avg_age_years": 0.6,
+      "total_open": 208,
+      "total_over_3y": 70
+    }
+  ]
+}

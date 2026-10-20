@@ -1,0 +1,137 @@
+{
+  "job_id": "8eaf1b3e-2912-42e3-bf39-9d12d57dc1dd",
+  "total_bytes_processed": 550668,
+  "executed_at": "2026-10-20T06:42:12.479008+00:00",
+  "elapsed_seconds": 0.78,
+  "row_count": 15,
+  "columns": [
+    "asset",
+    "fy26_mmboe",
+    "ytd_be_inr_cr",
+    "ytd_actual_inr_cr",
+    "variance_vs_be_inr_cr",
+    "utilisation_vs_be_pct"
+  ],
+  "rows": [
+    {
+      "asset": "Bassein & Satellite",
+      "fy26_mmboe": 84.5,
+      "ytd_be_inr_cr": 1944.93,
+      "ytd_actual_inr_cr": 1807.38,
+      "variance_vs_be_inr_cr": -137.55,
+      "utilisation_vs_be_pct": 92.9
+    },
+    {
+      "asset": "Mumbai High",
+      "fy26_mmboe": 55.49,
+      "ytd_be_inr_cr": 3648.95,
+      "ytd_actual_inr_cr": 3533.8,
+      "variance_vs_be_inr_cr": -115.15,
+      "utilisation_vs_be_pct": 96.8
+    },
+    {
+      "asset": "Ankleshwar Asset",
+      "fy26_mmboe": 30.73,
+      "ytd_be_inr_cr": 245.4,
+      "ytd_actual_inr_cr": 241.27,
+      "variance_vs_be_inr_cr": -4.13,
+      "utilisation_vs_be_pct": 98.3
+    },
+    {
+      "asset": "Eastern Offshore",
+      "fy26_mmboe": 28.13,
+      "ytd_be_inr_cr": 7088.73,
+      "ytd_actual_inr_cr": 6640.58,
+      "variance_vs_be_inr_cr": -448.15,
+      "utilisation_vs_be_pct": 93.7
+    },
+    {
+      "asset": "Neelam & Heera",
+      "fy26_mmboe": 26.32,
+      "ytd_be_inr_cr": 818.58,
+      "ytd_actual_inr_cr": 790.46,
+      "variance_vs_be_inr_cr": -28.12,
+      "utilisation_vs_be_pct": 96.6
+    },
+    {
+      "asset": "Assam Asset",
+      "fy26_mmboe": 13.73,
+      "ytd_be_inr_cr": 304.28,
+      "ytd_actual_inr_cr": 300.77,
+      "variance_vs_be_inr_cr": -3.51,
+      "utilisation_vs_be_pct": 98.8
+    },
+    {
+      "asset": "Tripura Asset",
+      "fy26_mmboe": 12.07,
+      "ytd_be_inr_cr": 121.71,
+      "ytd_actual_inr_cr": 121.5,
+      "variance_vs_be_inr_cr": -0.21,
+      "utilisation_vs_be_pct": 99.8
+    },
+    {
+      "asset": "Ahmedabad Asset",
+      "fy26_mmboe": 9.84,
+      "ytd_be_inr_cr": 280.73,
+      "ytd_actual_inr_cr": 263.91,
+      "variance_vs_be_inr_cr": -16.82,
+      "utilisation_vs_be_pct": 94.0
+    },
+    {
+      "asset": "Mehsana Asset",
+      "fy26_mmboe": 9.24,
+      "ytd_be_inr_cr": 727.29,
+      "ytd_actual_inr_cr": 689.56,
+      "variance_vs_be_inr_cr": -37.73,
+      "utilisation_vs_be_pct": 94.8
+    },
+    {
+      "asset": "Rajahmundry Asset",
+      "fy26_mmboe": 7.55,
+      "ytd_be_inr_cr": 160.95,
+      "ytd_actual_inr_cr": 163.45,
+      "variance_vs_be_inr_cr": 2.5,
+      "utilisation_vs_be_pct": 101.6
+    },
+    {
+      "asset": "CBM Bokaro",
+      "fy26_mmboe": 7.13,
+      "ytd_be_inr_cr": 378.07,
+      "ytd_actual_inr_cr": 375.47,
+      "variance_vs_be_inr_cr": -2.6,
+      "utilisation_vs_be_pct": 99.3
+    },
+    {
+      "asset": "Cambay Asset",
+      "fy26_mmboe": 5.79,
+      "ytd_be_inr_cr": 96.18,
+      "ytd_actual_inr_cr": 88.7,
+      "variance_vs_be_inr_cr": -7.48,
+      "utilisation_vs_be_pct": 92.2
+    },
+    {
+      "asset": "Cauvery Asset",
+      "fy26_mmboe": 3.55,
+      "ytd_be_inr_cr": 80.48,
+      "ytd_actual_inr_cr": 81.39,
+      "variance_vs_be_inr_cr": 0.91,
+      "utilisation_vs_be_pct": 101.1
+    },
+    {
+      "asset": "Jorhat Asset",
+      "fy26_mmboe": 1.78,
+      "ytd_be_inr_cr": 60.87,
+      "ytd_actual_inr_cr": 61.31,
+      "variance_vs_be_inr_cr": 0.44,
+      "utilisation_vs_be_pct": 100.7
+    },
+    {
+      "asset": "Rajasthan Basin",
+      "fy26_mmboe": 0.8,
+      "ytd_be_inr_cr": 60.87,
+      "ytd_actual_inr_cr": 55.51,
+      "variance_vs_be_inr_cr": -5.36,
+      "utilisation_vs_be_pct": 91.2
+    }
+  ]
+}

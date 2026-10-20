@@ -1,0 +1,33 @@
+{
+  "job_id": "faa30ef3-43b4-434d-bbb4-3dfabf912741",
+  "total_bytes_processed": 17658,
+  "executed_at": "2026-10-20T06:38:57.650515+00:00",
+  "elapsed_seconds": 0.71,
+  "row_count": 2,
+  "columns": [
+    "status_group",
+    "grievances",
+    "avg_days_since_filing",
+    "older_than_60_days",
+    "future_dated_filings",
+    "charter_target_days"
+  ],
+  "rows": [
+    {
+      "status_group": "open",
+      "grievances": 18,
+      "avg_days_since_filing": 210.0,
+      "older_than_60_days": 13,
+      "future_dated_filings": 3,
+      "charter_target_days": 60
+    },
+    {
+      "status_group": "closed",
+      "grievances": 89,
+      "avg_days_since_filing": 1338.0,
+      "older_than_60_days": 89,
+      "future_dated_filings": 0,
+      "charter_target_days": 60
+    }
+  ]
+}

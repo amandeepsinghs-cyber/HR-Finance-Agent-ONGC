@@ -1,0 +1,43 @@
+{
+  "job_id": "e40cae81-02d9-45a9-8202-02af68223d67",
+  "total_bytes_processed": 79591,
+  "executed_at": "2026-10-20T06:42:22.296278+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 1,
+  "columns": [
+    "field_id",
+    "field_name",
+    "onshore_offshore",
+    "maturity",
+    "asset_wc_id",
+    "fiscal_year",
+    "gross_revenue_inr_cr",
+    "total_opex_inr_cr",
+    "ebitda_inr_cr",
+    "dda_depreciation_inr_cr",
+    "pbt_inr_cr",
+    "lifting_cost_per_boe_usd",
+    "root_cause_loss_code",
+    "is_loss_making_3yr_consecutive",
+    "fields_evaluated"
+  ],
+  "rows": [
+    {
+      "field_id": "FLD-CHP",
+      "field_name": "Champang",
+      "onshore_offshore": "onshore",
+      "maturity": "mature",
+      "asset_wc_id": "WC-JOR",
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 329.6,
+      "total_opex_inr_cr": 234.71,
+      "ebitda_inr_cr": 26.25,
+      "dda_depreciation_inr_cr": 31.18,
+      "pbt_inr_cr": -4.93,
+      "lifting_cost_per_boe_usd": 48.12,
+      "root_cause_loss_code": "high_water_cut_depleted",
+      "is_loss_making_3yr_consecutive": false,
+      "fields_evaluated": 53
+    }
+  ]
+}

@@ -1,0 +1,483 @@
+      Recruitment in Engineering and Geoscience Disciplines at E1 level through Computer
+                                      Based Test (CBT)
+                                   Advt. No. 1/2025 (R&P)
+
+
+
+
+ONGC, a “Maharatna” Public Sector Enterprise and India’s leading Crude Oil and Natural Gas Company, invites
+applications for vacancies in Class I executive positions (E1 level) in Engineering and Geoscience disciplines. The
+positions carry the best in industry compensation package (Approx. INR 25 lacs CTC) apart from an excellent
+opportunity for growth & development.
+We are looking for curious problem-solvers, passionate environmentalists, sustainability advocates, and tech-savvy
+innovators who thrive in collaborative environments. Join us to work on cutting-edge projects that integrate
+innovation, technology, and sustainability.
+
+1. Pay scales, Emoluments & Other Financial Benefits
+
+
+ SN         Post Level               Basic Pay Scale (₹)                                Allowances
+                                                              Besides Basic Pay and annual increment @ 3%, the employee is
+                                                              entitled to allowances @ 35% of Basic Pay under Cafeteria
+                                                              Approach, Dearness Allowance, HRA/Company Accommodation,
+  1                E1                60,000 – 1,80,000/-      Contributory Provident Fund, Conveyance Maintenance, Leave
+                                                              Encashment, Performance Related Pay (PRP), Medical Facility for
+                                                              self and dependents, Gratuity, Post Retirement Benefit Scheme
+                                                              and Composite Social Security Scheme etc. as per Company rules.
+
+
+2. Details of Posts and Minimum Eligibility Criteria
+2.1 Essential Qualification & vacancies
+
+                                                  Domain                                     Number of Posts*
+                              Essential           Specific                                                             Reserved for Persons with
+ SN         Posts           Qualification &      paper for                                         Identified for      Benchmarked disabilities
+                             Experience             CBT      UR   OBC   SC   ST   EWS   Total      benchmarked               (Categories)
+                                                                                                    disabilities
+                                                                                                                       A   B    C    D/E    Tot
+
+       a.   Geoscience Disciplines
+
+                            Post Graduate
+                           Degree in Geology
+                            with minimum
+                              60% marks                                                          Category B (D, HH);
+                                                                                                 Category C (OA, OL,
+                                     or                                                           CP, AAV, DW, LC);
+ 1     Geologist          M.Sc. or M.Tech in     Geology     3     1    1    -     -     5        Category D (SLD,     -   3    2     -      5#
+                             Petroleum                                                             MI); Category E
+                          Geoscience with                                                       (Combination of B to
+                           minimum 60%                                                                    D)
+                                marks
+                                     Or
+                         M.Sc. or M.Tech in
+                            Petroleum
+                           Geology with
+                          minimum 60%
+                               marks
+                                or
+                             M.Tech. in
+                             Geological
+                          Technology with
+                           minimum 60%
+                               marks
+                           Post Graduate
+                             Degree in
+                          Geophysics with
+                           minimum 60%
+                               marks
+                                or            Geophysics
+                             M.Tech. in
+                            Geophysical
+    Geophysicist          Technology with                                             Category C (AAV,
+2                          minimum 60%                      2    1   -   -   -   3                       -   -   3   -   3#
+    (Surface)                                                                             DW, LC)
+                               marks
+                                or
+                          Post Graduate
+                         Degree in Physics
+                         with Electronics       Physics
+                          with minimum
+                           60% marks
+
+
+                           Post Graduate
+                             Degree in
+                          Geophysics with
+                           minimum 60%
+                               marks
+                                or            Geophysics
+                             M.Tech. in
+                            Geophysical
+    Geophysicist                                                                      Category C (AAV,
+3                         Technology with                   1    1   -   -   -   2                       -   -   2   -   2#
+    (Wells)                                                                                 LC)
+                           minimum 60%
+                               marks
+                                or
+                          Post Graduate
+                         Degree in Physics
+                         with Electronics       Physics
+                          with minimum
+                           60% marks
+                 Total                                      6    3   1   -   -   10                      -   3   7   -   10
+
+    b.   Engineering
+                          Graduate Degree
+                           in Mechanical
+    AEE(Production)                           Mechanical                              Category C (AAV,
+1                         Engineering with                  5    2   2   1   1   11                      -   -   2   -   2#
+    - Mechanical                              Engineering                                 DW, LC)
+                           minimum 60%
+                                marks
+                          Graduate Degree
+                            in Petroleum
+                           Engineering /
+    AEE(Production)                            Petroleum                              Category C (AAV,
+2                        Applied Petroleum                  8    4   4   2   1   19                      -   -   2   -   2#
+    - Petroleum                               Engineering                                 DW, LC)
+                          Engineering with
+                           minimum 60%
+                                marks
+                          Graduate Degree
+                             in Chemical
+    AEE(Production)                            Chemical                               Category C (AAV,
+3                         Engineering with                  9    6   4   3   1   23                      -   -   4   -   4#
+    - Chemical                                Engineering                                 DW, LC)
+                           minimum 60%
+                                marks
+                          Graduate Degree
+                           in Mechanical
+    AEE(Drilling) -                           Mechanical                              Category C (AAV,
+4                         Engineering with                  12   6   3   1   1   23                      -   -   5   -   5#
+    Mechanical                                Engineering                                   LC)
+                           minimum 60%
+                                marks
+                             Graduate Degree
+                               in Petroleum
+         AEE(Drilling) –                         Petroleum                                           Category C (AAV,
+    5                        Engineering with                 3      1     1    1     -      6                            -   -    -    -      -
+         Petroleum                              Engineering                                                LC)
+                              minimum 60%
+                                   marks
+
+
+                                                                                                    Category B (D, HH);
+                             Graduate Degree                                                        Category C (OA, OL,
+                              in Mechanical                                                           CP, AAV, DW);
+         AEE                                    Mechanical
+    6                        Engineering with                 3      2     1    -     -      6       Category D (SLD,     -   -    -    5      5#
+         (Mechanical)                           Engineering
+                              minimum 60%                                                             MI); Category E
+                                  marks                                                            (Combination of B to
+                                                                                                             D)
+
+
+
+                                                                                                    Category B (D, HH);
+                             Graduate Degree                                                        Category C (OL, CP,
+                               in Electrical                                                          AAV, LC, DW);
+                                                 Electrical
+    7    AEE (Electrical)$   Engineering with                 5      2     1    2     -      10    Category D (ASD(M),    -   7   1     2     10#
+                                                Engineering
+                              minimum 60%                                                          SLD, MI); Category E
+                                  marks.                                                           (Combination of B to
+                                                                                                            D)
+
+
+
+*- Includes carry forward reservations
+#- Carried forward reservations of previous advertisements. If the suitable candidate from respective benchmark disability is not available then
+PWBD candidate of other benchmark disabilities may be considered by interchange of category among identified suitable benchmark disabilities
+and if no suitable PWBD candidate even by interchange of benchmark disabilities is available, the carried forward vacancy will be filled up with
+other than a person with benchmark disabilities.
+$ Candidates Selected for the post of AEE(Electrical) will be required to produce Certificate of Competency as Electrical Supervisor (CCES) within 2
+years of joining ONGC.
+Abbreviations Used: AEE = Assistant Executive Engineer ; Category A = Blindness and Low Vision; Category B = Deaf and Hard of Hearing;
+Category C = Locomotor disability including Cerebral Palsy, Leprosy Cured, Dwarfism, acid attack victim and muscular dystrophy; Category D =
+Autism, intellectual disability, specific learning disability and mental illness; Category E = Multiple disabilities from amongst persons under
+Categories (A) to (D) including deaf-blindness; D=Deaf, HH= Hard of Hearing , OA= One Arm, OL= One Leg, DW = Dwarfism, LC = Leprosy Cured, AAV
+= Acid Attack Victims, CP= Cerebral Palsy, ID= Intellectual Disability, ASD= Autism Spectrum Disorder (M=Mild, MoD=Moderate), SLD= Specific
+Learning Disability, MI = Mental Illness, MD = Multiple Disabilities
+
+ Note:
+
+        a. The courses offered by Institutes / Universities through the regular mode should be approved / recognized
+           by the relevant statutory bodies for employment to posts and services under the central Government like
+           Association of Indian Universities (AIU)/ UGC/AICTE etc. Candidates who have obtained their qualification
+           through Distance Learning / part time mode are also eligible to apply provided their qualification is
+           recognized by the relevant statutory bodies for employment to posts and services of the central
+           government.
+        b. Qualifications mentioned in the table above are sacrosanct. No equivalent Qualification will be accepted e.g.
+           AMIE will not be considered where qualification is Graduate degree in Engineering.
+        c. Calculation of percentage of marks in the qualifying degree is as per University / Institution rules.
+        d. Wherever CGPA/ OGPA/ CPI/ DGPA or letter grade in degree is awarded, equivalent % of marks should be
+           indicated in the online application as per norms adopted by concerned University/ Institute. Candidates are
+           required to obtain a certificate to this effect from the University/ Institute, which shall be required to be
+           submitted at the time of document verification. If university/Institute does not have the provision for
+           conversion CGPA/ OGPA/ CPI/ DGPA or letter grade into percentage then the equivalence will be established
+           by dividing the candidate’s relative grade with maximum possible corresponding scale and multiplying the
+           result with 100.
+        e. The candidates who are in the final year will also be considered for this recruitment exercise provided they
+           obtain minimum required percentage of marks or more in essential Qualification on or before 31.07.2025.
+        f. Where the posts specified in this advertisement are not reserved for a category (ies), a reserved category
+           candidate can also apply provided she/ he fulfills the criteria specified for Unreserved Category. She/ He
+           shall be treated at par with unreserved category candidates in the selection process for such posts.
+       g. For the post of Geophysics (Surface / Wells), one of the qualifications prescribed is a Post Graduate degree in
+          Physics with Electronics. The candidate must possess the degree of Postgraduate in Physics with Electronics.
+          Any variation in name of the Degree from the prescribed nomenclature will not be acceptable. Qualification
+          of BE / B.Tech. in Chemical Sciences and Technology will not be acceptable for the post of AEE (Production) –
+          Chemical.
+
+ 3. Age Limit (with age relaxation) as on last date of application
+                                                  Max. Age                                       Max. Age
+                                     [For the posts of AEE(Production),                 [For the posts of Geologist,
+            Category
+                                       AEE(Drilling), AEE(Mechanical),                    Geophysicist (Surface),
+                                               AEE(Electrical)]                            Geophysicist (Wells)]
+ Unreserved / EWS                                  26 Years                                       27 Years
+ OBC ( NCL)                                        29 Years                                       30 Years
+ SC / ST                                           31 Years                                       32 Years
+                  General/EWS                      36 Years                                       37 Years
+ PwBD             OBC                              39 Years                                       40 Years
+                     SC/ST                              41 Years                                  42 Years
+                     General/EWS                        31 years                                  32 years
+ Ex-Servicemen       OBC                                31 years                                  32 years
+                     SC/ST                              31 years                                  32 years
+                                         Relaxation as per respective category and further relaxation to the extent of
+ Departmental Candidates
+                                                                  service rendered in ONGC
+
+ a)      Ex-Servicemen candidates may avail the age relaxation available to ex-servicemen or ONGC departmental (if
+ applicable) or reserved category. Such Departmental candidates who are also Ex-Servicemen will get age relaxation of
+ either Ex-servicemen or Departmental candidates whichever is maximum.
+
+
+ Note:
+
+ i.    Candidates seeking reservation as SC / ST/OBC, will have to possess/ submit at the time of document
+       verification, caste certificate, in the prescribed proforma meant for appointment to posts under the
+       Government of India from the designated authority indicating clearly the candidate’s caste (same as mentioned
+       in Central list), the Act/Order under which the caste is recognized as SC/ST/OBC and the Village/Town the
+       candidates is ordinarily resident of.
+ii.    Candidates seeking reservation as PwBD will have to possess / submit at the time of document verification the
+       benchmarked disability certificate only in the prescribed proforma as per Form V/VI/VII (Rule 18(1) of Rights of
+       Persons with Disabilities Rules, 2017).
+iii.   Prescribed format of the caste certificate for SC/ST/OBC & disability certificate for PwBD for employment in
+       government undertaking is downloadable from the online application site.
+iv.    OBC (NCL) certificate should have been issued on or after 01.04.2024 by the competent authority. The
+       certificate must contain the date of issue along with name of caste, spelled exactly in the same manner as
+       appearing in the central list of the respective state.
+ v.    Candidates seeking reservation under EWS will have to submit at the time of interview, an Income and Asset
+       Certificate issued by a competent authority. The prescribed format and the competent authority have been
+       given in Department of Personnel & Training of Govt. of India Office Memorandum No. 36039/1/2019 – Estt
+       (Res) dated 31/01/2019. Further, certificate should have been issued on or after 01.04.2024 by the competent
+       authority.
+vi.    Where in any recruitment year any vacancy earmarked for EWS cannot be filled up due to non-availability of a
+       suitable candidate belonging to EWS, such vacancies for that particular recruitment year shall not be carried
+       forward to the next recruitment year as backlog.
+vii.   No change in the category, already indicated by a candidate in his/her online application form for this exercise,
+       will ordinarily be allowed.
+
+ 4. SELECTION PROCESS:
+
+  i.   Eligible candidates will be required to appear for Computer Based Test (Objective Type) comprising of four
+       sections- General Awareness, concerned subject, English Language and an Aptitude test for a total duration of
+       02 hours.
+ ii.   CBT Score will be considered by ONGC for shortlisting the candidates in 1:5 ratio for further selection process of
+       Personal Interview as per the criteria decided by the Management. While shortlisting in the ratio of 1:5 in the
+       respective categories, in case multiple candidates secure minimum cut-off marks, all of them will also be
+       shortlisted in relaxation of the specified ratio.
+iii.   The shortlisted candidates will be subjected to a Group Discussion.
+iv.    The final selection of the candidate will be based on the parameters - CBT Score and Performance in the
+       Personal Interview. Following weightages shall be assigned to the parameters:
+
+               Parameters                                                                   Marks
+               CBT Score                                                                     85
+               Interview                                                                      15
+                                                              Total                          100
+
+       In order to be empanelled, candidates are required to qualify in the CBT and thereafter again in the personal
+       interview separately, in addition to fulfilling qualification criteria. To qualify in the CBT, General, EWS and OBC
+       candidates are required to score minimum 45% marks & SC/ST/PwBD candidates are required to score a
+       minimum of 40% marks. To qualify in the Interview, General, EWS and OBC candidates are required to score
+       minimum 60% marks i.e. 09 marks out of 15 & SC/ST/PwBD candidates are required to score a minimum of 40%
+       marks i.e. 06 marks out of 15 marks in Interview.
+
+ 5. Finalization of Merit List
+     a. Candidates who qualify in the interview shall be empanelled in the Merit List.
+     b. Offer of appointment shall be issued to the candidates based on their relative rank in the Merit List prepared
+        on the sum total of marks scored by the candidate in CBT and interview.
+     c. In case of a tie in the total marks scored between two candidates, candidate who gets more marks in
+        performance (CBT Score) is considered senior and if equal marks are scored in performance, the one older in
+        age is considered senior for release of name.
+     d. Departmental candidates shall be given first consideration in matters of selection.
+     e. Appointment of selected candidates will be subject to their passing the company’s Medical Examination as
+        per standards laid down under ONGC Medical Examination of Employees Rules, 1996. Details of the rules are
+        available on ONGC’s Website at www.ongcindia.com.
+    f. Those selected candidates who are already employed elsewhere will be required to resign from their
+        respective organization only after being declared medically fit as per extant Medical rules of ONGC. If any
+        candidate resigns from his/her present employment before being declared medically fit for joining in ONGC,
+        then ONGC shall bear no responsibility, whatsoever, on this account.
+
+
+       6. Format of Computer Based Test (CBT)
+       a. The format of the Computer Based Test will be as follows:
+           Part Subject                                                   Number of Questions
+           I      Concerned Domain (Mechanical / Chemical / Petroleum /            40
+                  Electrical / Geology / Geophysics / Physics)
+           II     General Awareness                                                10
+           III    Aptitude Test                                                    25
+           IV     English Language                                                 10
+                                                                    Total          85
+   b. The test paper shall consist of Multiple-Choice Questions and shall be of 2 hours duration. However, PWBD
+      candidates may get the provision of compensatory time i.e. 20 minutes per hour. PwBD candidates in the
+      category of Locomotor disability who are compelled to avail Scribe due to their disability, shall be allowed to
+      bring the scribe. The provision of scribe can be allowed on production of a certificate from the Chief Medical
+      Officer/ Civil Surgeon/ Medical Superintendent of a Government Health Care Institution as per proforma
+      prescribed by the GOI to the effect that the person concerned has physical limitation to write/ operate
+      computer and help of scribe is essential to appear at the examination.
+   c. There will be No negative marking in the CBT test.
+   d. In case the exam is held in more than one session, the scores across various sessions will be equated
+      (normalized) to adjust for slight differences in difficulty level of the sessions. In such case normalized marks
+      shall be used for all practical purposes.
+   e. The test centres for CBT will be as follows:
+
+            SN     City                                 SN   City
+             1     Delhi including NCR                   2   Kolkata
+             3     Mumbai/Thane/Navi Mumbai/ MMR         4   Chennai
+             5     Ahmedabad/Gandhinagar                 6   Hyderabad
+             7     Guwahati                              8   Jaipur
+             9     Udaipur                              10   Mohali
+            11     Nagpur                               12   Bhopal
+            13     Bengaluru                            14   Ernakulum
+            15     Raipur                               16   Surat
+            17     Lucknow                              18   Visakhapatnam
+            19     Bhubaneswar
+
+       Candidates have to give preference for the test center. No change in preference of test centre will be
+       allowed later. However, ONGC Management reserves the right to change any of the above-mentioned test
+       centres at its discretion and also add or reduce the number of test cities / centres.
+
+
+7. How to Apply:
+   a. Eligible & Interested Candidates need to visit www.ongcindia.com to register their application online. The
+      registration site shall remain open from 10/01/2025 to 24/01/2025. No other mode, repeat, no other mode,
+      of application shall be accepted.
+   b. Candidates can apply for only one post for which he/she is most desirous, based on his/her qualification. In
+      the case of multiple applications from a candidate the latest one shall be considered as final and older
+      applications shall be rejected
+   c. If there is no vacancy in a post for reserved category, candidates belonging to reserved category can still
+      apply for unreserved posts. However age relaxation will not be extended to them.
+   d. Before registering/submitting their online applications on the website the candidates should keep the
+      following ready:
+           i.  Mobile number & E-mail ID in which the OTP will be sent for completing the registration process.
+          ii.  Scanned copy of recent passport size color photograph of the candidate with white background in
+               jpg / jpeg format. (20kb–50 kb only)
+        iii.   Scanned copy of the signature of the candidate in jpg / jpeg format (10kb – 20kb only)
+         iv.   Class 10th Certificate (For verification of Date of Birth)
+          v.   Degree Certificate of Essential Qualification
+         vi.   Consolidated Marksheet/transcript of essential qualification for all semesters or years
+        vii.   Photo identity proof (like Aadhar card, Passport, Driving License, Voter Id Card)
+       viii.   PAN Card
+               The above documents are required to be uploaded in pdf format (not more than 500 kb for each file)
+   e. All correspondence with the registered candidates shall be done through their registered e-mail and/ or
+      mobile phone only. The candidates are required to keep the registered e-mail and mobile phone active for at
+      least one year from the date of registration.
+   f. All information regarding examination, interviews etc. shall be available on the website of ONGC –
+      www.ongcindia.com. Candidate can download examination Call letter from the site. No separate Admit
+      card/Interview call letters shall be sent to the candidates by post. ONGC will not be responsible for any loss
+      of e-mail / SMS sent due to invalid or wrong email ID/mobile phone no. or delivery of emails to spam/bulk
+      mail folder.
+   g. The sole responsibility of providing copies of certificates as and when asked for and downloading/printing of
+      Interview call letter shall be that of the candidate.
+   h. No changes shall be allowed once the candidate has submitted his/her online application.
+   i. Registration fee : The registration fee for candidates is as under :
+
+         SN      Category                                 Registration Charges (Rs.)
+         1       GEN/EWS/OBC                              1000/-*
+         2       SC/ST/PwBD                               No charges
+
+        *The Registration fee exclude the convenience fee / Bank’s Commission plus GST.
+   Ø Registration fee is non-refundable.
+   Ø Registration Fee has to be deposited online.
+   Ø Departmental candidates from ONGC would also be required to deposit the applicable registration fee.
+      However, the same will be reimbursable.
+   j. Candidates are advised to submit only one application. In the case of multiple applications from a candidate
+      the latest one shall be considered as final and older applications shall be rejected.
+   k. All the SC/ST/PwBD candidates attending CBT & All the candidates attending Personal Interviews whose
+      mailing address is out of the Test city/ Interview centre city, will be reimbursed single second class to & fro
+      rail fare (inclusive of sleeper charges / reservation charges if paid) by shortest route or actual fare paid
+      whichever is less. In case the situation is not conducive for physical interviews, due to HMPV or any other
+      pandemic like situation, the Interview may be conducted virtually. If the interview is conducted virtually, the
+      mode of interview (Skype/ Cisco Webex / Google meet / Whatsapp/Zoom/ Microsoft Teams etc.) will be
+      intimated to all the shortlisted candidates in advance. In this case, no TA will be paid to the candidates
+
+
+8. Important Dates:
+         SN      Activity                                                            Date
+             1   Start date of online registration of application   10/01/2025
+             2   Last date of online registration of application    24/01/2025
+             3   Conduct of CBT                                     23/02/2025 (Tentative)
+
+9. General Instructions:
+   a. All applicants must fulfill the essential requirements of the post and other conditions stipulated in the
+      advertisement. They are advised to satisfy themselves before applying. No enquiry asking for advice as to
+      eligibility will be entertained.
+   b. Applicants are required to apply online only. No manual/ paper application will be entertained.
+   c. Screening and selection will be based on the details provided by the candidate; hence it is necessary that
+      applicants should furnish only accurate, full and correct information. Furnishing of wrong / false information
+      will be a disqualification and ONGC will NOT be responsible for any consequence of furnishing of such
+      wrong/false information.
+   d. Candidates should have the relevant documents like percentage of marks obtained in the qualifying
+      examination; email id and mobile phone readily available with them before they commence the ONLINE
+      application process. This information will be required at the time of filling – in the ONLINE application.
+   e. Candidature of the registered candidate is liable to be rejected at any stage of recruitment process or after
+      recruitment or joining if any information provided by the candidate is found false or is not found in
+      conformity with eligibility criteria mentioned in the advertisement.
+f. Requests for change of mailing address / discipline / Test Center as declared in the online application or
+   mode of interview, will not be entertained.
+g. Candidates should retain the copy of their ONGC Registration Slip and Admit Card for future reference. Print
+   out of the same should not be tampered with. No documents including copy of Registration slip etc. are to
+   be sent to ONGC unless specifically asked for.
+h. Candidates in employment of Public Sector Undertaking/ Govt. Service will be required to produce No
+   Objection Certificate (NOC) from their employer at the time of document verification / interview. In case
+   NOC is not submitted at the time of interview the candidate may be provisionally allowed to appear subject
+   to submitting an undertaking that he/she will submit the NOC within a stipulated time frame or will get
+   proper relieving from the existing employer before joining ONGC, if selected.
+i. ONGC departmental candidates must ensure filling their own CPF Number of ONGC in the appropriate field
+   in the online form, failing which they shall not, repeat SHALL NOT, be screened/ considered as departmental
+   candidates from ONGC.
+j. If more than one application is received from a candidate, the latest application will be considered as final.
+k. Disputes, if any, are subject to Delhi Jurisdiction only.
+l. The candidates applying for the recruitment should ensure that they fulfill all eligibility conditions for the
+   post against which they apply. Their admission at all the stages of the selection process will be purely
+   provisional subject to satisfying the prescribed eligibility conditions. Mere issue of unique ID for online
+   application/ interview call letter to the candidate will not imply that his/her candidature has been finally
+   cleared by ONGC. ONGC takes up verification of eligibility conditions with reference to original documents
+   only after the candidate has been shortlisted for Interview
+m. Appointment of selected candidates will be subject to their passing the Company’s Medical Examination as
+   per standards laid down under ONGC’s Medical Examination of Employees Rules, 1996. Details of the rules
+   are available on ONGC’s website. However, for the benefit of the candidates, a few salient points are being
+   mentioned below
+
+      SN         Medical Condition                                          Remarks
+      1          Complete or partial colour blindness                       Not Acceptable for all advertised
+                                                                            posts.
+      2           The total amount of Myopia (including the cylinder) shall Acceptable for all advertised posts.
+                  not exceed -4.00 D and total amount of Hypermetropia
+                  (including the cylinder) shall not exceed +4.00 D
+      2           For Candidates of more than 20 years of age, the Total Acceptable only for the Posts of
+                  amount of Myopia limited to - 6.00 D and Total amount Geologist, Geophysicist (Surface /
+                  of Hypermetropia limited to + 6.00 D (provided there Wells)
+                  are no degenerative changes in the vitreous or retina Not Acceptable for all other Posts.
+                  and where the disease is not likely to progress)
+      3           Congenital Night blindness                                Not acceptable for any post
+      Correction with contact lenses and intraocular implants is not a bar for employment provided the
+      prescribed standards are fulfilled. Candidates applying as PwBD will be considered as per Govt. of India
+      directives for reservation as PwBD candidates.
+
+n.   The selected candidates are liable to be posted anywhere in India or abroad (Asset/Basin/Institute/Plant/HQ
+     etc).
+o.   For more information about the Company, you may visit ONGC website www.ongcindia.com.
+p.   In case of any difficulty please register your query at https://cgrs.ibps.in
+q.   Candidates not found to be meeting the prescribed eligibility criteria shall be rejected at any stage of the
+     selection process or after selection. Any candidate submitting false/incorrect information shall be rejected
+     during any stage of the selection process.
+r.   Canvassing in any form or influencing the officials related to the selection / recruitment process would result
+     in immediate disqualification of the candidate. In case of any dispute, the decision of the management of
+     ONGC will be final and binding on all candidates.
+s.   Candidates are also advised not to respond to unscrupulous advertisements appearing in any newspaper. For
+     authenticity of any communication/advertisement in this regard, the candidate must check on ONGC’s
+     website www.ongcindia.com.
+t.   ONGC Management reserves the right to cancel the recruitment exercise fully/ partially at any stage at its
+     discretion.
+u.   It may be noted that ONGC does not seek payments of any kind other than the registration fee.
+
+
+                                                                          DGM (IE) – I/c Corporate Recruitment
+                                                                                       ONGC
+
+
+                            “ONGC is not responsible for printing errors, if any”
+

@@ -1,0 +1,21 @@
+{
+  "job_id": "58848768-1b63-43ec-92e2-3c8bfd1580e0",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:43.550756+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 11.0",
+      "heading": "Confidentiality of Pre-Decisional Records",
+      "quote_snippet": "11.1 Absolute Confidentiality of Draft Proposals: All preliminary transfer sheets, draft rosters, internal deliberations of the Transfer Screening Committee, and proposed replacement lists are strictly CONFIDENTIAL and PRE-DECISIONAL records under Rule 11 of the ONGC CDA Rules, 1994. 11.2 Prohibition of Unauthorized Disclosure: No employee or executive shall solicit, disclose, share, circulate, or"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+- table: hrfin_silver.contract_workforce
+  issue: service_category rotates month to month for every work centre (each wc has one row per month; all 46 wcs carry 8 different service categories across 66 months), so contractor headcount cannot be split by role/service.
+  evidence: "WC-HAZ FY26 months: logistics_transport, mechanical_maintenance, hydrocarbon_processing x2, civil_maintenance, mechanical_maintenance x2, catering_hospitality, logistics_transport, catering_hospitality, logistics_transport, electrical_instrumentation. COUNT(DISTINCT service_category) = 8 for all 46 wc_id."
+  impact_on_ids: [X1__why, X2__drill_down]
+- table: hrfin_silver.contract_workforce
+  issue: contractor_cost_per_boe_usd does not reconcile with monthly_cost_inr / production BOE and is 0 for producing assets (Assam Asset).
+  evidence: "Bassein FY26 avg column 1.16 USD/BOE vs computed 0.097 (Rs 72.8 cr / 84.5 MMboe @88.33); Jorhat 6.88 vs 2.54; Assam 0 vs 0.45."
+  impact_on_ids: [X1, X1__compare_or_so_what]
+- table: hrfin_silver.contract_workforce
+  issue: discipline_id has only two values (DISC-PRD, DISC-LOG) fixed per wc - not a real role attribute; is_core_activity is a fixed per-wc flag (20 wcs).
+  evidence: "DISC-LOG 1,914 rows / 29 wcs; DISC-PRD 1,122 rows / 17 wcs."
+  impact_on_ids: [X2__drill_down]
+- table: hrfin_silver.hse_incidents
+  issue: One incident row per work centre per month (exposure record doubling as incident); overtime is a constant per band (54 h offshore, 36 h elsewhere); fatigue_factor_flag is TRUE on exactly the offshore LTIs and nothing else; installation_name is '<asset> Installation' (no platform grain).
+  evidence: "FY22-FY26: 36/36 high-overtime LTIs fatigue-flagged, 0 of 38 standard LTIs, 0 of 639 near-misses; COUNT(DISTINCT overtime) per wc = 1; 552 rows/FY = 46 wc x 12."
+  impact_on_ids: [X3, X3__drill_down, X3__why]
+- table: hrfin_silver.hse_incidents vs mou_targets
+  issue: MoU-reported FY26 LTIFR differs from the rate recomputed from incident records.
+  evidence: "mou_targets FY26 actual_achievement 0.14 vs 15 LTIs / 98.87 M man-hours = 0.152."
+  impact_on_ids: [X3__compare_or_so_what]
+- table: hrfin_silver.benefit_liabilities
+  issue: Coverage FY22-FY26 only (no FY21, so a true 5-year FY21->FY26 trend is impossible); PRBS plan assets equal the liability to the rupee in every year (funded 100.00%) - looks like a plug; funded ratios constant per scheme across years.
+  evidence: "PRBS FY22 14,731.71 = 14,731.71 ... FY26 18,250 = 18,250; PRMB funded 92.99% all years; Gratuity 93.89% all years."
+  impact_on_ids: [X4, X4__compare_or_so_what]
+- table: hrfin_silver.corporate_financials
+  issue: ROCE values implausibly high for an upstream PSU (standalone 42-89%, consolidated 37-79%).
+  evidence: "FY23 standalone_roce_pct 89.22, FY26 63.24; consolidated FY26 55.65."
+  impact_on_ids: [X5__compare_or_so_what]
+- table: hrfin_silver.subsidiary_financials
+  issue: Series are linear interpolations (constant increments per year) and OPAL shows 18.89% ROCE while loss-making every year; roce_pct constant per entity across years.
+  evidence: "HPCL PAT 14,427 -> 15,114 -> 15,801 -> 16,488 -> 17,175 (+687/yr); OPAL PAT -1,528.8 ... -1,820 with roce_pct 18.89."
+  impact_on_ids: [X5, X5__why]
+- table: hrfin_silver.energy_transition
+  issue: cumulative_capex_inr_cr does not equal the running sum of annual_capex_inr_cr (it is 1.8x the current-year annual value); net_zero_2038_roadmap_milestone_met is TRUE for all 35 rows incl. projects with zero spend; no Net Zero 2038 target trajectory exists anywhere. FY26 green capex (Rs 11,983 cr) is 33% of company capex - implausibly high.
+  evidence: "ETR-PRJ-01: annual 840+1,680+2,730+4,200 = 9,450 vs stored FY26 cumulative 7,560 (=1.8 x 4,200)."
+  impact_on_ids: [X6, X6__drill_down, X6__compare_or_so_what]
+- table: hrfin_silver.energy_transition vs training_records
+  issue: engineers_reskilled_count (FY26 sum 1,426) contradicts training_records renewable reskilling (2,058 enrolments / 1,568 completions in FY26; 10,165 distinct employees enrolled FY22-FY27).
+  evidence: "SUM(engineers_reskilled_count) FY26 = 1,426; training_records is_renewable_reskilling FY26 completed = 1,568."
+  impact_on_ids: [X6, X6__why]
+- table: hrfin_silver.rti_applications
+  issue: turnaround_days is NULL on every row; status 'Pending' rows date back to Apr-2024 (pending >2 years).
+  evidence: "AVG(turnaround_days) NULL for all statuses; MIN(received_date) of pending = 2024-04-02."
+  impact_on_ids: [X8, X8__compare_or_so_what]
+- table: hrfin_silver.project_progress
+  issue: Single FY26 snapshot (no weekly/monthly history); slippage, dates and cost overrun are project-level values repeated on all 6 milestones; several anticipated completion dates are already past 19-Oct-2026 while projects are not completed (stale).
+  evidence: "360 rows = 60 projects x 6 milestones, all fiscal_year FY26; PRJ-0016 anticipated 2026-03-31 still 'delayed'."
+  impact_on_ids: [X10, X10__drill_down, X10__compare_or_so_what]
+- table: hrfin_silver.field_pnl_annual
+  issue: Non-field line types carry absurd lifting_cost_per_boe_usd values in some years (AVG over all rows = 68,922,047 USD/BOE); no field shows a 12% YoY lifting-cost rise; no sub-annual cost data (cost_ledger is ~Rs 1,400 cr/yr, mostly NULL field_id).
+  evidence: "AVG(lifting_cost_per_boe_usd) all rows = 6.89e7; line_type='field' FY26 range 5.01-48.12; max FY26 vs FY25 change +0.9% (Panna)."
+  impact_on_ids: [X10, X10__why]
+- table: hrfin_silver.posting_history
+  issue: exemption_tag stores the literal string 'None' instead of NULL; 4,378 current executive postings start on the same date 2020-07-01, putting ~75% of executives beyond the JRTP 5-year window.
+  evidence: "DISTINCT exemption_tag = 'None', 'Impending_Retirement'; current executive postings from_date=2020-07-01: 2,544 rotation + 1,834 hard_station."
+  impact_on_ids: [X10, X10__compare_or_so_what]
+- table: hrfin_docs.silver_chunks
+  issue: Contract Labour (Regulation & Abolition) Act text, Net Zero 2038 roadmap targets and Executive Committee exception thresholds are absent from the corpus.
+  evidence: "No chunk matches 'contract labour (regulation' / 'clra'; '2038' appears only in P2-24 and P2-25 narrative text; no ExCom threshold clauses."
+  impact_on_ids: [X2__why, X6__compare_or_so_what, X10__compare_or_so_what]

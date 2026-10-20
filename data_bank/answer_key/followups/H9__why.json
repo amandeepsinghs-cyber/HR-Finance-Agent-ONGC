@@ -1,0 +1,21 @@
+{
+  "job_id": "0a679e5c-35fe-4783-b41b-78026f4d3904",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:38:56.941514+00:00",
+  "elapsed_seconds": 0.56,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 13.0",
+      "heading": "Transfer Grievance Redressal Mechanism",
+      "quote_snippet": "13.1 Representation Timeline: Any executive aggrieved by a transfer order may submit a formal representation to the Transfer Grievance Redressal Committee (TGRC) within 15 (fifteen) calendar days from the date of official publication of the transfer order on the intranet portal. 13.2 Grounds for Representation: Representations shall be entertained strictly on specified grounds: (a) genuine medical emergency certified by Medical Board; (b) child appearing in Class X or XII Board examination in the current academic year; (c) spouse working in central/state government or CPSE at the current station (DOPT guidelines); or (d) superannuation within 2\u20133 years. 13.3 Time-Bound Disposal: The TGRC, ch"
+    }
+  ]
+}

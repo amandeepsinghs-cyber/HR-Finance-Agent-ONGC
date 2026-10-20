@@ -1,0 +1,147 @@
+# Step 2.4 Actual Emergent Story Findings
+step: "2.4"
+timestamp: "2026-10-19T11:40:00Z"
+architecture: "FULLY EMERGENT (BLIND)"
+
+upstream_hashes:
+  production_monthly_csv: "4205c4456ed14dd2"
+  py_cluster_exp_csv: "92ff7ad1139241b2"
+  headcount_monthly_snapshot_csv: "48028342c1975acc"
+  essr_esll_csv: "a94a0fd20411f595"
+  pa0001_csv: "731e9227dc78021a"
+  pa0002_pa0001_csv: "453313904a99b02e"
+  price_fx_xlsx: "ed617977b561e911"
+
+landing_output_hashes:
+  CO_PA_csv: "ef45ac5daf23f87d"
+  COSP_COSS_csv: "a20e5a37550cbcd8"
+  capex_be_re_actuals_xlsx: "290c8e356412a63f"
+  project_milestones_csv: "ab111239f91ad7d4"
+  EKKO_EKPO_csv: "7e545120e2459e5b"
+  FI_AR_INVOICES_csv: "5433a44c614f789a"
+  treasury_forex_hedges_xlsx: "39b5c7b79f9572be"
+
+global_scalars:
+  offshore_opex_multiplier: 0.9680
+  onshore_opex_multiplier: 1.101146
+  offshore_dda_rate_per_boe: 922.1183
+  onshore_dda_rate_per_boe: 564.6466
+
+segment_calibration_deltas_fy26:
+  total_revenue_inr_cr: 132508.00
+  total_revenue_delta_pct: 0.00
+  offshore_revenue_inr_cr: 92406.00
+  offshore_revenue_delta_pct: 0.00
+  onshore_revenue_inr_cr: 40102.00
+  onshore_revenue_delta_pct: 0.00
+  offshore_pbt_inr_cr: 34385.01
+  offshore_pbt_delta_pct: 0.00
+  onshore_pbt_inr_cr: 6246.01
+  onshore_pbt_delta_pct: 0.00
+  offshore_dda_inr_cr: 18830.00
+  offshore_dda_delta_pct: -0.00
+  onshore_dda_inr_cr: 6367.01
+  onshore_dda_delta_pct: 0.00
+
+receivables_reconciliation_fy26:
+  total_revenue_from_operations_inr_cr: 132508.00
+  total_invoiced_net_value_inr_cr: 132507.78
+  invoicing_delta_pct: 0.00
+  total_year_end_outstanding_inr_cr: 13167.89
+  debtor_collection_period_days: 36.27
+  overdue_gt_90d_inr_cr: 1594.34
+  overdue_gt_90d_pct_of_outstanding: 12.11
+
+fy27_h1_invoicing_modelled:
+  source: "volume_x_price_production_records"
+  h1_modelled_gross_revenue_inr_cr: 65534.65
+  h1_monthly_mean_inr_cr: 10922.44
+  fy26_monthly_mean_inr_cr: 11042.33
+  continuity_jump_pct: 1.09
+
+capex_summary:
+  fy26_capex_inr_cr: 35877.88
+  fy26_capex_delta_pct: -0.00
+  fy25_capex_total_inr_cr: 62056.96
+  fy25_opal_equity_infusion_inr_cr: 18365.00
+  fy25_standalone_projects_capex_inr_cr: 43691.96
+  fy27_h1_capex_be_inr_cr: 18914.81
+  fy27_h1_capex_actual_inr_cr: 18020.19
+  fy27_h1_share_of_fy26_annual_pct: 50.23
+  fy27_h1_vs_fy26_monthly_mean_jump_pct: 0.45
+
+monthly_series_continuity_fy26_vs_fy27_h1:
+  capex_jump_pct: 0.45
+  po_spend_jump_pct: 7.26
+  receivables_invoicing_jump_pct: 1.09
+  cost_ledger_opex_by_head_jumps_pct:
+    Corporate_Administration: 3.23
+    Corporate_Shared_Services: 3.23
+    Marine_Logistics: 3.23
+    Offshore_Platform_Operations: 3.23
+    Onshore_Production_Facilities: 3.23
+    Plant_Operations: 3.23
+    Power_and_Fuel: 2.93
+    Production_Chemicals: 3.23
+    Subsea_and_Marine_Maintenance: 3.23
+    Water_Handling_and_Disposal: 3.84
+    Workover_and_Well_Servicing: 4.06
+
+field_profitability_summary_fy26:
+  total_producing_fields: 53
+  fields_with_negative_ebitda: 0
+  fields_with_negative_pbt: 1
+  negative_pbt_fields:
+    - field_id: "FLD-CHP"
+      field_name: "Champang"
+      ebitda_inr_cr: 26.25
+      pbt_inr_cr: -4.93
+      total_opex_inr_cr: 234.71
+      dda_inr_cr: 31.18
+
+emergent_story_actuals:
+  S6_borholla_fy26:
+    ebitda_inr_cr: 36.39
+    pbt_inr_cr: 3.22
+    total_opex_inr_cr: 241.23
+    root_cause_loss_code: "high_water_cut_depleted"
+  S6_adiyakkamangalam_fy26:
+    ebitda_inr_cr: 174.85
+    pbt_inr_cr: 138.69
+    total_opex_inr_cr: 127.77
+    ebitda_margin_pct: 45.75
+  S6_lakwa_fy26:
+    ebitda_inr_cr: 1571.49
+    pbt_inr_cr: 1231.00
+    dda_inr_cr: 340.49
+    5yr_sustaining_capex_inr_cr: 1420.20
+  S8_manpower_cost_per_boe_fy26:
+    cambay_asset_inr_per_boe: 350.04
+    cambay_asset_usd_per_boe: 4.08
+    mumbai_high_asset_inr_per_boe: 159.66
+    mumbai_high_asset_usd_per_boe: 1.86
+    disparity_ratio: 2.19
+  S9_project_slippages:
+    projects_with_slippage_gt_12m_and_overrun_gt_1000cr: 2
+  S10_fy27_h1_capex:
+    budget_estimate_be_inr_cr: 18914.81
+    actual_spend_inr_cr: 18020.19
+    achievement_ratio_pct: 95.27
+  S15_crude_price_stress_test_60_brent:
+    baseline_field_ebitda_inr_cr: 75277.88
+    stressed_field_ebitda_inr_cr: 61858.07
+    ebitda_impact_inr_cr: -13419.81
+  S22_vendor_concentration_fy26:
+    top_10_vendor_share_pct: 53.59
+    top_10_spend_inr_cr: 8956.34
+    total_po_spend_inr_cr: 16713.76
+  S23_receivables_fy26:
+    total_outstanding_inr_cr: 13167.89
+    debtor_days: 36.27
+    overdue_gt_90d_inr_cr: 1594.34
+    overdue_gt_90d_pct: 12.11
+  S25_forex_debt_fy26:
+    total_gross_debt_usd_bn: 2.99
+    natural_hedge_crude_pct: 78.32
+    unhedged_non_usd_mtm_loss_inr_cr: -109.68
+  S36_critical_path_delayed_projects: 9

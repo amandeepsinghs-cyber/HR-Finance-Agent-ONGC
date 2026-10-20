@@ -1,0 +1,71 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_payroll_benefits",
+  description: "Payroll elements, compensation, leave balances, medical claims, travel allowances, and post-retirement benefit liabilities"
+}
+
+SELECT
+  py.payroll_id,
+  py.emp_id,
+  e.name AS emp_name,
+  e.gender,
+  e.category,
+  py.month,
+  py.fiscal_year,
+  py.wc_id,
+  w.name AS wc_name,
+  w.city,
+  w.sector,
+  py.grade_id,
+  g.cadre,
+  g.designation,
+  g.pay_scale_min_inr,
+  g.pay_scale_max_inr,
+  py.discipline_id,
+  py.cost_centre_id,
+  py.basic_pay_inr,
+  py.da_inr,
+  py.hra_inr,
+  py.cafeteria_allowances_inr,
+  py.mining_offshore_allowance_inr,
+  py.overtime_hours,
+  py.overtime_amount_inr,
+  py.prp_inr,
+  py.gross_salary_inr,
+  py.income_tax_tds_inr,
+  (py.gross_salary_inr - py.net_salary_inr) AS deduction_amount_inr,
+  'Statutory & Benefit Deductions' AS deduction_reason,
+  py.net_salary_inr,
+  py.employer_cpf_inr,
+  py.employer_prbs_inr,
+  py.employer_prmb_inr,
+  py.superannuation_benefit_pct,
+  cl.claim_id,
+  cl.claimed_amount_inr,
+  cl.approved_amount_inr,
+  cl.claim_status,
+  cl.hospital_name,
+  cl.is_empanelled_hospital,
+  cl.submission_date,
+  cl.turnaround_days,
+  lv.leave_type,
+  lv.closing_balance_days,
+  lv.encashable_balance_days,
+  bl.actuarial_liability_inr_cr,
+  bl.plan_assets_inr_cr,
+  bl.net_liability_inr_cr,
+  bl.funded_ratio_pct,
+  bl.discount_rate_pct,
+  bl.salary_escalation_rate_pct,
+  bl.medical_inflation_rate_pct,
+  bl.scheme_name,
+  bl.scheme_type,
+  bl.dpe_30pct_superannuation_compliance_flag
+FROM ${ref("payroll_monthly")} py
+JOIN ${ref("employee_master")} e ON py.emp_id = e.emp_id
+LEFT JOIN ${ref("dim_work_centre")} w ON py.wc_id = w.wc_id
+LEFT JOIN ${ref("dim_grade")} g ON py.grade_id = g.grade_id
+LEFT JOIN (SELECT emp_id, claim_id, claimed_amount_inr, approved_amount_inr, claim_status, hospital_name, is_empanelled_hospital, submission_date, turnaround_days FROM ${ref("medical_claims")} QUALIFY ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY submission_date DESC) = 1) cl ON py.emp_id = cl.emp_id
+LEFT JOIN (SELECT emp_id, leave_type, closing_balance_days, encashable_balance_days FROM ${ref("leave_ledger")} QUALIFY ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY to_date DESC) = 1) lv ON py.emp_id = lv.emp_id
+LEFT JOIN (SELECT fiscal_year, actuarial_liability_inr_cr, plan_assets_inr_cr, net_liability_inr_cr, funded_ratio_pct, discount_rate_pct, salary_escalation_rate_pct, medical_inflation_rate_pct, scheme_name, scheme_type, dpe_30pct_superannuation_compliance_flag FROM ${ref("benefit_liabilities")} QUALIFY ROW_NUMBER() OVER (PARTITION BY fiscal_year ORDER BY scheme_record_id) = 1) bl ON py.fiscal_year = bl.fiscal_year

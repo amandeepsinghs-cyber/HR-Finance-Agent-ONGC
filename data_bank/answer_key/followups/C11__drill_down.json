@@ -1,0 +1,61 @@
+{
+  "job_id": "fa509ac5-a55c-4df2-a417-a20d1fe0f3b7",
+  "total_bytes_processed": 24869496,
+  "executed_at": "2026-10-20T06:42:58.249702+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 3,
+  "columns": [
+    "short_name",
+    "hc_mar21",
+    "hc_mar26",
+    "hc_change",
+    "hc_change_pct",
+    "crude_mmt_fy21",
+    "crude_mmt_fy26",
+    "crude_variance_pct",
+    "gas_bcm_fy21",
+    "gas_bcm_fy26",
+    "gas_variance_pct"
+  ],
+  "rows": [
+    {
+      "short_name": "Rajahmundry Asset",
+      "hc_mar21": 1213,
+      "hc_mar26": 845,
+      "hc_change": -368,
+      "hc_change_pct": -30.3,
+      "crude_mmt_fy21": 0.281,
+      "crude_mmt_fy26": 0.238,
+      "crude_variance_pct": -15.5,
+      "gas_bcm_fy21": 1.1,
+      "gas_bcm_fy26": 0.792,
+      "gas_variance_pct": -28.0
+    },
+    {
+      "short_name": "Assam Asset",
+      "hc_mar21": 2480,
+      "hc_mar26": 1822,
+      "hc_change": -658,
+      "hc_change_pct": -26.5,
+      "crude_mmt_fy21": 1.712,
+      "crude_mmt_fy26": 1.509,
+      "crude_variance_pct": -11.9,
+      "gas_bcm_fy21": 0.524,
+      "gas_bcm_fy26": 0.364,
+      "gas_variance_pct": -30.6
+    },
+    {
+      "short_name": "Mehsana Asset",
+      "hc_mar21": 1790,
+      "hc_mar26": 1559,
+      "hc_change": -231,
+      "hc_change_pct": -12.9,
+      "crude_mmt_fy21": 1.215,
+      "crude_mmt_fy26": 1.058,
+      "crude_variance_pct": -13.0,
+      "gas_bcm_fy21": 0.299,
+      "gas_bcm_fy26": 0.204,
+      "gas_variance_pct": -31.9
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "job_id": "8a31b3df-9f1a-4d52-aff4-f7cc5caadcd9",
+  "total_bytes_processed": 428384,
+  "executed_at": "2026-10-20T06:38:49.646861+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 5,
+  "columns": [
+    "category",
+    "in_position",
+    "company_in_position",
+    "representation_pct",
+    "norm_pct",
+    "gap_vs_norm_pp",
+    "backlog_vacancies"
+  ],
+  "rows": [
+    {
+      "category": "EWS",
+      "in_position": 1155,
+      "company_in_position": 23117,
+      "representation_pct": 5.0,
+      "norm_pct": 10.0,
+      "gap_vs_norm_pp": -5.0,
+      "backlog_vacancies": 0
+    },
+    {
+      "category": "PwD",
+      "in_position": 523,
+      "company_in_position": 23117,
+      "representation_pct": 2.26,
+      "norm_pct": 4.0,
+      "gap_vs_norm_pp": -1.74,
+      "backlog_vacancies": 4
+    },
+    {
+      "category": "OBC",
+      "in_position": 6241,
+      "company_in_position": 23117,
+      "representation_pct": 27.0,
+      "norm_pct": 27.0,
+      "gap_vs_norm_pp": -0.0,
+      "backlog_vacancies": 0
+    },
+    {
+      "category": "SC",
+      "in_position": 3472,
+      "company_in_position": 23117,
+      "representation_pct": 15.02,
+      "norm_pct": 15.0,
+      "gap_vs_norm_pp": 0.02,
+      "backlog_vacancies": 110
+    },
+    {
+      "category": "ST",
+      "in_position": 2623,
+      "company_in_position": 23117,
+      "representation_pct": 11.35,
+      "norm_pct": 7.5,
+      "gap_vs_norm_pp": 3.85,
+      "backlog_vacancies": 69
+    }
+  ]
+}

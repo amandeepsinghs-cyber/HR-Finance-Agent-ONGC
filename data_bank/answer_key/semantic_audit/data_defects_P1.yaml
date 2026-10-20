@@ -1,0 +1,32 @@
+- table: hrfin_docs.silver_chunks
+  issue: "Every chunk's `text` begins with a metadata header (Document Title / Type / Clause / a long 'Domain Vocabulary & Glossary Terms' list) before the clause body; the glossary is document-wide, not chunk-specific."
+  evidence: "SUBSTR(text,1,300) returned only header for all JRTP/Leave Rules/R&P chunks; keyword search for 'sexual harass'/'gift' hits all 12 P1-01 chunks via the glossary although 0 chunk bodies contain those words."
+  impact_on_ids: [P1, P2, P3, P4, P5, P6, P8, P10, "all P* follow-ups"]
+- table: hrfin_docs.silver_chunks (doc_id P1-01, ONGC CDA Rules 1994)
+  issue: "Mis-chunked: clause_ref values are sentence fragments ('(3);', 'of charge;', '34 should be imposed on the Employee...'); body text holds no gift rule or sexual-harassment/ICC provision."
+  evidence: "12 chunks; REGEXP counts of 'gift' and 'sexual' in header-stripped body = 0 for all."
+  impact_on_ids: [P6__drill_down, P9__why, P9__compare_or_so_what]
+- table: hrfin_docs.silver_chunks (coverage)
+  issue: "No POSH Act / ICC procedure document, no CVC gift circular, no Balmer Lawrie/IRCTC travel-agent rule, no non-executive transfer policy, no income-tax leave-encashment cap, no TA lodging table by city class (Annexure-II chunks are blank claim forms)."
+  evidence: "Keyword searches across all 665 chunks; P1-16 Parts 75-84 are forms."
+  impact_on_ids: [P1__compare_or_so_what, P4__why, P6__why, P7__why, P7__compare_or_so_what, P9, P9__why, P9__compare_or_so_what]
+- table: hrfin_docs.silver_chunks (JRTP)
+  issue: "Internal inconsistency: Clause 2.1(c) lists Silchar under the Tripura Asset; Clause 5.2 (and dim_work_centre) put Silchar in CL-NE-ASSAM."
+  evidence: "JRTP 2.1(c) 'Tripura Asset (Agartala, Silchar)'; 5.2(v) 'CL-NE-ASSAM ... and Silchar Base'; dim_work_centre WC-SIL cluster_id CL-NE-ASSAM."
+  impact_on_ids: [P1__drill_down, P2]
+- table: hrfin_silver.dim_grade vs hrfin_silver.travel_claims
+  issue: "E4 Class-A lodging ceiling in dim_grade (6,500) not applied in claims: all 1,131 E4 Class-A claims reimbursed at 4,500/night. Also E5-E7 share 6,500 in dim_grade (not checked against claims here)."
+  evidence: "travel_claims E4 Class_A avg=min=max lodging/night = 4500; dim_grade E4 daily_lodging_limit_cat_a_inr = 6500."
+  impact_on_ids: [P7__compare_or_so_what]
+- table: hrfin_silver.dim_grade
+  issue: "Only a Category-A lodging limit column exists; no Class-B/C/offshore ceilings, although travel_claims carries city_category Class_A/B/C/Offshore (B/C/Offshore paid at 3,000/night)."
+  evidence: "dim_grade columns: ta_da_travel_class, daily_lodging_limit_cat_a_inr only."
+  impact_on_ids: [P7__compare_or_so_what]
+- table: hrfin_silver.icc_committees
+  issue: "presiding_officer_name is a placeholder designation ('Senior Executive Officer') for all 46 committees; no internal member names."
+  evidence: "COUNT(DISTINCT presiding_officer_name)=1 over 46 active rows."
+  impact_on_ids: [P9, P9__drill_down]
+- table: hrfin_gold.mart_employee_relations
+  issue: "Multi-grain mart: posh_complaints_count summed by FY is inflated vs posh_cases (FY22 26 vs 8; FY24 49 vs 12) and posh_completed_within_90_days_pct differs (FY26 82.9% vs 58.3% from posh_cases)."
+  evidence: "SUM(posh_complaints_count) by fiscal_year vs COUNT(*) from hrfin_silver.posh_cases."
+  impact_on_ids: [P9__why]

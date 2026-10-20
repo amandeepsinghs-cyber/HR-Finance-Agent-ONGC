@@ -1,0 +1,51 @@
+{
+  "job_id": "e498afdc-969d-4148-9c3d-f75b88d99923",
+  "total_bytes_processed": 5519228,
+  "executed_at": "2026-10-20T06:38:38.783672+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 5,
+  "columns": [
+    "discipline",
+    "function",
+    "active_executives",
+    "never_hard",
+    "pct_never_hard"
+  ],
+  "rows": [
+    {
+      "discipline": "Human Resources (HR)",
+      "function": "hr",
+      "active_executives": 583,
+      "never_hard": 81,
+      "pct_never_hard": 13.9
+    },
+    {
+      "discipline": "Finance & Accounts (F&A)",
+      "function": "finance",
+      "active_executives": 742,
+      "never_hard": 92,
+      "pct_never_hard": 12.4
+    },
+    {
+      "discipline": "All executives",
+      "function": "all",
+      "active_executives": 13453,
+      "never_hard": 842,
+      "pct_never_hard": 6.3
+    },
+    {
+      "discipline": "Production",
+      "function": "technical",
+      "active_executives": 2926,
+      "never_hard": 55,
+      "pct_never_hard": 1.9
+    },
+    {
+      "discipline": "Drilling",
+      "function": "technical",
+      "active_executives": 1876,
+      "never_hard": 32,
+      "pct_never_hard": 1.7
+    }
+  ]
+}

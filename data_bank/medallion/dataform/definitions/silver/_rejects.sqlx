@@ -1,0 +1,14 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "_rejects",
+  description: "Silver logging table capturing rows rejected due to parsing or validation failures"
+}
+
+SELECT
+  CAST(NULL AS STRING) AS source_table,
+  CAST(NULL AS STRING) AS record_id,
+  CAST(NULL AS STRING) AS reject_reason,
+  CAST(NULL AS STRING) AS raw_payload,
+  CAST(NULL AS TIMESTAMP) AS rejected_at
+LIMIT 0

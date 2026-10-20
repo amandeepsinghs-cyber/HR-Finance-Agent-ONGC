@@ -1,0 +1,1089 @@
+                               Chapter 1
+
+
+      Overview of Welfare Schemes
+1.1   Our mother organisation, ONGC, takes care of its Employees not
+      only during their service period but after their superannuation also.
+      Welfare Schemes available to Ex-ONGCians are :
+      a)   Comprehensive Medical Facilities (including Outdoor and
+           Indoor treatment, Spectacles, Artificial appliances) for self,
+           spouse, Physically challenged children and Dependent parents
+           if they have opted at the time of superannuation.
+      b)   Felicitation of Retired Employees of 75 years and above
+           was introduced in 2012. At present the scheme is modified
+           to felicitate retired employees on attaining 70, 75, 80, 85, 90,
+           95 and 100 years of age
+      c)   Asha Kiran * was introduced in 2013 to take care of
+           emergency needs of Retired employees or surviving spouse
+           (in case of deceased employee) who are not able to cope up
+           with distressful emergency situation. At present, scheme covers
+           those who have retired before 1.01.2007 and have monthly
+           income less than the specified income limit.
+      d)   Agrani Samman* was introduced in 2001 as payment of
+           Ex-gratia to Pre 15th Oct 1959 employees who completed 20
+           years service. At present scheme covers those having more
+           than 10 years but less than 20 years of service also subject
+           to terms and conditions.
+      e)   Pension from EPFO* under EPS-95 scheme wherever
+           applicable
+      f)   Pension from LIC (PRBS)* wherever applicable
+                              Note * means the scheme is not applicable to all
+
+
+Hamesha Aapke Saath-2024, EOEWA                                             7
+1.2   Benefits available for Spouse / Dependent PwD child after demise
+      of Ex-ONGCians
+        SCHEME                         BENEFITS
+        Medical, Spectacle, Same as for Ex-employee but
+        Artificial Appliances spectacles for spouse only
+        Felicitation          Only if milestone achieved before death
+                              of Ex-employee
+        Asha Kiran*           Same as for Ex-employee, if applicable
+        Agrani Samman*        50% if applicable
+        EPS-95 Pension*       50% if applicable
+        PRBS Pension*         Depends on option
+
+1.3   Benefits under schemes from a) to d) as mentioned in para 1.1 above
+      are available through online portal https://Bandhan.ongc.co.in
+      (see Chapter 2 for more details on portal) subject to submission of
+      Annual Dependency Declaration (see Chapter 3) by way of Life
+      Certificate and Non-employment declaration.
+1.4   Reimbursement of medical expenditure on OPD treatment has
+      been covered in Chapter 4. Members are encouraged to avail credit
+      note for tests, investigations and day care procedures.
+1.5   ONGCAReS card can be used be for availing Indoor treatment
+      (IPD—In Patient Department) in empanelled hospitals for planned
+      treatment as well as for emergency cases. (See Chapter 5 for details
+      and process guide on ONGCAReS card). This provides cash-less
+      treatment. Though IPD from Non-empaneled hospitals is
+      discouraged, it may be unavoidable in certain situations.
+      Reimbursement of such treatment is required to be submitted in
+      physical form as covered in Chapter 5.
+1.6   Provisions for reimbursement of expenditure on Spectacles and
+      Artificial appliances have been covered in Chapter 6 with applicable
+      limits.
+1.7   Process for claiming Felicitation amount on attaining different
+      milestones and applicable limits is covered in Chapter 7.
+1.8   For guidelines on Asha Kiran scheme refer to Chapter 8.
+8                                       Hamesha Aapke Saath-2024, EOEWA
+1.9   Snap shot of Agrani Samman is covered in Chapter 9.
+1.10 Pension under EPS-95 scheme, if applicable, is paid by EPFO
+     through specified Bank branch directly to the account of beneficiary.
+     For this Life certificate is to be submitted at anytime and remains
+     valid for one year. Fresh life certificate is to be submitted with
+     validity of earlier certificate. (See Chapter 10 for more details).
+1.11 PRBS pension, if applicable, is paid by the agency as opted by the
+     Ex-employee at the time of retirement. Life certificate requirement
+     depends on the option availed at the time of retirement. From year
+     2020, members now have option to transfer PRBS corpus to NPS
+     account and start annuity payment as per his/ her choice.
+     (See Chapter 10 for more details).
+1.12 In case of death of Ex-employee, spouse can claim applicable
+     benefits. This involves necessary entries like demise of employee
+     and updation of data pertaining to spouse in system. Actions,
+     which are to be taken by spouse in order to continue the benefits,
+     have been explained in Chapter 11 with the help of Process Flow
+     diagrams.
+1.13 Important Contacts : I/c HR-ER and I/c SEE (Separated Employees
+     Establishment) are the nodal officers to support Retired employees
+     and their family. For updated Contact details please click on "Contact
+     Us" on Bandhan portal. Additionally, we, Ex ONGC Executives
+     Welfare Association, Delhi (EOEWA), are committed to help all our
+     members through our website "https://exongcexecutives.org"
+     and other channels. Important contact details as on date have been
+     provided for ready reference.
+         Office               Phone                      Email
+         SEE Delhi            011 2240 6603       seedelhi@ongc.co.in
+                              011 2240 6615
+                              011 2240 6617
+         EOEWA Delhi          97 73 92 23 35 eoewadelhi@gmail.com
+
+
+Hamesha Aapke Saath-2024, EOEWA                                          9
+                              Chapter 2
+
+
+                    Bandhan Portal
+BANDHAN portal has been created exclusively for the benefit of
+FOREVER ONGCians. It has following useful link :
+ H ONLINE CLAIMS
+ H WELFARE SCHEMES
+ H OFFICE ORDERS / CIRCULARS
+ H EMPANELLED HOSPITALS
+ H LIST OF INADMISSIBLE MEDICINES / DEVICES
+ H PAYMENT FOR MEDICAL DEPENDENCY OF PARENTS
+ H FIND ONGCians (ACTIVE / RETIRED ONGCians)
+ H DOWNLOAD FORMS
+ H NEWS PAPERS
+ H NON EMPLOYMENT DECLARATION
+ H ADDRESS/ MOBILE NUMBER UPDATION
+2.1   Bandhan portal can be accessed through https://bandhan.ongc.co.in
+      using CPF number of Ex-ONGCian. Initial password is also CPF
+      number. It can be changed online.
+
+
+
+
+10                                    Hamesha Aapke Saath-2024, EOEWA
+2.2   If you are not able to login or forgot the password, it can be reset
+      by clicking "Forgot password" and entering CPF number and date
+      of birth as maintained in ONGC database. Password will again be
+      reset to CPF number.
+
+
+
+
+Hamesha Aapke Saath-2024, EOEWA                                        11
+2.3 Online claims Tab
+
+
+
+
+This tab is the main interface between the retired employees and ONGC.
+2.4   Audio-visual guide to submit medical bills online is available on
+      home page of Bandhan portal. Further, Help document for Medical
+      reimbursement and Help document for Other Processes are available
+      on Online Claims section for guidance.
+2.5   In case of any difficulty, members can request EOEWA for
+      arranging online hand holding session. Email may please be sent to
+      eoewadelhi@gmail.com and we will try to facilitate the same at
+      the earliest.
+
+
+
+
+12                                     Hamesha Aapke Saath-2024, EOEWA
+                               Chapter 3
+
+
+      Annual Dependency Declaration
+3.1   As per ONGC guidelines, all the members, who want to avail Medical
+      and other welfare schemes, are required to submit Non-Employment
+      Declaration (NED) and Life certificate (LC) in the month of January
+      every year.
+3.2   From year 2024, a new node "Annual Dependency Declaration" has
+      been created under Online Claims. Scan of NED and Life Certificate
+      in defined format are required to be uploaded from this newly
+      created node.
+3.3   Life certificate can be signed by Bank Manager, Gazetted officer
+      or Serving ONGC officer of level E2 and above. Alternatively, it
+      can be a Digital Life Certificate generated through Jeevan Pramaan
+      App. However, it has to be issued or generated on or after 1st
+      January of the respective year.
+3.4   Format for Non-Employment Declaration (NED) and Life certificate
+      (LC) are included in Annexure.
+3.5   If spouse is alive and data has been updated then only LC (Life
+      Certificate) for spouse is required, NED is not required. All
+      beneficiaries data appearing in Bandhan needs to be updated/
+      accepted. In case of marriage of children or employment, those
+      details need to be captured and submitted. Then only the Medical
+      record is updated in system by SEE
+
+
+
+
+Hamesha Aapke Saath-2024, EOEWA                                       13
+                                 Chapter 4
+
+
+                    Medical Facilities
+4.0   Medical treatment involves OPD, Indoor (IPD), PME, Different
+      tests & Investigations as suggested by the consulting physicians.
+      For IPD, ONGCAReS provides cash-less facility for the benefit of
+      employees, retired employees and their dependent family members.
+      For PME and other tests, which are performed in day care, credit
+      letter facility can be availed for cash-less treatment. Regular
+      medicines for diseases requiring long term medication, can be
+      obtained through ONGC empanelled pharmacy chains. This way,
+      cases involving re-imbursement can be reduced considerably and
+      thus saving us from botheration of claims, need of preserving bills
+      for verification at a later stage and is tax efficient system for Retired
+      employees.
+4.1   Necessary Pre-requisites for submission of Medical claims
+      a)    Claim should be submitted within six months
+      b)    Claim should be supported with medical prescriptions from
+            consulting physicians
+      c)    Doctor's prescription to claim reimbursements should not be
+            older than three months
+      d)    In case the claims is delayed, request for condonation is to
+            be submitted with reasons alongwith the claim
+      e)    For faster claim settlement, it is better to submit claims online
+      f)    Super seniors or those who are not able to submit claims
+            online, can send Physical Claim form supported with all
+            prescriptions, bills and undertaking that bill being claimed
+            for the first time to SEE.
+      g)    All the bills to be submitted, whether online or physically,
+            need to be provided with an undertaking on the bill itself
+            that the bill is being claimed for the first time.
+14                                         Hamesha Aapke Saath-2024, EOEWA
+4.2   Process for online medical reimbursement
+      Following points should be taken care of while submitting online
+      claim
+      a) Have your login credentials handy like Url, CPF, Password,
+            DOB (as per records) and PAN number
+      b) Update your mobile number and email ID, to receive
+            notifications in a timely manner
+      c) Segregate the bills already claimed and to be claimed to avoid
+            duplicate claim
+      d) "Bill is being claimed for the first time" certification is must
+            on each receipt/ Bill
+      e) Ensure that Scan of invoices and prescription are legible
+      f)    Kindly ensure all the particulars like bill number, date and
+            amount etc. are filled in properly
+      g) Keep original of all the claims submitted to ONGC for ready
+            reference for 5 years and try to write the claim number and
+            date on the body of the bill for reference
+      h) Single PDF containing scan of all Invoices (Bills) and
+            Prescriptions in the order of entry in online claim, to be
+            uploaded. File size should be less than 8 MB
+      i)    Bills more than six months old, should accompany request
+            for delay condonation with valid reasons
+      j)    Dental, allopathic, ayurvedic, homeopathy should be claimed
+            separately
+      k) Be aware of the requirements for dental treatment
+            reimbursement and you can submit claim only after
+            completion of treatment and not in piecemeal
+      l)     Prefer to avail all tests (Blood test, CT scan, MRI etc.) and
+            procedures wherever empanelled hospitals and labs are
+            available through credit letter wherever possible
+      m) Restrict the bill to 10 line items in one claim so that file size
+            of scan is within 8 MB
+      n) Bills may be claimed in the order of Doctor's name, beneficiary
+            and month for easy verification and early settlement;
+      o)   Check pay slip before calling SEE for payments status
+Hamesha Aapke Saath-2024, EOEWA                                        15
+                                 Chapter 5
+
+
+      ONGCAReS and IPD Treatment
+5.1   ONGC has introduced ONGCCAReS App in 2021 for regular as
+      well as superannuated employees and their eligible dependents for
+      cash less and seamless indoor treatment in empanelled hospitals of
+      ONGC all over India.
+      Once the requisite data is captured in App thereafter ONGCAReSCard
+      is issued to all the eligible employees and their dependents.
+      The purpose of introducing this ONGCAReS Card and App is to
+      simplify the process of indoor treatment. In case of emergency,
+      employees can go to any empanelled hospitals directly with
+      ONGCAReS card and rest will be taken care by hospitals by
+      contacting ONGC medical section.
+      In case of planned surgery or indoor treatment, employee has to
+      make a request in App along with Doctor Prescription and any
+      other supporting document under Node "Admission request"
+      which will be approved by medical section.
+      The above will save lot of commuting time of employee and
+      productive time of Doctor.
+      However, employees and their dependents can always go to Local
+      medical section of ONGC for getting Credit letter for indoor
+      treatment.
+  The purpose of introducing
+   this ONGCAReS Card and
+     App is to simplify the
+ process of indoor treatment.
+     In case of emergency,
+   employees can go to any
+ empanelled hospitals directly
+  with ONGCAReS card and
+  rest will be taken care by
+ hospitals by contacting ONGC
+        medical section.
+
+16                                      Hamesha Aapke Saath-2024, EOEWA
+5.2   Procedure for log in ONGCAReS App
+      H The App can be downloaded from Google play store for
+           Android phones.
+      H Download App and sign up
+      H Enter Employee CPF number, Date of birth and click on
+           proceed button
+      H To verify the mobile no and enter 6 digit OTP and click on
+           arrow button
+      H Enter New password and set MPIN to complete the
+           registration process
+      H Fill in the employee onboard form, fill information, capture
+           face
+      H Once the data is captured, ONGCAReS card will be issued
+           through local SEE
+5.3   In case treatment has been availed in Non-Empanelled Hospital or in
+      empanelled hospital without cash-less credit facility, all original bills
+      need to be submitted in physical form for reimbursement of the
+      expenditure incurred. No provision exists for such claims through
+      Bandhan portal as of now.
+
+5.4 Indoor treatment in Non-empanelled hospitals
+      H Avoid visiting non-empanelled hospital
+      H     In case of emergency, provide the Justification for admission
+            in Private hospital in an application .
+      H     Emergency certificate by the hospital
+      H     With the Medical bill form, all bills to be submitted in original
+            (physical copies)
+      H     Medical Bill for treatment in private hospital cannot be
+            submitted in Bandhan
+      H     Discharge summary's copy to be submitted
+      H     Break up of Consumable and other charges to be submitted.
+      H     In case of cataract surgery in private hospital, lens bar code
+            in original with expiry date, price and batch no. should be
+            given. Injections bar code is also compulsory.
+Hamesha Aapke Saath-2024, EOEWA                                             17
+     H    In case of angiography, angioplasty full break up of all
+           treatment to be given.
+     H All payments to the hospital should be made in digital mode.
+     H Medical claim should be submitted within six months
+5.5 Claim should be submitted within 6 months. In case bill could not
+     be submitted in time, request should be submitted for delay
+     condonation with proper justification. Delayed bill should be
+     submitted separately and not clubed with other bills.
+5.6 Home Nursing Care
+     H For details and monetary ceiling on Home Nursing Care and
+          Physiotherapy Kindly refer Office order no. DDN/Health-
+          Ser-DDN/2022/CMS/918739 dated 16.9.2022
+     H In case a qualified nurse is engaged, nurse's qualification
+          certificate is required.
+     H For engaging Attendant, his/her Aadhar card should be
+          submitted
+     H All Payments should be made in digital mode.
+     Home nursing care for initial two months, no approval is required
+     but after two months medical board decides for continuation of
+     Home Nursing care.
+
+
+
+
+18                                    Hamesha Aapke Saath-2024, EOEWA
+                               Chapter 6
+
+  Spectacles , Artificial Appliances, Life
+    Saving Devices and Hearing Aid
+6.1   Spectacles
+      ELIGIBILITY Retired employees, their spouse and spouse of
+      deceased employee who die while in service
+      Cost ceilings of specs/contact lenses Office Order no. ONGC/
+      ER/CP/Med/001 dated 5.4.2018
+
+           Level                                       Ceilings
+           E-9 & above level                          Rs. 40,000/-
+           E-5 to E-8 Level                           Rs. 25,000/-
+           E0 to E4 & S Level                         Rs. 18,000/-
+           Non Executive (W&A Level)                   Rs.12,000/-
+
+
+      CRITERIA Reimbursement allowed only when spectacles /
+      contact lenses are purchased on the recommendation of an eye
+      specialist
+      Spectacle reimbursement claim should be preferred through
+      Bandhan portal in online claims with one PDF of eye testing
+      report and bill of less than 8 MB for uploading.
+      Provision :Re-imbursement can be claimed upto the ceiling amount,
+      any number of times, during the block year of 2 years.
+      Current block year for the Spectacles reimbursement is 2024-2025
+      i.e. 1 Jan 2024 to 31 Dec 2025
+      Those retirees/ beneficiaries, who are not familiar with computer,
+      can claim reimbursement by submitting hard copies of Spectacles
+      claim form, Eye specialist's recommendation and bill to SEE.
+Hamesha Aapke Saath-2024, EOEWA                                      19
+     Form for submission of spectacles claim in hard copy is included
+     in Annexure.
+     For further instructions and claim process, please contact Medical
+     Section & SEE.
+6.2 Artificial Appliances
+     a)    Existing cost ceiling for artificial appliances prostheses are
+           revised as indicated hereunder :
+     Category of Artificial appliances        Existing Cost Ceiling
+     Above Elbow prostheses                          Rs. 4,80,000/-
+     Below Elbow prostheses                          Rs. 2,50,000/-
+     Below Knee Prostheses                           Rs.1,50,000/-
+     Shoulder Disarticulation                        Rs.1,00,000/-
+     Hip Disarticulation                             Rs.1,50,000/-
+
+
+
+
+20                                     Hamesha Aapke Saath-2024, EOEWA
+  b)   Ceilings for Orthotic appliances is as under :
+          No.     Description                        Monetary Ceiling
+          1. Ankle foot Orthosis (AFO) toe off                23,000
+             with motion ankle joint or equivalent
+          2. Knee Ankle foot Orthosis (KAFO)                1,22,000
+             with safety stride and automatic spring
+             lever knee joint with wedge lock plus
+             multifunctional ankle or equivalent
+          3. Hip Knee Ankle Foot Orthosis (HKFO)            1,12,000
+             Carbon fibre laminated or equivalent
+          4. Partial Hand Prosthesis Standard                 72,000
+             ( for amputation through the metacarpals or
+             amputation of thumb or amputation of
+             two or more fingers from base)
+          5. Partial Foot Prosthesis standard                 54,000
+             (for amputation through metatarsals/tarsals
+             or amputation of two or more toes from base
+  c)    Wheel chair are provided on the recommendation of inhouse
+        orthopaedic or empanelled orthopaedic, However power wheel
+        chair would be provided on the specific recommendation of
+        Medical board
+         Type of            Recommended                     Cost
+         wheel chair            User                       Ceiling
+         Ordinary wheel    Elderly person who stays         Rs.6,000/-
+         chair             indoor and is taken
+                           care by family members
+         Folding wheel     Individual who though           Rs.15,000/-
+         chair             dependent but needs to
+                           be taken outdoor requiring
+                           use of public transport or
+                           personal vehicle
+         Power Wheel       Working individual/           Rs.1,80,000/-
+         chair             young individual
+
+Hamesha Aapke Saath-2024, EOEWA                                        21
+           Life norms for artificial appliances and wheel chair for retired
+           employees, spouse and dependent of deceased employee who
+           die while in service is once after retirement/death of
+           employee.
+           For further instructions and claim process, please contact
+           Medical Section & SEE.
+
+ 6.3 Life Saving Devices
+     CPAP / BIPAP / Auto - PAP / Oxygen Concentrator:
+     Monetary ceiling and periodicity
+      H    CPAP : 30,000 Once in life time
+      H    BIPAP : 85,000 Once in life time
+      H    Auto-PAP : 70,000 Once in life time
+      H    Oxygen Concentrator :50,000 Once in life time
+      H    Nebulizer : 3,000 One in a period of 5 years
+     For further instructions and claim process, please contact Medical
+     Section & SEE.
+
+ 6.4 Hearing Aid
+     Retired employee &spouse : Reimbursement of Hearing Aid
+     maximum twice after retirement.
+     Conventional (Retired Employees & Spouse)
+     One sided hearing aid                             Rs. 10,000/-
+     Bilateral                                         Rs. 20,000/-
+
+     Digital Hearing Aid (Retired Employees & Spouse)
+     One sided hearing aid                             Rs. 30,000/-
+     Bilateral                                         Rs. 60,000/-
+
+     For further instructions and claim process, please contact Medical
+     Section & SEE.
+
+
+
+
+22                                      Hamesha Aapke Saath-2024, EOEWA
+                         WHAT
+                 MY FAMILY
+                      SHOULD
+                         KNOW
+
+
+
+
+    PLEASE FILL IN THE INFORMATION FOR
+    EASY ACCESS AT ONE PLACE FOR YOUR
+             FAMILY MEMBERS.
+
+
+                Please Keep This Document
+                At A Safe And Secure Place.
+
+
+
+Hamesha Aapke Saath-2024, EOEWA               23
+       BASIC INFORMATION : AS IN ONGC RECORDS
+
+1.1    NAME ......................................................................................
+
+1.2    DATE OF BIRTH ..................................................................
+
+1.3    DATE OF SUPERANNUATION/SEPARATION FROM
+       ONGC ......................................................................................
+
+1.4    DESIGNATION AT THE TIME OF SEPARATION FROM
+       ONGC ......................................................................................
+
+1.5    CPF NUMBER .......................................................................
+
+1.6    PHONE NUMBER ................................................................
+
+1.7    PAN CARD NO. .....................................................................
+
+1.8    BANK NAME..........................................................................
+
+       BANK ACCOUNT NUMBER...............................................
+
+       BANK IFSC CODE ................................................................
+
+1.9    HOME ADDRESS ..................................................................
+
+        ..................................................................................................
+        ..................................................................................................
+
+1.10 E MAIL ADDRESS ................................................................
+
+1.11 EPF PENSION ORDER NUMBER ....................................
+
+1.12 PRBS PENSION ACCOUNT NO. .......................................
+
+1.13 ASHA KIRAN .........................................................................
+
+1.14 AGRANI SAMMAN ................................................................
+24                                                        Hamesha Aapke Saath-2024, EOEWA
+2.    BASIC GENERAL INFORMATION AS PER OFFICIAL
+      DOCUMENTS (IN CASE NAME/DATE OF BIRTH/
+      ADDRESS IS DIFFERENT IN ANY OF THESE
+      DOCUMENTS FROM WHAT IS MENTIONED ABOVE
+      AS PER ONGC RECORDS, PLEASE WRITE THE SAME
+      AGAINST THE DOCUMENT
+
+       Document               Number   Linked Ph. No.
+
+2.1    AADHAR NO.
+
+2.2    VOTER ID NO.
+
+2.3    PASSPORT NO.
+
+3. BANK ACCOUNTS
+
+3.1    BANK NAME
+
+       ACCOUNT NUMBER
+
+       CUSTOMER ID
+
+       IFSC CODE
+
+       LINKED PH. NO.
+
+       LINKED E MAIL
+
+       JOINT HOLDER
+
+       NOMINEE
+
+       LOCKER NO.
+
+
+Hamesha Aapke Saath-2024, EOEWA                         25
+ 3.2   BANK NAME
+
+       ACCOUNT NUMBER
+
+       CUSTOMER ID
+
+       IFSC CODE
+
+       LINKED PH. NO.
+
+       LINKED E MAIL
+
+       JOINT HOLDER
+
+       NOMINEE
+
+       LOCKER NO.
+
+
+
+
+ 3.3   BANK NAME
+
+       ACCOUNT NUMBER
+
+       CUSTOMER ID
+
+       IFSC CODE
+
+       LINKED PH. NO.
+
+       LINKED E MAIL
+
+       JOINT HOLDER
+
+       NOMINEE
+
+       LOCKER NO.
+
+
+26                      Hamesha Aapke Saath-2024, EOEWA
+4. OTHER FINANCIAL INSTRUMENTS
+ 4.1 FDS (Other Than         Company     Number   Maturity
+     In Bank Account)         Name                 Date
+
+
+
+
+ 4.2 BONDS
+
+
+
+
+ 4.3 MUTUAL FUNDS
+
+
+
+
+ 4.4 DEMAT Accounts
+
+
+
+
+ 4.5 Personal Loans               Name   Amount   Comment
+     Given To Others
+
+
+
+
+Hamesha Aapke Saath-2024, EOEWA                          27
+     Personal Loans       Name          Amount       Comment
+     Taken From Others
+
+
+
+
+ 4.6 Credit Cards        Company        Number      Linked Ph.
+     (Not Linked To                                    No.
+     Bank Account
+
+
+
+
+ 4.7 Life Insurance      Company         Cover       Comment
+     Policy                             Amount
+
+
+
+
+ 4.8 Medical Insurance
+     Policy
+
+
+
+
+28                               Hamesha Aapke Saath-2024, EOEWA
+4.9 Other Insurance
+    Policies
+
+
+
+
+4.10 PPF
+
+
+
+
+4.11 House Building Loan
+
+
+
+
+4.12 Vehicle Loan
+
+
+
+
+5. OTHER ASSETS
+5.1   FLAT ........................................................................................
+5.2   HOUSE ....................................................................................
+5.3   LAND .......................................................................................
+5.4   CAR ..........................................................................................
+5.5   CLUB MEMBERSHIP ...........................................................
+5.6   TIME SHARE .........................................................................
+5.7   FREQUENT FLIER PROGRAM .........................................
+
+Hamesha Aapke Saath-2024, EOEWA                                                                   29
+30   Hamesha Aapke Saath-2024, EOEWA
+                                Chapter 7
+
+
+                 Felicitation Scheme
+7.1   Retired employees on attaining a particular age milestone are
+      felicitated with following amount by ONGC as under :
+
+
+             Age in Years                           Amount
+                    70                          Rs. 75,000/-
+                    75                          Rs. 95,000/-
+                    80                         Rs.1,20,000/-
+                    85                         Rs.1,45,000/-
+                    90                         Rs.1,70,000/-
+                    95                         Rs.2,25,000/-
+                   100                         Rs.3,75,000/-
+
+
+7.2   In case an eligible retired employee expires after attaining an age
+      related milestone and could not be paid the felicitation amount
+      before his/her death, the same shall be released only to the surviving
+      spouse and not to any other family member.
+7.3   Felicitation is only for retired employees and is not applicable to
+      spouse of Retired employee
+7.4   The proforma for claiming felicitation amount is placed in Annexure
+      which is to be submitted in hard copy to SEE section duly attested
+      by certifying authority. There is no provision for claiming felicitation
+      amount in https://Bandhan.ongc.co.in
+
+
+
+
+Hamesha Aapke Saath-2024, EOEWA                                            31
+                                Chapter 8
+
+
+                  Asha Kiran Scheme
+ No.103(92)/13-AKS/CP dated 15.10.2013 , 25.03.2014&27.12.2018
+8.1    A scheme for extending financial assistance to the employees retired
+       prior to 01.01.2007 or his/her surviving spouse in case post
+       separation death of employee. The scheme is for taking care of
+       their emergency needs. Monthly income from all sources should
+       not be not more than Rs.17,000/-
+8.2    Admissibility of financial support, per annum, under various
+       situations will be as under:
+      1. Natural Calamities                 Rs.1,50,000 to Rs.2,00,000/-
+      2. Food supplements/vitamins,
+         Life Support and nourishment                         Rs.65,000/-
+      3. Old age mobility issues                Rs.10,000 to Rs.30,000/-
+      4. Support to dependent parents/
+         parents-in-law/grand children                        Rs.40,000/-
+      5. Financial Emergencies                  Rs.35,000 to Rs.50,000/-
+      6. Victim of acts of terrorism                          Rs.70,000/-
+      7. Any other emergency                                  Rs.60,000/-
+       H  Maximum overall annual ceiling in respect of one employee shall be
+       Rs.2,00,000/- (Rupees two lakhs only)
+8.3    Continuance of Asha Kiran Scheme is approved by Board Level
+       Committee every year. Therefore, for details Asha Kiran, Order
+       issued during October/November every year should be referred.
+       The deadline for submission of applications is 28/29 February. It
+       may change as per Asha Kiran order every year.
+8.4    Preprinted Asha Kiran forms can be downloaded by the beneficiaries
+       from bandhan.ongc.co.in. The printout of pre-printed Asha Kiran
+32                                       Hamesha Aapke Saath-2024, EOEWA
+      form is required to be submitted to SEE section, duly filled in by
+      complying with following guidelines. Beneficiary should read the
+      instructions mentioned in Asha Kiran form before filling up.
+8.5   Though the Pan Card, Aadhar Card and bank details are available
+      in office records, but self attested copy should be provided if
+      asked by SEE section.
+8.6   In case Digital Life Certificate is submitted on Jeevan Praman.gov.in,
+      Praman Id is required to be mentioned in relevant column.
+                                    Or
+      Life Certificate should be attested by the Certifying authority
+      as mentioned in the Certificate. Life certificate should also
+      have signatures of the beneficiary with place and date of
+      certification.
+
+
+
+
+Hamesha Aapke Saath-2024, EOEWA                                          33
+                                  Chapter 9
+
+
+              Agrani Samman Scheme
+9.1     AGRANI SAMMAN EX-GRATIA BENEFIT FOR ONGC
+        EX-EMPLOYEES
+        Agranni Samman came into force w.e.f. 1.1.2003
+9.2     Eligibility conditions:
+        (i)   Pre-15.10.1959 employees who superannuated / voluntarily
+              retired / died while in service and (ii) those eligible post -
+              14.10.1959 employees who superannuated / voluntary retired
+              /died while in service prior to 1.4.1991 (in case of executives)
+              and 16.11.1995 (in case of non-executives), after rendering
+              minimum 10 years service in ONGC.
+        ii)   Post 14.10.1959 employees who rendered 20 or more years
+              of regular service shall be eligible to 'Agrani Samman'
+              ex-gratia per month at following rates:
+        Level of           'Agrani Samman'    Dearness              Remarks
+        employees          Pre-       Post -  Allowance
+                        15.10.1959 14.10.1959    (DA)
+      Class III & IV    Rs.1500        Rs.750         Plus    Minus full
+                                                   applicable  PRBS
+      E-0 to E-3        Rs.3000       Rs.1500                 (without
+                                                   DA from commutation
+      E-4 to E-6        Rs.4500       Rs.2250       time to   and / or
+                                                      time Govt. Pension,
+      E-7 & above       Rs.6000       Rs.3000                  if any
+9.3     Full time Member / Director of ONGC shall also be eligible to
+        'Agrani Samman' ex-gratia subject to fulfilment of eligibility
+        conditions.
+9.4     The 'Agrani Samman' for those who rendered 10 to 20 years regular
+        service before their superannuation /VR / death shall be on pro-
+        rata. Ex-employees who have rendered a net service of 9 years and
+34                                         Hamesha Aapke Saath-2024, EOEWA
+      six months or more but less than 10 years prior to their
+      superannuation / voluntary retirement / death and fulfil all other
+      terms and conditions of the scheme, are also considered for payment
+      of Agrani Samman ex-gratia and benefit is given to ex-employees
+      and spouses.
+      The qualifying service in respect of Deputations shall be reckoned
+      from their date of absorption in ONGC.
+9.5   The eligible ex-employee will continue to get 'Agrani Samman'
+      ex-gratia so long he/she is alive after 01.01.2003. Thereafter, his/
+      her surviving spouse shall be eligible for 50% of 'Agrani Samman'
+      ex-gratia minus full PRBS (without commutation) /or Govt.
+      Pension, if any, till his/her survival.
+9.6   Such of those ex-employees/spouses will not be eligible under this
+      scheme where the spouse or any dependent son/daughter of
+       ex-employee has been provided employment in ONGC on
+      compassionate grounds.
+
+
+
+
+Hamesha Aapke Saath-2024, EOEWA                                        35
+                             Chapter 10
+
+
+         EPS-95 and PRBS Pension
+10.1 EPS-95 scheme was implemented in 2005 wherein required
+     contribution for EPS, w.e.f. 16 Nov 1995, was diverted from
+     accumulated Employer contribution for CPF. As such, only those
+     employees who were in service in Oct 2005, became members of
+     EPS-95. There may be some exceptions.
+10.2 Now this pension data is being maintained online by EPFO.
+     Members getting EPS-95 pension should keep the following url
+     handy for all the issues after generation of PPO (Pension Payment
+     Order). The link can be found by searching "Know your EPFO
+     pension status" on Google.
+     https://mis.epfindia.gov.in/PensionPaymentEnquiry/enquiry.jsp
+10.3 This link provides different option as under
+
+
+
+
+10.4 First option "Jeevan Pramaan Enquiry" gives status of digital life
+     certificate. Option "Know your PPO No" can be used to find
+     PPO number, if member forgets, by entering either Bank account
+36                                    Hamesha Aapke Saath-2024, EOEWA
+     details OR by entering Member ID. For all ONGCians, Member
+     ID is UK DDN 0001261 000 00XXXXX where XXXXX is the
+     EPS number.
+
+
+
+
+10.5 Once you have your PPO number, you can get the details (download
+     PPO) by entering PPO number and date of birth on third option
+     "PPO Enquiry/ Payment Enquiry". Same link provides details of
+     all the payments against the PPO.
+10.6 Last option "Know your pension status" can be used to find the
+     validity of Last submitted Life certificate. Earlier, all the EPS
+     pensioners were required to submit Life Certificate in the month
+     of November. Now it can be submitted any time and remains valid
+     for 12 months. For ease, it can be submitted in month of Birth,
+     January or in November as per existing practice. But it should be
+     submitted within validity of last certificate and can be before
+     12 months from last submission of certificate.
+
+
+
+
+Hamesha Aapke Saath-2024, EOEWA                                    37
+10.7 PRBS Pension is case specific. Initially, all the members eligible for
+     PRBS Pension, were getting pension through Dehradun branch of
+     LIC of India. PRBS Section, ONGC Dehradun maintained
+     necessary records of Annuity number, Option selected by the
+     member at the time of retirement. Later on, Annuity paying
+     companies included SBI Life, HDFC Life, Kotak Life and others.
+     Life certificate requirement depends of option selected.
+10.8 In case this important information is not readily available with
+     spouse of deceased employee, request for details can be sent to
+     local SEE office and / or PRBS Section, ONGC Dehradun
+     email trustcare@ongc.co.in
+
+
+
+
+38                                       Hamesha Aapke Saath-2024, EOEWA
+                              Chapter 11
+
+
+                Jindagi ke Baad Bhi
+11.1 Loss of Life partner is one of the most stressful situation in life.
+     This becomes worse when loss is of person who had been handling
+     all financial transactions with ONGC being Retired employee. Our
+     organisation, through SEE offices at different locations, continues
+     to support living spouse (and physically challenged children) who
+     were dependent on the retired employee. This chapter is an attempt
+     to facilitate the transition from Retired employee to surviving
+     dependents. Kindly follow the steps as shown in process flow
+     charts applicable in different situations.
+11.2 After the demise of Ex-ONGCian, surviving spouse is the next
+     beneficiary for welfare schemes. As such, spouse has to submit
+     following documents (of spouse of Ex-employee) with a request
+     letter along-with CPF number, Name, Last designation of the
+     deceased Ex-ONGCian to the Separated Employees Establishment
+     (SEE) where personal file is being maintained for updation of
+     spouse details in ONGC database -
+     a) Death certificate
+     b) PAN and Aadhaar card of spouse
+     c) Cancelled cheque of individual account of spouse
+
+
+
+
+Hamesha Aapke Saath-2024, EOEWA                                       39
+     This step is to be completed at the earliest in all cases. Once data
+     is updated, please check Profile data of Home page after login to
+     Bandhan portal. Email Id and Mobile number can be updated by
+     spouse online. This is important to receive system generated alert
+     SMS and communication from SEE.
+
+
+
+
+11.3 Claim for Asha Kiran
+
+
+
+
+40                                     Hamesha Aapke Saath-2024, EOEWA
+11.4 Claim for Agrani Samman
+
+
+
+
+11.5 Continuation of Medical facilities
+
+
+
+
+11.6 Once steps defined in 11.2 and 11.5 above are completed. Spouse
+     / PwD children can continue to avail reimbursement of Spectacles
+     and/ or Artificial appliances similar to ex-ONGCians.
+11.7 Life Certificate requirement and process thereof for a widow (after
+     retirement and death of employee)
+     -     Spouse needs to be submit Life Certificate through Annual
+           Dependency Declaration node on Bandhan portal (Online
+           claims)
+     -     No need to submit NED
+Hamesha Aapke Saath-2024, EOEWA                                      41
+11.8 For PRBS Pension, wherever applicable, spouse can contact local
+     SEE for details or approach trustcare@ongc.co.in to get Annuity
+     details and Option selected by employee at time of retirement.
+
+11.9 For EPS-95 Pension, if applicable, contact SEE or EOEWA Delhi
+     through email eoewadelhi@gmail.com giving Members details.
+     Procedure for approval of widow/widower pension depends on
+     the time of exit from EPS-95. For all those cases, where UAN
+     number has been allotted and e-nomination has been submitted by
+     the member before death, the process is now Online. For others,
+     spouse has to submit request letter to EPFO office from where
+     PPO has been issued along-with old PPO, Death certificate, self
+     certified copies of Aadhaar and PAN card of spouse, cancelled
+     cheque from spouse bank account.
+
+     NB: Data in respect of self and dependent beneficiaries in Aadhar, PAN,
+     Bank should match with data in ONGC. E.g. Name, Father's / spouse
+     name, date of birth etc. If not, necessary corrective action should be initiated
+     at the earliest so that future complications, if any, can be avoided.
+
+
+
+
+42                                           Hamesha Aapke Saath-2024, EOEWA
+                                 Chapter 12
+
+
+   Hum Aapke Saath Hain (HASH)
+This is EOEWA Delhi initiative - Helping hand to Super Seniors/Lonely
+members
+12.1 EC EOEWA has realised and deliberated the need of supporting
+      Super Senior / Lonely members in claiming online medical
+      reimbursement and Annual dependency declaration etc. Additionally,
+      it is felt that some medical emergency situations may warrant help as
+      some members do not have younger family members residing with
+      them to take care of emergencies.
+      To meet this genuine requirement, EC EOEWA is pleased to introduce
+      a significant initiative of extending physical / Virtual help for medical
+      procedures and claims to support super seniors and Lonely Members
+      in staying in Delhi - NCR areas.
+12.2 As far as guidance on various issues is concerned, Members can
+      approach any EC Member or Admin EOEWA on mobile/ WhatsApp
+      97739 22335. Help through Calls / WhatsApp / Email will be extended
+      at the earliest. However, where situation warrants for physical visit by
+      Volunteers, we have tried to identify members for area-wise help.
+12.3 Our initiative aims to provide crucial support to the elderly population
+      in Delhi-NCR areas, ensuring they receive the necessary medical
+      assistance and claims processing seamlessly through the dedicated
+      efforts of EOEWA volunteers. This extension will further strengthen
+      our commitment to the well-being of super seniors/Lonely members
+      in these specific regions. List of area-wise volunteers will be maintained
+      on our website exongcexecutives.org and will be updated from time
+      to time. Members interested to avail services of volunteers are
+      requested to visit our website.
+12.4 We feel, we need more volunteers in different areas as Delhi-NCR is
+      quite spread. We request all our members, especially the younger
+      ones, to come forward for the common cause. Your support and
+      consideration for this proposal is crucial as it aligns with our mission
+      to make a positive impact on the lives of super seniors in the specified
+      NCR zones. EOEWA-Members who can extend help are requested
+      to send their name and area they can support to Admin EOEWA
+      (Mobile 977 39 22 335).
+12.5 The intended beneficiaries of this scheme are only Super senior members
+      and those with some chronical medical issues or families of deceased
+      members who are not conversant with computer based online process.
+Hamesha Aapke Saath-2024, EOEWA                                              43
+                          ANNEXURE
+
+This compilation is only to help Forever ONGCians and their families
+for general understanding of rules, regulations, procedures etc.
+This booklet intends to provide starting point of help by guiding
+them to approach the right authority. We, in no way intend to
+undermine the importance of complete circular and guidelines as
+maintained by SEE. Accordingly, this Annexure lists office order number
+some of the important circulars and few formats which may be used by
+members.
+
+
+We cannot cover all the terms and conditions applicable for different
+welfare schemes in this summary booklet. Therefore, members are advised
+to check detailed circulars available on Bandhan portal or contact respective
+SEE for more details.
+
+
+
+
+44                                        Hamesha Aapke Saath-2024, EOEWA
+              LIST OF SELECTED
+           IMPORTANT CIRCULARS
+                SPECTACLE REIMBURSEMENT
+      Spectacle reimbursement ONGC/ER/CP/MED/001
+                 dated 05.04.2018 [OO 12/2018]
+                      HOME NURSING CARE
+     Home Nursing care DDN/HEALTH-SER-DDN/2022/
+         CMS/918739 dated 16.09.2022 [OO 41/2022]
+                           FELICITATION
+    Felicitation DDN/CORP-ER/ESTT-POLICY/2021/Feli/
+               902765 dated 05.01.2022 [OO 03/2022]
+                            HEARING AID
+   Hearing Aid ONGC/ER/CP/MED/011 dated 29th August,
+                   2008 [OO 61/2008]
+            LIFE SAVING RESPIRATORY DEVICES
+   Life saving respiratory devices for domiciliary use ONGC/
+  ER/CP/MED/026 last updated 05.04..2019 [Contains original
+  order dated 01.06.2012 as 35/2012 with Amendment ONGC/
+        ER/CP/MED/008 dated 16.11.2018 OO 40/2018]
+                             ASHA KIRAN
+       Asha Kiran No.103(92)/13-AKS/CP dated 15.10.2013,
+                    25.03.2014 & 27.12.2018
+                         AGRANI SAMMAN
+        Agrani Samman (Revised scheme of Ex-gratia for
+          pre 15.10.1959 and post 14.10.1959 employees)
+              103(92)/02-EP dated January 7, 2003
+ For more details and detailed office orders, please click on link "Welfare
+ Schemes" on Home page after login to Bandhan portal where scheme
+ wise office orders are being maintained.
+ On Home page after login to Bandhan portal, all circulars and office
+ order related with retired employees can be searched by clicking on
+ link "Office orders and circulars".
+Hamesha Aapke Saath-2024, EOEWA                                           45
+46   Hamesha Aapke Saath-2024, EOEWA
+Hamesha Aapke Saath-2024, EOEWA   47
+48   Hamesha Aapke Saath-2024, EOEWA
+Hamesha Aapke Saath-2024, EOEWA   49
+     FOR PERSONAL USE
+
+
+
+
+50             Hamesha Aapke Saath-2024, EOEWA
+

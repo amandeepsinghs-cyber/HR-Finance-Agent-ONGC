@@ -1,0 +1,53 @@
+{
+  "job_id": "cc3e7e6f-9530-46e1-a5f0-1d484c77dc2b",
+  "total_bytes_processed": 114126,
+  "executed_at": "2026-10-20T06:42:33.275548+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 3,
+  "columns": [
+    "field_name",
+    "onshore_offshore",
+    "base_ebitda_cr",
+    "base_ebitda_margin_pct",
+    "sim_ebitda_cr",
+    "base_pbt_cr",
+    "sim_pbt_cr",
+    "turns_operating_cash_negative",
+    "turns_pbt_negative"
+  ],
+  "rows": [
+    {
+      "field_name": "Champang",
+      "onshore_offshore": "onshore",
+      "base_ebitda_cr": 26.25,
+      "base_ebitda_margin_pct": 7.96,
+      "sim_ebitda_cr": -15.04,
+      "base_pbt_cr": -4.93,
+      "sim_pbt_cr": -46.22,
+      "turns_operating_cash_negative": true,
+      "turns_pbt_negative": true
+    },
+    {
+      "field_name": "Borholla",
+      "onshore_offshore": "onshore",
+      "base_ebitda_cr": 36.39,
+      "base_ebitda_margin_pct": 10.38,
+      "sim_ebitda_cr": -7.54,
+      "base_pbt_cr": 3.22,
+      "sim_pbt_cr": -40.71,
+      "turns_operating_cash_negative": true,
+      "turns_pbt_negative": true
+    },
+    {
+      "field_name": "Khoraghat",
+      "onshore_offshore": "onshore",
+      "base_ebitda_cr": 50.29,
+      "base_ebitda_margin_pct": 13.24,
+      "sim_ebitda_cr": 2.7,
+      "base_pbt_cr": 14.35,
+      "sim_pbt_cr": -33.24,
+      "turns_operating_cash_negative": false,
+      "turns_pbt_negative": true
+    }
+  ]
+}

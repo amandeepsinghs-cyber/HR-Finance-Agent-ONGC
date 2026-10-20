@@ -1,0 +1,57 @@
+{
+  "job_id": "2c25acaf-a84a-4952-81a3-b33038dff78a",
+  "total_bytes_processed": 1405,
+  "executed_at": "2026-10-20T06:37:19.980977+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 5,
+  "columns": [
+    "scheme_type",
+    "actuarial_liability_cr",
+    "plan_assets_cr",
+    "net_unfunded_cr",
+    "funded_ratio_pct",
+    "prbs_assets_as_pct_of_obligation"
+  ],
+  "rows": [
+    {
+      "scheme_type": "PRBS Pension",
+      "actuarial_liability_cr": 18250.0,
+      "plan_assets_cr": 18250.0,
+      "net_unfunded_cr": 0.0,
+      "funded_ratio_pct": 100.0,
+      "prbs_assets_as_pct_of_obligation": 100.0
+    },
+    {
+      "scheme_type": "Provident Fund",
+      "actuarial_liability_cr": 13266.9,
+      "plan_assets_cr": 13414.6,
+      "net_unfunded_cr": -147.7,
+      "funded_ratio_pct": 101.1,
+      "prbs_assets_as_pct_of_obligation": 137.6
+    },
+    {
+      "scheme_type": "Post-Retirement Medical",
+      "actuarial_liability_cr": 7065.6,
+      "plan_assets_cr": 6570.4,
+      "net_unfunded_cr": 495.3,
+      "funded_ratio_pct": 93.0,
+      "prbs_assets_as_pct_of_obligation": 258.3
+    },
+    {
+      "scheme_type": "Gratuity",
+      "actuarial_liability_cr": 1867.9,
+      "plan_assets_cr": 1753.7,
+      "net_unfunded_cr": 114.2,
+      "funded_ratio_pct": 93.9,
+      "prbs_assets_as_pct_of_obligation": 977.0
+    },
+    {
+      "scheme_type": "All benefit schemes",
+      "actuarial_liability_cr": 40450.4,
+      "plan_assets_cr": 39988.7,
+      "net_unfunded_cr": 461.8,
+      "funded_ratio_pct": 98.9,
+      "prbs_assets_as_pct_of_obligation": 45.1
+    }
+  ]
+}

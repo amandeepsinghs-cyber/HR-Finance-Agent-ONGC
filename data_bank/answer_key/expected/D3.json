@@ -1,0 +1,86 @@
+{
+  "job_id": "c3214fb8-1d35-4ac4-b115-96308fd295b7",
+  "total_bytes_processed": 1674,
+  "executed_at": "2026-10-19T14:43:21.792438+00:00",
+  "elapsed_seconds": 0.56,
+  "row_count": 10,
+  "columns": [
+    "grade_id",
+    "designation",
+    "typical_residency_years",
+    "promotion_mode",
+    "dpc_evaluation_type"
+  ],
+  "rows": [
+    {
+      "grade_id": "E0",
+      "designation": "Assistant Officer / Graduate Trainee",
+      "typical_residency_years": 2,
+      "promotion_mode": "time_bound",
+      "dpc_evaluation_type": "Confirmation & Screening"
+    },
+    {
+      "grade_id": "E1",
+      "designation": "Assistant Executive Engineer (AEE) / Officer",
+      "typical_residency_years": 3,
+      "promotion_mode": "time_bound",
+      "dpc_evaluation_type": "Time-Bound Assessment"
+    },
+    {
+      "grade_id": "E2",
+      "designation": "Assistant Executive Engineer (AEE) / Deputy Manager",
+      "typical_residency_years": 3,
+      "promotion_mode": "time_bound",
+      "dpc_evaluation_type": "Time-Bound Assessment"
+    },
+    {
+      "grade_id": "E3",
+      "designation": "Executive Engineer (EE) / Manager",
+      "typical_residency_years": 4,
+      "promotion_mode": "time_bound",
+      "dpc_evaluation_type": "Time-Bound Assessment"
+    },
+    {
+      "grade_id": "E4",
+      "designation": "Superintending Engineer (SE) / Chief Manager",
+      "typical_residency_years": 4,
+      "promotion_mode": "time_bound",
+      "dpc_evaluation_type": "Time-Bound / Benchmarked DPC"
+    },
+    {
+      "grade_id": "E5",
+      "designation": "Deputy General Manager (DGM)",
+      "typical_residency_years": 4,
+      "promotion_mode": "merit",
+      "dpc_evaluation_type": "Merit DPC (APAR + Interview + Board)"
+    },
+    {
+      "grade_id": "E6",
+      "designation": "Joint General Manager (JGM) / Addl. GM",
+      "typical_residency_years": 3,
+      "promotion_mode": "merit",
+      "dpc_evaluation_type": "Merit DPC (Competitive Quorum)"
+    },
+    {
+      "grade_id": "E7",
+      "designation": "General Manager (GM)",
+      "typical_residency_years": 3,
+      "promotion_mode": "merit",
+      "dpc_evaluation_type": "Senior Leadership DPC"
+    },
+    {
+      "grade_id": "E8",
+      "designation": "Chief General Manager (CGM)",
+      "typical_residency_years": 3,
+      "promotion_mode": "merit",
+      "dpc_evaluation_type": "Apex Selection Committee"
+    },
+    {
+      "grade_id": "E9",
+      "designation": "Executive Director (ED) / Group General Manager",
+      "typical_residency_years": 2,
+      "promotion_mode": "merit",
+      "dpc_evaluation_type": "Board Committee / CMD Selection"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "job_id": "95e691a6-05ee-485e-a02e-761dc57fbcd9",
+  "total_bytes_processed": 121530,
+  "executed_at": "2026-10-20T06:37:17.453057+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 1,
+  "columns": [
+    "high_overtime_ltifr_fy26",
+    "standard_overtime_ltifr_fy26",
+    "company_ltifr_fy26_computed",
+    "mou_reported_ltifr_fy26",
+    "mou_excellent_target",
+    "mou_very_good_target",
+    "mou_good_target",
+    "mou_fair_target",
+    "mou_poor_target",
+    "high_overtime_vs_excellent_multiple"
+  ],
+  "rows": [
+    {
+      "high_overtime_ltifr_fy26": 0.282,
+      "standard_overtime_ltifr_fy26": 0.09,
+      "company_ltifr_fy26_computed": 0.152,
+      "mou_reported_ltifr_fy26": 0.14,
+      "mou_excellent_target": 0.1,
+      "mou_very_good_target": 0.15,
+      "mou_good_target": 0.2,
+      "mou_fair_target": 0.25,
+      "mou_poor_target": 0.3,
+      "high_overtime_vs_excellent_multiple": 2.8
+    }
+  ]
+}

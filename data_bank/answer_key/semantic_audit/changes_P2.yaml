@@ -1,0 +1,151 @@
+# Semantic audit 2026-10-20 — slice P2 (P11–P20 + follow-ups)
+- id: P11
+  defect_class: [WRONG_QUESTION, SANITY_BOUND, CASE_HYGIENE]
+  old_headline: "201 execs breached 10-yr Delhi cluster cap (200 due transfer, 1 exempt)"
+  new_headline: "No executive in Delhi has exceeded the 10-yr cap (max 8.4 yrs among 692 execs); the 200 long-stayers are Group B/C/D non-executives + the CMD, outside JRTP"
+  why: "JRTP Clause 1.2 covers E0–E9 executives only; old SQL counted all staff in CL-DEL (151 GRP-C + 49 GRP-D + CMD) and the legacy MD called them executives. Now split by dim_grade.cadre; narrative registered (legacy hard-coded prose was false)."
+  severity: blocking
+- id: P11__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "CMD 1 / GRP-C 151 / GRP-D 49 'officers breached cap'"
+  new_headline: "0 Delhi executives over the cap (premise of 138 unsupported); 419 >5 yrs, 4 >8 yrs, max 8.39 yrs (E2)"
+  why: "Same population error as P11; restricted to executives by grade with distance-to-cap."
+  severity: blocking
+- id: P11__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "All-staff breaches per cluster (Mumbai 2,202 non-exempt...)"
+  new_headline: "Delhi net change 0 (692→692); company-wide 278 non-exempt executives breach, led by Mumbai 162 (-4.2%)"
+  why: "Question is about Delhi net staffing; old SQL included non-executives in every cluster and no Delhi delta. Now executives only, Delhi row first with net change."
+  severity: important
+- id: P12
+  defect_class: [WRONG_QUESTION, SCD2_NOT_ASOF, GENERIC_TEXT, CASE_HYGIENE]
+  old_headline: "generic template; per-discipline counts of all E4→E5 DPC cases since FY01 without hard posting (~1,351)"
+  new_headline: "4 executives due for E4→E5 lack the continuous 3-yr hard/NE tenure; 1 (Ajay Ahmed) never had a hard/NE posting"
+  why: "Old SQL counted historical (completed = already promoted) cases since FY01 and 'any Cat-C posting ever'. Due = open 'delayed' E4→E5 cases of Active E4s (128); Clause 6.1 continuous 3 years via merged Cat-C stints; lists the executives."
+  severity: blocking
+- id: P12__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Drilling 202 / F&A 211 / Production 206"
+  new_headline: "Of 128 due E4s: Drilling 62, Production 66, F&A 0; only 4 (all Production) lack 3-yr hard/NE tenure"
+  why: "Historical-case population replaced by the open-case population used in P12."
+  severity: important
+- id: P12__compare_or_so_what
+  defect_class: [WRONG_QUESTION, JOIN_FANOUT, GENERIC_TEXT, GAP]
+  old_headline: "all grades/all years: no-hard 1,350 completed vs hard 7,050"
+  new_headline: "E4→E5 FY22–FY27: clearance 93.3% for officers meeting the 3-yr norm vs 98.2% (<3 yrs) and 99.5% (none) — 380 promoted without it, no waiver recorded"
+  why: "Restricted to E4→E5, FY22–FY27, hard/NE service counted before each due_date; grain fixed to (dpc_id, emp_id) since dpc_id is shared by several employees. GAP: no hardship-waiver field exists."
+  severity: important
+- id: P13
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; list of retiree annual payouts (PRBS 1,551 cr ...) + compliance flag"
+  new_headline: "Yes — employer superannuation 27.6% of Basic+DA vs 30% cap; headroom 2.4 pp = ₹119 cr on ₹4,973 cr Basic+DA (FY26)"
+  why: "DPE cap is on employer contributions as % of Basic+DA (PRBS Clause 3.1), not benefits paid. Now from payroll_monthly; gratuity imputed (assumption stated)."
+  severity: blocking
+- id: P13__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "actuarial liabilities and payouts by scheme"
+  new_headline: "FY26: CPF 12.00%, PRBS 8.40%, gratuity 4.20% (imputed), PRMB 3.00% = 27.60% of Basic+DA (₹1,372 cr)"
+  why: "Question asks % of Basic+DA per scheme; old returned balances/payouts."
+  severity: important
+- id: P13__why
+  defect_class: [WRONG_QUESTION]
+  old_headline: "PRBS Clause 1.0 (Trust constitution)"
+  new_headline: "PRBS Clause 3.0 — Contribution Rates & 30% Superannuation Cap"
+  why: "Wrong clause cited."
+  severity: important
+- id: P13__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "retiree payouts by scheme name"
+  new_headline: "FY26 executive payroll headroom ₹92.6 cr (₹1,064.7 cr vs cap ₹1,157.3 cr); all cadres ₹119.3 cr"
+  why: "No headroom or executive filter in old SQL."
+  severity: important
+- id: P14
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; MoU parameter targets list"
+  new_headline: "Excellent→Very Good cuts executive PRP pool 12.5% ≈ ₹39.5 cr (₹316.2→₹276.7 cr, FY26 basis)"
+  why: "Old SQL had no PRP and no scenario. Applies DPE 3rd PRC (G-01 Part 13: MoU component 50%, Excellent 100% / VG 75%) to FY26 E1–E9 PRP in payroll; assumption: FY26 outgo = Excellent-basis pool."
+  severity: blocking
+- id: P14__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "MoU parameter list (weightage/targets)"
+  new_headline: "E1–E9 corpus −12.5% (₹316.2→₹276.7 cr); largest hit E4 ₹8.48 cr"
+  why: "Corpus by grade instead of MoU parameter list."
+  severity: important
+- id: P14__why
+  defect_class: [WRONG_QUESTION]
+  old_headline: "PRBS Clause 1.0"
+  new_headline: "DPE OM 2017 (G-01) Parts 13–15 — PRP eligibility by MoU / team / individual rating"
+  why: "Wrong document cited."
+  severity: important
+- id: P14__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "MoU parameter list (actual vs excellent target)"
+  new_headline: "Very Good costs E5 ≈ ₹34,508/yr and E7 ≈ ₹38,140/yr per FTE in PRP"
+  why: "Per-grade PRP per FTE from payroll."
+  severity: important
+- id: P15
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT, FY_MAPPING]
+  old_headline: "generic template; states ranked (UP 155 ...) with no 2% test"
+  new_headline: "Yes — FY26 CSR ₹949 cr = 109.9% of 2% obligation ₹863.5 cr; top states UP, Maharashtra, J&K (44.8%)"
+  why: "Obligation never computed; now 2% × avg PBT FY23–FY25 (Section 135). Removed never-matching '2026' FY alternate."
+  severity: important
+- id: P15__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "all 26 state×theme rows"
+  new_headline: "Four states ₹287.9 cr of ₹949 cr (30.4%): Maharashtra 137.6, AP/Assam/Gujarat 50.1 each"
+  why: "Filtered to the four states asked."
+  severity: important
+- id: P15__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "operational vs aspirational district split"
+  new_headline: "FY26 spend exceeds obligation by ₹85.5 cr (109.9%); FY22–FY24 were short on the PBT basis (low 82.1%)"
+  why: "Question asks spend vs 2% obligation; now FY22–FY26 trend."
+  severity: important
+- id: P16
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT, CASE_HYGIENE]
+  old_headline: "generic template; top-50 drilling POs by value"
+  new_headline: "A ₹50 cr drilling contract is approved by the Functional Director with Director (Finance) concurrence (BDP 3.3); >₹50 cr → EC; all 10,073 drilling POs ≤ ₹7.26 cr (Level 3)"
+  why: "Old SQL never mapped to an authority. Now BDP ladder × drilling PO value bands."
+  severity: important
+- id: P16__compare_or_so_what
+  defect_class: [WRONG_QUESTION]
+  old_headline: "BDP Clause 1.0 (principles)"
+  new_headline: "BDP Clause 2.0 — open ₹10 cr / limited ₹2.5 cr / proprietary ₹1 cr"
+  why: "Wrong clause for single-source vs open tender limits."
+  severity: cosmetic
+- id: P17
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template; FY26 PAT/dividend/DPS only"
+  new_headline: "Yes, modestly — FY26 accruals after dividend ₹41,422 cr cover capex ₹35,878 cr with ₹5,544 cr spare (≈ ₹4.41/share); payout already 50.7% of PAT; FY27 H1 capex +0.4%"
+  why: "Capex plan ignored. Adds DIPAM floor, accruals vs capex, equal-coverage H1 capex run-rate."
+  severity: important
+- id: P17__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT, GAP]
+  old_headline: "DPS / payout for all years"
+  new_headline: "FY26 DIPAM 30%-of-PAT floor ₹9,868 cr vs paid ₹16,669 cr (+₹6,801 cr); net-worth leg not computable"
+  why: "Floor never computed. GAP: no net worth in data."
+  severity: important
+- id: P17__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT, GAP]
+  old_headline: "revenue/capex/dividend FY24–FY26"
+  new_headline: "FY26 capex absorbed 61.8% of PAT+DD&A; surplus after dividend only ₹5,544 cr; FY25 gap −₹16,356 cr"
+  why: "Adds funding arithmetic FY22–FY26. GAP: no debt data."
+  severity: important
+- id: P17__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "10 years of payout % (no DPS)"
+  new_headline: "DPS ₹13.25 = +₹1.00 (+8.2%) vs FY25; ₹11.25 in FY23; payout 35.3%→50.7% as PAT fell"
+  why: "Question asks DPS vs previous 3 years."
+  severity: cosmetic
+- id: P19
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Refusal evidence table showed BDP Clause 2.0 + Clause 3.0 (the withheld Director limits)"
+  new_headline: "Refusal evidence: BDP Clause 8.0 (confidentiality) + Clause 2.0 (permitted alternative)"
+  why: "Refusal should not surface the withheld clause; legacy refusal prose still accurate."
+  severity: important
+- id: P20
+  defect_class: [WRONG_QUESTION]
+  old_headline: "BDP Clauses 1.0–5.0 (G-07 GFR filter + LIMIT 5)"
+  new_headline: "BDP Clause 6.0 (divestment reserved to Board) + Clause 8.0 (confidentiality)"
+  why: "Old evidence rows irrelevant to divestment; legacy refusal prose still accurate."
+  severity: cosmetic

@@ -1,0 +1,28 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "leave_ledger",
+  description: "Employee leave balance and transaction ledger tracking Earned Leave (EL), Casual Leave (CL), Half Pay Leave (HPL), and encashment."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`leave_id`) AS leave_id,
+    TRIM(`PERNR`) AS emp_id,
+    TRIM(`wc_id`) AS wc_id,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`SUBTY`) AS leave_type,
+    TRIM(`transaction_type`) AS transaction_type,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`BEGDA`), ''), 1, 10)) AS from_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`ENDDA`), ''), 1, 10)) AS to_date,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`ABWTG`), ''), ',', ''), '₹', '') AS NUMERIC) AS days_count,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`ANZHL`), ''), ',', ''), '₹', '') AS NUMERIC) AS closing_balance_days,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`encashable_balance_days`), ''), ',', ''), '₹', '') AS NUMERIC) AS encashable_balance_days,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`study_leave_bond_years`), ''), ',', ''), '₹', '') AS INT64) AS study_leave_bond_years
+  FROM ${ref("sap_pa2001_pa2006")}
+  WHERE NULLIF(TRIM(`leave_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY leave_id ORDER BY _ingest_ts DESC) = 1

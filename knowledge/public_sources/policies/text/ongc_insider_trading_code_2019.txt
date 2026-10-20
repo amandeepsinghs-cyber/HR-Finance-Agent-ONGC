@@ -1,0 +1,763 @@
+              Oil and Natural Gas Corporation Limited
+                  (A Government of India Enterprise)
+                   CIN: L74899DL1993GOI054155
+
+   Regd. Office: Plot No.5A-5B, Nelson Mandela Road, Vasant Kunj,
+                          New Delhi- 110070
+
+           Phone No.: 011-26754073 Fax: 011-26129081
+       Website: www.ongcdindia.com Email ID: secretariat@ongc.co.in
+
+
+ONGC Policies under Prohibition of Insider Trading Regulations, 2019
+
+   (With immediate effect in terms of approval of the Board of Directors
+                  at the meeting held on 30.05.2019)
+
+
+
+
+                                                                           Page 1 of 16
+ONGC Policies under Prohibition of Insider Trading Regulations, 2019
+
+    1. Introduction
+
+    The Company’s extant “Code of Internal Procedures and Conduct for
+    Prohibition of Insider Trading in dealing with the securities of ONGC” was
+    considered and approved by the Board of Directors at the 268 th Meeting of
+    the Board held on 29.04.2015 as required under the SEBI (Prohibition of
+    Insider Trading) Regulations 2015 hereinafter refer to as the PIT
+    Regulations.
+
+    SEBI vide recent amendments to PIT Regulations made certain changes
+    which became effective from 01.04.2019. Considering the said
+    amendments it is proposed to formulate and adopt revised policies under
+    the caption “ONGC Policies under Prohibition of Insider Trading
+    Regulations” (hereinafter collectively refer to as ONGC - PIT Policies,
+    which shall include-
+       (i) Code of practices and procedures for Fair Disclosure of Unpublished
+             Price Sensitive Information (UPSI);
+       (ii) Code of conduct for regulating, monitoring and reporting of trading by
+             Designated Persons; and
+       (iii) Policies and Procedure for inquiry in case of alleged/ suspected leak
+             of UPSI.
+
+    2. Policy and Obligation:
+
+    The Company endeavours to preserve the confidentiality of UPSI and to
+    prevent misuse of such information. The Company is committed to
+    transparency and fairness in dealing with all stakeholders and in ensuring
+    adherence to all laws and regulations.
+
+    Every Designated Person of the Company has a duty to safeguard the
+    confidentiality of all such information obtained in the course of his or her
+    work at the Company. No Designated Person may use his or her position or
+    knowledge of the Company to gain personal benefit or to provide benefit to
+    any third party.
+
+    3. Definitions:
+
+    (a) “Act” means the Securities and Exchange Board of India Act, 1992.
+
+    (b) “Chief Investor Relations Officer/ CIRO” means in-charge Corporate
+        Finance of the Company or any other executive as nominated by the
+        Chairman & Managing Director (CMD) of the Company from time to time.
+
+    (c) “Company/ ONGC” means Oil and Natural Gas Corporation Limited.
+
+    (d) “Compliance Officer” means Company Secretary of the Company.
+
+
+                                                                       Page 2 of 16
+(e) "Connected Person" means,-
+
+   (i) any person who is or has during the six months prior to the concerned
+        act been associated with the Company, directly or indirectly, in any
+        capacity including by reason of frequent communication with its
+        officers or by being in any contractual, fiduciary or employment
+        relationship or by being a director, officer or an employee of the
+        Company or holds any position including a professional or business
+        relationship between himself and the Company whether temporary or
+        permanent, that allows such person, directly or indirectly, access to
+        unpublished price sensitive information or is reasonably expected to
+        allow such access.
+   (ii) Without prejudice to the generality of the foregoing, the persons falling
+        within the following categories shall be deemed to be connected
+        persons unless the contrary is established, -
+        1) an immediate relative of connected persons specified in clause (i)
+            above; or
+        2) an associate company or subsidiary company; or
+        3) an intermediary as specified in section 12 of the Act or an employee
+            or director thereof; or
+        4) an investment company, trustee company, asset management
+            company or an employee or director thereof; or
+        5) an official of a stock exchange or of clearing house or corporation;
+            or
+        6) a member of board of trustees of a mutual fund or a member of the
+            board of directors of the asset management company of a mutual
+            fund or is an employee thereof; or
+        7) a member of the board of directors or an employee, of a public
+            financial institution as defined in Section 2(72) of the Companies
+            Act, 2013; or
+        8) an official or an employee of a self-regulatory organization
+            recognized or authorized by the SEBI; or
+        9) a banker of the Company; or
+        10) a concern, firm, trust, hindu undivided family, company or
+            association of persons wherein a director of the Company or his
+            immediate relative or banker of the Company, has more than ten
+            per cent (10%) of the holding or interest.
+
+(f) “Designated Persons” shall include –
+   1) Promoter of the Company being the President of India acting through
+      the Ministry of Petroleum and Natural Gas.
+   2) All members of the Board of Directors;
+   3) All executives of ONGC of the level of Executive Directors, Group
+      General Managers and Advisers.
+   4) All Key Executives, not covered in (3) above, as identified by the
+      Executive Committee of the Company from time to time.
+
+   5) All employees pertaining to Management Service Group functioning
+      under the CMD and Functional Directors of the Company.
+   6) All employees (including support staff) of Corporate Finance,
+      Corporate Treasury, Corporate Communications, Corporate
+
+                                                                     Page 3 of 16
+      Planning, Corporate Legal, Business Development and Joint
+      Ventures Group, Marketing, Corporate Accounts, Corporate Affairs,
+      Company Secretariat, Exploration Contract Management Group,
+      Pricing Cell, Infocom and Chief Investor Relations Officer.
+   7) Any other employee of the Company having possession of UPSI;
+   8) Board member(s), Chief Executive Officer (CEO), Chief Financial
+      Officer (CFO) and Company Secretary (CS) of material subsidiaries
+      of the Company; and
+   9) Immediate Relative members of (2) to (8) above.
+
+   Explanation: For the purpose of clause (8) above, “material subsidiary”
+   shall mean a subsidiary, whose income or net worth exceeds ten percent
+   of the consolidated income or net worth respectively, of ONGC and its
+   subsidiaries in the immediately preceding accounting year.
+
+(g) “Generally available information” means information that is
+    accessible to the public on a non-discriminatory basis;
+
+(h) “Immediate relative” means a spouse of a person, and includes parent,
+    sibling, and child of such person or of the spouse, any of whom is either
+    dependent financially on such person, or consults such person in taking
+    decisions relating to trading in securities;
+
+(i) “Insider” means any person who is a connected person; or in
+    possession of or having access to UPSI of the Company;
+
+(j) “Regulations” mean the Securities and Exchange Board of India
+    (Prohibition of Insider Trading) Regulations, 2015 and any amendments
+    thereto.
+
+(k) “SEBI” means the Securities and Exchange Board of India;
+
+(l) “Trading” means subscribing, buying, selling, dealing or agreeing to
+    subscribe, buy, sell, deal in equity shares and/ or other securities of the
+    Company, and “trade” shall be construed accordingly;
+
+(m)“Trading day” means a day on which the recognized stock exchange
+   are open for trading;
+
+(n) “Trading Window” means the period during which Designated Persons
+    and Insiders of the Company may trade in the equity shares and/ or
+    securities of the Company.
+
+(o) "Unpublished Price sensitive information" (UPSI) means any
+    information relating to the Company or the securities of the Company,
+    directly or indirectly, that is not generally available which upon becoming
+    generally available, is likely to materially affect the price of the securities
+    and shall, ordinarily including but not restricted to, information relating to
+    the following: –
+    1) Financial results;
+    2) Dividends;
+                                                                       Page 4 of 16
+   3) Change in capital structure;
+   4) Mergers, de-mergers, acquisitions, de-listings, disposals and
+      expansion of business and such other transactions;
+   5) Changes in Key Managerial Personnel; and
+   6) Such other information as may be decided by the CMD.
+
+4. Applicability-
+   “ONGC - PIT Policies” shall apply to all Insiders, Connected Person and
+   Designated Persons.
+
+5. Code of practices and procedures for Fair disclosure of
+  Unpublished Price Sensitive Information (UPSI):
+
+  A. Principles of Fair Disclosure for purposes of Code of Practices and
+     Procedures for Fair Disclosure of UPSI -
+
+     (i) Prompt public disclosure of UPSI that would impact price
+            discovery no sooner than credible and concrete information
+            comes into being in order to make such information generally
+            available.
+     (ii) Uniform and universal dissemination of UPSI to avoid selective
+            disclosure.
+     (iii) CIRO to deal with dissemination of information and disclosure of
+            UPSI.
+     (iv) Prompt dissemination of UPSI that gets disclosed selectively,
+            inadvertently or otherwise to make such information generally
+            available.
+     (v) Appropriate and fair response to queries on news reports and
+            requests for verification of market rumours by regulatory
+            authorities by the CIRO.
+     (vi) Ensuring that information shared with analysts and research
+            personnel is not UPSI by the CIRO.
+     (vii) Developing best practices to make transcripts or records of
+            proceedings of meetings with analysts and other investor
+            relations conferences on the official website to ensure official
+            confirmation and documentation of disclosures made by the
+            CIRO.
+     (viii) Handling of all UPSI on a need-to-know basis.
+
+  B. Principles for sharing UPSI for legitimate purposes and maintenance
+     of database:
+     (i) “Legitimate Purpose” shall include sharing of UPSI in the ordinary
+         course of business by an insider with partners, collaborators,
+         lenders, customers, suppliers, merchant bankers, legal advisors,
+         auditors, insolvency professionals or other advisors or
+         consultants, provided that such sharing has not been carried out
+         to evade or circumvent the prohibitions of PIT Regulations.
+
+     (ii) Any person in receipt of UPSI, pursuant to (i) above shall be
+          considered an “insider” and due notice shall be given to such
+          persons to maintain confidentiality of such UPSI.
+
+                                                                 Page 5 of 16
+     (iii) A structured digital database shall be maintained containing the
+           names of such persons or entities as the case may be with whom
+           information is shared under this principles along with the
+           Permanent Account Number or any other identifier authorized by
+           law where Permanent Account Number is not available. Such
+           databases shall be maintained with adequate internal controls
+           and checks such as time stamping and audit trails to ensure non-
+           tampering of the database.
+
+6. Code of conduct for regulating, monitoring and reporting of trading
+   by Designated Persons:
+
+    (i) Trading when in possession of UPSI: No insider shall trade in
+        securities that are listed or proposed to be listed on a stock
+        exchange when in possession of UPSI. When a person who has
+        traded in securities has been in possession of UPSI, his trades
+        would be presumed to have been motivated by the knowledge and
+        awareness of such information in his possession.
+
+    (ii) All information shall be handled within the Company on a need-to-
+         know basis and no UPSI shall be communicated to any person
+         except in furtherance of legitimate purposes, performance of duties
+         or discharge of legal obligations.
+
+       The code of conduct shall follow norms for appropriate Chinese
+       Walls procedures, and processes for permitting any designated
+       person to “cross the wall”.
+
+    (iii) Designated Persons of the Company and their immediate relatives
+          shall be governed by the ONGC – PIT Policies in their dealing with
+          the securities of the Company, in addition to applicable laws.
+
+    (iv) Trading Window Closure: Designated persons may execute trades
+         subject to compliance with the PIT Regulations. Designated
+         persons and their immediate relatives shall not trade in securities
+         when the trading window is closed.
+
+       The trading window shall remain closed for financial statements as
+       under:
+          Declaration of           Trading Window Closure period
+        Financial Results            From                  To
+                for
+        First quarter     1st July of the financial    Upto 48 hours
+                          year.                     after declaration of
+        Second quarter    1st October of the         financial results,
+                          financial year.             as notified from
+        Third quarter       st
+                          1 January of the              time to time.
+                          financial year.
+        Annual and fourth 1st April of following
+        Quarter           financial year.
+                                                                 Page 6 of 16
+   In addition, the Company may declare any other schedule for
+   closure of trading window based on requirements and the
+   same shall be notified accordingly.
+   The gap between clearance of accounts by Audit Committee and
+   Board meetings should be as narrow as possible and preferably on
+   the same day to avoid leakage of material information.
+
+(v) When the trading window is open, Designated persons shall be
+    entitled to trade on the equity shares and/ or securities of the
+    Company for an aggregate value not exceeding rupees one crore
+    per annum; however, trading beyond such limit shall be subject to
+    pre-clearance by the Compliance Officer.
+
+(vi) Pre-clearance of Trades: All Designated Persons and their
+     immediate relatives who intend to trade in the securities of the
+     Company exceeding value rupees one crore should obtain pre-
+     clearance of such the transaction(s) by making application to the
+     Compliance Officer for pre-clearance in Form A.
+
+(vii) The time-frame for execution of trade shall be seven trading days,
+      within which trades that have been pre-cleared have to be
+      executed by the designated person, failing which fresh pre-
+      clearance shall be sought for the trades.
+
+(viii) Designated person shall not execute a contra trade within six
+     months, however the Compliance Officer may grant relaxation from
+     strict application of such restriction for reasons to be recorded in
+     writing provided that such relaxation does not violate PIT
+     regulations. Should a contra trade be executed, inadvertently or
+     otherwise, in violation of such a restriction, the profits from such
+     trade shall be liable to be disgorged for remittance to SEBI for credit
+     to the Investor Protection and Education Fund administered by the
+     SEBI under the Act. Provided that this shall not be applicable for
+     trades pursuant to exercise of stock options.
+
+(ix) The Designated Person shall submit the application in Form A of
+     these Code for pre-clearance, reporting of trades executed,
+     reporting of trade not executed after securing pre-clearance and for
+     reporting the holding positions in securities of the Company on
+     annual basis to monitor compliance with the PIT Regulations.
+
+(x) A trading activities of Designated Persons as per approved Trading
+    Plans, in terms of Regulation 5 of the PIT Regulations don not
+    warrant pre-clearance.
+
+(xi) The Compliance Officer shall submit consolidated trading report to
+     the Board through the Audit Committee on an annual basis.
+
+(xii) In case of report on alleged violation or suspected violations, the
+     Committee comprising the Director (Finance), the Director (HR),
+                                                                Page 7 of 16
+        the CIRO and the Compliance Officer, shall conduct enquiry and on
+        determination of guilt, may recommend imposition of disciplinary
+        actions including wage freeze, suspension, recovery and/ or claw-
+        back for approval by the Chairman and Managing Director. This
+        shall be without prejudice to the powers of SEBI to proceed against
+        violation(s) under the PIT Regulations.
+
+    (xiii) The Compliance Officer shall promptly report to SEBI of
+         determination of violation of PIT Regulations.
+
+    (xiv) Designated persons shall be required to disclose names and
+        Permanent Account Number or any other identifier like Aadhar
+        number, demat account details, bank account details, of the
+        following persons to the Company on an annual basis and as and
+        when the information changes –
+        a) immediate relatives;
+        b) persons with whom such designated person(s) shares a
+            material financial relationship;
+        c) Phone, mobile/ cell numbers which are used by them;
+        d) names of educational institutions from which designated
+            persons have graduated and names of their past employers
+            shall also be disclosed on a one time basis.
+
+         Explanation – The term “material financial relationship” shall
+         mean a relationship in which one person is a recipient of any kind
+         of payment such as by way of a loan or gift during the immediately
+         preceding twelve months, equivalent to at least 25% of such
+         payer’s annual income but shall exclude relationships in which the
+         payment is based on arm’s length transactions.
+
+    (xv) All Designated Persons, excepting the President of India, shall
+         immediately share the ONGC- PIT Policy with any other person
+         including Connected Person and Insiders, with whom s/he
+         proposes to share UPSI only after getting and such person shall
+         immediately execute “acknowledgement of the Policy” and shall
+         maintain confidentiality.
+
+7. Confidentiality & Communication of UPSI:
+
+  The PIT Policy envisages robust institutional mechanism including china
+  wall system for its implementation. In view of requirements, role of
+  Compliance Officer, CIRO, in-charge Corporate Communication and
+  Designate Employees shall be as under:
+
+  (A) Compliance Officer:
+
+  (i) To notify Stock exchanges with respect to update Code for Insider
+      trading upon approval of the Board;
+
+  (ii) To notify the trading plan to stock exchanges and arrange for placing
+       on the intranet, for dissemination to Designated Persons;
+
+                                                                 Page 8 of 16
+(iii) To disseminate the PIT Policy amongst Designated Persons of
+      material subsidiaries.
+
+(iv) To provide any clarifications with regard to the implementation of the
+     PIT Policy.
+
+(v) To receive disclosures from Director/ KMP/ Promoter as provided in
+    Form B.
+
+(B) Chief Investor Relationship Officer (CIRO):
+
+(i) CIRO Shall be responsible for compliance of policies, procedures,
+    maintenance of records, monitoring and adherence to the rules for the
+    preservation of UPSI, monitoring of trades and the implementation of
+    the Code of Conduct under the overall supervision of the Board of
+    Directors.
+
+(ii) CIRO shall ensure adequate and effective system of internal controls
+     to ensure compliance with the requirements given in the regulations to
+     prevent insider trading. Further, periodic process review to evaluate
+     effectiveness of such internal controls and reporting to the Board
+     through the Compliance Officer.
+
+(iii) CIRO in co-ordination with Corporate HR and ICE Team shall maintain
+      a digital database containing the name and PAN (or any other identifier
+      authorized by law where PAN is not available) of such persons or
+      entities with whom UPSI is shared. The digital data-base shall be
+      maintained with adequate internal controls and checks such as time-
+      stamping and audit trails to ensure non-tampering of database. Inputs
+      in this regard shall be ensured by the concerned Heads of
+      Departments within 2 working days of the said UPSI.
+
+(iv) To receive disclosures from Designated Persons as provided in Form
+     B.
+
+(v) CIRO shall deal with dissemination of information and disclosure of
+    UPSI. Uniform and universal dissemination of UPSI shall be ensured
+    to avoid selective disclosure. In case of selective dissemination of
+    UPSI inadvertently or otherwise, it shall be ensured promptly to make
+    such information generally available. Accordingly,
+
+    (a) CIRO shall ensure that the information shared with analysts and
+        research personnel is not UPSI and the principles such as,
+        equality of access to information, calls and meetings with analysts
+        etc. are being followed.
+
+    (b) CIRO shall ensure development of best practices to make
+        transcripts or records of proceedings of meetings with analysts/
+        other investor relations conferences available on the official
+        website to ensure official confirmation and documentation of
+
+                                                                  Page 9 of 16
+         disclosures made.
+
+     (c) The CIRO or any officer authorized by the CMD shall be invited to
+         meetings/ conferences organized by the Company with the
+         analysts/ institutional investors. Apart from CIRO, no person,
+         except those authorized by the CMD shall disclose any information
+         relating to the Company’s Securities to analysts and institutional
+         investors.
+
+  (C) In-Charge Corporate Communications (CC):
+
+     (i) In line with the Company practice, CC shall ensure release of all
+         official Press Releases to media after submission to Stock
+         Exchanges. These press releases shall also be posted on the
+         website of the Company.
+
+     (ii) CC shall ensure appropriate and fair response to queries on news
+          reports and requests for verification of market rumours by
+          regulatory authorities/ stock exchanges in consultation with Head
+          of the concerned department to which the news report/ market
+          rumour pertains and the CIRO.
+
+     (iii) Any other material event having bearing on the performance/
+           operations of the Company as well as price sensitive information
+           pertaining to any Specific Function/ Division/ Unit shall be promptly
+           reported to CC by concerned Functional Head or Unit/ Division
+           Head. CC after taking approval of the CMD shall communicate the
+           same to Stock Exchanges through Compliance Officer, under
+           intimation to CIRO.
+
+
+  (D) Designate Employees:
+
+    Designated Person shall obtain necessary acknowledgment for having
+    taken note of this Policy from outsider(s) dealing with respective
+    departments, say Auditors/ Investors representatives/ Equity Analysts
+    etc. before sharing of any UPSI.
+
+8. Policies and Procedure for inquiry in case of leak/ suspected leak of
+   UPSI:
+
+    In case of report of any alleged leak or suspected leak of UPSI, the
+    Committee comprising the Director (Finance), the Director (HR), the
+    CIRO and the Compliance Officer, shall conduct enquiry and on
+    determination of guilt, may recommend imposition of disciplinary
+    actions including wage freeze, suspension, recovery and/ or claw-back
+    for approval by the Chairman and Managing Director. This shall be
+    without prejudice to the powers of SEBI to proceed against violation(s)
+    under the PIT Regulations.
+
+
+
+                                                                   Page 10 of 16
+9. Effective Date:
+
+  The ONGC – PIT Policy shall become effective from 30.05.2019.
+
+
+10. Amendment:
+
+  Amendment in Policy shall be made as under:
+
+  (i) Amendment required due to statutory modifications on account of
+      change in law including clarifications issued under the PIT
+      Regulations or modification required for clarification purposes shall be
+      appropriately factored in the ONGC – PIT Policy with the approval of
+      the Chairman and Managing Director of the Company; and
+
+  (ii) Amendment proposal not covered as per clause (i) above, shall be
+       subject to approval of the Board of Directors of the Company.
+
+
+
+
+                                                                  Page 11 of 16
+           OIL AND NATURAL GAS CORPORATION LIMITED
+                          Plot No.5A-5B, Nelson Mandela Road, Vasant Kunj,
+                                         New Delhi- 110070
+
+                                                     FORM - A
+
+             APPLICATION FOR PRE-CLEARANCE OF TRADING IN SECURITIES
+            (In terms of clause 5(ix) of ONGC policies under Prohibition of Insider Trading Regulations )
+
+The Compliance Officer
+Oil and Natural Gas Corporation Limited
+Plot No.5A-5B, Nelson Mandela Road, Vasant Kunj,
+New Delhi - 110070
+
+  I,…...……………………………………a Designated Person of Oil and Natural Gas
+  Corporation Limited intend to carry out transaction(s) in the shares of Oil and Natural Gas
+  Corporation Limited as per the details given below:-
+
+    No.         of Folio No. /    Nature of     Estimated       Estimated           Whether          Name of the
+    shares held      DPID &          new        number of      consideration       proposed          dependent/
+   (including by    Client ID     transactio   securities to      value        transaction is in    relationship, if
+     dependent      and CPF            n          be dealt                        the name of      the transaction
+    members )       Number       for which                                        self or in the          is in
+         as        In case of    approval                                           name of        the name(s) of
+   on         the Designated          is                                           dependent               the
+       date of       Person          sought                                     family member       dependent(s)
+    application
+
+
+
+
+ [Note: The Designated Persons shall also include particulars with regard to trading which he proposed to take up
+ in derivatives in the aforesaid application.]
+
+ In this connection I solemnly confirm and declare:
+
+            a)    THAT I do not have access and/or have not received any Price Sensitive
+                  Information up to the time of signing the undertaking;
+
+            b)    THAT in case I have access to or receive "Price Sensitive Information" after the
+                  signing of the undertaking but before the execution of the transaction, I shall
+                  inform the Compliance Officer of any change in my position and that I shall
+                  completely refrain from dealing in the securities of the Corporation till the time
+                  such information becomes public;
+
+            c)    THAT I have not contravened the Code of Conduct for prohibition of insider
+                  trading as notified by the Corporation from time to time.
+
+            d)    THAT I hereby confirm that I abide by the provisions of ONGC Policies
+                  under Prohibition of Insider Trading Regulations and in the SEBI (PIT)
+                  Regulation, 2015 as may be amended or re-enacted from time to time with
+                  regards to dealing with securities of the Company
+ I, hereby solemnly declare that I have made a full and true disclosure in this regard to the best
+ of my knowledge and belief.
+
+
+
+                                                                                                     Page 12 of 16
+Pre-clearance may kindly be accorded in terms of ONGC policies under Prohibition of Insider
+Trading Regulations.
+ In case of Director/ Employee Designated Person      For Non-Employee Designates Person
+
+ Name:                                             Name:
+
+ CPF:                                              Occupation:
+
+ Designation:                                      PAN/ Aadhar:
+
+ Department:                                       Address:
+
+                                                   Phone/ Mobile:
+ Date of Joining /becoming/ Designated
+ Person:                                           Email:
+
+
+
+Signature: …………………………
+
+Date :
+Place :
+
+
+
+OFFICE USE
+
+Serial number of the application received:
+
+Date & time of receipt of the Application:
+
+Date & time of communication of the pre-clearance or otherwise:
+
+Reasons for not giving pre-clearance:
+
+
+Signature of the Compliance Officer/ Authorised Officer
+
+
+
+
+                                                                                Page 13 of 16
+                                                                                           Form B
+                               Disclosure Requirements
+     ONGC Policies under Prohibition of Insider Trading Regulations, 2019
+
+  (A) Initial Disclosures under Regulation 7(1) of the PIT Regulations:
+
+     By Whom             What to be disclosed              When to be disclosed     Form
+ Promoter/          Shareholding in the Company.          Within thirty days of In      Form
+ member of the                                            the Regulations taking Prescribed
+ promoter group/                                          effect.                by SEBI.
+ Director/ KMP.
+Every person on     Shareholding in the Company.          Within seven days of In       Form
+appointment as                                            such appointment or of Prescribed
+KMP/ Director/                                            becoming Promoter.     by SEBI
+upon becoming
+Promoter.
+Designated          1. Name & PAN (or any other Within 30 days of Form C
+Persons                identifier authorized by law) of becoming              a
+                       the following persons:               Designated Person
+                       a) Immediate Relatives;
+                       b) Persons with whom the
+                           designated person shares a
+                           material financial relationship;
+                       c) Phone, mobile & cell numbers
+                           which are used by the above
+                           persons
+                    2. Names         of     educational
+                    institutions from which the
+                    designated          person        has
+                    graduated/ studied.
+
+                    3. Names of past employers.
+
+
+  (B) Continual Disclosures under Regulation 7(2) of the PIT Regulations:
+
+   By Whom            What to be disclosed              When to be disclosed          Form
+Promoter/                                         Within two trading days of In Form
+member     of                                     such transaction if the value of Prescribed
+the promoter                                      the securities traded, whether by SEBI
+group/             Number of such securities      in one transaction or a series
+Director.          acquired or disposed of        of transactions     over    any
+                                                  calendar
+                                                  quarter, aggregates to a
+Designated                                        traded
+Person                                            value in excess of Rs. 10 lakh
+                                                  or such other value as may be
+                                                  specified.
+
+                                                  It is clarified that disclosure of
+                                                  incremental transactions shall
+                                                  be made when transactions
+                                                                                       Page 14 of 16
+                                                    effected after the prior
+                                                    disclosure cross the threshold
+                                                    specified above.
+
+
+
+
+Compliance         Details of disclosure by Within two trading days of In Form
+Officer to Stock   Promoter/         Director/ receipt of disclosure or Prescribed
+exchanges          Designated Person           becoming aware of such by SEBI
+                                               disclosure.
+
+Designated            Name & PAN (or any other1. Within 30 days of the end of the Form C
+Persons               identifier authorized by financial year.
+                      law) of the following2. Whenever the information
+                      persons:                    changes vis-à-vis their last
+                   a) Immediate Relatives;        disclosure, within 30 days
+                   b) Persons with whom the from the change.
+                      designated          person
+                      shares       a     material
+                      financial relationship;
+                   c) Phone, mobile numbers
+                      which are used by the
+                      above persons.
+
+
+Note:
+   1. The disclosures of trading in securities shall also include trading in derivatives of
+      securities and the traded value of the derivatives shall be taken into account.
+
+   2. The Compliance Officer/ CIRO shall maintain records of all the disclosures/
+      declarations/ undertakings/ forms as mentioned in this Code, as received from time to
+      time, for a period of five years.
+
+   3. The Compliance Officer shall report to the Board of Directors for the purpose of the
+      Code and in particular, shall provide reports to the Chairman of the Audit Committee
+      and to the Chairman of the Board annually.
+
+   4. The Audit Committee shall review compliance with the provisions of insider trading
+      regulations at least once in a financial year and shall verify that the systems for internal
+      control are adequate and are operating effectively.
+
+
+
+
+                                                                                     Page 15 of 16
+                                                                                    Form C
+                   Format for Disclosure by Designated Person
+
+The Chief Investor Relationship Officer,
+Oil and Natural Gas Corporation Limited
+New Delhi
+
+Dear Sir/ Madam,
+
+Pursuant to provisions of PIT Regulations, I hereby submit Initial Disclosure/ Continual
+Disclosure (strikethrough which is not applicable), please find the requisite information for
+your record:
+
+1. Name & PAN or any other identifier authorized by law of the following persons:
+S. No. Name of the Immediate Relatives *         PAN            Phone, mobile numbers
+        OR                                                      which are used by the
+        Persons with whom the designated                        person.
+        person shares a material financial
+        relationship*
+
+
+
+  2. Names of educational institutions
+ from I (the Designated Person has
+ Graduated#
+
+  3. Names of past Employers#
+
+
+
+*For definition of “immediate relative” & “material financial relationship” please refer to
+relevant Clauses of the Code.
+# Information for Points 2 & 3 have to be provided only at the time of Initial Disclosure.
+
+I hereby declare that the particulars given above are true and in case of any change the
+same shall be disclosed to the Company as required.
+
+Signature                 :
+Name                      :
+CPF Number (if applicable):
+PAN                       :
+Designation               :
+Department                :
+Company                   :
+Place                     :
+Date                      :
+
+
+
+
+                                                                                Page 16 of 16
+

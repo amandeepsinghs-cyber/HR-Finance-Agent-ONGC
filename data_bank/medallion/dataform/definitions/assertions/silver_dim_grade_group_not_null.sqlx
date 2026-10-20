@@ -1,0 +1,12 @@
+config {
+  type: "assertion",
+  schema: "hrfin_silver",
+  description: "Assert that dim_grade group is non-null and valid for all grades"
+}
+
+SELECT
+  grade_id,
+  cadre,
+  `group`
+FROM ${ref("dim_grade")}
+WHERE `group` IS NULL OR TRIM(`group`) = ''

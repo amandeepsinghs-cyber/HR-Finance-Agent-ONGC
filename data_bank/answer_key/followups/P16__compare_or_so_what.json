@@ -1,0 +1,21 @@
+{
+  "job_id": "79f0861c-3ed3-4367-be4b-f71baddb0060",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:23.252859+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "BDP summary",
+      "clause_ref": "Clause 2.0",
+      "heading": "Asset Managers & Key Executives Powers",
+      "quote_snippet": "Document Title: ONGC Book of Delegated Powers (BDP 2015 - Governance Summary) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 2.0 - Asset Managers & Key Executives Powers\nDomain Vocabulary & Glossary Terms: Book of Delegated Powers 2015; Delegated Financial Powers; Administrat"
+    }
+  ]
+}

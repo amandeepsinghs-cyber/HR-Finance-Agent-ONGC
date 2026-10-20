@@ -1,0 +1,15 @@
+# Answer Key: P8__compare_or_so_what
+
+**Question:** How does a formal Whistle Blower disclosure differ procedurally from an ordinary employee grievance petition?
+**Type:** `policy` | **Result Count:** `4` rows | **Execution:** `0.73s`
+
+## Executive Synthesis
+A Protected Disclosure is a written, good-faith report of unethical or improper activity - personal grievances are expressly excluded (WBP 4.9) and go through ordinary channels such as the Grievance Management System, ICC or Safety Committees instead (Human Rights Policy 4). Disclosures run on a confidential track: identity concealed, a Screening Committee recommendation within 10 working days (9.3) and investigation normally completed within 120 days (9.15), with quarterly reporting to the Audit Committee. An ordinary grievance carries none of that identity protection or Audit Committee oversight.
+
+### Summary Result Table
+| doc_id | clause_ref | heading | provision | quote_snippet |
+| --- | --- | --- | --- | --- |
+| P2-01 | Part 5 | Whistle Blower Policy / Vigil Mechanism, 2018 (Part 5) | WBP 4.9 (personal grievance excluded) | 4.9 “Protected Disclosure or Complaint” means a written communication of a concern made in good faith, which discloses or demonstrates information that may evidence an unethical or improper activity, which would be factual and not speculative and should contain as much specific information as possible so that the nature and extent of the concern be assessed appropriately. No personal grievance shall be covered under Protected Disclosure or Complaint under this policy. |
+| P2-01 | Part 11 | Whistle Blower Policy / Vigil Mechanism, 2018 (Part 11) | WBP 9.3 (screening in 10 working days) | 9.3 The Screening Committee shall make the recommendations within ten (10) working days from the date of receipt of the complaint. In the absence of any member(s), the available members of the Committee, being not less than two (2), shall make the recommendations. |
+| P2-01 | Part 13 | Whistle Blower Policy / Vigil Mechanism, 2018 (Part 13) | WBP 9.15 (investigation in 120 days) | 9.15 The investigation shall normally be completed within 120 days of the receipt of the Protected Disclosure and is extendable by such period as the Audit Committee deems fit. |
+| P2-16 | Part 8 | Human Rights Policy of ONGC and OVL, 2022 (Part 8) | Human Rights Policy 4 (grievance systems) | 4. Grievance Redressal Appropriate systems and mechanisms with time bound process for redressal, such as Grievance Management System, Safety Committees, Internal Complaints Committee, Whistle-blower Policy etc. are in place to allow for resolution of the issues raised under this policy. This helps in grievance redressal, maintaining high standards, monitoring and learning for continuous development and in incorporation of new policies and practice, to properly anticipate, respond and sync with changing environment. |

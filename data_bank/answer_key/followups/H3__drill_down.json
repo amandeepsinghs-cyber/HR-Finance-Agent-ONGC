@@ -1,0 +1,79 @@
+{
+  "job_id": "12ec2b8b-62a1-447b-a04c-2bfcc3adb2d4",
+  "total_bytes_processed": 515973,
+  "executed_at": "2026-10-20T06:38:40.183179+00:00",
+  "elapsed_seconds": 0.74,
+  "row_count": 6,
+  "columns": [
+    "discipline",
+    "critical_group",
+    "sanctioned",
+    "vacancies",
+    "vacancy_rate_pct",
+    "exceeds_15pct",
+    "work_centres_above_15pct",
+    "worst_work_centre_rate_pct"
+  ],
+  "rows": [
+    {
+      "discipline": "Chemistry",
+      "critical_group": "Chemical",
+      "sanctioned": 1950,
+      "vacancies": 185,
+      "vacancy_rate_pct": 9.5,
+      "exceeds_15pct": false,
+      "work_centres_above_15pct": 3,
+      "worst_work_centre_rate_pct": 18.8
+    },
+    {
+      "discipline": "Production",
+      "critical_group": "Petroleum",
+      "sanctioned": 4758,
+      "vacancies": 428,
+      "vacancy_rate_pct": 9.0,
+      "exceeds_15pct": false,
+      "work_centres_above_15pct": 0,
+      "worst_work_centre_rate_pct": 14.5
+    },
+    {
+      "discipline": "Drilling",
+      "critical_group": "Petroleum",
+      "sanctioned": 3598,
+      "vacancies": 313,
+      "vacancy_rate_pct": 8.7,
+      "exceeds_15pct": false,
+      "work_centres_above_15pct": 0,
+      "worst_work_centre_rate_pct": 13.8
+    },
+    {
+      "discipline": "Instrumentation",
+      "critical_group": "Instrumentation",
+      "sanctioned": 2092,
+      "vacancies": 164,
+      "vacancy_rate_pct": 7.8,
+      "exceeds_15pct": false,
+      "work_centres_above_15pct": 0,
+      "worst_work_centre_rate_pct": 13.8
+    },
+    {
+      "discipline": "Reservoir",
+      "critical_group": "Petroleum",
+      "sanctioned": 1106,
+      "vacancies": 71,
+      "vacancy_rate_pct": 6.4,
+      "exceeds_15pct": false,
+      "work_centres_above_15pct": 0,
+      "worst_work_centre_rate_pct": 14.3
+    },
+    {
+      "discipline": "Geophysics (Surface)",
+      "critical_group": "Geophysics",
+      "sanctioned": 816,
+      "vacancies": 45,
+      "vacancy_rate_pct": 5.5,
+      "exceeds_15pct": false,
+      "work_centres_above_15pct": 0,
+      "worst_work_centre_rate_pct": 14.3
+    }
+  ]
+}

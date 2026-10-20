@@ -1,0 +1,179 @@
+{
+  "job_id": "e6a2feee-05cf-4bcc-a33c-d6477d6e077a",
+  "total_bytes_processed": 40783,
+  "executed_at": "2026-10-20T06:41:44.820497+00:00",
+  "elapsed_seconds": 1.41,
+  "row_count": 16,
+  "columns": [
+    "asset",
+    "onshore_offshore",
+    "manpower_cost_inr_cr",
+    "mmboe_fy26",
+    "manpower_cost_inr_per_boe",
+    "manpower_cost_usd_per_boe",
+    "regular_headcount",
+    "boe_per_employee"
+  ],
+  "rows": [
+    {
+      "asset": "Jorhat Asset",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 484.7,
+      "mmboe_fy26": 1.78,
+      "manpower_cost_inr_per_boe": 2729.0,
+      "manpower_cost_usd_per_boe": 30.9,
+      "regular_headcount": 1325,
+      "boe_per_employee": 1341.0
+    },
+    {
+      "asset": "Cauvery Asset",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 264.7,
+      "mmboe_fy26": 3.55,
+      "manpower_cost_inr_per_boe": 746.0,
+      "manpower_cost_usd_per_boe": 8.45,
+      "regular_headcount": 675,
+      "boe_per_employee": 5255.0
+    },
+    {
+      "asset": "Mehsana Asset",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 607.2,
+      "mmboe_fy26": 9.24,
+      "manpower_cost_inr_per_boe": 657.0,
+      "manpower_cost_usd_per_boe": 7.44,
+      "regular_headcount": 1559,
+      "boe_per_employee": 5930.0
+    },
+    {
+      "asset": "Rajasthan Basin",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 40.4,
+      "mmboe_fy26": 0.8,
+      "manpower_cost_inr_per_boe": 508.0,
+      "manpower_cost_usd_per_boe": 5.75,
+      "regular_headcount": 91,
+      "boe_per_employee": 8742.0
+    },
+    {
+      "asset": "Ahmedabad Asset",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 484.0,
+      "mmboe_fy26": 9.84,
+      "manpower_cost_inr_per_boe": 492.0,
+      "manpower_cost_usd_per_boe": 5.57,
+      "regular_headcount": 1223,
+      "boe_per_employee": 8047.0
+    },
+    {
+      "asset": "Assam Asset",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 658.1,
+      "mmboe_fy26": 13.73,
+      "manpower_cost_inr_per_boe": 479.0,
+      "manpower_cost_usd_per_boe": 5.43,
+      "regular_headcount": 1822,
+      "boe_per_employee": 7534.0
+    },
+    {
+      "asset": "Rajahmundry Asset",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 331.4,
+      "mmboe_fy26": 7.55,
+      "manpower_cost_inr_per_boe": 439.0,
+      "manpower_cost_usd_per_boe": 4.97,
+      "regular_headcount": 846,
+      "boe_per_employee": 8919.0
+    },
+    {
+      "asset": "Neelam & Heera",
+      "onshore_offshore": "offshore",
+      "manpower_cost_inr_cr": 1123.6,
+      "mmboe_fy26": 26.32,
+      "manpower_cost_inr_per_boe": 427.0,
+      "manpower_cost_usd_per_boe": 4.83,
+      "regular_headcount": 1728,
+      "boe_per_employee": 15234.0
+    },
+    {
+      "asset": "Cambay Asset",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 202.5,
+      "mmboe_fy26": 5.79,
+      "manpower_cost_inr_per_boe": 350.0,
+      "manpower_cost_usd_per_boe": 3.96,
+      "regular_headcount": 508,
+      "boe_per_employee": 11390.0
+    },
+    {
+      "asset": "CBM Bokaro",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 237.1,
+      "mmboe_fy26": 7.13,
+      "manpower_cost_inr_per_boe": 332.0,
+      "manpower_cost_usd_per_boe": 3.76,
+      "regular_headcount": 557,
+      "boe_per_employee": 12806.0
+    },
+    {
+      "asset": "Tripura Asset",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 342.8,
+      "mmboe_fy26": 12.07,
+      "manpower_cost_inr_per_boe": 284.0,
+      "manpower_cost_usd_per_boe": 3.22,
+      "regular_headcount": 844,
+      "boe_per_employee": 14295.0
+    },
+    {
+      "asset": "Eastern Offshore",
+      "onshore_offshore": "offshore",
+      "manpower_cost_inr_cr": 643.1,
+      "mmboe_fy26": 28.13,
+      "manpower_cost_inr_per_boe": 229.0,
+      "manpower_cost_usd_per_boe": 2.59,
+      "regular_headcount": 1011,
+      "boe_per_employee": 27828.0
+    },
+    {
+      "asset": "Mumbai High",
+      "onshore_offshore": "offshore",
+      "manpower_cost_inr_cr": 885.9,
+      "mmboe_fy26": 55.49,
+      "manpower_cost_inr_per_boe": 160.0,
+      "manpower_cost_usd_per_boe": 1.81,
+      "regular_headcount": 1359,
+      "boe_per_employee": 40829.0
+    },
+    {
+      "asset": "Bassein & Satellite",
+      "onshore_offshore": "offshore",
+      "manpower_cost_inr_cr": 1199.6,
+      "mmboe_fy26": 84.5,
+      "manpower_cost_inr_per_boe": 142.0,
+      "manpower_cost_usd_per_boe": 1.61,
+      "regular_headcount": 1855,
+      "boe_per_employee": 45552.0
+    },
+    {
+      "asset": "Ankleshwar Asset",
+      "onshore_offshore": "onshore",
+      "manpower_cost_inr_cr": 358.9,
+      "mmboe_fy26": 30.73,
+      "manpower_cost_inr_per_boe": 117.0,
+      "manpower_cost_usd_per_boe": 1.32,
+      "regular_headcount": 925,
+      "boe_per_employee": 33223.0
+    },
+    {
+      "asset": "All producing assets",
+      "onshore_offshore": "all",
+      "manpower_cost_inr_cr": 7864.0,
+      "mmboe_fy26": 296.64,
+      "manpower_cost_inr_per_boe": 265.0,
+      "manpower_cost_usd_per_boe": 3.0,
+      "regular_headcount": 16328,
+      "boe_per_employee": 18167.0
+    }
+  ]
+}

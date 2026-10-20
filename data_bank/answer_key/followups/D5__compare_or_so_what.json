@@ -1,0 +1,21 @@
+{
+  "job_id": "9d3276ad-800c-482a-9685-38e0d40592ba",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:47.102847+00:00",
+  "elapsed_seconds": 0.8,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 4.0",
+      "heading": "Cumulative Stay Cap",
+      "quote_snippet": "4.1 Maximum Cumulative Career Stay: No executive shall be permitted to spend more than an aggregate of 10 (ten) years at a single city or designated Geographic Cluster over their entire career in the Corporation. 4.2 Computation of Cumulative Stay: Cumulative stay shall be computed as the mathematical sum of all historical postings (SCD2 records) served at work centres belonging to the same statio"
+    }
+  ]
+}

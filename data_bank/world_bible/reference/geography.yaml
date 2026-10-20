@@ -1,0 +1,299 @@
+states:
+- state_code: AS
+  state_name: Assam
+  capital: Dispur
+  region_sector: NE
+  districts:
+  - name: Sivasagar
+    is_aspirational: false
+    ongc_presence: true
+  - name: Jorhat
+    is_aspirational: false
+    ongc_presence: true
+  - name: Cachar
+    is_aspirational: false
+    ongc_presence: true
+  - name: Golaghat
+    is_aspirational: false
+    ongc_presence: true
+  - name: Dibrugarh
+    is_aspirational: false
+    ongc_presence: false
+  - name: Baksa
+    is_aspirational: true
+    ongc_presence: false
+  - name: Barpeta
+    is_aspirational: true
+    ongc_presence: false
+  - name: Darrang
+    is_aspirational: true
+    ongc_presence: false
+  - name: Dhubri
+    is_aspirational: true
+    ongc_presence: false
+  - name: Goalpara
+    is_aspirational: true
+    ongc_presence: false
+  - name: Hailakandi
+    is_aspirational: true
+    ongc_presence: true
+  - name: Udalguri
+    is_aspirational: true
+    ongc_presence: false
+- state_code: GJ
+  state_name: Gujarat
+  capital: Gandhinagar
+  region_sector: Western
+  districts:
+  - name: Ahmedabad
+    is_aspirational: false
+    ongc_presence: true
+  - name: Mehsana
+    is_aspirational: false
+    ongc_presence: true
+  - name: Bharuch
+    is_aspirational: false
+    ongc_presence: true
+  - name: Surat
+    is_aspirational: false
+    ongc_presence: true
+  - name: Anand
+    is_aspirational: false
+    ongc_presence: true
+  - name: Vadodara
+    is_aspirational: false
+    ongc_presence: true
+  - name: Gandhinagar
+    is_aspirational: false
+    ongc_presence: true
+  - name: Dahod
+    is_aspirational: true
+    ongc_presence: false
+  - name: Narmada
+    is_aspirational: true
+    ongc_presence: true
+- state_code: MH
+  state_name: Maharashtra
+  capital: Mumbai
+  region_sector: Western
+  districts:
+  - name: Mumbai
+    is_aspirational: false
+    ongc_presence: true
+  - name: Mumbai Suburban
+    is_aspirational: false
+    ongc_presence: true
+  - name: Raigad
+    is_aspirational: false
+    ongc_presence: true
+  - name: Thane
+    is_aspirational: false
+    ongc_presence: true
+  - name: Pune
+    is_aspirational: false
+    ongc_presence: false
+  - name: Gadchiroli
+    is_aspirational: true
+    ongc_presence: false
+  - name: Nandurbar
+    is_aspirational: true
+    ongc_presence: false
+  - name: Osmanabad
+    is_aspirational: true
+    ongc_presence: false
+  - name: Washim
+    is_aspirational: true
+    ongc_presence: false
+- state_code: AP
+  state_name: Andhra Pradesh
+  capital: Amaravati
+  region_sector: Southern
+  districts:
+  - name: East Godavari
+    is_aspirational: false
+    ongc_presence: true
+  - name: Kakinada
+    is_aspirational: false
+    ongc_presence: true
+  - name: Konaseema
+    is_aspirational: false
+    ongc_presence: true
+  - name: West Godavari
+    is_aspirational: false
+    ongc_presence: true
+  - name: Visakhapatnam
+    is_aspirational: false
+    ongc_presence: false
+  - name: Vizianagaram
+    is_aspirational: true
+    ongc_presence: false
+  - name: YSR Kadapa
+    is_aspirational: true
+    ongc_presence: false
+- state_code: TR
+  state_name: Tripura
+  capital: Agartala
+  region_sector: NE
+  districts:
+  - name: West Tripura
+    is_aspirational: false
+    ongc_presence: true
+  - name: Sipahijala
+    is_aspirational: false
+    ongc_presence: true
+  - name: Gomati
+    is_aspirational: false
+    ongc_presence: true
+  - name: Dhalai
+    is_aspirational: true
+    ongc_presence: false
+- state_code: TN
+  state_name: Tamil Nadu
+  capital: Chennai
+  region_sector: Southern
+  districts:
+  - name: Chennai
+    is_aspirational: false
+    ongc_presence: true
+  - name: Nagapattinam
+    is_aspirational: false
+    ongc_presence: true
+  - name: Tiruvarur
+    is_aspirational: false
+    ongc_presence: true
+  - name: Thanjavur
+    is_aspirational: false
+    ongc_presence: true
+  - name: Ramanathapuram
+    is_aspirational: true
+    ongc_presence: false
+  - name: Virudhunagar
+    is_aspirational: true
+    ongc_presence: false
+- state_code: UK
+  state_name: Uttarakhand
+  capital: Dehradun
+  region_sector: Northern
+  districts:
+  - name: Dehradun
+    is_aspirational: false
+    ongc_presence: true
+  - name: Haridwar
+    is_aspirational: true
+    ongc_presence: false
+  - name: Udham Singh Nagar
+    is_aspirational: true
+    ongc_presence: false
+- state_code: DL
+  state_name: Delhi
+  capital: New Delhi
+  region_sector: Northern
+  districts:
+  - name: South West Delhi
+    is_aspirational: false
+    ongc_presence: true
+  - name: New Delhi
+    is_aspirational: false
+    ongc_presence: true
+  - name: Central Delhi
+    is_aspirational: false
+    ongc_presence: false
+- state_code: JH
+  state_name: Jharkhand
+  capital: Ranchi
+  region_sector: Eastern
+  districts:
+  - name: Bokaro
+    is_aspirational: false
+    ongc_presence: true
+  - name: Dhanbad
+    is_aspirational: false
+    ongc_presence: true
+  - name: Ranchi
+    is_aspirational: true
+    ongc_presence: false
+  - name: Hazaribagh
+    is_aspirational: true
+    ongc_presence: false
+  - name: Dumka
+    is_aspirational: true
+    ongc_presence: false
+- state_code: RJ
+  state_name: Rajasthan
+  capital: Jaipur
+  region_sector: Western
+  districts:
+  - name: Jodhpur
+    is_aspirational: false
+    ongc_presence: true
+  - name: Bikaner
+    is_aspirational: false
+    ongc_presence: true
+  - name: Jaisalmer
+    is_aspirational: true
+    ongc_presence: true
+  - name: Barmer
+    is_aspirational: true
+    ongc_presence: false
+  - name: Dholpur
+    is_aspirational: true
+    ongc_presence: false
+- state_code: WB
+  state_name: West Bengal
+  capital: Kolkata
+  region_sector: Eastern
+  districts:
+  - name: Kolkata
+    is_aspirational: false
+    ongc_presence: true
+  - name: North 24 Parganas
+    is_aspirational: false
+    ongc_presence: true
+  - name: Birbhum
+    is_aspirational: true
+    ongc_presence: false
+  - name: Maldah
+    is_aspirational: true
+    ongc_presence: false
+- state_code: GA
+  state_name: Goa
+  capital: Panaji
+  region_sector: Western
+  districts:
+  - name: South Goa
+    is_aspirational: false
+    ongc_presence: true
+  - name: North Goa
+    is_aspirational: false
+    ongc_presence: false
+- state_code: UP
+  state_name: Uttar Pradesh
+  capital: Lucknow
+  region_sector: Northern
+  districts:
+  - name: Varanasi
+    is_aspirational: false
+    ongc_presence: false
+  - name: Chandauli
+    is_aspirational: true
+    ongc_presence: false
+  - name: Sonbhadra
+    is_aspirational: true
+    ongc_presence: false
+  - name: Balrampur
+    is_aspirational: true
+    ongc_presence: false
+- state_code: JK
+  state_name: Jammu & Kashmir
+  capital: Srinagar / Jammu
+  region_sector: Northern
+  districts:
+  - name: Anantnag
+    is_aspirational: false
+    ongc_presence: false
+  - name: Baramulla
+    is_aspirational: true
+    ongc_presence: false
+  - name: Kupwara
+    is_aspirational: true
+    ongc_presence: false

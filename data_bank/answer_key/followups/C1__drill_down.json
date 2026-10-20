@@ -1,0 +1,119 @@
+{
+  "job_id": "01483068-39c6-4aa6-9c45-008161ec97f2",
+  "total_bytes_processed": 13270286,
+  "executed_at": "2026-10-20T06:26:51.427115+00:00",
+  "elapsed_seconds": 1.99,
+  "row_count": 9,
+  "columns": [
+    "discipline_id",
+    "discipline_name",
+    "e5_e7_past_5yr",
+    "e5_past_5yr",
+    "e6_past_5yr",
+    "e7_past_5yr",
+    "e5_e7_in_delhi",
+    "pct_of_discipline_past_5yr",
+    "share_of_delhi_e5_e7_past_5yr"
+  ],
+  "rows": [
+    {
+      "discipline_id": "DISC-HR",
+      "discipline_name": "Human Resources (HR)",
+      "e5_e7_past_5yr": 29,
+      "e5_past_5yr": 15,
+      "e6_past_5yr": 6,
+      "e7_past_5yr": 8,
+      "e5_e7_in_delhi": 44,
+      "pct_of_discipline_past_5yr": 65.9,
+      "share_of_delhi_e5_e7_past_5yr": 23.2
+    },
+    {
+      "discipline_id": "DISC-FIN",
+      "discipline_name": "Finance & Accounts (F&A)",
+      "e5_e7_past_5yr": 27,
+      "e5_past_5yr": 13,
+      "e6_past_5yr": 8,
+      "e7_past_5yr": 6,
+      "e5_e7_in_delhi": 51,
+      "pct_of_discipline_past_5yr": 52.9,
+      "share_of_delhi_e5_e7_past_5yr": 21.6
+    },
+    {
+      "discipline_id": "DISC-MM",
+      "discipline_name": "Materials Management (MM)",
+      "e5_e7_past_5yr": 24,
+      "e5_past_5yr": 10,
+      "e6_past_5yr": 8,
+      "e7_past_5yr": 6,
+      "e5_e7_in_delhi": 33,
+      "pct_of_discipline_past_5yr": 72.7,
+      "share_of_delhi_e5_e7_past_5yr": 19.2
+    },
+    {
+      "discipline_id": "DISC-IT",
+      "discipline_name": "Information Technology",
+      "e5_e7_past_5yr": 23,
+      "e5_past_5yr": 12,
+      "e6_past_5yr": 6,
+      "e7_past_5yr": 5,
+      "e5_e7_in_delhi": 39,
+      "pct_of_discipline_past_5yr": 59.0,
+      "share_of_delhi_e5_e7_past_5yr": 18.4
+    },
+    {
+      "discipline_id": "DISC-LEG",
+      "discipline_name": "Legal",
+      "e5_e7_past_5yr": 8,
+      "e5_past_5yr": 2,
+      "e6_past_5yr": 3,
+      "e7_past_5yr": 3,
+      "e5_e7_in_delhi": 15,
+      "pct_of_discipline_past_5yr": 53.3,
+      "share_of_delhi_e5_e7_past_5yr": 6.4
+    },
+    {
+      "discipline_id": "DISC-DRL",
+      "discipline_name": "Drilling",
+      "e5_e7_past_5yr": 6,
+      "e5_past_5yr": 3,
+      "e6_past_5yr": 2,
+      "e7_past_5yr": 1,
+      "e5_e7_in_delhi": 9,
+      "pct_of_discipline_past_5yr": 66.7,
+      "share_of_delhi_e5_e7_past_5yr": 4.8
+    },
+    {
+      "discipline_id": "DISC-MED",
+      "discipline_name": "Medical Services",
+      "e5_e7_past_5yr": 3,
+      "e5_past_5yr": 0,
+      "e6_past_5yr": 1,
+      "e7_past_5yr": 2,
+      "e5_e7_in_delhi": 5,
+      "pct_of_discipline_past_5yr": 60.0,
+      "share_of_delhi_e5_e7_past_5yr": 2.4
+    },
+    {
+      "discipline_id": "DISC-PRD",
+      "discipline_name": "Production",
+      "e5_e7_past_5yr": 3,
+      "e5_past_5yr": 2,
+      "e6_past_5yr": 0,
+      "e7_past_5yr": 1,
+      "e5_e7_in_delhi": 5,
+      "pct_of_discipline_past_5yr": 60.0,
+      "share_of_delhi_e5_e7_past_5yr": 2.4
+    },
+    {
+      "discipline_id": "DISC-HSE",
+      "discipline_name": "Environment & Safety (HSE)",
+      "e5_e7_past_5yr": 2,
+      "e5_past_5yr": 0,
+      "e6_past_5yr": 1,
+      "e7_past_5yr": 1,
+      "e5_e7_in_delhi": 3,
+      "pct_of_discipline_past_5yr": 66.7,
+      "share_of_delhi_e5_e7_past_5yr": 1.6
+    }
+  ]
+}

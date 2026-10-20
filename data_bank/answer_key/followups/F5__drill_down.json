@@ -1,0 +1,97 @@
+{
+  "job_id": "bf2cf48f-fe46-4d79-ad2f-0b90031a02eb",
+  "total_bytes_processed": 10131902,
+  "executed_at": "2026-10-20T06:39:04.584844+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 10,
+  "columns": [
+    "service_contract_category",
+    "vendors",
+    "pos",
+    "paid_fy26_cr",
+    "share_of_top80_spend_pct",
+    "cost_overrun_cr"
+  ],
+  "rows": [
+    {
+      "service_contract_category": "Workover Rigless Services",
+      "vendors": 623,
+      "pos": 1420,
+      "paid_fy26_cr": 1333.1,
+      "share_of_top80_spend_pct": 10.5,
+      "cost_overrun_cr": 3.22
+    },
+    {
+      "service_contract_category": "Technical Service Provider (TSP)",
+      "vendors": 628,
+      "pos": 1461,
+      "paid_fy26_cr": 1323.0,
+      "share_of_top80_spend_pct": 10.4,
+      "cost_overrun_cr": 14.93
+    },
+    {
+      "service_contract_category": "Offshore Subsea EPC & Pipe-laying",
+      "vendors": 627,
+      "pos": 1456,
+      "paid_fy26_cr": 1310.2,
+      "share_of_top80_spend_pct": 10.3,
+      "cost_overrun_cr": 13.48
+    },
+    {
+      "service_contract_category": "Civil Infrastructure & Road Construction",
+      "vendors": 635,
+      "pos": 1417,
+      "paid_fy26_cr": 1267.8,
+      "share_of_top80_spend_pct": 10.0,
+      "cost_overrun_cr": 2.93
+    },
+    {
+      "service_contract_category": "Aviation & Helicopter Charter",
+      "vendors": 640,
+      "pos": 1453,
+      "paid_fy26_cr": 1265.8,
+      "share_of_top80_spend_pct": 10.0,
+      "cost_overrun_cr": 3.03
+    },
+    {
+      "service_contract_category": "Charter Hire Drilling Rigs",
+      "vendors": 633,
+      "pos": 1419,
+      "paid_fy26_cr": 1257.6,
+      "share_of_top80_spend_pct": 9.9,
+      "cost_overrun_cr": 12.62
+    },
+    {
+      "service_contract_category": "Central IT & ERP Services",
+      "vendors": 635,
+      "pos": 1429,
+      "paid_fy26_cr": 1251.3,
+      "share_of_top80_spend_pct": 9.9,
+      "cost_overrun_cr": 2.84
+    },
+    {
+      "service_contract_category": "Tubulars, Casing & Wellheads",
+      "vendors": 672,
+      "pos": 1451,
+      "paid_fy26_cr": 1245.7,
+      "share_of_top80_spend_pct": 9.8,
+      "cost_overrun_cr": 2.74
+    },
+    {
+      "service_contract_category": "Offshore Supply Vessels (OSV)",
+      "vendors": 639,
+      "pos": 1451,
+      "paid_fy26_cr": 1224.5,
+      "share_of_top80_spend_pct": 9.6,
+      "cost_overrun_cr": 3.22
+    },
+    {
+      "service_contract_category": "Chemicals & Demulsifiers",
+      "vendors": 613,
+      "pos": 1358,
+      "paid_fy26_cr": 1224.1,
+      "share_of_top80_spend_pct": 9.6,
+      "cost_overrun_cr": 2.65
+    }
+  ]
+}

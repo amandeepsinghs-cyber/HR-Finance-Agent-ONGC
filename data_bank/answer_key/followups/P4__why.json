@@ -1,0 +1,30 @@
+{
+  "job_id": "229f5209-bcff-4bca-9b16-a31f7eb1a88f",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:16.224987+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 4.0",
+      "heading": "Encashment of Earned Leave",
+      "provision": "Leave Rules 4.1-4.2",
+      "quote_snippet": "4.1 Encashment on Superannuation: An employee retiring on superannuation, voluntary retirement, or upon death in service shall be entitled to receive lump-sum cash equivalent of unutilized Earned Leave standing to their credit, subject to a maximum aggregate ceiling of 300 (three hundred) days. 4.2 Encashment Calculation Formula: The cash equivalent of leave salary for encashment shall be calculated strictly as: Cash Amount = [(Basic Pay on date of retirement + IDA applicable) / 30] \u00d7 Number of Unutilized EL Days (up to max 300). No house rent allowance (HRA), cafeteria perks, or performance related pay (PRP) shall be included in the encashment calculation."
+    },
+    {
+      "doc_id": "Leave Rules",
+      "clause_ref": "Clause 5.0",
+      "heading": "Half Pay Leave (HPL) Accrual & Encashment",
+      "provision": "Leave Rules 5.3 (subject to DPE guidelines)",
+      "quote_snippet": "5.3 Encashment of HPL at Retirement: Where the accumulated Earned Leave at retirement falls short of the 300-day ceiling, unutilized HPL may be encashed to bridge the deficit up to the combined aggregate ceiling of 300 days, subject to DPE guidelines. For such encashment, two days of HPL shall equal one day of cash salary (equivalent to half pay)."
+    }
+  ]
+}

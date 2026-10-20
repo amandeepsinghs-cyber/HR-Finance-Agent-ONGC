@@ -1,0 +1,340 @@
+# Semantic audit 2026-10-20 - slice C (C1-C14 + follow-ups). One entry per changed id.
+# Old values from scratch/answer_key_before; new values from the re-executed SQL.
+
+- id: C1
+  defect_class: [WRONG_QUESTION]
+  old_headline: "419 execs in Delhi >=5y (402 due transfer, 17 exempt under 3-yr retirement rule)"
+  new_headline: "419 execs in Delhi >=5y; 401 due, 17 retiring within 3y, 1 valid exemption tag (EMP-100697, EX-RET3Y to 2029-10-31)"
+  why: "Coordinator alignment with H10/X10 company rule (8,457 due): valid current-posting exemption tags were ignored. Narrative registered (legacy prose assumed due = total - retiring)."
+  severity: important
+  gold_objects: "hrfin_gold.v_continuous_stay, hrfin_silver.posting_history"
+- id: C1__drill_down
+  defect_class: [THRESHOLD_VS_RANK, GENERIC_TEXT]
+  old_headline: "generic template; 24 grade x discipline rows ordered by grade"
+  new_headline: "HR has the largest block of long-staying senior officers in Delhi HQ: 29 E5-E7 past 5 yrs (65.9%); top 4 disciplines hold 103 of 125"
+  why: "Did not rank disciplines by concentration. Now one row per discipline with count, discipline strength and concentration %."
+  severity: important
+- id: C1__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "NO_CODE / approved by CMD 226; EX-RET3Y 4"
+  new_headline: "411 of 419 (98.1%) have no recorded exemption; only 8 Impending_Retirement (EX-RET3Y, Director HR)"
+  why: "Population was posting_history from_date>=60m (230) not the parent's 419 continuous-stay execs; COALESCE(approved_by,'CMD') fabricated a CMD approval; exemption fields hold literal 'None'."
+  severity: blocking
+- id: C1__compare_or_so_what
+  defect_class: [CATEGORICAL_CASE, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Dehradun 85.97% vs Mumbai 73.34% (Delhi missing)"
+  new_headline: "Delhi HQ 60.5% stay>=5y vs Tel Bhavan 76.5%, RO Mumbai 77.4%, company 74.7%"
+  why: "city IN ('Delhi',...) never matched 'New Delhi' so Delhi was dropped; city pooled all Dehradun institutes / Mumbai offshore assets. Now by wc_id + company benchmark."
+  severity: blocking
+- id: C2
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "in-position execs at 4 NE WCs (Assam 687...)"
+  new_headline: "8,457 execs overdue (>=5y, outside 3-yr protection, no valid exemption tag); only 10 hard/remote stations short, combined gap 617 (N&H 158, Bassein 155, MH 108)"
+  why: "Old SQL identified neither overdue officers nor shortfall. Now overdue pool (JRTP 3.2/7.1, minus valid current-posting exemption tags - aligned with C1/H10/X10 rule) + hard/remote station vacancy vs FY26 sanctioned posts."
+  severity: blocking
+- id: C2__drill_down
+  defect_class: [WRONG_QUESTION, CATEGORICAL_CASE, GENERIC_TEXT]
+  old_headline: "headcount by discipline (Assam Production 356...) - no sanctioned comparison"
+  new_headline: "Tripura carries the whole deficit: 62 of 569 posts (10.9%), Production 19; Assam fully staffed"
+  why: "No deficit computed; separated staff included. Now sanctioned vs in-position (E-grades) by discipline."
+  severity: blocking
+- id: C2__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "exemption_tag 'None' 19,478"
+  new_headline: "Every FY22-FY26 cycle net-negative for NE: 458 in vs 831 out (-373); NE exec gap 62 of 1,921"
+  why: "Counted all historical NE postings by a tag that is literally 'None'. Now transfer-cycle in/out flows."
+  severity: blocking
+- id: C2__compare_or_so_what
+  defect_class: [WRONG_QUESTION, CATEGORICAL_CASE, GENERIC_TEXT]
+  old_headline: "E3-E5 by has_hard/offshore flags (329 never)"
+  new_headline: "1,908 of 8,457 overdue (22.6%) never completed a 36-month Cat-C/offshore tenure (366 never posted there)"
+  why: "Wrong population (all E3-E5 incl. separated) and any posting counted as completed tenure. Now overdue population (aligned company rule incl. valid-exemption exclusion), tenure_months>=36."
+  severity: important
+- id: C3
+  defect_class: [STOCK_SUMMED, UNEQUAL_PERIODS, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Eastern Offshore 960->12,312 (+1,182%), Mehsana +973% (4 hard-coded WCs)"
+  new_headline: "44 of 46 work centres saw no increase; only Delhi HQ (+191, +25.2%) and Eastern Offshore (+51) grew; company 28,479->23,117"
+  why: "Summed 12 FY26 monthly snapshots vs 1 FY21; hard-coded 4 WCs. Now all WCs, Mar-21 vs Mar-26."
+  severity: blocking
+- id: C3__drill_down
+  defect_class: [STOCK_SUMMED, UNEQUAL_PERIODS, GENERIC_TEXT]
+  old_headline: "Cambay executives 507 -> 3,913"
+  new_headline: "Executive headcount fell at Rajahmundry (857->507, -40.8%), Cambay (-38.5%), Mehsana (-18.1%); Eastern Offshore +10.8%"
+  why: "Same month-summing bug. Now March snapshots 2021..2026 by cadre."
+  severity: blocking
+- id: C3__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "oil kmt / gas mmscm for 2 assets"
+  new_headline: "Eastern Offshore 0->28.1 MMboe and only asset adding staff (+51); mature assets lost output and people together"
+  why: "No link to headcount; now headcount + BOE (oil/gas separate) + maturity for the 4 assets."
+  severity: important
+- id: C3__compare_or_so_what
+  defect_class: [STOCK_SUMMED, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "hc growth only: Eastern Offshore +1,182.5%, Mehsana +972.6%"
+  new_headline: "Producing-asset headcount -21.8% vs oil+condensate -6.3%, gas -12.5%, BOE -9.5%; 12 of 14 cut heads faster than output"
+  why: "No production at all, month-summed headcount. Now 15 producing assets, period-end hc vs FY21->FY26 oil/gas/BOE growth."
+  severity: blocking
+- id: C4
+  defect_class: [FY_MAPPING, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "E7 774 'No_Successor_Mapped'; retiring FY27-FY29 by DOB band = 39"
+  new_headline: "106 of 1,129 active E7+ retire by 18-Oct-2029; 5 plan roles lack a Ready-Now successor; 79 retirees not in any succession plan"
+  why: "DOB window = Apr-26..Mar-29 (partly past) not next 3 yrs from 2026-10-19; no roles named. Now retirement_date window, board level included, roles listed."
+  severity: blocking
+- id: C4__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "succession roles retiring in 12m at any WC (Delhi CMD, Bassein GMs)"
+  new_headline: "111 execs at MH, N&H, Drilling Services retire in 12 months, 32 at E5+; only 1 is a succession-plan role (CGM N&H)"
+  why: "No offshore/drilling scope; separated incumbents included. Now active execs at WC-MUM/NEH/DRL."
+  severity: important
+- id: C4__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "positions by successor_1 readiness (GM 4/4)"
+  new_headline: "All 16 positions without a Ready-Now successor cite lack of offshore leadership experience; 8 Tier-1"
+  why: "Had no reason field and ignored successor_2. Now readiness_gap_reason, tier, NE-tenure flags."
+  severity: important
+- id: C4__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "E6->E7 dpc_cases completed 1,520 (FY13-FY26 count)"
+  new_headline: "78.5% of active technical E6 (743/946) meet the 7.5 DPC benchmark; 16.7% Outstanding"
+  why: "A historical count, not a % of eligible; dpc benchmark score constant 85. Now FY26 APAR vs benchmark."
+  severity: important
+- id: C5
+  defect_class: [CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "generic template (Production 823 retiring by 2030)"
+  new_headline: "Production largest absolute gap (823 of 2,926); Drilling hardest hit (34.1%); 2,254 of 7,405 core technical execs retire by FY30"
+  why: "Numbers correct; status filter replaced with LOWER(status)='active'; added E5+ and E0-E2 pipeline columns."
+  severity: cosmetic
+- id: C5__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "719 rows of count=1 grouped by date of birth"
+  new_headline: "791 Geology/Geophysics/Reservoir execs superannuate by FY30 (262/228/301), back-loaded into FY28-FY30"
+  why: "No cumulative projection. Now by retirement FY with running total."
+  severity: important
+- id: C5__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "FY21+ joiners in 3 disciplines (no baseline)"
+  new_headline: "Core technical intake FY20-FY25 = 132 (~22/yr) vs 1,687 in FY14-FY19 (~281/yr); none still in service"
+  why: "No baseline to judge 'low'. Now intake by FY joined FY14-FY26 with period labels."
+  severity: important
+- id: C5__compare_or_so_what
+  defect_class: [SANITY_BOUND, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Drilling 3,332 turning 60 by 2030 (incl. separated staff); no projects"
+  new_headline: "4 ongoing deepwater/HP-HT projects' host teams lose 22.2%-42.5% of specialists by FY30 vs 30.4% company"
+  why: "Counted all-time employees incl. 19,373 separated; never compared projects. Now ongoing deepwater/HPHT projects vs host specialists."
+  severity: blocking
+- id: C6
+  defect_class: [CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "generic template (53 fields by PBT)"
+  new_headline: "Most profitable: MH South Rs7,132 cr, MH North Rs6,972 cr, Gandhar Rs5,703 cr; only 1 of 53 fields lost money (Champang -Rs4.93 cr)"
+  why: "Result correct; explicit line_type='field', margin and loss flag added."
+  severity: cosmetic
+- id: C6__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "all 53 fields' EBITDA margin (no Assam/Cauvery filter)"
+  new_headline: "Mature onshore Assam/Cauvery net margins -1.5% (Champang) to 49.4% (Rudrasagar); weak end is Jorhat"
+  why: "No asset/maturity filter, no net margin. Now WC-ASM/JOR/CAU mature onshore with EBITDA and net margin."
+  severity: important
+- id: C6__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "average water cut for all 53 fields"
+  new_headline: "Manpower is the primary driver: Champang Rs2,847/BOE vs field avg Rs265 (~11x); water cut 93.9% vs 49.5%"
+  why: "No cost data or link to loss-makers. Now bottom-5 cost components per BOE vs all-field benchmark."
+  severity: important
+- id: C6__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "EBITDA list of all 53 fields"
+  new_headline: "Ankleshwar 69.2% EBITDA margin > Bassein 64.2% > MH 58.1% > Mehsana 55.3%; onshore leads on PBT margin"
+  why: "No margins/asset grouping. Now asset-level ratio-of-sums margins."
+  severity: important
+- id: C7
+  defect_class: [WRONG_QUESTION, JOIN_FANOUT, GENERIC_TEXT]
+  old_headline: "copy of C9: KG-DWN-98/2 overrun Rs5,101.8 cr (x6 milestone rows)"
+  new_headline: "FY22-FY26 capex led by Eastern Offshore Rs48,955 cr (32.1%), MH Rs26,473 cr; under-invested: Bassein (25.3% of 2P, 9.0% of capex), Ankleshwar, Assam, Tripura"
+  why: "SQL answered C9 not C7. Now 5-yr capex by asset vs FY26 2P reserves and intensity flag."
+  severity: blocking
+- id: C7__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "capex by every WC x FY (155 rows)"
+  new_headline: "Eastern Offshore Rs48,955 cr (32.1%) vs Western Offshore MH+B&S Rs40,191 cr (26.3%) FY22-FY26"
+  why: "No regional grouping. Now WC-MUM+BAS vs WC-EAS by year and cumulative."
+  severity: important
+- id: C7__why
+  defect_class: [UNIT_MIXING, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "SUM(2P oil MMT + gas BCM) labelled MMTOE; no capex"
+  new_headline: "Bassein (179.6 MMTOE), Eastern Offshore, N&H had no development-drilling budget line; where a line exists spend was 95-101% of BE"
+  why: "Added MMT to BCM; no BE/RE. Now dev-drilling BE/RE/actual by reserve-holding asset with reserves_2p_total_mmtoe."
+  severity: blocking
+- id: C7__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "basin AVG RRR (Jodhpur 1.20...)"
+  new_headline: "RRR similar (1.17 vs 1.17 FY26) but KG $84.73 project capex per BOE added vs MH Redevelopment $2.86"
+  why: "Basin averages, not the two developments. Now field-level RRR (ratio of sums) + project capex per BOE added."
+  severity: important
+- id: C8
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Champang only (PBT<0), no candidate flags"
+  new_headline: "Only 1 mature field loss-making (Champang -Rs4.93 cr); candidates Champang & Borholla, both PEC-flagged; none divestment-flagged"
+  why: "Ignored divestment/PEC flags and maturity. Now loss OR flags, 3-yr PBT and route."
+  severity: important
+- id: C8__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "FY24-26 rows for Assam/Cambay fields without a negative test"
+  new_headline: "None of 9 Assam/Jorhat/Cambay fields had negative EBITDA in any of FY24-FY26"
+  why: "Never tested EBITDA<0; missed Jorhat. Now explicit 3-year flag."
+  severity: important
+- id: C8__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT, GAP]
+  old_headline: "copy of C6__why (water cut of 53 fields)"
+  new_headline: "Candidates run 93.9%/93.8% water cut, $48.12/$46.49 lifting cost vs $9.13, manpower $32/BOE vs $3"
+  why: "Duplicate of another query. Now candidate technical constraints vs benchmark. GAP: no PEC-operator cost data."
+  severity: important
+- id: C8__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT, GAP]
+  old_headline: "EBITDA list of 53 fields"
+  new_headline: "Recorded savings Rs523.5 cr/yr (opex 214.2 + capex 309.4) but only 2 of the bottom 5 carry an estimate"
+  why: "No savings figures. Now bottom-5 with recorded opex/capex savings. GAP for 3 fields without estimate."
+  severity: important
+- id: C9
+  defect_class: [JOIN_FANOUT, GENERIC_TEXT]
+  old_headline: "360 rows (each project x6 milestones)"
+  new_headline: "9 projects behind schedule, 60 over budget by Rs14,454 cr; KG-DWN-98/2 Rs5,101.8 cr over, 15 months late"
+  why: "Milestone grain multiplied every project 6x. Now project grain."
+  severity: blocking
+- id: C9__drill_down
+  defect_class: [JOIN_FANOUT, CATEGORICAL_CASE, GENERIC_TEXT]
+  old_headline: "36 rows (KG/pipeline projects x6, incl. onshore KG facility, Tripura pipeline)"
+  new_headline: "KG-DWN-98/2 15 months late, Rs5,101.8 cr over; PRP-VIII B 19 months late and still open"
+  why: "Case-sensitive LIKE caught wrong projects; fan-out. Now PRJ-0001 + pipeline replacement projects, project grain."
+  severity: important
+- id: C9__why
+  defect_class: [JOIN_FANOUT, GENERIC_TEXT]
+  old_headline: "subsea_commissioning overrun Rs30,610.8 cr"
+  new_headline: "Contractor standby most common (5 of 9 slipped projects, avg 16.2 m); subsea commissioning largest by value (Rs5,101.8 cr)"
+  why: "SUM over 6 milestone rows = 6x overrun. Now project grain then grouped."
+  severity: blocking
+- id: C9__compare_or_so_what
+  defect_class: [JOIN_FANOUT, GENERIC_TEXT]
+  old_headline: "50 milestone rows (~9 projects)"
+  new_headline: "Anticipated final cost Rs1,10,811 cr vs Rs96,357 cr original (+Rs14,454 cr, 15.0%); equals RCE for every project"
+  why: "Fan-out + LIMIT 50 truncated portfolio. Now project grain + total."
+  severity: important
+- id: C10
+  defect_class: [FY_MAPPING, PCT_DENOM, GENERIC_TEXT]
+  old_headline: "FY26 parameters (crude 92.1% of Excellent...)"
+  new_headline: "FY27 tracking Very Good at best: projected composite 3.88, 0 of 9 on course for Excellent, crude 19.051 MMT below VG 20"
+  why: "'This year' = FY27 not FY26; LTIFR (lower-better) scored 140%. Now FY27 projected, LTIFR inverted."
+  severity: blocking
+- id: C10__drill_down
+  defect_class: [FY_MAPPING, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "all 9 FY26 parameters (no rating filter)"
+  new_headline: "All 9 FY27 parameters projected below Excellent incl. crude (Good), gas, capex, RRR (Very Good); 1.00 composite points forgone"
+  why: "No rating filter, wrong FY. Now FY27 below-Excellent with shortfall and score forgone."
+  severity: important
+- id: C10__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT, GAP]
+  old_headline: "gas MoU rows FY25-FY27 with a static note"
+  new_headline: "Q2 FY27 gas 5.020 BCM vs Excellent pace 5.250 (gap 0.230), +1.0% YoY; KG +0.091 BCM offsets mature decline"
+  why: "No quarterly data. Now Q2 by asset vs pro-rata MoU targets. GAP: no FY27 wells in wells_drilled."
+  severity: important
+- id: C10__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "9 parameters / 100 weight per FY"
+  new_headline: "FY27 projected composite 3.88 vs 4.62 in FY25 (4 Excellent, 45% weight); FY26 4.28"
+  why: "No composite scores. Now composite, projected and rating counts per FY."
+  severity: important
+- id: C11
+  defect_class: [STOCK_SUMMED, UNEQUAL_PERIODS, UNIT_MIXING, GENERIC_TEXT]
+  old_headline: "Bassein hc 1,928->22,703 (+1,077%); 14 assets 'added headcount' while prod (MMT+BCM) fell"
+  new_headline: "No asset added headcount while losing production; headcount 20,871->16,327 across 15 assets"
+  why: "Summed 12 monthly snapshots (FY26) vs 1 (FY21); added MMT to BCM. Now Mar-21 vs Mar-26 snapshot, BOE. (SQL pre-corrected by coordinator; verified and written.)"
+  severity: blocking
+- id: C11__drill_down
+  defect_class: [STOCK_SUMMED, UNEQUAL_PERIODS, GENERIC_TEXT]
+  old_headline: "Assam 2,480 -> 22,439; no production"
+  new_headline: "Rajahmundry -30.3% heads, Assam -26.5%, Mehsana -12.9%; crude -15.5/-11.9/-13.0%, gas -28.0/-30.6/-31.9%"
+  why: "Month-summed headcount; no output. Now Mar snapshots + crude MMT / gas BCM separately."
+  severity: blocking
+- id: C11__why
+  defect_class: [STOCK_SUMMED, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Cambay FY26 staff by discipline summed over 12 months (Production 1,420)"
+  new_headline: "They did not expand: at 14 declining assets surface engineering -12.7%, admin & support -68.7% (share of surface eng. rose 33.7%->38.3%)"
+  why: "Stock summed over months, single asset, no baseline; premise refuted by corrected parent."
+  severity: blocking
+- id: C11__compare_or_so_what
+  defect_class: [PCT_DENOM, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "unweighted AVG field boe_per_employee for 19 WCs (MH 40,827.7)"
+  new_headline: "Only expanding asset Eastern Offshore: 27,828 BOE/employee = 1.5x producing-asset avg 18,169, 2.2x company 12,832"
+  why: "Average of ratios across non-producing WCs; no 'expanding' notion. Now ratio of sums, expanding flag, two corporate averages."
+  severity: important
+- id: C12
+  defect_class: [WRONG_QUESTION, JOIN_FANOUT, GENERIC_TEXT]
+  old_headline: "manpower cost % of revenue by field (Jorhat 47.7%, 59 rows)"
+  new_headline: "Manpower cost/BOE FY26: $1.32 Ankleshwar to $30.90 Jorhat; producing-asset avg $3.00 (Rs265)"
+  why: "Metric was % of revenue at field grain labelled by asset. Now asset ratio-of-sums INR & USD per BOE."
+  severity: blocking
+- id: C12__drill_down
+  defect_class: [WRONG_QUESTION, PCT_DENOM, GENERIC_TEXT]
+  old_headline: "AVG of field USD/BOE (Assam 6.35...); no cadre split"
+  new_headline: "Payroll per BOE: Ahmedabad $4.73 (exec 3.56), Assam $4.66, N&H $4.37, MH $1.64; executives 55-75% of payroll"
+  why: "No exec/non-exec split; averaged ratios. Now payroll_monthly by cadre / asset BOE."
+  severity: important
+- id: C12__why
+  defect_class: [PCT_DENOM, GENERIC_TEXT]
+  old_headline: "onshore 7.91 vs offshore 3.60 (unweighted average of field ratios)"
+  new_headline: "Volume effect: mature onshore $4.65/BOE vs offshore $2.19 although onshore cost/employee is lower (Rs38.3 vs 65.0 lakh)"
+  why: "Averaged field ratios. Now ratio of sums by onshore/offshore x maturity with BOE/employee."
+  severity: important
+- id: C12__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "corporate revenue/opex/lifting cost by FY"
+  new_headline: "Peer comparison not possible (no Oil India data); ONGC manpower cost $3.90/BOE FY26 vs $4.16 FY21"
+  why: "Returned lifting cost, not manpower. GAP: no peer data; closest honest result = ONGC trend."
+  severity: important
+- id: C13
+  defect_class: [WRONG_QUESTION, SANITY_BOUND]
+  old_headline: "hard-coded Rs6.50 cr CTA; 4 assets all-grade vacancy (Tripura 113...)"
+  new_headline: "200 E3-E5 moves cost Rs6.40 cr one-time + Rs2.15 cr/yr allowance; field exec coverage 89.4%->91.7%; 728 of 928 vacancies remain"
+  why: "Cost was a literal; no allocation. Now parameterised scenario from posting_history costs, payroll basic and sanctioned vacancies. Source-pool overdue count uses the aligned rotation rule (valid exemption tags excluded). Registered a narrative (legacy W3/C13 prose stated Rs3.25 L / Rs6.50 cr, not supported by data)."
+  severity: important
+- id: C13__drill_down
+  defect_class: [WRONG_QUESTION, CATEGORICAL_CASE, GENERIC_TEXT]
+  old_headline: "10 hard stations with fewest technical officers (KG Basin 65...)"
+  new_headline: "P&M gains: N&H +34 (85.8->91.5%), Bassein +33, MH +23; Tripura +13, Karaikal +8, Assam 0 (100% filled)"
+  why: "Not a gain; separated staff included. Now parent allocation vs P&M vacancy."
+  severity: important
+- id: C13__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Delhi 692 / Dehradun 595 executives by city"
+  new_headline: "Rs6.40 cr one-time: transfer grant Rs2.40 cr, CTA Rs3.00 cr, baggage Rs1.00 cr (Rs1.2L/1.5L/0.5L each)"
+  why: "No cost at all. Now component averages from 1,444 FY24-FY26 postings x 200."
+  severity: important
+- id: C13__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "literals only: 200, 6.50, 35,878, 0.0181%"
+  new_headline: "Rs66.9 cr payroll shifts out of HQ (Delhi -15.6%, Tel Bhavan -15.5%) - reallocation not saving; field supervision ratio 0.69->0.68; uptime 97.0%"
+  why: "No data used. Now HQ before/after + field ratio + baseline uptime. GAP: no staffing->uptime model."
+  severity: important
+- id: C14
+  defect_class: [WRONG_QUESTION]
+  old_headline: "legacy board note: 'top operating losses concentrated in' 5 fields (4 of 5 profitable); no production/staffing"
+  new_headline: "Only 1 of the five weakest FY26 fields lost money (Champang -Rs4.93 cr); 4.32 MMboe, Rs1,046 cr opex (64% manpower), 1,799 regular + 2,038 contract; PEC for Champang & Borholla"
+  why: "Missing production/staffing inputs and misleading legacy prose. Narrative registered instead of legacy renderer."
+  severity: important
+- id: C14__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "EBITDA margin of all 53 fields"
+  new_headline: "Five fields: Rs1,814.0 cr revenue, Rs1,046.0 cr opex (Rs670.6 cr manpower), net Rs193.86 cr; only Champang a loss"
+  why: "Not 'these 5'; requested figures missing."
+  severity: important
+- id: C14__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Champang high_water_cut_depleted (1 row)"
+  new_headline: "Only Champang has a coded root cause; 4 of 5 at 87-94% water cut and manpower is the largest opex line in all five (58-67%)"
+  why: "Filtered to coded rows only, dropping 4 of 5 fields."
+  severity: important
+- id: C14__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "EBITDA list of 53 fields"
+  new_headline: "PEC worth Rs832.9 cr over 5 yrs vs -Rs8.6 cr in-house (advantage Rs841.4 cr) for the 2 fields with estimates"
+  why: "No payoff figures. Now recorded 5-yr PEC payoff vs flat in-house PBT; GAP for 3 fields."
+  severity: important

@@ -1,0 +1,72 @@
+{
+  "job_id": "e9f786fb-75b9-4de6-8b78-f199cd16617e",
+  "total_bytes_processed": 355884,
+  "executed_at": "2026-10-20T06:38:59.979182+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 6,
+  "columns": [
+    "fiscal_year",
+    "h1_months",
+    "h1_be_cr",
+    "h1_actual_cr",
+    "h1_utilisation_vs_be_pct",
+    "full_year_actual_cr",
+    "h1_share_of_full_year_pct"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "h1_months": 6,
+      "h1_be_cr": 9575.5,
+      "h1_actual_cr": 9163.3,
+      "h1_utilisation_vs_be_pct": 95.7,
+      "full_year_actual_cr": 18259.0,
+      "h1_share_of_full_year_pct": 50.2
+    },
+    {
+      "fiscal_year": "FY23",
+      "h1_months": 6,
+      "h1_be_cr": 9575.5,
+      "h1_actual_cr": 9076.2,
+      "h1_utilisation_vs_be_pct": 94.8,
+      "full_year_actual_cr": 18268.3,
+      "h1_share_of_full_year_pct": 49.7
+    },
+    {
+      "fiscal_year": "FY24",
+      "h1_months": 6,
+      "h1_be_cr": 9575.5,
+      "h1_actual_cr": 9075.3,
+      "h1_utilisation_vs_be_pct": 94.8,
+      "full_year_actual_cr": 18160.3,
+      "h1_share_of_full_year_pct": 50.0
+    },
+    {
+      "fiscal_year": "FY25",
+      "h1_months": 6,
+      "h1_be_cr": 32086.5,
+      "h1_actual_cr": 31113.8,
+      "h1_utilisation_vs_be_pct": 97.0,
+      "full_year_actual_cr": 62057.0,
+      "h1_share_of_full_year_pct": 50.1
+    },
+    {
+      "fiscal_year": "FY26",
+      "h1_months": 6,
+      "h1_be_cr": 18914.8,
+      "h1_actual_cr": 17949.7,
+      "h1_utilisation_vs_be_pct": 94.9,
+      "full_year_actual_cr": 35877.9,
+      "h1_share_of_full_year_pct": 50.0
+    },
+    {
+      "fiscal_year": "FY27",
+      "h1_months": 6,
+      "h1_be_cr": 18914.8,
+      "h1_actual_cr": 18020.2,
+      "h1_utilisation_vs_be_pct": 95.3,
+      "full_year_actual_cr": null,
+      "h1_share_of_full_year_pct": null
+    }
+  ]
+}

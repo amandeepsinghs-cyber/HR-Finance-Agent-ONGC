@@ -1,0 +1,79 @@
+{
+  "job_id": "dcd82eaf-1100-4f21-9217-910034665d1a",
+  "total_bytes_processed": 40040,
+  "executed_at": "2026-10-20T06:44:57.221372+00:00",
+  "elapsed_seconds": 0.75,
+  "row_count": 4,
+  "columns": [
+    "project_name",
+    "asset",
+    "status",
+    "sanctioned_cost_inr_cr",
+    "revised_cost_inr_cr",
+    "cost_overrun_cr",
+    "cost_overrun_pct",
+    "schedule_slippage_months",
+    "planned_completion",
+    "actual_or_revised_completion",
+    "delayed_milestones",
+    "delay_root_cause_category"
+  ],
+  "rows": [
+    {
+      "project_name": "KG-DWN-98/2 Cluster-II Deepwater Development",
+      "asset": "Eastern Offshore",
+      "status": "ongoing",
+      "sanctioned_cost_inr_cr": 34012.0,
+      "revised_cost_inr_cr": 39113.8,
+      "cost_overrun_cr": 5101.8,
+      "cost_overrun_pct": 15.0,
+      "schedule_slippage_months": 15,
+      "planned_completion": "2025-03-31",
+      "actual_or_revised_completion": "2026-06-30",
+      "delayed_milestones": 3,
+      "delay_root_cause_category": "subsea_commissioning"
+    },
+    {
+      "project_name": "Pipeline Replacement Project Phase-VII (PRP-VII)",
+      "asset": "Mumbai High",
+      "status": "completed",
+      "sanctioned_cost_inr_cr": 3215.0,
+      "revised_cost_inr_cr": 3697.25,
+      "cost_overrun_cr": 482.25,
+      "cost_overrun_pct": 15.0,
+      "schedule_slippage_months": 1,
+      "planned_completion": "2024-12-31",
+      "actual_or_revised_completion": "2025-01-31",
+      "delayed_milestones": 3,
+      "delay_root_cause_category": "fabrication_delay_yard"
+    },
+    {
+      "project_name": "Pipeline Replacement Project Phase-VIII Part-B (PRP-VIII B)",
+      "asset": "Bassein & Satellite",
+      "status": "delayed",
+      "sanctioned_cost_inr_cr": 1384.0,
+      "revised_cost_inr_cr": 1591.6,
+      "cost_overrun_cr": 207.6,
+      "cost_overrun_pct": 15.0,
+      "schedule_slippage_months": 19,
+      "planned_completion": "2025-05-31",
+      "actual_or_revised_completion": "2026-12-31",
+      "delayed_milestones": 3,
+      "delay_root_cause_category": "fabrication_delay_yard"
+    },
+    {
+      "project_name": "Uran to Trombay Replacement Subsea Pipeline",
+      "asset": "Uran Plant",
+      "status": "completed",
+      "sanctioned_cost_inr_cr": 720.0,
+      "revised_cost_inr_cr": 828.0,
+      "cost_overrun_cr": 108.0,
+      "cost_overrun_pct": 15.0,
+      "schedule_slippage_months": 0,
+      "planned_completion": "2025-04-30",
+      "actual_or_revised_completion": "2025-04-30",
+      "delayed_milestones": 0,
+      "delay_root_cause_category": "fabrication_delay_yard"
+    }
+  ]
+}

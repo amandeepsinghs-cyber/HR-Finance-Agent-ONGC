@@ -1,0 +1,75 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_field_economics",
+  description: "Field-level P&L, lifting costs ($/boe), operating cost breakdown, statutory levies, and mature field viability"
+}
+
+SELECT
+  pnl.pnl_id,
+  pnl.fiscal_year,
+  pnl.field_id,
+  f.name AS field_name,
+  f.name AS name,
+  f.basin,
+  f.onshore_offshore,
+  pnl.line_type,
+  pnl.asset_wc_id,
+  pnl.asset_wc_id AS wc_id,
+  w.name AS asset_name,
+  w.short_name AS short_name,
+  pnl.oil_revenue_inr_cr,
+  pnl.gas_revenue_inr_cr,
+  pnl.gross_revenue_inr_cr,
+  pnl.statutory_royalty_inr_cr,
+  pnl.statutory_cess_inr_cr,
+  pnl.statutory_windfall_tax_saed_inr_cr,
+  pnl.net_revenue_inr_cr,
+  pnl.allocated_manpower_cost_inr_cr,
+  pnl.regular_employee_headcount,
+  pnl.regular_employee_headcount AS headcount,
+  pnl.contractor_cost_inr_cr,
+  pnl.contractor_headcount,
+  pnl.power_fuel_cost_inr_cr,
+  pnl.workover_repairs_cost_inr_cr,
+  pnl.water_handling_cost_inr_cr,
+  pnl.logistics_osv_chopper_cost_inr_cr,
+  pnl.chemicals_consumables_cost_inr_cr,
+  pnl.other_opex_inr_cr,
+  pnl.total_opex_inr_cr,
+  pnl.ebitda_inr_cr,
+  pnl.ebitda_margin_pct,
+  pnl.dda_depreciation_inr_cr,
+  pnl.pbt_inr_cr,
+  pnl.total_production_boe,
+  pnl.lifting_cost_per_boe_usd,
+  pnl.lifting_cost_per_boe_usd AS lifting_cost_average_usd_boe,
+  pnl.manpower_cost_per_boe_usd,
+  pnl.boe_per_employee,
+  pnl.is_loss_making_3yr_consecutive,
+  pnl.is_divestment_candidate,
+  pnl.pec_monetisation_potential_flag,
+  pnl.root_cause_loss_code,
+  pnl.estimated_annual_opex_savings_inr_cr,
+  pnl.estimated_annual_capex_savings_inr_cr,
+  pnl.projected_pec_farmout_payoff_5yr_inr_cr,
+  pm.oil_production_mt,
+  pm.gas_production_mmscm,
+  pm.water_cut_pct,
+  pm.water_produced_m3,
+  pm.well_downtime_hours,
+  pm.gas_utilisation_pct,
+  fx.brent_usd_bbl,
+  cb.budget_estimate_be_inr_cr,
+  cb.prj_id,
+  cl.amount_inr,
+  py.gross_salary_inr,
+  0.0 AS total_transfer_cost_inr
+FROM ${ref("field_pnl_annual")} pnl
+LEFT JOIN ${ref("dim_field")} f ON pnl.field_id = f.field_id
+LEFT JOIN ${ref("dim_work_centre")} w ON pnl.asset_wc_id = w.wc_id
+LEFT JOIN (SELECT field_id, fiscal_year, SUM(oil_production_mt) AS oil_production_mt, SUM(gas_production_mmscm) AS gas_production_mmscm, AVG(water_cut_pct) AS water_cut_pct, SUM(water_produced_m3) AS water_produced_m3, SUM(well_downtime_hours) AS well_downtime_hours, AVG(gas_utilisation_pct) AS gas_utilisation_pct FROM ${ref("production_monthly")} GROUP BY 1, 2) pm ON pnl.field_id = pm.field_id AND pnl.fiscal_year = pm.fiscal_year
+LEFT JOIN (SELECT fiscal_year, AVG(brent_usd_bbl) AS brent_usd_bbl FROM ${ref("dim_price_fx")} GROUP BY 1) fx ON pnl.fiscal_year = fx.fiscal_year
+LEFT JOIN (SELECT asset_wc_id, fiscal_year, SUM(budget_estimate_be_inr_cr) AS budget_estimate_be_inr_cr, MAX(prj_id) AS prj_id FROM ${ref("capex_budget")} GROUP BY 1, 2) cb ON pnl.asset_wc_id = cb.asset_wc_id AND pnl.fiscal_year = cb.fiscal_year
+LEFT JOIN (SELECT wc_id, fiscal_year, SUM(amount_inr) AS amount_inr FROM ${ref("cost_ledger")} GROUP BY 1, 2) cl ON pnl.asset_wc_id = cl.wc_id AND pnl.fiscal_year = cl.fiscal_year
+LEFT JOIN (SELECT wc_id, fiscal_year, SUM(gross_salary_inr) AS gross_salary_inr FROM ${ref("payroll_monthly")} GROUP BY 1, 2) py ON pnl.asset_wc_id = py.wc_id AND pnl.fiscal_year = py.fiscal_year

@@ -1,0 +1,58 @@
+{
+  "job_id": "79b35fe8-0206-499a-96c9-11d80ed5f357",
+  "total_bytes_processed": 123579,
+  "executed_at": "2026-10-20T06:42:21.651217+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 6,
+  "columns": [
+    "classification",
+    "denials_this_week",
+    "denials_prior_30d",
+    "baseline_per_week",
+    "ratio_vs_baseline"
+  ],
+  "rows": [
+    {
+      "classification": "ALL CONFIDENTIAL",
+      "denials_this_week": 15,
+      "denials_prior_30d": 33,
+      "baseline_per_week": 7.7,
+      "ratio_vs_baseline": 1.95
+    },
+    {
+      "classification": "confidential_transfer_draft",
+      "denials_this_week": 4,
+      "denials_prior_30d": 5,
+      "baseline_per_week": 1.17,
+      "ratio_vs_baseline": 3.43
+    },
+    {
+      "classification": "confidential_dpc",
+      "denials_this_week": 3,
+      "denials_prior_30d": 5,
+      "baseline_per_week": 1.17,
+      "ratio_vs_baseline": 2.57
+    },
+    {
+      "classification": "confidential_vigilance",
+      "denials_this_week": 3,
+      "denials_prior_30d": 9,
+      "baseline_per_week": 2.1,
+      "ratio_vs_baseline": 1.43
+    },
+    {
+      "classification": "confidential_salary",
+      "denials_this_week": 3,
+      "denials_prior_30d": 5,
+      "baseline_per_week": 1.17,
+      "ratio_vs_baseline": 2.57
+    },
+    {
+      "classification": "confidential_field_pnl",
+      "denials_this_week": 2,
+      "denials_prior_30d": 9,
+      "baseline_per_week": 2.1,
+      "ratio_vs_baseline": 0.95
+    }
+  ]
+}

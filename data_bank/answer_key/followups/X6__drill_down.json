@@ -1,0 +1,65 @@
+{
+  "job_id": "57355fc7-1428-4241-b017-8833ed24a36d",
+  "total_bytes_processed": 3975,
+  "executed_at": "2026-10-20T06:37:23.834862+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 7,
+  "columns": [
+    "project_name",
+    "technology_type",
+    "installed_mw_fy26",
+    "cumulative_capex_fy22_fy26_cr",
+    "stored_cumulative_capex_fy26_cr"
+  ],
+  "rows": [
+    {
+      "project_name": "1000 MW Solar Park Rajasthan (OGL Joint Venture)",
+      "technology_type": "Solar PV",
+      "installed_mw_fy26": 1000.0,
+      "cumulative_capex_fy22_fy26_cr": 9450.0,
+      "stored_cumulative_capex_fy26_cr": 7560.0
+    },
+    {
+      "project_name": "500 MW Wind Farm Gujarat Kutch",
+      "technology_type": "Wind Onshore",
+      "installed_mw_fy26": 500.0,
+      "cumulative_capex_fy22_fy26_cr": 4935.0,
+      "stored_cumulative_capex_fy26_cr": 3780.0
+    },
+    {
+      "project_name": "500 MW Solar Power Project Maharashtra",
+      "technology_type": "Solar PV",
+      "installed_mw_fy26": 500.0,
+      "cumulative_capex_fy22_fy26_cr": 4305.0,
+      "stored_cumulative_capex_fy26_cr": 3780.0
+    },
+    {
+      "project_name": "300 MW Hybrid Solar-Wind Tamil Nadu",
+      "technology_type": "Solar PV",
+      "installed_mw_fy26": 300.0,
+      "cumulative_capex_fy22_fy26_cr": 2583.0,
+      "stored_cumulative_capex_fy26_cr": 2268.0
+    },
+    {
+      "project_name": "250 MW Offshore Wind Pilot Project Gulf of Khambhat",
+      "technology_type": "Wind Offshore",
+      "installed_mw_fy26": 250.0,
+      "cumulative_capex_fy22_fy26_cr": 1732.5,
+      "stored_cumulative_capex_fy26_cr": 1890.0
+    },
+    {
+      "project_name": "200 MW Green Hydrogen & Ammonia Demonstration Plant Hazira",
+      "technology_type": "Green Hydrogen",
+      "installed_mw_fy26": 200.0,
+      "cumulative_capex_fy22_fy26_cr": 1386.0,
+      "stored_cumulative_capex_fy26_cr": 1512.0
+    },
+    {
+      "project_name": "103 MW Captive Wind & Solar for ONGC Plants (Uran & Dahej)",
+      "technology_type": "Solar PV",
+      "installed_mw_fy26": 103.0,
+      "cumulative_capex_fy22_fy26_cr": 1016.8,
+      "stored_cumulative_capex_fy26_cr": 778.68
+    }
+  ]
+}

@@ -1,0 +1,240 @@
+- id: X1
+  defect_class: [STOCK_SUMMED, WRONG_QUESTION, SANITY_BOUND, GENERIC_TEXT]
+  old_headline: "46 work centres; Ahmedabad 16,579 contractors vs 15,073 regular; cost/BOE from stored column (Assam 0.0)"
+  new_headline: "15 producing assets, 31-Mar-2026: 20,046 contract vs 16,327 regular (1.23x); contractor $0.10-2.54/BOE vs regular $1.32-30.90/BOE (FY26)"
+  why: "Summed 12 monthly contractor stocks and 12 headcount snapshots (~12x); used unreliable contractor_cost_per_boe_usd column; included institutes/offices with no BOE. Now Mar-26 stocks, FY26 cost / FY26 BOE at FY26 FX."
+  severity: blocking
+- id: X1__drill_down
+  defect_class: [FY_MAPPING, GENERIC_TEXT]
+  old_headline: "AVG stored ratio over FY22-FY27: Hazira 1.58, Mumbai High 1.45, Uran 1.58"
+  new_headline: "Mar-2026: Uran 1.58, Hazira 1.58, Mumbai High 1.45 vs company 1.09"
+  why: "No period filter (averaged 66 months); now same period as parent plus company benchmark. Values barely change."
+  severity: cosmetic
+- id: X1__why
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "Cited HR Manual Clause 1.0 (executive designations)"
+  new_headline: "Plants 1.58 and offshore 1.45 contract workers per employee vs 1.10 onshore assets; role split not derivable"
+  why: "Citation irrelevant to contract labour. Replaced by ratio by work-centre segment; support-vs-core split impossible (service_category rotates monthly), no policy doc."
+  severity: important
+- id: X1__compare_or_so_what
+  defect_class: [JOIN_FANOUT, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "46 rows of AVG contractor_cost_per_boe vs AVG field manpower_cost_per_boe"
+  new_headline: "Offshore $0.14 contract vs $2.24 regular per BOE; onshore $0.34 vs $4.44 (FY26)"
+  why: "Joined field-grain P&L to monthly contract rows, averaged ratios, no onshore/offshore grouping. Now total cost / total BOE by theatre."
+  severity: important
+- id: X2
+  defect_class: [STOCK_SUMMED, THRESHOLD_VS_RANK, GENERIC_TEXT]
+  old_headline: "Bassein 182,761 / Assam 152,727 core contractors (alphabetical)"
+  new_headline: "Hazira, Uran, Dahej plants rely most: 1.58 contract per regular (61.2% of workforce, Sep-2026)"
+  why: "Summed 66 monthly stocks; ordered by name, not reliance. Now latest-month stocks ranked by contract:regular ratio."
+  severity: blocking
+- id: X2__drill_down
+  defect_class: [STOCK_SUMMED, WRONG_QUESTION, GAP, CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "Assam Production 263,245; Gujarat Production 456,618"
+  new_headline: "7 Gujarat/Assam installations used drilling/processing contracts in FY26; Jorhat largest (~502 avg/month)"
+  why: "State x discipline (dim_discipline is a fixed 2-value tag) summed over 66 months; question asked installations and drilling/processing roles. Now FY26 per installation by service-category contract months (caveat: category rotates)."
+  severity: important
+- id: X2__why
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "Cited HR Manual Clause 1.0 (executive designations)"
+  new_headline: "CLRA Act text not in corpus; closest authorities J-14, J-17 (contract labour regularisation) and Supplier Code P2-17"
+  why: "Irrelevant citation; narrative registered (legacy RAG renderer kept quote format)."
+  severity: important
+- id: X2__compare_or_so_what
+  defect_class: [WRONG_QUESTION, STOCK_SUMMED, GENERIC_TEXT]
+  old_headline: "By type (core only): asset 1,473,816; plant 168,787; no offices"
+  new_headline: "Offshore assets 1.45 contract per employee vs corporate offices 0.32 (Sep-2026); offices have no core contract labour"
+  why: "Core-only filter removed every corporate office, making the comparison impossible; summed 66 months."
+  severity: important
+- id: X3
+  defect_class: [WRONG_QUESTION, PCT_DENOM, GENERIC_TEXT]
+  old_headline: "46 wcs: avg OT 36-54, avg of monthly LTIFR"
+  new_headline: "Yes: 54 h overtime sites LTIFR 0.282 vs 0.090 (FY26, 3.1x); 0.211 vs 0.103 over FY22-FY26"
+  why: "Never compared bands; averaged monthly rates instead of pooled LTIs/man-hours."
+  severity: important
+- id: X3__drill_down
+  defect_class: [FY_MAPPING, GAP, GENERIC_TEXT]
+  old_headline: "Mumbai High Installation 54.0; N&H Installation 54.0 (all years)"
+  new_headline: "Both 54 h/month in FY26; Mumbai High LTIFR 0.437 vs N&H 0.229; no platform-level data"
+  why: "No period filter; platform/technician grain not in data."
+  severity: cosmetic
+- id: X3__why
+  defect_class: [WRONG_QUESTION, FY_MAPPING, GENERIC_TEXT]
+  old_headline: "LTIs by fatigue flag: False 41, True 40 (all years incl. FY27)"
+  new_headline: "Fatigue on 36/36 high-overtime LTIs vs 0/38 standard; near-miss rate lower offshore (0.552 vs 1.476 per M mh)"
+  why: "Ignored near-misses and overtime; included partial FY27."
+  severity: important
+- id: X3__compare_or_so_what
+  defect_class: [WRONG_QUESTION, PCT_DENOM, GENERIC_TEXT]
+  old_headline: "AVG monthly LTIFR 0.0928 vs excellent 0.1"
+  new_headline: "High-overtime LTIFR 0.282 = 2.8x MoU Excellent (0.10), Poor band; company 0.152"
+  why: "Averaged per-row monthly LTIFR across all wcs and FY25-FY27; not the high-overtime population."
+  severity: important
+- id: X4
+  defect_class: [WRONG_QUESTION, GAP, CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "FY26 only, 4 schemes (PRBS 18,250, PF 13,267, PRMB 7,066, Gratuity 1,868)"
+  new_headline: "PRBS+PRMB Rs 25,316 cr at FY26, +27.3% from Rs 19,887 cr (FY22); unfunded Rs 361 -> 495 cr"
+  why: "No trend; mixed PF/gratuity into pension question. FY21 absent in data (GAP: 5 valuations FY22-FY26)."
+  severity: important
+- id: X4__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Assumptions for 4 schemes, no liability split"
+  new_headline: "PRBS Rs 18,250 cr (72.1%, fully funded) vs PRMB Rs 7,066 cr (27.9%, 93.0% funded)"
+  why: "Question asked PRMB vs PRBS valuation breakdown."
+  severity: important
+- id: X4__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "PRMB liability/payout by year, medical inflation 7.5"
+  new_headline: "Retirees per active 0.96 -> 1.49; discount rate 7.25% -> 7.05%; liability per retiree flat"
+  why: "No demographic or pension data; now both schemes with members and discount rate."
+  severity: important
+- id: X4__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Avg funded ratio per scheme (PRBS 100.0) + DPE flag"
+  new_headline: "PRBS assets Rs 18,250 cr = 100% of PRBS but 45.1% of total obligations Rs 40,450 cr"
+  why: "No comparison with total obligations."
+  severity: cosmetic
+- id: X5
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "5 subsidiaries incl. OPAL/OTPC, raw revenue/PAT/dividend"
+  new_headline: "HPCL+MRPL+OVL: Rs 11,964 cr attributable PAT (24.0% of group PAT), Rs 2,840 cr dividend to ONGC"
+  why: "Included entities not asked; no contribution computation."
+  severity: important
+- id: X5__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Dividend received only, 5 entities"
+  new_headline: "HPCL PAT Rs 17,175 cr / div Rs 3,850 cr; MRPL 1,931 / 525; OVL 1,152 / 350"
+  why: "Question asked PAT and dividends declared for the three."
+  severity: important
+- id: X5__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "FY26 GRM/throughput HPCL, MRPL only"
+  new_headline: "Throughput up (HPCL 20.98 -> 22.80 MMT), GRMs flat, OVL production 10.10 -> 10.52 MMTOE"
+  why: "OVL omitted; no trend."
+  severity: cosmetic
+- id: X5__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Sum of subsidiary PAT by FY"
+  new_headline: "Consolidated ROCE 55.65% vs standalone 63.24% (FY26), gap -5.1 to -10.7 pp FY22-FY26"
+  why: "Question was ROCE; SQL never touched it."
+  severity: important
+- id: X6
+  defect_class: [WRONG_QUESTION, GAP, CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "FY26 by technology: Solar 1,903 MW / Rs 7,993 cr ... no reskilling"
+  new_headline: "Green capex Rs 25,408 cr FY22-FY26 (Rs 11,983 cr = 33.4% of FY26 capex); 6,912 employees reskilled"
+  why: "Missing reskilling and trend; Net Zero spend path not in data (GAP)."
+  severity: important
+- id: X6__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Stored cumulative_capex per project (Solar Park Rs 7,560 cr)"
+  new_headline: "Cumulative Rs 25,408 cr: solar 17,355, wind 6,668, green H2 1,386 (sum of annual capex)"
+  why: "Stored cumulative column does not reconcile with annual spend (data defect); now summed from annual."
+  severity: important
+- id: X6__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "36 FY-stamped programme rows of 371 each"
+  new_headline: "One programme via 6 institutes; 9,199 completions FY22-FY27 YTD; ONGC Academy 1,530"
+  why: "Programme names embed FY so counts fragmented; regrouped by institute with completions."
+  severity: cosmetic
+- id: X6__compare_or_so_what
+  defect_class: [STOCK_SUMMED, GAP, CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "SUM(cumulative_capex) by tech: Solar 14,387; all milestones met"
+  new_headline: "Annual green capex Rs 253 cr -> Rs 11,983 cr; no Net Zero 2038 spend targets exist to compare"
+  why: "Summed a cumulative balance across projects; target comparison impossible (GAP)."
+  severity: important
+- id: X7
+  defect_class: [WRONG_QUESTION]
+  old_headline: "WC-wise (TRI 113, ASM 26, AAB 4) - not category-wise"
+  new_headline: "143 NE vacancies vs 4,548 sanctioned (3.1%): SC 16, ST 16, OBC 40, EWS 8, General 63; Tripura 113"
+  why: "Assam 30 = WC-ASM 26 + WC-AAB 4 (all non-executive grade_band; Jorhat/Silchar/INBIGS 0). Parliament question asked category-wise; legacy document placeholders listed only 2 assets. Narrative (draft reply) registered; all 6 NE work centres included."
+  severity: important
+- id: X7__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "WC-ASM + WC-TRI only (Assam EWS 83/81 ...)"
+  new_headline: "Assam 3,561/3,591 in position; Tripura 844/957; weakest General in Tripura 86.6%"
+  why: "Excluded Jorhat, A&AA, Silchar, INBIGS from 'Assam'."
+  severity: important
+- id: X7__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "All-India special drive target 179"
+  new_headline: "NE special drive targets 15 backlog SC/ST posts (8.4% of 179)"
+  why: "Not scoped to North-East."
+  severity: important
+- id: X7__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Vacancies by hard-station category A 477 / B 461 / C 1,094"
+  new_headline: "NE vacancy rate 3.14% vs national 8.08% (rest of India 9.17%)"
+  why: "Hard-station category is not the NE comparison asked."
+  severity: important
+- id: X8
+  defect_class: [WRONG_QUESTION, CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "36 open CAG paras, 82 pending RTI (no ageing)"
+  new_headline: "36 CAG paras (20 > 3 yrs, 6 > 5 yrs) and 82 RTI pending (63 past 30 days, 34 > 1 yr)"
+  why: "Question asked 'how old'; ageing added as of 2026-10-19."
+  severity: important
+- id: X8__drill_down
+  defect_class: [CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "generic template"
+  new_headline: "Offshore Logistics 11 open paras (Rs 490 cr), Procurement/MM 10; HR 6, Finance 2"
+  why: "SQL correct; LOWER() hygiene and avg age added; real narrative."
+  severity: cosmetic
+- id: X8__why
+  defect_class: [WRONG_QUESTION, CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "Bottleneck None 8 (closed paras) top row"
+  new_headline: "20 open paras > 3 yrs; leading bottleneck awaiting CAG concurrence on ATN"
+  why: "Included closed paras as a NULL bottleneck."
+  severity: important
+- id: X8__compare_or_so_what
+  defect_class: [PCT_DENOM, GENERIC_TEXT]
+  old_headline: "78.9% within 30 days (denominator incl. pending)"
+  new_headline: "89.5% disposed; 88.2% of disposals within 30 days; 63 pending beyond 30 days"
+  why: "Mixed disposal and compliance by dividing on-time disposals by all applications incl. recent pending."
+  severity: important
+- id: X9
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "UP Education 79.25 top state-theme; no policy comparison"
+  new_headline: "Rs 949 cr across 14 states; 67.2% in operational areas, 23.4% aspirational; UP (no ONGC ops) largest"
+  why: "'vs policy priority areas' missing; added operational-area and aspirational spend."
+  severity: important
+- id: X9__drill_down
+  defect_class: [WRONG_QUESTION, PCT_DENOM, GENERIC_TEXT]
+  old_headline: "Aspirational-only projects by theme (Rs 222 cr), no proportions"
+  new_headline: "Education 23.4%, sanitation 17.6%, healthcare 11.0% of Rs 949 cr; aspirational 23.4%"
+  why: "Question asked proportion of total; denominator was aspirational subset."
+  severity: important
+- id: X9__why
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "Generic CSR Policy Part 1/2 citations"
+  new_headline: "8 projects (Rs 311.7 cr) outside operational areas, 7 in J&K/UP; 6 in aspirational districts"
+  why: "Replaced generic citation with the projects; no disaster-relief tag in data (GAP)."
+  severity: important
+- id: X9__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Aspirational False 726.83 / True 222.17"
+  new_headline: "67.2% to operational areas; 30.3% (Rs 287.6 cr) to 2 states with no ONGC operations"
+  why: "Split by aspirational flag, not operational-area guideline asked."
+  severity: important
+- id: X10
+  defect_class: [SANITY_BOUND, WRONG_QUESTION, JOIN_FANOUT, GAP, GENERIC_TEXT]
+  old_headline: "9 slipped projects; 20,488 rotation overdue; lifting 68,922,047 USD/BOE"
+  new_headline: "7 open projects slipped; 8,457 executives past 5-yr window (non-exempt, >3 yrs to retirement); max field lifting rise +0.9% (none >=12%)"
+  why: "Lifting = AVG over all line types/years (absurd); rotation counted all grades >=36 months; slipped count incl. completed. 'This week' not answerable (no weekly data). Rev 2 (coordinator): rotation aligned to C1/H10 standard - hrfin_gold.v_continuous_stay is_current_stay, executives, >=60 months, minus valid exemption tags ('None' = no exemption) and officers within 3 years of superannuation: 10,050 -> 8,457 (interim 10,017 had not excluded 1,592 retirement-protected)."
+  severity: blocking
+- id: X10__drill_down
+  defect_class: [JOIN_FANOUT, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "54 milestone rows, DUDP 1 month first (alphabetical)"
+  new_headline: "PRP-VIII B 19 months, TCPP Bassein 17, MHN booster compressors 17 months late"
+  why: "Project slippage repeated over 6 milestones; sorted by name. Now project grain by slippage."
+  severity: important
+- id: X10__why
+  defect_class: [WRONG_QUESTION, GAP, GENERIC_TEXT]
+  old_headline: "FLD-CAM monthly downtime FY26 (arbitrary field)"
+  new_headline: "No 12% spike exists; largest rise Panna +0.9% with output -13.5% and +1,322 downtime h"
+  why: "Hard-coded field unrelated to lifting cost; no weekly/compressor data (GAP)."
+  severity: important
+- id: X10__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "Cited BDP Clause 5.0 (CMD powers)"
+  new_headline: "No ExCom thresholds exist; vs alert: projects 7 vs 3, rotation 8,457 vs 42, lifting +0.9% vs +12%"
+  why: "Citation irrelevant; compared to alert claims and documented norms (JRTP 5 yrs, BDP Rs 100 cr)."
+  severity: important

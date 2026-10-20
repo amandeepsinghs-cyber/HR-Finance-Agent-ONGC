@@ -1,0 +1,25 @@
+{
+  "job_id": "4d2166a0-b8e2-4b13-9084-300b333c9c60",
+  "total_bytes_processed": 7178197,
+  "executed_at": "2026-10-20T06:33:03.855758+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 1,
+  "columns": [
+    "wc_id",
+    "wc_cumulative_years",
+    "cluster_id",
+    "cluster_cumulative_years",
+    "jrtp_cluster_cap_years",
+    "postings_on_record"
+  ],
+  "rows": [
+    {
+      "wc_id": "WC-DEL",
+      "wc_cumulative_years": 5.2,
+      "cluster_id": "CL-DEL",
+      "cluster_cumulative_years": 5.2,
+      "jrtp_cluster_cap_years": 10,
+      "postings_on_record": 1
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "job_id": "348cc566-64aa-4444-a5aa-bf0dfae96aeb",
+  "total_bytes_processed": 24534985,
+  "executed_at": "2026-10-20T06:37:12.788363+00:00",
+  "elapsed_seconds": 0.63,
+  "row_count": 20,
+  "columns": [
+    "short_name",
+    "wc_type",
+    "onshore_offshore",
+    "contract_workers_sep26",
+    "regular_employees_sep26",
+    "contract_to_regular_ratio",
+    "contract_share_of_workforce_pct"
+  ],
+  "rows": [
+    {
+      "short_name": "Hazira Plant",
+      "wc_type": "plant",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 831,
+      "regular_employees_sep26": 526,
+      "contract_to_regular_ratio": 1.58,
+      "contract_share_of_workforce_pct": 61.2
+    },
+    {
+      "short_name": "Uran Plant",
+      "wc_type": "plant",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 812,
+      "regular_employees_sep26": 514,
+      "contract_to_regular_ratio": 1.58,
+      "contract_share_of_workforce_pct": 61.2
+    },
+    {
+      "short_name": "Dahej Plant",
+      "wc_type": "plant",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 809,
+      "regular_employees_sep26": 512,
+      "contract_to_regular_ratio": 1.58,
+      "contract_share_of_workforce_pct": 61.2
+    },
+    {
+      "short_name": "Bassein & Satellite",
+      "wc_type": "asset",
+      "onshore_offshore": "offshore",
+      "contract_workers_sep26": 2658,
+      "regular_employees_sep26": 1833,
+      "contract_to_regular_ratio": 1.45,
+      "contract_share_of_workforce_pct": 59.2
+    },
+    {
+      "short_name": "Neelam & Heera",
+      "wc_type": "asset",
+      "onshore_offshore": "offshore",
+      "contract_workers_sep26": 2472,
+      "regular_employees_sep26": 1705,
+      "contract_to_regular_ratio": 1.45,
+      "contract_share_of_workforce_pct": 59.2
+    },
+    {
+      "short_name": "Mumbai High",
+      "wc_type": "asset",
+      "onshore_offshore": "offshore",
+      "contract_workers_sep26": 1956,
+      "regular_employees_sep26": 1349,
+      "contract_to_regular_ratio": 1.45,
+      "contract_share_of_workforce_pct": 59.2
+    },
+    {
+      "short_name": "Eastern Offshore",
+      "wc_type": "asset",
+      "onshore_offshore": "offshore",
+      "contract_workers_sep26": 1454,
+      "regular_employees_sep26": 1003,
+      "contract_to_regular_ratio": 1.45,
+      "contract_share_of_workforce_pct": 59.2
+    },
+    {
+      "short_name": "Drilling Services",
+      "wc_type": "service",
+      "onshore_offshore": "offshore",
+      "contract_workers_sep26": 202,
+      "regular_employees_sep26": 139,
+      "contract_to_regular_ratio": 1.45,
+      "contract_share_of_workforce_pct": 59.2
+    },
+    {
+      "short_name": "Offshore Logistics",
+      "wc_type": "service",
+      "onshore_offshore": "offshore",
+      "contract_workers_sep26": 200,
+      "regular_employees_sep26": 138,
+      "contract_to_regular_ratio": 1.45,
+      "contract_share_of_workforce_pct": 59.2
+    },
+    {
+      "short_name": "Western Offshore Basin",
+      "wc_type": "basin",
+      "onshore_offshore": "offshore",
+      "contract_workers_sep26": 162,
+      "regular_employees_sep26": 112,
+      "contract_to_regular_ratio": 1.45,
+      "contract_share_of_workforce_pct": 59.1
+    },
+    {
+      "short_name": "Assam Asset",
+      "wc_type": "asset",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 2005,
+      "regular_employees_sep26": 1823,
+      "contract_to_regular_ratio": 1.1,
+      "contract_share_of_workforce_pct": 52.4
+    },
+    {
+      "short_name": "Mehsana Asset",
+      "wc_type": "asset",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 1691,
+      "regular_employees_sep26": 1537,
+      "contract_to_regular_ratio": 1.1,
+      "contract_share_of_workforce_pct": 52.4
+    },
+    {
+      "short_name": "Jorhat Asset",
+      "wc_type": "asset",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 1452,
+      "regular_employees_sep26": 1320,
+      "contract_to_regular_ratio": 1.1,
+      "contract_share_of_workforce_pct": 52.4
+    },
+    {
+      "short_name": "Ahmedabad Asset",
+      "wc_type": "asset",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 1319,
+      "regular_employees_sep26": 1199,
+      "contract_to_regular_ratio": 1.1,
+      "contract_share_of_workforce_pct": 52.4
+    },
+    {
+      "short_name": "Ankleshwar Asset",
+      "wc_type": "asset",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 1011,
+      "regular_employees_sep26": 919,
+      "contract_to_regular_ratio": 1.1,
+      "contract_share_of_workforce_pct": 52.4
+    },
+    {
+      "short_name": "Rajahmundry Asset",
+      "wc_type": "asset",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 927,
+      "regular_employees_sep26": 843,
+      "contract_to_regular_ratio": 1.1,
+      "contract_share_of_workforce_pct": 52.4
+    },
+    {
+      "short_name": "Tripura Asset",
+      "wc_type": "asset",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 922,
+      "regular_employees_sep26": 838,
+      "contract_to_regular_ratio": 1.1,
+      "contract_share_of_workforce_pct": 52.4
+    },
+    {
+      "short_name": "Cauvery Asset",
+      "wc_type": "asset",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 738,
+      "regular_employees_sep26": 671,
+      "contract_to_regular_ratio": 1.1,
+      "contract_share_of_workforce_pct": 52.4
+    },
+    {
+      "short_name": "CBM Bokaro",
+      "wc_type": "asset",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 605,
+      "regular_employees_sep26": 550,
+      "contract_to_regular_ratio": 1.1,
+      "contract_share_of_workforce_pct": 52.4
+    },
+    {
+      "short_name": "Cambay Asset",
+      "wc_type": "asset",
+      "onshore_offshore": "onshore",
+      "contract_workers_sep26": 560,
+      "regular_employees_sep26": 509,
+      "contract_to_regular_ratio": 1.1,
+      "contract_share_of_workforce_pct": 52.4
+    }
+  ]
+}

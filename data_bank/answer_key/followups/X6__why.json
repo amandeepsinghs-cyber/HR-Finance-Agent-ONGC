@@ -1,0 +1,72 @@
+{
+  "job_id": "aade1759-2458-4b5e-8b74-8bed1ecf9f8a",
+  "total_bytes_processed": 3806085,
+  "executed_at": "2026-10-20T06:37:24.533184+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 6,
+  "columns": [
+    "institute",
+    "enrolments",
+    "completions",
+    "distinct_employees_completed",
+    "total_training_days",
+    "first_fy",
+    "latest_fy"
+  ],
+  "rows": [
+    {
+      "institute": "IDT",
+      "enrolments": 2059,
+      "completions": 1564,
+      "distinct_employees_completed": 1533,
+      "total_training_days": 6914,
+      "first_fy": "FY22",
+      "latest_fy": "FY27"
+    },
+    {
+      "institute": "IRS Ahmedabad",
+      "enrolments": 2059,
+      "completions": 1548,
+      "distinct_employees_completed": 1511,
+      "total_training_days": 7873,
+      "first_fy": "FY22",
+      "latest_fy": "FY27"
+    },
+    {
+      "institute": "External",
+      "enrolments": 2059,
+      "completions": 1542,
+      "distinct_employees_completed": 1494,
+      "total_training_days": 6098,
+      "first_fy": "FY22",
+      "latest_fy": "FY27"
+    },
+    {
+      "institute": "ONGC Academy Dehradun",
+      "enrolments": 2059,
+      "completions": 1530,
+      "distinct_employees_completed": 1507,
+      "total_training_days": 8334,
+      "first_fy": "FY22",
+      "latest_fy": "FY27"
+    },
+    {
+      "institute": "IOGPT Navi Mumbai",
+      "enrolments": 2059,
+      "completions": 1512,
+      "distinct_employees_completed": 1473,
+      "total_training_days": 8520,
+      "first_fy": "FY22",
+      "latest_fy": "FY27"
+    },
+    {
+      "institute": "KDMIPE",
+      "enrolments": 2059,
+      "completions": 1503,
+      "distinct_employees_completed": 1477,
+      "total_training_days": 8618,
+      "first_fy": "FY22",
+      "latest_fy": "FY27"
+    }
+  ]
+}

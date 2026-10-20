@@ -1,0 +1,29 @@
+{
+  "job_id": "1e969b10-afd8-4d28-9892-21a952f444d0",
+  "total_bytes_processed": 1639894,
+  "executed_at": "2026-10-20T06:33:22.967164+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 1,
+  "columns": [
+    "grade_id",
+    "designation",
+    "ta_da_travel_class",
+    "daily_lodging_limit_cat_a_inr",
+    "mumbai_city_category",
+    "e2_mumbai_claims",
+    "avg_lodging_per_night_inr",
+    "claim_class_entitlement"
+  ],
+  "rows": [
+    {
+      "grade_id": "E2",
+      "designation": "Assistant Executive Engineer (AEE) / Deputy Manager",
+      "ta_da_travel_class": "Economy_Air",
+      "daily_lodging_limit_cat_a_inr": 4500.0,
+      "mumbai_city_category": "Class_A",
+      "e2_mumbai_claims": 460,
+      "avg_lodging_per_night_inr": 4500.0,
+      "claim_class_entitlement": "Air_Economy"
+    }
+  ]
+}

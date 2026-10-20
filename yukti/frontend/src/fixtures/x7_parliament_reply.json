@@ -1,0 +1,59 @@
+{
+  "turn_id": "turn_x7_006",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "I have prepared the draft reply for the Parliament question regarding North-East vacancies. Total vacancies stand at 143 against 4548 sanctioned posts, with 113 in Tripura and 30 in Assam, and 15 backlog vacancies being filled through a Special Recruitment Drive.",
+  "display_text": "Draft Parliamentary Reply: Category-wise vacancies in North-East work centres as of 31 March 2026 [1]. Total vacancies: 143 (30 in Assam, 113 in Tripura; SC 16, ST 16, OBC 40, EWS 8, General 63). 15 backlog vacancies are being filled through a Special Recruitment Drive.",
+  "visual": {
+    "type": "document",
+    "mode": "replace",
+    "title": "Parliament Reply Draft: North-East Vacancies (Rajya Sabha Admitted Question)",
+    "document": {
+      "doc_type": "Parliament Reply",
+      "title": "GOVERNMENT OF INDIA - MINISTRY OF PETROLEUM AND NATURAL GAS",
+      "template_id": "TMPL_PARL_REPLY_v2",
+      "version": 1,
+      "markdown": "# OIL AND NATURAL GAS CORPORATION LIMITED\n### CORPORATE HR DIVISION \u2014 DEENDAYAL URJA BHAWAN, NEW DELHI\n\n**RAJYA SABHA / LOK SABHA ADMITTED QUESTION NO. 1842**\n**SUBJECT:** Vacancies in ONGC Operational Assets in North-Eastern Region (Category-Wise)\n\n---\n\n#### QUESTION:\n(a) The total number of sanctioned posts and current vacancies in ONGC work centres located in Assam and Tripura;\n(b) Category-wise breakup (SC, ST, OBC, EWS, General) of existing vacancies;\n(c) Steps undertaken through Special Recruitment Drives to clear regional backlogs.\n\n---\n\n#### ANSWER:\n**MINISTER OF STATE IN THE MINISTRY OF PETROLEUM AND NATURAL GAS**\n\n**(a) & (b):** As on 31 March 2026, ONGC had 143 vacancies against 4,548 sanctioned posts (3.1%) in its North-Eastern work centres \u2014 30 in Assam and 113 in Tripura.\n\n| Category | Sanctioned | In Position | Vacancies | Assam | Tripura | Backlog (SRD) |\n| --- | --- | --- | --- | --- | --- | --- |\n| SC | 720 | 704 | 16 | 3 | 13 | 8 |\n| ST | 544 | 528 | 16 | 3 | 13 | 7 |\n| OBC | 1,207 | 1,167 | 40 | 10 | 30 | 0 |\n| EWS | 209 | 201 | 8 | 2 | 6 | 0 |\n| General | 1,868 | 1,805 | 63 | 12 | 51 | 0 |\n| **TOTAL** | **4,548** | **4,405** | **143** | **30** | **113** | **15** |\n\n**(c): Special Recruitment Drive & Remedial Action:**\n1. Of the reserved-category vacancies, 15 are backlog vacancies (8 SC, 7 ST) being filled through a Special Recruitment Drive.\n2. Tripura accounts for 79.0% of regional vacancies and receives prioritized allocation in the ongoing engineering Graduate Trainee induction."
+    },
+    "kpis": [
+      {
+        "label": "Total NE Vacancies",
+        "value": 143,
+        "unit": "Positions",
+        "delta": "3.1% Vacancy Rate"
+      },
+      {
+        "label": "Backlog (SRD Drive)",
+        "value": 15,
+        "unit": "Reserved",
+        "delta": "Special Drive"
+      }
+    ]
+  },
+  "insights": [
+    "As on 31 March 2026, ONGC had 143 vacancies against 4548 sanctioned posts (3.1%) across North-Eastern centres (30 in Assam and 113 in Tripura).",
+    "Category-wise breakdown: SC 16; ST 16; OBC 40; EWS 8; General 63.",
+    "Of the reserved-category vacancies, 15 are backlog vacancies being filled through a Special Recruitment Drive; Tripura accounts for 79.0% of regional vacancies."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.mart_workforce",
+      "query_id": "afcc1b89-5765-451f-babc-f6fc359ad5c2",
+      "sql": "-- Answer Key SQL: X7\n-- Question: Draft a reply to a Parliament question: \"Vacancies in ONGC in the North-East region, category-wise.\"\n-- Type: document\n-- Semantic audit 2026-10-20: Category-wise as the Parliament question asks (old SQL was work-centre-wise with no category split).\n-- All six NE work centres (Assam + Tripura), FY26 sanctioned-posts roster, by social category with state split.\nSELECT\n    sp.social_category AS category,\n    SUM(sp.sanctioned_strength) AS sanctioned,\n    SUM(sp.in_position_strength) AS in_position,\n    SUM(sp.vacancy_count) AS vacancies,\n    SUM(IF(wc.state = 'Assam', sp.vacancy_count, 0)) AS vacancies_assam,\n    SUM(IF(wc.state = 'Tripura', sp.vacancy_count, 0)) AS vacancies_tripura,\n    ROUND(SUM(sp.vacancy_count) * 100 / SUM(sp.sanctioned_strength), 1) AS vacancy_rate_pct,\n    SUM(sp.backlog_vacancies) AS backlog_reserved_vacancies\nFROM sanctioned_posts sp\nJOIN dim_work_centre wc ON sp.wc_id = wc.wc_id\nWHERE wc.sector = 'NE' AND sp.fiscal_year = 'FY26'\nGROUP BY sp.social_category\nORDER BY CASE sp.social_category WHEN 'SC' THEN 1 WHEN 'ST' THEN 2 WHEN 'OBC' THEN 3 WHEN 'EWS' THEN 4 ELSE 5 END;\n"
+    }
+  ],
+  "suggestions": [
+    "Export official draft to Google Docs",
+    "Translate full reply into Official Hindi",
+    "Review ST Special Recruitment status"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "docs",
+    "word",
+    "pdf"
+  ]
+}

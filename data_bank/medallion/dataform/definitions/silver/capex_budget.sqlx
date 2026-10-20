@@ -1,0 +1,43 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "capex_budget",
+  description: "Capital expenditure tracker tracking Budget Estimates (BE), Revised Estimates (RE), actual spend, and utilization variance."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_1) AS budget_id,
+    TRIM(col_6) AS fiscal_year,
+    TRIM(col_5) AS month,
+    NULLIF(TRIM(col_2), '') AS prj_id,
+    TRIM(col_4) AS asset_wc_id,
+    CASE
+                      WHEN LOWER(TRIM(col_7)) LIKE '%development drilling%' THEN 'development_drilling'
+                      WHEN LOWER(TRIM(col_7)) LIKE '%survey%' OR LOWER(TRIM(col_7)) LIKE '%seismic%' THEN 'exploratory_drilling'
+                      WHEN LOWER(TRIM(col_7)) LIKE '%eor%' OR LOWER(TRIM(col_7)) LIKE '%secondary%' THEN 'secondary_tertiary_recovery'
+                      WHEN LOWER(TRIM(col_7)) LIKE '%platform%' OR LOWER(TRIM(col_7)) LIKE '%subsea%' THEN 'offshore_platforms'
+                      WHEN LOWER(TRIM(col_7)) LIKE '%pipeline%' OR LOWER(TRIM(col_7)) LIKE '%gas sweetening%' THEN 'pipelines'
+                      WHEN LOWER(TRIM(col_7)) LIKE '%surface%' THEN 'surface_facilities'
+                      WHEN LOWER(TRIM(col_7)) LIKE '%renewables%' THEN 'hse_renewables'
+                      ELSE 'secondary_tertiary_recovery'
+                    END AS capex_head,
+    SAFE_CAST(REPLACE(col_8, ',', '') AS NUMERIC) AS budget_estimate_be_inr_cr,
+    SAFE_CAST(REPLACE(col_9, ',', '') AS NUMERIC) AS revised_estimate_re_inr_cr,
+    SAFE_CAST(REPLACE(col_10, ',', '') AS NUMERIC) AS actual_spend_inr_cr,
+    ROUND(SAFE_CAST(REPLACE(col_10, ',', '') AS NUMERIC) - SAFE_CAST(REPLACE(col_8, ',', '') AS NUMERIC), 2) AS variance_actual_vs_be_inr_cr,
+    ROUND(SAFE_CAST(REPLACE(col_10, ',', '') AS NUMERIC) - SAFE_CAST(REPLACE(col_9, ',', '') AS NUMERIC), 2) AS variance_actual_vs_re_inr_cr,
+    ROUND(SAFE_DIVIDE(SAFE_CAST(REPLACE(col_10, ',', '') AS NUMERIC), NULLIF(SAFE_CAST(REPLACE(col_9, ',', '') AS NUMERIC), 0)) * 100, 2) AS capex_utilisation_pct,
+    CASE WHEN LOWER(TRIM(col_7)) LIKE '%secondary%' OR LOWER(TRIM(col_7)) LIKE '%eor%' THEN SAFE_CAST(REPLACE(col_10, ',', '') AS NUMERIC) ELSE 0 END AS secondary_recovery_capex_inr_cr,
+    CASE
+                      WHEN SAFE_DIVIDE(SAFE_CAST(REPLACE(col_10, ',', '') AS NUMERIC), NULLIF(SAFE_CAST(REPLACE(col_9, ',', '') AS NUMERIC), 0)) >= 0.95 THEN 'on_track'
+                      WHEN SAFE_DIVIDE(SAFE_CAST(REPLACE(col_10, ',', '') AS NUMERIC), NULLIF(SAFE_CAST(REPLACE(col_9, ',', '') AS NUMERIC), 0)) < 0.80 THEN 'underspent_procurement_delay'
+                      ELSE 'on_track'
+                    END AS burn_rate_status
+  FROM ${ref("excel_capex_be_re_actuals")}
+  WHERE _row_number >= 7 AND _sheet_name NOT IN ('_Ref_Capex_Codes') AND col_1 IS NOT NULL AND TRIM(col_1) != '' AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Subtotal|^Total|^Summary)') AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Note:|^Confidential|^Status:)')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY budget_id ORDER BY _ingest_ts DESC) = 1

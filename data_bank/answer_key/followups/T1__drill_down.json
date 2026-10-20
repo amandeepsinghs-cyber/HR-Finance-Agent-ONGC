@@ -1,0 +1,414 @@
+{
+  "job_id": "97b12abf-085f-493c-967b-9e011438efa0",
+  "total_bytes_processed": 43258,
+  "executed_at": "2026-10-20T06:42:22.908009+00:00",
+  "elapsed_seconds": 0.61,
+  "row_count": 44,
+  "columns": [
+    "field_name",
+    "onshore_offshore",
+    "ebitda_inr_cr",
+    "ebitda_margin_pct",
+    "pbt_inr_cr",
+    "negative_operating_earnings",
+    "negative_pbt"
+  ],
+  "rows": [
+    {
+      "field_name": "Champang",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 26.25,
+      "ebitda_margin_pct": 7.96,
+      "pbt_inr_cr": -4.93,
+      "negative_operating_earnings": false,
+      "negative_pbt": true
+    },
+    {
+      "field_name": "Borholla",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 36.39,
+      "ebitda_margin_pct": 10.38,
+      "pbt_inr_cr": 3.22,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Khoraghat",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 50.29,
+      "ebitda_margin_pct": 13.24,
+      "pbt_inr_cr": 14.35,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Mori",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 122.93,
+      "ebitda_margin_pct": 39.52,
+      "pbt_inr_cr": 93.49,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Heera",
+      "onshore_offshore": "offshore",
+      "ebitda_inr_cr": 1013.22,
+      "ebitda_margin_pct": 44.5,
+      "pbt_inr_cr": 661.36,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Kuthalam",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 201.88,
+      "ebitda_margin_pct": 45.58,
+      "pbt_inr_cr": 87.73,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Adiyakkamangalam",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 174.85,
+      "ebitda_margin_pct": 45.75,
+      "pbt_inr_cr": 138.69,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "D-1 Field",
+      "onshore_offshore": "offshore",
+      "ebitda_inr_cr": 1204.83,
+      "ebitda_margin_pct": 45.99,
+      "pbt_inr_cr": 799.99,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Mukta",
+      "onshore_offshore": "offshore",
+      "ebitda_inr_cr": 1112.5,
+      "ebitda_margin_pct": 46.62,
+      "pbt_inr_cr": 741.79,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Lanwa",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 205.77,
+      "ebitda_margin_pct": 50.51,
+      "pbt_inr_cr": 167.23,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Charali",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 138.67,
+      "ebitda_margin_pct": 51.13,
+      "pbt_inr_cr": 113.01,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Jotana",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 219.35,
+      "ebitda_margin_pct": 51.29,
+      "pbt_inr_cr": 178.89,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Narimanam",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 270.88,
+      "ebitda_margin_pct": 51.29,
+      "pbt_inr_cr": 220.91,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Ratna & R-Series",
+      "onshore_offshore": "offshore",
+      "ebitda_inr_cr": 1672.55,
+      "ebitda_margin_pct": 52.44,
+      "pbt_inr_cr": 1179.64,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Balol",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 252.27,
+      "ebitda_margin_pct": 52.83,
+      "pbt_inr_cr": 207.09,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Kesanapalli",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 321.38,
+      "ebitda_margin_pct": 53.48,
+      "pbt_inr_cr": 264.51,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Santhal",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 269.87,
+      "ebitda_margin_pct": 53.58,
+      "pbt_inr_cr": 222.22,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Neelam",
+      "onshore_offshore": "offshore",
+      "ebitda_inr_cr": 1738.58,
+      "ebitda_margin_pct": 53.89,
+      "pbt_inr_cr": 1240.06,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Panna",
+      "onshore_offshore": "offshore",
+      "ebitda_inr_cr": 1882.57,
+      "ebitda_margin_pct": 53.92,
+      "pbt_inr_cr": 1169.11,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Bechraji",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 334.37,
+      "ebitda_margin_pct": 55.69,
+      "pbt_inr_cr": 277.56,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Linch",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 384.33,
+      "ebitda_margin_pct": 56.1,
+      "pbt_inr_cr": 308.53,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Sobhasan",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 1106.05,
+      "ebitda_margin_pct": 57.92,
+      "pbt_inr_cr": 888.49,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Mumbai High North",
+      "onshore_offshore": "offshore",
+      "ebitda_inr_cr": 9506.45,
+      "ebitda_margin_pct": 57.97,
+      "pbt_inr_cr": 6972.39,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Geleki",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 1199.4,
+      "ebitda_margin_pct": 57.98,
+      "pbt_inr_cr": 1003.71,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Mumbai High South",
+      "onshore_offshore": "offshore",
+      "ebitda_inr_cr": 9714.51,
+      "ebitda_margin_pct": 58.13,
+      "pbt_inr_cr": 7132.1,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Lakwa",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 1571.49,
+      "ebitda_margin_pct": 58.77,
+      "pbt_inr_cr": 1231.0,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Rudrasagar",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 1327.73,
+      "ebitda_margin_pct": 58.9,
+      "pbt_inr_cr": 1114.46,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Jhalora",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 309.61,
+      "ebitda_margin_pct": 59.0,
+      "pbt_inr_cr": 259.96,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Viraj",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 310.67,
+      "ebitda_margin_pct": 59.05,
+      "pbt_inr_cr": 260.9,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Baghewala",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 282.24,
+      "ebitda_margin_pct": 59.44,
+      "pbt_inr_cr": 237.32,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Tatipaka",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 313.56,
+      "ebitda_margin_pct": 59.86,
+      "pbt_inr_cr": 178.55,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Sanand",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 780.55,
+      "ebitda_margin_pct": 59.98,
+      "pbt_inr_cr": 657.42,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Nandej",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 353.91,
+      "ebitda_margin_pct": 60.0,
+      "pbt_inr_cr": 298.1,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Baramura",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 375.81,
+      "ebitda_margin_pct": 60.02,
+      "pbt_inr_cr": 214.41,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Nawagam",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 829.73,
+      "ebitda_margin_pct": 60.41,
+      "pbt_inr_cr": 699.77,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Kathana",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 966.88,
+      "ebitda_margin_pct": 60.5,
+      "pbt_inr_cr": 815.69,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Kalol",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 955.15,
+      "ebitda_margin_pct": 61.31,
+      "pbt_inr_cr": 807.76,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Motwan",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 308.81,
+      "ebitda_margin_pct": 63.34,
+      "pbt_inr_cr": 262.68,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Pasarlapudi",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 575.48,
+      "ebitda_margin_pct": 64.79,
+      "pbt_inr_cr": 370.72,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Ankleshwar",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 876.33,
+      "ebitda_margin_pct": 64.95,
+      "pbt_inr_cr": 748.68,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Cambay",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 450.93,
+      "ebitda_margin_pct": 66.22,
+      "pbt_inr_cr": 275.41,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Kosamba",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 1334.5,
+      "ebitda_margin_pct": 67.06,
+      "pbt_inr_cr": 1146.22,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Bassein",
+      "onshore_offshore": "offshore",
+      "ebitda_inr_cr": 9672.22,
+      "ebitda_margin_pct": 68.63,
+      "pbt_inr_cr": 4366.37,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    },
+    {
+      "field_name": "Gandhar",
+      "onshore_offshore": "onshore",
+      "ebitda_inr_cr": 7075.78,
+      "ebitda_margin_pct": 70.45,
+      "pbt_inr_cr": 5702.6,
+      "negative_operating_earnings": false,
+      "negative_pbt": false
+    }
+  ]
+}

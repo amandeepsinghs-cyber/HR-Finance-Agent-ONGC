@@ -1,0 +1,87 @@
+{
+  "job_id": "12ad19db-d667-41ce-b58e-74864e7c1204",
+  "total_bytes_processed": 1876781,
+  "executed_at": "2026-10-20T06:34:04.625814+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 12,
+  "columns": [
+    "discipline",
+    "retirement_fy",
+    "superannuations",
+    "cumulative_to_date"
+  ],
+  "rows": [
+    {
+      "discipline": "Geology",
+      "retirement_fy": "FY27",
+      "superannuations": 46,
+      "cumulative_to_date": 46
+    },
+    {
+      "discipline": "Geology",
+      "retirement_fy": "FY28",
+      "superannuations": 63,
+      "cumulative_to_date": 109
+    },
+    {
+      "discipline": "Geology",
+      "retirement_fy": "FY29",
+      "superannuations": 70,
+      "cumulative_to_date": 179
+    },
+    {
+      "discipline": "Geology",
+      "retirement_fy": "FY30",
+      "superannuations": 83,
+      "cumulative_to_date": 262
+    },
+    {
+      "discipline": "Geophysics",
+      "retirement_fy": "FY27",
+      "superannuations": 33,
+      "cumulative_to_date": 33
+    },
+    {
+      "discipline": "Geophysics",
+      "retirement_fy": "FY28",
+      "superannuations": 70,
+      "cumulative_to_date": 103
+    },
+    {
+      "discipline": "Geophysics",
+      "retirement_fy": "FY29",
+      "superannuations": 56,
+      "cumulative_to_date": 159
+    },
+    {
+      "discipline": "Geophysics",
+      "retirement_fy": "FY30",
+      "superannuations": 69,
+      "cumulative_to_date": 228
+    },
+    {
+      "discipline": "Reservoir",
+      "retirement_fy": "FY27",
+      "superannuations": 48,
+      "cumulative_to_date": 48
+    },
+    {
+      "discipline": "Reservoir",
+      "retirement_fy": "FY28",
+      "superannuations": 88,
+      "cumulative_to_date": 136
+    },
+    {
+      "discipline": "Reservoir",
+      "retirement_fy": "FY29",
+      "superannuations": 75,
+      "cumulative_to_date": 211
+    },
+    {
+      "discipline": "Reservoir",
+      "retirement_fy": "FY30",
+      "superannuations": 90,
+      "cumulative_to_date": 301
+    }
+  ]
+}

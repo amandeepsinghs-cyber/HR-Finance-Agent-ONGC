@@ -1,0 +1,45 @@
+{
+  "job_id": "2306d9cb-c734-4ec9-b327-1355549baf8a",
+  "total_bytes_processed": 119894453,
+  "executed_at": "2026-10-20T06:33:14.878967+00:00",
+  "elapsed_seconds": 0.73,
+  "row_count": 3,
+  "columns": [
+    "cadre_group",
+    "employees_paid",
+    "basic_plus_da_cr",
+    "employer_super_contribution_cr",
+    "employer_super_pct",
+    "cap_amount_cr",
+    "headroom_cr"
+  ],
+  "rows": [
+    {
+      "cadre_group": "Executives E1-E9",
+      "employees_paid": 14738,
+      "basic_plus_da_cr": 3857.7,
+      "employer_super_contribution_cr": 1064.7,
+      "employer_super_pct": 27.6,
+      "cap_amount_cr": 1157.3,
+      "headroom_cr": 92.6
+    },
+    {
+      "cadre_group": "Non-executives",
+      "employees_paid": 9686,
+      "basic_plus_da_cr": 1113.6,
+      "employer_super_contribution_cr": 307.3,
+      "employer_super_pct": 27.6,
+      "cap_amount_cr": 334.1,
+      "headroom_cr": 26.7
+    },
+    {
+      "cadre_group": "Board",
+      "employees_paid": 3,
+      "basic_plus_da_cr": 1.5,
+      "employer_super_contribution_cr": 0.4,
+      "employer_super_pct": 27.6,
+      "cap_amount_cr": 0.4,
+      "headroom_cr": 0.0
+    }
+  ]
+}

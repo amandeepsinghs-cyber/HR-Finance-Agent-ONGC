@@ -1,0 +1,33 @@
+{
+  "job_id": "6046ce6b-aba0-462d-a3dc-ff8d912e207b",
+  "total_bytes_processed": 5284729,
+  "executed_at": "2026-10-20T06:38:47.005855+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 2,
+  "columns": [
+    "promotion_step",
+    "pending_candidates",
+    "residency_norm_years",
+    "residency_completed_awaiting",
+    "pct_residency_completed",
+    "avg_years_in_grade"
+  ],
+  "rows": [
+    {
+      "promotion_step": "E4->E5",
+      "pending_candidates": 128,
+      "residency_norm_years": 4,
+      "residency_completed_awaiting": 105,
+      "pct_residency_completed": 82.0,
+      "avg_years_in_grade": 6.2
+    },
+    {
+      "promotion_step": "E5->E6",
+      "pending_candidates": 100,
+      "residency_norm_years": 4,
+      "residency_completed_awaiting": 59,
+      "pct_residency_completed": 59.0,
+      "avg_years_in_grade": 4.9
+    }
+  ]
+}

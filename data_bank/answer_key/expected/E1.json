@@ -1,0 +1,23 @@
+{
+  "job_id": "2eb543c3-3c8f-4e83-b450-bdf98d784e7f",
+  "total_bytes_processed": 34467702,
+  "executed_at": "2026-10-20T06:32:44.539771+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 1,
+  "columns": [
+    "fiscal_year",
+    "leave_type",
+    "closing_balance_days",
+    "encashable_days_per_ledger",
+    "in_service_encashable_per_rule_4_3"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY26",
+      "leave_type": "Earned_Leave_EL",
+      "closing_balance_days": 78.0,
+      "encashable_days_per_ledger": 18.0,
+      "in_service_encashable_per_rule_4_3": 30.0
+    }
+  ]
+}

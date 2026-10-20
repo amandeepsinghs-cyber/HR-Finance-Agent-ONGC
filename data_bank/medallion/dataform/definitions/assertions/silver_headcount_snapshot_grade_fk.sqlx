@@ -1,0 +1,13 @@
+config {
+  type: "assertion",
+  schema: "hrfin_silver",
+  description: "Assert that all grade_ids in headcount_snapshot reference valid dim_grade with non-null cadre and group"
+}
+
+SELECT
+  h.grade_id,
+  h.wc_id,
+  h.fiscal_year
+FROM ${ref("headcount_snapshot")} h
+LEFT JOIN ${ref("dim_grade")} g ON h.grade_id = g.grade_id
+WHERE g.grade_id IS NULL OR g.cadre IS NULL OR g.group IS NULL

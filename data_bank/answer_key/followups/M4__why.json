@@ -1,0 +1,21 @@
+{
+  "job_id": "ea2e8954-407a-4316-9018-bc2e56c18fe6",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:42:18.446956+00:00",
+  "elapsed_seconds": 0.69,
+  "row_count": 1,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "BDP summary",
+      "clause_ref": "Clause 8.0",
+      "heading": "Commercial Confidentiality of Operational Schedules",
+      "quote_snippet": "8.1 Commercial Sensitivity: The detailed schedules of delegated powers, proprietary procurement limits, field-specific financial delegations, and vendor sanction thresholds constitute commercially sensitive internal information. 8.2 Internal Controlled Classification: This Book of Delegated Powers is classified as an Internal Controlled Document. Unauthorized publication, sharing with external contractors, or public disclosure is prohibited under corporate confidentiality regulations."
+    }
+  ]
+}

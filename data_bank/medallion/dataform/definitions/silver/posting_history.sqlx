@@ -1,0 +1,37 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "posting_history",
+  description: "Historical posting stint ledger recording every station movement, transfer order, cluster stay, and exemption."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`posting_id`) AS posting_id,
+    TRIM(`PERNR`) AS emp_id,
+    TRIM(`WERKS`) AS wc_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`BEGDA`), ''), 1, 10)) AS from_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`ENDDA`), ''), 1, 10)) AS to_date,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`PERSK`) AS grade_id,
+    TRIM(`discipline_id`) AS discipline_id,
+    TRIM(`designation`) AS designation,
+    TRIM(`MASSN`) AS posting_type,
+    TRIM(`order_no`) AS order_no,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`tenure_months`), ''), ',', ''), '₹', '') AS INT64) AS tenure_months,
+    CASE WHEN LOWER(TRIM(`is_current_posting`)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(`is_current_posting`)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_current_posting,
+    TRIM(`exemption_tag`) AS exemption_tag,
+    TRIM(`MASSG`) AS exemption_reason_code,
+    TRIM(`exemption_approved_by`) AS exemption_approved_by,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`exemption_valid_until`), ''), 1, 10)) AS exemption_valid_until,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`transfer_grant_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS transfer_grant_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`composite_transfer_grant_cta_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS composite_transfer_grant_cta_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`baggage_transport_cost_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS baggage_transport_cost_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`total_transfer_cost_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS total_transfer_cost_inr
+  FROM ${ref("sap_pa0001")}
+  WHERE NULLIF(TRIM(`posting_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY posting_id ORDER BY _ingest_ts DESC) = 1

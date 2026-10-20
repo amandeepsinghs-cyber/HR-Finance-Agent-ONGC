@@ -1,0 +1,2969 @@
+metadata:
+  description: ONGC Calibration Targets & Modelled Assumptions from FACTS.md
+  source_doc: knowledge/public_sources/grounding_data/FACTS.md
+  target_count: 180
+  generated_by: generators/build_calibration_targets.py
+  tolerance_rule: ±2% relative default (0.02); exact for statutory or exact counts;
+    spec ground rules §0
+calibration_targets:
+- id: CAL-HR-HC-FY13
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY13
+  value: 32923
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR22 p.18
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY14
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY14
+  value: 33911
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR22 p.18
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY15
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY15
+  value: 33185
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR22 p.18
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY16
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY16
+  value: 33927
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR22 p.18
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY17
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY17
+  value: 33660
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY18
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY18
+  value: 32265
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY19
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY19
+  value: 31065
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY20
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY20
+  value: 30105
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY21
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY21
+  value: 28479
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY22
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY22
+  value: 27165
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY23
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY23
+  value: 25993
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY24
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY24
+  value: 25847
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY25
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY25
+  value: 24368
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H7
+- id: CAL-HR-HC-FY26
+  domain: hr
+  metric: Regular employees at 31-March
+  period: FY26
+  value: 23117
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24, p.141
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C3
+  - H1
+  - H3
+  - M1
+- id: CAL-HR-STR-EXEC
+  domain: hr
+  metric: Executive regular headcount (permanent employees)
+  period: 31-Mar-2026
+  value: 13781
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 BRSR p.141
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C1
+  - H1
+  - H3
+  - M1
+- id: CAL-HR-STR-NONEXEC
+  domain: hr
+  metric: Non-executive regular headcount (permanent workers)
+  period: 31-Mar-2026
+  value: 9336
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 BRSR p.141
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H3
+  - M1
+- id: CAL-HR-DIV-WOMEN-TOT
+  domain: hr
+  metric: Total women regular employees
+  period: 31-Mar-2026
+  value: 1885
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.141, p.119
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H7
+- id: CAL-HR-DIV-WOMEN-EXEC
+  domain: hr
+  metric: Women executive regular employees
+  period: 31-Mar-2026
+  value: 1377
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 BRSR p.141
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H7
+- id: CAL-HR-DIV-WOMEN-NONEXEC
+  domain: hr
+  metric: Women non-executive regular employees
+  period: 31-Mar-2026
+  value: 508
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 BRSR p.141
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H7
+- id: CAL-HR-DIV-WOMEN-PCT
+  domain: hr
+  metric: Women percentage of total regular workforce
+  period: 31-Mar-2026
+  value: 8.2
+  unit: pct
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.119
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H7
+- id: CAL-HR-DIV-SC-PCT
+  domain: hr
+  metric: Scheduled Castes (SC) representation percentage
+  period: 31-Mar-2026
+  value: 15.02
+  unit: pct
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.119
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H6
+- id: CAL-HR-DIV-ST-PCT
+  domain: hr
+  metric: Scheduled Tribes (ST) representation percentage
+  period: 31-Mar-2026
+  value: 11.35
+  unit: pct
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.119
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H6
+- id: CAL-HR-DIV-PWD-TOT
+  domain: hr
+  metric: Persons with Disabilities (PwD) regular employees
+  period: 31-Mar-2026
+  value: 523
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 BRSR p.141
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H6
+- id: CAL-HR-DIV-PWD-EXEC
+  domain: hr
+  metric: Persons with Disabilities (PwD) executive regular employees
+  period: 31-Mar-2026
+  value: 313
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 BRSR p.141
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H6
+- id: CAL-HR-DIV-PWD-NONEXEC
+  domain: hr
+  metric: Persons with Disabilities (PwD) non-executive regular employees
+  period: 31-Mar-2026
+  value: 210
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 BRSR p.141
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H6
+- id: CAL-HR-AGE-U30
+  domain: hr
+  metric: Employees aged under 30 years
+  period: 31-Mar-2026
+  value: 2300
+  unit: count
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.79
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C4
+  - C5
+  - H4
+  - W2
+- id: CAL-HR-AGE-30-50
+  domain: hr
+  metric: Employees aged 30 to 50 years
+  period: 31-Mar-2026
+  value: 15834
+  unit: count
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.79
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C4
+  - C5
+  - H4
+  - W2
+- id: CAL-HR-AGE-O50
+  domain: hr
+  metric: Employees aged above 50 years
+  period: 31-Mar-2026
+  value: 5859
+  unit: count
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.79
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C4
+  - C5
+  - H4
+  - P3
+  - W2
+- id: CAL-HR-PAY-MED-EXEC-M
+  domain: hr
+  metric: Median annual remuneration Executive Male
+  period: FY26
+  value: 43.3
+  unit: lakh_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 BRSR p.181
+  confidence: verified
+  target_tables:
+  - H8
+  questions_served:
+  - F7
+  - P13
+  - D1
+- id: CAL-HR-PAY-MED-EXEC-F
+  domain: hr
+  metric: Median annual remuneration Executive Female
+  period: FY26
+  value: 37.55
+  unit: lakh_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 BRSR p.181
+  confidence: verified
+  target_tables:
+  - H8
+  questions_served:
+  - F7
+  - P13
+  - D1
+- id: CAL-HR-PAY-MED-NONEXEC-M
+  domain: hr
+  metric: Median annual remuneration Non-Executive Male
+  period: FY26
+  value: 21.97
+  unit: lakh_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 BRSR p.181
+  confidence: verified
+  target_tables:
+  - H8
+  questions_served:
+  - F7
+  - P13
+  - D1
+- id: CAL-HR-PAY-MED-NONEXEC-F
+  domain: hr
+  metric: Median annual remuneration Non-Executive Female
+  period: FY26
+  value: 19.02
+  unit: lakh_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 BRSR p.181
+  confidence: verified
+  target_tables:
+  - H8
+  questions_served:
+  - F7
+  - P13
+  - D1
+- id: CAL-HR-FLOW-HIRES-FY26
+  domain: hr
+  metric: New hires recruited in FY26
+  period: FY26
+  value: 167
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.76, p.79
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H4
+  - W2
+- id: CAL-HR-FLOW-HIRES-WOMEN-FY26
+  domain: hr
+  metric: New female hires recruited in FY26
+  period: FY26
+  value: 28
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.76, p.79
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H4
+  - H7
+- id: CAL-HR-FLOW-TURNOVER-EXEC
+  domain: hr
+  metric: Executive annual turnover rate (SEBI all-separation basis)
+  period: FY26
+  value: 7.4
+  unit: pct
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 BRSR p.142
+  confidence: verified
+  target_tables:
+  - H5
+  questions_served:
+  - H4
+- id: CAL-HR-FLOW-TURNOVER-NONEXEC
+  domain: hr
+  metric: Non-executive annual turnover rate (SEBI all-separation basis)
+  period: FY26
+  value: 3.1
+  unit: pct
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 BRSR p.142
+  confidence: verified
+  target_tables:
+  - H5
+  questions_served:
+  - H4
+- id: CAL-HR-FLOW-SEPARATIONS-FY26
+  domain: hr
+  metric: Total employee separations in FY26 (superannuations, resignations, deaths)
+  period: FY26
+  value: 1418
+  unit: count
+  tolerance: 0.05
+  scope: standalone
+  citation: AR26 p.24, p.142 derived
+  confidence: derived
+  target_tables:
+  - H5
+  questions_served:
+  - C4
+  - H4
+  - W2
+- id: CAL-HR-TRN-EXEC-FY26
+  domain: hr
+  metric: Executives trained during FY26
+  period: FY26
+  value: 8746
+  unit: count
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.76, p.117
+  confidence: verified
+  target_tables:
+  - H11
+  questions_served:
+  - H8
+  - E6
+- id: CAL-HR-TRN-NONEXEC-FY26
+  domain: hr
+  metric: Non-executives trained during FY26
+  period: FY26
+  value: 3615
+  unit: count
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.76, p.117
+  confidence: verified
+  target_tables:
+  - H11
+  questions_served:
+  - H8
+  - E6
+- id: CAL-HR-TRN-HRS-AVG-FY26
+  domain: hr
+  metric: Average training hours per employee in FY26
+  period: FY26
+  value: 12.12
+  unit: hours
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.76
+  confidence: verified
+  target_tables:
+  - H11
+  questions_served:
+  - H8
+- id: CAL-HR-LOC-ASSAM-TOT
+  domain: hr
+  metric: ONGC regular employees in Assam
+  period: 30-Jul-2026
+  value: 3561
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: LS2067 p.1-2
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C2
+  - H3
+  - X7
+- id: CAL-HR-LOC-ASSAM-EXEC
+  domain: hr
+  metric: ONGC executive employees in Assam
+  period: 30-Jul-2026
+  value: 1518
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: LS2067 p.1-2
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C2
+  - H3
+  - X7
+- id: CAL-HR-LOC-ASSAM-NONEXEC
+  domain: hr
+  metric: ONGC non-executive employees in Assam
+  period: 30-Jul-2026
+  value: 2043
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: LS2067 p.1-2
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - C2
+  - H3
+  - X7
+- id: CAL-HR-LOC-ASSAM-GRPA
+  domain: hr
+  metric: ONGC Group A employees in Assam
+  period: 30-Jul-2026
+  value: 1352
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: LS2067 p.1-2
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H3
+  - X7
+- id: CAL-HR-LOC-ASSAM-GRPB
+  domain: hr
+  metric: ONGC Group B employees in Assam
+  period: 30-Jul-2026
+  value: 166
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: LS2067 p.1-2
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H3
+  - X7
+- id: CAL-HR-LOC-ASSAM-GRPC
+  domain: hr
+  metric: ONGC Group C employees in Assam
+  period: 30-Jul-2026
+  value: 1796
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: LS2067 p.1-2
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H3
+  - X7
+- id: CAL-HR-LOC-ASSAM-GRPD
+  domain: hr
+  metric: ONGC Group D employees in Assam
+  period: 30-Jul-2026
+  value: 247
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: LS2067 p.1-2
+  confidence: verified
+  target_tables:
+  - H1
+  - H7
+  questions_served:
+  - H3
+  - X7
+- id: CAL-OPS-PROD-OIL-FY22
+  domain: ops
+  metric: Total crude oil production including JV share
+  period: FY22
+  value: 21.707
+  unit: mmt
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C11
+  - F1
+  - F3
+- id: CAL-OPS-PROD-OIL-FY23
+  domain: ops
+  metric: Total crude oil production including JV share
+  period: FY23
+  value: 21.485
+  unit: mmt
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C11
+  - F1
+  - F3
+- id: CAL-OPS-PROD-OIL-FY24
+  domain: ops
+  metric: Total crude oil production including JV share
+  period: FY24
+  value: 21.139
+  unit: mmt
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C11
+  - F1
+  - F3
+- id: CAL-OPS-PROD-OIL-FY25
+  domain: ops
+  metric: Total crude oil production including JV share
+  period: FY25
+  value: 20.892
+  unit: mmt
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C11
+  - F1
+  - F3
+- id: CAL-OPS-PROD-OIL-FY26
+  domain: ops
+  metric: Total crude oil production including JV share
+  period: FY26
+  value: 20.501
+  unit: mmt
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14, p.55, p.95
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C6
+  - C11
+  - C14
+  - F1
+  - F3
+  - T1
+- id: CAL-OPS-PROD-OIL-ONGC-FY26
+  domain: ops
+  metric: Crude oil production from ONGC operated standalone fields
+  period: FY26
+  value: 19.332
+  unit: mmt
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.55
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C11
+  - F1
+  - F3
+- id: CAL-OPS-PROD-OIL-JV-FY26
+  domain: ops
+  metric: Crude oil production ONGC share in domestic JVs
+  period: FY26
+  value: 1.17
+  unit: mmt
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.55
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - F1
+  - F3
+- id: CAL-OPS-PROD-GAS-FY22
+  domain: ops
+  metric: Total natural gas production including JV share
+  period: FY22
+  value: 21.68
+  unit: bcm
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C11
+  - F1
+  - F3
+- id: CAL-OPS-PROD-GAS-FY23
+  domain: ops
+  metric: Total natural gas production including JV share
+  period: FY23
+  value: 21.351
+  unit: bcm
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C11
+  - F1
+  - F3
+- id: CAL-OPS-PROD-GAS-FY24
+  domain: ops
+  metric: Total natural gas production including JV share
+  period: FY24
+  value: 20.647
+  unit: bcm
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C11
+  - F1
+  - F3
+- id: CAL-OPS-PROD-GAS-FY25
+  domain: ops
+  metric: Total natural gas production including JV share
+  period: FY25
+  value: 20.19
+  unit: bcm
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C11
+  - F1
+  - F3
+- id: CAL-OPS-PROD-GAS-FY26
+  domain: ops
+  metric: Total natural gas production including JV share
+  period: FY26
+  value: 19.966
+  unit: bcm
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14, p.55, p.95
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C6
+  - C11
+  - C14
+  - F1
+  - F3
+  - T1
+- id: CAL-OPS-PROD-GAS-ONGC-FY26
+  domain: ops
+  metric: Natural gas production from ONGC operated standalone fields
+  period: FY26
+  value: 19.533
+  unit: bcm
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.55
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - C11
+  - F1
+  - F3
+- id: CAL-OPS-PROD-GAS-JV-FY26
+  domain: ops
+  metric: Natural gas production ONGC share in domestic JVs
+  period: FY26
+  value: 0.434
+  unit: bcm
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.55
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - F1
+  - F3
+- id: CAL-OPS-PROD-VAP-FY26
+  domain: ops
+  metric: 'Value Added Products (VAP: LPG, Naphtha, C2-C3) production'
+  period: FY26
+  value: 2561
+  unit: kt
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14, p.99
+  confidence: verified
+  target_tables:
+  - F1
+  questions_served:
+  - F3
+- id: CAL-OPS-RES-2P-FY26
+  domain: ops
+  metric: 2P (Proved + Probable) PRMS Hydrocarbon Reserves as of 1-April-2026
+  period: FY26
+  value: 709.32
+  unit: mmtoe
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.98
+  confidence: verified
+  target_tables:
+  - F2
+  questions_served:
+  - F8
+- id: CAL-OPS-RES-2P-OPERATED-FY26
+  domain: ops
+  metric: 2P Reserves in ONGC-operated domestic fields
+  period: FY26
+  value: 697.83
+  unit: mmtoe
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.98
+  confidence: verified
+  target_tables:
+  - F2
+  questions_served:
+  - F8
+- id: CAL-OPS-RES-2P-JV-FY26
+  domain: ops
+  metric: 2P Reserves ONGC share in domestic JV fields
+  period: FY26
+  value: 11.49
+  unit: mmtoe
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.98
+  confidence: verified
+  target_tables:
+  - F2
+  questions_served:
+  - F8
+- id: CAL-OPS-RES-1P-FY26
+  domain: ops
+  metric: 1P (Proved) Hydrocarbon Reserves (ONGC + domestic JV)
+  period: FY26
+  value: 528.04
+  unit: mmtoe
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.14
+  confidence: verified
+  target_tables:
+  - F2
+  questions_served:
+  - F8
+- id: CAL-OPS-RES-RRR-FY26
+  domain: ops
+  metric: Reserve Replacement Ratio (RRR, 2P basis)
+  period: FY26
+  value: 1.17
+  unit: ratio
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.98
+  confidence: verified
+  target_tables:
+  - F2
+  questions_served:
+  - F8
+- id: CAL-OPS-WELLS-TOT-FY26
+  domain: ops
+  metric: Total wells drilled in FY26
+  period: FY26
+  value: 501
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.14, p.96
+  confidence: verified
+  target_tables:
+  - F3
+  questions_served:
+  - F8
+- id: CAL-OPS-WELLS-EXPL-FY26
+  domain: ops
+  metric: Exploratory wells drilled in FY26
+  period: FY26
+  value: 100
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.14, p.96
+  confidence: verified
+  target_tables:
+  - F3
+  questions_served:
+  - F8
+- id: CAL-OPS-WELLS-DEV-FY26
+  domain: ops
+  metric: Development wells drilled in FY26
+  period: FY26
+  value: 401
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.14, p.96
+  confidence: verified
+  target_tables:
+  - F3
+  questions_served:
+  - F8
+- id: CAL-OPS-WELLS-TOT-FY25
+  domain: ops
+  metric: Total wells drilled in FY25 (35-year peak)
+  period: FY25
+  value: 578
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.14, p.96
+  confidence: verified
+  target_tables:
+  - F3
+  questions_served:
+  - F8
+- id: CAL-FIN-EXP-EMP-FY17
+  domain: finance
+  metric: Expenditure on employees
+  period: FY17
+  value: 11551
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  - H8
+  questions_served:
+  - F7
+  - C12
+- id: CAL-FIN-EXP-EMP-FY18
+  domain: finance
+  metric: Expenditure on employees
+  period: FY18
+  value: 11381
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  - H8
+  questions_served:
+  - F7
+  - C12
+- id: CAL-FIN-EXP-EMP-FY19
+  domain: finance
+  metric: Expenditure on employees
+  period: FY19
+  value: 12113
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  - H8
+  questions_served:
+  - F7
+  - C12
+- id: CAL-FIN-EXP-EMP-FY20
+  domain: finance
+  metric: Expenditure on employees
+  period: FY20
+  value: 11512
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  - H8
+  questions_served:
+  - F7
+  - C12
+- id: CAL-FIN-EXP-EMP-FY21
+  domain: finance
+  metric: Expenditure on employees
+  period: FY21
+  value: 10126
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  - H8
+  questions_served:
+  - F7
+  - C12
+- id: CAL-FIN-EXP-EMP-FY22
+  domain: finance
+  metric: Expenditure on employees
+  period: FY22
+  value: 11082
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  - H8
+  questions_served:
+  - F7
+  - C12
+- id: CAL-FIN-EXP-EMP-FY23
+  domain: finance
+  metric: Expenditure on employees
+  period: FY23
+  value: 10621
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  - H8
+  questions_served:
+  - F7
+  - C12
+- id: CAL-FIN-EXP-EMP-FY24
+  domain: finance
+  metric: Expenditure on employees
+  period: FY24
+  value: 10526
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  - H8
+  questions_served:
+  - F7
+  - C12
+- id: CAL-FIN-EXP-EMP-FY25
+  domain: finance
+  metric: Expenditure on employees
+  period: FY25
+  value: 10720
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24, p.354
+  confidence: verified
+  target_tables:
+  - F17
+  - H8
+  questions_served:
+  - F7
+  - C12
+- id: CAL-FIN-EXP-EMP-FY26
+  domain: finance
+  metric: Expenditure on employees
+  period: FY26
+  value: 10211
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24, p.354
+  confidence: verified
+  target_tables:
+  - F17
+  - H8
+  questions_served:
+  - F7
+  - C12
+  - P13
+- id: CAL-FIN-REV-FY17
+  domain: finance
+  metric: Revenue from operations
+  period: FY17
+  value: 77908
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - F7
+  - E7
+- id: CAL-FIN-REV-FY18
+  domain: finance
+  metric: Revenue from operations
+  period: FY18
+  value: 85004
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - F7
+  - E7
+- id: CAL-FIN-REV-FY19
+  domain: finance
+  metric: Revenue from operations
+  period: FY19
+  value: 109655
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - F7
+  - E7
+- id: CAL-FIN-REV-FY20
+  domain: finance
+  metric: Revenue from operations
+  period: FY20
+  value: 96214
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - F7
+  - E7
+- id: CAL-FIN-REV-FY21
+  domain: finance
+  metric: Revenue from operations
+  period: FY21
+  value: 68141
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - F7
+  - E7
+- id: CAL-FIN-REV-FY22
+  domain: finance
+  metric: Revenue from operations
+  period: FY22
+  value: 110345
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - F7
+  - E7
+- id: CAL-FIN-REV-FY23
+  domain: finance
+  metric: Revenue from operations
+  period: FY23
+  value: 155517
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - F7
+  - E7
+- id: CAL-FIN-REV-FY24
+  domain: finance
+  metric: Revenue from operations
+  period: FY24
+  value: 138402
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - F7
+  - E7
+- id: CAL-FIN-REV-FY25
+  domain: finance
+  metric: Revenue from operations
+  period: FY25
+  value: 137846
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - F7
+  - E7
+- id: CAL-FIN-REV-FY26
+  domain: finance
+  metric: Revenue from operations
+  period: FY26
+  value: 132508
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - F7
+  - E7
+- id: CAL-FIN-PAT-FY17
+  domain: finance
+  metric: Profit After Tax (PAT)
+  period: FY17
+  value: 17900
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - E7
+- id: CAL-FIN-PAT-FY18
+  domain: finance
+  metric: Profit After Tax (PAT)
+  period: FY18
+  value: 19945
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - E7
+- id: CAL-FIN-PAT-FY19
+  domain: finance
+  metric: Profit After Tax (PAT)
+  period: FY19
+  value: 26765
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - E7
+- id: CAL-FIN-PAT-FY20
+  domain: finance
+  metric: Profit After Tax (PAT)
+  period: FY20
+  value: 13464
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - E7
+- id: CAL-FIN-PAT-FY21
+  domain: finance
+  metric: Profit After Tax (PAT)
+  period: FY21
+  value: 11246
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - E7
+- id: CAL-FIN-PAT-FY22
+  domain: finance
+  metric: Profit After Tax (PAT)
+  period: FY22
+  value: 40306
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - E7
+- id: CAL-FIN-PAT-FY23
+  domain: finance
+  metric: Profit After Tax (PAT restated)
+  period: FY23
+  value: 40096
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - E7
+- id: CAL-FIN-PAT-FY24
+  domain: finance
+  metric: Profit After Tax (PAT)
+  period: FY24
+  value: 40526
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - E7
+- id: CAL-FIN-PAT-FY25
+  domain: finance
+  metric: Profit After Tax (PAT)
+  period: FY25
+  value: 35610
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - E7
+- id: CAL-FIN-PAT-FY26
+  domain: finance
+  metric: Profit After Tax (PAT)
+  period: FY26
+  value: 32894
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - F3
+  - E7
+- id: CAL-FIN-CAPEX-FY17
+  domain: finance
+  metric: Capital expenditure (Capex)
+  period: FY17
+  value: 28006
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F7
+  questions_served:
+  - C7
+  - F2
+- id: CAL-FIN-CAPEX-FY18
+  domain: finance
+  metric: Capital expenditure (Capex)
+  period: FY18
+  value: 72902
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F7
+  questions_served:
+  - C7
+  - F2
+- id: CAL-FIN-CAPEX-FY19
+  domain: finance
+  metric: Capital expenditure (Capex)
+  period: FY19
+  value: 29450
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F7
+  questions_served:
+  - C7
+  - F2
+- id: CAL-FIN-CAPEX-FY20
+  domain: finance
+  metric: Capital expenditure (Capex)
+  period: FY20
+  value: 29538
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F7
+  questions_served:
+  - C7
+  - F2
+- id: CAL-FIN-CAPEX-FY21
+  domain: finance
+  metric: Capital expenditure (Capex)
+  period: FY21
+  value: 26859
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F7
+  questions_served:
+  - C7
+  - F2
+- id: CAL-FIN-CAPEX-FY22
+  domain: finance
+  metric: Capital expenditure (Capex)
+  period: FY22
+  value: 27741
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F7
+  questions_served:
+  - C7
+  - F2
+- id: CAL-FIN-CAPEX-FY23
+  domain: finance
+  metric: Capital expenditure (Capex)
+  period: FY23
+  value: 30208
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F7
+  questions_served:
+  - C7
+  - F2
+- id: CAL-FIN-CAPEX-FY24
+  domain: finance
+  metric: Capital expenditure (Capex)
+  period: FY24
+  value: 37494
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F7
+  questions_served:
+  - C7
+  - F2
+- id: CAL-FIN-CAPEX-FY25
+  domain: finance
+  metric: Capital expenditure (Capex incl. OPaL infusion)
+  period: FY25
+  value: 62057
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24; IP25 p.10
+  confidence: verified
+  target_tables:
+  - F7
+  questions_served:
+  - C7
+  - F2
+- id: CAL-FIN-CAPEX-FY26
+  domain: finance
+  metric: Capital expenditure (Capex)
+  period: FY26
+  value: 35878
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24; IP25 p.10
+  confidence: verified
+  target_tables:
+  - F7
+  questions_served:
+  - C7
+  - F2
+  - M2
+- id: CAL-FIN-REAL-OIL-FY24
+  domain: finance
+  metric: Crude oil net realisation (nominated blocks)
+  period: FY24
+  value: 80.77
+  unit: usd_per_bbl
+  tolerance: 0.02
+  scope: standalone
+  citation: PR25
+  confidence: verified
+  target_tables:
+  - F4
+  questions_served:
+  - F4
+  - W1
+  - W4
+- id: CAL-FIN-REAL-OIL-FY25
+  domain: finance
+  metric: Crude oil net realisation (nominated blocks)
+  period: FY25
+  value: 76.9
+  unit: usd_per_bbl
+  tolerance: 0.02
+  scope: standalone
+  citation: PR26
+  confidence: verified
+  target_tables:
+  - F4
+  questions_served:
+  - F4
+  - W1
+  - W4
+- id: CAL-FIN-REAL-OIL-FY26
+  domain: finance
+  metric: Crude oil net realisation (nominated blocks)
+  period: FY26
+  value: 68.4
+  unit: usd_per_bbl
+  tolerance: 0.02
+  scope: standalone
+  citation: PR26
+  confidence: verified
+  target_tables:
+  - F4
+  questions_served:
+  - F4
+  - W1
+  - W4
+- id: CAL-FIN-REAL-OIL-INR-FY26
+  domain: finance
+  metric: Crude oil net realisation in Indian Rupee
+  period: FY26
+  value: 6042
+  unit: inr_per_bbl
+  tolerance: 0.02
+  scope: standalone
+  citation: PR26
+  confidence: verified
+  target_tables:
+  - F4
+  questions_served:
+  - F4
+  - W1
+  - W4
+- id: CAL-FIN-REAL-GAS-APM-FY26
+  domain: finance
+  metric: APM / administered natural gas price ceiling
+  period: FY26
+  value: 6.6
+  unit: usd_per_mmbtu
+  tolerance: 0.02
+  scope: standalone
+  citation: PR26
+  confidence: verified
+  target_tables:
+  - F4
+  questions_served:
+  - F4
+  - W1
+- id: CAL-FIN-REAL-GAS-NW-FY26
+  domain: finance
+  metric: New-well natural gas price realisation
+  period: FY26
+  value: 8.08
+  unit: usd_per_mmbtu
+  tolerance: 0.02
+  scope: standalone
+  citation: PR26
+  confidence: verified
+  target_tables:
+  - F4
+  questions_served:
+  - F4
+  - W1
+- id: CAL-FIN-SEG-REV-OFFSHORE
+  domain: finance
+  metric: Segment revenue - Offshore
+  period: FY26
+  value: 92406
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.368
+  confidence: verified
+  target_tables:
+  - F5
+  questions_served:
+  - C6
+  - F3
+  - F10
+- id: CAL-FIN-SEG-REV-ONSHORE
+  domain: finance
+  metric: Segment revenue - Onshore
+  period: FY26
+  value: 40102
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.368
+  confidence: verified
+  target_tables:
+  - F5
+  questions_served:
+  - C6
+  - F3
+  - F10
+- id: CAL-FIN-SEG-PBIT-OFFSHORE
+  domain: finance
+  metric: Segment profit (pre-tax, pre-finance) - Offshore
+  period: FY26
+  value: 34385
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.368, Note 44.2; FACTS §D6
+  confidence: verified
+  target_tables:
+  - F5
+  questions_served:
+  - C6
+  - F3
+  - F10
+- id: CAL-FIN-SEG-PBIT-ONSHORE
+  domain: finance
+  metric: Segment profit (pre-tax, pre-finance) - Onshore
+  period: FY26
+  value: 6246
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.368, Note 44.2; FACTS §D6
+  confidence: verified
+  target_tables:
+  - F5
+  questions_served:
+  - C6
+  - F3
+  - F10
+- id: CAL-FIN-LEVY-ROYALTY-FY26
+  domain: finance
+  metric: Royalty statutory levy paid to Central & State Governments
+  period: FY26
+  value: 12965
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24, p.25
+  confidence: verified
+  target_tables:
+  - F5
+  - F6
+  - F17
+  questions_served:
+  - F4
+  - W4
+- id: CAL-FIN-LEVY-CESS-FY26
+  domain: finance
+  metric: OIDB Cess statutory levy paid on domestic crude
+  period: FY26
+  value: 13034
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24, p.25
+  confidence: verified
+  target_tables:
+  - F5
+  - F6
+  - F17
+  questions_served:
+  - F4
+  - W4
+- id: CAL-FIN-LEVY-SAED-FY26
+  domain: finance
+  metric: Special Additional Excise Duty (SAED windfall tax) in FY26
+  period: FY26
+  value: 0
+  unit: cr_inr
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.25
+  confidence: verified
+  target_tables:
+  - F5
+  - F6
+  - F17
+  questions_served:
+  - F4
+  - W4
+- id: CAL-FIN-LEVY-SAED-FY25
+  domain: finance
+  metric: Special Additional Excise Duty (SAED windfall tax) in FY25
+  period: FY25
+  value: 3948
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.25
+  confidence: verified
+  target_tables:
+  - F5
+  - F6
+  - F17
+  questions_served:
+  - F4
+  - W4
+- id: CAL-FIN-LEVY-SAED-FY24
+  domain: finance
+  metric: Special Additional Excise Duty (SAED windfall tax) in FY24
+  period: FY24
+  value: 8634
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.25
+  confidence: verified
+  target_tables:
+  - F5
+  - F6
+  - F17
+  questions_served:
+  - F4
+  - W4
+- id: CAL-FIN-LEVY-SAED-FY23
+  domain: finance
+  metric: Special Additional Excise Duty (SAED windfall tax) in FY23
+  period: FY23
+  value: 10964
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.25
+  confidence: verified
+  target_tables:
+  - F5
+  - F6
+  - F17
+  questions_served:
+  - F4
+  - W4
+- id: CAL-FIN-REC-TRADE-FY26
+  domain: finance
+  metric: Trade receivables as of 31-March-2026
+  period: FY26
+  value: 13168
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.23
+  confidence: verified
+  target_tables:
+  - F10
+  questions_served:
+  - F6
+- id: CAL-FIN-REC-DAYS-FY26
+  domain: finance
+  metric: Debtor days (collection period)
+  period: FY26
+  value: 32
+  unit: days
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F10
+  questions_served:
+  - F6
+- id: CAL-FIN-LIAB-GRAT-OBL
+  domain: finance
+  metric: Gratuity defined benefit obligation
+  period: 31-Mar-2026
+  value: 1867.9
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.364
+  confidence: verified
+  target_tables:
+  - F14
+  questions_served:
+  - X4
+- id: CAL-FIN-LIAB-GRAT-ASSETS
+  domain: finance
+  metric: Gratuity plan assets in trust
+  period: 31-Mar-2026
+  value: 1753.7
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.364
+  confidence: verified
+  target_tables:
+  - F14
+  questions_served:
+  - X4
+- id: CAL-FIN-LIAB-GRAT-NET
+  domain: finance
+  metric: Gratuity net defined benefit liability
+  period: 31-Mar-2026
+  value: 114.2
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.364
+  confidence: verified
+  target_tables:
+  - F14
+  questions_served:
+  - X4
+- id: CAL-FIN-LIAB-PRMB-OBL
+  domain: finance
+  metric: Post-Retirement Medical Benefits (PRMB) obligation
+  period: 31-Mar-2026
+  value: 7065.6
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.364
+  confidence: verified
+  target_tables:
+  - F14
+  questions_served:
+  - X4
+- id: CAL-FIN-LIAB-PRMB-ASSETS
+  domain: finance
+  metric: PRMB plan assets in trust
+  period: 31-Mar-2026
+  value: 6570.4
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.364
+  confidence: verified
+  target_tables:
+  - F14
+  questions_served:
+  - X4
+- id: CAL-FIN-LIAB-PRMB-NET
+  domain: finance
+  metric: PRMB net defined benefit liability
+  period: 31-Mar-2026
+  value: 495.3
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.364
+  confidence: verified
+  target_tables:
+  - F14
+  questions_served:
+  - X4
+- id: CAL-FIN-LIAB-PF-OBL
+  domain: finance
+  metric: Provident Fund trust defined benefit obligation
+  period: 31-Mar-2026
+  value: 13266.9
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.365
+  confidence: verified
+  target_tables:
+  - F14
+  questions_served:
+  - X4
+- id: CAL-FIN-LIAB-PF-ASSETS
+  domain: finance
+  metric: Provident Fund trust plan assets
+  period: 31-Mar-2026
+  value: 13414.6
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.365
+  confidence: verified
+  target_tables:
+  - F14
+  questions_served:
+  - X4
+- id: CAL-FIN-LIAB-PRBS-EXP
+  domain: finance
+  metric: Post-Retirement Benefit Scheme (PRBS pension) defined contribution expense
+  period: FY26
+  value: 263.1
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.360
+  confidence: verified
+  target_tables:
+  - F14
+  questions_served:
+  - P13
+  - X4
+- id: CAL-FIN-LIAB-PRBS-CONTRIB
+  domain: finance
+  metric: Contribution paid to PRBS Trust in FY26
+  period: FY26
+  value: 692.2
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.376
+  confidence: verified
+  target_tables:
+  - F14
+  questions_served:
+  - P13
+  - X4
+- id: CAL-CORP-DIV-TOT-FY17
+  domain: corporate
+  metric: Total dividend declared for the financial year
+  period: FY17
+  value: 7764
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-TOT-FY18
+  domain: corporate
+  metric: Total dividend declared for the financial year
+  period: FY18
+  value: 8470
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-TOT-FY19
+  domain: corporate
+  metric: Total dividend declared for the financial year
+  period: FY19
+  value: 8806
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-TOT-FY20
+  domain: corporate
+  metric: Total dividend declared for the financial year
+  period: FY20
+  value: 6290
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-TOT-FY21
+  domain: corporate
+  metric: Total dividend declared for the financial year
+  period: FY21
+  value: 4529
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-TOT-FY22
+  domain: corporate
+  metric: Total dividend declared for the financial year
+  period: FY22
+  value: 13209
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-TOT-FY23
+  domain: corporate
+  metric: Total dividend declared for the financial year
+  period: FY23
+  value: 14153
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-TOT-FY24
+  domain: corporate
+  metric: Total dividend declared for the financial year
+  period: FY24
+  value: 15411
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-TOT-FY25
+  domain: corporate
+  metric: Total dividend declared for the financial year
+  period: FY25
+  value: 15411
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-TOT-FY26
+  domain: corporate
+  metric: Total dividend declared for the financial year
+  period: FY26
+  value: 16669
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-DPS-FY26
+  domain: corporate
+  metric: Dividend per share
+  period: FY26
+  value: 13.25
+  unit: inr_per_share
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-DIV-PAYOUT-FY26
+  domain: corporate
+  metric: Dividend payout ratio as percentage of standalone PAT
+  period: FY26
+  value: 50.68
+  unit: pct
+  tolerance: 0.02
+  scope: standalone
+  citation: PR26
+  confidence: derived
+  target_tables:
+  - F17
+  questions_served:
+  - P17
+- id: CAL-CORP-CSR-TOT-FY17
+  domain: corporate
+  metric: Annual Corporate Social Responsibility (CSR) expenditure
+  period: FY17
+  value: 517
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-TOT-FY18
+  domain: corporate
+  metric: Annual Corporate Social Responsibility (CSR) expenditure
+  period: FY18
+  value: 503
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-TOT-FY19
+  domain: corporate
+  metric: Annual Corporate Social Responsibility (CSR) expenditure
+  period: FY19
+  value: 615
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-TOT-FY20
+  domain: corporate
+  metric: Annual Corporate Social Responsibility (CSR) expenditure
+  period: FY20
+  value: 607
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-TOT-FY21
+  domain: corporate
+  metric: Annual Corporate Social Responsibility (CSR) expenditure
+  period: FY21
+  value: 539
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-TOT-FY22
+  domain: corporate
+  metric: Annual Corporate Social Responsibility (CSR) expenditure
+  period: FY22
+  value: 450
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-TOT-FY23
+  domain: corporate
+  metric: Annual Corporate Social Responsibility (CSR) expenditure
+  period: FY23
+  value: 452
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-TOT-FY24
+  domain: corporate
+  metric: Annual Corporate Social Responsibility (CSR) expenditure
+  period: FY24
+  value: 650
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-TOT-FY25
+  domain: corporate
+  metric: Annual Corporate Social Responsibility (CSR) expenditure
+  period: FY25
+  value: 908
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24
+  confidence: verified
+  target_tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-TOT-FY26
+  domain: corporate
+  metric: Annual Corporate Social Responsibility (CSR) expenditure (record spend)
+  period: FY26
+  value: 949
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.24, p.97
+  confidence: verified
+  target_tables:
+  - F12
+  - F17
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-STATE-UP
+  domain: corporate
+  metric: CSR expenditure in Uttar Pradesh (Rank 1 state)
+  period: FY26
+  value: 155.0
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: CSR26-P
+  confidence: verified
+  target_tables:
+  - F12
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-STATE-MH
+  domain: corporate
+  metric: CSR expenditure in Maharashtra (Rank 2 state)
+  period: FY26
+  value: 137.6
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: CSR26-P
+  confidence: verified
+  target_tables:
+  - F12
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-CSR-STATE-JK
+  domain: corporate
+  metric: CSR expenditure in Jammu & Kashmir (Rank 3 state)
+  period: FY26
+  value: 132.6
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: CSR26-P
+  confidence: verified
+  target_tables:
+  - F12
+  questions_served:
+  - P15
+  - X9
+- id: CAL-CORP-SUB-HPCL-PAT
+  domain: corporate
+  metric: HPCL standalone Profit After Tax (54.90% subsidiary)
+  period: FY26
+  value: 17175
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.108; PR26
+  confidence: verified
+  target_tables:
+  - F15
+  questions_served:
+  - X5
+- id: CAL-CORP-SUB-MRPL-PAT
+  domain: corporate
+  metric: MRPL standalone Profit After Tax (71.63% subsidiary)
+  period: FY26
+  value: 1931
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.108; PR26
+  confidence: verified
+  target_tables:
+  - F15
+  questions_served:
+  - X5
+- id: CAL-CORP-SUB-OVL-PAT
+  domain: corporate
+  metric: ONGC Videsh Limited (OVL) consolidated PAT (100% subsidiary)
+  period: FY26
+  value: 1152
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.108; PR26
+  confidence: verified
+  target_tables:
+  - F15
+  questions_served:
+  - X5
+- id: CAL-CORP-SUB-OPAL-EBITDA
+  domain: corporate
+  metric: OPaL standalone EBITDA (95.69% subsidiary)
+  period: FY26
+  value: 1207
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.109
+  confidence: verified
+  target_tables:
+  - F15
+  questions_served:
+  - X5
+- id: CAL-CORP-GRP-PAT-FY26
+  domain: corporate
+  metric: ONGC Group consolidated Profit After Tax
+  period: FY26
+  value: 49793
+  unit: cr_inr
+  tolerance: 0.02
+  scope: group
+  citation: AR26 p.23; PR26
+  confidence: verified
+  target_tables:
+  - F15
+  - F17
+  questions_served:
+  - X5
+- id: CAL-CORP-GRP-REV-FY26
+  domain: corporate
+  metric: ONGC Group gross revenue from operations
+  period: FY26
+  value: 662247
+  unit: cr_inr
+  tolerance: 0.02
+  scope: group
+  citation: PR26
+  confidence: verified
+  target_tables:
+  - F15
+  - F17
+  questions_served:
+  - X5
+- id: CAL-CORP-NZ-TARGET-YEAR
+  domain: corporate
+  metric: Net Zero target year for Scope 1 and Scope 2 operational emissions
+  period: Target
+  value: 2038
+  unit: year
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.52, p.57
+  confidence: verified
+  target_tables:
+  - F16
+  questions_served:
+  - X6
+- id: CAL-CORP-NZ-CAPEX-2030
+  domain: corporate
+  metric: Cumulative energy transition capex planned by 2030
+  period: By 2030
+  value: 100000
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.57; IP25 p.22
+  confidence: verified
+  target_tables:
+  - F16
+  questions_served:
+  - X6
+- id: CAL-CORP-NZ-CAPEX-2038
+  domain: corporate
+  metric: Cumulative energy transition capex planned by 2038 Net Zero milestone
+  period: By 2038
+  value: 200000
+  unit: cr_inr
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.57
+  confidence: verified
+  target_tables:
+  - F16
+  questions_served:
+  - X6
+- id: CAL-CORP-RE-TARGET-2030
+  domain: corporate
+  metric: Renewable energy portfolio capacity target by 2030
+  period: By 2030
+  value: 10.0
+  unit: gw
+  tolerance: exact
+  scope: group
+  citation: IP25 p.22
+  confidence: verified
+  target_tables:
+  - F16
+  questions_served:
+  - X6
+- id: CAL-CORP-RE-CAPACITY-FY26
+  domain: corporate
+  metric: Total operational and under-implementation Renewable Energy portfolio
+  period: FY26
+  value: 2.853
+  unit: gw
+  tolerance: 0.02
+  scope: group
+  citation: AR26 p.10
+  confidence: verified
+  target_tables:
+  - F16
+  questions_served:
+  - X6
+- id: CAL-GOV-BOD-COUNT
+  domain: governance
+  metric: Board of Directors total member count at 31-March-2026
+  period: 31-Mar-2026
+  value: 8
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.3, p.142
+  confidence: verified
+  target_tables:
+  - G4
+  questions_served:
+  - P19
+- id: CAL-GOV-BOD-WOMEN
+  domain: governance
+  metric: Women directors on Board of Directors at 31-March-2026
+  period: 31-Mar-2026
+  value: 0
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.142
+  confidence: verified
+  target_tables:
+  - G4
+  questions_served:
+  - P19
+- id: CAL-GOV-ED-SUPERANN-FY26
+  domain: governance
+  metric: Executive Directors superannuated during FY26
+  period: FY26
+  value: 20
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: AR26 p.257
+  confidence: verified
+  target_tables:
+  - H5
+  questions_served:
+  - C4
+- id: CAL-GOV-SAFE-LTIFR-FY26
+  domain: governance
+  metric: Lost Time Injury Frequency Rate (LTIFR)
+  period: FY26
+  value: 0.15
+  unit: ratio
+  tolerance: 0.02
+  scope: standalone
+  citation: AR26 p.81
+  confidence: verified
+  target_tables:
+  - H17
+  questions_served:
+  - X3
+- id: CAL-GOV-PARL-ASSAM-VAC
+  domain: governance
+  metric: Reported ONGC vacancies in Assam in Parliament Lok Sabha
+  period: 30-Jul-2026
+  value: 30
+  unit: count
+  tolerance: exact
+  scope: standalone
+  citation: LS2067 p.1-2
+  confidence: verified
+  target_tables:
+  - G1
+  questions_served:
+  - X7
+modelled_assumptions:
+- item: grade_wise_headcount
+  description: Grade-wise regular employee headcount distribution across executives
+    (E0–E9) and non-executives (Groups B, C, D / W-levels).
+  status: NOT-public in Annual Reports or website.
+  target_totals: 13,781 executives + 9,336 non-executives = 23,117 total at 31-Mar-2026
+    (AR26 p.141).
+  proposed_range:
+    junior_executives_E0_to_E2: 30% - 35% of executives (~4,100 - 4,800)
+    mid_level_executives_E3_to_E4: 35% - 40% of executives (~4,800 - 5,500)
+    senior_executives_E5_to_E6: 18% - 22% of executives (~2,500 - 3,000)
+    top_leadership_E7_to_E9: 7% - 10% of executives (~1,000 - 1,400; EDs ~160 - 200)
+    non_executive_group_B_supervisory: 8% - 12% of non-executives (~800 - 1,100)
+    non_executive_group_C_skilled_clerical: 75% - 82% of non-executives (~7,000 -
+      7,700)
+    non_executive_group_D_support: 8% - 15% of non-executives (~800 - 1,400)
+  rationale: 'Follows standard Indian CPSE staffing pyramid under DPE 3rd PRC IDA
+    scales. Calibrated to match official Assam breakdown in LS2067 (1,352 Grp A, 166
+    Grp B, 1,796 Grp C, 247 Grp D) and satisfies the published median remuneration
+    benchmarks (AR26 p.181: Exec Male ₹43.30L / Non-exec Male ₹21.97L).'
+  confidence: plausible_modelled
+  target_tables:
+  - H1
+  - H6
+  - H7
+  questions_served:
+  - C1
+  - C4
+  - C5
+  - H3
+  - H4
+  - H5
+  - H10
+  - P10
+  - P12
+  - E4
+- item: asset_level_headcount
+  description: Allocation of the 23,117 regular employees across the ~45 work centres
+    and 17 assets/basins in 12 states.
+  status: NOT-public except Assam state total = exactly 3,561 (LS2067).
+  target_totals: Sum of all asset, basin, plant, institute, and corporate office headcounts
+    must equal 23,117.
+  proposed_range:
+    western_offshore_and_mumbai_hub: 6,500 - 7,500 employees (~28% - 32% of total;
+      Mumbai High, Neelam & Heera, B&S, Uran plant, RO Mumbai)
+    gujarat_onshore_assets: 5,000 - 6,000 employees (~22% - 26% of total; Ahmedabad,
+      Mehsana, Ankleshwar, Cambay, Hazira plant)
+    assam_state_total: Exactly 3,561 employees located in Assam STATE across all work
+      centres in Assam (Assam Asset Nazira/Sivasagar, Jorhat Asset, Silchar Basin,
+      A&AA Basin, INBIGS institute, exploration/drilling setups per LS2067) + ~750
+      - 1,000 in Tripura Asset
+    dehradun_corporate_and_institutes: 2,000 - 2,500 employees (Tel Bhavan, KDMIPE,
+      GEOPIC, ONGC Academy, IDWE)
+    delhi_registered_office: 600 - 900 employees (Nelson Mandela Road corporate HQ)
+    eastern_offshore_and_kg_pg_basin: 1,500 - 2,000 employees (Kakinada / Rajahmundry)
+    cauvery_asset_and_basin: 900 - 1,300 employees (Karaikal / Chennai)
+    other_work_centres: 1,200 - 1,800 employees (CBM Bokaro, Rajasthan Jodhpur, MBA
+      Kolkata, Goa ATI, Panvel IEOT/IOGPT)
+  rationale: 'Anchored to the statutory Parliament figure for Assam STATE (LS2067:
+    covering all Assam installations including Assam Asset, Jorhat Asset, Silchar
+    Basin, A&AA Basin, INBIGS) and reflects asset physical footprint: 263 offshore
+    facilities vs 250 onshore installations (AR26 p.55) and 41 locations across 12
+    states (BRSR p.140).'
+  confidence: plausible_modelled
+  target_tables:
+  - H1
+  - H2
+  - H7
+  questions_served:
+  - C1
+  - C2
+  - C3
+  - C11
+  - C13
+  - H1
+  - H2
+  - H3
+  - H7
+  - M1
+  - W3
+- item: asset_level_pnl
+  description: Field-level and asset-level revenue, operating expenditure, and EBITDA.
+  status: NOT-public (AR26 Note 44.2, p.368-369 publishes only Offshore vs Onshore
+    segment financials).
+  target_totals: Offshore Revenue ₹92,406 cr / Segment profit ₹34,385 cr; Onshore
+    Revenue ₹40,102 cr / Segment profit ₹6,246 cr (AR26 Note 44.2, p.368-369; FACTS
+    §D6).
+  proposed_range:
+    mumbai_high_asset: 45% - 55% of Offshore revenue (~₹41,000 - ₹50,000 cr), EBITDA
+      margin 40% - 48%
+    bassein_and_satellite: 20% - 28% of Offshore revenue (~₹18,000 - ₹25,000 cr),
+      major gas producer
+    neelam_and_heera: 15% - 20% of Offshore revenue (~₹14,000 - ₹18,000 cr)
+    eastern_offshore_kg_dwn_98_2: 5% - 10% of Offshore revenue (~₹4,500 - ₹9,000 cr),
+      lower margins due to CWIP ramp-up
+    gujarat_onshore_assets: 55% - 65% of Onshore revenue (~₹22,000 - ₹26,000 cr; Ahmedabad,
+      Mehsana, Ankleshwar)
+    assam_asset: 15% - 22% of Onshore revenue (~₹6,000 - ₹8,800 cr)
+    tripura_and_cauvery: 12% - 18% of Onshore revenue (~₹4,800 - ₹7,200 cr)
+    loss_making_marginal_fields: 5 to 10 mature fields modeled with negative operating
+      profit to support divestment stories S6, S8, S14 and question C8/C14
+  rationale: Derived from production volume distribution, crude/gas pricing, and constrained
+    strictly to aggregate to the audited Offshore and Onshore segment totals in AR26
+    Note 44.2 and FACTS §D6.
+  confidence: plausible_modelled
+  target_tables:
+  - F5
+  - F6
+  questions_served:
+  - C6
+  - C8
+  - C11
+  - C14
+  - F1
+  - F3
+  - F7
+  - F10
+  - T1
+  - W1
+  - M4
+- item: obc_share
+  description: Other Backward Classes (OBC) workforce representation percentage across
+    cadres.
+  status: NOT-public in Annual Reports (AR26 p.119 discloses only SC 15.02% and ST
+    11.35%).
+  target_totals: Overall OBC representation ~20.0% - 27.0% across total workforce.
+  proposed_range:
+    entry_cadres_E0_to_E2_and_groups_C_D: 25% - 27% (conforming to the 27% central
+      reservation quota established in 1993)
+    mid_cadres_E3_to_E5: 20% - 24%
+    senior_cadres_E6_to_E9: 12% - 18% (recruited largely before reservation implementation)
+  rationale: Central government reservation of 27% for OBC direct recruitment has
+    been active since September 1993. A vintage-weighted employee profile yields an
+    overall OBC presence of ~22-25%.
+  confidence: plausible_modelled
+  target_tables:
+  - H1
+  - H6
+  questions_served:
+  - H6
+- item: contract_labour
+  description: Outsourced contractor manpower count and contract cost breakdown across
+    work centres.
+  status: NOT-public in full detail (AR26 BRSR p.141 reports only 876 'other than
+    permanent', which reflects only direct temporary agency hires, omitting broad
+    service contracts).
+  target_totals: 28,000 - 35,000 contract personnel active; total contracted services
+    cost ~₹14,200 cr matching Note 35.2.
+  proposed_range:
+    total_contract_headcount: 28,000 - 35,000 workers deployed across offshore platforms,
+      drilling rigs, seismic crews, security, plant maintenance
+    drilling_and_workover_services_cost: ₹5,538 cr (AR26 p.354)
+    hire_of_equipment_and_vehicles_cost: ₹7,622 cr (AR26 p.354)
+    contractual_security_services_cost: ₹1,038 cr (AR26 p.354)
+    ratio_contract_to_regular: 1.2x to 1.5x regular employee strength
+  rationale: Upstream oil operations rely heavily on contracted rig crews, marine
+    vessel crews, catering, and security. Expense totals tie directly to audited Note
+    35.2 line items.
+  confidence: plausible_modelled
+  target_tables:
+  - H16
+  - F6
+  - F9
+  questions_served:
+  - X1
+  - X2
+  - X3
+  - F5
+- item: lifting_cost_proxy
+  description: Lifting / production cost per barrel of oil equivalent (BOE) across
+    assets.
+  status: NOT-disclosed officially; proxy derived in FACTS §D4; FLAGGED UNCERTAIN.
+  target_totals: Company-wide average proxy ~US$ 11.50 / boe (~₹990 / boe; ~₹7,250
+    / toe).
+  proposed_range:
+    company_wide_average: US$ 10.50 - 12.50 / boe (mean ~US$ 11.50 / boe at ₹86 /
+      USD exchange rate)
+    shallow_water_offshore_mumbai_high: US$ 9.00 - 11.00 / boe
+    deepwater_eastern_offshore_kg_dwn_98_2: US$ 14.00 - 18.00 / boe
+    mature_onshore_gujarat_and_assam: US$ 11.00 - 14.50 / boe
+    marginal_loss_making_fields: US$ 22.00 - 35.00 / boe
+  rationale: Derived in FACTS §D4 by dividing standalone operating expenses of ₹28,208
+    cr (AR26 p.23) by standalone production of ~38.865 MMTOE (~286 million boe). Excludes
+    statutory levies (royalty, cess) and DD&A. Flagged uncertain as ONGC does not
+    publish asset-wise lifting costs.
+  confidence: uncertain
+  target_tables:
+  - F5
+  - F6
+  questions_served:
+  - C12
+  - F1
+  - W1

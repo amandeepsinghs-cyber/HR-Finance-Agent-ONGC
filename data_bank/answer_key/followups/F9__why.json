@@ -1,0 +1,27 @@
+{
+  "job_id": "35dfccde-c872-4345-8484-a523f4b8b919",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:39:13.219081+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "G-04",
+      "clause_ref": "6 - Meaning of \u201crelative\u201d",
+      "heading": "Guidelines on Corporate Governance for CPSEs, 2010 (OM 18(8)/2005-GM) - Section 6 - Meaning of \u201crelative\u201d",
+      "quote_snippet": "Quarterly details of foreign exchange exposures and the steps taken by management to limit the risks of adverse exchange rate movement, if material."
+    },
+    {
+      "doc_id": "G-06",
+      "clause_ref": "6 - Meaning of \u201crelative\u201d",
+      "heading": "DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Section 6 - Meaning of \u201crelative\u201d",
+      "quote_snippet": "Quarterly details of foreign exchange exposures and the steps taken by management to limit the risks of adverse exchange rate movement, if material."
+    }
+  ]
+}

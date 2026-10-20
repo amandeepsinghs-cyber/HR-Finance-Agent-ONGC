@@ -1,0 +1,36 @@
+{
+  "job_id": "2120f47a-5606-4abd-af74-fb613cf3e2dc",
+  "total_bytes_processed": 7876487,
+  "executed_at": "2026-10-20T06:38:37.298215+00:00",
+  "elapsed_seconds": 0.74,
+  "row_count": 2,
+  "columns": [
+    "grade_id",
+    "promotion_to",
+    "never_hard_executives",
+    "in_zone_of_consideration",
+    "with_pending_dpc",
+    "avg_years_in_grade",
+    "residency_norm_years"
+  ],
+  "rows": [
+    {
+      "grade_id": "E4",
+      "promotion_to": "E5",
+      "never_hard_executives": 122,
+      "in_zone_of_consideration": 3,
+      "with_pending_dpc": 1,
+      "avg_years_in_grade": 1.2,
+      "residency_norm_years": 4
+    },
+    {
+      "grade_id": "E5",
+      "promotion_to": "E6",
+      "never_hard_executives": 95,
+      "in_zone_of_consideration": 2,
+      "with_pending_dpc": 0,
+      "avg_years_in_grade": 1.1,
+      "residency_norm_years": 4
+    }
+  ]
+}

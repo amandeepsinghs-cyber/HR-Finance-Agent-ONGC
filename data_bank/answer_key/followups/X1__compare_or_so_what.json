@@ -1,0 +1,39 @@
+{
+  "job_id": "521ba6a6-65bb-42ca-b4df-b02057bf5c2b",
+  "total_bytes_processed": 318175,
+  "executed_at": "2026-10-20T06:37:12.152966+00:00",
+  "elapsed_seconds": 0.64,
+  "row_count": 2,
+  "columns": [
+    "onshore_offshore",
+    "producing_assets",
+    "mmboe_fy26",
+    "contractor_cost_fy26_cr",
+    "regular_manpower_cost_fy26_cr",
+    "contractor_cost_per_boe_usd",
+    "regular_cost_per_boe_usd",
+    "regular_to_contractor_cost_multiple"
+  ],
+  "rows": [
+    {
+      "onshore_offshore": "offshore",
+      "producing_assets": 4,
+      "mmboe_fy26": 194.44,
+      "contractor_cost_fy26_cr": 234.5,
+      "regular_manpower_cost_fy26_cr": 3852.2,
+      "contractor_cost_per_boe_usd": 0.137,
+      "regular_cost_per_boe_usd": 2.24,
+      "regular_to_contractor_cost_multiple": 16.4
+    },
+    {
+      "onshore_offshore": "onshore",
+      "producing_assets": 11,
+      "mmboe_fy26": 102.19,
+      "contractor_cost_fy26_cr": 311.3,
+      "regular_manpower_cost_fy26_cr": 4011.8,
+      "contractor_cost_per_boe_usd": 0.345,
+      "regular_cost_per_boe_usd": 4.44,
+      "regular_to_contractor_cost_multiple": 12.9
+    }
+  ]
+}

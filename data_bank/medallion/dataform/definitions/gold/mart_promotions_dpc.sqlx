@@ -1,0 +1,44 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_promotions_dpc",
+  description: "Promotion history, DPC eligibility, residency evaluation, vacancies, and APAR appraisals"
+}
+
+SELECT
+  pr.promotion_id,
+  pr.emp_id,
+  e.name AS emp_name,
+  e.name AS name,
+  e.gender,
+  e.category,
+  e.has_hard_station_tenure,
+  pr.wc_id,
+  w.name AS wc_name,
+  pr.discipline_id,
+  d.name AS discipline_name,
+  pr.from_grade_id,
+  pr.to_grade_id,
+  pr.to_grade_id AS grade_id,
+  pr.effective_date,
+  pr.fiscal_year,
+  pr.dpc_id,
+  pr.promotion_mode,
+  pr.residency_years_completed,
+  pr.apar_benchmark_met,
+  pr.vigilance_cleared,
+  pr.hard_station_completed_flag,
+  pr.order_no,
+  dpc.status AS dpc_status,
+  dpc.status AS status,
+  dpc.pending_reason,
+  dpc.delay_bottleneck_reason,
+  dpc.delay_months,
+  dpc.accelerated_merit_benchmark_score,
+  apar.numerical_score AS apar_benchmark_score
+FROM ${ref("promotion_history")} pr
+JOIN ${ref("employee_master")} e ON pr.emp_id = e.emp_id
+LEFT JOIN ${ref("dim_work_centre")} w ON pr.wc_id = w.wc_id
+LEFT JOIN ${ref("dim_discipline")} d ON pr.discipline_id = d.discipline_id
+LEFT JOIN ${ref("dpc_cases")} dpc ON pr.emp_id = dpc.emp_id AND pr.fiscal_year = dpc.fiscal_year
+LEFT JOIN ${ref("apar_ratings")} apar ON pr.emp_id = apar.emp_id AND pr.fiscal_year = apar.fiscal_year

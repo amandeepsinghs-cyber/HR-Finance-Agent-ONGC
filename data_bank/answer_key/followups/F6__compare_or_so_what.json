@@ -1,0 +1,57 @@
+{
+  "job_id": "a46f077d-81a8-48b6-8680-daf536d46519",
+  "total_bytes_processed": 4280000,
+  "executed_at": "2026-10-20T06:39:07.859185+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "billed_cr",
+    "year_end_outstanding_cr",
+    "dso_days",
+    "avg_collection_days",
+    "credit_terms_days"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "billed_cr": 132643.0,
+      "year_end_outstanding_cr": 0.0,
+      "dso_days": null,
+      "avg_collection_days": 32.6,
+      "credit_terms_days": 30.0
+    },
+    {
+      "fiscal_year": "FY23",
+      "billed_cr": 144200.0,
+      "year_end_outstanding_cr": 0.0,
+      "dso_days": null,
+      "avg_collection_days": 32.5,
+      "credit_terms_days": 30.0
+    },
+    {
+      "fiscal_year": "FY24",
+      "billed_cr": 152980.0,
+      "year_end_outstanding_cr": 0.0,
+      "dso_days": null,
+      "avg_collection_days": 32.5,
+      "credit_terms_days": 30.0
+    },
+    {
+      "fiscal_year": "FY25",
+      "billed_cr": 160877.0,
+      "year_end_outstanding_cr": 0.0,
+      "dso_days": null,
+      "avg_collection_days": 32.5,
+      "credit_terms_days": 30.0
+    },
+    {
+      "fiscal_year": "FY26",
+      "billed_cr": 132508.0,
+      "year_end_outstanding_cr": 13167.9,
+      "dso_days": 36.3,
+      "avg_collection_days": 32.5,
+      "credit_terms_days": 30.0
+    }
+  ]
+}

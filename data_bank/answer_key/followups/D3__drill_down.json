@@ -1,0 +1,170 @@
+{
+  "job_id": "da58a0da-620a-4649-91ef-1202e3429a6e",
+  "total_bytes_processed": 830536,
+  "executed_at": "2026-10-20T06:32:53.927787+00:00",
+  "elapsed_seconds": 0.69,
+  "row_count": 22,
+  "columns": [
+    "from_grade_id",
+    "to_grade_id",
+    "discipline_id",
+    "fy27_cases_held",
+    "pending_carryover_cases"
+  ],
+  "rows": [
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-CHM",
+      "fy27_cases_held": 4,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-DRL",
+      "fy27_cases_held": 0,
+      "pending_carryover_cases": 62
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-ELE",
+      "fy27_cases_held": 6,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-FIN",
+      "fy27_cases_held": 3,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-HR",
+      "fy27_cases_held": 1,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-HSE",
+      "fy27_cases_held": 2,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-INS",
+      "fy27_cases_held": 7,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-IT",
+      "fy27_cases_held": 3,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-LEG",
+      "fy27_cases_held": 2,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-MEC",
+      "fy27_cases_held": 7,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-MM",
+      "fy27_cases_held": 4,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "discipline_id": "DISC-PRD",
+      "fy27_cases_held": 0,
+      "pending_carryover_cases": 66
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "discipline_id": "DISC-CHM",
+      "fy27_cases_held": 3,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "discipline_id": "DISC-DRL",
+      "fy27_cases_held": 0,
+      "pending_carryover_cases": 44
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "discipline_id": "DISC-ELE",
+      "fy27_cases_held": 6,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "discipline_id": "DISC-HR",
+      "fy27_cases_held": 2,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "discipline_id": "DISC-HSE",
+      "fy27_cases_held": 1,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "discipline_id": "DISC-INS",
+      "fy27_cases_held": 3,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "discipline_id": "DISC-IT",
+      "fy27_cases_held": 1,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "discipline_id": "DISC-MEC",
+      "fy27_cases_held": 3,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "discipline_id": "DISC-MM",
+      "fy27_cases_held": 5,
+      "pending_carryover_cases": 0
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "discipline_id": "DISC-PRD",
+      "fy27_cases_held": 0,
+      "pending_carryover_cases": 56
+    }
+  ]
+}

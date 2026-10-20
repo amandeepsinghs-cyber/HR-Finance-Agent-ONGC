@@ -1,0 +1,49 @@
+{
+  "job_id": "76a2f6ac-c7fd-4553-b8d5-1705e5b40cc3",
+  "total_bytes_processed": 32875,
+  "executed_at": "2026-10-20T06:38:57.919354+00:00",
+  "elapsed_seconds": 0.6,
+  "row_count": 4,
+  "columns": [
+    "segment",
+    "production_mmboe",
+    "lifting_cost_usd_boe",
+    "benchmark_usd_boe",
+    "gap_vs_benchmark_usd",
+    "reported_corporate_lifting_usd_boe"
+  ],
+  "rows": [
+    {
+      "segment": "1. Mumbai High",
+      "production_mmboe": 55.49,
+      "lifting_cost_usd_boe": 10.31,
+      "benchmark_usd_boe": 11.5,
+      "gap_vs_benchmark_usd": -1.19,
+      "reported_corporate_lifting_usd_boe": 14.04
+    },
+    {
+      "segment": "2. Other offshore assets",
+      "production_mmboe": 138.96,
+      "lifting_cost_usd_boe": 7.92,
+      "benchmark_usd_boe": 11.5,
+      "gap_vs_benchmark_usd": -3.58,
+      "reported_corporate_lifting_usd_boe": 14.04
+    },
+    {
+      "segment": "3. Onshore assets",
+      "production_mmboe": 102.19,
+      "lifting_cost_usd_boe": 10.13,
+      "benchmark_usd_boe": 11.5,
+      "gap_vs_benchmark_usd": -1.37,
+      "reported_corporate_lifting_usd_boe": 14.04
+    },
+    {
+      "segment": "4. All fields (company)",
+      "production_mmboe": 296.64,
+      "lifting_cost_usd_boe": 9.13,
+      "benchmark_usd_boe": 11.5,
+      "gap_vs_benchmark_usd": -2.37,
+      "reported_corporate_lifting_usd_boe": 14.04
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_postings",
+  description: "Station tenure tracking, transfer rotations, cluster stay analytics, and administrative exemptions"
+}
+
+WITH ranked_postings AS (
+  SELECT
+    p.*,
+    ROW_NUMBER() OVER (PARTITION BY p.emp_id ORDER BY p.from_date, p.posting_id) -
+    ROW_NUMBER() OVER (PARTITION BY p.emp_id, p.wc_id ORDER BY p.from_date, p.posting_id) AS island_id
+  FROM ${ref("posting_history")} p
+),
+continuous_spans AS (
+  SELECT
+    emp_id,
+    wc_id,
+    island_id,
+    MIN(from_date) AS continuous_from_date,
+    MAX(COALESCE(to_date, DATE '2026-10-19')) AS continuous_to_date,
+    DATE_DIFF(DATE '2026-10-19', MIN(from_date), MONTH) AS continuous_stay_months,
+    ROUND(DATE_DIFF(DATE '2026-10-19', MIN(from_date), DAY) / 365.25, 2) AS continuous_stay_years
+  FROM ranked_postings
+  GROUP BY emp_id, wc_id, island_id
+)
+SELECT
+  p.posting_id,
+  p.emp_id,
+  e.name AS emp_name,
+  e.name AS name,
+  e.gender,
+  e.category,
+  e.dob,
+  e.retirement_date,
+  e.has_hard_station_tenure,
+  e.has_offshore_tenure,
+  p.wc_id,
+  w.name AS wc_name,
+  w.short_name AS short_name,
+  w.city,
+  w.sector,
+  w.cluster_id,
+  w.cluster_name,
+  w.hard_station_cat,
+  w.onshore_offshore,
+  w.is_corporate_hq,
+  p.from_date,
+  p.to_date,
+  p.fiscal_year,
+  p.grade_id,
+  p.grade_id AS current_grade_id,
+  LAG(p.grade_id) OVER (PARTITION BY p.emp_id ORDER BY p.from_date, p.posting_id) AS from_grade_id,
+  p.grade_id AS to_grade_id,
+  g.cadre,
+  g.group,
+  p.discipline_id,
+  d.code AS code,
+  d.name AS discipline_name,
+  d.function AS function,
+  p.designation,
+  p.posting_type,
+  p.order_no,
+  p.tenure_months,
+  p.is_current_posting,
+  cs.continuous_from_date,
+  cs.continuous_stay_months,
+  cs.continuous_stay_years,
+  CASE WHEN cs.continuous_stay_years >= 5.0 AND p.is_current_posting THEN TRUE ELSE FALSE END AS has_exceeded_station_5yr_cap,
+  p.exemption_tag,
+  p.exemption_reason_code,
+  p.exemption_approved_by,
+  p.exemption_valid_until,
+  p.transfer_grant_inr,
+  p.composite_transfer_grant_cta_inr,
+  p.baggage_transport_cost_inr,
+  p.total_transfer_cost_inr,
+  sanc.sanctioned_strength,
+  sanc.in_position_strength,
+  sanc.vacancy_count
+FROM ranked_postings p
+JOIN ${ref("employee_master")} e ON p.emp_id = e.emp_id
+JOIN ${ref("dim_work_centre")} w ON p.wc_id = w.wc_id
+JOIN ${ref("dim_grade")} g ON p.grade_id = g.grade_id
+JOIN ${ref("dim_discipline")} d ON p.discipline_id = d.discipline_id
+JOIN continuous_spans cs ON p.emp_id = cs.emp_id AND p.wc_id = cs.wc_id AND p.island_id = cs.island_id
+LEFT JOIN (SELECT wc_id, discipline_id, grade_id, SUM(sanctioned_strength) AS sanctioned_strength, SUM(in_position_strength) AS in_position_strength, SUM(vacancy_count) AS vacancy_count FROM ${ref("sanctioned_posts")} WHERE fiscal_year = 'FY26' GROUP BY 1, 2, 3) sanc ON p.wc_id = sanc.wc_id AND p.discipline_id = sanc.discipline_id AND p.grade_id = sanc.grade_id

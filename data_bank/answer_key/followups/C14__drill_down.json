@@ -1,0 +1,75 @@
+{
+  "job_id": "5a7b7dfd-8516-4b77-9421-c64d0f1c3707",
+  "total_bytes_processed": 80097,
+  "executed_at": "2026-10-20T06:40:01.342458+00:00",
+  "elapsed_seconds": 0.77,
+  "row_count": 5,
+  "columns": [
+    "field_name",
+    "gross_revenue_inr_cr",
+    "statutory_levies_inr_cr",
+    "total_opex_inr_cr",
+    "manpower_cost_inr_cr",
+    "ebitda_inr_cr",
+    "dda_depreciation_inr_cr",
+    "net_operating_result_inr_cr",
+    "is_loss"
+  ],
+  "rows": [
+    {
+      "field_name": "Champang",
+      "gross_revenue_inr_cr": 329.6,
+      "statutory_levies_inr_cr": 68.64,
+      "total_opex_inr_cr": 234.71,
+      "manpower_cost_inr_cr": 157.23,
+      "ebitda_inr_cr": 26.25,
+      "dda_depreciation_inr_cr": 31.18,
+      "net_operating_result_inr_cr": -4.93,
+      "is_loss": true
+    },
+    {
+      "field_name": "Borholla",
+      "gross_revenue_inr_cr": 350.63,
+      "statutory_levies_inr_cr": 73.01,
+      "total_opex_inr_cr": 241.23,
+      "manpower_cost_inr_cr": 161.08,
+      "ebitda_inr_cr": 36.39,
+      "dda_depreciation_inr_cr": 33.17,
+      "net_operating_result_inr_cr": 3.22,
+      "is_loss": false
+    },
+    {
+      "field_name": "Khoraghat",
+      "gross_revenue_inr_cr": 379.86,
+      "statutory_levies_inr_cr": 79.11,
+      "total_opex_inr_cr": 250.46,
+      "manpower_cost_inr_cr": 166.43,
+      "ebitda_inr_cr": 50.29,
+      "dda_depreciation_inr_cr": 35.94,
+      "net_operating_result_inr_cr": 14.35,
+      "is_loss": false
+    },
+    {
+      "field_name": "Kuthalam",
+      "gross_revenue_inr_cr": 442.88,
+      "statutory_levies_inr_cr": 44.73,
+      "total_opex_inr_cr": 196.27,
+      "manpower_cost_inr_cr": 113.3,
+      "ebitda_inr_cr": 201.88,
+      "dda_depreciation_inr_cr": 114.15,
+      "net_operating_result_inr_cr": 87.73,
+      "is_loss": false
+    },
+    {
+      "field_name": "Mori",
+      "gross_revenue_inr_cr": 311.07,
+      "statutory_levies_inr_cr": 64.78,
+      "total_opex_inr_cr": 123.36,
+      "manpower_cost_inr_cr": 72.55,
+      "ebitda_inr_cr": 122.93,
+      "dda_depreciation_inr_cr": 29.44,
+      "net_operating_result_inr_cr": 93.49,
+      "is_loss": false
+    }
+  ]
+}

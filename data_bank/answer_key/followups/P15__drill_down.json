@@ -1,0 +1,54 @@
+{
+  "job_id": "fa1ab728-5880-460f-9535-c34072344301",
+  "total_bytes_processed": 16077,
+  "executed_at": "2026-10-20T06:33:19.203127+00:00",
+  "elapsed_seconds": 0.81,
+  "row_count": 4,
+  "columns": [
+    "state_name",
+    "csr_themes",
+    "projects",
+    "sanctioned_cr",
+    "csr_spend_cr",
+    "share_of_fy26_total_pct",
+    "fy26_total_spend_cr"
+  ],
+  "rows": [
+    {
+      "state_name": "Maharashtra",
+      "csr_themes": "Education; Environmental Sustainability; Healthcare",
+      "projects": 4,
+      "sanctioned_cr": 149.66,
+      "csr_spend_cr": 137.6,
+      "share_of_fy26_total_pct": 14.5,
+      "fy26_total_spend_cr": 949.0
+    },
+    {
+      "state_name": "Andhra Pradesh",
+      "csr_themes": "Education; Promotion of Sports",
+      "projects": 2,
+      "sanctioned_cr": 53.7,
+      "csr_spend_cr": 50.1,
+      "share_of_fy26_total_pct": 5.3,
+      "fy26_total_spend_cr": 949.0
+    },
+    {
+      "state_name": "Assam",
+      "csr_themes": "Education; Skill Development & Livelihoods",
+      "projects": 2,
+      "sanctioned_cr": 53.88,
+      "csr_spend_cr": 50.1,
+      "share_of_fy26_total_pct": 5.3,
+      "fy26_total_spend_cr": 949.0
+    },
+    {
+      "state_name": "Gujarat",
+      "csr_themes": "Environmental Sustainability; Sanitation & Safe Drinking Water",
+      "projects": 2,
+      "sanctioned_cr": 54.48,
+      "csr_spend_cr": 50.1,
+      "share_of_fy26_total_pct": 5.3,
+      "fy26_total_spend_cr": 949.0
+    }
+  ]
+}

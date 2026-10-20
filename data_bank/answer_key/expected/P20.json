@@ -1,0 +1,27 @@
+{
+  "job_id": "0a98e9f4-93c7-4f0d-9534-f5a724a9b33e",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:31.531057+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "BDP summary",
+      "clause_ref": "Clause 6.0",
+      "heading": "Board of Directors Reserved Matters",
+      "quote_snippet": "Document Title: ONGC Book of Delegated Powers (BDP 2015 - Governance Summary) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 6.0 - Board of Directors Reserved Matters\nDomain Vocabulary & Glossary Terms: Book of Delegated Powers 2015; Delegated Financial Powers; Administrative"
+    },
+    {
+      "doc_id": "BDP summary",
+      "clause_ref": "Clause 8.0",
+      "heading": "Commercial Confidentiality of Operational Schedules",
+      "quote_snippet": "Document Title: ONGC Book of Delegated Powers (BDP 2015 - Governance Summary) (Official Native PDF)\nDocument Type: rulebook\nClause / Section: Clause 8.0 - Commercial Confidentiality of Operational Schedules\nDomain Vocabulary & Glossary Terms: Book of Delegated Powers 2015; Delegated Financial Powers"
+    }
+  ]
+}

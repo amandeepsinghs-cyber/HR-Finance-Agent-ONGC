@@ -1,0 +1,31 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "grievances_litigation",
+  description: "Legal disputes and employee grievance docket register across Central Administrative Tribunal (CAT), High Courts, and Supreme Court."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_1) AS case_id,
+    TRIM(col_2) AS emp_id,
+    TRIM(col_3) AS wc_id,
+    TRIM(col_4) AS case_type,
+    TRIM(col_5) AS case_category,
+    TRIM(col_6) AS forum,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_7), ''), 1, 10)) AS filing_date,
+    TRIM(col_8) AS fiscal_year,
+    TRIM(col_9) AS status,
+    CASE WHEN LOWER(TRIM(col_10)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_10)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS interim_stay_granted,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_11), ''), ',', ''), '₹', '') AS INT64) AS age_days,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_12), ''), ',', ''), '₹', '') AS NUMERIC) AS age_years,
+    CASE WHEN LOWER(TRIM(col_13)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_13)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS is_aged_over_3_years,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(col_14), ''), 1, 10)) AS next_hearing_date,
+    TRIM(col_15) AS subject_summary
+  FROM ${ref("excel_legal_cases_tracker")}
+  WHERE _row_number >= 7 AND _sheet_name = 'legal_cases' AND col_1 IS NOT NULL AND TRIM(col_1) != '' AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Subtotal|^Total|^Summary)') AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Privileged|^Note:)')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY case_id ORDER BY _ingest_ts DESC) = 1

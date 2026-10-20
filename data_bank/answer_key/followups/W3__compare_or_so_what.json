@@ -1,0 +1,33 @@
+{
+  "job_id": "5a4eebf8-9e5f-43ea-b8cd-e83e7545196b",
+  "total_bytes_processed": 5346949,
+  "executed_at": "2026-10-20T06:42:40.645563+00:00",
+  "elapsed_seconds": 0.71,
+  "row_count": 1,
+  "columns": [
+    "relocated_officers",
+    "one_time_cost_inr_cr",
+    "receiving_assets",
+    "receiving_assets_fy26_net_revenue_inr_cr",
+    "receiving_assets_fy26_mmboe",
+    "net_revenue_per_boe_inr",
+    "breakeven_boe_one_year",
+    "breakeven_uplift_pct_one_year",
+    "breakeven_uplift_pct_over_3yrs",
+    "cost_pct_of_fy26_capex"
+  ],
+  "rows": [
+    {
+      "relocated_officers": 200,
+      "one_time_cost_inr_cr": 6.4,
+      "receiving_assets": 12,
+      "receiving_assets_fy26_net_revenue_inr_cr": 92170.75,
+      "receiving_assets_fy26_mmboe": 280.34,
+      "net_revenue_per_boe_inr": 3288.0,
+      "breakeven_boe_one_year": 19466.0,
+      "breakeven_uplift_pct_one_year": 0.0069,
+      "breakeven_uplift_pct_over_3yrs": 0.0023,
+      "cost_pct_of_fy26_capex": 0.0178
+    }
+  ]
+}

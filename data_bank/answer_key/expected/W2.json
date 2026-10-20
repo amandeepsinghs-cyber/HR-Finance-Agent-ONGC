@@ -1,0 +1,171 @@
+{
+  "job_id": "d6499a54-3e2e-464b-942e-4a028def95dd",
+  "total_bytes_processed": 1876781,
+  "executed_at": "2026-10-20T06:42:35.297806+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 17,
+  "columns": [
+    "discipline_id",
+    "discipline_name",
+    "current_headcount",
+    "current_executives",
+    "retirements_by_oct2028",
+    "projected_headcount_oct2028",
+    "change_pct"
+  ],
+  "rows": [
+    {
+      "discipline_id": "DISC-PRD",
+      "discipline_name": "Production",
+      "current_headcount": 4232,
+      "current_executives": 2926,
+      "retirements_by_oct2028": 487,
+      "projected_headcount_oct2028": 3745,
+      "change_pct": -11.5
+    },
+    {
+      "discipline_id": "DISC-DRL",
+      "discipline_name": "Drilling",
+      "current_headcount": 3194,
+      "current_executives": 1876,
+      "retirements_by_oct2028": 377,
+      "projected_headcount_oct2028": 2817,
+      "change_pct": -11.8
+    },
+    {
+      "discipline_id": "DISC-MEC",
+      "discipline_name": "Mechanical",
+      "current_headcount": 2557,
+      "current_executives": 1140,
+      "retirements_by_oct2028": 2,
+      "projected_headcount_oct2028": 2555,
+      "change_pct": -0.1
+    },
+    {
+      "discipline_id": "DISC-ELE",
+      "discipline_name": "Electrical",
+      "current_headcount": 2141,
+      "current_executives": 828,
+      "retirements_by_oct2028": 1,
+      "projected_headcount_oct2028": 2140,
+      "change_pct": -0.0
+    },
+    {
+      "discipline_id": "DISC-INS",
+      "discipline_name": "Instrumentation",
+      "current_headcount": 1929,
+      "current_executives": 568,
+      "retirements_by_oct2028": 0,
+      "projected_headcount_oct2028": 1929,
+      "change_pct": 0.0
+    },
+    {
+      "discipline_id": "DISC-CHM",
+      "discipline_name": "Chemistry",
+      "current_headcount": 1784,
+      "current_executives": 455,
+      "retirements_by_oct2028": 0,
+      "projected_headcount_oct2028": 1784,
+      "change_pct": 0.0
+    },
+    {
+      "discipline_id": "DISC-CIV",
+      "discipline_name": "Civil",
+      "current_headcount": 1299,
+      "current_executives": 0,
+      "retirements_by_oct2028": 0,
+      "projected_headcount_oct2028": 1299,
+      "change_pct": 0.0
+    },
+    {
+      "discipline_id": "DISC-RES",
+      "discipline_name": "Reservoir",
+      "current_headcount": 1005,
+      "current_executives": 1005,
+      "retirements_by_oct2028": 173,
+      "projected_headcount_oct2028": 832,
+      "change_pct": -17.2
+    },
+    {
+      "discipline_id": "DISC-GEO",
+      "discipline_name": "Geology",
+      "current_headcount": 857,
+      "current_executives": 857,
+      "retirements_by_oct2028": 143,
+      "projected_headcount_oct2028": 714,
+      "change_pct": -16.7
+    },
+    {
+      "discipline_id": "DISC-FIN",
+      "discipline_name": "Finance & Accounts (F&A)",
+      "current_headcount": 743,
+      "current_executives": 742,
+      "retirements_by_oct2028": 0,
+      "projected_headcount_oct2028": 743,
+      "change_pct": 0.0
+    },
+    {
+      "discipline_id": "DISC-GPS",
+      "discipline_name": "Geophysics (Surface)",
+      "current_headcount": 741,
+      "current_executives": 741,
+      "retirements_by_oct2028": 129,
+      "projected_headcount_oct2028": 612,
+      "change_pct": -17.4
+    },
+    {
+      "discipline_id": "DISC-MM",
+      "discipline_name": "Materials Management (MM)",
+      "current_headcount": 671,
+      "current_executives": 671,
+      "retirements_by_oct2028": 4,
+      "projected_headcount_oct2028": 667,
+      "change_pct": -0.6
+    },
+    {
+      "discipline_id": "DISC-HR",
+      "discipline_name": "Human Resources (HR)",
+      "current_headcount": 584,
+      "current_executives": 583,
+      "retirements_by_oct2028": 2,
+      "projected_headcount_oct2028": 582,
+      "change_pct": -0.3
+    },
+    {
+      "discipline_id": "DISC-HSE",
+      "discipline_name": "Environment & Safety (HSE)",
+      "current_headcount": 404,
+      "current_executives": 404,
+      "retirements_by_oct2028": 1,
+      "projected_headcount_oct2028": 403,
+      "change_pct": -0.2
+    },
+    {
+      "discipline_id": "DISC-IT",
+      "discipline_name": "Information Technology",
+      "current_headcount": 394,
+      "current_executives": 394,
+      "retirements_by_oct2028": 0,
+      "projected_headcount_oct2028": 394,
+      "change_pct": 0.0
+    },
+    {
+      "discipline_id": "DISC-LEG",
+      "discipline_name": "Legal",
+      "current_headcount": 162,
+      "current_executives": 162,
+      "retirements_by_oct2028": 0,
+      "projected_headcount_oct2028": 162,
+      "change_pct": 0.0
+    },
+    {
+      "discipline_id": "DISC-MED",
+      "discipline_name": "Medical Services",
+      "current_headcount": 101,
+      "current_executives": 101,
+      "retirements_by_oct2028": 0,
+      "projected_headcount_oct2028": 101,
+      "change_pct": 0.0
+    }
+  ]
+}

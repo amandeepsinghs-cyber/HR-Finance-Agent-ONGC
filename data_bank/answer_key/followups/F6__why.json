@@ -1,0 +1,36 @@
+{
+  "job_id": "f00edad3-a312-4175-aeb1-a30d9e227775",
+  "total_bytes_processed": 2506024,
+  "executed_at": "2026-10-20T06:39:07.207029+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 2,
+  "columns": [
+    "dispute_reason",
+    "products",
+    "invoices",
+    "customers",
+    "disputed_outstanding_cr",
+    "avg_age_days",
+    "share_of_over_90d_pct"
+  ],
+  "rows": [
+    {
+      "dispute_reason": "Gas gross calorific value (GCV) billing differential and pipeline metering reconciliation.",
+      "products": "C2-C3, LPG, Natural Gas, VAP / Naphtha",
+      "invoices": 121,
+      "customers": 26,
+      "disputed_outstanding_cr": 1324.8,
+      "avg_age_days": 161.0,
+      "share_of_over_90d_pct": 83.1
+    },
+    {
+      "dispute_reason": "Contested basic sediment & water (BS&W) testing protocols and offshore transit losses.",
+      "products": "Crude Oil",
+      "invoices": 27,
+      "customers": 20,
+      "disputed_outstanding_cr": 269.6,
+      "avg_age_days": 170.0,
+      "share_of_over_90d_pct": 16.9
+    }
+  ]
+}

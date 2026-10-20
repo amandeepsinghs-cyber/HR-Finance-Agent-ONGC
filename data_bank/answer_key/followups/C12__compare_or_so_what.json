@@ -1,0 +1,86 @@
+{
+  "job_id": "50532639-1238-4e6c-bea3-2292ced73f96",
+  "total_bytes_processed": 210170,
+  "executed_at": "2026-10-20T06:41:47.240322+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 6,
+  "columns": [
+    "fiscal_year",
+    "employee_cost_total_inr_cr",
+    "mmboe",
+    "months",
+    "manpower_cost_inr_per_boe",
+    "manpower_cost_usd_per_boe",
+    "inr_usd",
+    "lifting_cost_average_usd_boe",
+    "peer_manpower_cost_usd_per_boe"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY21",
+      "employee_cost_total_inr_cr": 10126.0,
+      "mmboe": 327.61,
+      "months": 12,
+      "manpower_cost_inr_per_boe": 309.0,
+      "manpower_cost_usd_per_boe": 4.16,
+      "inr_usd": 74.22,
+      "lifting_cost_average_usd_boe": 13.1,
+      "peer_manpower_cost_usd_per_boe": null
+    },
+    {
+      "fiscal_year": "FY22",
+      "employee_cost_total_inr_cr": 11082.0,
+      "mmboe": 318.03,
+      "months": 12,
+      "manpower_cost_inr_per_boe": 348.0,
+      "manpower_cost_usd_per_boe": 4.68,
+      "inr_usd": 74.51,
+      "lifting_cost_average_usd_boe": 13.06,
+      "peer_manpower_cost_usd_per_boe": null
+    },
+    {
+      "fiscal_year": "FY23",
+      "employee_cost_total_inr_cr": 10621.0,
+      "mmboe": 313.99,
+      "months": 12,
+      "manpower_cost_inr_per_boe": 338.0,
+      "manpower_cost_usd_per_boe": 4.21,
+      "inr_usd": 80.39,
+      "lifting_cost_average_usd_boe": 12.73,
+      "peer_manpower_cost_usd_per_boe": null
+    },
+    {
+      "fiscal_year": "FY24",
+      "employee_cost_total_inr_cr": 10526.0,
+      "mmboe": 306.4,
+      "months": 12,
+      "manpower_cost_inr_per_boe": 344.0,
+      "manpower_cost_usd_per_boe": 4.15,
+      "inr_usd": 82.79,
+      "lifting_cost_average_usd_boe": 12.99,
+      "peer_manpower_cost_usd_per_boe": null
+    },
+    {
+      "fiscal_year": "FY25",
+      "employee_cost_total_inr_cr": 10720.0,
+      "mmboe": 301.13,
+      "months": 12,
+      "manpower_cost_inr_per_boe": 356.0,
+      "manpower_cost_usd_per_boe": 4.21,
+      "inr_usd": 84.56,
+      "lifting_cost_average_usd_boe": 13.29,
+      "peer_manpower_cost_usd_per_boe": null
+    },
+    {
+      "fiscal_year": "FY26",
+      "employee_cost_total_inr_cr": 10211.0,
+      "mmboe": 296.64,
+      "months": 12,
+      "manpower_cost_inr_per_boe": 344.0,
+      "manpower_cost_usd_per_boe": 3.9,
+      "inr_usd": 88.33,
+      "lifting_cost_average_usd_boe": 14.04,
+      "peer_manpower_cost_usd_per_boe": null
+    }
+  ]
+}

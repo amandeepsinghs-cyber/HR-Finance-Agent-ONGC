@@ -1,0 +1,93 @@
+{
+  "job_id": "d2e141ad-85bb-442b-94f7-1d690f4d7ce4",
+  "total_bytes_processed": 378290,
+  "executed_at": "2026-10-20T06:38:57.315873+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 6,
+  "columns": [
+    "short_name",
+    "fiscal_year",
+    "lifting_cost_usd_boe",
+    "lifting_cost_inr_boe",
+    "production_mmboe",
+    "total_opex_cr",
+    "manpower_cost_cr",
+    "power_fuel_cr",
+    "water_handling_cr",
+    "water_cut_pct"
+  ],
+  "rows": [
+    {
+      "short_name": "Cambay Asset",
+      "fiscal_year": "FY24",
+      "lifting_cost_usd_boe": 9.18,
+      "lifting_cost_inr_boe": 760.0,
+      "production_mmboe": 6.73,
+      "total_opex_cr": 511.1,
+      "manpower_cost_cr": 223.9,
+      "power_fuel_cr": 167.0,
+      "water_handling_cr": 9.2,
+      "water_cut_pct": 42.9
+    },
+    {
+      "short_name": "Cambay Asset",
+      "fiscal_year": "FY25",
+      "lifting_cost_usd_boe": 9.46,
+      "lifting_cost_inr_boe": 800.0,
+      "production_mmboe": 6.13,
+      "total_opex_cr": 490.7,
+      "manpower_cost_cr": 220.6,
+      "power_fuel_cr": 155.1,
+      "water_handling_cr": 8.9,
+      "water_cut_pct": 44.3
+    },
+    {
+      "short_name": "Cambay Asset",
+      "fiscal_year": "FY26",
+      "lifting_cost_usd_boe": 8.99,
+      "lifting_cost_inr_boe": 795.0,
+      "production_mmboe": 5.79,
+      "total_opex_cr": 459.8,
+      "manpower_cost_cr": 202.5,
+      "power_fuel_cr": 147.4,
+      "water_handling_cr": 8.9,
+      "water_cut_pct": 45.5
+    },
+    {
+      "short_name": "Mehsana Asset",
+      "fiscal_year": "FY24",
+      "lifting_cost_usd_boe": 14.85,
+      "lifting_cost_inr_boe": 1229.0,
+      "production_mmboe": 10.34,
+      "total_opex_cr": 1271.5,
+      "manpower_cost_cr": 612.0,
+      "power_fuel_cr": 359.7,
+      "water_handling_cr": 28.8,
+      "water_cut_pct": 85.5
+    },
+    {
+      "short_name": "Mehsana Asset",
+      "fiscal_year": "FY25",
+      "lifting_cost_usd_boe": 15.64,
+      "lifting_cost_inr_boe": 1323.0,
+      "production_mmboe": 9.68,
+      "total_opex_cr": 1279.7,
+      "manpower_cost_cr": 637.9,
+      "power_fuel_cr": 343.4,
+      "water_handling_cr": 29.4,
+      "water_cut_pct": 86.2
+    },
+    {
+      "short_name": "Mehsana Asset",
+      "fiscal_year": "FY26",
+      "lifting_cost_usd_boe": 15.03,
+      "lifting_cost_inr_boe": 1327.0,
+      "production_mmboe": 9.24,
+      "total_opex_cr": 1227.2,
+      "manpower_cost_cr": 607.2,
+      "power_fuel_cr": 330.4,
+      "water_handling_cr": 29.6,
+      "water_cut_pct": 86.8
+    }
+  ]
+}

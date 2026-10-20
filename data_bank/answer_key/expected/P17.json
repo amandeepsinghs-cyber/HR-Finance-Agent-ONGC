@@ -1,0 +1,45 @@
+{
+  "job_id": "5cce37f8-4197-44a9-aae6-bfc8c1ff325d",
+  "total_bytes_processed": 356744,
+  "executed_at": "2026-10-20T06:33:23.916937+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 1,
+  "columns": [
+    "fiscal_year",
+    "pat_inr_cr",
+    "dividend_cr",
+    "dividend_per_share_inr",
+    "payout_pct_of_pat",
+    "dipam_floor_30pct_pat_cr",
+    "paid_above_floor_cr",
+    "dda_inr_cr",
+    "capex_cr",
+    "accruals_after_dividend_cr",
+    "surplus_after_capex_cr",
+    "max_extra_dps_from_surplus_inr",
+    "fy26_apr_sep_capex_cr",
+    "fy27_apr_sep_capex_cr",
+    "fy27_apr_sep_capex_be_cr",
+    "capex_h1_change_pct"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY26",
+      "pat_inr_cr": 32894.0,
+      "dividend_cr": 16669.0,
+      "dividend_per_share_inr": 13.25,
+      "payout_pct_of_pat": 50.7,
+      "dipam_floor_30pct_pat_cr": 9868.0,
+      "paid_above_floor_cr": 6801.0,
+      "dda_inr_cr": 25197.01,
+      "capex_cr": 35878.0,
+      "accruals_after_dividend_cr": 41422.0,
+      "surplus_after_capex_cr": 5544.0,
+      "max_extra_dps_from_surplus_inr": 4.41,
+      "fy26_apr_sep_capex_cr": 17950.0,
+      "fy27_apr_sep_capex_cr": 18020.0,
+      "fy27_apr_sep_capex_be_cr": 18915.0,
+      "capex_h1_change_pct": 0.4
+    }
+  ]
+}

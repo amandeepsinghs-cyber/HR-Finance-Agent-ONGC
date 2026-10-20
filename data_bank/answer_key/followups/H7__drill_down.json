@@ -1,0 +1,57 @@
+{
+  "job_id": "c7d8e44a-7808-48ff-8b07-905ef1c0c9e3",
+  "total_bytes_processed": 1214123,
+  "executed_at": "2026-10-20T06:38:51.175955+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 7,
+  "columns": [
+    "work_centre",
+    "women_executives",
+    "executives",
+    "women_pct"
+  ],
+  "rows": [
+    {
+      "work_centre": "Mumbai High",
+      "women_executives": 12,
+      "executives": 792,
+      "women_pct": 1.5
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "women_executives": 11,
+      "executives": 1071,
+      "women_pct": 1.0
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "women_executives": 10,
+      "executives": 996,
+      "women_pct": 1.0
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "women_executives": 5,
+      "executives": 593,
+      "women_pct": 0.8
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "women_executives": 3,
+      "executives": 95,
+      "women_pct": 3.2
+    },
+    {
+      "work_centre": "Drilling Services",
+      "women_executives": 0,
+      "executives": 100,
+      "women_pct": 0.0
+    },
+    {
+      "work_centre": "Offshore Logistics",
+      "women_executives": 0,
+      "executives": 99,
+      "women_pct": 0.0
+    }
+  ]
+}

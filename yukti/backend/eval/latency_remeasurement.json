@@ -1,0 +1,57 @@
+[
+  {
+    "qid": "C1",
+    "text_before_ms": 7878.4,
+    "text_after_ms": 3621.6,
+    "text_delta_pct": -54.0,
+    "ws_before_ms": 5467.4,
+    "ws_after_ms": 4007.6,
+    "tool_called": "query_data",
+    "sql_called": "SELECT grade_id, discipline_id, SUM(total_executives) AS num_executives FROM hrfin_gold.agg_headcount_tenure_summary WHERE wc_id = 'WC-DEL' AND continuous_stay_months >= 60 AND grade_id LIKE 'E%' GROUP BY grade_id, discipline_id ORDER BY num_executives DESC;",
+    "spoken_summary": "There are 419 executives who have been posted in the Delhi office for 5 years or more"
+  },
+  {
+    "qid": "C6",
+    "text_before_ms": 10215.2,
+    "text_after_ms": 3859.5,
+    "text_delta_pct": -62.2,
+    "ws_before_ms": 6200.0,
+    "ws_after_ms": 3722.5,
+    "tool_called": "query_data",
+    "sql_called": "SELECT field_name, recomputed_ebitda_inr_cr, recomputed_pbt_inr_cr FROM hrfin_gold.agg_field_pnl_summary WHERE fiscal_year = 'FY26' AND (recomputed_ebitda_inr_cr < 0 OR recomputed_pbt_inr_cr < 0);",
+    "spoken_summary": "In FY26, the Champang field recorded a negative PBT of \u20b94.93 Crore, even though its E"
+  },
+  {
+    "qid": "W1",
+    "text_before_ms": 5620.6,
+    "text_after_ms": 3616.8,
+    "text_delta_pct": -35.7,
+    "ws_before_ms": 5800.0,
+    "ws_after_ms": 2748.7,
+    "tool_called": "what_if",
+    "sql_called": null,
+    "spoken_summary": "If Brent crude drops to $0 per barrel, two fields are projected to become EBITDA nega"
+  },
+  {
+    "qid": "C12",
+    "text_before_ms": 19193.2,
+    "text_after_ms": 5295.7,
+    "text_delta_pct": -72.4,
+    "ws_before_ms": 7500.0,
+    "ws_after_ms": 3997.8,
+    "tool_called": "query_data",
+    "sql_called": "SELECT\n  t1.asset_name,\n  t1.onshore_offshore,\n  ROUND(SUM(t1.lifting_cost_per_boe_usd), 2) AS avg_lifting_cost_per_boe_usd\nFROM\n  hrfin_gold.agg_lifting_cost_summary AS t1\nWHERE\n  LOWER(t1.onshore_offshore) IN ('onshore', 'offshore') AND LOWER(t1.asset_name) IN ('western offshore', 'assam asset', 'gujarat asset')\nGROUP BY\n  t1.asset_name, t1.onshore_offshore\nORDER BY\n  t1.asset_name;",
+    "spoken_summary": "I am sorry, but I cannot provide the average lifting cost per barrel for Western Offs"
+  },
+  {
+    "qid": "NE-Vacancies",
+    "text_before_ms": 9489.6,
+    "text_after_ms": 4760.0,
+    "text_delta_pct": -49.8,
+    "ws_before_ms": 6800.0,
+    "ws_after_ms": 4352.6,
+    "tool_called": "query_data",
+    "sql_called": "SELECT work_centre_name, SUM(total_sanctioned) as sanctioned, SUM(total_in_position) as in_position, SUM(total_vacancies) as vacancies FROM hrfin_gold.agg_vacancies_summary WHERE fiscal_year = 'FY26' AND hard_station_cat = 'C' AND LOWER(onshore_offshore) = 'onshore' GROUP BY work_centre_name ORDER BY vacancies DESC",
+    "spoken_summary": "Across Category-C hard stations in the North East, there are 225 executive vacancies."
+  }
+]

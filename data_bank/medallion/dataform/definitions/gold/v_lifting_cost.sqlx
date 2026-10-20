@@ -1,0 +1,27 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "v_lifting_cost",
+  description: "Unit lifting and production costs per BOE by field and asset across fiscal years"
+}
+
+SELECT
+  pnl.fiscal_year,
+  pnl.asset_wc_id,
+  w.name AS asset_name,
+  w.onshore_offshore,
+  pnl.field_id,
+  f.name AS field_name,
+  pnl.total_production_boe,
+  pnl.total_opex_inr_cr,
+  ROUND(SAFE_DIVIDE(pnl.total_opex_inr_cr * 10000000.0, NULLIF(pnl.total_production_boe, 0)), 2) AS lifting_cost_per_boe_inr,
+  pnl.lifting_cost_per_boe_usd,
+  pnl.manpower_cost_per_boe_usd,
+  pnl.allocated_manpower_cost_inr_cr,
+  pnl.regular_employee_headcount,
+  pnl.contractor_headcount,
+  pnl.boe_per_employee
+FROM ${ref("field_pnl_annual")} pnl
+LEFT JOIN ${ref("dim_field")} f ON pnl.field_id = f.field_id
+LEFT JOIN ${ref("dim_work_centre")} w ON pnl.asset_wc_id = w.wc_id
+WHERE pnl.line_type = 'field' AND pnl.total_production_boe > 0

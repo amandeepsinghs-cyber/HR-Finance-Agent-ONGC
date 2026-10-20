@@ -1,0 +1,175 @@
+{
+  "turn_id": "turn_h10_012",
+  "language": "en",
+  "persona": "DIR_HR",
+  "spoken_summary": "Under the FY27 transfer proposal, 8457 active executives are due for rotation across 46 work centres under JRTP. Category C stations need 612 executives to fill vacancies, led by Neelam & Heera and Bassein & Satellite.",
+  "display_text": "Annual Job Rotation & Transfer Proposal Roster across 46 work centres [1]. Governed by JRTP Clause 3.0 (Station Tenure Norms) and Clause 6.0 (Hard Station Rotation). Company total due for rotation: 8457.",
+  "visual": {
+    "type": "table",
+    "mode": "replace",
+    "title": "Annual Job Rotation & Transfer Proposal (FY27 Balancing Roster)",
+    "table": {
+      "columns": [
+        "Work Centre",
+        "Hard Station Cat",
+        "Active Executives",
+        "Stay >= 5y",
+        "Due for Rotation",
+        "Retiring < 3y",
+        "Category C Vacancies"
+      ],
+      "rows": [
+        {
+          "Work Centre": "Neelam & Heera",
+          "Hard Station Cat": "C",
+          "Active Executives": 996,
+          "Stay >= 5y": 776,
+          "Due for Rotation": 639,
+          "Retiring < 3y": 137,
+          "Category C Vacancies": 158
+        },
+        {
+          "Work Centre": "Bassein & Satellite",
+          "Hard Station Cat": "C",
+          "Active Executives": 1071,
+          "Stay >= 5y": 685,
+          "Due for Rotation": 559,
+          "Retiring < 3y": 126,
+          "Category C Vacancies": 155
+        },
+        {
+          "Work Centre": "Mumbai High",
+          "Hard Station Cat": "C",
+          "Active Executives": 792,
+          "Stay >= 5y": 560,
+          "Due for Rotation": 444,
+          "Retiring < 3y": 116,
+          "Category C Vacancies": 108
+        },
+        {
+          "Work Centre": "Assam Asset",
+          "Hard Station Cat": "C",
+          "Active Executives": 687,
+          "Stay >= 5y": 524,
+          "Due for Rotation": 424,
+          "Retiring < 3y": 100,
+          "Category C Vacancies": 0
+        },
+        {
+          "Work Centre": "Jorhat Asset",
+          "Hard Station Cat": "C",
+          "Active Executives": 496,
+          "Stay >= 5y": 390,
+          "Due for Rotation": 324,
+          "Retiring < 3y": 66,
+          "Category C Vacancies": 0
+        },
+        {
+          "Work Centre": "Tripura Asset",
+          "Hard Station Cat": "C",
+          "Active Executives": 500,
+          "Stay >= 5y": 373,
+          "Due for Rotation": 304,
+          "Retiring < 3y": 69,
+          "Category C Vacancies": 62
+        },
+        {
+          "Work Centre": "Eastern Offshore",
+          "Hard Station Cat": "C",
+          "Active Executives": 593,
+          "Stay >= 5y": 344,
+          "Due for Rotation": 289,
+          "Retiring < 3y": 55,
+          "Category C Vacancies": 82
+        },
+        {
+          "Work Centre": "CBM Bokaro",
+          "Hard Station Cat": "C",
+          "Active Executives": 331,
+          "Stay >= 5y": 246,
+          "Due for Rotation": 211,
+          "Retiring < 3y": 35,
+          "Category C Vacancies": 39
+        },
+        {
+          "Work Centre": "INBIGS",
+          "Hard Station Cat": "C",
+          "Active Executives": 64,
+          "Stay >= 5y": 63,
+          "Due for Rotation": 47,
+          "Retiring < 3y": 16,
+          "Category C Vacancies": 0
+        },
+        {
+          "Work Centre": "Rajasthan Basin",
+          "Hard Station Cat": "C",
+          "Active Executives": 66,
+          "Stay >= 5y": 62,
+          "Due for Rotation": 43,
+          "Retiring < 3y": 19,
+          "Category C Vacancies": 8
+        }
+      ]
+    },
+    "kpis": [
+      {
+        "label": "Company Due Rotation",
+        "value": 8457,
+        "unit": "Officers",
+        "delta": "JRTP Clause 3.0"
+      },
+      {
+        "label": "Eligible 3\u20135 Yr Window",
+        "value": 1362,
+        "unit": "Officers",
+        "delta": "Eligible Pool"
+      },
+      {
+        "label": "Category C Vacancies",
+        "value": 612,
+        "unit": "Vacancies",
+        "delta": "Hard Stations"
+      }
+    ]
+  },
+  "insights": [
+    "FY27 transfer proposal: 8457 of 13,453 active executives are due for rotation \u2014 continuous stay of 5 years or more (10,050), less 1,592 within 3 years of superannuation and 1 with a valid exemption.",
+    "A further 1362 officers are in the 3\u20135-year window and eligible but not yet due.",
+    "Category C stations need 612 executives to fill FY26 vacancies; 399 due officers have never served Category C (first call under JRTP 6.1). Largest release pools: Neelam & Heera (639), Bassein & Satellite (559)."
+  ],
+  "caveat": "Data caveat: stay start dates partly censored at Jul-2020 (7,720 of 8,457 due start on 1-Jul-2020); true overdue pool is smaller and must be validated against service books before issue.",
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.mart_postings",
+      "query_id": "fee0df7b-d5e6-47cc-a9df-7fce5a946c0b",
+      "sql": "-- Answer Key SQL: H10\n-- Question: Generate an Excel transfer proposal for FY27 using rotation rules.\n-- Type: document\n-- Semantic audit 2026-10-20: old SQL counted ALL employees (incl. non-executives, exempt and age 57+) with >=36 months per WC, and\n-- the legacy document prose reported the 46-row count as '{eligible_officers_count}'.\n-- Semantic audit 2026-10-20 (rev 2, coordinator): 'due' redefined per JRTP 3.1/3.2 and C1/MET-HR-011 as continuous stay >= 60\n-- months (hrfin_gold.v_continuous_stay) with no valid exemption and not within 3 yrs of superannuation; 3-5 yr stays shown\n-- separately as eligible_3_to_5y; stays starting exactly 2020-07-01 (left-censored posting history) counted per WC.\nWITH stay AS (\n    -- current continuous stay per hrfin_gold.v_continuous_stay (same source as C1 / MET-HR-011)\n    SELECT v.emp_id, v.wc_id, v.grade_id, v.discipline_id, v.retirement_date,\n           v.continuous_from_date, v.continuous_stay_months,\n           IF(LOWER(IFNULL(p.exemption_tag, 'none')) IN ('none', ''), NULL, p.exemption_tag) AS exemption_tag,\n           p.exemption_valid_until\n    FROM `ongc-hr-finance-agent.hrfin_gold.v_continuous_stay` v\n    JOIN dim_grade g ON g.grade_id = v.grade_id\n    JOIN employee_master e ON e.emp_id = v.emp_id\n    LEFT JOIN posting_history p ON p.emp_id = v.emp_id AND p.is_current_posting\n    WHERE v.is_current_stay\n      AND LOWER(g.cadre) = 'executive'\n      AND LOWER(e.employment_status) = 'active'\n),\never_hard AS (\n    SELECT p.emp_id, LOGICAL_OR(LOWER(w.hard_station_cat) = 'c') AS served_cat_c\n    FROM posting_history p JOIN dim_work_centre w ON w.wc_id = p.wc_id\n    GROUP BY p.emp_id\n),\nrotation AS (\n    -- JRTP 3.1/3.2: 3 yrs is the MINIMUM; rotation normally after 3-5 yrs -> 'due' = continuous stay >= 60 months (C1 rule).\n    -- Protected: within 3 yrs of superannuation (JRTP 7.1, C1 rule: retirement_date - 2026-10-19 <= 3*365.25 days)\n    -- or a recorded exemption still valid on 2026-10-19.\n    SELECT s.*, IFNULL(h.served_cat_c, FALSE) AS served_cat_c,\n           DATE_DIFF(s.retirement_date, DATE '2026-10-19', DAY) <= 3 * 365.25 AS retiring_3y,\n           s.exemption_tag IS NOT NULL AND IFNULL(s.exemption_valid_until, DATE '9999-12-31') >= DATE '2026-10-19' AS valid_exemption,\n           s.continuous_stay_months >= 60 AS stay_ge_5y,\n           s.continuous_stay_months BETWEEN 36 AND 59 AS stay_3_to_5y,\n           s.continuous_from_date = DATE '2020-07-01' AS censored_2020_07_01\n    FROM stay s\n    LEFT JOIN ever_hard h ON h.emp_id = s.emp_id\n),\nflags AS (\n    SELECT r.*,\n           r.stay_ge_5y AND NOT r.retiring_3y AND NOT r.valid_exemption AS due_for_rotation,\n           r.stay_3_to_5y AND NOT r.retiring_3y AND NOT r.valid_exemption AS eligible_3_to_5y\n    FROM rotation r\n)\n, vac AS (\n    SELECT sp.wc_id, SUM(sp.vacancy_count) AS exec_vacancies_fy26\n    FROM sanctioned_posts sp JOIN dim_grade g ON g.grade_id = sp.grade_id\n    WHERE sp.fiscal_year = 'FY26' AND LOWER(g.cadre) = 'executive'\n    GROUP BY sp.wc_id\n)\nSELECT\n    wc.short_name AS work_centre,\n    wc.hard_station_cat,\n    COUNT(*) AS active_executives,\n    COUNTIF(f.stay_ge_5y) AS stay_ge_5y,\n    COUNTIF(f.due_for_rotation) AS due_for_rotation,\n    COUNTIF(f.stay_ge_5y AND f.retiring_3y) AS protected_retiring_3y,\n    COUNTIF(f.stay_ge_5y AND NOT f.retiring_3y AND f.valid_exemption) AS protected_exemption_only,\n    COUNTIF(f.eligible_3_to_5y) AS eligible_3_to_5y,\n    COUNTIF(f.due_for_rotation AND NOT f.served_cat_c) AS due_never_served_cat_c,\n    COUNTIF(f.censored_2020_07_01) AS stay_starts_2020_07_01,\n    IFNULL(MAX(v.exec_vacancies_fy26), 0) AS exec_vacancies_fy26,\n    SUM(COUNTIF(f.due_for_rotation)) OVER () AS company_due_for_rotation,\n    SUM(COUNTIF(f.eligible_3_to_5y)) OVER () AS company_eligible_3_to_5y,\n    SUM(COUNTIF(f.censored_2020_07_01)) OVER () AS company_stay_starts_2020_07_01,\n    SUM(COUNTIF(f.due_for_rotation AND f.censored_2020_07_01)) OVER () AS company_due_stay_starts_2020_07_01,\n    SUM(COUNT(*)) OVER () AS company_active_executives\nFROM flags f\nJOIN dim_work_centre wc ON wc.wc_id = f.wc_id\nLEFT JOIN vac v ON v.wc_id = f.wc_id\nGROUP BY wc.short_name, wc.hard_station_cat\nORDER BY wc.hard_station_cat DESC, due_for_rotation DESC, work_centre;\n"
+    },
+    {
+      "kind": "policy",
+      "doc_id": "JRTP",
+      "clause": "3.0",
+      "title": "Job Rotation & Transfer Policy - Station Tenure Norms"
+    },
+    {
+      "kind": "policy",
+      "doc_id": "JRTP",
+      "clause": "6.0",
+      "title": "Hard Station Rotation Norms"
+    }
+  ],
+  "suggestions": [
+    "Export proposal roster to Microsoft Excel",
+    "Filter roster by Category C candidates",
+    "Submit proposal note to Director (HR)"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "xlsx",
+    "sheets",
+    "docs",
+    "pdf"
+  ]
+}

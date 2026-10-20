@@ -1,0 +1,65 @@
+{
+  "job_id": "1f5c21db-9d43-4895-ad5d-b0d561d66401",
+  "total_bytes_processed": 19008,
+  "executed_at": "2026-10-20T06:38:56.380025+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 6,
+  "columns": [
+    "case_category",
+    "cat_benches",
+    "high_court",
+    "supreme_court",
+    "internal_grievance_cell",
+    "open_cases"
+  ],
+  "rows": [
+    {
+      "case_category": "quarters_allotment",
+      "cat_benches": 27,
+      "high_court": 3,
+      "supreme_court": 9,
+      "internal_grievance_cell": 7,
+      "open_cases": 46
+    },
+    {
+      "case_category": "seniority_fixation",
+      "cat_benches": 26,
+      "high_court": 6,
+      "supreme_court": 6,
+      "internal_grievance_cell": 3,
+      "open_cases": 41
+    },
+    {
+      "case_category": "disciplinary_action",
+      "cat_benches": 19,
+      "high_court": 5,
+      "supreme_court": 1,
+      "internal_grievance_cell": 6,
+      "open_cases": 31
+    },
+    {
+      "case_category": "transfer_challenge",
+      "cat_benches": 19,
+      "high_court": 7,
+      "supreme_court": 3,
+      "internal_grievance_cell": 2,
+      "open_cases": 31
+    },
+    {
+      "case_category": "promotion_dispute",
+      "cat_benches": 18,
+      "high_court": 4,
+      "supreme_court": 2,
+      "internal_grievance_cell": 6,
+      "open_cases": 30
+    },
+    {
+      "case_category": "pay_anomaly",
+      "cat_benches": 16,
+      "high_court": 5,
+      "supreme_court": 4,
+      "internal_grievance_cell": 4,
+      "open_cases": 29
+    }
+  ]
+}

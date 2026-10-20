@@ -1,0 +1,1018 @@
+[OCR text extracted with RapidOCR from scanned PDF: ongc_policy_preservation_of_documents.pdf]
+
+--- Page 1 ---
+OnGe
+OILANDNATURALGASCORPORATIONLIMITED
+Jeevan Bharti Bldg. Tower-ll, 124 Indira Chowk, New Delhi - 110 001
+CINNo.L74899DL1993GOI054155
+CORPORATEPOLICYONPRESERVATIONOFDOCUMENTSANDTHEIRARCHIVING
+1.0 Preamble
+provided as under:
+Preservationofdocuments.
+theminatleasttwocategoriesasfollows-
+(a)documentswhosepreservationshallbepemanent innature;
+(b)documentswithpreservationperiodofnotlessthaneightyearsaftercompletionof therelevanttransactions:
+Provided that thelistedentitymaykeepdocumentsspecified inclauses(a)and(b) inelectronicmode.
+1.1 Further, as per Regulation 30(8) it is stipulated as under:
+(8)Thelistedentityshalldiscloseonitswebsiteallsucheventsorinformationwhichhasbeendisclosedtostock
+exchange(s) under thisregulation andsuchdisclosures shall behostedon thewebsiteof the listed entity fora
+minimumperiodof fiveyearsand thereafterasperthearchivalpolicyofthelistedentity,asdisclosedonitswebsite.
+Accordingly, to comply with the aforesaid Listing Regulations, this policy has been framed.
+1.2 This Policy shallbe known as Corporate Policy on Preservation of Documents and their Archiving.
+1.3 This Policy is effective from the approval of the Board of Directors of the Company on 11th February,
+2016.
+2.0 APPLICABILITY: This policy shall be applicable to all documents of ONGC maintained at the Registered
+Officeand thevariousAssets/Basins/Units/Institutes/Centres/OfficesincludingCorporateOfficeetc.
+3.0 The word document shall mean and include books, paper, registers, vouchers, books of accounts etc. It
+the Companies Act, 2013.
+
+--- Page 2 ---
+4.0 The Preservation of the Documents shallbe as follows:
+SI.No. Name/Descriptionof thedocuments Period of Remarks
+preservation
+Company Secretariat
+Agenda Items which have been put up before every Permanent
+meeting of the Board of Directors alongwith the
+approval of the Competent Authority
+2. MinutesofeveryMeetingof theBoardof Directors Permanent
+after their approval and signature by the Chairman
+3 Agenda items which havebeen put upbefore every 8years
+meeting of theBoard level Committee alongwith the
+approval of the Competent Authority
+4. Minutesofthemeetings ofallBoardLevel Permanent
+Committees after their approval and signature by
+the Chairman
+5 AttendanceSheet/RegisterofDirectorsattending 8years
+themeetingsofBoard/BoardLevel Committee.
+6. All files of the past and present Directors of the Permanent
+Company containing their appointment letters and
+other material and important correspondences.
+7. Alloriginal Agreements,MOUs,Contracts, Permanent
+Guarantees, Share / Security Certificates /
+documents given for custody to Company
+Secretariat.
+8. Annual Reports of the Company from inception. Permanent
+9. Statutory Registers as per Companies Act, 2013 Permanent
+10 Filesof Legalcases of Shareholder/ Investor 8years However, it is required to
+Complaints keep the file till disposal of
+the case.
+11. Allother rdocumentsand correspondences 8years
+pertaining to Company Secretariat.
+2
+
+--- Page 3 ---
+Finance&Accounts
+12 (A)Financial Statements/Books ofAccounts 8years from the However, where the Tax
+end of the assessment of the same
+All BooksofAccountsatCorporate relevant has not been completed,
+Accounts/Assets/Basins/Units/Institutes/Centres/ Financial Year the same to be kept till
+Offices etc includingthose relating to Cost assessment is over and the
+Accounts.These will includeFinancial Statements, concemed department has
+vouchers,entries,supportingdocumentsetc. certified that there is no
+further need for the same
+(B) Pre audit to be stored.
+Payment through LC
+? Commercial Invoice
+Bil of lading (shipping document)
+Packing list
+CertificateofTestand Inspectionfrom
+manufacturer/ third party agency (TPI)
+Certificate of origin fromeconomic
+chamber of commerceofexporting
+country
+Certificates of warranty to quality from
+manufacturer
+Correspondence with vendors
+Copy of Purchases order/LOl
+Paymentthrough LSC
+Complete set of Invoicei.e.commercial
+invoice andtaxinvoice
+Lorryreceipt/Goodtransportreceiptasa
+proof of dispatch
+Packing list
+Certificate of warranty to quality
+Inspection cover note in the name of
+ONGC
+Correspondence with vendors.
+CopyofPurchaseOrder/ LOl
+Payment against GRV
+Complete set of Invoice i.e. commercial
+invoice and tax invoice
+Certificate of warranty
+Inspection certificate
+Copy of Purchase Order/ LOl
+Works/Service Contracts
+? Letter of Intent/contract
+Invoice (Vendor Invoice as well as third
+party invoice)
+Inspection report/ Third party inspection
+certificate
+Insurance document
+Guaranteeandwarrantycertificate
+3
+
+--- Page 4 ---
+Installation&Commissioningcertificatel
+Completion certificate
+Site acceptancetestreports
+Correspondencewithvendors
+Employees'payments
+Bill having approval of competent
+authority
+Relevantoriginal invoice
+(C) Cash and Bank
+OriginalPaymentVoucherswith
+supporting documents
+BankGuarantees
+Challans of taxpayments etc.
+(D)Other Sections
+Instructions,Decisions andCircularsfrom
+management
+Instructions,Decisions,Circulars and
+assessment orders from statutory
+Authonities andMinistry
+Importantcorrespondencefileswith
+vendors/outside agencies,certified
+financial statements/auditreportsetc.
+13 Records where legal disputes are ongoing should 8 years or till
+beseparatelycategorized and maintained. closure of all
+legal issues,
+whichever is
+later.
+14 Recordsrelating to direct and indirect taxation to 8yearsor til
+be maintained. completion of
+final
+assessments,
+whichever is
+later.
+15 Recordsrelating to on-goingvigilancecasesmay 8 years or
+be kept. conclusion of the
+cases
+whichever is
+later.
+ONSHORE
+16 Inbuilt engineering drawings,manuals,standards, Permanent Digitised form.
+SOPs well data,etc of OnshoreAssets,
+Project FR, FDP, Well Card, Asset Annual Report,
+Asset Sub-surface Annual Report,Land Records, Permanent Manual
+PEL/ ML,EC/FC
+ADB Agenda 5Years Manual
+
+--- Page 5 ---
+T&FS
+17 DPR,Well details,Well Programme and GTO,F Permanent
+details of well operation, Completion report/ end of
+Well Reports,FrequencyAuthorisation Licences to
+operateRadioEquipment.SACFAClearances,EC/
+BoardAgenda,Policy documents-ISMS&Access
+Control,Audit Related
+18 Financial systems Logs such as SAP, Procurement Not less than
+case documents,Payment details etc.,Financial, eight years after
+Legal&OEC proceedings,ISOStandard completion of
+Certification documents，Projects and Tenders, the relevant
+Tender processing file& Contract documents transaction.
+19 Bank Guarantee,Contract Copies,IT Systems Notless than
+Logs ( e-mails, Servers, Network, Security, eight years after
+Applications etc.), Correspondence, Fax Messages, completion of
+AuditObservation,ManagementInformation the relevant
+Reports，General，Administrative,HRD Related, transaction.
+WorkPlanning,Technical Administrativeapproval
+casefilesandothermiscellaneousdocuments.
+OFFSHORE
+Document Type Custodian Physical Mode (Yrs) Electronic Mode
+AnnualWorkProgram/ Respective WorkCentres 10Yrs Permanent
+Budget Approvals (Asset/ Services/Plants/
+Institutes
+Development Plans Respective Assets 5 years after Permanent
+including its approval completionof such
+development plan
+period
+InitialWellCompletion Respective Assets Permanent Permanent
+report &Subsequent
+activity Report
+Documents relating to Offshore Engineering Working lifeof the Permanent
+structural Design & Services platform
+process design of any
+platform, plant
+Copies ' of Contracts Respective Work Centre 10 years after Permanent
+entered between Contract closure
+Services/Assets/Plants& (Assets/Services/Plants)
+Vendors
+Correspondence with RespectiveWorkCentres 10 years after Permanent
+contractors having (Assets/Services/Plants) contract closure
+commercial/legal issues
+P&ID of Platform RespectiveAssets/Offshore Working life of Permanent
+including any subsequent Engineering platform
+changes
+5
+
+--- Page 6 ---
+P&ID of Plants Respective Plants Working life of plant Permanent
+Document of change in RespectiveWork Centres Working life of Permanent
+respect of any change in installation
+installation structure (Assets/Services/Plants)
+process
+Asset Development Respective Assets 10 yrs Permanent
+Board Agendas/
+Proceedings/ Minutes
+Reports inrespect of R&D Respective Institutes 10 yrs Permanent
+work ofIOGPT/IEOT
+Reports in respect of any Respective Institutes 10 yrs Permanent
+project works
+IOGPT/IEOT
+Report regarding Project Respective Assets 10 yrs Permanent
+workassigned by asset
+to IRS
+Monthly/Annual Reportof Respective Assets 10 yrs Permanent
+Asset/Services/ Plants/ Services/Plants/Institutes
+Institutes
+Incident/ Accident Offshore HSE/HSE of 10 yrs Permanent
+Reports, enquiry respective plant( in case of
+(committee) report plants)
+relating to accident
+incident
+PSC/ JOA including JVOG 10 yrs after PSC Permanent
+amendments, if any in period expires
+respect of JVs operated
+by JVOG
+CopiesofMinutes of JVOG 10yrsafter PSCPermanent
+Meetings in JVOG viz. period expires
+TCM/OCM/MCM
+Correspondence with JV JVOG 10yrsafter PSC Permanent
+partners period expires
+Correspondence with JVOG 10yrs after PSC Permanent
+DGH/MoPNG relating JV period expires
+matters
+6
+
+--- Page 7 ---
+EXPLORATION
+Main activity Document Type Preserved Permanentiy
+Physical Mode Electronic
+(Yrs) Mode
+Technical AnnualExplorationWorkProgramme/ 10 Permanent
+Budget approval notes
+Explorationrelatedpolicyguidelines To be made Permanent
+documents paperless
+ReserveEstimationReports(Half-yearly) 5 Permanent
+Annual RECReports(Part-l,Part-Il) 10 Pemanent
+AgendaitemsandminutesforEPMBetc. 5 Permanent
+Annual /Quartery/MonthlyReports/ To be made Permanent
+Technical Reports/R&DReports paperiess
+Documents related to Asper Company Permanent
+Procurements/Contracts/Tenders etc. policy
+Administrative DocumentsrelatedtoAdministrative As per office order Permanent
+nature like Training, Manpower, No.ONGC/ER/CP/
+circulars,office orders, memo, notices GAD/RR/012 dated
+etc. 05Jul14 on record
+Legal Documents retention and Permanent
+ISO certification, audit observation and disposal Permanent
+vigilance cases
+Correspondence with PMOVIPs/ 5 Permanent
+Ministry/ DGH
+Domestic Acreages Production Sharing Contracts including Permanent Permanent
+Amendments, Confidentiality
+Agreements, Joint Study Agreements,
+Heads of Agreement, Joint Operating
+Agreements, Joint Bidding Agreements,
+Farm out/Farm in Agreements,
+Documents&Files related toPre-NELP
+&NELP rounds,MoUs,Files related to
+Datarecords (Receipt/Submission
+/Sharing), Agenda to
+Board/EC/Committees along with their
+Resolution, ATRs/Files,
+Correspondence to Government,
+approved minutes of OC/MC/TC
+meetings
+Blockdetailsandreports 5 yrs. after Permanent
+Maps/drawings/productiondata surrender of block Pemanent
+Final evaluation and /Monitoring report Permanent
+Overseas Acreage Corporatepresentationsbyowners Permanent
+BasinOverviewDetails Permanent Permanent
+Country specificfiles/OSCs/PSCs Permanent
+Maps Drawings/Production data 5 yrs.In case of Pemanent
+Final Report onAcreage Evaluation successful Permanent
+acquisition, till 5 yrs Permanent
+Confidential Note/Recommendations after the surrender
+of the block
+
+--- Page 8 ---
+Corp presentation to ONGC /OVL Board Permanent
+ONGCJV Evaluation JV Overview andPresentations Permanent
+/ Monitoring JVrelatedPSC&JOA Permanent Permanent
+Third Party Evaluation/Reports Permanent
+Copies of MOMof TCM/OC&MCM Permanent
+Correspondence withPartners/DGH Pemanent
+Maps/Drawings/Production details 5 yrs. after Permanent
+FDPs/SimulationsStudyReports surrender of block Permanent
+Correspondence on Permanent Permanent
+Arbitration/OEC/IEM if any.
+Judgement in case of Permanent
+Arbitration/OEC/IEM if any
+Relinquishment on expiry withdrawal Permanent
+approvalnotes
+Spl.Pan-lndia TaskForceguidelinesandmandate 7 yrs after Permanent
+Projects ProjectFramework&Timelines completion of Permanent
+Correspondence with various agencies project Permanent
+Joint StudyReport of theProject Permanent
+Final Recommendations of Statutory Permanent
+Authority
+Domain Empanelment proposals & approvals, 5 Permanent
+Experts/Consultancy contract documents,relatedpapers and
+final reports submitted.
+Technology Technology proposals and Annexures, 5 Permanent
+Induction Minutes of TechnologyCommittee
+meetings and approval notes, details of
+induction
+8
+
+--- Page 9 ---
+HR&ALLIEDDEPT.-RECORDRETENTIONSCHEDULE
+A.B EMPLOYEESRELATION
+SI. MAIN HEAD SUBHEAD RETENTIONPEROD
+(YEARS)
+1. Corporate Policy General:
+GovernmentDirectives/Guidelines Permanent
+Deputation Permanent
+Agrani Samman Ex-gratia Permanent
+Sahyog Trust Permanent
+Asha kiran Permanent
+Manpower Maintenance:
+Service Rules Permanent
+Pay Fixation Rules Permanent
+Wage/Pay Negotiation Permanent
+Wage/Pay Revision Permanent
+Pay Scales Permanent
+Pay Anomaly/Revision Permanent
+Increment Permanent
+Allowances-Functional Permanent
+Allowances-Locational Permanent
+WelfareBasedAllowances Permanent
+Statutory Allowances Permanent
+Traveling Allowances Permanent
+Benefits:
+Statutory Permanent
+Non-Statutory Permanent
+Staff vehicle Permanent
+Leave&RelatedBenefits Permanent
+Location Related Benefits Permanent
+FunctionalRelatedBenefits Permanent
+6
+
+--- Page 10 ---
+Sl. MAIN HEAD SUB HEAD RETENTIONPEROD
+(YEARS)
+Reimbursements-CMRE&Car/ 2wheeler Permanent
+insurance
+Housing/Residential/Township lease, self- Permanent
+lease
+Long service Reward scheme Permanent
+Loan&Advances:
+House Building Permanent
+Conveyance Permanent
+Children EducationAllowance Permanent
+House Furnishing Permanent
+White Goods Permanent
+Separation:
+Gratuity Rules Permanent
+ONGCPRBScheme Permanent
+CSS Scheme Permanent
+PrematureRetirementScheme Permanent
+Separation&Terminal Benefits Permanent
+VRS Permanent
+PerformanceLinked Benefits
+Annual Incentives Permanent
+Performance Incentives Permanent
+Medical
+Regular Employee&their dependents Permanent
+Retired&SeparatedEmployees Permanent
+Handicapped wards of Retired Employees Permanent
+TenurebasedFieldExecutive/Field Permanent
+Operators
+Contingent,CISF,Freedom fighters,KV Pemanent
+ONGC
+Expensive medicines for Retired wards. Permanent
+10
+
+--- Page 11 ---
+SI. MAIN HEAD SUB HEAD RETENTION PEROD
+(YEARS)
+2. Establishment and Personal Files/ServiceRecordsofRegular Transfer to Sr. Citizen Cell
+Personal Claims/ Loan& employees immediately after the
+Advances Retirement.
+In case of death/
+resignation- 10yrs
+Records of separated employees
+Property Return Separation +3
+House Building Advance Permanent
+Conveyance Advance Permanent
+Leave Records-Casual Online.All data are
+available in SAP.
+LeaveRecords-Others -op-
+Holiday Home Claims 04
+CEA Claims 04
+Probation Clearance Files Till next promotion
+Grievance/Representation Settlement +2 yrs
+ChildrenEducationAllowance Permanent
+House Furnishing Advance Permanent
+White Goods Advance Permanent
+Disciplinary Matters Separation +3 yrs
+Document &Formats Permanent
+VIPReference 2 Years
+Budget Provision 3 years
+3. Administration JobContracts&Agreements Closure +2 years
+(Services) All contract files to be
+scanned forbackup-
+proposed by GEOPIC
+Billing & Payment Settlement +2years
+Budget Provisions 3 years
+Approvals Permanent
+Purchases Settlement +2
+Sports & Recreation 3
+11
+
+--- Page 12 ---
+SI. MAIN HEAD SUB HEAD RETENTIONPEROD
+(YEARS)
+Audit Para & Reply Settlement +3
+ComponentPlan/Social obligation 3
+Employees welfare 3
+Hospitality (Records) 3
+Hospitality (Bills & Payments) Settlement +3
+Railway/Airbooking&Reservation 3
+(Records)
+Railway/Air booking (Bills & Payment) Settlement +3
+Residential Accommodation:Requests& 1
+Allotment
+Hiring of properties on lease 3 (after lease period)
+Event Management 3 years
+Dispatch (Record) 3/10 years
+Dispatch (Postage Stamps Record) 3 years
+4. Industrial Relation Grievance Policy Permanent
+Standing orders Permanent
+Legal Compliance and Court Matters Permanent
+Periodical Negotiation 10
+Correspondence with Unions/Associations 5
+Accident Compensation/Financial Settlement +3/10 yrs
+Assistance
+5. Miscellaneous CorrespondencewithGovernment 5
+External Correspondence 5
+Internal Correspondence 3
+Documents&Formats Permanent
+VIPreferences 2
+Budget Provision 3
+Audit Paras Settlement +3
+12
+
+--- Page 13 ---
+B.HUMAN RESOURCE DEVELOPMENT
+Sl. MAIN HEAD SUB HEAD RETENTIONPEROD
+(YEARS)
+1. Manpower Acquisition Recruitment and Promotion Regulations Permanent
+Creation&SanctionofPosts Permanent
+Continuance/abolition/revival of posts. Revision+5
+Up gradation/Re-designation of Posts 10
+2. Recruitment Recruitment Plan&Approvals 10
+Recruitment Procedure including hiring of 10
+Agencies
+RecruitmentProceeding&Approvals G
+Empanelment 2
+Reservationimplementation 5
+StatutoryCompliance 5
+Selection Committee Reports 5
+Appointment Formalities&Correspondence. 2
+withcandidates
+Retention of Applications 1
+Medical ExaminationRules Permanent
+Medical Examination (Findings) 1
+Proposals/ECAgendaforcampus 4
+recruitment-approval for
+Institutes/Universities and qualifications
+Recruitments file containing-Sanction orders 5
+of posts, Roster points, notification-
+Advertisement requisition to employment
+exchange
+Onlineregistration and applicationdata, 3
+writtentestresults,CVof thecandidates,
+approvals for selections Committee, all type
+of payments, public grievances,OMR
+answer sheets,Question Book let and
+answer key
+3. Placement Discipline wise Postings(Transfer proposals) 2
+Location wisePostings 2
+Job Rotation andTransferPolicy Permanent
+13
+
+--- Page 14 ---
+Sl. MAIN HEAD SUBHEAD RETENTION PEROD
+(YEARS)
+SAD(sensitive,Agreed, doubt full integrity 3Years
+transfers)
+MDTApprovals 2Years
+Deputation out cases Till repartriation+1 year
+Special Studies 3Years
+4. Performance Appraisal PerformanceAppraisal Rules Permanent
+Recording of PARs Separation +3
+Communication of Ratings 3
+Representations Settlement +2
+PARAppeal&reviewrepresentations Settlement+3
+PAR Appeal &review decisions and Till separation
+communications
+EC Decisions,final listof awards andrelated 5Years
+correspondence and other Govt.awards.
+5. Seniority Relevant Rules Permanent
+Fixation of senionity in individuals cases 5
+SeniorityListsDiscipline wise 5
+Representations 5
+6. Promotion Promotion Policies Permanent
+Promotion Plans&Approvals Permanent
+DepartmentalPromotionCommittee: 5
+Constitution&Proceedings
+Representations 3
+7. ServiceMatters Extension of Service Settlement +1
+Deputation Tenure+2
+8. Hiring of Contractual Proceeding&Approvals 5 
+Manpower Services Placement
+2
+9. Training&Development Training Manual Permanent
+14
+
+--- Page 15 ---
+Sl. MAIN HEAD SUBHEAD RETENTIONPEROD
+(YEARS)
+Training Calendar 2
+Training Schedule 2
+Training Records, Approvals etc. 5
+Annual Training Records 5
+TrainingFeedbackForms 2
+Correspondence Internal 5
+Correspondence External 5
+Retention of Training Bond Bond period +2
+10. HR initiatives- Proceedings&Approvals 10 years
+ADC/Mentoring/Business Short listing of candidates, office orders,
+Games/Fun team game 5
+etc. representations, Correspondence with
+participants, feed backs
+CorrespondencewithGovernment 5
+External correspondence G
+Internalcorrespondence 3
+VIPreferences 2
+Budget provisions 3
+RTI applications Settlement + 1
+Audit paras settlement +3
+Parliamentary Questions 3 yrs
+ParliamentaryCommitteeInformation 5 yrs
+Court Cases Settlement+2
+11 Summer/winter trainingfor Training approval, certificates,records etc. 2years
+students
+15
+
+--- Page 16 ---
+C. MEDICAL
+Si. MAIN HEAD SUB HEAD RETENTIONPEROD
+(YEARS)
+1. OPD Records Registration Record 3
+OPD treatment 3
+OPDAttendance 3
+Investigation record (Lab/X-ray etc) 3
+Medical certificates 3
+2. Indoor Records Indoor treatment records 10
+Investigationrecord(Lab/X-rayetc) 10
+Hospital Statistics(Bed occupancy, surgery etc.) 3
+3. Medico legal records Indoor treatment and investigations (Lab/X-ray 30
+etc.)
+MedicolegalExamrecords 30
+4. Medical camps No. of camps conducted in the year 3
+No. of patients benefited 3
+Organizing details/Expenditure etc. 3
+5. Immunizationrecords Vaccination details 10
+6. PMERecords Health profile 5
+7. Stores Requisition-Stores 2
+Approvals 2
+Medicine issue voucher
+InventoryBook 2
+Medicinerecord 2
+Capital items record Permanent
+8. Administrative Composite Hygiene Score 1
+Medical Expenses-Employees 2
+Medical Facilitators report 1
+Birth/DeathRecord Permanent
+Referrals 2
+Service Contracts Closure +2
+Attendance Register 1
+16
+
+--- Page 17 ---
+AbsenteeStatements 1
+Staff Roasters 1
+D. CORPORATECOMMUNICATION
+Sl. MAIN HEAD SUBHEAD RETENTION PEROD (YEARS)
+1. Advertising Tenderrelated 2
+Recruitment related 2
+Courtesy/Casual 2
+Corporate Campaign 2
+Event 2
+Artworks etc. 2
+Agency Profles G
+2. Sponsorships Approvals 2
+3. Printing ONGC News Reports (Magazine) Permanent
+Local ONGCNewsFlash 3
+Annual Reports 3
+Profile 2
+Files 3
+4. Others Photography Permanent
+Films/CDs Permanent
+Invoices 2
+Exhibitions 1
+Budget Provisions 3
+Correspondence-Internal 3
+Correspondence-External 3
+Miscellaneous 1
+E. LEGAL SERVICES
+SI. MAIN HEAD SUBHEAD RETENTIONPEROD(YEARS)
+No.
+1 Legal Contracts,Agreement&Deeds The terms of Agreement/·
+Documents Contracts & 5 years
+17
+
+--- Page 18 ---
+Agreement with foreign Govt.or international Permanent.
+organization
+Indemnity Bonds executed in favour of Govt. Permanent.
+Property documents Permanent.
+Arbitration Settlement + 2 yrs.
+Court Cases Settlement + 2 yrs.
+2 Legal Arbitration&Litigation Settlement + 3 yrs.
+Matters
+Subject to the files not being
+closed until the award/judgment
+become final in all respect by
+limitation or final decision in
+appeal/revision.
+Cases involving important issues or containing Permanent.
+material of a high precedent/reference value.
+Notices underSection80ofCivilProcedure 3 years.
+Code, (lf such a notice is followed up by a civil
+court,it would become arbitration/litigation cases
+F.S SECURITY
+SI. MAINHEAD SUBHEAD RETENTIONPEROD(YEARS)
+No.
+1. Security Security Scheme&Manual Permanent
+Statutory Matters &Approvals Pemanent
+GatePasses 2
+Security of Installations 2
+Budget Provisions 3
+ReviewMeeting 1
+CISF Permanent
+Other Secunty Agencies Permanent
+Audit 3
+Purchase of Security items 3
+Procurement of Arms and Ammunitions 3
+Accident/lncident Report 5
+Contracts withSecurityAgencies Closure +2
+Correspondence with Security Agencies 2
+18
+
+--- Page 19 ---
+S1. MAIN HEAD SUBHEAD RETENTION PEROD (YEARS)
+No.
+Correspondence with State/Local Secunty 3
+Authorities
+Bills and Payments Settlement+2
+Inspection Report 2
+Training 3
+Court Cases Final disposal+6
+C&AVenification 3
+Visitor passes 3
+Daily situation report 2
+Monthlyreports/returns 6months
+OSCCMinutes/Correspondence 2 Years Digitize/soft copies -
+5years
+Territorial ArmyRegular correspondence
+FIRs/Crime Data Final disposal+3years
+G.OFFICIALLANGUAGE
+Sl. MAIN HEAD SUBHEAD RETENTIONPEROD
+(YEARS)
+1. Progressive Use of Govt. Rules and Regulations Permanent
+Official Language Periodical Reportsregarding useof Official
+Language
+Constitution of Official Language Committees
+Meeting andFollow-up action of Official 3
+Language Committee
+2. Training (Officia! Incentive scheme/General orders Permanent
+Language)
+Training Programme 1
+Awards-Correspondence/Records 3
+Conduct of Official Language Competitions 5
+3. Translation Books, reports, periodical etc. 3
+19
+
+--- Page 20 ---
+H.ONGCCSSSTRUSTANDONGCGRATUITYFUNDTRUST
+SI. MAIN HEAD SUBHEAD RETENTION PEROD
+(YEARS)
+1. Scheme ONGC CSSSTRUST Pemanent
+2. Scheme ONGC Gratuity Fund Trust Pemanent
+3. Agenda Board of Trustees Permanent
+4. Minutes Board of Trustees Permanent
+5. Annual Return In-Come-Tax Permanent
+6. CSSS Claim Death/Permanent totalDisability 15 years
+7. Correspondence Death/Permanent totalDisability 10 years
+Documents
+8. Recordof Investment ONGC CSSS/OGFT Till matunty plus five years
+9. Annuai Account/Annual ONGC CSSS/OGFT 20 years
+Report
+10. Record ofcontribution CSSS 10 years
+11. Cash&BankRecords Bankreconciliationstatement 20 years
+12. Cash&Bank Documents/vouchers 15 years
+13. Assessment orders Income Tax Permanent
+14. QuarterlyE-return TDS from employees 15 years
+15. Misc.files RTl and other correspondence 15years
+1. EMPLOYEESCONTRIBUTORYPROVIDENTFUND
+SI MAIN HEAD SUBHEAD RETENTIONPEROD
+(YEARS)
+1 CONTRIBUTION CPFSTATEMENT Electronic Records 20
+CPF Schedule Electronic Records 20
+CPFAuthority ElectronicRecords 20
+2 INVESTMENT Investment relates files, Till the date of maturity+7
+documents
+Investment Register Permanent
+Security wise register Permanent
+3 FINALPAYMENT/SETTLEMENT Registers of final Permanent
+payment/setlement of the
+members
+20
+
+--- Page 21 ---
+SI MAIN HEAD SUB HEAD RETENTIONPEROD
+(YEARS)
+4 NRW Non Refundable withdrawal 10
+claim application-documents
+5 VOUCHERS Cash&Bank payment 15
+vouchers
+Cash&BankReceipt 15
+vouchers
+6 BANKRECONCILIATION Bank reconciliation 15
+statements
+Correspondence withBanks 10
+BankAuthorizations Permanent
+Cheque Register 10
+Bank Book 15
+Cash Book 15
+7 CLOSING OFACCOUNTS Scheduie of accounts 20
+Profit&Loss Accounts 20
+Balance Sheet 20
+8 INCOMETAX IncomeTaxQtlyreturn 10
+Income Tax Return & Permanent
+AssessmentOrder
+Files containing Permanent
+correspondence with Income
+Tax Department
+6 PURCHASES Petty purchases file 5
+10 MISC IMPORTANTFILE Files relating to payment of Permanent
+Inspection charges with
+copies of challans
+Filerelated toexemptionof Permanent
+the trust
+11 LITIGATION Litigations involving 20
+important issueswhich have
+high precedent/reference
+value
+Notices/pleadings,interim Til the dispute attains finality
+orders,execution petitions + 5 yrs.
+etc.
+21
+
+--- Page 22 ---
+IS MAIN HEAD SUB HEAD RETENTIONPEROD
+(YEARS)
+Judgement/Final Permanent
+order/Decrees passed in
+favour/against Trust
+Scheduleof Feeof 10
+Advocates
+Bills of the Till the case attains Finality +
+Advocates/SanctionOrder 5 yrs.
+J.（ ONGCACADEMY,DEHRADUN
+IS MAIN HEAD SUBHEAD RETENTIONPEROD
+(YEARS)
+1. ONGCAcademy AnnualTrainingCalender 2
+Itemized details Approval for Annual Training Calender 5
+Approval for other Training Programmes
+Approval (AA/ER)forotherassignment (Tasks 5
+for conducting training, Procurements,
+infrastructure ect.)
+Files/Documentsrelated toPayment 5
+Training Course material - GT Manual Permanent
+Training course material- Programmes of 2
+Funtional & Management
+AnnualTrainingRecords 3
+Feedbackrecords on trainingprogrammes 3
+Correspondence- Internal 2 years
+Correspondence-External 3 years
+Record of Bonds related to training Bond period + 2yrs
+Approval of GTs tobe called for GD induction 3 yrs.
+Training for each batch
+Arranging MDFF and ST Training at designated 3 yrs.
+location for each batch
+Constitution of panel for Final Evaluation of GT 3 yrs.
+Training for each batch
+Final result of GT Induction for each batch 5 yrs.
+Arrangement of events for GTs -through (SPIC 5 yrs.
+MACAY etc) and payment to Agency
+22
+
+--- Page 23 ---
+SI MAIN HEAD SUB HEAD RETENTIONPEROD
+(YEARS)
+Arrangement of Guest lecture/lnteraction with 5 yrs.
+renownedpersonalities
+Arrangement of Inter-Institutional Quiz/Debate- 5 yrs.
+Selection and Payment to Agency
+Approval for expenditure sanction for ST training 5 yrs.
+at IOGPT etc.
+SAP authorization for payment of honorarium to 3yrs.
+facility duringST(OutsideDehradun)
+Hiring the services of agencies for Outbound 5 yrs
+training for GTs
+Hiring the services of agencies for Soft skill 5 yrs.
+training for GTs
+Hiring the services of instructors for PT, Yoga. 5 yrs
+Gym andBiliardinExecutiveHostel
+Hiring the services of CableTV in Executive 5 yrs.
+Hostel
+Feedback of the agencies providing out bound 3 yrs
+training
+Feedbackof the agencies proving SoftSkill 3 yrs
+training
+Correspondence with agencies providing out 3 yrs
+bound training
+Correspondence with agencies providing for PT, 3yrs
+Yoga. Gym and Biliard training
+Budget requirement ofGT Group 2 yrs.
+Approval and correspondence pertaining to 5 yrs
+CIPM Courses
+Approval and correspondence pertaining to 5 yrs
+deferentIPMAlevelcourses
+Approval payment and correspondence 5yrs
+pertaining to OlM Training for each contract
+Training&Assessment of OlM Training 5 yrs.
+Training & Assessment of CIPM Training. 5yrs
+Training &Assessment of IPMAlevel training. 5 yrs.
+Bill payment for CiPMcourses 5 yrs
+23
+
+--- Page 24 ---
+SI MAIN HEAD SUB HEAD RETENTIONPEROD
+(YEARS)
+Billpayment for IPMA level courses 5 yrs
+Bill payment for OIM training 5 yrs
+Monthly progress Report 2 yrs
+Correspondence or inviting faculties lectures 3 yrs
+Correspondence with agencies forA&MCivil and 2 yrs
+Electrical jobs in Executives Hostel
+Requirementof deferent items inExecutive Hotel 2yrs.
+Honorarium payment to deferent Instructors 5yrs
+Payment to Outbound training agencies 5yrs
+Payment to Mess Contractor 5yrs
+Payment to Cable Contractor 5 yrs
+Pertaining to Mentor-Menteeprogramme forGTs 2 yrs
+Internal audi/Govt. audit /RTI replies 5 yrs
+GT Manual updation/Module revision 2yrs
+GT's MDFF Attendance/performance 2 yrs
+GT's OJTattendance/performance 2 yrs
+Answering sheet (Test paper) record of each 2 yrs
+group
+Presentation skill assessmentrecord ofeach 2yrs
+group
+Level and out of station permission record for 2yrs
+each groups
+Attendance of each group 2 yrs
+Faculty feedback of each groups 2 yrs
+Faculty honorarium claim 3yrs
+Containing GTs personal details at the time of 5 yrs
+reporting ONGC Academy
+Issuing of different books 2 yrs
+Issuing of different Kits & Liveries 2yrs
+Convening of meeting of diferent committees of 1 yrs
+GTs
+lssuing of cards for each groups 5yrs
+24
+
+--- Page 25 ---
+S1 MAIN HEAD SUB HEAD RETENTIONPEROD
+(YEARS)
+Tour/leave/personal bills raised by GT group 5yrs
+officials
+Dak Register 5 yrs
+Approvals-Administrative and expenditure 5yrs
+sanction for new proposals/schemes.
+Files of Training Courses including AA/ES still 5 yrs
+course completion
+FilesofONGCScholarship andGoldMedals 5 yrs
+Files of Dissertion work including project report 5 yrs
+FilesofONGCChairs/GrantstoInstitutes JKg
+Prime minister's Doctoral (PHD), Fellowship 10 yr
+RecordAbsence/leave 1 yr
+Training course material-Hard copies 2yr
+Training course material - Soft copies p
+Training course material - Soft copies p
+Approval- Administrative and Expenditure 5 yrs
+sanction for proposals
+Files of training courses including AA/ES till 5 yrs
+course completion (ISO fles)
+Correspondence --External (with agencies) 3yrs
+Files of payment details 5 yrs
+Training course material-Hard Copies 2 yrs.
+Approval - Administrative and Expenditure 5 yrs
+sanction for honorarium of mentors
+Approval-Administrative and Expenditure 5 yrs
+sanction for stipend of CA/CWA students
+Correspondence -External (with agencies) 3 yrs
+Applications of Summer/Winter trainees 1 yr.
+Applications of CA/ICWA students 1 yrs.
+Project reports - Hard copies 2 yrs
+Project reports-Soft copies,CDs 3yrs
+Brochure of training programmes 1yr
+25
+
+--- Page 26 ---
+1S MAIN HEAD SUB HEAD RETENTIONPEROD
+(YEARS)
+Approvals -Administrative and Expenditure 5 yrs.
+sanction for Indian& foreign programmes
+Correspondence GTs and their joining 3 yrs
+Recordsof Medical reimbursement 1yr.
+Records toIRmatters 5 yrs.
+Hindi relatedpapers 2yrs
+Internal transfer and work re-assignment 5 yrs.
+Forwarding ofPersonal File/servicedocuments 2 yrs
+Sahyog Trust 5 yrs
+Approvals - Administrative and Expenditure 5 yrs
+sanction-Procurement cases
+Approvals-Administrative and Expenditure 5yrs
+sanction-Contract related files
+Hospitality Payments/bills 5 yrs
+Administration Payh;ments/bills 5 yrs
+Record of employees Transferred out from 3 yrs.
+Academy
+Correspondence (Admn.) -- Internal 2 yrs
+Miscellaneous files 3 yrs
+Quarterly Compliance Report 1 yr.
+TDS Remittance 3yrs
+Monthly/QuarterlyServiceTaxRemittance 3 yrs
+Monthly/Quarterly WorksTax 3 yrs
+Record of Foreign Payments 5 yrs
+Records of Contracts in operation-Canteen 3 yrs
+services
+Records of Contracts in operation- Lift operation 3 yrs.
+Balance sheet circular 3 yrs.
+Payment Voucher/Invoice 3 yrs.
+Records of EMD/SD 3 yrs.
+BankReconciliationrecords 1 yr.
+26
+
+--- Page 27 ---
+S1 MAIN HEAD SUB HEAD RETENTION PEROD
+(YEARS)
+Records of TA,TTA Contingent Adjustments 1yr.
+Other MiscellaneousRecords 3 yrs
+Procurement cases for Capital Items, stores & 3 yrs.
+Spares
+ProcurementcasesforServices 3 yrs
+Stockholderrecords:(a)issuerequisitionslip(b) 3 yrs.
+issueof material record
+OtherMiscellaneousRecords 3 yrs.
+Correspondence Internal 3 yrs.
+Contract /Agreementfiles andcorrespondence 3 yrs
+Agreements/Contracts 3 yrs,
+Subscription of Digital Resources 3 yrs.
+Subscription of Newspapers andPeriodicals 3 yrs.
+Purchase of Capital items 3 yrs.
+Disposal of Newspaper andPeriodicals 2 yrs.
+ReminderforOverdueBooks/MaterialsandNo 2 yrs.
+Dues Certificates
+General Correspondence 3 yrs.
+RecordsofGovt.of India'sRules&Regulations P
+Official LanguageIncentive schemes and P
+General orders
+Periodical Reports Official Language 2 yrs.
+Records of training programmes of Official 2 yrs.
+Language
+Purchase of Books of Official Language 3 yrs.
+FilesfororganizingOfficial languagecompetition 2 yrs.
+General/Misc.correspondence 3yrs.
+5.0 The documents shall be kept in physical/electronic mode as per the practice being followed by the
+concerned Department.
+6.0 The Protected Document Format (PDF) of Annual Reports shall be uploaded on the website of the
+Company for the past 8 Financial Years. Thereafter, they shall be kept in the archives.
+27
+
+--- Page 28 ---
+7.0 The electronic back up/PDF/scanned version etc. of all other documents shall be kept according to the
+needs of the relevant department.
+8.0 Amendment - The policy may be amended with the approval of Director (Finance) and Chairman &
+Managing Director.
+**★★****★*****
+28

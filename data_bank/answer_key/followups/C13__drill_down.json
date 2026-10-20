@@ -1,0 +1,174 @@
+{
+  "job_id": "deaa1729-f9be-4a4d-90d5-6b2f6db8921b",
+  "total_bytes_processed": 683477,
+  "executed_at": "2026-10-20T06:51:35.579957+00:00",
+  "elapsed_seconds": 0.75,
+  "row_count": 14,
+  "columns": [
+    "field_asset",
+    "city",
+    "allocated_officers",
+    "pm_sanctioned",
+    "pm_in_position",
+    "pm_vacancy",
+    "pm_coverage_gain",
+    "pm_fill_pct_before",
+    "pm_fill_pct_after"
+  ],
+  "rows": [
+    {
+      "field_asset": "Neelam & Heera",
+      "city": "Mumbai",
+      "allocated_officers": 34,
+      "pm_sanctioned": 599,
+      "pm_in_position": 514,
+      "pm_vacancy": 85,
+      "pm_coverage_gain": 34,
+      "pm_fill_pct_before": 85.8,
+      "pm_fill_pct_after": 91.5
+    },
+    {
+      "field_asset": "Bassein & Satellite",
+      "city": "Mumbai",
+      "allocated_officers": 33,
+      "pm_sanctioned": 606,
+      "pm_in_position": 531,
+      "pm_vacancy": 75,
+      "pm_coverage_gain": 33,
+      "pm_fill_pct_before": 87.6,
+      "pm_fill_pct_after": 93.1
+    },
+    {
+      "field_asset": "Mumbai High",
+      "city": "Mumbai",
+      "allocated_officers": 23,
+      "pm_sanctioned": 468,
+      "pm_in_position": 413,
+      "pm_vacancy": 55,
+      "pm_coverage_gain": 23,
+      "pm_fill_pct_before": 88.2,
+      "pm_fill_pct_after": 93.2
+    },
+    {
+      "field_asset": "Mehsana Asset",
+      "city": "Mehsana",
+      "allocated_officers": 20,
+      "pm_sanctioned": 524,
+      "pm_in_position": 476,
+      "pm_vacancy": 48,
+      "pm_coverage_gain": 20,
+      "pm_fill_pct_before": 90.8,
+      "pm_fill_pct_after": 94.7
+    },
+    {
+      "field_asset": "Eastern Offshore",
+      "city": "Kakinada",
+      "allocated_officers": 18,
+      "pm_sanctioned": 341,
+      "pm_in_position": 301,
+      "pm_vacancy": 40,
+      "pm_coverage_gain": 18,
+      "pm_fill_pct_before": 88.3,
+      "pm_fill_pct_after": 93.5
+    },
+    {
+      "field_asset": "Ankleshwar Asset",
+      "city": "Ankleshwar",
+      "allocated_officers": 14,
+      "pm_sanctioned": 337,
+      "pm_in_position": 302,
+      "pm_vacancy": 35,
+      "pm_coverage_gain": 14,
+      "pm_fill_pct_before": 89.6,
+      "pm_fill_pct_after": 93.8
+    },
+    {
+      "field_asset": "Tripura Asset",
+      "city": "Agartala",
+      "allocated_officers": 13,
+      "pm_sanctioned": 308,
+      "pm_in_position": 269,
+      "pm_vacancy": 39,
+      "pm_coverage_gain": 13,
+      "pm_fill_pct_before": 87.3,
+      "pm_fill_pct_after": 91.6
+    },
+    {
+      "field_asset": "Ahmedabad Asset",
+      "city": "Ahmedabad",
+      "allocated_officers": 13,
+      "pm_sanctioned": 368,
+      "pm_in_position": 339,
+      "pm_vacancy": 29,
+      "pm_coverage_gain": 13,
+      "pm_fill_pct_before": 92.1,
+      "pm_fill_pct_after": 95.7
+    },
+    {
+      "field_asset": "Rajahmundry Asset",
+      "city": "Rajahmundry",
+      "allocated_officers": 10,
+      "pm_sanctioned": 270,
+      "pm_in_position": 249,
+      "pm_vacancy": 21,
+      "pm_coverage_gain": 10,
+      "pm_fill_pct_before": 92.2,
+      "pm_fill_pct_after": 95.9
+    },
+    {
+      "field_asset": "CBM Bokaro",
+      "city": "Bokaro",
+      "allocated_officers": 8,
+      "pm_sanctioned": 182,
+      "pm_in_position": 166,
+      "pm_vacancy": 16,
+      "pm_coverage_gain": 8,
+      "pm_fill_pct_before": 91.2,
+      "pm_fill_pct_after": 95.6
+    },
+    {
+      "field_asset": "Cauvery Asset",
+      "city": "Karaikal",
+      "allocated_officers": 8,
+      "pm_sanctioned": 214,
+      "pm_in_position": 201,
+      "pm_vacancy": 13,
+      "pm_coverage_gain": 8,
+      "pm_fill_pct_before": 93.9,
+      "pm_fill_pct_after": 97.7
+    },
+    {
+      "field_asset": "Cambay Asset",
+      "city": "Cambay",
+      "allocated_officers": 6,
+      "pm_sanctioned": 167,
+      "pm_in_position": 156,
+      "pm_vacancy": 11,
+      "pm_coverage_gain": 6,
+      "pm_fill_pct_before": 93.4,
+      "pm_fill_pct_after": 97.0
+    },
+    {
+      "field_asset": "Assam Asset",
+      "city": "Nazira",
+      "allocated_officers": 0,
+      "pm_sanctioned": 359,
+      "pm_in_position": 359,
+      "pm_vacancy": 0,
+      "pm_coverage_gain": 0,
+      "pm_fill_pct_before": 100.0,
+      "pm_fill_pct_after": 100.0
+    },
+    {
+      "field_asset": "Jorhat Asset",
+      "city": "Jorhat",
+      "allocated_officers": 0,
+      "pm_sanctioned": 266,
+      "pm_in_position": 266,
+      "pm_vacancy": 0,
+      "pm_coverage_gain": 0,
+      "pm_fill_pct_before": 100.0,
+      "pm_fill_pct_after": 100.0
+    }
+  ]
+}

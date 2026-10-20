@@ -1,0 +1,93 @@
+{
+  "job_id": "4e88c7a1-fe5e-4523-8dc8-0dc631391045",
+  "total_bytes_processed": 94677,
+  "executed_at": "2026-10-20T06:39:01.303767+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 5,
+  "columns": [
+    "fiscal_year",
+    "brent_usd_bbl",
+    "net_realisation_usd_bbl",
+    "revenue_cr",
+    "cess_cr",
+    "royalty_cr",
+    "saed_windfall_cr",
+    "levies_pct_revenue",
+    "workover_cr",
+    "opex_inr_per_boe",
+    "production_mmboe",
+    "ebitda_margin_pct"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY22",
+      "brent_usd_bbl": 78.9,
+      "net_realisation_usd_bbl": 76.6,
+      "revenue_cr": 38930.0,
+      "cess_cr": 3922.0,
+      "royalty_cr": 3504.0,
+      "saed_windfall_cr": 0.0,
+      "levies_pct_revenue": 19.1,
+      "workover_cr": 549.0,
+      "opex_inr_per_boe": 907.0,
+      "production_mmboe": 102.8,
+      "ebitda_margin_pct": 57.0
+    },
+    {
+      "fiscal_year": "FY23",
+      "brent_usd_bbl": 95.4,
+      "net_realisation_usd_bbl": 75.8,
+      "revenue_cr": 44718.0,
+      "cess_cr": 4124.0,
+      "royalty_cr": 4025.0,
+      "saed_windfall_cr": 0.0,
+      "levies_pct_revenue": 18.2,
+      "workover_cr": 547.0,
+      "opex_inr_per_boe": 899.0,
+      "production_mmboe": 100.7,
+      "ebitda_margin_pct": 61.5
+    },
+    {
+      "fiscal_year": "FY24",
+      "brent_usd_bbl": 83.2,
+      "net_realisation_usd_bbl": 80.8,
+      "revenue_cr": 47993.0,
+      "cess_cr": 4441.0,
+      "royalty_cr": 4319.0,
+      "saed_windfall_cr": 0.0,
+      "levies_pct_revenue": 18.3,
+      "workover_cr": 546.0,
+      "opex_inr_per_boe": 908.0,
+      "production_mmboe": 97.8,
+      "ebitda_margin_pct": 63.2
+    },
+    {
+      "fiscal_year": "FY25",
+      "brent_usd_bbl": 79.2,
+      "net_realisation_usd_bbl": 76.9,
+      "revenue_cr": 44153.0,
+      "cess_cr": 4106.0,
+      "royalty_cr": 3886.0,
+      "saed_windfall_cr": 1605.0,
+      "levies_pct_revenue": 21.7,
+      "workover_cr": 549.0,
+      "opex_inr_per_boe": 953.0,
+      "production_mmboe": 90.4,
+      "ebitda_margin_pct": 58.7
+    },
+    {
+      "fiscal_year": "FY26",
+      "brent_usd_bbl": 70.9,
+      "net_realisation_usd_bbl": 68.4,
+      "revenue_cr": 40141.0,
+      "cess_cr": 3614.0,
+      "royalty_cr": 4054.0,
+      "saed_windfall_cr": 0.0,
+      "levies_pct_revenue": 19.1,
+      "workover_cr": 546.0,
+      "opex_inr_per_boe": 950.0,
+      "production_mmboe": 85.9,
+      "ebitda_margin_pct": 60.6
+    }
+  ]
+}

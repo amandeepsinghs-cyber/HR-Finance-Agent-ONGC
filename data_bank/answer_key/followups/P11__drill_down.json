@@ -1,0 +1,99 @@
+{
+  "job_id": "f79dae8d-f5d7-4405-b7a6-565ddd2a20f9",
+  "total_bytes_processed": 10103620,
+  "executed_at": "2026-10-20T06:33:06.357353+00:00",
+  "elapsed_seconds": 1.2,
+  "row_count": 9,
+  "columns": [
+    "grade_id",
+    "executives_in_delhi",
+    "breached_10yr_cap",
+    "approaching_cap_8yr_plus",
+    "over_5yr_in_cluster",
+    "max_cumulative_years",
+    "retiring_within_3yr"
+  ],
+  "rows": [
+    {
+      "grade_id": "E1",
+      "executives_in_delhi": 60,
+      "breached_10yr_cap": 0,
+      "approaching_cap_8yr_plus": 0,
+      "over_5yr_in_cluster": 35,
+      "max_cumulative_years": 7.43,
+      "retiring_within_3yr": 1
+    },
+    {
+      "grade_id": "E2",
+      "executives_in_delhi": 132,
+      "breached_10yr_cap": 0,
+      "approaching_cap_8yr_plus": 1,
+      "over_5yr_in_cluster": 90,
+      "max_cumulative_years": 8.39,
+      "retiring_within_3yr": 1
+    },
+    {
+      "grade_id": "E3",
+      "executives_in_delhi": 154,
+      "breached_10yr_cap": 0,
+      "approaching_cap_8yr_plus": 1,
+      "over_5yr_in_cluster": 87,
+      "max_cumulative_years": 8.15,
+      "retiring_within_3yr": 7
+    },
+    {
+      "grade_id": "E4",
+      "executives_in_delhi": 122,
+      "breached_10yr_cap": 0,
+      "approaching_cap_8yr_plus": 0,
+      "over_5yr_in_cluster": 67,
+      "max_cumulative_years": 7.3,
+      "retiring_within_3yr": 1
+    },
+    {
+      "grade_id": "E5",
+      "executives_in_delhi": 101,
+      "breached_10yr_cap": 0,
+      "approaching_cap_8yr_plus": 1,
+      "over_5yr_in_cluster": 57,
+      "max_cumulative_years": 8.3,
+      "retiring_within_3yr": 1
+    },
+    {
+      "grade_id": "E6",
+      "executives_in_delhi": 59,
+      "breached_10yr_cap": 0,
+      "approaching_cap_8yr_plus": 1,
+      "over_5yr_in_cluster": 35,
+      "max_cumulative_years": 8.31,
+      "retiring_within_3yr": 0
+    },
+    {
+      "grade_id": "E7",
+      "executives_in_delhi": 44,
+      "breached_10yr_cap": 0,
+      "approaching_cap_8yr_plus": 0,
+      "over_5yr_in_cluster": 33,
+      "max_cumulative_years": 6.3,
+      "retiring_within_3yr": 10
+    },
+    {
+      "grade_id": "E8",
+      "executives_in_delhi": 16,
+      "breached_10yr_cap": 0,
+      "approaching_cap_8yr_plus": 0,
+      "over_5yr_in_cluster": 12,
+      "max_cumulative_years": 6.3,
+      "retiring_within_3yr": 1
+    },
+    {
+      "grade_id": "E9",
+      "executives_in_delhi": 4,
+      "breached_10yr_cap": 0,
+      "approaching_cap_8yr_plus": 0,
+      "over_5yr_in_cluster": 3,
+      "max_cumulative_years": 6.3,
+      "retiring_within_3yr": 0
+    }
+  ]
+}

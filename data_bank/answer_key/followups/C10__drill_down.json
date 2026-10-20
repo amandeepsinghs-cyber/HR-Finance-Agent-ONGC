@@ -1,0 +1,119 @@
+{
+  "job_id": "e9977776-3b96-4496-9357-c8c8a644ed8b",
+  "total_bytes_processed": 3734,
+  "executed_at": "2026-10-20T06:48:50.230713+00:00",
+  "elapsed_seconds": 0.72,
+  "row_count": 9,
+  "columns": [
+    "parameter_name",
+    "unit_of_measure",
+    "weightage",
+    "excellent_target",
+    "fy27_projected_achievement",
+    "fy27_projected_rating",
+    "shortfall_to_excellent",
+    "weighted_score",
+    "weighted_score_forgone"
+  ],
+  "rows": [
+    {
+      "parameter_name": "Crude Oil Production (excluding JV)",
+      "unit_of_measure": "MMT",
+      "weightage": 20.0,
+      "excellent_target": 21.0,
+      "fy27_projected_achievement": 19.051,
+      "fy27_projected_rating": "Good",
+      "shortfall_to_excellent": 1.949,
+      "weighted_score": 0.61,
+      "weighted_score_forgone": 0.39
+    },
+    {
+      "parameter_name": "Natural Gas Sales & Production",
+      "unit_of_measure": "BCM",
+      "weightage": 15.0,
+      "excellent_target": 21.0,
+      "fy27_projected_achievement": 20.05,
+      "fy27_projected_rating": "Very Good",
+      "shortfall_to_excellent": 0.95,
+      "weighted_score": 0.607,
+      "weighted_score_forgone": 0.143
+    },
+    {
+      "parameter_name": "Capital Expenditure (Standalone)",
+      "unit_of_measure": "INR Crore",
+      "weightage": 15.0,
+      "excellent_target": 37000.0,
+      "fy27_projected_achievement": 36040.0,
+      "fy27_projected_rating": "Very Good",
+      "shortfall_to_excellent": 960.0,
+      "weighted_score": 0.678,
+      "weighted_score_forgone": 0.072
+    },
+    {
+      "parameter_name": "Revenue from Operations (Net of Levies)",
+      "unit_of_measure": "INR Crore",
+      "weightage": 15.0,
+      "excellent_target": 135000.0,
+      "fy27_projected_achievement": 130500.0,
+      "fy27_projected_rating": "Very Good",
+      "shortfall_to_excellent": 4500.0,
+      "weighted_score": 0.682,
+      "weighted_score_forgone": 0.068
+    },
+    {
+      "parameter_name": "Operating Profit / PAT",
+      "unit_of_measure": "INR Crore",
+      "weightage": 10.0,
+      "excellent_target": 35000.0,
+      "fy27_projected_achievement": 31600.0,
+      "fy27_projected_rating": "Good",
+      "shortfall_to_excellent": 3400.0,
+      "weighted_score": 0.387,
+      "weighted_score_forgone": 0.113
+    },
+    {
+      "parameter_name": "Reserve Replacement Ratio (2P RRR)",
+      "unit_of_measure": "Ratio",
+      "weightage": 10.0,
+      "excellent_target": 1.2,
+      "fy27_projected_achievement": 1.12,
+      "fy27_projected_rating": "Very Good",
+      "shortfall_to_excellent": 0.08,
+      "weighted_score": 0.42,
+      "weighted_score_forgone": 0.08
+    },
+    {
+      "parameter_name": "Exploratory & Development Wells Drilled",
+      "unit_of_measure": "Count",
+      "weightage": 5.0,
+      "excellent_target": 520.0,
+      "fy27_projected_achievement": 485.0,
+      "fy27_projected_rating": "Good",
+      "shortfall_to_excellent": 35.0,
+      "weighted_score": 0.192,
+      "weighted_score_forgone": 0.058
+    },
+    {
+      "parameter_name": "Lost Time Injury Frequency Rate (LTIFR)",
+      "unit_of_measure": "Rate",
+      "weightage": 5.0,
+      "excellent_target": 0.1,
+      "fy27_projected_achievement": 0.15,
+      "fy27_projected_rating": "Very Good",
+      "shortfall_to_excellent": 0.05,
+      "weighted_score": 0.2,
+      "weighted_score_forgone": 0.05
+    },
+    {
+      "parameter_name": "HR Training & Capability Development",
+      "unit_of_measure": "Person-Days",
+      "weightage": 5.0,
+      "excellent_target": 60000.0,
+      "fy27_projected_achievement": 57000.0,
+      "fy27_projected_rating": "Very Good",
+      "shortfall_to_excellent": 3000.0,
+      "weighted_score": 0.22,
+      "weighted_score_forgone": 0.03
+    }
+  ]
+}

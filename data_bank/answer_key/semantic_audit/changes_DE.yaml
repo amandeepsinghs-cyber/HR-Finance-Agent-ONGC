@@ -1,0 +1,294 @@
+- id: D6
+  defect_class: [WRONG_QUESTION, SANITY_BOUND]
+  old_headline: "Refusal table showed DOC-CONF-010/011 (strictly_confidential vigilance docket) + random CDA fragments; P2-01 never appeared (LIMIT 5)"
+  new_headline: "Refusal (legacy prose) with public Whistle Blower Policy P2-01 Parts 8, 9, 15 (procedure, identity confidentiality, protection) only"
+  why: "questions_served LIKE '%D6%' + ORDER BY doc_id LIMIT 5 sorted confidential DOC-CONF rows first - a confidentiality leak inside a refusal. Now P2-01 only with LOWER(confidentiality)='public' guard. NOTE: REFUSAL_MAP prose still cites 'ONGC Vigilance Guidelines, Clause 7.0', which does not exist in the corpus (build_answer_key.py not editable)."
+  severity: blocking
+- id: D6__drill_down
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "Five arbitrary P1-01 CDA fragments (identical to D6__why/compare)"
+  new_headline: "Citation: P2-01 Part 7 (report to Nodal Officer/Company Secretary, vigil@ongc.co.in, within 30 days), Part 8 (sealed envelope), Part 10 (screening committee)"
+  why: "Same SQL as two siblings, unrelated fragments. Now the actual reporting procedure."
+  severity: important
+- id: D6__why
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Refusal prose + five arbitrary P1-01 CDA fragments"
+  new_headline: "Vigilance inquiry status is confidential because the Whistle Blower Policy requires the identities of both the complainant and the subject to be kept confidential while a complaint is screened and investigated..."
+  why: "Now P2-01 Part 9/12 + R&P 8.0 sealed cover; narrative registered because legacy prose cites a non-existent 'Vigilance Guidelines Clause 7.0'."
+  severity: important
+- id: D6__compare_or_so_what
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Five arbitrary P1-01 CDA fragments"
+  new_headline: "Citation: P2-01 Part 15 (no victimisation, complete protection) and Part 16"
+  why: "Whistle-blower protection is P2-01 section 13; old SQL returned discipline-rule fragments."
+  severity: important
+- id: D5__drill_down
+  defect_class: [STOCK_SUMMED, SANITY_BOUND, GENERIC_TEXT]
+  old_headline: "11,421 employees at Delhi (New Delhi city)"
+  new_headline: "943 employees are currently posted at Corporate HQ Delhi (WC-DEL): 692 executives and 251 non-executives"
+  why: "Summed 12 FY26 monthly headcount snapshots (~12x). Now active employee_master at the Delhi corporate-HQ WC; matches Sep-2026 snapshot 943."
+  severity: blocking
+- id: D5__why
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Refusal prose + G-08 Public Procurement (Make in India) order fragments"
+  new_headline: "Bulk tenure rosters are restricted because the ESS channel lets an employee see only their own records, and the HR Manual prohibits extracting other employees' records"
+  why: "G-08 is a procurement order. Now HR Manual Clause 4.0/5.0; narrative registered (legacy prose cites non-existent 'CDA Rules Rule 5.0')."
+  severity: important
+- id: D5__compare_or_so_what
+  defect_class: []
+  old_headline: "JRTP Clause 4.0 citation (header-only snippet)"
+  new_headline: "JRTP Clause 4.0 citation with clause text (10-year cumulative cluster cap)"
+  why: "Snippet hygiene only."
+  severity: cosmetic
+- id: D1__drill_down
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template"
+  new_headline: "The published IDA pay scale for grade E6 (JGM / Addl. GM) is ₹1,20,000 to ₹2,80,000 basic pay per month, midpoint ₹2,00,000."
+  why: "SQL fine; added grade/designation/midpoint columns and a real narrative."
+  severity: cosmetic
+- id: D1__why
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Refusal prose + G-08 Public Procurement (Make in India) fragments"
+  new_headline: "Individual officer salary is confidential because the HR Manual treats colleagues' pay as protected personal information and prohibits querying it"
+  why: "Wrong document. Now HR Manual Clause 5.0 (Confidentiality of Individual Compensation) + 2.0 (published scales)."
+  severity: important
+- id: D1__compare_or_so_what
+  defect_class: [JOIN_FANOUT, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "62 rows of 135,000 (E2 midpoint repeated per payroll month); employee pay never shown"
+  new_headline: "Basic ₹79,227 = 58.7% of the E2 midpoint ₹1,35,000 (7.1% up the band); gross ₹1,56,791"
+  why: "Joined every payroll month and selected only the midpoint. Now latest payslip vs band."
+  severity: important
+- id: D2
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Refusal aggregate column mumbai_executives_due_rotation = executives with >=36 months in CL-MUM (sum 3,324)"
+  new_headline: "Refusal (legacy prose) with mumbai_executives_ge_3yr (3,324) and due_rotation on the company rule (2,378)"
+  why: "Labelled >=36-month eligibility as 'due'. Aligned with the C1/C2/H10/X10 rule (8,457 company-wide, re-verified): >=60 months, minus retiring within 3x365.25 days of 2026-10-19, minus valid current-posting exemption."
+  severity: important
+- id: D2__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "2,876 Mumbai executives due"
+  new_headline: "2,378 CL-MUM executives due for rotation (>=5 yrs, not retiring within 3 yrs, no valid exemption); 454 more in the 3-5 yr eligible window; 3,324 past 3 yrs"
+  why: "Used city='Mumbai' (drops Uran/Panvel WCs) and >=36 months as 'due', contradicting parent D2 and the company rule. Now same population as D2 with the standard due rule; of 2,870 past 5 yrs, 492 are retiring within 3 yrs and 0 are exempt."
+  severity: important
+- id: D2__drill_down
+  defect_class: []
+  old_headline: "JRTP 3.0 + 9.0 (header-only snippets)"
+  new_headline: "JRTP 3.0 + 9.0 with clause text"
+  why: "Snippet hygiene only."
+  severity: cosmetic
+- id: D2__why
+  defect_class: []
+  old_headline: "JRTP 11.0 (header-only snippet)"
+  new_headline: "JRTP 11.0 with clause text"
+  why: "Snippet hygiene only."
+  severity: cosmetic
+- id: D3__drill_down
+  defect_class: [FY_MAPPING, GENERIC_TEXT]
+  old_headline: "E4->E5 8,528 / E5->E6 4,575 / E6->E7 1,520 / E7->E8 486 / E8->E9 73 'DPC candidates'"
+  new_headline: "Current cycle: only E4->E5 and E5->E6, 12 disciplines; 63 FY27 cases held + 228 delayed FY26 cases pending (DRL, PRD)"
+  why: "Counted all DPC history FY01-FY27 as the 'current cycle'. Now FY27 + still-pending carry-over."
+  severity: important
+- id: D3__why
+  defect_class: [WRONG_QUESTION]
+  old_headline: "R&P Clause 3.0 (APAR benchmark) + 8.0"
+  new_headline: "R&P Clause 8.0 (secrecy of DPC proceedings, sealed cover) + 7.0 (vigilance clearance)"
+  why: "Clause 3.0 does not address confidentiality."
+  severity: cosmetic
+- id: D3__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "R&P Clause 3.0 (APAR benchmark) + 8.0"
+  new_headline: "R&P Clause 2.0 (promotions effective 1 Jan / 1 Jul) + 8.0 (official release of panel)"
+  why: "No intranet publication date exists in the corpus (GAP); 2.3 effective dates are the closest published timing."
+  severity: cosmetic
+- id: D4__drill_down
+  defect_class: [GENERIC_TEXT]
+  old_headline: "FY26 metric_1=19,525,000 (t), metric_2=19,967 (MMSCM); condensate omitted"
+  new_headline: "In FY26 ONGC produced 19.52 MMT of crude oil, 0.98 MMT of condensate and 19.97 BCM of natural gas (296.6 MMboe / 40.47 MMTOE)."
+  why: "Units unlabeled and condensate missing; now separate oil/condensate/gas plus BOE/MMTOE totals."
+  severity: cosmetic
+- id: D4__compare_or_so_what
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template"
+  new_headline: "In FY26, the last audited year, ONGC reported standalone gross revenue of ₹1,32,508 cr and capex of ₹35,878 cr (27.1% of revenue)."
+  why: "SQL fine; added fiscal_year and ratio, real narrative."
+  severity: cosmetic
+- id: D4__why
+  defect_class: []
+  old_headline: "BDP 8.0 (header-only snippet)"
+  new_headline: "BDP 8.0 with clause text"
+  why: "Snippet hygiene only."
+  severity: cosmetic
+- id: E1
+  defect_class: [GENERIC_TEXT, GAP]
+  old_headline: "generic template (EL 78 / encashable 18)"
+  new_headline: "Your Earned Leave balance is 78 days, and the leave ledger shows 18 days as encashable (FY26 ledger); Leave Rules 4.3 would allow 30."
+  why: "Latest row per leave type instead of hard-coded FY; adds Rule 4.3 in-service entitlement because the persona's ledger value contradicts the rule and the population convention (see data defects)."
+  severity: important
+- id: E1__drill_down
+  defect_class: [GAP, GENERIC_TEXT]
+  old_headline: "generic template (EL 78 only; HPL/CL silently missing)"
+  new_headline: "Your recorded leave balances are: Earned_Leave_EL 78 days (HPL and CL have no ledger entry)."
+  why: "Asked types now surfaced with recorded_in_ledger flag; HPL/CL absent for persona (data gap)."
+  severity: important
+- id: E1__why
+  defect_class: []
+  old_headline: "Leave Rules 3.0/4.0 (header-only snippets)"
+  new_headline: "Leave Rules 3.0/4.0 with clause text (300-day ceiling; 30/yr in-service encashment)"
+  why: "Snippet hygiene only."
+  severity: cosmetic
+- id: E1__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "68,832.78 (= 18 days, silently capped)"
+  new_headline: "Encashing 30 days of Earned Leave would be worth ₹1,14,721 gross at ₹3,824/day; ₹68,833 if the ledger's 18 days binds."
+  why: "Question asks 30 days; old SQL capped at ledger's 18 without saying so and joined all ledger rows (LIMIT 1)."
+  severity: important
+- id: E2
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template (posting row: WC-DEL since 2021-08-16, 62 months)"
+  new_headline: "At Corporate HQ Delhi since 2021-08-16 (62 months), past the JRTP 3-5 yr window (closed 2026-08-16) -> due in next AGT, effective by 2027-07-01"
+  why: "Old SQL did not answer 'when due' or 'policy for my grade'. Now applies JRTP 3.0/9.1 to the current posting."
+  severity: important
+- id: E2__drill_down
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template (CL-DEL 5.2 yrs)"
+  new_headline: "5.2 years at WC-DEL and 5.2 years cumulatively in CL-DEL, inside the 10-year cluster cap."
+  why: "Added the work-centre figure the question asks for and the cap."
+  severity: cosmetic
+- id: E2__why
+  defect_class: []
+  old_headline: "JRTP 3.0 + 9.0 (header-only snippets)"
+  new_headline: "JRTP 3.0 + 9.0 with clause text"
+  why: "Snippet hygiene only."
+  severity: cosmetic
+- id: E2__compare_or_so_what
+  defect_class: []
+  old_headline: "JRTP 3.0 (header-only snippet)"
+  new_headline: "JRTP 3.0 with clause text (tenure norm uniform across grades; technical extension to 5 yrs)"
+  why: "Snippet hygiene only."
+  severity: cosmetic
+- id: E3
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template"
+  new_headline: "2 claims: CLM-P002 (IPD, dependent parent, ₹42,000, 2026-09-18) pending_scrutiny; CLM-P001 (OPD) approved_paid ₹17,200 of ₹18,500"
+  why: "Added dates/type/amounts; real narrative."
+  severity: cosmetic
+- id: E3__drill_down
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template"
+  new_headline: "CLM-P001: claimed ₹18,500, deduction ₹1,300 (non_reimbursable_consumables), net ₹17,200; CLM-P002 pending"
+  why: "Added deduction head and net payable."
+  severity: cosmetic
+- id: E3__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template (deduction_reason duplicated)"
+  new_headline: "The only deduction was not room rent/investigation: CLM-P001 lost ₹1,300 for non_reimbursable_consumables"
+  why: "Question presumes a room-rent/investigation deduction; data shows consumables. Flag added."
+  severity: cosmetic
+- id: E3__compare_or_so_what
+  defect_class: [GAP, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "turnaround_days NULL, NULL"
+  new_headline: "1 of 2 claims breached the 15-day SLA: CLM-P001 settled in 14 days; CLM-P002 open 31 days"
+  why: "turnaround_days is NULL for every claim; now derived from submission/settlement dates (as-of 2026-10-19 for open)."
+  severity: important
+- id: E4
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Five J-15 court-judgment fragments (R&P clause targeted was 4.0 = E4->E5 merit channel)"
+  new_headline: "Citation: R&P Clause 2.0 (E2->E3 time-bound, 3 yrs residency), 3.0 (APAR >= 3.5/70%, no adverse remark), 7.0 (vigilance clearance)"
+  why: "Court fragments sorted before 'R&P' and filled LIMIT 5; target clause was for the wrong grade transition."
+  severity: blocking
+- id: E4__drill_down
+  defect_class: [WRONG_QUESTION]
+  old_headline: "R&P Clause 4.0 (E4->E5 merit)"
+  new_headline: "R&P Clause 2.0 (3 yrs residency at E2) + 3.0 (APAR >= 3.5 / 70%)"
+  why: "Wrong clause for E2->E3."
+  severity: important
+- id: E4__why
+  defect_class: [WRONG_QUESTION]
+  old_headline: "R&P Clause 4.0 only (Clause 9.0 does not exist)"
+  new_headline: "R&P Clause 2.0 (time-bound, non-vacancy) + 4.0 (merit, vacancy-based, 1:3 zone)"
+  why: "Needed both channels to explain the contrast."
+  severity: cosmetic
+- id: E4__compare_or_so_what
+  defect_class: [WRONG_QUESTION]
+  old_headline: "JRTP 6.0 + R&P 4.0"
+  new_headline: "R&P 5.0 (Cat-C/NE/14x14 tenure mandatory before E4->E5) + JRTP 6.0"
+  why: "Hardship tenure is a prerequisite for E5, not an accelerator; Clause 5.0 is the governing text."
+  severity: cosmetic
+- id: E5
+  defect_class: [WRONG_QUESTION]
+  old_headline: "P1-16 Part 1 (TA Regulations title/applicability)"
+  new_headline: "Citation: JRTP 6.0 (hard-station allowance 10% BP; 14x14 offshore is Cat-C), P1-16 Part 10 (14-day on/off staff fly economy/Y), Part 38 (1/4 DA when free board & lodging)"
+  why: "Part 1 has no offshore entitlement. No consolidated offshore TA/DA clause exists in the corpus (partial GAP)."
+  severity: important
+- id: E5__drill_down
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "P1-16 Part 2 (definitions)"
+  new_headline: "JRTP 6.3: Special Hard Station Allowance 10% of BP (no daily rate / conveyance amount in corpus)"
+  why: "Definitions text irrelevant; payroll offshore allowance is implausible (data defect) so not used."
+  severity: important
+- id: E5__why
+  defect_class: [WRONG_QUESTION, GAP]
+  old_headline: "P1-16 Part 3 (scope of family)"
+  new_headline: "P1-16 Part 10 (14-day on/off travel) + R&P 5.0 (14x14 offshore duty counts as hard-station tenure)"
+  why: "No safety/travel-time guideline exists in the corpus (GAP)."
+  severity: cosmetic
+- id: E5__compare_or_so_what
+  defect_class: [CASE_HYGIENE, GENERIC_TEXT]
+  old_headline: "Three empty citation blocks (rows had no quote_snippet)"
+  new_headline: "Onshore E2 Class-A lodging up to ₹4,500/day, Economy_Air; offshore no lodging claim, DA at 0.25 under free board & lodging"
+  why: "Legacy policy renderer printed empty quotes; LOWER(cadre) added; narrative registered."
+  severity: important
+- id: E6
+  defect_class: [FY_MAPPING, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template (36 FY27 programmes listed, from 2026-04-04)"
+  new_headline: "None: all 36 FY27 programmes open to your grade and experience already started (calendar 2026-04-04..2026-09-19); none lists your discipline"
+  why: "Old list ignored eligibility and today's date (2026-10-19). Now eligibility-filtered with still_open/discipline flags."
+  severity: important
+- id: E6__drill_down
+  defect_class: [FY_MAPPING, WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template (72 rows FY22-FY27, duplicate column)"
+  new_headline: "No upcoming courses at ONGC Academy Dehradun / IOGPT Navi Mumbai: all 12 FY27 sessions started before 19-Oct-2026"
+  why: "Listed all historical years; now FY27, eligible, upcoming flag."
+  severity: important
+- id: E6__why
+  defect_class: [FY_MAPPING, GENERIC_TEXT]
+  old_headline: "generic template (100 programmes across all years, LIMIT 100)"
+  new_headline: "18 of 36 FY27 programmes require prior experience (max 5 yrs); with 5.2 yrs you are blocked from 0"
+  why: "Scoped to this year and the employee."
+  severity: cosmetic
+- id: E6__compare_or_so_what
+  defect_class: [UNEQUAL_PERIODS, GAP, GENERIC_TEXT]
+  old_headline: "generic template (days summed across FY22-FY27 by category)"
+  new_headline: "FY27: technical 6 programmes / 22 days vs managerial+leadership 12 / 47 days"
+  why: "Summed six years; no 'mandatory credit' field (GAP) - days/programmes used as proxy."
+  severity: cosmetic
+- id: E7
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template (32,894)"
+  new_headline: "ONGC's published standalone PAT for FY26 was ₹32,894 cr (-7.6% vs ₹35,610 cr)."
+  why: "Value correct; added FY and YoY context."
+  severity: cosmetic
+- id: E7__drill_down
+  defect_class: [GENERIC_TEXT]
+  old_headline: "generic template"
+  new_headline: "FY25 standalone ₹35,610 / consolidated ₹48,074 cr; FY26 ₹32,894 / ₹49,793 cr; group entities added ₹16,899 cr"
+  why: "Added group contribution."
+  severity: cosmetic
+- id: E7__why
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "statutory_levies_total 106,509 (actually revenue minus levies, mislabelled)"
+  new_headline: "Profit did not grow: PAT fell ₹2,716 cr; realisation $76.90->$68.40 cut revenue ₹5,338 cr, opex +₹13,695 cr; levies -₹4,691 cr (windfall 3,948->0) offset"
+  why: "Mislabelled single number, no drivers; premise of 'growth' false. Now FY25->FY26 bridge. Dividend income not in data (GAP)."
+  severity: important
+- id: E7__compare_or_so_what
+  defect_class: [WRONG_QUESTION, GENERIC_TEXT]
+  old_headline: "generic template (4 yearly PAT values, no average)"
+  new_headline: "FY26 PAT ₹32,894 cr is ₹5,850 cr (-15.1%) below the FY23-FY25 average of ₹38,744 cr"
+  why: "Computes the asked 3-year average and gap."
+  severity: cosmetic
+- id: D1-D6 refusal roots (+ D2/D3/D4 __why, M3)
+  defect_class: [WRONG_QUESTION]
+  old_headline: "Cited non-existent rules: 'CDA Rules 1994 Rule 5.0' (D1, D5, M3), 'ONGC Vigilance Guidelines Clause 7.0' (D6), 'IT Data Governance Policy' (D5), 'Corporate Commercial Information Protection Guidelines' (D4), RTI s.8(1)(i) cabinet-papers exemption for transfer drafts (D2)"
+  new_headline: "Citations replaced with real refs from rulebooks_clause_index.csv (HR Manual 4.0/5.0, JRTP 9.1(d)/11.0, R&P 8.0, BDP 6.1/8.0), ONGC CDA Rules 1994 Rules 4/11, Whistle Blower Policy P2-01 cl. 7.6/12/13.3, RTI Act 2005 s.8(1)(d)/(h)/(j)"
+  why: "Lead decision (residual b): no invented rule numbers in refusal prose. REFUSAL_MAP in build_answer_key.py edited by coordinator; MDs re-rendered."
+  severity: important

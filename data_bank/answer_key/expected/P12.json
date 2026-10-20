@@ -1,0 +1,69 @@
+{
+  "job_id": "53f3fecd-8780-412a-b59e-b8fa6d6f1e73",
+  "total_bytes_processed": 10241832,
+  "executed_at": "2026-10-20T06:33:08.898632+00:00",
+  "elapsed_seconds": 0.71,
+  "row_count": 4,
+  "columns": [
+    "emp_id",
+    "name",
+    "discipline",
+    "current_work_centre",
+    "dpc_fiscal_year",
+    "pending_reason",
+    "never_hard_or_ne_posted",
+    "hard_ne_service_years",
+    "longest_continuous_hard_ne_years",
+    "longest_continuous_hard_ne_days"
+  ],
+  "rows": [
+    {
+      "emp_id": "EMP-119497",
+      "name": "Ajay Ahmed",
+      "discipline": "Production",
+      "current_work_centre": "Dahej Plant",
+      "dpc_fiscal_year": "FY26",
+      "pending_reason": "court_stay_seniority_dispute",
+      "never_hard_or_ne_posted": true,
+      "hard_ne_service_years": 0.0,
+      "longest_continuous_hard_ne_years": 0.0,
+      "longest_continuous_hard_ne_days": 0
+    },
+    {
+      "emp_id": "EMP-118855",
+      "name": "Mukesh Kumar",
+      "discipline": "Production",
+      "current_work_centre": "Hazira Plant",
+      "dpc_fiscal_year": "FY26",
+      "pending_reason": "court_stay_seniority_dispute",
+      "never_hard_or_ne_posted": false,
+      "hard_ne_service_years": 2.0,
+      "longest_continuous_hard_ne_years": 2.0,
+      "longest_continuous_hard_ne_days": 732
+    },
+    {
+      "emp_id": "EMP-108112",
+      "name": "Divya Biswas",
+      "discipline": "Production",
+      "current_work_centre": "Ahmedabad Asset",
+      "dpc_fiscal_year": "FY26",
+      "pending_reason": "court_stay_seniority_dispute",
+      "never_hard_or_ne_posted": false,
+      "hard_ne_service_years": 2.52,
+      "longest_continuous_hard_ne_years": 2.52,
+      "longest_continuous_hard_ne_days": 920
+    },
+    {
+      "emp_id": "EMP-100317",
+      "name": "Anil Majumdar",
+      "discipline": "Production",
+      "current_work_centre": "Delhi HQ",
+      "dpc_fiscal_year": "FY26",
+      "pending_reason": "court_stay_seniority_dispute",
+      "never_hard_or_ne_posted": false,
+      "hard_ne_service_years": 3.0,
+      "longest_continuous_hard_ne_years": 3.0,
+      "longest_continuous_hard_ne_days": 1094
+    }
+  ]
+}

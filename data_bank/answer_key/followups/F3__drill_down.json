@@ -1,0 +1,389 @@
+{
+  "job_id": "55912f92-951c-48db-920b-b61b392aa587",
+  "total_bytes_processed": 44204,
+  "executed_at": "2026-10-20T06:39:00.638210+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 37,
+  "columns": [
+    "field_name",
+    "asset_name",
+    "maturity",
+    "production_change_pct",
+    "ebitda_margin_fy22_pct",
+    "ebitda_margin_fy26_pct",
+    "margin_change_pp",
+    "ebitda_fy26_cr"
+  ],
+  "rows": [
+    {
+      "field_name": "Kuthalam",
+      "asset_name": "Cauvery Asset",
+      "maturity": "mature",
+      "production_change_pct": -22.9,
+      "ebitda_margin_fy22_pct": -21.3,
+      "ebitda_margin_fy26_pct": 45.6,
+      "margin_change_pp": 66.9,
+      "ebitda_fy26_cr": 201.9
+    },
+    {
+      "field_name": "Tatipaka",
+      "asset_name": "Rajahmundry Asset",
+      "maturity": "mature",
+      "production_change_pct": -23.6,
+      "ebitda_margin_fy22_pct": 12.3,
+      "ebitda_margin_fy26_pct": 59.9,
+      "margin_change_pp": 47.5,
+      "ebitda_fy26_cr": 313.6
+    },
+    {
+      "field_name": "Jharia CBM",
+      "asset_name": "CBM Bokaro",
+      "maturity": "plateau",
+      "production_change_pct": -19.3,
+      "ebitda_margin_fy22_pct": 13.6,
+      "ebitda_margin_fy26_pct": 59.9,
+      "margin_change_pp": 46.2,
+      "ebitda_fy26_cr": 495.2
+    },
+    {
+      "field_name": "Agartala Dome",
+      "asset_name": "Tripura Asset",
+      "maturity": "plateau",
+      "production_change_pct": -18.7,
+      "ebitda_margin_fy22_pct": 15.6,
+      "ebitda_margin_fy26_pct": 61.1,
+      "margin_change_pp": 45.4,
+      "ebitda_fy26_cr": 287.7
+    },
+    {
+      "field_name": "Baramura",
+      "asset_name": "Tripura Asset",
+      "maturity": "mature",
+      "production_change_pct": -23.7,
+      "ebitda_margin_fy22_pct": 15.2,
+      "ebitda_margin_fy26_pct": 60.0,
+      "margin_change_pp": 44.8,
+      "ebitda_fy26_cr": 375.8
+    },
+    {
+      "field_name": "Rokhia",
+      "asset_name": "Tripura Asset",
+      "maturity": "plateau",
+      "production_change_pct": -18.9,
+      "ebitda_margin_fy22_pct": 17.0,
+      "ebitda_margin_fy26_pct": 61.6,
+      "margin_change_pp": 44.6,
+      "ebitda_fy26_cr": 422.4
+    },
+    {
+      "field_name": "CBM Bokaro",
+      "asset_name": "CBM Bokaro",
+      "maturity": "plateau",
+      "production_change_pct": -18.8,
+      "ebitda_margin_fy22_pct": 16.6,
+      "ebitda_margin_fy26_pct": 61.2,
+      "margin_change_pp": 44.5,
+      "ebitda_fy26_cr": 450.0
+    },
+    {
+      "field_name": "Cambay",
+      "asset_name": "Cambay Asset",
+      "maturity": "mature",
+      "production_change_pct": -23.2,
+      "ebitda_margin_fy22_pct": 29.2,
+      "ebitda_margin_fy26_pct": 66.2,
+      "margin_change_pp": 37.0,
+      "ebitda_fy26_cr": 450.9
+    },
+    {
+      "field_name": "Konaban",
+      "asset_name": "Tripura Asset",
+      "maturity": "plateau",
+      "production_change_pct": -18.8,
+      "ebitda_margin_fy22_pct": 30.2,
+      "ebitda_margin_fy26_pct": 66.7,
+      "margin_change_pp": 36.5,
+      "ebitda_fy26_cr": 573.8
+    },
+    {
+      "field_name": "Pasarlapudi",
+      "asset_name": "Rajahmundry Asset",
+      "maturity": "mature",
+      "production_change_pct": -23.8,
+      "ebitda_margin_fy22_pct": 39.2,
+      "ebitda_margin_fy26_pct": 64.8,
+      "margin_change_pp": 25.5,
+      "ebitda_fy26_cr": 575.5
+    },
+    {
+      "field_name": "C-Series Clusters",
+      "asset_name": "Bassein & Satellite",
+      "maturity": "plateau",
+      "production_change_pct": -21.5,
+      "ebitda_margin_fy22_pct": 37.5,
+      "ebitda_margin_fy26_pct": 61.4,
+      "margin_change_pp": 23.9,
+      "ebitda_fy26_cr": 1138.3
+    },
+    {
+      "field_name": "B-173A / B-Series Clusters",
+      "asset_name": "Bassein & Satellite",
+      "maturity": "plateau",
+      "production_change_pct": -21.7,
+      "ebitda_margin_fy22_pct": 38.3,
+      "ebitda_margin_fy26_pct": 61.9,
+      "margin_change_pp": 23.6,
+      "ebitda_fy26_cr": 1207.5
+    },
+    {
+      "field_name": "Bassein",
+      "asset_name": "Bassein & Satellite",
+      "maturity": "mature",
+      "production_change_pct": -21.6,
+      "ebitda_margin_fy22_pct": 49.0,
+      "ebitda_margin_fy26_pct": 68.6,
+      "margin_change_pp": 19.7,
+      "ebitda_fy26_cr": 9672.2
+    },
+    {
+      "field_name": "Panna",
+      "asset_name": "Neelam & Heera",
+      "maturity": "mature",
+      "production_change_pct": -10.1,
+      "ebitda_margin_fy22_pct": 47.4,
+      "ebitda_margin_fy26_pct": 53.9,
+      "margin_change_pp": 6.5,
+      "ebitda_fy26_cr": 1882.6
+    },
+    {
+      "field_name": "Lakwa",
+      "asset_name": "Assam Asset",
+      "maturity": "mature",
+      "production_change_pct": -17.5,
+      "ebitda_margin_fy22_pct": 52.4,
+      "ebitda_margin_fy26_pct": 58.8,
+      "margin_change_pp": 6.4,
+      "ebitda_fy26_cr": 1571.5
+    },
+    {
+      "field_name": "Borholla",
+      "asset_name": "Jorhat Asset",
+      "maturity": "mature",
+      "production_change_pct": -13.9,
+      "ebitda_margin_fy22_pct": 4.6,
+      "ebitda_margin_fy26_pct": 10.4,
+      "margin_change_pp": 5.8,
+      "ebitda_fy26_cr": 36.4
+    },
+    {
+      "field_name": "Khoraghat",
+      "asset_name": "Jorhat Asset",
+      "maturity": "mature",
+      "production_change_pct": -13.5,
+      "ebitda_margin_fy22_pct": 7.6,
+      "ebitda_margin_fy26_pct": 13.2,
+      "margin_change_pp": 5.7,
+      "ebitda_fy26_cr": 50.3
+    },
+    {
+      "field_name": "Champang",
+      "asset_name": "Jorhat Asset",
+      "maturity": "mature",
+      "production_change_pct": -15.0,
+      "ebitda_margin_fy22_pct": 2.5,
+      "ebitda_margin_fy26_pct": 8.0,
+      "margin_change_pp": 5.5,
+      "ebitda_fy26_cr": 26.3
+    },
+    {
+      "field_name": "Mori",
+      "asset_name": "Rajahmundry Asset",
+      "maturity": "mature",
+      "production_change_pct": -12.0,
+      "ebitda_margin_fy22_pct": 35.9,
+      "ebitda_margin_fy26_pct": 39.5,
+      "margin_change_pp": 3.7,
+      "ebitda_fy26_cr": 122.9
+    },
+    {
+      "field_name": "Gandhar",
+      "asset_name": "Ankleshwar Asset",
+      "maturity": "mature",
+      "production_change_pct": -18.2,
+      "ebitda_margin_fy22_pct": 67.0,
+      "ebitda_margin_fy26_pct": 70.5,
+      "margin_change_pp": 3.5,
+      "ebitda_fy26_cr": 7075.8
+    },
+    {
+      "field_name": "Mukta",
+      "asset_name": "Neelam & Heera",
+      "maturity": "mature",
+      "production_change_pct": -4.1,
+      "ebitda_margin_fy22_pct": 44.9,
+      "ebitda_margin_fy26_pct": 46.6,
+      "margin_change_pp": 1.7,
+      "ebitda_fy26_cr": 1112.5
+    },
+    {
+      "field_name": "Kesanapalli",
+      "asset_name": "Rajahmundry Asset",
+      "maturity": "mature",
+      "production_change_pct": -11.9,
+      "ebitda_margin_fy22_pct": 51.9,
+      "ebitda_margin_fy26_pct": 53.5,
+      "margin_change_pp": 1.6,
+      "ebitda_fy26_cr": 321.4
+    },
+    {
+      "field_name": "Adiyakkamangalam",
+      "asset_name": "Cauvery Asset",
+      "maturity": "mature",
+      "production_change_pct": -11.8,
+      "ebitda_margin_fy22_pct": 44.7,
+      "ebitda_margin_fy26_pct": 45.7,
+      "margin_change_pp": 1.0,
+      "ebitda_fy26_cr": 174.9
+    },
+    {
+      "field_name": "Sobhasan",
+      "asset_name": "Mehsana Asset",
+      "maturity": "mature",
+      "production_change_pct": -16.6,
+      "ebitda_margin_fy22_pct": 57.0,
+      "ebitda_margin_fy26_pct": 57.9,
+      "margin_change_pp": 1.0,
+      "ebitda_fy26_cr": 1106.1
+    },
+    {
+      "field_name": "Rudrasagar",
+      "asset_name": "Assam Asset",
+      "maturity": "mature",
+      "production_change_pct": -11.2,
+      "ebitda_margin_fy22_pct": 58.0,
+      "ebitda_margin_fy26_pct": 58.9,
+      "margin_change_pp": 0.9,
+      "ebitda_fy26_cr": 1327.7
+    },
+    {
+      "field_name": "Geleki",
+      "asset_name": "Assam Asset",
+      "maturity": "mature",
+      "production_change_pct": -10.6,
+      "ebitda_margin_fy22_pct": 57.1,
+      "ebitda_margin_fy26_pct": 58.0,
+      "margin_change_pp": 0.9,
+      "ebitda_fy26_cr": 1199.4
+    },
+    {
+      "field_name": "Charali",
+      "asset_name": "Assam Asset",
+      "maturity": "mature",
+      "production_change_pct": -14.7,
+      "ebitda_margin_fy22_pct": 50.3,
+      "ebitda_margin_fy26_pct": 51.1,
+      "margin_change_pp": 0.8,
+      "ebitda_fy26_cr": 138.7
+    },
+    {
+      "field_name": "Jhalora",
+      "asset_name": "Ahmedabad Asset",
+      "maturity": "mature",
+      "production_change_pct": -12.2,
+      "ebitda_margin_fy22_pct": 58.3,
+      "ebitda_margin_fy26_pct": 59.0,
+      "margin_change_pp": 0.7,
+      "ebitda_fy26_cr": 309.6
+    },
+    {
+      "field_name": "Narimanam",
+      "asset_name": "Cauvery Asset",
+      "maturity": "mature",
+      "production_change_pct": -11.5,
+      "ebitda_margin_fy22_pct": 50.7,
+      "ebitda_margin_fy26_pct": 51.3,
+      "margin_change_pp": 0.6,
+      "ebitda_fy26_cr": 270.9
+    },
+    {
+      "field_name": "Nawagam",
+      "asset_name": "Ahmedabad Asset",
+      "maturity": "mature",
+      "production_change_pct": -12.1,
+      "ebitda_margin_fy22_pct": 59.9,
+      "ebitda_margin_fy26_pct": 60.4,
+      "margin_change_pp": 0.6,
+      "ebitda_fy26_cr": 829.7
+    },
+    {
+      "field_name": "Viraj",
+      "asset_name": "Ahmedabad Asset",
+      "maturity": "mature",
+      "production_change_pct": -12.4,
+      "ebitda_margin_fy22_pct": 58.4,
+      "ebitda_margin_fy26_pct": 59.1,
+      "margin_change_pp": 0.6,
+      "ebitda_fy26_cr": 310.7
+    },
+    {
+      "field_name": "Linch",
+      "asset_name": "Mehsana Asset",
+      "maturity": "mature",
+      "production_change_pct": -15.7,
+      "ebitda_margin_fy22_pct": 55.6,
+      "ebitda_margin_fy26_pct": 56.1,
+      "margin_change_pp": 0.5,
+      "ebitda_fy26_cr": 384.3
+    },
+    {
+      "field_name": "Sanand",
+      "asset_name": "Ahmedabad Asset",
+      "maturity": "mature",
+      "production_change_pct": -12.4,
+      "ebitda_margin_fy22_pct": 59.4,
+      "ebitda_margin_fy26_pct": 60.0,
+      "margin_change_pp": 0.5,
+      "ebitda_fy26_cr": 780.6
+    },
+    {
+      "field_name": "Nandej",
+      "asset_name": "Ahmedabad Asset",
+      "maturity": "mature",
+      "production_change_pct": -12.6,
+      "ebitda_margin_fy22_pct": 59.5,
+      "ebitda_margin_fy26_pct": 60.0,
+      "margin_change_pp": 0.5,
+      "ebitda_fy26_cr": 353.9
+    },
+    {
+      "field_name": "Kalol",
+      "asset_name": "Ahmedabad Asset",
+      "maturity": "mature",
+      "production_change_pct": -11.8,
+      "ebitda_margin_fy22_pct": 60.9,
+      "ebitda_margin_fy26_pct": 61.3,
+      "margin_change_pp": 0.4,
+      "ebitda_fy26_cr": 955.2
+    },
+    {
+      "field_name": "Heera",
+      "asset_name": "Neelam & Heera",
+      "maturity": "mature",
+      "production_change_pct": -10.8,
+      "ebitda_margin_fy22_pct": 44.2,
+      "ebitda_margin_fy26_pct": 44.5,
+      "margin_change_pp": 0.3,
+      "ebitda_fy26_cr": 1013.2
+    },
+    {
+      "field_name": "Kathana",
+      "asset_name": "Cambay Asset",
+      "maturity": "mature",
+      "production_change_pct": -12.2,
+      "ebitda_margin_fy22_pct": 60.3,
+      "ebitda_margin_fy26_pct": 60.5,
+      "margin_change_pp": 0.2,
+      "ebitda_fy26_cr": 966.9
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "job_id": "ba37216d-fb32-4743-8e4b-ceb39512cb0c",
+  "total_bytes_processed": 10257556,
+  "executed_at": "2026-10-20T06:51:36.265485+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 4,
+  "columns": [
+    "component",
+    "per_officer_inr",
+    "cost_for_200_officers_cr",
+    "postings_basis"
+  ],
+  "rows": [
+    {
+      "component": "One-time transfer grant",
+      "per_officer_inr": 120000.0,
+      "cost_for_200_officers_cr": 2.4,
+      "postings_basis": 1444
+    },
+    {
+      "component": "Composite transfer grant (CTA)",
+      "per_officer_inr": 150000.0,
+      "cost_for_200_officers_cr": 3.0,
+      "postings_basis": 1444
+    },
+    {
+      "component": "Baggage transportation",
+      "per_officer_inr": 50000.0,
+      "cost_for_200_officers_cr": 1.0,
+      "postings_basis": 1444
+    },
+    {
+      "component": "Total one-time cost",
+      "per_officer_inr": 320000.0,
+      "cost_for_200_officers_cr": 6.4,
+      "postings_basis": 1444
+    }
+  ]
+}

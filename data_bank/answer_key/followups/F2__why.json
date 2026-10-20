@@ -1,0 +1,54 @@
+{
+  "job_id": "7d06b359-1130-417d-8e43-d939df982096",
+  "total_bytes_processed": 505398,
+  "executed_at": "2026-10-20T06:38:59.303631+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 2,
+  "columns": [
+    "prj_id",
+    "project_name",
+    "delay_root_cause",
+    "slippage_months",
+    "sanctioned_cost_cr",
+    "revised_cost_cr",
+    "cost_overrun_cr",
+    "delayed_milestones",
+    "delayed_milestone_names",
+    "fy27_be_ytd_cr",
+    "fy27_actual_ytd_cr",
+    "fy27_utilisation_vs_be_pct",
+    "notes"
+  ],
+  "rows": [
+    {
+      "prj_id": "PRJ-0001",
+      "project_name": "KG-DWN-98/2 Cluster-II Deepwater Development",
+      "delay_root_cause": "subsea_commissioning",
+      "slippage_months": 15,
+      "sanctioned_cost_cr": 34012.0,
+      "revised_cost_cr": 39113.8,
+      "cost_overrun_cr": 5101.8,
+      "delayed_milestones": 3,
+      "delayed_milestone_names": "Offshore Heavy-Lift & Subsea Hook-Up; Platform Jacket & Topsides Fabrication; Commercial Commissioning & First Production",
+      "fy27_be_ytd_cr": 6676.5,
+      "fy27_actual_ytd_cr": 6222.1,
+      "fy27_utilisation_vs_be_pct": 93.2,
+      "notes": "Flagship deepwater subsea project; first oil achieved Jan-2024; gas processing platform facing commissioning delays."
+    },
+    {
+      "prj_id": "PRJ-0057",
+      "project_name": "Eastern Offshore Subsea Umbilicals, Risers & Flowlines (SURF)",
+      "delay_root_cause": "engineering_drawing_approval",
+      "slippage_months": 0,
+      "sanctioned_cost_cr": 2100.0,
+      "revised_cost_cr": 2415.0,
+      "cost_overrun_cr": 315.0,
+      "delayed_milestones": 0,
+      "delayed_milestone_names": null,
+      "fy27_be_ytd_cr": 412.2,
+      "fy27_actual_ytd_cr": 418.4,
+      "fy27_utilisation_vs_be_pct": 101.5,
+      "notes": "Deepwater subsea tiebacks in KG-DWN-98/2 field."
+    }
+  ]
+}

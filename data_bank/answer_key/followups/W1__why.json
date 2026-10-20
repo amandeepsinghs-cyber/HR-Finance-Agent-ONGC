@@ -1,0 +1,75 @@
+{
+  "job_id": "add446a9-3c37-4ebd-9e7d-e6df4d1aa449",
+  "total_bytes_processed": 115142,
+  "executed_at": "2026-10-20T06:42:33.931387+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 5,
+  "columns": [
+    "onshore_offshore",
+    "lifting_cost_band",
+    "n_fields",
+    "wtd_lifting_cost_usd_boe",
+    "base_ebitda_cr",
+    "sim_ebitda_at_60_cr",
+    "ebitda_change_pct",
+    "sim_ebitda_margin_pct",
+    "fields_pbt_negative_at_60"
+  ],
+  "rows": [
+    {
+      "onshore_offshore": "onshore",
+      "lifting_cost_band": "1 high (>= $20/boe)",
+      "n_fields": 5,
+      "wtd_lifting_cost_usd_boe": 37.67,
+      "base_ebitda_cr": 410.71,
+      "sim_ebitda_at_60_cr": 191.05,
+      "ebitda_change_pct": -53.5,
+      "sim_ebitda_margin_pct": 12.9,
+      "fields_pbt_negative_at_60": 3
+    },
+    {
+      "onshore_offshore": "offshore",
+      "lifting_cost_band": "2 mid ($10-20/boe)",
+      "n_fields": 8,
+      "wtd_lifting_cost_usd_boe": 12.0,
+      "base_ebitda_cr": 27845.21,
+      "sim_ebitda_at_60_cr": 22073.14,
+      "ebitda_change_pct": -20.7,
+      "sim_ebitda_margin_pct": 52.0,
+      "fields_pbt_negative_at_60": 0
+    },
+    {
+      "onshore_offshore": "onshore",
+      "lifting_cost_band": "2 mid ($10-20/boe)",
+      "n_fields": 23,
+      "wtd_lifting_cost_usd_boe": 13.47,
+      "base_ebitda_cr": 12900.99,
+      "sim_ebitda_at_60_cr": 10256.87,
+      "ebitda_change_pct": -20.5,
+      "sim_ebitda_margin_pct": 54.1,
+      "fields_pbt_negative_at_60": 0
+    },
+    {
+      "onshore_offshore": "onshore",
+      "lifting_cost_band": "3 low (< $10/boe)",
+      "n_fields": 12,
+      "wtd_lifting_cost_usd_boe": 6.39,
+      "base_ebitda_cr": 13231.51,
+      "sim_ebitda_at_60_cr": 11826.4,
+      "ebitda_change_pct": -10.6,
+      "sim_ebitda_margin_pct": 65.9,
+      "fields_pbt_negative_at_60": 0
+    },
+    {
+      "onshore_offshore": "offshore",
+      "lifting_cost_band": "3 low (< $10/boe)",
+      "n_fields": 5,
+      "wtd_lifting_cost_usd_boe": 5.89,
+      "base_ebitda_cr": 20889.46,
+      "sim_ebitda_at_60_cr": 19809.69,
+      "ebitda_change_pct": -5.2,
+      "sim_ebitda_margin_pct": 66.4,
+      "fields_pbt_negative_at_60": 0
+    }
+  ]
+}

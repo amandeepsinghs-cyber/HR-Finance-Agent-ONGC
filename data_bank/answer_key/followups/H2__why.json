@@ -1,0 +1,99 @@
+{
+  "job_id": "25453273-3acc-44b4-8099-10bc44b0b517",
+  "total_bytes_processed": 5718620,
+  "executed_at": "2026-10-20T06:38:38.101095+00:00",
+  "elapsed_seconds": 0.8,
+  "row_count": 9,
+  "columns": [
+    "cluster_name",
+    "never_hard_execs_served",
+    "postings",
+    "pct_of_never_hard_execs",
+    "currently_posted",
+    "never_hard_execs_total",
+    "never_hard_technical"
+  ],
+  "rows": [
+    {
+      "cluster_name": "Cambay\u2013Ankleshwar\u2013Vadodara",
+      "never_hard_execs_served": 328,
+      "postings": 797,
+      "pct_of_never_hard_execs": 39.0,
+      "currently_posted": 200,
+      "never_hard_execs_total": 842,
+      "never_hard_technical": 535
+    },
+    {
+      "cluster_name": "Ahmedabad\u2013Mehsana",
+      "never_hard_execs_served": 250,
+      "postings": 609,
+      "pct_of_never_hard_execs": 29.7,
+      "currently_posted": 115,
+      "never_hard_execs_total": 842,
+      "never_hard_technical": 535
+    },
+    {
+      "cluster_name": "Mumbai\u2013Panvel\u2013Uran",
+      "never_hard_execs_served": 175,
+      "postings": 416,
+      "pct_of_never_hard_execs": 20.8,
+      "currently_posted": 138,
+      "never_hard_execs_total": 842,
+      "never_hard_technical": 535
+    },
+    {
+      "cluster_name": "Dehradun Complex",
+      "never_hard_execs_served": 138,
+      "postings": 421,
+      "pct_of_never_hard_execs": 16.4,
+      "currently_posted": 138,
+      "never_hard_execs_total": 842,
+      "never_hard_technical": 535
+    },
+    {
+      "cluster_name": "Cauvery\u2013Chennai",
+      "never_hard_execs_served": 113,
+      "postings": 247,
+      "pct_of_never_hard_execs": 13.4,
+      "currently_posted": 61,
+      "never_hard_execs_total": 842,
+      "never_hard_technical": 535
+    },
+    {
+      "cluster_name": "Rajahmundry\u2013Kakinada",
+      "never_hard_execs_served": 106,
+      "postings": 221,
+      "pct_of_never_hard_execs": 12.6,
+      "currently_posted": 61,
+      "never_hard_execs_total": 842,
+      "never_hard_technical": 535
+    },
+    {
+      "cluster_name": "Delhi National Capital Region",
+      "never_hard_execs_served": 91,
+      "postings": 263,
+      "pct_of_never_hard_execs": 10.8,
+      "currently_posted": 91,
+      "never_hard_execs_total": 842,
+      "never_hard_technical": 535
+    },
+    {
+      "cluster_name": "Kolkata Hub",
+      "never_hard_execs_served": 29,
+      "postings": 78,
+      "pct_of_never_hard_execs": 3.4,
+      "currently_posted": 29,
+      "never_hard_execs_total": 842,
+      "never_hard_technical": 535
+    },
+    {
+      "cluster_name": "Goa Training Complex",
+      "never_hard_execs_served": 9,
+      "postings": 23,
+      "pct_of_never_hard_execs": 1.1,
+      "currently_posted": 9,
+      "never_hard_execs_total": 842,
+      "never_hard_technical": 535
+    }
+  ]
+}

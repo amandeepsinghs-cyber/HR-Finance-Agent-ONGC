@@ -1,0 +1,37 @@
+{
+  "job_id": "db34e685-dfde-4836-bc0d-019ad3898549",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:21.609521+00:00",
+  "elapsed_seconds": 0.75,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "G-06",
+      "clause_ref": "5. Misconduct",
+      "heading": "DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 5. Misconduct",
+      "provision": "DPE CDA Rule 5(2)-(2A) (bribes, vendor sponsorship)",
+      "quote_snippet": "2. Taking or giving bribes or any illegal gratification. 2A. Obtaining donations/ advertisement / sponsorship etc. for the associations/NGOs formed by either employee or their spouse / employee\u2019s family members etc. from the contractors, vendors, customers or other persons having commercial relationship / official dealings. This will be treated as miscon- duct\u201d [Inserted in respect of DPE OM No. GM-06/0002/2015-GM/FTS-4861 dated 14-12-2015.]"
+    },
+    {
+      "doc_id": "G-06",
+      "clause_ref": "4. General",
+      "heading": "DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 4. General",
+      "provision": "DPE CDA Rule 4(1)(xiv)-(xv) (no obligations / misuse)",
+      "quote_snippet": "(xiv) not place oneself under any financial or other obligations to any individual or organization which may influence the employee in the performance of one\u2019s official duties; (xv) not misuse one\u2019s position as public servant and not take decisions in order to derive financial or material benefits for oneself, one\u2019s family or one\u2019s friends;"
+    },
+    {
+      "doc_id": "G-06",
+      "clause_ref": "12. Gifts",
+      "heading": "DPE Guidelines for Administrative Ministries & CPSEs (printed compendium) - Rule 12. Gifts",
+      "provision": "DPE CDA Rule 12 Note (lavish hospitality)",
+      "quote_snippet": "Note - An employee of the CPSE shall avoid acceptance of lavish or frequent hospitality from any individual or firm having official dealings with the employee."
+    }
+  ]
+}

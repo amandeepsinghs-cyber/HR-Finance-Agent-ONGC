@@ -1,0 +1,139 @@
+{
+  "job_id": "91039f90-09a3-453b-aa65-55e006414511",
+  "total_bytes_processed": 1791565,
+  "executed_at": "2026-10-20T06:34:05.281599+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 12,
+  "columns": [
+    "fiscal_year_joined",
+    "period",
+    "technical_executive_intake",
+    "still_active",
+    "drilling",
+    "geoscience",
+    "reservoir",
+    "production"
+  ],
+  "rows": [
+    {
+      "fiscal_year_joined": "FY14",
+      "period": "FY14-FY19",
+      "technical_executive_intake": 624,
+      "still_active": 413,
+      "drilling": 209,
+      "geoscience": 94,
+      "reservoir": 48,
+      "production": 273
+    },
+    {
+      "fiscal_year_joined": "FY15",
+      "period": "FY14-FY19",
+      "technical_executive_intake": 166,
+      "still_active": 123,
+      "drilling": 51,
+      "geoscience": 26,
+      "reservoir": 13,
+      "production": 76
+    },
+    {
+      "fiscal_year_joined": "FY16",
+      "period": "FY14-FY19",
+      "technical_executive_intake": 538,
+      "still_active": 396,
+      "drilling": 165,
+      "geoscience": 79,
+      "reservoir": 49,
+      "production": 245
+    },
+    {
+      "fiscal_year_joined": "FY17",
+      "period": "FY14-FY19",
+      "technical_executive_intake": 316,
+      "still_active": 224,
+      "drilling": 90,
+      "geoscience": 51,
+      "reservoir": 30,
+      "production": 145
+    },
+    {
+      "fiscal_year_joined": "FY18",
+      "period": "FY14-FY19",
+      "technical_executive_intake": 26,
+      "still_active": 19,
+      "drilling": 5,
+      "geoscience": 7,
+      "reservoir": 3,
+      "production": 11
+    },
+    {
+      "fiscal_year_joined": "FY19",
+      "period": "FY14-FY19",
+      "technical_executive_intake": 17,
+      "still_active": 0,
+      "drilling": 5,
+      "geoscience": 2,
+      "reservoir": 3,
+      "production": 7
+    },
+    {
+      "fiscal_year_joined": "FY20",
+      "period": "FY20-FY25",
+      "technical_executive_intake": 31,
+      "still_active": 0,
+      "drilling": 5,
+      "geoscience": 4,
+      "reservoir": 3,
+      "production": 19
+    },
+    {
+      "fiscal_year_joined": "FY21",
+      "period": "FY20-FY25",
+      "technical_executive_intake": 14,
+      "still_active": 0,
+      "drilling": 7,
+      "geoscience": 2,
+      "reservoir": 1,
+      "production": 4
+    },
+    {
+      "fiscal_year_joined": "FY22",
+      "period": "FY20-FY25",
+      "technical_executive_intake": 14,
+      "still_active": 0,
+      "drilling": 7,
+      "geoscience": 3,
+      "reservoir": 0,
+      "production": 4
+    },
+    {
+      "fiscal_year_joined": "FY23",
+      "period": "FY20-FY25",
+      "technical_executive_intake": 20,
+      "still_active": 0,
+      "drilling": 9,
+      "geoscience": 0,
+      "reservoir": 0,
+      "production": 11
+    },
+    {
+      "fiscal_year_joined": "FY24",
+      "period": "FY20-FY25",
+      "technical_executive_intake": 51,
+      "still_active": 0,
+      "drilling": 20,
+      "geoscience": 0,
+      "reservoir": 0,
+      "production": 31
+    },
+    {
+      "fiscal_year_joined": "FY25",
+      "period": "FY20-FY25",
+      "technical_executive_intake": 2,
+      "still_active": 0,
+      "drilling": 1,
+      "geoscience": 0,
+      "reservoir": 0,
+      "production": 1
+    }
+  ]
+}

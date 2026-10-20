@@ -1,0 +1,33 @@
+{
+  "job_id": "e200c6d6-e27e-475c-940c-416371f0163e",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:41.550153+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 6.0",
+      "heading": "Mandatory North-East / Hard Station Tenure",
+      "quote_snippet": "6.1 Mandatory Prerequisite for Executive Leadership: Every executive belonging to technical and general operational disciplines must successfully complete at least one full tenure of 3 (three) continuous years in a Category 'C' Hard Station or North-East work centre (Assam Asset, Tripura Asset, Bokaro CBM, Rajasthan Jodhpur, or 14/14 Offshore Duty) prior to consideration for merit promotion from S"
+    },
+    {
+      "doc_id": "P1-16",
+      "clause_ref": "Part 10",
+      "heading": "ONGC Travelling Allowance Regulations (full text) (Part 10)",
+      "quote_snippet": "i) Henceforth all air tickets should be booked by check fare only. However, employees working on 14 days On/Off shift pattern in Offshore areas of Mumbai and KG Offshore may not be forced to travel by check fare tickets and instead they may be allowed to travel by air by economy/\u2019Y\u2019 class for operating on On/Off shift pattern. ii) If tickets are not to be booked by check fare, controlling officer "
+    },
+    {
+      "doc_id": "P1-16",
+      "clause_ref": "Part 38",
+      "heading": "ONGC Travelling Allowance Regulations (full text) (Part 38)",
+      "quote_snippet": "c. A halt shall be treated as continuos unless it is terminated by return to headquarters or by an absence on duty from the halting place (which exceeds 8 km.) for period involving not less than 3 consecutive nights. ix. Forced halts: One Daily Allowance will be allowed for forced halt at a place where such halt is made for reasons beyond the control of the officers/ officials on tour and to be re"
+    }
+  ]
+}

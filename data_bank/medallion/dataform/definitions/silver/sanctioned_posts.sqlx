@@ -1,0 +1,35 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "sanctioned_posts",
+  description: "Manpower planning matrix recording sanctioned posts, in-position strength, vacancy deficits, and reservation quotas."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(col_1) AS sanction_id,
+    TRIM(col_2) AS fiscal_year,
+    TRIM(col_3) AS wc_id,
+    TRIM(col_4) AS discipline_id,
+    TRIM(col_5) AS grade_id,
+    TRIM(col_6) AS grade_band,
+    TRIM(col_7) AS social_category,
+    TRIM(col_8) AS gender,
+    TRIM(col_9) AS pwd_category,
+    TRIM(col_10) AS age_band,
+    TRIM(col_11) AS tenure_band,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_12), ''), ',', ''), '₹', '') AS INT64) AS sanctioned_strength,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_13), ''), ',', ''), '₹', '') AS INT64) AS in_position_strength,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_14), ''), ',', ''), '₹', '') AS INT64) AS vacancy_count,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_15), ''), ',', ''), '₹', '') AS NUMERIC) AS vacancy_rate_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_16), ''), ',', ''), '₹', '') AS INT64) AS backlog_vacancies,
+    CASE WHEN LOWER(TRIM(col_17)) IN ('true', '1', 't', 'yes', 'y') THEN TRUE WHEN LOWER(TRIM(col_17)) IN ('false', '0', 'f', 'no', 'n') THEN FALSE ELSE NULL END AS special_drive_flag,
+    TRIM(col_18) AS special_drive_name,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(col_19), ''), ',', ''), '₹', '') AS INT64) AS special_drive_target_vacancies
+  FROM ${ref("excel_manpower_plan")}
+  WHERE _row_number >= 7 AND _sheet_name = 'manpower_plan' AND col_1 IS NOT NULL AND TRIM(col_1) != '' AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Subtotal|^Total|^Summary)') AND NOT REGEXP_CONTAINS(TRIM(col_1), r'(?i)(^Note:|^Confidential)')
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY sanction_id ORDER BY _ingest_ts DESC) = 1

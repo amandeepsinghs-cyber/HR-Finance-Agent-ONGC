@@ -1,0 +1,626 @@
+{
+  "timestamp": "2026-10-19T14:51:18Z",
+  "sample_size": 65,
+  "passed_count": 65,
+  "failed_count": 0,
+  "stratified_results": [
+    {
+      "entry_id": "W1",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": "Brent",
+      "cite_present": true,
+      "sql_rows": 53,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W1__drill_down",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W1__why",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W1__compare_or_so_what",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W2",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W2__drill_down",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W2__why",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W2__compare_or_so_what",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W3",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W3__drill_down",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W3__why",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W3__compare_or_so_what",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W4",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": "SAED",
+      "cite_present": true,
+      "sql_rows": 4,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W4__drill_down",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W4__why",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "W4__compare_or_so_what",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C13",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": "CTA",
+      "cite_present": true,
+      "sql_rows": 1,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C13__drill_down",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C13__why",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C13__compare_or_so_what",
+      "category": "What-If",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "D1",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "CDA",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "D2",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "JRTP",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "D3",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "DPC",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "D4",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "BDP",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "D5",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "CDA",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "D6",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "Vigilance",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "P18",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "JRTP",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "P19",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "BDP",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "P20",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "BDP",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "M3",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "Confidential",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "M4",
+      "category": "Refusal",
+      "has_doc": true,
+      "cited_policy": "BDP",
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C1",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": "JRTP",
+      "cite_present": true,
+      "sql_rows": 1,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C1__drill_down",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C1__why",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C1__compare_or_so_what",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "P11",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": "JRTP",
+      "cite_present": true,
+      "sql_rows": 1,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "P11__drill_down",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "P11__why",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "P11__compare_or_so_what",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C2",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 4,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C2__drill_down",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C2__why",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C2__compare_or_so_what",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C4",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 3,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C4__drill_down",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C4__why",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C4__compare_or_so_what",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C6",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 53,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C6__drill_down",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C6__why",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C6__compare_or_so_what",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C11",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 1,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C11__drill_down",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C11__why",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C11__compare_or_so_what",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C12",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 17,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C12__drill_down",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C12__why",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "C12__compare_or_so_what",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": null,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "F1",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 15,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "F3",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 530,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "H1",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 46,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "H3",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 14,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "H5",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 2,
+      "status": "PASS"
+    },
+    {
+      "entry_id": "X1",
+      "category": "Core",
+      "has_doc": true,
+      "cited_policy": null,
+      "cite_present": true,
+      "sql_rows": 46,
+      "status": "PASS"
+    }
+  ],
+  "reconciliations": {
+    "C1_delhi_overstay": {
+      "total_5y": 419,
+      "exempt_3yr": 17,
+      "non_exempt_due_transfer": 402,
+      "reconciliation_verdict": "Answer key C1 (419 total, 17 exempt, 402 non-exempt) is 100% correct.",
+      "g3_agt_narrative_note": "G3 narrative cited 170 by conflating Delhi and Dehradun and filtering raw dob > 1969-10-19. C1 is the true station-specific operational count."
+    },
+    "P11_delhi_cluster_10y": {
+      "currently_in_cluster_breach": 201,
+      "currently_in_cluster_exempt": 1,
+      "currently_in_cluster_due_transfer": 200,
+      "lifetime_all_officers_breach": 519,
+      "reconciliation_verdict": "Answer key P11 (201 currently in cluster, 1 exempt, 200 due transfer) is 100% correct for operational transfer questions.",
+      "earlier_probe_249_note": "Earlier probe SQL in verify/probes/P11.sql omitted 'to_date IS NULL' / 'is_currently_in_cluster', counting past officers who already transferred away from Delhi."
+    }
+  },
+  "w1_sanity_check": {
+    "total_fields_with_losses_at_60_usd": 3,
+    "ebitda_negative_fields": [
+      "FLD-CHP",
+      "FLD-BOR"
+    ],
+    "pbt_negative_fields": [
+      "FLD-CHP",
+      "FLD-BOR",
+      "FLD-KHO"
+    ],
+    "matches_answer_key_finding": true,
+    "status": "PASS"
+  },
+  "defects": [],
+  "duration_seconds": 17.12
+}

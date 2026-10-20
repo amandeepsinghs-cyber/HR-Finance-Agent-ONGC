@@ -1,0 +1,69 @@
+{
+  "job_id": "afcc1b89-5765-451f-babc-f6fc359ad5c2",
+  "total_bytes_processed": 673801,
+  "executed_at": "2026-10-20T06:37:25.820812+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 5,
+  "columns": [
+    "category",
+    "sanctioned",
+    "in_position",
+    "vacancies",
+    "vacancies_assam",
+    "vacancies_tripura",
+    "vacancy_rate_pct",
+    "backlog_reserved_vacancies"
+  ],
+  "rows": [
+    {
+      "category": "SC",
+      "sanctioned": 720,
+      "in_position": 704,
+      "vacancies": 16,
+      "vacancies_assam": 3,
+      "vacancies_tripura": 13,
+      "vacancy_rate_pct": 2.2,
+      "backlog_reserved_vacancies": 8
+    },
+    {
+      "category": "ST",
+      "sanctioned": 544,
+      "in_position": 528,
+      "vacancies": 16,
+      "vacancies_assam": 3,
+      "vacancies_tripura": 13,
+      "vacancy_rate_pct": 2.9,
+      "backlog_reserved_vacancies": 7
+    },
+    {
+      "category": "OBC",
+      "sanctioned": 1207,
+      "in_position": 1167,
+      "vacancies": 40,
+      "vacancies_assam": 10,
+      "vacancies_tripura": 30,
+      "vacancy_rate_pct": 3.3,
+      "backlog_reserved_vacancies": 0
+    },
+    {
+      "category": "EWS",
+      "sanctioned": 209,
+      "in_position": 201,
+      "vacancies": 8,
+      "vacancies_assam": 2,
+      "vacancies_tripura": 6,
+      "vacancy_rate_pct": 3.8,
+      "backlog_reserved_vacancies": 0
+    },
+    {
+      "category": "General",
+      "sanctioned": 1868,
+      "in_position": 1805,
+      "vacancies": 63,
+      "vacancies_assam": 12,
+      "vacancies_tripura": 51,
+      "vacancy_rate_pct": 3.4,
+      "backlog_reserved_vacancies": 0
+    }
+  ]
+}

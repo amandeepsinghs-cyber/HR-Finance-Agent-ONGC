@@ -1,0 +1,27 @@
+{
+  "job_id": "7cf8717e-aa76-49fa-8d30-a0d56a5e758a",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:34:51.760254+00:00",
+  "elapsed_seconds": 0.62,
+  "row_count": 2,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 2.0",
+      "heading": "Time-Bound Promotion Channel (E1\u2192E4)",
+      "quote_snippet": "2.1 Qualifying Residency Requirements: Promotions within the junior executive ranks (E1 through E4) shall be governed by the Time-Bound Promotion Channel subject to completing prescribed residency and meeting the APAR benchmark: (a) Promotion from E1 to E2: 3 (three) completed years of qualifying residency service at Grade E1. (b) Promotion from E2 to E3: 3 (three) completed years of qualifying re"
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 3.0",
+      "heading": "APAR Benchmark for Time-Bound Promotion",
+      "quote_snippet": "3.1 Performance Benchmark Threshold: To qualify for time-bound promotion, an executive must maintain a consistent track record of satisfactory performance across the qualifying residency years: (a) For E1\u2192E2: Minimum cumulative rating of 'Good' (score \u2265 3.0 / 60%) in the annual e-APAR ratings for the preceding 3 years. (b) For E2\u2192E3: Minimum cumulative rating of 'Good' to 'Very Good' (score \u2265 3.5 "
+    }
+  ]
+}

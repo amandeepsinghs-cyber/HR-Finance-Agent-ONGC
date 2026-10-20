@@ -1,0 +1,33 @@
+{
+  "job_id": "44943f15-fff5-4599-9dc5-a56cf3787761",
+  "total_bytes_processed": 7337473,
+  "executed_at": "2026-10-20T06:34:47.768337+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 7",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 7)",
+      "quote_snippet": "6. ELIGIBILITY All Directors and Employees of the Company are eligible to make Protected Disclosures under the Policy in relation to matters concerning the Company. 7. PROCEDURE 7.1 All Protected Disclosures should be addressed only to the Nodal Officer at the following address\u2013 The Company Secretary Oil and Natural Gas Corporation Limited Deendayal Urja Bhawan 5, Nelson Mandela Marg, Vasant Kunj,"
+    },
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 8",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 8)",
+      "quote_snippet": "7.3 The Protected Disclosure should be submitted under a covering letter signed by the Whistle Blower in a closed and secured envelope and should be super-scribed as \u201cProtected Disclosure under the Whistle Blower policy\u201d or sent through email to vigil@ongc.co.in with the caption/ subject as \u201cProtected Disclosure under the Whistle Blower policy\u201d. The Nodal Officer shall refer the protected disclosu"
+    },
+    {
+      "doc_id": "P2-01",
+      "clause_ref": "Part 10",
+      "heading": "Whistle Blower Policy / Vigil Mechanism, 2018 (Part 10)",
+      "quote_snippet": "9.1 The Screening Committee upon receipt of the complaint from the Competent Authority or, as the case may be, the Chairman of Audit Committee, (through Nodal Officer) shall make discreet inquiry to ascertain whether there is any basis for proceeding further to investigate the complaint. If the Screening Committee is of the opinion that there is no sufficient ground for proceeding further on the c"
+    }
+  ]
+}

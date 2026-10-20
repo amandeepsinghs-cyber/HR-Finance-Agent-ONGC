@@ -1,0 +1,37 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "project_progress",
+  description: "Major capital project progress milestones, baseline vs actual schedules, cost overruns, and engineering delay root causes."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`progress_id`) AS progress_id,
+    TRIM(`prj_id`) AS prj_id,
+    TRIM(`milestone_id`) AS milestone_id,
+    TRIM(`milestone_name`) AS milestone_name,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`scheduled_start_date`), ''), 1, 10)) AS scheduled_start_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`actual_start_date`), ''), 1, 10)) AS actual_start_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`scheduled_completion_date`), ''), 1, 10)) AS scheduled_completion_date,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`anticipated_or_actual_completion_date`), ''), 1, 10)) AS anticipated_or_actual_completion_date,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`physical_progress_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS physical_progress_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`financial_progress_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS financial_progress_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`original_sanctioned_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS original_sanctioned_cost_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`sanctioned_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS sanctioned_cost_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`revised_cost_estimate_rce_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS revised_cost_estimate_rce_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`revised_cost_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS revised_cost_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`cost_overrun_inr_cr`), ''), ',', ''), '₹', '') AS NUMERIC) AS cost_overrun_inr_cr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`cost_overrun_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS cost_overrun_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`schedule_slippage_months`), ''), ',', ''), '₹', '') AS INT64) AS schedule_slippage_months,
+    TRIM(`milestone_status`) AS milestone_status,
+    TRIM(`delay_root_cause_category`) AS delay_root_cause_category,
+    TRIM(`brief_notes`) AS brief_notes
+  FROM ${ref("sap_project_milestones")}
+  WHERE NULLIF(TRIM(`progress_id`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY progress_id ORDER BY _ingest_ts DESC) = 1

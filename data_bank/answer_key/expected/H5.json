@@ -1,0 +1,42 @@
+{
+  "job_id": "1954b3ea-3609-484d-928b-9d89fee82d20",
+  "total_bytes_processed": 832730,
+  "executed_at": "2026-10-20T06:38:45.015365+00:00",
+  "elapsed_seconds": 0.65,
+  "row_count": 2,
+  "columns": [
+    "from_grade_id",
+    "to_grade_id",
+    "pending_candidates",
+    "earliest_due_date",
+    "avg_recorded_delay_months",
+    "max_recorded_delay_months",
+    "avg_months_overdue_asof_2026_10_19",
+    "max_months_overdue_asof_2026_10_19",
+    "total_pending"
+  ],
+  "rows": [
+    {
+      "from_grade_id": "E4",
+      "to_grade_id": "E5",
+      "pending_candidates": 128,
+      "earliest_due_date": "2025-06-30",
+      "avg_recorded_delay_months": 8.6,
+      "max_recorded_delay_months": 10,
+      "avg_months_overdue_asof_2026_10_19": 15.5,
+      "max_months_overdue_asof_2026_10_19": 16,
+      "total_pending": 228
+    },
+    {
+      "from_grade_id": "E5",
+      "to_grade_id": "E6",
+      "pending_candidates": 100,
+      "earliest_due_date": "2025-06-30",
+      "avg_recorded_delay_months": 8.5,
+      "max_recorded_delay_months": 10,
+      "avg_months_overdue_asof_2026_10_19": 15.4,
+      "max_months_overdue_asof_2026_10_19": 16,
+      "total_pending": 228
+    }
+  ]
+}

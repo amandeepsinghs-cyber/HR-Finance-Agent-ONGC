@@ -1,0 +1,45 @@
+{
+  "job_id": "4bd3369b-9596-4179-b9f8-3fe9218727ed",
+  "total_bytes_processed": 10103620,
+  "executed_at": "2026-10-20T06:42:27.924103+00:00",
+  "elapsed_seconds": 1.27,
+  "row_count": 3,
+  "columns": [
+    "cadre",
+    "currently_in_delhi",
+    "cumulative_5yr_plus",
+    "breached_10yr_cap",
+    "breached_and_superannuation_exempt",
+    "with_recorded_exemption",
+    "max_cumulative_years"
+  ],
+  "rows": [
+    {
+      "cadre": "non_executive",
+      "currently_in_delhi": 248,
+      "cumulative_5yr_plus": 226,
+      "breached_10yr_cap": 200,
+      "breached_and_superannuation_exempt": 0,
+      "with_recorded_exemption": 0,
+      "max_cumulative_years": 36.2
+    },
+    {
+      "cadre": "board",
+      "currently_in_delhi": 3,
+      "cumulative_5yr_plus": 1,
+      "breached_10yr_cap": 1,
+      "breached_and_superannuation_exempt": 1,
+      "with_recorded_exemption": 0,
+      "max_cumulative_years": 11.8
+    },
+    {
+      "cadre": "executive",
+      "currently_in_delhi": 692,
+      "cumulative_5yr_plus": 419,
+      "breached_10yr_cap": 0,
+      "breached_and_superannuation_exempt": 0,
+      "with_recorded_exemption": 11,
+      "max_cumulative_years": 8.4
+    }
+  ]
+}

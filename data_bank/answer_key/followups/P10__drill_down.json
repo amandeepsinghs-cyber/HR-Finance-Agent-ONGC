@@ -1,0 +1,37 @@
+{
+  "job_id": "d74520d0-4cec-4a3f-bb41-4bd7a77d5343",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:32.398282+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 2.0",
+      "heading": "Time-Bound Promotion Channel (E1\u2192E4)",
+      "provision": "R&P 2.1(c) (E3 residency)",
+      "quote_snippet": "(c) Promotion from E3 to E4: 3 to 4 (three to four) completed years of qualifying residency service at Grade E3."
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 3.0",
+      "heading": "APAR Benchmark for Time-Bound Promotion",
+      "provision": "R&P 3.1(c) (E3 APAR benchmark)",
+      "quote_snippet": "(c) For E3\u2192E4: Minimum cumulative rating of 'Very Good' (score \u2265 3.5 / 70%) across the preceding residency period."
+    },
+    {
+      "doc_id": "R&P/Promotion",
+      "clause_ref": "Clause 3.0",
+      "heading": "APAR Benchmark for Time-Bound Promotion",
+      "provision": "R&P 3.2 (adverse remark deferral)",
+      "quote_snippet": "3.2 Adverse Remark Disqualification: Any uncommunicated or sustained adverse remark, or an APAR rating below 'Good' in any single year, shall result in deferment of promotion by one year until the benchmark is restored."
+    }
+  ]
+}

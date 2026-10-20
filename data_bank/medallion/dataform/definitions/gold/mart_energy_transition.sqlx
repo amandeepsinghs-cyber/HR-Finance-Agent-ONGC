@@ -1,0 +1,28 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_energy_transition",
+  description: "Renewable energy capacity, green hydrogen / CCUS capex, power generation, and green workforce reskilling"
+}
+
+SELECT
+  et.transition_project_id,
+  et.project_name,
+  et.fiscal_year,
+  et.technology_type,
+  et.location_state_code,
+  g.state_name,
+  et.wc_id,
+  w.name AS wc_name,
+  et.installed_capacity_mw,
+  et.generation_gwh,
+  et.scope1_avoided_emissions_mtco2e,
+  et.scope2_avoided_emissions_mtco2e,
+  et.annual_capex_inr_cr,
+  et.cumulative_capex_inr_cr,
+  et.engineers_reskilled_count,
+  et.net_zero_2038_roadmap_milestone_met,
+  CASE WHEN et.engineers_reskilled_count > 0 THEN TRUE ELSE FALSE END AS is_renewable_reskilling
+FROM ${ref("energy_transition")} et
+LEFT JOIN ${ref("dim_geography")} g ON et.location_state_code = g.state_code
+LEFT JOIN ${ref("dim_work_centre")} w ON et.wc_id = w.wc_id

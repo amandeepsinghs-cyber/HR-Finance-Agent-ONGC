@@ -1,0 +1,72 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "mart_asset_productivity",
+  description: "Cross-silo asset-level productivity combining workforce headcount, payroll cost, and hydrocarbon production"
+}
+
+WITH prod_agg AS (
+  SELECT
+    asset_wc_id,
+    fiscal_year,
+    ROUND(SUM(oil_production_mt) / 1000000.0, 4) AS oil_production_mmt,
+    ROUND(SUM(gas_production_mmscm) / 1000.0, 4) AS gas_production_bcm,
+    ROUND(SUM(condensate_production_mt) / 1000000.0, 4) AS condensate_production_mmt,
+    ROUND(SUM(oil_production_mt + condensate_production_mt) / 1000000.0, 4) AS total_liquids_production_mmt,
+    ROUND(SUM(total_production_boe), 0) AS total_production_boe,
+    ROUND(SUM(total_production_boe) / 7330000.0, 4) AS total_production_mmtoe
+  FROM ${ref("production_monthly")}
+  GROUP BY asset_wc_id, fiscal_year
+),
+pay_agg AS (
+  SELECT
+    wc_id AS asset_wc_id,
+    fiscal_year,
+    COUNT(DISTINCT emp_id) AS regular_headcount,
+    ROUND(SUM(gross_salary_inr) / 10000000.0, 2) AS payroll_cost_inr_cr
+  FROM ${ref("payroll_monthly")}
+  GROUP BY wc_id, fiscal_year
+),
+pnl_agg AS (
+  SELECT
+    asset_wc_id,
+    fiscal_year,
+    ROUND(SUM(gross_revenue_inr_cr), 2) AS gross_revenue_inr_cr,
+    ROUND(SUM(total_opex_inr_cr), 2) AS total_opex_inr_cr,
+    ROUND(SUM(ebitda_inr_cr), 2) AS ebitda_inr_cr
+  FROM ${ref("field_pnl_annual")}
+  GROUP BY asset_wc_id, fiscal_year
+),
+fx_agg AS (
+  SELECT
+    fiscal_year,
+    AVG(inr_usd_fx_rate) AS inr_usd_fx_rate
+  FROM ${ref("dim_price_fx")}
+  GROUP BY fiscal_year
+)
+SELECT
+  w.wc_id AS asset_wc_id,
+  w.name AS asset_name,
+  w.sector,
+  w.onshore_offshore,
+  COALESCE(p.fiscal_year, py.fiscal_year, pnl.fiscal_year) AS fiscal_year,
+  COALESCE(py.regular_headcount, 0) AS regular_headcount,
+  COALESCE(py.payroll_cost_inr_cr, 0) AS payroll_cost_inr_cr,
+  COALESCE(p.oil_production_mmt, 0) AS oil_production_mmt,
+  COALESCE(p.gas_production_bcm, 0) AS gas_production_bcm,
+  COALESCE(p.condensate_production_mmt, 0) AS condensate_production_mmt,
+  COALESCE(p.total_liquids_production_mmt, 0) AS total_liquids_production_mmt,
+  COALESCE(p.total_production_mmtoe, 0) AS total_production_mmtoe,
+  COALESCE(p.total_production_boe, 0) AS total_production_boe,
+  COALESCE(pnl.gross_revenue_inr_cr, 0) AS gross_revenue_inr_cr,
+  COALESCE(pnl.total_opex_inr_cr, 0) AS total_opex_inr_cr,
+  COALESCE(pnl.ebitda_inr_cr, 0) AS ebitda_inr_cr,
+  ROUND(SAFE_DIVIDE(py.payroll_cost_inr_cr * 10000000.0, NULLIF(p.total_production_boe, 0)), 2) AS manpower_cost_per_boe_inr,
+  ROUND(SAFE_DIVIDE(SAFE_DIVIDE(py.payroll_cost_inr_cr * 10000000.0, NULLIF(p.total_production_boe, 0)), NULLIF(fx.inr_usd_fx_rate, 0)), 2) AS manpower_cost_per_boe_usd,
+  ROUND(SAFE_DIVIDE(p.total_production_boe, NULLIF(py.regular_headcount, 0)), 2) AS boe_per_employee,
+  ROUND(SAFE_DIVIDE(pnl.gross_revenue_inr_cr, NULLIF(py.regular_headcount, 0)), 4) AS revenue_per_employee_inr_cr
+FROM ${ref("dim_work_centre")} w
+JOIN prod_agg p ON w.wc_id = p.asset_wc_id
+LEFT JOIN pay_agg py ON w.wc_id = py.asset_wc_id AND p.fiscal_year = py.fiscal_year
+LEFT JOIN pnl_agg pnl ON w.wc_id = pnl.asset_wc_id AND p.fiscal_year = pnl.fiscal_year
+LEFT JOIN fx_agg fx ON p.fiscal_year = fx.fiscal_year

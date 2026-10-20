@@ -1,0 +1,21 @@
+{
+  "job_id": "c46023c2-40b5-4d01-a94b-81f02680632a",
+  "total_bytes_processed": 380,
+  "executed_at": "2026-10-20T06:32:57.155302+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 1,
+  "columns": [
+    "fiscal_year",
+    "gross_revenue_inr_cr",
+    "total_capex_spent_inr_cr",
+    "capex_to_revenue_pct"
+  ],
+  "rows": [
+    {
+      "fiscal_year": "FY26",
+      "gross_revenue_inr_cr": 132508.0,
+      "total_capex_spent_inr_cr": 35878.0,
+      "capex_to_revenue_pct": 27.1
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "job_id": "a952d017-1751-4de1-ad14-66a57395b48a",
+  "total_bytes_processed": 7308271,
+  "executed_at": "2026-10-20T06:33:11.493549+00:00",
+  "elapsed_seconds": 0.7,
+  "row_count": 3,
+  "columns": [
+    "doc_id",
+    "clause_ref",
+    "heading",
+    "provision",
+    "quote_snippet"
+  ],
+  "rows": [
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 5.0",
+      "heading": "Geographic Clusters",
+      "provision": "JRTP 5.3",
+      "quote_snippet": "5.3 Intra-Cluster Transfer Effect: Transfer between work centres within the same Geographic Cluster (e.g. from New Delhi to Noida, or from Ahmedabad Asset to IRS Chandkheda, or from Mumbai WOB to Uran Plant) shall NOT constitute an outstation transfer for the purpose of resetting station tenure or cumulative cluster tenure."
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 4.0",
+      "heading": "Cumulative Stay Cap",
+      "provision": "JRTP 4.2-4.3",
+      "quote_snippet": "4.2 Computation of Cumulative Stay: Cumulative stay shall be computed as the mathematical sum of all historical postings (SCD2 records) served at work centres belonging to the same station or cluster, irrespective of breaks between postings or promotions in place. 4.3 Overstay Review: Corporate HR shall compile annually a list of all officers who have completed 5, 8, and 10 years of cumulative stay. Officers who have completed or exceeded 10 years at a single cluster (notably Delhi-NCR or Mumbai Urban) shall be placed on the mandatory outstation transfer proposal list for immediate redeployment to operational assets."
+    },
+    {
+      "doc_id": "JRTP",
+      "clause_ref": "Clause 3.0",
+      "heading": "Station Tenure Norms",
+      "provision": "JRTP 3.1-3.2",
+      "quote_snippet": "3.1 Minimum Station Tenure: The minimum normal tenure of an executive at any station shall be 3 (three) completed years. 3.2 Normal Rotation Window: Normal rotation of an executive shall be considered upon completion of 3 to 5 years at a work centre. No executive shall ordinarily be displaced prior to completing 3 years, except on administrative exigencies, organizational restructuring, or proven disciplinary necessity approved by Director (HR)."
+    }
+  ]
+}

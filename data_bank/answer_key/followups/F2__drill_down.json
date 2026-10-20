@@ -1,0 +1,152 @@
+{
+  "job_id": "0e893827-35ae-4319-88f2-7827f0a952d9",
+  "total_bytes_processed": 429239,
+  "executed_at": "2026-10-20T06:38:58.602256+00:00",
+  "elapsed_seconds": 0.68,
+  "row_count": 12,
+  "columns": [
+    "segment",
+    "direction",
+    "prj_id",
+    "project_name",
+    "asset_name",
+    "be_ytd_cr",
+    "actual_ytd_cr",
+    "variance_vs_be_cr",
+    "variance_vs_be_pct"
+  ],
+  "rows": [
+    {
+      "segment": "offshore",
+      "direction": "underspend",
+      "prj_id": "PRJ-0001",
+      "project_name": "KG-DWN-98/2 Cluster-II Deepwater Development",
+      "asset_name": "Eastern Offshore",
+      "be_ytd_cr": 6676.5,
+      "actual_ytd_cr": 6222.1,
+      "variance_vs_be_cr": -454.4,
+      "variance_vs_be_pct": -6.8
+    },
+    {
+      "segment": "offshore",
+      "direction": "underspend",
+      "prj_id": "PRJ-0005",
+      "project_name": "Mumbai High bp TSP Redevelopment Scheme Phase-1",
+      "asset_name": "Mumbai High",
+      "be_ytd_cr": 1020.8,
+      "actual_ytd_cr": 922.8,
+      "variance_vs_be_cr": -98.0,
+      "variance_vs_be_pct": -9.6
+    },
+    {
+      "segment": "offshore",
+      "direction": "underspend",
+      "prj_id": "PRJ-0006",
+      "project_name": "Development of DSF-II (Discovered Small Fields)",
+      "asset_name": "Bassein & Satellite",
+      "be_ytd_cr": 480.9,
+      "actual_ytd_cr": 433.4,
+      "variance_vs_be_cr": -47.5,
+      "variance_vs_be_pct": -9.9
+    },
+    {
+      "segment": "offshore",
+      "direction": "overspend",
+      "prj_id": "PRJ-0042",
+      "project_name": "Deepwater Drillship Upgrade & Refurbishment Campaign",
+      "asset_name": "Drilling Services",
+      "be_ytd_cr": 323.9,
+      "actual_ytd_cr": 329.4,
+      "variance_vs_be_cr": 5.6,
+      "variance_vs_be_pct": 1.7
+    },
+    {
+      "segment": "offshore",
+      "direction": "overspend",
+      "prj_id": "PRJ-0057",
+      "project_name": "Eastern Offshore Subsea Umbilicals, Risers & Flowlines (SURF)",
+      "asset_name": "Eastern Offshore",
+      "be_ytd_cr": 412.2,
+      "actual_ytd_cr": 418.4,
+      "variance_vs_be_cr": 6.2,
+      "variance_vs_be_pct": 1.5
+    },
+    {
+      "segment": "offshore",
+      "direction": "overspend",
+      "prj_id": "PRJ-0014",
+      "project_name": "Pipeline Replacement Project Phase-VII (PRP-VII)",
+      "asset_name": "Mumbai High",
+      "be_ytd_cr": 631.1,
+      "actual_ytd_cr": 637.9,
+      "variance_vs_be_cr": 6.8,
+      "variance_vs_be_pct": 1.1
+    },
+    {
+      "segment": "onshore",
+      "direction": "underspend",
+      "prj_id": "PRJ-0037",
+      "project_name": "Cauvery Ultra-Deepwater Exploration Campaign",
+      "asset_name": "Cauvery Basin",
+      "be_ytd_cr": 245.4,
+      "actual_ytd_cr": 226.4,
+      "variance_vs_be_cr": -19.0,
+      "variance_vs_be_pct": -7.7
+    },
+    {
+      "segment": "onshore",
+      "direction": "underspend",
+      "prj_id": "PRJ-0009",
+      "project_name": "Kalol Redevelopment Phase-II",
+      "asset_name": "Ahmedabad Asset",
+      "be_ytd_cr": 219.9,
+      "actual_ytd_cr": 202.1,
+      "variance_vs_be_cr": -17.7,
+      "variance_vs_be_pct": -8.1
+    },
+    {
+      "segment": "onshore",
+      "direction": "underspend",
+      "prj_id": "PRJ-0053",
+      "project_name": "Bengal-Fan Deepwater Seismic & Stratigraphic Test",
+      "asset_name": "MBA Basin",
+      "be_ytd_cr": 168.8,
+      "actual_ytd_cr": 153.6,
+      "variance_vs_be_cr": -15.2,
+      "variance_vs_be_pct": -9.0
+    },
+    {
+      "segment": "onshore",
+      "direction": "overspend",
+      "prj_id": "PRJ-0041",
+      "project_name": "National Seismic Programme (NSP) Onshore 2D/3D Survey",
+      "asset_name": "Western Onshore Basin",
+      "be_ytd_cr": 353.3,
+      "actual_ytd_cr": 355.2,
+      "variance_vs_be_cr": 1.8,
+      "variance_vs_be_pct": 0.5
+    },
+    {
+      "segment": "onshore",
+      "direction": "overspend",
+      "prj_id": "PRJ-0021",
+      "project_name": "Hazira Plant Gas Processing Unit Upgrade",
+      "asset_name": "Hazira Plant",
+      "be_ytd_cr": 127.6,
+      "actual_ytd_cr": 129.5,
+      "variance_vs_be_cr": 1.9,
+      "variance_vs_be_pct": 1.5
+    },
+    {
+      "segment": "onshore",
+      "direction": "overspend",
+      "prj_id": "PRJ-0035",
+      "project_name": "KG Onshore Gas Gathering & Processing Facility",
+      "asset_name": "Rajahmundry Asset",
+      "be_ytd_cr": 161.0,
+      "actual_ytd_cr": 163.5,
+      "variance_vs_be_cr": 2.5,
+      "variance_vs_be_pct": 1.6
+    }
+  ]
+}

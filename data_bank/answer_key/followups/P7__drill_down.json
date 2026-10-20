@@ -1,0 +1,27 @@
+{
+  "job_id": "14e0ab69-7780-4d5b-b78d-95aca9efdbd2",
+  "total_bytes_processed": 8076782,
+  "executed_at": "2026-10-20T06:33:23.639413+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 1,
+  "columns": [
+    "grade_id",
+    "city_class",
+    "hotel_ceiling_per_day_inr",
+    "avg_lodging_per_night_inr",
+    "e2_class_a_claims",
+    "local_conveyance_per_day_inr",
+    "conveyance_source"
+  ],
+  "rows": [
+    {
+      "grade_id": "E2",
+      "city_class": "Class_A",
+      "hotel_ceiling_per_day_inr": 4500.0,
+      "avg_lodging_per_night_inr": 4500.0,
+      "e2_class_a_claims": 941,
+      "local_conveyance_per_day_inr": 600,
+      "conveyance_source": "P1-16 TA Regulations Part 19 (EC 483rd meeting)"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+dataformCoreVersion: 3.0.24
+defaultProject: ongc-hr-finance-agent
+defaultLocation: asia-south1
+defaultDataset: hrfin_silver
+defaultAssertionDataset: hrfin_silver

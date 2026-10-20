@@ -1,0 +1,137 @@
+{
+  "job_id": "5bf43a2d-fa2d-406c-8ae5-66838cc907e7",
+  "total_bytes_processed": 1095,
+  "executed_at": "2026-10-20T06:37:21.922465+00:00",
+  "elapsed_seconds": 0.67,
+  "row_count": 15,
+  "columns": [
+    "entity_code",
+    "fiscal_year",
+    "pat_cr",
+    "gross_refining_margin_usd_bbl",
+    "refining_throughput_mmt",
+    "international_production_mmtoe"
+  ],
+  "rows": [
+    {
+      "entity_code": "HPCL",
+      "fiscal_year": "FY22",
+      "pat_cr": 14427.0,
+      "gross_refining_margin_usd_bbl": 8.94,
+      "refining_throughput_mmt": 20.98,
+      "international_production_mmtoe": null
+    },
+    {
+      "entity_code": "HPCL",
+      "fiscal_year": "FY23",
+      "pat_cr": 15114.0,
+      "gross_refining_margin_usd_bbl": 9.22,
+      "refining_throughput_mmt": 21.43,
+      "international_production_mmtoe": null
+    },
+    {
+      "entity_code": "HPCL",
+      "fiscal_year": "FY24",
+      "pat_cr": 15801.0,
+      "gross_refining_margin_usd_bbl": 9.7,
+      "refining_throughput_mmt": 21.89,
+      "international_production_mmtoe": null
+    },
+    {
+      "entity_code": "HPCL",
+      "fiscal_year": "FY25",
+      "pat_cr": 16488.0,
+      "gross_refining_margin_usd_bbl": 8.41,
+      "refining_throughput_mmt": 22.34,
+      "international_production_mmtoe": null
+    },
+    {
+      "entity_code": "HPCL",
+      "fiscal_year": "FY26",
+      "pat_cr": 17175.0,
+      "gross_refining_margin_usd_bbl": 9.15,
+      "refining_throughput_mmt": 22.8,
+      "international_production_mmtoe": null
+    },
+    {
+      "entity_code": "MRPL",
+      "fiscal_year": "FY22",
+      "pat_cr": 1622.04,
+      "gross_refining_margin_usd_bbl": 8.47,
+      "refining_throughput_mmt": 15.27,
+      "international_production_mmtoe": null
+    },
+    {
+      "entity_code": "MRPL",
+      "fiscal_year": "FY23",
+      "pat_cr": 1699.28,
+      "gross_refining_margin_usd_bbl": 8.33,
+      "refining_throughput_mmt": 15.6,
+      "international_production_mmtoe": null
+    },
+    {
+      "entity_code": "MRPL",
+      "fiscal_year": "FY24",
+      "pat_cr": 1776.52,
+      "gross_refining_margin_usd_bbl": 8.95,
+      "refining_throughput_mmt": 15.94,
+      "international_production_mmtoe": null
+    },
+    {
+      "entity_code": "MRPL",
+      "fiscal_year": "FY25",
+      "pat_cr": 1853.76,
+      "gross_refining_margin_usd_bbl": 8.86,
+      "refining_throughput_mmt": 16.27,
+      "international_production_mmtoe": null
+    },
+    {
+      "entity_code": "MRPL",
+      "fiscal_year": "FY26",
+      "pat_cr": 1931.0,
+      "gross_refining_margin_usd_bbl": 8.45,
+      "refining_throughput_mmt": 16.6,
+      "international_production_mmtoe": null
+    },
+    {
+      "entity_code": "OVL",
+      "fiscal_year": "FY22",
+      "pat_cr": 967.68,
+      "gross_refining_margin_usd_bbl": null,
+      "refining_throughput_mmt": null,
+      "international_production_mmtoe": 10.1
+    },
+    {
+      "entity_code": "OVL",
+      "fiscal_year": "FY23",
+      "pat_cr": 1013.76,
+      "gross_refining_margin_usd_bbl": null,
+      "refining_throughput_mmt": null,
+      "international_production_mmtoe": 10.2
+    },
+    {
+      "entity_code": "OVL",
+      "fiscal_year": "FY24",
+      "pat_cr": 1059.84,
+      "gross_refining_margin_usd_bbl": null,
+      "refining_throughput_mmt": null,
+      "international_production_mmtoe": 10.31
+    },
+    {
+      "entity_code": "OVL",
+      "fiscal_year": "FY25",
+      "pat_cr": 1105.92,
+      "gross_refining_margin_usd_bbl": null,
+      "refining_throughput_mmt": null,
+      "international_production_mmtoe": 10.41
+    },
+    {
+      "entity_code": "OVL",
+      "fiscal_year": "FY26",
+      "pat_cr": 1152.0,
+      "gross_refining_margin_usd_bbl": null,
+      "refining_throughput_mmt": null,
+      "international_production_mmtoe": 10.52
+    }
+  ]
+}

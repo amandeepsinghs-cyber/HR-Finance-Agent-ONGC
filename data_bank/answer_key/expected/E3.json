@@ -1,0 +1,39 @@
+{
+  "job_id": "6355ca53-f8f1-4d5d-9507-9392b40047d2",
+  "total_bytes_processed": 4088975,
+  "executed_at": "2026-10-20T06:32:45.865915+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 2,
+  "columns": [
+    "claim_id",
+    "claim_type",
+    "patient_relationship",
+    "submission_date",
+    "claim_status",
+    "claimed_amount_inr",
+    "approved_amount_inr",
+    "settlement_date"
+  ],
+  "rows": [
+    {
+      "claim_id": "CLM-P002",
+      "claim_type": "IPD_Inpatient",
+      "patient_relationship": "dependent_parent",
+      "submission_date": "2026-09-18",
+      "claim_status": "pending_scrutiny",
+      "claimed_amount_inr": 42000.0,
+      "approved_amount_inr": 0.0,
+      "settlement_date": null
+    },
+    {
+      "claim_id": "CLM-P001",
+      "claim_type": "OPD_Outpatient",
+      "patient_relationship": "self",
+      "submission_date": "2026-05-10",
+      "claim_status": "approved_paid",
+      "claimed_amount_inr": 18500.0,
+      "approved_amount_inr": 17200.0,
+      "settlement_date": "2026-05-24"
+    }
+  ]
+}

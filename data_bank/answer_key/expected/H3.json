@@ -1,0 +1,5929 @@
+{
+  "job_id": "2afdcd0e-4826-44e7-a5b2-4fb7481e74ba",
+  "total_bytes_processed": 620189,
+  "executed_at": "2026-10-20T06:38:39.440298+00:00",
+  "elapsed_seconds": 0.66,
+  "row_count": 591,
+  "columns": [
+    "work_centre",
+    "discipline",
+    "sanctioned",
+    "in_position",
+    "vacancies",
+    "vacancy_rate_pct",
+    "company_sanctioned",
+    "company_vacancies"
+  ],
+  "rows": [
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Production",
+      "sanctioned": 454,
+      "in_position": 388,
+      "vacancies": 66,
+      "vacancy_rate_pct": 14.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Production",
+      "sanctioned": 451,
+      "in_position": 393,
+      "vacancies": 58,
+      "vacancy_rate_pct": 12.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Production",
+      "sanctioned": 326,
+      "in_position": 279,
+      "vacancies": 47,
+      "vacancy_rate_pct": 14.4,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Drilling",
+      "sanctioned": 334,
+      "in_position": 288,
+      "vacancies": 46,
+      "vacancy_rate_pct": 13.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Drilling",
+      "sanctioned": 339,
+      "in_position": 295,
+      "vacancies": 44,
+      "vacancy_rate_pct": 13.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Production",
+      "sanctioned": 398,
+      "in_position": 356,
+      "vacancies": 42,
+      "vacancy_rate_pct": 10.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Mechanical",
+      "sanctioned": 253,
+      "in_position": 216,
+      "vacancies": 37,
+      "vacancy_rate_pct": 14.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Production",
+      "sanctioned": 272,
+      "in_position": 238,
+      "vacancies": 34,
+      "vacancy_rate_pct": 12.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Mechanical",
+      "sanctioned": 253,
+      "in_position": 221,
+      "vacancies": 32,
+      "vacancy_rate_pct": 12.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Production",
+      "sanctioned": 287,
+      "in_position": 256,
+      "vacancies": 31,
+      "vacancy_rate_pct": 10.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Drilling",
+      "sanctioned": 258,
+      "in_position": 229,
+      "vacancies": 29,
+      "vacancy_rate_pct": 11.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Instrumentation",
+      "sanctioned": 203,
+      "in_position": 175,
+      "vacancies": 28,
+      "vacancy_rate_pct": 13.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Drilling",
+      "sanctioned": 257,
+      "in_position": 229,
+      "vacancies": 28,
+      "vacancy_rate_pct": 10.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Drilling",
+      "sanctioned": 198,
+      "in_position": 171,
+      "vacancies": 27,
+      "vacancy_rate_pct": 13.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Instrumentation",
+      "sanctioned": 194,
+      "in_position": 168,
+      "vacancies": 26,
+      "vacancy_rate_pct": 13.4,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Production",
+      "sanctioned": 222,
+      "in_position": 196,
+      "vacancies": 26,
+      "vacancy_rate_pct": 11.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Production",
+      "sanctioned": 231,
+      "in_position": 205,
+      "vacancies": 26,
+      "vacancy_rate_pct": 11.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Chemistry",
+      "sanctioned": 160,
+      "in_position": 135,
+      "vacancies": 25,
+      "vacancy_rate_pct": 15.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Mechanical",
+      "sanctioned": 144,
+      "in_position": 121,
+      "vacancies": 23,
+      "vacancy_rate_pct": 16.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Electrical",
+      "sanctioned": 226,
+      "in_position": 204,
+      "vacancies": 22,
+      "vacancy_rate_pct": 9.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Production",
+      "sanctioned": 233,
+      "in_position": 212,
+      "vacancies": 21,
+      "vacancy_rate_pct": 9.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Chemistry",
+      "sanctioned": 146,
+      "in_position": 126,
+      "vacancies": 20,
+      "vacancy_rate_pct": 13.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Mechanical",
+      "sanctioned": 185,
+      "in_position": 165,
+      "vacancies": 20,
+      "vacancy_rate_pct": 10.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Drilling",
+      "sanctioned": 242,
+      "in_position": 222,
+      "vacancies": 20,
+      "vacancy_rate_pct": 8.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Chemistry",
+      "sanctioned": 96,
+      "in_position": 78,
+      "vacancies": 18,
+      "vacancy_rate_pct": 18.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Electrical",
+      "sanctioned": 152,
+      "in_position": 134,
+      "vacancies": 18,
+      "vacancy_rate_pct": 11.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Instrumentation",
+      "sanctioned": 155,
+      "in_position": 137,
+      "vacancies": 18,
+      "vacancy_rate_pct": 11.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Drilling",
+      "sanctioned": 157,
+      "in_position": 139,
+      "vacancies": 18,
+      "vacancy_rate_pct": 11.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Drilling",
+      "sanctioned": 169,
+      "in_position": 151,
+      "vacancies": 18,
+      "vacancy_rate_pct": 10.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Electrical",
+      "sanctioned": 105,
+      "in_position": 88,
+      "vacancies": 17,
+      "vacancy_rate_pct": 16.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Civil",
+      "sanctioned": 122,
+      "in_position": 105,
+      "vacancies": 17,
+      "vacancy_rate_pct": 13.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Mechanical",
+      "sanctioned": 149,
+      "in_position": 132,
+      "vacancies": 17,
+      "vacancy_rate_pct": 11.4,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Electrical",
+      "sanctioned": 184,
+      "in_position": 167,
+      "vacancies": 17,
+      "vacancy_rate_pct": 9.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Instrumentation",
+      "sanctioned": 169,
+      "in_position": 153,
+      "vacancies": 16,
+      "vacancy_rate_pct": 9.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Electrical",
+      "sanctioned": 170,
+      "in_position": 154,
+      "vacancies": 16,
+      "vacancy_rate_pct": 9.4,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 183,
+      "in_position": 167,
+      "vacancies": 16,
+      "vacancy_rate_pct": 8.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Mechanical",
+      "sanctioned": 201,
+      "in_position": 185,
+      "vacancies": 16,
+      "vacancy_rate_pct": 8.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Electrical",
+      "sanctioned": 126,
+      "in_position": 111,
+      "vacancies": 15,
+      "vacancy_rate_pct": 11.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Chemistry",
+      "sanctioned": 194,
+      "in_position": 179,
+      "vacancies": 15,
+      "vacancy_rate_pct": 7.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Drilling",
+      "sanctioned": 112,
+      "in_position": 98,
+      "vacancies": 14,
+      "vacancy_rate_pct": 12.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Drilling",
+      "sanctioned": 116,
+      "in_position": 102,
+      "vacancies": 14,
+      "vacancy_rate_pct": 12.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Production",
+      "sanctioned": 137,
+      "in_position": 123,
+      "vacancies": 14,
+      "vacancy_rate_pct": 10.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Drilling",
+      "sanctioned": 158,
+      "in_position": 144,
+      "vacancies": 14,
+      "vacancy_rate_pct": 8.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 183,
+      "in_position": 169,
+      "vacancies": 14,
+      "vacancy_rate_pct": 7.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Chemistry",
+      "sanctioned": 122,
+      "in_position": 109,
+      "vacancies": 13,
+      "vacancy_rate_pct": 10.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Production",
+      "sanctioned": 142,
+      "in_position": 129,
+      "vacancies": 13,
+      "vacancy_rate_pct": 9.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Civil",
+      "sanctioned": 87,
+      "in_position": 75,
+      "vacancies": 12,
+      "vacancy_rate_pct": 13.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Reservoir",
+      "sanctioned": 88,
+      "in_position": 76,
+      "vacancies": 12,
+      "vacancy_rate_pct": 13.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Geology",
+      "sanctioned": 89,
+      "in_position": 77,
+      "vacancies": 12,
+      "vacancy_rate_pct": 13.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Mechanical",
+      "sanctioned": 100,
+      "in_position": 88,
+      "vacancies": 12,
+      "vacancy_rate_pct": 12.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Information Technology",
+      "sanctioned": 131,
+      "in_position": 119,
+      "vacancies": 12,
+      "vacancy_rate_pct": 9.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Production",
+      "sanctioned": 133,
+      "in_position": 121,
+      "vacancies": 12,
+      "vacancy_rate_pct": 9.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Production",
+      "sanctioned": 148,
+      "in_position": 136,
+      "vacancies": 12,
+      "vacancy_rate_pct": 8.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Geology",
+      "sanctioned": 62,
+      "in_position": 51,
+      "vacancies": 11,
+      "vacancy_rate_pct": 17.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Geology",
+      "sanctioned": 76,
+      "in_position": 65,
+      "vacancies": 11,
+      "vacancy_rate_pct": 14.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Civil",
+      "sanctioned": 102,
+      "in_position": 91,
+      "vacancies": 11,
+      "vacancy_rate_pct": 10.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Reservoir",
+      "sanctioned": 104,
+      "in_position": 93,
+      "vacancies": 11,
+      "vacancy_rate_pct": 10.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Mechanical",
+      "sanctioned": 113,
+      "in_position": 102,
+      "vacancies": 11,
+      "vacancy_rate_pct": 9.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 126,
+      "in_position": 115,
+      "vacancies": 11,
+      "vacancy_rate_pct": 8.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Chemistry",
+      "sanctioned": 138,
+      "in_position": 127,
+      "vacancies": 11,
+      "vacancy_rate_pct": 8.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Mechanical",
+      "sanctioned": 149,
+      "in_position": 138,
+      "vacancies": 11,
+      "vacancy_rate_pct": 7.4,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Civil",
+      "sanctioned": 178,
+      "in_position": 167,
+      "vacancies": 11,
+      "vacancy_rate_pct": 6.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Electrical",
+      "sanctioned": 73,
+      "in_position": 63,
+      "vacancies": 10,
+      "vacancy_rate_pct": 13.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Chemistry",
+      "sanctioned": 75,
+      "in_position": 65,
+      "vacancies": 10,
+      "vacancy_rate_pct": 13.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Instrumentation",
+      "sanctioned": 94,
+      "in_position": 84,
+      "vacancies": 10,
+      "vacancy_rate_pct": 10.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Civil",
+      "sanctioned": 94,
+      "in_position": 84,
+      "vacancies": 10,
+      "vacancy_rate_pct": 10.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Chemistry",
+      "sanctioned": 100,
+      "in_position": 90,
+      "vacancies": 10,
+      "vacancy_rate_pct": 10.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Civil",
+      "sanctioned": 62,
+      "in_position": 53,
+      "vacancies": 9,
+      "vacancy_rate_pct": 14.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Chemistry",
+      "sanctioned": 69,
+      "in_position": 60,
+      "vacancies": 9,
+      "vacancy_rate_pct": 13.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Mechanical",
+      "sanctioned": 84,
+      "in_position": 75,
+      "vacancies": 9,
+      "vacancy_rate_pct": 10.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Instrumentation",
+      "sanctioned": 85,
+      "in_position": 76,
+      "vacancies": 9,
+      "vacancy_rate_pct": 10.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Drilling",
+      "sanctioned": 86,
+      "in_position": 77,
+      "vacancies": 9,
+      "vacancy_rate_pct": 10.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Instrumentation",
+      "sanctioned": 110,
+      "in_position": 101,
+      "vacancies": 9,
+      "vacancy_rate_pct": 8.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Production",
+      "sanctioned": 124,
+      "in_position": 115,
+      "vacancies": 9,
+      "vacancy_rate_pct": 7.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 126,
+      "in_position": 117,
+      "vacancies": 9,
+      "vacancy_rate_pct": 7.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 142,
+      "in_position": 133,
+      "vacancies": 9,
+      "vacancy_rate_pct": 6.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 147,
+      "in_position": 138,
+      "vacancies": 9,
+      "vacancy_rate_pct": 6.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Chemistry",
+      "sanctioned": 43,
+      "in_position": 35,
+      "vacancies": 8,
+      "vacancy_rate_pct": 18.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 58,
+      "in_position": 50,
+      "vacancies": 8,
+      "vacancy_rate_pct": 13.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Chemistry",
+      "sanctioned": 60,
+      "in_position": 52,
+      "vacancies": 8,
+      "vacancy_rate_pct": 13.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Reservoir",
+      "sanctioned": 63,
+      "in_position": 55,
+      "vacancies": 8,
+      "vacancy_rate_pct": 12.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Chemistry",
+      "sanctioned": 73,
+      "in_position": 65,
+      "vacancies": 8,
+      "vacancy_rate_pct": 11.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Electrical",
+      "sanctioned": 88,
+      "in_position": 80,
+      "vacancies": 8,
+      "vacancy_rate_pct": 9.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Reservoir",
+      "sanctioned": 89,
+      "in_position": 81,
+      "vacancies": 8,
+      "vacancy_rate_pct": 9.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Mechanical",
+      "sanctioned": 103,
+      "in_position": 95,
+      "vacancies": 8,
+      "vacancy_rate_pct": 7.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Mechanical",
+      "sanctioned": 102,
+      "in_position": 94,
+      "vacancies": 8,
+      "vacancy_rate_pct": 7.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Electrical",
+      "sanctioned": 136,
+      "in_position": 128,
+      "vacancies": 8,
+      "vacancy_rate_pct": 5.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Civil",
+      "sanctioned": 40,
+      "in_position": 33,
+      "vacancies": 7,
+      "vacancy_rate_pct": 17.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Geology",
+      "sanctioned": 58,
+      "in_position": 51,
+      "vacancies": 7,
+      "vacancy_rate_pct": 12.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Civil",
+      "sanctioned": 68,
+      "in_position": 61,
+      "vacancies": 7,
+      "vacancy_rate_pct": 10.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Instrumentation",
+      "sanctioned": 70,
+      "in_position": 63,
+      "vacancies": 7,
+      "vacancy_rate_pct": 10.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Civil",
+      "sanctioned": 74,
+      "in_position": 67,
+      "vacancies": 7,
+      "vacancy_rate_pct": 9.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Instrumentation",
+      "sanctioned": 79,
+      "in_position": 72,
+      "vacancies": 7,
+      "vacancy_rate_pct": 8.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Electrical",
+      "sanctioned": 83,
+      "in_position": 76,
+      "vacancies": 7,
+      "vacancy_rate_pct": 8.4,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Instrumentation",
+      "sanctioned": 86,
+      "in_position": 79,
+      "vacancies": 7,
+      "vacancy_rate_pct": 8.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Mechanical",
+      "sanctioned": 88,
+      "in_position": 81,
+      "vacancies": 7,
+      "vacancy_rate_pct": 8.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Electrical",
+      "sanctioned": 92,
+      "in_position": 85,
+      "vacancies": 7,
+      "vacancy_rate_pct": 7.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Mechanical",
+      "sanctioned": 105,
+      "in_position": 98,
+      "vacancies": 7,
+      "vacancy_rate_pct": 6.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 29,
+      "in_position": 23,
+      "vacancies": 6,
+      "vacancy_rate_pct": 20.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Civil",
+      "sanctioned": 44,
+      "in_position": 38,
+      "vacancies": 6,
+      "vacancy_rate_pct": 13.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Geology",
+      "sanctioned": 45,
+      "in_position": 39,
+      "vacancies": 6,
+      "vacancy_rate_pct": 13.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Chemistry",
+      "sanctioned": 49,
+      "in_position": 43,
+      "vacancies": 6,
+      "vacancy_rate_pct": 12.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Civil",
+      "sanctioned": 52,
+      "in_position": 46,
+      "vacancies": 6,
+      "vacancy_rate_pct": 11.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Electrical",
+      "sanctioned": 56,
+      "in_position": 50,
+      "vacancies": 6,
+      "vacancy_rate_pct": 10.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Instrumentation",
+      "sanctioned": 69,
+      "in_position": 63,
+      "vacancies": 6,
+      "vacancy_rate_pct": 8.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Chemistry",
+      "sanctioned": 73,
+      "in_position": 67,
+      "vacancies": 6,
+      "vacancy_rate_pct": 8.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Instrumentation",
+      "sanctioned": 74,
+      "in_position": 68,
+      "vacancies": 6,
+      "vacancy_rate_pct": 8.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Information Technology",
+      "sanctioned": 98,
+      "in_position": 92,
+      "vacancies": 6,
+      "vacancy_rate_pct": 6.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Civil",
+      "sanctioned": 39,
+      "in_position": 34,
+      "vacancies": 5,
+      "vacancy_rate_pct": 12.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Civil",
+      "sanctioned": 44,
+      "in_position": 39,
+      "vacancies": 5,
+      "vacancy_rate_pct": 11.4,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Drilling",
+      "sanctioned": 51,
+      "in_position": 46,
+      "vacancies": 5,
+      "vacancy_rate_pct": 9.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 51,
+      "in_position": 46,
+      "vacancies": 5,
+      "vacancy_rate_pct": 9.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 52,
+      "in_position": 47,
+      "vacancies": 5,
+      "vacancy_rate_pct": 9.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Geology",
+      "sanctioned": 57,
+      "in_position": 52,
+      "vacancies": 5,
+      "vacancy_rate_pct": 8.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 61,
+      "in_position": 56,
+      "vacancies": 5,
+      "vacancy_rate_pct": 8.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Chemistry",
+      "sanctioned": 69,
+      "in_position": 64,
+      "vacancies": 5,
+      "vacancy_rate_pct": 7.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Electrical",
+      "sanctioned": 71,
+      "in_position": 66,
+      "vacancies": 5,
+      "vacancy_rate_pct": 7.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Mechanical",
+      "sanctioned": 73,
+      "in_position": 68,
+      "vacancies": 5,
+      "vacancy_rate_pct": 6.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Production",
+      "sanctioned": 100,
+      "in_position": 95,
+      "vacancies": 5,
+      "vacancy_rate_pct": 5.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Geology",
+      "sanctioned": 30,
+      "in_position": 26,
+      "vacancies": 4,
+      "vacancy_rate_pct": 13.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Geology",
+      "sanctioned": 32,
+      "in_position": 28,
+      "vacancies": 4,
+      "vacancy_rate_pct": 12.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Reservoir",
+      "sanctioned": 32,
+      "in_position": 28,
+      "vacancies": 4,
+      "vacancy_rate_pct": 12.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Civil",
+      "sanctioned": 34,
+      "in_position": 30,
+      "vacancies": 4,
+      "vacancy_rate_pct": 11.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Geology",
+      "sanctioned": 36,
+      "in_position": 32,
+      "vacancies": 4,
+      "vacancy_rate_pct": 11.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 37,
+      "in_position": 33,
+      "vacancies": 4,
+      "vacancy_rate_pct": 10.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 40,
+      "in_position": 36,
+      "vacancies": 4,
+      "vacancy_rate_pct": 10.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Civil",
+      "sanctioned": 42,
+      "in_position": 38,
+      "vacancies": 4,
+      "vacancy_rate_pct": 9.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Reservoir",
+      "sanctioned": 44,
+      "in_position": 40,
+      "vacancies": 4,
+      "vacancy_rate_pct": 9.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 45,
+      "in_position": 41,
+      "vacancies": 4,
+      "vacancy_rate_pct": 8.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Chemistry",
+      "sanctioned": 46,
+      "in_position": 42,
+      "vacancies": 4,
+      "vacancy_rate_pct": 8.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Instrumentation",
+      "sanctioned": 49,
+      "in_position": 45,
+      "vacancies": 4,
+      "vacancy_rate_pct": 8.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Instrumentation",
+      "sanctioned": 52,
+      "in_position": 48,
+      "vacancies": 4,
+      "vacancy_rate_pct": 7.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Reservoir",
+      "sanctioned": 52,
+      "in_position": 48,
+      "vacancies": 4,
+      "vacancy_rate_pct": 7.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 59,
+      "in_position": 55,
+      "vacancies": 4,
+      "vacancy_rate_pct": 6.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Legal",
+      "sanctioned": 67,
+      "in_position": 63,
+      "vacancies": 4,
+      "vacancy_rate_pct": 6.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Drilling",
+      "sanctioned": 70,
+      "in_position": 66,
+      "vacancies": 4,
+      "vacancy_rate_pct": 5.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Electrical",
+      "sanctioned": 77,
+      "in_position": 73,
+      "vacancies": 4,
+      "vacancy_rate_pct": 5.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 11,
+      "in_position": 8,
+      "vacancies": 3,
+      "vacancy_rate_pct": 27.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 16,
+      "in_position": 13,
+      "vacancies": 3,
+      "vacancy_rate_pct": 18.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Geology",
+      "sanctioned": 18,
+      "in_position": 15,
+      "vacancies": 3,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 20,
+      "in_position": 17,
+      "vacancies": 3,
+      "vacancy_rate_pct": 15.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 21,
+      "in_position": 18,
+      "vacancies": 3,
+      "vacancy_rate_pct": 14.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Geology",
+      "sanctioned": 23,
+      "in_position": 20,
+      "vacancies": 3,
+      "vacancy_rate_pct": 13.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 24,
+      "in_position": 21,
+      "vacancies": 3,
+      "vacancy_rate_pct": 12.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 25,
+      "in_position": 22,
+      "vacancies": 3,
+      "vacancy_rate_pct": 12.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 25,
+      "in_position": 22,
+      "vacancies": 3,
+      "vacancy_rate_pct": 12.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Civil",
+      "sanctioned": 26,
+      "in_position": 23,
+      "vacancies": 3,
+      "vacancy_rate_pct": 11.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 26,
+      "in_position": 23,
+      "vacancies": 3,
+      "vacancy_rate_pct": 11.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 30,
+      "in_position": 27,
+      "vacancies": 3,
+      "vacancy_rate_pct": 10.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 31,
+      "in_position": 28,
+      "vacancies": 3,
+      "vacancy_rate_pct": 9.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Information Technology",
+      "sanctioned": 31,
+      "in_position": 28,
+      "vacancies": 3,
+      "vacancy_rate_pct": 9.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Mechanical",
+      "sanctioned": 36,
+      "in_position": 33,
+      "vacancies": 3,
+      "vacancy_rate_pct": 8.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 36,
+      "in_position": 33,
+      "vacancies": 3,
+      "vacancy_rate_pct": 8.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 37,
+      "in_position": 34,
+      "vacancies": 3,
+      "vacancy_rate_pct": 8.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Drilling",
+      "sanctioned": 37,
+      "in_position": 34,
+      "vacancies": 3,
+      "vacancy_rate_pct": 8.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Geology",
+      "sanctioned": 38,
+      "in_position": 35,
+      "vacancies": 3,
+      "vacancy_rate_pct": 7.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Mechanical",
+      "sanctioned": 41,
+      "in_position": 38,
+      "vacancies": 3,
+      "vacancy_rate_pct": 7.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Reservoir",
+      "sanctioned": 45,
+      "in_position": 42,
+      "vacancies": 3,
+      "vacancy_rate_pct": 6.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Electrical",
+      "sanctioned": 51,
+      "in_position": 48,
+      "vacancies": 3,
+      "vacancy_rate_pct": 5.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Reservoir",
+      "sanctioned": 59,
+      "in_position": 56,
+      "vacancies": 3,
+      "vacancy_rate_pct": 5.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Chemistry",
+      "sanctioned": 59,
+      "in_position": 56,
+      "vacancies": 3,
+      "vacancy_rate_pct": 5.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Production",
+      "sanctioned": 64,
+      "in_position": 61,
+      "vacancies": 3,
+      "vacancy_rate_pct": 4.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Instrumentation",
+      "sanctioned": 65,
+      "in_position": 62,
+      "vacancies": 3,
+      "vacancy_rate_pct": 4.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 5,
+      "in_position": 3,
+      "vacancies": 2,
+      "vacancy_rate_pct": 40.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 10,
+      "in_position": 8,
+      "vacancies": 2,
+      "vacancy_rate_pct": 20.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Medical Services",
+      "sanctioned": 12,
+      "in_position": 10,
+      "vacancies": 2,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 14,
+      "in_position": 12,
+      "vacancies": 2,
+      "vacancy_rate_pct": 14.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Reservoir",
+      "sanctioned": 14,
+      "in_position": 12,
+      "vacancies": 2,
+      "vacancy_rate_pct": 14.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 14,
+      "in_position": 12,
+      "vacancies": 2,
+      "vacancy_rate_pct": 14.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Information Technology",
+      "sanctioned": 15,
+      "in_position": 13,
+      "vacancies": 2,
+      "vacancy_rate_pct": 13.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 16,
+      "in_position": 14,
+      "vacancies": 2,
+      "vacancy_rate_pct": 12.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Drilling",
+      "sanctioned": 17,
+      "in_position": 15,
+      "vacancies": 2,
+      "vacancy_rate_pct": 11.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Production",
+      "sanctioned": 17,
+      "in_position": 15,
+      "vacancies": 2,
+      "vacancy_rate_pct": 11.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 17,
+      "in_position": 15,
+      "vacancies": 2,
+      "vacancy_rate_pct": 11.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 17,
+      "in_position": 15,
+      "vacancies": 2,
+      "vacancy_rate_pct": 11.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 18,
+      "in_position": 16,
+      "vacancies": 2,
+      "vacancy_rate_pct": 11.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 20,
+      "in_position": 18,
+      "vacancies": 2,
+      "vacancy_rate_pct": 10.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Reservoir",
+      "sanctioned": 21,
+      "in_position": 19,
+      "vacancies": 2,
+      "vacancy_rate_pct": 9.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 21,
+      "in_position": 19,
+      "vacancies": 2,
+      "vacancy_rate_pct": 9.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 22,
+      "in_position": 20,
+      "vacancies": 2,
+      "vacancy_rate_pct": 9.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Geology",
+      "sanctioned": 22,
+      "in_position": 20,
+      "vacancies": 2,
+      "vacancy_rate_pct": 9.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 23,
+      "in_position": 21,
+      "vacancies": 2,
+      "vacancy_rate_pct": 8.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Reservoir",
+      "sanctioned": 24,
+      "in_position": 22,
+      "vacancies": 2,
+      "vacancy_rate_pct": 8.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 24,
+      "in_position": 22,
+      "vacancies": 2,
+      "vacancy_rate_pct": 8.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Reservoir",
+      "sanctioned": 25,
+      "in_position": 23,
+      "vacancies": 2,
+      "vacancy_rate_pct": 8.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 25,
+      "in_position": 23,
+      "vacancies": 2,
+      "vacancy_rate_pct": 8.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 25,
+      "in_position": 23,
+      "vacancies": 2,
+      "vacancy_rate_pct": 8.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 26,
+      "in_position": 24,
+      "vacancies": 2,
+      "vacancy_rate_pct": 7.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Drilling",
+      "sanctioned": 29,
+      "in_position": 27,
+      "vacancies": 2,
+      "vacancy_rate_pct": 6.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Civil",
+      "sanctioned": 31,
+      "in_position": 29,
+      "vacancies": 2,
+      "vacancy_rate_pct": 6.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Geophysical Services",
+      "discipline": "Drilling",
+      "sanctioned": 31,
+      "in_position": 29,
+      "vacancies": 2,
+      "vacancy_rate_pct": 6.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Reservoir",
+      "sanctioned": 32,
+      "in_position": 30,
+      "vacancies": 2,
+      "vacancy_rate_pct": 6.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Electrical",
+      "sanctioned": 34,
+      "in_position": 32,
+      "vacancies": 2,
+      "vacancy_rate_pct": 5.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Drilling",
+      "sanctioned": 35,
+      "in_position": 33,
+      "vacancies": 2,
+      "vacancy_rate_pct": 5.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Electrical",
+      "sanctioned": 36,
+      "in_position": 34,
+      "vacancies": 2,
+      "vacancy_rate_pct": 5.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Instrumentation",
+      "sanctioned": 38,
+      "in_position": 36,
+      "vacancies": 2,
+      "vacancy_rate_pct": 5.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Civil",
+      "sanctioned": 40,
+      "in_position": 38,
+      "vacancies": 2,
+      "vacancy_rate_pct": 5.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 41,
+      "in_position": 39,
+      "vacancies": 2,
+      "vacancy_rate_pct": 4.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Drilling",
+      "sanctioned": 44,
+      "in_position": 42,
+      "vacancies": 2,
+      "vacancy_rate_pct": 4.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Reservoir",
+      "sanctioned": 45,
+      "in_position": 43,
+      "vacancies": 2,
+      "vacancy_rate_pct": 4.4,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 53,
+      "in_position": 51,
+      "vacancies": 2,
+      "vacancy_rate_pct": 3.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Production",
+      "sanctioned": 81,
+      "in_position": 79,
+      "vacancies": 2,
+      "vacancy_rate_pct": 2.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 3,
+      "in_position": 2,
+      "vacancies": 1,
+      "vacancy_rate_pct": 33.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 3,
+      "in_position": 2,
+      "vacancies": 1,
+      "vacancy_rate_pct": 33.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 3,
+      "in_position": 2,
+      "vacancies": 1,
+      "vacancy_rate_pct": 33.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Electrical",
+      "sanctioned": 4,
+      "in_position": 3,
+      "vacancies": 1,
+      "vacancy_rate_pct": 25.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 4,
+      "in_position": 3,
+      "vacancies": 1,
+      "vacancy_rate_pct": 25.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 4,
+      "in_position": 3,
+      "vacancies": 1,
+      "vacancy_rate_pct": 25.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 5,
+      "in_position": 4,
+      "vacancies": 1,
+      "vacancy_rate_pct": 20.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Chemistry",
+      "sanctioned": 5,
+      "in_position": 4,
+      "vacancies": 1,
+      "vacancy_rate_pct": 20.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 5,
+      "in_position": 4,
+      "vacancies": 1,
+      "vacancy_rate_pct": 20.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 6,
+      "in_position": 5,
+      "vacancies": 1,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Chemistry",
+      "sanctioned": 6,
+      "in_position": 5,
+      "vacancies": 1,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 6,
+      "in_position": 5,
+      "vacancies": 1,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 6,
+      "in_position": 5,
+      "vacancies": 1,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Mechanical",
+      "sanctioned": 6,
+      "in_position": 5,
+      "vacancies": 1,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Chemistry",
+      "sanctioned": 6,
+      "in_position": 5,
+      "vacancies": 1,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Instrumentation",
+      "sanctioned": 6,
+      "in_position": 5,
+      "vacancies": 1,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Production",
+      "sanctioned": 6,
+      "in_position": 5,
+      "vacancies": 1,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 6,
+      "in_position": 5,
+      "vacancies": 1,
+      "vacancy_rate_pct": 16.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 7,
+      "in_position": 6,
+      "vacancies": 1,
+      "vacancy_rate_pct": 14.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Electrical",
+      "sanctioned": 7,
+      "in_position": 6,
+      "vacancies": 1,
+      "vacancy_rate_pct": 14.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 7,
+      "in_position": 6,
+      "vacancies": 1,
+      "vacancy_rate_pct": 14.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 8,
+      "in_position": 7,
+      "vacancies": 1,
+      "vacancy_rate_pct": 12.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Eastern Offshore",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 8,
+      "in_position": 7,
+      "vacancies": 1,
+      "vacancy_rate_pct": 12.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Drilling",
+      "sanctioned": 8,
+      "in_position": 7,
+      "vacancies": 1,
+      "vacancy_rate_pct": 12.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 9,
+      "in_position": 8,
+      "vacancies": 1,
+      "vacancy_rate_pct": 11.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Production",
+      "sanctioned": 9,
+      "in_position": 8,
+      "vacancies": 1,
+      "vacancy_rate_pct": 11.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Mechanical",
+      "sanctioned": 9,
+      "in_position": 8,
+      "vacancies": 1,
+      "vacancy_rate_pct": 11.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Instrumentation",
+      "sanctioned": 9,
+      "in_position": 8,
+      "vacancies": 1,
+      "vacancy_rate_pct": 11.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Chemistry",
+      "sanctioned": 9,
+      "in_position": 8,
+      "vacancies": 1,
+      "vacancy_rate_pct": 11.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Information Technology",
+      "sanctioned": 10,
+      "in_position": 9,
+      "vacancies": 1,
+      "vacancy_rate_pct": 10.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Chemistry",
+      "sanctioned": 10,
+      "in_position": 9,
+      "vacancies": 1,
+      "vacancy_rate_pct": 10.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mumbai High",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 10,
+      "in_position": 9,
+      "vacancies": 1,
+      "vacancy_rate_pct": 10.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Drilling",
+      "sanctioned": 10,
+      "in_position": 9,
+      "vacancies": 1,
+      "vacancy_rate_pct": 10.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Bassein & Satellite",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 11,
+      "in_position": 10,
+      "vacancies": 1,
+      "vacancy_rate_pct": 9.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 11,
+      "in_position": 10,
+      "vacancies": 1,
+      "vacancy_rate_pct": 9.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 12,
+      "in_position": 11,
+      "vacancies": 1,
+      "vacancy_rate_pct": 8.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 12,
+      "in_position": 11,
+      "vacancies": 1,
+      "vacancy_rate_pct": 8.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 12,
+      "in_position": 11,
+      "vacancies": 1,
+      "vacancy_rate_pct": 8.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Drilling",
+      "sanctioned": 12,
+      "in_position": 11,
+      "vacancies": 1,
+      "vacancy_rate_pct": 8.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Drilling",
+      "sanctioned": 12,
+      "in_position": 11,
+      "vacancies": 1,
+      "vacancy_rate_pct": 8.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Drilling",
+      "sanctioned": 13,
+      "in_position": 12,
+      "vacancies": 1,
+      "vacancy_rate_pct": 7.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Drilling",
+      "sanctioned": 13,
+      "in_position": 12,
+      "vacancies": 1,
+      "vacancy_rate_pct": 7.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Tripura Asset",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 13,
+      "in_position": 12,
+      "vacancies": 1,
+      "vacancy_rate_pct": 7.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Mechanical",
+      "sanctioned": 13,
+      "in_position": 12,
+      "vacancies": 1,
+      "vacancy_rate_pct": 7.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Drilling",
+      "sanctioned": 14,
+      "in_position": 13,
+      "vacancies": 1,
+      "vacancy_rate_pct": 7.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Electrical",
+      "sanctioned": 14,
+      "in_position": 13,
+      "vacancies": 1,
+      "vacancy_rate_pct": 7.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Geology",
+      "sanctioned": 15,
+      "in_position": 14,
+      "vacancies": 1,
+      "vacancy_rate_pct": 6.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 15,
+      "in_position": 14,
+      "vacancies": 1,
+      "vacancy_rate_pct": 6.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 15,
+      "in_position": 14,
+      "vacancies": 1,
+      "vacancy_rate_pct": 6.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 15,
+      "in_position": 14,
+      "vacancies": 1,
+      "vacancy_rate_pct": 6.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Production",
+      "sanctioned": 15,
+      "in_position": 14,
+      "vacancies": 1,
+      "vacancy_rate_pct": 6.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 16,
+      "in_position": 15,
+      "vacancies": 1,
+      "vacancy_rate_pct": 6.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Information Technology",
+      "sanctioned": 16,
+      "in_position": 15,
+      "vacancies": 1,
+      "vacancy_rate_pct": 6.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 16,
+      "in_position": 15,
+      "vacancies": 1,
+      "vacancy_rate_pct": 6.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Geology",
+      "sanctioned": 17,
+      "in_position": 16,
+      "vacancies": 1,
+      "vacancy_rate_pct": 5.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Geology",
+      "sanctioned": 17,
+      "in_position": 16,
+      "vacancies": 1,
+      "vacancy_rate_pct": 5.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Production",
+      "sanctioned": 18,
+      "in_position": 17,
+      "vacancies": 1,
+      "vacancy_rate_pct": 5.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 18,
+      "in_position": 17,
+      "vacancies": 1,
+      "vacancy_rate_pct": 5.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Geology",
+      "sanctioned": 18,
+      "in_position": 17,
+      "vacancies": 1,
+      "vacancy_rate_pct": 5.6,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Geology",
+      "sanctioned": 19,
+      "in_position": 18,
+      "vacancies": 1,
+      "vacancy_rate_pct": 5.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 19,
+      "in_position": 18,
+      "vacancies": 1,
+      "vacancy_rate_pct": 5.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Geology",
+      "sanctioned": 19,
+      "in_position": 18,
+      "vacancies": 1,
+      "vacancy_rate_pct": 5.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Drilling",
+      "sanctioned": 20,
+      "in_position": 19,
+      "vacancies": 1,
+      "vacancy_rate_pct": 5.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Legal",
+      "sanctioned": 21,
+      "in_position": 20,
+      "vacancies": 1,
+      "vacancy_rate_pct": 4.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Reservoir",
+      "sanctioned": 22,
+      "in_position": 21,
+      "vacancies": 1,
+      "vacancy_rate_pct": 4.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CBM Bokaro",
+      "discipline": "Geology",
+      "sanctioned": 23,
+      "in_position": 22,
+      "vacancies": 1,
+      "vacancy_rate_pct": 4.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 26,
+      "in_position": 25,
+      "vacancies": 1,
+      "vacancy_rate_pct": 3.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Production",
+      "sanctioned": 26,
+      "in_position": 25,
+      "vacancies": 1,
+      "vacancy_rate_pct": 3.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 26,
+      "in_position": 25,
+      "vacancies": 1,
+      "vacancy_rate_pct": 3.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Reservoir",
+      "sanctioned": 27,
+      "in_position": 26,
+      "vacancies": 1,
+      "vacancy_rate_pct": 3.7,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Mechanical",
+      "sanctioned": 30,
+      "in_position": 29,
+      "vacancies": 1,
+      "vacancy_rate_pct": 3.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 31,
+      "in_position": 30,
+      "vacancies": 1,
+      "vacancy_rate_pct": 3.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 31,
+      "in_position": 30,
+      "vacancies": 1,
+      "vacancy_rate_pct": 3.2,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Medical Services",
+      "sanctioned": 32,
+      "in_position": 31,
+      "vacancies": 1,
+      "vacancy_rate_pct": 3.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 33,
+      "in_position": 32,
+      "vacancies": 1,
+      "vacancy_rate_pct": 3.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 35,
+      "in_position": 34,
+      "vacancies": 1,
+      "vacancy_rate_pct": 2.9,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Information Technology",
+      "sanctioned": 36,
+      "in_position": 35,
+      "vacancies": 1,
+      "vacancy_rate_pct": 2.8,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Chemistry",
+      "sanctioned": 40,
+      "in_position": 39,
+      "vacancies": 1,
+      "vacancy_rate_pct": 2.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Medical Services",
+      "sanctioned": 40,
+      "in_position": 39,
+      "vacancies": 1,
+      "vacancy_rate_pct": 2.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 40,
+      "in_position": 39,
+      "vacancies": 1,
+      "vacancy_rate_pct": 2.5,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 42,
+      "in_position": 41,
+      "vacancies": 1,
+      "vacancy_rate_pct": 2.4,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Offshore Logistics",
+      "discipline": "Drilling",
+      "sanctioned": 48,
+      "in_position": 47,
+      "vacancies": 1,
+      "vacancy_rate_pct": 2.1,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Drilling",
+      "sanctioned": 79,
+      "in_position": 78,
+      "vacancies": 1,
+      "vacancy_rate_pct": 1.3,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Chemistry",
+      "sanctioned": 13,
+      "in_position": 13,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Civil",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Electrical",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Geology",
+      "sanctioned": 15,
+      "in_position": 15,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Instrumentation",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Mechanical",
+      "sanctioned": 14,
+      "in_position": 14,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "A&AA Basin",
+      "discipline": "Reservoir",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Chemistry",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Civil",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Electrical",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Information Technology",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Instrumentation",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Mechanical",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ATI Goa",
+      "discipline": "Production",
+      "sanctioned": 19,
+      "in_position": 19,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ahmedabad Asset",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 20,
+      "in_position": 20,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Ankleshwar Asset",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Drilling",
+      "sanctioned": 287,
+      "in_position": 287,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Electrical",
+      "sanctioned": 235,
+      "in_position": 235,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 16,
+      "in_position": 16,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 15,
+      "in_position": 15,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Geology",
+      "sanctioned": 34,
+      "in_position": 34,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 35,
+      "in_position": 35,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Instrumentation",
+      "sanctioned": 184,
+      "in_position": 184,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 24,
+      "in_position": 24,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Mechanical",
+      "sanctioned": 221,
+      "in_position": 221,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Production",
+      "sanctioned": 363,
+      "in_position": 363,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Assam Asset",
+      "discipline": "Reservoir",
+      "sanctioned": 55,
+      "in_position": 55,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Chemistry",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Civil",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Drilling",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Electrical",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Information Technology",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Instrumentation",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Production",
+      "sanctioned": 19,
+      "in_position": 19,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "CEWELL",
+      "discipline": "Reservoir",
+      "sanctioned": 17,
+      "in_position": 17,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cambay Asset",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Asset",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Chemistry",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Civil",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Drilling",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Geology",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 16,
+      "in_position": 16,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Instrumentation",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Mechanical",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Production",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Cauvery Basin",
+      "discipline": "Reservoir",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dahej Plant",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Dehradun Tel Bhavan",
+      "discipline": "Instrumentation",
+      "sanctioned": 22,
+      "in_position": 22,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 14,
+      "in_position": 14,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Delhi HQ",
+      "discipline": "Legal",
+      "sanctioned": 50,
+      "in_position": 50,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Civil",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Electrical",
+      "sanctioned": 15,
+      "in_position": 15,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 14,
+      "in_position": 14,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Instrumentation",
+      "sanctioned": 13,
+      "in_position": 13,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Drilling Services",
+      "discipline": "Production",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Chemistry",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Civil",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Drilling",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Electrical",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Geology",
+      "sanctioned": 26,
+      "in_position": 26,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 22,
+      "in_position": 22,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Instrumentation",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Mechanical",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Production",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Frontier Basin",
+      "discipline": "Reservoir",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Civil",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Drilling",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Electrical",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Information Technology",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Instrumentation",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Mechanical",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "GEOPIC",
+      "discipline": "Production",
+      "sanctioned": 12,
+      "in_position": 12,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Geophysical Services",
+      "discipline": "Chemistry",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Geophysical Services",
+      "discipline": "Electrical",
+      "sanctioned": 13,
+      "in_position": 13,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Geophysical Services",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Geophysical Services",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Geophysical Services",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Geophysical Services",
+      "discipline": "Instrumentation",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Geophysical Services",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Geophysical Services",
+      "discipline": "Mechanical",
+      "sanctioned": 17,
+      "in_position": 17,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Geophysical Services",
+      "discipline": "Production",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Hazira Plant",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Chemistry",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Civil",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Drilling",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Electrical",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Information Technology",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IDWE",
+      "discipline": "Instrumentation",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Chemistry",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 13,
+      "in_position": 13,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Instrumentation",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Mechanical",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Production",
+      "sanctioned": 16,
+      "in_position": 16,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IEOT",
+      "discipline": "Reservoir",
+      "sanctioned": 26,
+      "in_position": 26,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Chemistry",
+      "sanctioned": 16,
+      "in_position": 16,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Civil",
+      "sanctioned": 20,
+      "in_position": 20,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Drilling",
+      "sanctioned": 18,
+      "in_position": 18,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Electrical",
+      "sanctioned": 17,
+      "in_position": 17,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Geology",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 13,
+      "in_position": 13,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Information Technology",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Instrumentation",
+      "sanctioned": 14,
+      "in_position": 14,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Mechanical",
+      "sanctioned": 16,
+      "in_position": 16,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Production",
+      "sanctioned": 27,
+      "in_position": 27,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "INBIGS",
+      "discipline": "Reservoir",
+      "sanctioned": 16,
+      "in_position": 16,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Chemistry",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Civil",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Drilling",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Electrical",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Geology",
+      "sanctioned": 15,
+      "in_position": 15,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 17,
+      "in_position": 17,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Instrumentation",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IOGPT",
+      "discipline": "Reservoir",
+      "sanctioned": 27,
+      "in_position": 27,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Civil",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Drilling",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Geology",
+      "sanctioned": 19,
+      "in_position": 19,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 17,
+      "in_position": 17,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Information Technology",
+      "sanctioned": 15,
+      "in_position": 15,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Instrumentation",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Mechanical",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "IRS",
+      "discipline": "Production",
+      "sanctioned": 13,
+      "in_position": 13,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Chemistry",
+      "sanctioned": 138,
+      "in_position": 138,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Civil",
+      "sanctioned": 128,
+      "in_position": 128,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Drilling",
+      "sanctioned": 204,
+      "in_position": 204,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Electrical",
+      "sanctioned": 148,
+      "in_position": 148,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 13,
+      "in_position": 13,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Geology",
+      "sanctioned": 23,
+      "in_position": 23,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 26,
+      "in_position": 26,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Instrumentation",
+      "sanctioned": 145,
+      "in_position": 145,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 12,
+      "in_position": 12,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Mechanical",
+      "sanctioned": 160,
+      "in_position": 160,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Production",
+      "sanctioned": 268,
+      "in_position": 268,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Jorhat Asset",
+      "discipline": "Reservoir",
+      "sanctioned": 47,
+      "in_position": 47,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Chemistry",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Civil",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Electrical",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Geology",
+      "sanctioned": 19,
+      "in_position": 19,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 16,
+      "in_position": 16,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Instrumentation",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Mechanical",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Production",
+      "sanctioned": 14,
+      "in_position": 14,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KDMIPE",
+      "discipline": "Reservoir",
+      "sanctioned": 24,
+      "in_position": 24,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Chemistry",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Civil",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Drilling",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Electrical",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Geology",
+      "sanctioned": 25,
+      "in_position": 25,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Instrumentation",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Production",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "KG Basin",
+      "discipline": "Reservoir",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Chemistry",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Civil",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Drilling",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Electrical",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Instrumentation",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Mechanical",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Production",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "MBA Basin",
+      "discipline": "Reservoir",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Mehsana Asset",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 26,
+      "in_position": 26,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Neelam & Heera",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 17,
+      "in_position": 17,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Chemistry",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Civil",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Drilling",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Electrical",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Geology",
+      "sanctioned": 21,
+      "in_position": 21,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 18,
+      "in_position": 18,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Information Technology",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Instrumentation",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Mechanical",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Production",
+      "sanctioned": 14,
+      "in_position": 14,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "ONGC Academy",
+      "discipline": "Reservoir",
+      "sanctioned": 26,
+      "in_position": 26,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Offshore Logistics",
+      "discipline": "Chemistry",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Offshore Logistics",
+      "discipline": "Civil",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Offshore Logistics",
+      "discipline": "Electrical",
+      "sanctioned": 15,
+      "in_position": 15,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Offshore Logistics",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Offshore Logistics",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Offshore Logistics",
+      "discipline": "Instrumentation",
+      "sanctioned": 16,
+      "in_position": 16,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Offshore Logistics",
+      "discipline": "Mechanical",
+      "sanctioned": 31,
+      "in_position": 31,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Offshore Logistics",
+      "discipline": "Production",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Chemistry",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Civil",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Information Technology",
+      "sanctioned": 32,
+      "in_position": 32,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Instrumentation",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Legal",
+      "sanctioned": 7,
+      "in_position": 7,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 24,
+      "in_position": 24,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Medical Services",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Chennai",
+      "discipline": "Production",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Chemistry",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Civil",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Electrical",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Instrumentation",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Legal",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 31,
+      "in_position": 31,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Mechanical",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Kolkata",
+      "discipline": "Medical Services",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Chemistry",
+      "sanctioned": 12,
+      "in_position": 12,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Civil",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Drilling",
+      "sanctioned": 20,
+      "in_position": 20,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Electrical",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 10,
+      "in_position": 10,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Information Technology",
+      "sanctioned": 22,
+      "in_position": 22,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Legal",
+      "sanctioned": 17,
+      "in_position": 17,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 35,
+      "in_position": 35,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Mechanical",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Mumbai",
+      "discipline": "Production",
+      "sanctioned": 18,
+      "in_position": 18,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Chemistry",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Civil",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Electrical",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 42,
+      "in_position": 42,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Instrumentation",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Mechanical",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "RO Vadodara",
+      "discipline": "Medical Services",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajahmundry Asset",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Civil",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Electrical",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Rajasthan Basin",
+      "discipline": "Mechanical",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Chemistry",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Civil",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Drilling",
+      "sanctioned": 16,
+      "in_position": 16,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Electrical",
+      "sanctioned": 12,
+      "in_position": 12,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Geology",
+      "sanctioned": 13,
+      "in_position": 13,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 13,
+      "in_position": 13,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Instrumentation",
+      "sanctioned": 13,
+      "in_position": 13,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Mechanical",
+      "sanctioned": 9,
+      "in_position": 9,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Production",
+      "sanctioned": 14,
+      "in_position": 14,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Silchar Basin",
+      "discipline": "Reservoir",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Uran Plant",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Chemistry",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Civil",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Environment & Safety (HSE)",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Instrumentation",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Well Services",
+      "discipline": "Production",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Civil",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Drilling",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Finance & Accounts (F&A)",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Geology",
+      "sanctioned": 27,
+      "in_position": 27,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 20,
+      "in_position": 20,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Human Resources (HR)",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Instrumentation",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 2,
+      "in_position": 2,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Mechanical",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Production",
+      "sanctioned": 8,
+      "in_position": 8,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Offshore Basin",
+      "discipline": "Reservoir",
+      "sanctioned": 25,
+      "in_position": 25,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Chemistry",
+      "sanctioned": 14,
+      "in_position": 14,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Civil",
+      "sanctioned": 3,
+      "in_position": 3,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Electrical",
+      "sanctioned": 4,
+      "in_position": 4,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Geophysics (Surface)",
+      "sanctioned": 17,
+      "in_position": 17,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Instrumentation",
+      "sanctioned": 5,
+      "in_position": 5,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Materials Management (MM)",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Mechanical",
+      "sanctioned": 1,
+      "in_position": 1,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Production",
+      "sanctioned": 6,
+      "in_position": 6,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    },
+    {
+      "work_centre": "Western Onshore Basin",
+      "discipline": "Reservoir",
+      "sanctioned": 11,
+      "in_position": 11,
+      "vacancies": 0,
+      "vacancy_rate_pct": 0.0,
+      "company_sanctioned": 25149,
+      "company_vacancies": 2032
+    }
+  ]
+}
