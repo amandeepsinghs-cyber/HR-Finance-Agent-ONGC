@@ -63,7 +63,7 @@
 
 ---
 
-## Phase U4: Executive Polish (FEAT-005) · *gate: visual review sign-off (light + dark)*
+## Phase U4: Executive Polish (FEAT-005, FEAT-016) · *gate: before/after main-app screenshots, sponsor sign-off (light + dark)* · spec: [`docs/design/U4_spec.md`](docs/design/U4_spec.md)
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
@@ -72,6 +72,9 @@
 | **U4.3** | `F` | KPI cards with delta pills; table polish (sticky header, zebra, inline bars, number alignment) | Sticky header, zebra rows, right-aligned tabular numbers, inline bars for numeric columns, KPI delta pill (▲/▼ + colour per tokens) | Screenshot diff vs U0 | ⬜ | [packet](docs/delegation/packets/U4.3.md) | | | |
 | **U4.4** | `F` | Contextual voice pill: chat collapses to a glowing pill when a full-screen visual is shown; expands on hover/voice | Pill collapses within 300 ms when a visual is full-screen; expands on hover or voice activity; never covers the active chart's data area | Playwright | ⬜ | [packet](docs/delegation/packets/U4.4.md) | | | |
 | **U4.5** | `F` | Greeting/home screen refresh: calm, brand-correct, suggested prompts by persona | 4 persona-specific suggested prompts (CMD/DIR_HR/DIR_FIN/E-level) incl. ≥ 1 finance prompt; greeting text from V10; tokens only (0 hard-coded hex) | Screenshot review | ⬜ | [packet](docs/delegation/packets/U4.5.md) | | | |
+| **U4.6** | `O` | **Ask bar** rebuilt on primitives with the AI aura ring bound to orb state (idle/listening/thinking); suggestion chips above, never truncated | Aura state follows `orbState`; chips fully visible at 1440p/4K; typing + mic + send unchanged functionally | Playwright + screenshots | ⬜ | n/a | | | |
+| **U4.7** | `O` | **Newest-answer aura edge** (fades ~4 s) | Appears only on the newest card; respects reduced motion | Screen capture | ⬜ | n/a | | | |
+| **U4.8** | `F` | **Legacy migration** of CanvasView / FloatingConversationPanel / TopBar to U1 primitives (D-15) | No ad-hoc card/chip/button styles left in these files; `lint:tokens` OK; smoke test passes | grep + Playwright | ⬜ | [packet](docs/delegation/packets/U4.8.md) | | | |
 
 ---
 
