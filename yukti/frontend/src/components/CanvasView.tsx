@@ -92,11 +92,12 @@ const Greeting: React.FC<{
   const [hello, setHello] = useState('Hello');
   useEffect(() => setHello(greetingWord()), []);
   // Orb scales with the fluid type scale (rem), so it keeps its proportion on 4K / big screens.
-  const [orbPx, setOrbPx] = useState(156);
+  const [orbPx, setOrbPx] = useState(208);
   useEffect(() => {
     const fit = () => {
       const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-      setOrbPx(Math.round(Math.min(300, Math.max(140, rem * 9.75))));
+      // the aurora wave is wide: give it room on the greeting (≈ 208 px at 1440p, scales on 4K)
+      setOrbPx(Math.round(Math.min(380, Math.max(170, rem * 13))));
     };
     fit();
     window.addEventListener('resize', fit);

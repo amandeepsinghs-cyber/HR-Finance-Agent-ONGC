@@ -37,6 +37,7 @@ Every decision that changes scope, behaviour, policy or process is recorded here
 | D-26 | 2026-10-22 | **Readability floor: `text-label` raised 0.8 → 0.875 rem (14 px at 1440p)**; chips, KPI labels, context chips and delta pills use it. Meets U2.7 "text ≥ 14 px" for the CMD on a big screen. `caption` stays for eyebrows/meta outside the feed | Agent (change control) | U2.7, U4 |
 | D-27 | 2026-10-22 | **Conversation feed replaces the single canvas + history strip** (U2). Voice "go back/next" scrolls between cards; "home" scrolls to the top; "New conversation" clears feed + chat + backend session. Follow-up chips move from the floating bar into the latest card (they overlapped data). `NEXT_PUBLIC_FEED_V2=0` restores the single-answer view | Agent (per U2 spec) | U2 |
 | D-28 | 2026-10-22 | **U4.8 legacy-class migration moves to the end of U5**: U5 rewrites large parts of `AnswerCard` (roster, compare, insights), so migrating its ad-hoc classes in U2 would be redone | Agent (change control) | U4.8, U5 |
+| D-29 | 2026-10-22 | **Voice orb = "Aurora wave" (concept C), borderless.** The infinity-ribbon orb from U3.1 is retired (sponsor: "looks childish… thin threads"); of three prototypes (A aura sphere, B breathing halo, C aurora wave) the sponsor chose C. Feathered bands of AI-aura light, no outlines or rings; idle calm, listening/speaking follow the real mic / output level, thinking = travelling shimmer | Sponsor | U3.1/U3.2 (redo), D-16 |
 ---
 
 ## Open decisions (need sponsor input)
