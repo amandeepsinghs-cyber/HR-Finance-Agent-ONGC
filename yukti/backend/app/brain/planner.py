@@ -166,8 +166,15 @@ class Planner:
 
     @property
     def client(self) -> genai.Client:
-        if self._client is None:
+        # The genai async transport binds to the event loop that first used it; re-create the client
+        # when called from a different loop (tests, scripts) so a stale loop never breaks planning.
+        try:
+            loop_id = id(asyncio.get_running_loop())
+        except RuntimeError:
+            loop_id = None
+        if self._client is None or getattr(self, "_client_loop", None) != loop_id:
             self._client = genai.Client(vertexai=True, project=GCP_PROJECT, location=VERTEX_TEXT_LOCATION)
+            self._client_loop = loop_id
         return self._client
 
     def _prompt(self, question: str, prev: Optional[QuerySpec], history: List[str], fy_hint: Optional[Dict[str, Any]]) -> str:

@@ -210,21 +210,45 @@ class DocumentDraftingEngine:
 
             wc_section = ""
             if wc_profile:
-                act_hc = int(float(wc_profile.get("active_headcount", 0) or 0))
-                exec_hc = int(float(wc_profile.get("executive_headcount", 0) or 0))
-                non_exec_hc = int(float(wc_profile.get("non_executive_headcount", 0) or 0))
-                sanc_hc = int(float(wc_profile.get("sanctioned_strength", 0) or 0))
-                vac_hc = int(float(wc_profile.get("vacancy_count", 0) or 0))
-                cont_hc = int(float(wc_profile.get("contract_workforce_headcount", 0) or 0))
-                pay_cr = float(wc_profile.get("fy26_total_payroll_cr", 0) or 0)
-                stay_5y = int(float(wc_profile.get("execs_stay_ge_5yr", 0) or 0))
-                ret_3y = int(float(wc_profile.get("retiring_3yr_count", 0) or 0))
+                def _fmt_count(val: Any) -> str:
+                    if val is None or val == "":
+                        return "n/a"
+                    try:
+                        return f"{int(float(val)):,}"
+                    except (ValueError, TypeError):
+                        return "n/a"
+
+                def _get_val(new_key: str, old_key: Optional[str] = None) -> Any:
+                    val = wc_profile.get(new_key)
+                    if val is None and old_key:
+                        val = wc_profile.get(old_key)
+                    return val
+
+                act_hc = _fmt_count(wc_profile.get("active_headcount"))
+                exec_hc = _fmt_count(wc_profile.get("executive_headcount"))
+                non_exec_hc = _fmt_count(wc_profile.get("non_executive_headcount"))
+                sanc_hc = _fmt_count(_get_val("sanctioned_strength_fy26", "sanctioned_strength"))
+                vac_hc = _fmt_count(_get_val("vacancy_count_fy26", "vacancy_count"))
+                cont_hc = _fmt_count(_get_val("contractor_headcount_fy26", "contract_workforce_headcount"))
+
+                pay_val = _get_val("payroll_gross_inr_cr_fy26", "fy26_total_payroll_cr")
+                if pay_val is None or pay_val == "":
+                    pay_str = "n/a"
+                else:
+                    try:
+                        pay_str = f"₹{float(pay_val):,.2f} Crore"
+                    except (ValueError, TypeError):
+                        pay_str = "n/a"
+
+                stay_5y = _fmt_count(_get_val("continuous_stay_5yr_plus_execs", "execs_stay_ge_5yr"))
+                ret_3y = _fmt_count(_get_val("retiring_within_3yr_count", "retiring_3yr_count"))
+
                 wc_section = f"""
 ### 2. Work Centre 360° Key Indicators ({wc_name} · `{wc_id}`)
-- **In-Position Regular Strength (As of 19-Oct-2026):** **{act_hc:,}** employees (**{exec_hc:,}** Executives; **{non_exec_hc:,}** Non-Executives) against **{sanc_hc:,}** Sanctioned Posts (**{vac_hc:,}** Vacancies).
-- **Contractual & Outsourced Workforce:** **{cont_hc:,}** contract personnel deployed across operations.
-- **FY26 Annual Employee Cost (Payroll + Benefits):** **₹{pay_cr:,.2f} Crore**.
-- **Mobility & Succession Profile:** **{stay_5y:,}** executives with ≥5 years continuous station stay; **{ret_3y:,}** employees superannuating within 36 months.
+- **In-Position Regular Strength (As of 19-Oct-2026):** **{act_hc}** employees (**{exec_hc}** Executives; **{non_exec_hc}** Non-Executives) against **{sanc_hc}** Sanctioned Posts (**{vac_hc}** Vacancies).
+- **Contractual & Outsourced Workforce:** **{cont_hc}** contract personnel deployed across operations.
+- **FY26 Gross Payroll:** **{pay_str}**.
+- **Mobility & Succession Profile:** **{stay_5y}** executives with ≥5 years continuous station stay; **{ret_3y}** employees superannuating within 36 months.
 """
 
             md_table = self._format_markdown_table(ctx_cols, ctx_rows, max_rows=15)
@@ -276,4 +300,132 @@ class DocumentDraftingEngine:
             "markdown": markdown,
             "template_id": base["template_id"],
             "version": version,
+        }
+
+    def draft_transfer_note(
+        self,
+        employees: List[Dict[str, Any]],
+        context: Optional[Dict[str, Any]] = None,
+        version: int = 1,
+    ) -> Dict[str, Any]:
+        """Drafts a transfer-note document listing the given roster employees."""
+        if not employees:
+            raise ValueError("no employees selected")
+
+        n = len(employees)
+        wcs = [e.get("work_centre") for e in employees]
+        if all(w and w == wcs[0] for w in wcs):
+            wc_label = wcs[0]
+        else:
+            wc_label = "Multiple Work Centres"
+
+        title = f"Draft Transfer Note: {n} Executive(s) — {wc_label}"
+
+        def _format_cell(val: Any) -> str:
+            if val is None or val == "" or val == "None":
+                return "—"
+            if isinstance(val, bool):
+                return "Yes" if val else "No"
+            return str(val).replace("|", "\\|")  # a pipe would break the markdown table
+
+        def _format_tenure(val: Any) -> str:
+            if val is None or val == "" or val == "None" or val == "—":
+                return "—"
+            try:
+                return f"{float(val):.1f}"
+            except (ValueError, TypeError):
+                return "—"
+
+        headers = [
+            "S.No",
+            "Name",
+            "Emp ID",
+            "Designation",
+            "Grade",
+            "Discipline",
+            "Present Work Centre",
+            "Station Tenure (yrs)",
+            "ONGC Service (yrs)",
+            "Exemption",
+        ]
+        table_lines = [
+            "| " + " | ".join(headers) + " |",
+            "| " + " | ".join("---" for _ in headers) + " |",
+        ]
+        for idx, emp in enumerate(employees, 1):
+            row_vals = [
+                str(idx),
+                _format_cell(emp.get("name")),
+                _format_cell(emp.get("emp_id")),
+                _format_cell(emp.get("designation")),
+                _format_cell(emp.get("grade")),
+                _format_cell(emp.get("discipline")),
+                _format_cell(emp.get("work_centre")),
+                _format_tenure(emp.get("station_tenure_years")),
+                _format_tenure(emp.get("ongc_tenure_years")),
+                _format_cell(emp.get("exemption")),
+            ]
+            table_lines.append("| " + " | ".join(row_vals) + " |")
+        table_str = "\n".join(table_lines)
+
+        purpose_text = (
+            context.get("purpose")
+            if context and isinstance(context, dict) and context.get("purpose")
+            else f"This deliberative draft transfer note outlines proposed rotational transfers for {n} executive(s) pursuant to the ONGC Job Rotation and Transfer Policy (JRTP)."
+        )
+
+        exemption_lines = []
+        for emp in employees:
+            ret = emp.get("retiring_within_3yr")
+            is_retiring = (ret is True) or (isinstance(ret, str) and ret.lower() in ("true", "yes", "1"))
+            ex = emp.get("exemption")
+            has_ex = ex not in (None, "None", "", "—")
+            if is_retiring or has_ex:
+                reasons = []
+                if is_retiring:
+                    reasons.append("Retiring within 3 years")
+                if has_ex:
+                    reasons.append(f"Exemption: {ex}")
+                emp_name = emp.get("name") or "—"
+                emp_id = emp.get("emp_id") or "—"
+                exemption_lines.append(f"- **{emp_name}** ({emp_id}) — {'; '.join(reasons)}")
+
+        if exemption_lines:
+            exemptions_content = "\n".join(exemption_lines)
+        else:
+            exemptions_content = "No exemption flags among the selected employees."
+
+        md_parts = [
+            "# OIL AND NATURAL GAS CORPORATION LIMITED",
+            "## CORPORATE HUMAN RESOURCES | DRAFT TRANSFER NOTE",
+            "**Classification:** CONFIDENTIAL — DELIBERATIVE DRAFT (JRTP Clause 11.0)",
+            "",
+            "### 1. Purpose",
+            purpose_text,
+            "",
+            f"### 2. Employees Proposed for Transfer ({n})",
+            table_str,
+            "",
+            "### 3. Policy Basis",
+            "Rotational transfer recommendations are framed pursuant to JRTP Clause 3.2 rotation after 5 years of continuous station tenure. Clause 7.0 exemption within 3 years of superannuation applies to eligible executives subject to administrative review.",
+            "",
+            "### 4. Exemptions to Verify",
+            exemptions_content,
+            "",
+            "### 5. Proposed Destination",
+            "To be decided by the competent authority (Director HR).",
+            "",
+            "*Prepared by:* Yukti AI for Director (HR) review",
+        ]
+        markdown = "\n".join(md_parts)
+        markdown = sanitize_fictional_names(markdown)
+
+        return {
+            "doc_type": "transfer_note",
+            "title": title,
+            "markdown": markdown,
+            "template_id": "template_transfer_note.docx",
+            "version": version,
+            "employee_count": n,
+            "emp_ids": [e.get("emp_id") for e in employees],
         }

@@ -59,7 +59,7 @@ class SessionState:
             rows = all_rows or tbl.get("rows") or (visual.get("chart") or {}).get("data") or []
             if cols and rows:
                 self.last_columns = list(cols)
-                self.last_rows = list(rows)[:200]
+                self.last_rows = list(rows)[:2000]  # rosters up to 2,000 rows (B3.5 transfer note "for them")
             title_sub = f"{visual.get('title', '')} {visual.get('subtitle', '')}"
             self._extract_entities_from_text(title_sub)
 

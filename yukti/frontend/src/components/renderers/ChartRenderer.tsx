@@ -21,8 +21,9 @@ import {
   groupedOption,
   stackedOption,
   ramp,
+  niceBounds,
 } from '@/charts/options';
-import { fmtValue, fmtNum, humanizeKey, humanizeValue, parseUnit, toNumber } from '@/charts/format';
+import { fmtValue, fmtShare, humanizeKey, humanizeValue, parseUnit, toNumber } from '@/charts/format';
 import { KpiRenderer } from './KpiRenderer';
 
 interface ChartRendererProps {
@@ -50,11 +51,27 @@ export function useChartTokens(isDark: boolean): ChartTokens {
   return useMemo(() => getTokens(isDark), [isDark, scaleKey]);
 }
 
+/** Top 11 + "Others (n)" for a ranked view of sparse raw values (rubric C5: ≤ 12 bars). */
+function sparseTopN(rows: Row[], n = 12): Row[] {
+  if (rows.length <= n) return rows;
+  const rest = rows.slice(n - 1);
+  return [...rows.slice(0, n - 1), { label: `Others (${rest.length})`, raw: {}, value: rest.reduce((s, r) => s + r.value, 0) }];
+}
+
+const OTHERS_RE = /^(all\s+)?others?(\s*\(.*\))?$/i;
+
 function donutColors(plan: ChartPlan, t: ChartTokens): string[] {
   const n = plan.rows.length;
-  // Rubric C4: lightest ordinal slice must stay visible (light: from sequential[2]; dark: from [0], ≥3:1).
-  if (plan.ordinal) return ramp(t.sequential[t.dark ? 0 : 2], t.sequential[5], n);
-  return t.categorical.slice(0, n);
+  // Rubric C4: every ordinal slice ≥ 3:1 on the card (light: from sequential[3]; dark: from [0]).
+  if (plan.ordinal) return ramp(t.sequential[t.dark ? 0 : 3], t.sequential[5], n);
+  // Neutral greys are reserved for the muted "Others" bucket, so data slices use the chromatic hues only.
+  const neutral = (c: string) => {
+    const ch = [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+    return Math.max(...ch) - Math.min(...ch) < 32; // grey: channels nearly equal
+  };
+  const hues = t.categorical.filter((c) => !neutral(c));
+  let k = 0;
+  return plan.rows.map((r) => (OTHERS_RE.test(r.label.trim()) ? t.faint : hues[k++ % hues.length]));
 }
 
 const DonutWithLegend: React.FC<{ plan: ChartPlan; t: ChartTokens; isPie?: boolean }> = ({ plan, t, isPie = false }) => {
@@ -80,7 +97,7 @@ const DonutWithLegend: React.FC<{ plan: ChartPlan; t: ChartTokens; isPie?: boole
                 </span>
               </span>
               <span className="font-semibold tabular-nums text-[var(--ink)]">{fmtValue(r.value, plan.unit)}</span>
-              <span className="text-right tabular-nums text-[var(--ink-2)]">{fmtNum(pct, 1)}%</span>
+              <span className="text-right tabular-nums text-[var(--ink-2)]">{fmtShare(pct)}</span>
             </li>
           );
         })}
@@ -89,14 +106,39 @@ const DonutWithLegend: React.FC<{ plan: ChartPlan; t: ChartTokens; isPie?: boole
   );
 };
 
+/** Panel title for small multiples (each panel = one measure, its own unit axis). */
+function withTitle(opt: any, title: string, t: ChartTokens): any {
+  if (!opt) return opt;
+  return { ...opt, title: { text: title, left: 0, top: 0, textStyle: { color: t.text, fontSize: Math.round(14 * ((t as any).scale || 1)), fontWeight: 600 } }, grid: Array.isArray(opt.grid) ? opt.grid.map((g: any) => ({ ...g, top: Math.max(+g.top || 0, 40) })) : { ...(opt.grid || {}), top: 40 } };
+}
+
 const SmallMultiples: React.FC<{ plan: ChartPlan; spec: ChartSpec; t: ChartTokens }> = ({ plan, spec, t }) => {
   const data = (spec.data || []) as Record<string, any>[];
   const first = plan.seriesKeys[0];
-  const order = [...data].sort((a, b) => (toNumber(b[first]) || 0) - (toNumber(a[first]) || 0));
+  // Time series / ordered buckets keep their order (one line or column per measure); categories are ranked.
+  const ordered = plan.timeLike || plan.ordinal;
+  const order = ordered ? data : [...data].sort((a, b) => (toNumber(b[first]) || 0) - (toNumber(a[first]) || 0));
+  // U5.9 (C2): panels sharing a unit kind share ONE nice domain, so bar lengths compare across panels.
+  const sameKind = new Set(plan.seriesKeys.map((x) => parseUnit(spec.unit, x).kind)).size === 1;
+  const all = plan.seriesKeys.flatMap((k) => order.map((r) => toNumber(r[k]) ?? 0));
+  const gMin = Math.min(0, ...all);
+  const gMax = Math.max(0, ...all);
+  const span = gMax - gMin || 1;
+  // label room: ~45 % of the span on the negative side, ~25 % on the positive side (compact value labels)
+  const domain = sameKind ? niceBounds(gMin < 0 ? gMin - span * 0.45 : 0, gMax > 0 ? gMax + span * 0.25 : span * 0.1) : undefined;
   const panels = plan.seriesKeys.map((k) => {
     const rows: Row[] = order.map((r) => ({ label: humanizeValue(r[plan.dimKey]), raw: r, value: toNumber(r[k]) ?? 0 }));
-    const sub: ChartPlan = { ...plan, valueKey: k, rows, unit: parseUnit(spec.unit, k), total: rows.reduce((s, r) => s + r.value, 0) };
-    return { k, option: rankedOption(sub, t, { compact: true, title: humanizeKey(k), labelPx: 115 }) };
+    // keep a shared unit (e.g. "Executives") when the split was only by size; drop it when families differ
+    const sharedUnit = new Set(plan.seriesKeys.map((x) => parseUnit(spec.unit, x).kind)).size === 1 ? spec.unit : undefined;
+    const sub: ChartPlan = { ...plan, valueKey: k, seriesKeys: [k], rows, unit: parseUnit(sharedUnit, k), total: rows.reduce((s, r) => s + r.value, 0) };
+    // U5.9: line panels only for real time axes; grades / buckets are ordinal → columns.
+    const asLine = plan.timeLike;
+    const option = asLine
+      ? withTitle(lineOption(sub, t, order), humanizeKey(k), t)
+      : plan.ordinal
+        ? withTitle(columnOption(sub, t), humanizeKey(k), t)
+        : rankedOption(sub, t, { compact: true, title: humanizeKey(k), labelPx: 150, domain: domain && { min: domain.min, max: domain.max } });
+    return { k, option };
   });
   return (
     <div className="grid h-full gap-6" style={{ gridTemplateColumns: `repeat(${Math.min(panels.length, 3)}, minmax(0, 1fr))` }}>
@@ -123,6 +165,8 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = fal
       case 'column':
         return columnOption(plan, t);
       case 'histogram':
+        // U5.9: < 30 raw values → rank the values (same "Distribution of …" note); no histogram + density line.
+        if (plan.sparseRows) return rankedOption({ ...plan, form: 'ranked', rows: sparseTopN(plan.sparseRows) }, t);
         return histogramOption(plan, t);
       case 'waterfall':
         return waterfallOption(plan, t);
@@ -161,7 +205,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = fal
   }
 
   return (
-    <div className="w-full h-full" data-chart-form={plan.form}>
+    <div className="w-full h-full" data-chart-form={plan.form === 'histogram' && plan.sparseRows ? 'ranked' : plan.form}>
       {plan.form === 'donut' ? (
         <DonutWithLegend plan={plan} t={t} isPie={false} />
       ) : plan.form === 'pie' ? (
