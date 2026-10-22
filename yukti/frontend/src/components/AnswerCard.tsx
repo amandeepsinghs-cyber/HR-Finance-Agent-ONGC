@@ -24,7 +24,7 @@ import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
 import { sourceLabel } from './FloatingConversationPanel';
 import { planChart } from '@/charts/plan';
 import { cleanText, humanizeKey, toNumber } from '@/charts/format';
-import { ContextChips } from './ui/primitives';
+import { Card, Chip, ContextChips } from './ui/primitives';
 import { Download, ChevronRight, Database, Scale, FileText, Loader2, Volume2, BarChart3, PieChart, Activity, Table as TableIcon, SlidersHorizontal, Sparkles, CornerDownRight } from 'lucide-react';
 
 const NOISE = /^(executed sql|grounding:|query:|sql query|voice turn completed|yukti ai connected|role:|served from|canvas visual|turn complete)/i;
@@ -103,17 +103,17 @@ const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: stri
   const text = cleanText(contract.display_text || contract.spoken_summary || '');
   return (
     <article className="flex flex-col gap-3" data-testid="answer-card" data-visual-type="none">
-      <div className="card px-[1.35rem] py-[1.1rem] max-w-[72rem] flex items-start gap-3">
+      <Card className="px-[1.35rem] py-[1.1rem] max-w-[72rem] flex items-start gap-3">
         <Sparkles className="w-4 h-4 mt-[0.3rem] shrink-0 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
         <p className="text-body text-[var(--ink)] leading-relaxed">{text || '…'}</p>
-      </div>
+      </Card>
       {onAsk && followUps.length > 0 && (
         <nav aria-label="Follow-up questions" className="flex flex-wrap items-center gap-2" data-testid="follow-ups">
           {followUps.map((f) => (
-            <button key={f.label} type="button" onClick={() => onAsk(f.q, (f as { patch?: SpecPatch }).patch)} className="chip !py-1.5 !text-label" data-testid="follow-up-chip">
+            <Chip key={f.label} onClick={() => onAsk(f.q, (f as { patch?: SpecPatch }).patch)} className="!py-1.5 !text-label" data-testid="follow-up-chip">
               <CornerDownRight className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
               {cleanText(f.label)}
-            </button>
+            </Chip>
           ))}
         </nav>
       )}
@@ -337,10 +337,10 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               </div>
               {exportOptions.length > 0 && !refused && (
                 <div className="relative shrink-0">
-                  <button onClick={() => setExportOpen((o) => !o)} className="chip !py-2" aria-haspopup="menu" aria-expanded={exportOpen} data-testid="export-button">
+                  <Chip onClick={() => setExportOpen((o) => !o)} className="!py-2" aria-haspopup="menu" aria-expanded={exportOpen} data-testid="export-button">
                     {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" />}
                     Export
-                  </button>
+                  </Chip>
                   {exportOpen && (
                     <div role="menu" className="absolute right-0 top-[calc(100%+0.4rem)] w-[13rem] rounded-[var(--radius-lg)] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-40">
                       {exportOptions.map((o) => (
@@ -457,6 +457,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
           <div className={`grid gap-[1.25rem] ${insights.length && !refused && !wideTable ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
             {/* Newest-answer aura edge (U4.7): glows briefly when a fresh answer lands, then fades */}
             <div data-aura={glow} className="yk-aura-ring rounded-card min-w-0 self-start w-full">
+            {/* U4.8: kept – visual-card container conditionally applies .card only when !selfFramed (tables/documents self-frame) */}
             <section
               className={`yk-aura-surface min-w-0 ${selfFramed ? '' : 'card p-[1.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
               data-testid="visual-card"
@@ -507,7 +508,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
             </div>
 
             {insights.length > 0 && !refused && (
-              <aside className="card p-[1.25rem] self-start" data-testid="insights">
+              <Card as={'aside' as any} className="p-[1.25rem] self-start" data-testid="insights">
                 <div className="text-label text-[var(--ink-2)] mb-3">Key takeaways</div>
                 <ul className="space-y-[0.85rem]">
                   {insightItems.slice(0, 5).map((it, i) => (
@@ -526,7 +527,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
                     </li>
                   ))}
                 </ul>
-              </aside>
+              </Card>
             )}
           </div>
 
@@ -541,10 +542,10 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
                 <div className="mt-2 space-y-2.5">
                   <div className="flex flex-wrap gap-2">
                     {sources.map((s, i) => (
-                      <button key={i} onClick={() => setSelectedSource(s)} className="chip !text-label">
+                      <Chip key={i} onClick={() => setSelectedSource(s)} className="!text-label">
                         {s.kind === 'policy' ? <Scale className="w-3.5 h-3.5 text-ongc-maroon" /> : s.kind === 'document' ? <FileText className="w-3.5 h-3.5 text-[var(--accent)]" /> : <Database className="w-3.5 h-3.5 text-[var(--accent)]" />}
                         {sourceLabel(s)}
-                      </button>
+                      </Chip>
                     ))}
                   </div>
                   {contract.caveat && (
@@ -563,10 +564,10 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
       {isLatest && onAsk && followUps.length > 0 && !refused && (
         <nav aria-label="Follow-up questions" className="flex flex-wrap items-center gap-2" data-testid="follow-ups">
           {followUps.map((f) => (
-            <button key={f.label} type="button" onClick={() => onAsk(f.q, (f as { patch?: SpecPatch }).patch)} className="chip !py-1.5 !text-label" data-testid="follow-up-chip">
+            <Chip key={f.label} onClick={() => onAsk(f.q, (f as { patch?: SpecPatch }).patch)} className="!py-1.5 !text-label" data-testid="follow-up-chip">
               <CornerDownRight className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
               {cleanText(f.label)}
-            </button>
+            </Chip>
           ))}
         </nav>
       )}

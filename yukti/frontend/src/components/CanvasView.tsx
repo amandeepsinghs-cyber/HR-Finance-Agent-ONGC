@@ -10,6 +10,7 @@ import type { Turn } from '@/state/feed';
 import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
 import { latestAnswered } from '@/state/feed';
 import { Users, TrendingUp, Target, Scale, BarChart3, Activity } from 'lucide-react';
+import { Card } from './ui/primitives';
 
 interface CanvasViewProps {
   /** conversation feed (U2.2); empty = greeting */
@@ -138,10 +139,12 @@ const Greeting: React.FC<{
           {starters.map((c) => {
             const Icon = c.icon;
             return (
-              <button
+              <Card
                 key={c.title}
+                as={'button' as any}
+                variant="glass"
                 onClick={() => onSelect?.(c.q)}
-                className="group text-left rounded-card border border-[var(--hairline)] bg-[var(--glass)] backdrop-blur-md shadow-[var(--card-shadow)] px-5 py-4 transition duration-fast hover:-translate-y-0.5 hover:border-[var(--accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+                className="group text-left px-5 py-4 transition duration-fast hover:-translate-y-0.5 hover:border-[var(--accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
               >
                 <span className="flex items-center gap-2 text-caption uppercase tracking-[0.06em] text-[var(--ink-3)]">
                   <Icon className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" />
@@ -150,7 +153,7 @@ const Greeting: React.FC<{
                 <span className="mt-2 block text-label font-semibold text-[var(--ink)] leading-snug group-hover:text-[var(--accent-deep)] dark:group-hover:text-[var(--accent-soft)]">
                   {c.title}
                 </span>
-              </button>
+              </Card>
             );
           })}
         </div>
