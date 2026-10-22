@@ -3,7 +3,7 @@
 **Location**: `feature_list_and_verbatims/feature_list/design_recommendations_ui_and_orb.md`  
 **Linked Features**: [`FEAT-004`](./feature_list.md#feat-004-luminous-siri--infinity-loop-voice-orb), [`FEAT-005`](./feature_list.md#feat-005-executive-ui-modernization--enterprise-material-polish)  
 **Linked Verbatims**: [`Verbatim 12`](../verbatims/verbatim_12_orb_and_ui_polish.md)  
-**Status**: Adopted Specification
+**Status**: Adopted Specification (palette pending **OD-1**; context-chip source label = `SSOT`, per FEAT-007)
 
 ---
 

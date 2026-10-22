@@ -5,6 +5,9 @@
 **Linked Verbatim**: [`Verbatim 13`](../verbatims/verbatim_13_named_employee_roster.md)  
 **Audit Date**: October 22, 2026
 
+> [!WARNING]
+> **Superseded in part by FEAT-006 §4 (2026-10-22):** G-1/G-2 and the §3 SQL are **not needed**; use `hrfin_gold.ssot_workforce_employee`, which already has named employees and station tenure. G-3 (mock router) is replaced by contract-v2 fixtures (U5.2). G-4 is replaced by FEAT-010 / D-5 (CMD **and all Directors** see names; E1–E4 get an aggregate or a refusal).
+
 ---
 
 ## Executive Summary

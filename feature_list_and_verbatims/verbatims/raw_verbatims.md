@@ -3,7 +3,7 @@
 **Project**: ONGC HR and Finance Agent  
 **Target Audience / Primary Persona**: Chief Managing Director (CMD), ONGC  
 **Location**: `/usr/local/google/home/amandeepsinghs/o&g agentic transformation/Oil & Gas Agent Portfolio/cloud_run_apps/HR and Finance_ONGC`  
-**Captured Date**: October 19, 2026  
+**Captured Date**: October 19–22, 2026 (entries 1–10 on 19–20 Oct; 11–14 on 22 Oct)  
 
 ---
 
@@ -150,3 +150,15 @@
 > Now as a CMD, these are the kind of information that he would like to see, so that an action can be taken on that. So see what is missing in this, also save it as a verbatim and a feature request. So it can only be generated once the data is there, then we will talk about okay what is needed in the data and any data gaps. Also save this first."
 
 
+
+---
+
+## 14. Upgrade Approval, Governance, UI-First Order & Granular-Data RBAC (typed in chat, 22-Oct-2026 05:21)
+
+> "1. yes I approve the build but we should have a build.md file, a feature list and a step by step upgrade checklist.md before doing anything. We should have a robust documentation and confirmation mechanism and review mechanism so that we have a robust build. I will go with the UI first as it changes the feel and UI is ultimately tied to the brain as you said. See with names or any other data my idea is to show and expose the granular data on the CMD and Director level. On the E1-E4 level it can be aggregated summary or rejection. yes commit the current version first and say it as a baseline build."
+
+---
+
+## 15. Any-Chart Re-presentation & Elegant, Professional Plots (typed in chat, 22-Oct-2026 05:37)
+
+> "go ahead. CMD and Directors see everything. 4. agree, 5 ok, 6. ok, as I said there should be many ways to present data and the user can also at time ask if the data needs to present in a different way. Eg if there is a histogram presented as default then the user may ask to present it in a pie chart or other type of plots and the interface should be able to plot the data in the required format. Also the plots should be elegant and the most professional it is the main thing giving the impression of the platform and interface."
