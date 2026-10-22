@@ -1,42 +1,67 @@
-# Yukti AI — HR & Finance Agent for ONGC (demo) · v0.1
+# Yukti AI — Voice-First HR & Finance Agent for ONGC Leadership · v1.0 (`upgrade-H1`)
 
-Voice-first HR & Finance agent for ONGC leadership (CMD, Director (HR), Director (Finance), E1–E4 officers). Questions can be asked in English, Hindi or Hinglish, by voice or text. It answers in 2–4 sentences (Leda voice), shows a live chart, table or document on a canvas, can draft documents (board notes, Parliament replies, applications) and exports to Word, PDF and Excel. It refuses on a per-persona basis, citing the relevant policy.
+Voice-first HR & Finance executive agent for ONGC leadership (**CMD**, **Director (HR)**, **Director (Finance)**) and officers (**E1–E4**). Questions can be asked in English, Hindi, or Hinglish by voice or text. Yukti responds in 2–4 grounded sentences (Leda voice), renders interactive visualizations in a scrollable conversation feed (`AnswerCard` v2), supports instant any-chart re-presentation (`< 300 ms`), drills down from aggregate metrics to actionable employee rosters, drafts formal documents (Board notes, Transfer proposals, Parliament replies), and exports to Word (`.docx`), PDF (`.pdf`), Excel (`.xlsx`), Google Docs, and Google Sheets. Role-based access control (`rbac_policy.yaml`) is enforced pre- and post-query with small-cell suppression (`< 5`).
 
-> **Demo only.** All employee-level and financial detail is **synthetic** ("fully emergent" simulation calibrated to public ONGC facts, e.g. headcount 23,117 and revenue ₹1,32,508 cr in FY26). Rulebooks are marked *DEMO RECONSTRUCTION — not an official ONGC document*. Board personas are role-only; no real individuals are represented.
+> **Demo only.** All employee-level and financial detail is **synthetic** ("fully emergent" simulation calibrated to public ONGC facts, e.g. headcount 23,117 and revenue ₹1,32,508 Cr in FY26). Rulebooks are marked *DEMO RECONSTRUCTION — not an official ONGC document*. Board personas are role-only; no real individuals are represented.
 
-## Repository layout
+---
+
+## Repository Layout
+
 | Path | What |
 |---|---|
-| `feature_list_and_verbatims/` | Feature backlog and user requirements (verbatim) |
-| `docs/` | Question bank, data requirements, **UX spec** (`ux_spec.md`), gate reviews, **`TODO_BACKLOG.md`** (deferred work) |
-| `data_bank/world_bible/` | Locked reference world: schema, calibration targets, questions (89 + 267 follow-ups) |
-| `data_bank/generators/` | Synthetic data generators (HR, ops, finance, governance, documents, gaps) |
-| `data_bank/medallion/` | GCS upload, Bronze loader, Dataform Silver/Gold, document pipeline (Document AI OCR → chunks → Vertex AI Search) |
-| `data_bank/answer_key/` | Verified SQL, expected results and narratives for all 356 entries, plus the semantic audit (`AUDIT_SEMANTIC_2026-10-20.md`) |
-| `data_bank/verify/`, `data_bank/tests/` | Independent verification harness and tests |
-| `yukti/contracts/` | Agent→UI answer contract (JSON Schema) |
-| `yukti/backend/` | FastAPI + Google ADK agent (Gemini Live `gemini-3.8-live`, voice Leda; text `gemini-2.5-flash`), tools: query_data, search_policy, what_if, draft_document, export, access_check; eval harness |
-| `yukti/frontend/` | Next.js + Tailwind + Framer Motion + ECharts UI (AlphaEvolve-style particle orb, floating chat, canvas, Survey of India map) |
-| `spikes/voice_chart_spike/` | Early voice→chart latency spike |
+| `BUILD.md` | Build charter, 5-gate governance (`G1`–`G5`), architecture, and quality metrics |
+| `UPGRADE_CHECKLIST.md` | Step-by-step upgrade checklist (`U0`–`U5`, `B1`–`B4`, `H1`) with links to G3 evidence and G4 reviews |
+| `DELEGATION.md` | Multi-agent delegation protocol (`Opus` / `Flash` / `Flash-lite`) and task packets (`docs/delegation/packets/`) |
+| `docs/DECISIONS.md` | Complete decision log (`D-1` … `D-33`) |
+| `docs/demo_script.md` | End-to-end executive demo script (Voice orb, 7-turn HR chain, Any-chart re-plot, 5-turn Finance chain, RBAC) |
+| `docs/reviews/` | Independent G4 review reports and rubric scorecards (`U0.2` through `H1`) |
+| `feature_list_and_verbatims/` | Feature specification (`FEAT-001` … `FEAT-016`) and sponsor verbatims (`V1` … `V16`) |
+| `data_bank/` | Locked reference world, synthetic generators, medallion pipeline, and 356-entry verified answer key |
+| `yukti/contracts/` | Agent ↔ UI Answer Contract v2 JSON Schema (`answer_contract.schema.json`) |
+| `yukti/backend/` | FastAPI + Google ADK + QuerySpec brain (`app/brain/`: planner, compiler, RBAC, insights, drilldowns, narrator) + Gemini Live (`gemini-3.8-live`, voice Leda) + BigQuery semantic layer (`app/semantic/`) |
+| `yukti/frontend/` | Next.js + Tailwind + ECharts UI (`src/design/` tokens, `primitives.tsx`, `VoiceOrb.tsx` borderless Aurora wave, `ConversationFeed.tsx`, `AnswerCard.tsx`, `RosterTable.tsx`, `CompareRenderer.tsx`, `src/charts/compat.ts`) |
 
-## GCP (project `ongc-hr-finance-agent`)
-BigQuery `hrfin_bronze/silver/gold/docs` (asia-south1), GCS `gs://ongc-hr-finance-agent-landing` and `-docs`, Document AI OCR (asia-south1), Vertex AI Search `hrfin-doc-search-engine` (global), and Gemini on Vertex AI (us-central1/global).
+---
 
-## Run locally
+## GCP Architecture (Project `ongc-hr-finance-agent`)
+
+- **BigQuery (`asia-south1`):** `hrfin_bronze`, `hrfin_silver`, `hrfin_gold` (`ssot_workforce_employee`, `ssot_work_centre_360`, `ssot_field_economics_360`, `ssot_corporate_annual_360`), `hrfin_docs`
+- **Cloud Storage:** `gs://ongc-hr-finance-agent-landing` and `gs://ongc-hr-finance-agent-docs`
+- **Vertex AI Search (`global`):** `hrfin-doc-search-engine`
+- **Gemini on Vertex AI:** `gemini-2.5-flash` (structured-output QuerySpec planner & ADK text runner), `gemini-3.8-live` (bi-directional voice with Leda voice & server/client barge-in)
+
+---
+
+## Run Locally
+
+Requires `gcloud auth application-default login` with access to `ongc-hr-finance-agent`.
+
 ```bash
-# backend
-cd yukti/backend && uv sync && PORT=8095 uv run python run.py
-# frontend
-cd yukti/frontend && npm install && npm run dev   # http://localhost:3000  (?mock=1 for offline fixtures, ?debug=1 for latency overlay)
+# 1. Start Backend (FastAPI + QuerySpec Planner on :8095)
+cd yukti/backend
+YUKTI_PLANNER=1 GOOGLE_CLOUD_PROJECT=ongc-hr-finance-agent GOOGLE_GENAI_USE_VERTEXAI=TRUE \
+  .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8095
+
+# 2. Start Frontend Single-Origin Server (Next.js + HTTP/WS Proxy on :3300)
+cd yukti/frontend
+npm install && npm run build
+NODE_ENV=production PORT=3300 HOST=0.0.0.0 YUKTI_BACKEND_URL=http://127.0.0.1:8095 node server.js
 ```
-Requires `gcloud auth application-default login` with access to the project.
 
-## Not in git (heavy or regenerable)
-- `data_bank/landing/**` data files (~750 MB): regenerate with `data_bank/generators/*` in the order of `data_bank/DATA_GENERATION_CHECKLIST.md`, or copy from `gs://ongc-hr-finance-agent-landing/`.
-- `knowledge/public_sources/**/raw/` PDFs: re-download using the links in `knowledge/public_sources/policies/MANIFEST.md` and `grounding_data/FACTS.md`.
-- Local DuckDB files, `node_modules`, `.venv`, `.next`, and exports.
+Open [http://localhost:3300](http://localhost:3300) (or [http://localhost:3300/design-system](http://localhost:3300/design-system) for the design system & chart showcase).
 
-## Status (v0.1)
-- Data bank, medallion pipeline, answer key (re-audited), UI and live agent integration: working end-to-end.
-- Agent accuracy (cache OFF, `yukti/backend/eval/report.md`): **35% overall** (roots 55%, follow-ups 22%, paraphrases 37%, held-out 44%). Improvement in progress.
-- Deferred: data repair sprint, RBAC and Cloud Run deployment (see `docs/TODO_BACKLOG.md`).
+---
+
+## Verification & Quality Summary (`v1.0` / `upgrade-H1`)
+
+- **UI & Visual System (`U1`–`U5`):**
+  - Tokenised design system (`0` hardcoded hex in components; `58/58` WCAG contrast pairs pass in Light & Dark).
+  - Borderless **Aurora wave** voice orb (`D-29`) verified at `60 fps` at 1440p and 4K.
+  - Scrollable conversation feed (`AnswerCard` v2), virtualised `RosterTable` (`60 fps` on 2,000 rows), `CompareRenderer`, and `20/20` chart gallery views scoring `≥ 4/5` on all 8 rubric criteria (`C1`–`C8`).
+- **Brain, Governance & Hardening (`B1`–`B4`, `H1`):**
+  - 86-table profiled `semantic_catalog.json` + unified entity dictionary (`0` catalog/data mismatches).
+  - Structured-output `QuerySpec` planner + deterministic SQL compiler (`37/37` golden specs, `100%` BigQuery dry-run, flagship 7-turn HR chain `7/7`, flagship 5-turn Finance chain `5/5`).
+  - Granular RBAC (`25/25` persona × data-class matrix cells pass, `120/120` gate refusal governance, `< 5` small-cell suppression).
+  - Deterministic insight engine & grounded narrator (`0` ungrounded numbers across all 120 gate turns).
+  - Gate accuracy (`cache OFF`, `YUKTI_PLANNER=1`): **87.5% lenient (`105/120`) / 71.7% strict (`86/120`)**, up from **35.0%** pre-fix baseline (`52.5%` strict at `U0`), with median latency reduced from `14.6 s` (`U0`) to **`2.9 s`** (`H1`).

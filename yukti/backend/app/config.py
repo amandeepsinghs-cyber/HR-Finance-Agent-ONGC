@@ -19,7 +19,7 @@ EXPORTS_DIR = BACKEND_DIR / "exports"
 EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # GCP settings
-GCP_PROJECT = os.getenv("TARGET_PROJECT") or "ongc-hr-finance-agent"
+GCP_PROJECT = os.getenv("TARGET_PROJECT") or os.getenv("YUKTI_GCP_PROJECT") or "ongc-hr-finance-agent"
 BQ_LOCATION = os.getenv("BQ_LOCATION", "asia-south1")
 VERTEX_LOCATION = os.getenv("VERTEX_LOCATION", "us-central1")
 VERTEX_TEXT_LOCATION = os.getenv("YUKTI_TEXT_LOCATION", "global")
@@ -48,3 +48,5 @@ ALLOWED_DATASETS = {
 
 JOB_LABELS = {"datacloud": "ai-agent"}
 MAX_BYTES_BILLED = 524_288_000  # 500 MB
+FX_INR_PER_USD = float(os.getenv("YUKTI_FX_INR_PER_USD", "88.33"))
+

@@ -27,6 +27,82 @@ def get_contract_validator() -> jsonschema.Draft202012Validator:
     return _CONTRACT_VALIDATOR
 
 
+_VALID_LANGUAGES = {"en", "hi", "hi-en"}
+_VALID_PERSONAS = {"CMD", "DIR_HR", "DIR_FIN", "E2_HR", "E3_FIN"}
+_VALID_VISUAL_TYPES = {"kpi", "chart", "table", "clause", "document", "refusal", "none"}
+_VALID_VISUAL_MODES = {"replace", "refine", "compare", "restore"}
+
+
+def validate_and_repair_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
+    """Validates an Answer Contract against answer_contract.schema.json, repairing common
+    drift (e.g. language='en-IN' -> 'en', missing defaults, overlong strings) so schema
+    validation never crashes a turn with an unhandled HTTP 500 (H1.3b / Audit 2.14).
+    """
+    validator = get_contract_validator()
+    try:
+        validator.validate(contract)
+        return contract
+    except jsonschema.ValidationError as first_err:
+        logger.warning(f"Contract validation warning (repairing): {first_err.message}")
+
+    # Normalize language (e.g., 'en-IN', 'en-US' -> 'en'; 'hi-IN' -> 'hi')
+    lang = str(contract.get("language") or "en").strip().lower()
+    if lang not in _VALID_LANGUAGES:
+        if lang.startswith("hi") and "en" in lang:
+            contract["language"] = "hi-en"
+        elif lang.startswith("hi"):
+            contract["language"] = "hi"
+        else:
+            contract["language"] = "en"
+
+    # Normalize persona
+    persona = str(contract.get("persona") or "CMD").strip().upper()
+    if persona not in _VALID_PERSONAS:
+        from app.access_control import normalize_persona
+        contract["persona"] = normalize_persona(persona)
+
+    # Ensure required string fields
+    if not contract.get("turn_id") or not isinstance(contract.get("turn_id"), str):
+        contract["turn_id"] = "turn-repaired-001"
+    spoken = str(contract.get("spoken_summary") or "Details are on screen.").strip()
+    contract["spoken_summary"] = spoken or "Details are on screen."
+    display = str(contract.get("display_text") or contract["spoken_summary"]).strip()
+    contract["display_text"] = (display or contract["spoken_summary"])[:600]
+
+    # Ensure visual structure
+    vis = contract.get("visual")
+    if not isinstance(vis, dict):
+        vis = {"type": "none", "mode": "replace"}
+        contract["visual"] = vis
+    if vis.get("type") not in _VALID_VISUAL_TYPES:
+        vis["type"] = "none"
+    if vis.get("mode") not in _VALID_VISUAL_MODES:
+        vis["mode"] = "replace"
+
+    # Ensure required arrays & objects
+    if not isinstance(contract.get("insights"), list):
+        contract["insights"] = []
+    if not isinstance(contract.get("sources"), list):
+        contract["sources"] = []
+    if not isinstance(contract.get("suggestions"), list):
+        contract["suggestions"] = []
+    if not isinstance(contract.get("export_options"), list):
+        contract["export_options"] = ["pdf"]
+    if not isinstance(contract.get("status_events"), list):
+        contract["status_events"] = ["Completed"]
+    if not isinstance(contract.get("access"), dict) or contract["access"].get("status") not in ("allowed", "refused", "partial"):
+        contract["access"] = {"status": "allowed"}
+
+    try:
+        validator.validate(contract)
+    except jsonschema.ValidationError as second_err:
+        logger.error(f"Contract validation still had issue after repair ({second_err.message}); stripping optional v2 fields if invalid.")
+        for opt_key in ("insights_v2", "drilldowns", "context_chips", "query_spec"):
+            if opt_key in list(second_err.absolute_path):
+                contract.pop(opt_key, None)
+    return contract
+
+
 def detect_language(text: str, default: str = "en") -> str:
     """Detects whether user query is English (en), Hindi (hi), or Hinglish (hi-en)."""
     if not text:

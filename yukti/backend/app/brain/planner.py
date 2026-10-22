@@ -196,8 +196,17 @@ class Planner:
             thinking_config=types.ThinkingConfig(thinking_budget=0),
             max_output_tokens=1024,
         )
-        resp = await self.client.aio.models.generate_content(model=self.model, contents=prompt, config=cfg)
-        text = (resp.text or "").strip()
+        resp = None
+        for attempt in range(3):
+            try:
+                resp = await self.client.aio.models.generate_content(model=self.model, contents=prompt, config=cfg)
+                break
+            except Exception as e:
+                if attempt < 2 and ("429" in str(e) or "RESOURCE_EXHAUSTED" in str(e)):
+                    await asyncio.sleep(1.5 * (attempt + 1))
+                    continue
+                raise
+        text = (resp.text or "").strip() if resp else ""
         return json.loads(text) if text else {}
 
     # ------------------------------------------------------------ helpers

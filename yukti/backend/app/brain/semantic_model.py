@@ -7,6 +7,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
 
+from app.config import FX_INR_PER_USD
+
 MODEL_PATH = Path(__file__).resolve().parent / "semantic_model.yaml"
 
 
@@ -75,7 +77,8 @@ class SemanticModel:
             fields = {fn: FieldDef(name=fn, **fd) for fn, fd in (s.get("fields") or {}).items()}
             metrics = {}
             for mn, md in (s.get("metrics") or {}).items():
-                metrics[mn] = MetricDef(name=mn, subject=sname, expr=md["expr"], aggregation=md.get("aggregation", "sum"),
+                expr = str(md["expr"]).replace("{FX_INR_PER_USD}", str(FX_INR_PER_USD))
+                metrics[mn] = MetricDef(name=mn, subject=sname, expr=expr, aggregation=md.get("aggregation", "sum"),
                                         unit=md.get("unit", ""), label=md.get("label", mn),
                                         data_class=md.get("data_class", "general"), polarity=md.get("polarity"))
             subj = SubjectDef(

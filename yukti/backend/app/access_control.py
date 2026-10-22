@@ -6,6 +6,8 @@ the refusal answers from official ONGC governance policies for D1–D6, P18–P2
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, Set
 
+from app.config import GCP_PROJECT
+
 # Personas allowed in answer contract schema
 VALID_PERSONAS = {"CMD", "DIR_HR", "DIR_FIN", "E2_HR", "E3_FIN"}
 
@@ -38,13 +40,13 @@ REFUSAL_DEFINITIONS = {
         "alternative": "Public executive pay scale bands (E0 to E9) and statutory DA/allowance brackets.",
         # D-10: CMD and Directors see individual pay; only E1–E4 are refused (D-11).
         "restricted_personas": {"E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     grade_id,
     designation,
     pay_scale_min_inr,
     pay_scale_max_inr,
     typical_residency_years
-FROM `ongc-hr-finance-agent.hrfin_silver.dim_grade`
+FROM `{GCP_PROJECT}.hrfin_silver.dim_grade`
 WHERE LOWER(cadre) = 'executive'
 ORDER BY level_order;"""
     },
@@ -53,11 +55,11 @@ ORDER BY level_order;"""
         "rule_ref": "ONGC Job Rotation and Transfer Policy (JRTP) Clause 11.0 (Confidentiality & Promulgation of Transfer Orders) & RTI Act Section 8(1)(i).",
         "alternative": "Station tenure guidelines (JRTP Clause 3.0) and aggregate count of Mumbai executives overdue for rotational transfer.",
         "restricted_personas": {"E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     grade_id,
     discipline_id,
     COUNT(DISTINCT emp_id) AS mumbai_executives_due_rotation
-FROM `ongc-hr-finance-agent.hrfin_gold.v_continuous_stay`
+FROM `{GCP_PROJECT}.hrfin_gold.v_continuous_stay`
 WHERE is_current_stay = TRUE
   AND cluster_id = 'CL-MUM'
   AND grade_id LIKE 'E%'
@@ -70,13 +72,13 @@ ORDER BY grade_id, discipline_id;"""
         "rule_ref": "Modified Recruitment & Promotion Regulations 1980 / Service Rules 1995, Clause 8.0 (Confidentiality of DPC Proceedings & Sealed Cover).",
         "alternative": "Published promotion policy residency requirements and benchmark APAR eligibility criteria by grade.",
         "restricted_personas": {"E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     grade_id,
     designation,
     typical_residency_years,
     promotion_mode,
     dpc_evaluation_type
-FROM `ongc-hr-finance-agent.hrfin_silver.dim_grade`
+FROM `{GCP_PROJECT}.hrfin_silver.dim_grade`
 WHERE LOWER(cadre) = 'executive'
 ORDER BY level_order;"""
     },
@@ -85,12 +87,12 @@ ORDER BY level_order;"""
         "rule_ref": "Book of Delegated Powers (BDP 2015) Clause 8.0 & Corporate Commercial Information Protection Guidelines.",
         "alternative": "Audited company-wide gross revenues, standalone capital expenditure, and net profit from published annual accounts.",
         "restricted_personas": {"E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     fiscal_year,
     gross_revenue_inr_cr,
     total_capex_spent_inr_cr,
     pat_inr_cr
-FROM `ongc-hr-finance-agent.hrfin_gold.mart_corporate_performance`
+FROM `{GCP_PROJECT}.hrfin_gold.mart_corporate_performance`
 WHERE fiscal_year IS NOT NULL
 GROUP BY fiscal_year, gross_revenue_inr_cr, total_capex_spent_inr_cr, pat_inr_cr
 ORDER BY fiscal_year DESC
@@ -101,10 +103,10 @@ LIMIT 5;"""
         "rule_ref": "ONGC IT Data Governance Policy & CDA Rules 1994, Rule 5.0.",
         "alternative": "Aggregated counts of Delhi executives possessing station tenure >= 5 years, grouped by grade band.",
         "restricted_personas": {"E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     grade_id,
     COUNT(DISTINCT emp_id) AS executives_ge_5yr_count
-FROM `ongc-hr-finance-agent.hrfin_gold.v_continuous_stay`
+FROM `{GCP_PROJECT}.hrfin_gold.v_continuous_stay`
 WHERE is_current_stay = TRUE
   AND wc_id = 'WC-DEL'
   AND grade_id LIKE 'E%'
@@ -117,12 +119,12 @@ ORDER BY grade_id;"""
         "rule_ref": "Central Vigilance Commission (CVC) Operating Manual & ONGC Vigilance Guidelines, Clause 7.0.",
         "alternative": "Standard procedure for lodging vigilance complaints and Whistle Blower Policy protections.",
         "restricted_personas": {"E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     doc_id,
     clause_ref,
     heading,
     SUBSTR(text, 1, 300) AS quote_snippet
-FROM `ongc-hr-finance-agent.hrfin_docs.silver_chunks`
+FROM `{GCP_PROJECT}.hrfin_docs.silver_chunks`
 WHERE doc_id IN ('P2-01', 'Whistle Blower Policy') OR questions_served LIKE '%D6%'
 ORDER BY doc_id, clause_ref
 LIMIT 5;"""
@@ -132,12 +134,12 @@ LIMIT 5;"""
         "rule_ref": "Job Rotation and Transfer Policy (JRTP) Clause 11.0 (Confidentiality & Promulgation of Transfer Orders).",
         "alternative": "Published JRTP rotation calendar, station tenure norms (Clause 3.0), and hard station service rules.",
         "restricted_personas": {"E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     doc_id,
     clause_ref,
     heading,
     SUBSTR(text, 1, 300) AS quote_snippet
-FROM `ongc-hr-finance-agent.hrfin_docs.silver_chunks`
+FROM `{GCP_PROJECT}.hrfin_docs.silver_chunks`
 WHERE doc_id = 'JRTP' AND clause_ref IN ('Clause 3.0', 'Clause 9.0', 'Clause 11.0')
 ORDER BY clause_ref;"""
     },
@@ -146,12 +148,12 @@ ORDER BY clause_ref;"""
         "rule_ref": "Book of Delegated Powers (BDP 2015) Clause 8.0 (Confidentiality & Exceptions).",
         "alternative": "Operational financial delegation limits assigned to Key Executives / Level-1 Asset Managers for day-to-day procurement.",
         "restricted_personas": {"E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     doc_id,
     clause_ref,
     heading,
     SUBSTR(text, 1, 300) AS quote_snippet
-FROM `ongc-hr-finance-agent.hrfin_docs.silver_chunks`
+FROM `{GCP_PROJECT}.hrfin_docs.silver_chunks`
 WHERE doc_id = 'BDP summary' AND clause_ref IN ('Clause 2.0', 'Clause 3.0')
 ORDER BY clause_ref;"""
     },
@@ -160,12 +162,12 @@ ORDER BY clause_ref;"""
         "rule_ref": "Companies Act 2013 Section 118 / ONGC Board Secretariat Governance Norms.",
         "alternative": "Government policy guidelines for Discovered Small Fields (DSF) and the Production Enhancement Contract (PEC) framework for mature fields.",
         "restricted_personas": {"DIR_HR", "E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     doc_id,
     clause_ref,
     heading,
     SUBSTR(text, 1, 300) AS quote_snippet
-FROM `ongc-hr-finance-agent.hrfin_docs.silver_chunks`
+FROM `{GCP_PROJECT}.hrfin_docs.silver_chunks`
 WHERE doc_id IN ('G-07', 'BDP summary') OR questions_served LIKE '%P20%'
 ORDER BY doc_id, clause_ref
 LIMIT 5;"""
@@ -176,13 +178,13 @@ LIMIT 5;"""
         "alternative": "Official procedure for an officer to access their own appraisal and pay slip via Employee Self Service (ESS) portal.",
         # D-10: CMD and Directors see individual pay and APAR; only E1–E4 are refused (D-11).
         "restricted_personas": {"E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     grade_id,
     designation,
     pay_scale_min_inr,
     pay_scale_max_inr,
     typical_residency_years
-FROM `ongc-hr-finance-agent.hrfin_silver.dim_grade`
+FROM `{GCP_PROJECT}.hrfin_silver.dim_grade`
 WHERE LOWER(cadre) = 'executive'
 ORDER BY level_order;"""
     },
@@ -191,12 +193,12 @@ ORDER BY level_order;"""
         "rule_ref": "Book of Delegated Powers (BDP 2015) Clause 8.0 & Corporate Commercial Policy.",
         "alternative": "Audited standalone corporate revenue, gross operating profit (EBITDA), and total production figures from published annual accounts.",
         "restricted_personas": {"E2_HR", "E3_FIN"},
-        "alternative_sql": """SELECT
+        "alternative_sql": f"""SELECT
     fiscal_year,
     gross_revenue_inr_cr,
     ebitda_inr_cr,
     pat_inr_cr
-FROM `ongc-hr-finance-agent.hrfin_gold.mart_corporate_performance`
+FROM `{GCP_PROJECT}.hrfin_gold.mart_corporate_performance`
 WHERE fiscal_year IS NOT NULL
 GROUP BY fiscal_year, gross_revenue_inr_cr, ebitda_inr_cr, pat_inr_cr
 ORDER BY fiscal_year DESC

@@ -61,6 +61,7 @@ def _convert_row_value(val: Any) -> Any:
 def run_certified_query(
     query_id: str,
     params: Optional[Dict[str, Any]] = None,
+    persona: str = "CMD",
 ) -> Dict[str, Any]:
     """Executes a certified parameterized query from the verified query library.
 
@@ -98,9 +99,21 @@ def run_certified_query(
         if k not in merged_params:
             merged_params[k] = v
 
+    # H1.2: Validate parameter names and values against injection patterns before execution or caching
+    _UNSAFE_PARAM_RE = re.compile(
+        r"(?:;|--|/\*|\*/|['\"`\x00\r\n]|\b(?:UNION|SELECT|DROP|DELETE|UPDATE|INSERT|ALTER|CREATE|TRUNCATE|EXEC|EXECUTE|INFORMATION_SCHEMA|EXTERNAL_QUERY)\b)",
+        flags=re.IGNORECASE,
+    )
+    for p_name, p_val in merged_params.items():
+        if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", str(p_name)):
+            return {"type": "error", "error": f"Invalid parameter name '{p_name}'.", "retryable": False}
+        if isinstance(p_val, str):
+            if len(p_val) > 120 or _UNSAFE_PARAM_RE.search(p_val):
+                return {"type": "error", "error": f"Rejected unsafe parameter value for '{p_name}'.", "retryable": False}
+
     # Check cache
     cache = get_tool_cache()
-    cached_res = cache.get_sql(sql=f"CERTIFIED:{entry['id']}:{merged_params}")
+    cached_res = cache.get_sql(sql=f"CERTIFIED:{entry['id']}:{merged_params}", persona=persona)
     if cached_res:
         cached_res["latency_ms"] = round((time.perf_counter() - t0) * 1000, 1)
         cached_res["status_events"] = ["Using recently verified data"]
@@ -258,22 +271,29 @@ def run_certified_query(
         }
 
         # Cache result
-        cache.set_sql(sql=f"CERTIFIED:{entry['id']}:{merged_params}", persona="CMD", value=result)
+        cache.set_sql(sql=f"CERTIFIED:{entry['id']}:{merged_params}", persona=persona, value=result)
         return result
 
     except Exception as e:
         logger.error(f"Error executing certified query {query_id}: {e}", exc_info=True)
-        # Fallback with safe formatted substitution if parameter types had minor mismatch
+        # H1.2: Parameterised fallback only (never string-interpolate user parameters into SQL)
         try:
-            formatted_sql = raw_sql
+            fallback_params: List[bigquery.ScalarQueryParameter] = []
             for p_name, p_val in merged_params.items():
-                if isinstance(p_val, (int, float)):
-                    formatted_sql = formatted_sql.replace(f"@{p_name}", str(p_val))
+                if p_val is None:
+                    continue
+                if isinstance(p_val, bool):
+                    fallback_params.append(bigquery.ScalarQueryParameter(p_name, "BOOL", p_val))
+                elif isinstance(p_val, int):
+                    fallback_params.append(bigquery.ScalarQueryParameter(p_name, "INT64", p_val))
+                elif isinstance(p_val, float):
+                    fallback_params.append(bigquery.ScalarQueryParameter(p_name, "FLOAT64", p_val))
                 else:
-                    formatted_sql = formatted_sql.replace(f"@{p_name}", f"'{p_val}'")
+                    fallback_params.append(bigquery.ScalarQueryParameter(p_name, "STRING", str(p_val)))
 
-            job = client.query(formatted_sql, job_config=bigquery.QueryJobConfig(
+            job = client.query(raw_sql, job_config=bigquery.QueryJobConfig(
                 default_dataset=f"{GCP_PROJECT}.hrfin_silver",
+                query_parameters=fallback_params,
                 labels=JOB_LABELS,
                 maximum_bytes_billed=MAX_BYTES_BILLED,
             ))
@@ -298,7 +318,7 @@ def run_certified_query(
                 },
                 "sources": ["Audited Enterprise Records"],
                 "latency_ms": elapsed_ms,
-                "executed_sql": formatted_sql,
+                "executed_sql": raw_sql,
                 "params_applied": merged_params,
                 "provenance": entry.get("provenance", {}),
             }
@@ -308,3 +328,16 @@ def run_certified_query(
                 "error": f"Failed to execute certified query '{query_id}': {e2}",
                 "retryable": False,
             }
+
+
+async def execute_certified_query_async(
+    query_id: str,
+    params: Optional[Dict[str, Any]] = None,
+    persona: str = "CMD",
+) -> Dict[str, Any]:
+    """Non-blocking async wrapper for run_certified_query (H1.1)."""
+    import asyncio
+    return await asyncio.to_thread(run_certified_query, query_id=query_id, params=params, persona=persona)
+
+
+run_certified_query_async = execute_certified_query_async

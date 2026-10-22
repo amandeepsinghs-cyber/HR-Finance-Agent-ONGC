@@ -5,10 +5,12 @@ LRU eviction with configurable TTL (default 24 hours) and max 2,000 entries.
 """
 
 from collections import OrderedDict
+import copy
 import json
 import logging
 import os
 import re
+import threading
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -36,37 +38,40 @@ class ToolResultCache:
         self.max_size = max_size
         self.ttl = ttl_seconds
         self._cache: OrderedDict[str, Dict[str, Any]] = OrderedDict()
+        self._lock = threading.Lock()
         self.hits = 0
         self.misses = 0
 
     def _get(self, key: str) -> Optional[Dict[str, Any]]:
-        if key not in self._cache:
-            self.misses += 1
-            return None
+        with self._lock:
+            if key not in self._cache:
+                self.misses += 1
+                return None
 
-        entry = self._cache[key]
-        now = time.time()
-        if now - entry["timestamp"] > self.ttl:
-            # Expired
-            del self._cache[key]
-            self.misses += 1
-            return None
+            entry = self._cache[key]
+            now = time.time()
+            if now - entry["timestamp"] > self.ttl:
+                # Expired
+                del self._cache[key]
+                self.misses += 1
+                return None
 
-        # Move to end for LRU
-        self._cache.move_to_end(key)
-        self.hits += 1
-        return entry["value"]
+            # Move to end for LRU
+            self._cache.move_to_end(key)
+            self.hits += 1
+            return copy.deepcopy(entry["value"])
 
     def _set(self, key: str, value: Dict[str, Any]) -> None:
-        now = time.time()
-        if key in self._cache:
-            self._cache.move_to_end(key)
-        self._cache[key] = {
-            "value": value,
-            "timestamp": now,
-        }
-        if len(self._cache) > self.max_size:
-            self._cache.popitem(last=False)  # Evict oldest LRU
+        with self._lock:
+            now = time.time()
+            if key in self._cache:
+                self._cache.move_to_end(key)
+            self._cache[key] = {
+                "value": copy.deepcopy(value),
+                "timestamp": now,
+            }
+            if len(self._cache) > self.max_size:
+                self._cache.popitem(last=False)  # Evict oldest LRU
 
     def get_sql(self, sql: str, persona: str = "CMD") -> Optional[Dict[str, Any]]:
         norm_sql = normalize_sql_for_key(sql)

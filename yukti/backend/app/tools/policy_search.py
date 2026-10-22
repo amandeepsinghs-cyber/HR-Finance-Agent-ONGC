@@ -201,3 +201,8 @@ class PolicySearchEngine:
         if YUKTI_RESULT_CACHE:
             tool_cache.set_policy(query, persona, out)
         return out
+
+    async def search_async(self, query: str, top_k: int = 3, persona: str = "CMD") -> Dict[str, Any]:
+        """Non-blocking async wrapper for policy search (H1.1)."""
+        import asyncio
+        return await asyncio.to_thread(self.search, query=query, top_k=top_k, persona=persona)

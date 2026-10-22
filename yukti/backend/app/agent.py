@@ -4,6 +4,7 @@ mirroring user language (en/hi/hi-en), Indian number system, citing sources,
 and strictly answering from BigQuery and Vertex AI Search.
 """
 
+import asyncio
 import logging
 import os
 import re
@@ -77,15 +78,15 @@ _DRAFT_ENGINE = DocumentDraftingEngine()
 _EXPORT_ENGINE = DocumentExporter()
 
 
-def query_data(sql_query: str, title: Optional[str] = None) -> Dict[str, Any]:
+async def query_data(sql_query: str, title: Optional[str] = None) -> Dict[str, Any]:
     """Executes a SELECT query on BigQuery datasets hrfin_gold or hrfin_silver.
 
     Always follow the 5 Query-Craft rules and dataset allow-list.
     """
-    return execute_query_data(sql_query=sql_query, title=title)
+    return await asyncio.to_thread(execute_query_data, sql_query=sql_query, title=title)
 
 
-def run_certified_query(
+async def run_certified_query(
     query_id: str,
     params: Optional[Dict[str, Any]] = None,
     wc_id: Optional[str] = None,
@@ -116,15 +117,15 @@ def run_certified_query(
         merged["min_grade"] = min_grade
     if field_id:
         merged["field_id"] = field_id
-    return execute_certified_query(query_id=query_id, params=merged or None)
+    return await asyncio.to_thread(execute_certified_query, query_id=query_id, params=merged or None)
 
 
-def search_policy(query: str) -> Dict[str, Any]:
+async def search_policy(query: str) -> Dict[str, Any]:
     """Searches official ONGC policy manuals and rulebooks for matching clauses."""
-    return _POLICY_ENGINE.search(query=query)
+    return await asyncio.to_thread(_POLICY_ENGINE.search, query=query)
 
 
-def what_if(
+async def what_if(
     scenario: str,
     brent_price: Optional[float] = 60.0,
     freeze_months: Optional[int] = 24,
@@ -138,7 +139,8 @@ def what_if(
     - scenario='relocation': relocated_officers=200, cta_lakh=3.25
     - scenario='saed': windfall tax withdrawal
     """
-    return run_what_if_simulation(
+    return await asyncio.to_thread(
+        run_what_if_simulation,
         scenario=scenario,
         brent_price=brent_price,
         freeze_months=freeze_months,
@@ -147,7 +149,7 @@ def what_if(
     )
 
 
-def draft_document(
+async def draft_document(
     doc_type: str,
     topic: str,
     instruction: Optional[str] = None,
@@ -157,7 +159,8 @@ def draft_document(
 
     Supports instruction='make it shorter', 'add Brent $60 scenario', 'translate to Hindi'.
     """
-    return _DRAFT_ENGINE.draft(
+    return await asyncio.to_thread(
+        _DRAFT_ENGINE.draft,
         doc_type=doc_type,
         query=topic,
         version=version,
@@ -165,8 +168,7 @@ def draft_document(
     )
 
 
-def export_document(format: str, title: str, content: str) -> Dict[str, Any]:
-    """Exports documents or tabular statements to Word (.docx), Excel (.xlsx), PDF, or Google Docs/Sheets."""
+def _export_document_sync(format: str, title: str, content: str) -> Dict[str, Any]:
     fmt = format.lower()
     # H1.3a: the title comes from the model — never use it as a raw path (DocumentExporter.safe_path also guards)
     title = re.sub(r"[^A-Za-z0-9_\-]", "_", str(title or "Yukti_Export"))[:80] or "Yukti_Export"
@@ -181,6 +183,11 @@ def export_document(format: str, title: str, content: str) -> Dict[str, Any]:
         res = _EXPORT_ENGINE.export_google_docs(title=title, markdown_text=content, file_id=export_id)
         return {"status": "success", "export_id": export_id, "filename": f"{title}.docx", "format": "docs", "url": res.get("url")}
     return {"status": "success", "format": fmt}
+
+
+async def export_document(format: str, title: str, content: str) -> Dict[str, Any]:
+    """Exports documents or tabular statements to Word (.docx), Excel (.xlsx), PDF, or Google Docs/Sheets."""
+    return await asyncio.to_thread(_export_document_sync, format, title, content)
 
 
 def create_yukti_agent(

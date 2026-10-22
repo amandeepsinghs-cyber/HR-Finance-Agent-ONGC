@@ -142,14 +142,14 @@
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
-| **H1.1** | `O` | Async BigQuery/embeddings; voice tool calls off the receive loop | No event-loop blocking > 100 ms under 3 concurrent sessions | Load script | ⬜ | n/a | | | |
-| **H1.2** | `O` | SQL safety (re-validate repaired SQL, parameterised fallbacks, hardened allow-list) | Injection/bypass tests pass | `pytest` | ⬜ | n/a | | | |
+| **H1.1** | `O` | Async BigQuery/embeddings; voice tool calls off the receive loop | No event-loop blocking > 100 ms under 3 concurrent sessions | Load script | ✅ | n/a | ✅ | ✅ [review](docs/reviews/H1.md) | |
+| **H1.2** | `O` | SQL safety (re-validate repaired SQL, parameterised fallbacks, hardened allow-list) | Injection/bypass tests pass | `pytest` | ✅ | n/a | ✅ | ✅ [review](docs/reviews/H1.md) | |
 | **H1.3a** | `O` | Security hardening: export filename sanitisation (path traversal), `server.js` HTTPS backend + upstream abort | Traversal tests blocked; https backend proxy works; aborted request cancels upstream | `pytest` / node test | ✅ | n/a | ✅ | ✅ [review](docs/reviews/H1.3a_H1.5a.md) | |
-| **H1.3b** | `F` | Memory bounds (sessions, ADK events, visual history), cache immutability, contract-validation error handling | Regression test per item; memory flat over a 200-turn soak | `pytest` + soak script | ⬜ | [packet](docs/delegation/packets/H1.3b.md) | | | |
-| **H1.4** | `FL` | Full 773-turn eval | Targets in `BUILD.md` §6 | `yukti/backend/eval/gates/H1.md` | ⬜ | [packet](docs/delegation/packets/H1.4.md) | | | |
-| **H1.5a** | `F` | Update `Dockerfile` / `.dockerignore` / `start_cloudrun.sh` for the new build | `docker build` succeeds locally or via Cloud Build; image runs `/health` 200 | Build log | 🟡 files done; image build + /health at H1.5b | [packet](docs/delegation/packets/H1.5a.md) | ✅ | ✅ files [review](docs/reviews/H1.3a_H1.5a.md) | |
-| **H1.5b** | `O + S` | **Redeploy Cloud Run** (only after sponsor go-ahead) + smoke test | `/health` 200 via proxy; flagship HR + finance chains work on the Cloud Run URL; previous revision noted for rollback | Smoke test | ⬜ | n/a | | | |
-| **H1.6** | `F` | Final docs: README, APP_LINK, change log, demo script | README/APP_LINK/demo script reviewed against a live run of the flagship HR + finance chains; every documented command executed successfully | Reviewer agent | ⬜ | [packet](docs/delegation/packets/H1.6.md) | | | |
+| **H1.3b** | `F` | Memory bounds (sessions, ADK events, visual history), cache immutability, contract-validation error handling | Regression test per item; memory flat over a 200-turn soak | `pytest` + soak script | ✅ (executed by O, not F) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/H1.md) | |
+| **H1.4** | `FL` | Full 773-turn eval / H1 gate evaluation (D-34) | Targets in `BUILD.md` §6 | `yukti/backend/eval/gates/H1.md` | ✅ (executed by O, not FL; D-34) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/H1.md) · [gate](yukti/backend/eval/gates/H1.md) | |
+| **H1.5a** | `F` | Update `Dockerfile` / `.dockerignore` / `start_cloudrun.sh` for the new build | `docker build` succeeds locally or via Cloud Build; image runs `/health` 200 | Build log | ✅ files done (executed by O); image build + /health at H1.5b | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/H1.3a_H1.5a.md) | |
+| **H1.5b** | `O + S` | **Redeploy Cloud Run** (only after sponsor go-ahead) + smoke test | `/health` 200 via proxy; flagship HR + finance chains work on the Cloud Run URL; previous revision noted for rollback | Smoke test | ⬜ (ready on sponsor go-ahead, D-24) | n/a | | | |
+| **H1.6** | `F` | Final docs: README, APP_LINK, change log, demo script | README/APP_LINK/demo script reviewed against a live run of the flagship HR + finance chains; every documented command executed successfully | Reviewer agent | ✅ (executed by O, not F) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/H1.md) · [demo](docs/demo_script.md) | |
 
 ---
 
@@ -174,12 +174,12 @@
 | Baseline | 2026-10-22 | ✅ "commit the current version… baseline build" (V14) | waived (V14) | 2026-10-20 eval (pre-fix) | `baseline-v0.2` |
 | U0 | 2026-10-22 | ✅ "go ahead" (V15) | [`U0.2.md`](docs/reviews/U0.2.md), [`B1.md`](docs/reviews/B1.md) (U0.4) | `gates/U0.md` | `upgrade-U0` |
 | U1 | 2026-10-22 | ✅ order + aura approved (D-18) | [`U1.1`](docs/reviews/U1.1.md), [`U1.2/U1.4`](docs/reviews/U1.2_U1.4.md), [`U1.3/U1.5`](docs/reviews/U1.3_U1.5.md) | n/a (visual) | `upgrade-U1` |
-| U2 | | ⬜ | | n/a (UI tests) | `upgrade-U2` |
-| U3 | | ⬜ | | n/a (voice tests) | `upgrade-U3` |
-| U4 | | ⬜ | | n/a (visual) | `upgrade-U4` |
-| U5 | | ⬜ | | fixture sweep | `upgrade-U5` |
-| B1 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B1.md`](docs/reviews/B1.md) | `gates/B1.md` | — (G5 at final acceptance) |
-| B2 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B2.md`](docs/reviews/B2.md) | `gates/B2.md` | — (G5 at final acceptance) |
-| B3 | | ⬜ | | `gates/B3.md` | `upgrade-B3` |
-| B4 | | ⬜ | | `gates/B4.md` | `upgrade-B4` |
-| H1 | | ⬜ | | `gates/H1.md` | `upgrade-H1` |
+| U2 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`U2.md`](docs/reviews/U2.md) | n/a (UI tests) | `upgrade-U2` |
+| U3 | 2026-10-22 | ✅ Aurora wave C approved (D-29); final acceptance per D-24 | [`U3.md`](docs/reviews/U3.md), [`U3-aurora.md`](docs/reviews/U3-aurora.md) | n/a (voice tests, 60 fps 4K) | `upgrade-U3` |
+| U4 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`U4.md`](docs/reviews/U4.md), [`U4.8.md`](docs/reviews/U4.8.md) | n/a (visual) | `upgrade-U4` |
+| U5 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`U5.md`](docs/reviews/U5.md), [`U5.9.md`](docs/reviews/U5.9.md) | 20/20 rubric PASS | `upgrade-U5` |
+| B1 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B1.md`](docs/reviews/B1.md) | [`gates/B1.md`](yukti/backend/eval/gates/B1.md) | `upgrade-B1` |
+| B2 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B2.md`](docs/reviews/B2.md) | [`gates/B2.md`](yukti/backend/eval/gates/B2.md) | `upgrade-B2` |
+| B3 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B3.md`](docs/reviews/B3.md) | [`gates/B3.md`](yukti/backend/eval/gates/B3.md) | `upgrade-B3` |
+| B4 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B4.md`](docs/reviews/B4.md) | [`gates/B4.md`](yukti/backend/eval/gates/B4.md) | `upgrade-B4` |
+| H1 | 2026-10-22 | ⬜ (D-24: final acceptance; H1.5b on go-ahead) | [`H1.3a_H1.5a.md`](docs/reviews/H1.3a_H1.5a.md), [`H1.md`](docs/reviews/H1.md) | [`gates/H1.md`](yukti/backend/eval/gates/H1.md) | `upgrade-H1` |

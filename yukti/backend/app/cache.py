@@ -5,6 +5,7 @@ Never includes held-out follow-ups or paraphrases.
 Emits status_event: 'Served from verified demo cache'.
 """
 
+import copy
 import json
 import logging
 import os
@@ -77,7 +78,7 @@ class DemoCache:
         norm_q = self._normalize(query)
         qid = self.query_to_id.get(norm_q)
         if qid and qid in self.root_entries:
-            return self.root_entries[qid]
+            return copy.deepcopy(self.root_entries[qid])
         return None
 
 

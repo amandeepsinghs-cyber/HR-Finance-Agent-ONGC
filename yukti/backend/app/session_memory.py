@@ -15,6 +15,12 @@ from app.semantic.entities import CODE_RE, get_entities
 
 logger = logging.getLogger("yukti.session_memory")
 
+MAX_SESSION_TURNS = 50
+MAX_VISUAL_HISTORY = 20
+MAX_SPEC_HISTORY = 20
+MAX_SESSIONS = 200
+SESSION_TTL_SECONDS = 3600
+
 
 # Work-centre names/aliases come from the single entity dictionary (B1.2).
 
@@ -46,6 +52,7 @@ class SessionState:
     ) -> None:
         """Records an emitted turn contract into the session history and updates active dataset/entity state."""
         enriched = dict(turn_contract)
+        enriched.pop("all_rows", None)
         if user_query:
             enriched["user_query"] = user_query
             self.last_user_query = user_query
@@ -53,13 +60,21 @@ class SessionState:
 
         visual = turn_contract.get("visual")
         if visual and isinstance(visual, dict):
-            self.visual_history.append(visual)
+            vis_stored = dict(visual)
             tbl = visual.get("table") or {}
             cols = tbl.get("columns") or []
             rows = all_rows or tbl.get("rows") or (visual.get("chart") or {}).get("data") or []
             if cols and rows:
                 self.last_columns = list(cols)
                 self.last_rows = list(rows)[:2000]  # rosters up to 2,000 rows (B3.5 transfer note "for them")
+            if isinstance(tbl, dict) and isinstance(tbl.get("rows"), list) and len(tbl["rows"]) > 50:
+                tbl_stored = dict(tbl)
+                tbl_stored["rows"] = tbl["rows"][:50]
+                vis_stored["table"] = tbl_stored
+            enriched["visual"] = vis_stored
+            self.visual_history.append(vis_stored)
+            if len(self.visual_history) > MAX_VISUAL_HISTORY:
+                self.visual_history[:] = self.visual_history[-MAX_VISUAL_HISTORY:]
             title_sub = f"{visual.get('title', '')} {visual.get('subtitle', '')}"
             self._extract_entities_from_text(title_sub)
 
@@ -74,6 +89,10 @@ class SessionState:
             self._extract_entities_from_sql(self.last_sql)
 
         self.turns.append(enriched)
+        if len(self.turns) > MAX_SESSION_TURNS:
+            self.turns[:] = self.turns[-MAX_SESSION_TURNS:]
+        if len(self.spec_history) > MAX_SPEC_HISTORY:
+            self.spec_history[:] = self.spec_history[-MAX_SPEC_HISTORY:]
         self.last_turn_time = time.time()
 
     def _extract_entities_from_text(self, text: str) -> None:
@@ -236,10 +255,24 @@ class SessionState:
 
 
 class SessionManager:
-    """In-memory multi-session registry."""
+    """Bounded in-memory multi-session registry with LRU + TTL eviction (H1.3b)."""
 
-    def __init__(self):
+    def __init__(self, max_sessions: int = MAX_SESSIONS, ttl_seconds: int = SESSION_TTL_SECONDS):
+        self.max_sessions = max_sessions
+        self.ttl_seconds = ttl_seconds
         self.sessions: Dict[str, SessionState] = {}
+
+    def _evict(self) -> None:
+        now = time.time()
+        expired = [
+            sid for sid, st in list(self.sessions.items())
+            if now - st.last_turn_time > self.ttl_seconds
+        ]
+        for sid in expired:
+            self.sessions.pop(sid, None)
+        while len(self.sessions) >= self.max_sessions:
+            oldest_sid = min(self.sessions, key=lambda k: self.sessions[k].last_turn_time)
+            self.sessions.pop(oldest_sid, None)
 
     def get_or_create(
         self,
@@ -248,12 +281,14 @@ class SessionManager:
         language: str = "en",
     ) -> SessionState:
         if session_id not in self.sessions:
+            self._evict()
             self.sessions[session_id] = SessionState(
                 session_id=session_id,
                 persona=persona,
                 language=language,
             )
         else:
+            self.sessions[session_id].last_turn_time = time.time()
             if persona:
                 self.sessions[session_id].persona = persona
             if language:

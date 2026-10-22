@@ -19,9 +19,9 @@ from google.genai import types
 
 from app.access_control import check_access, normalize_persona
 from app.agent import create_yukti_agent
-from app.answer_composer import detect_language, get_contract_validator
+from app.answer_composer import detect_language, get_contract_validator, validate_and_repair_contract
 from app.brain.pipeline import planner_enabled, run_planner_turn
-from app.config import DEFAULT_TEXT_MODEL, VERTEX_TEXT_LOCATION
+from app.config import DEFAULT_TEXT_MODEL, GCP_PROJECT, VERTEX_TEXT_LOCATION
 from app.router import get_semantic_router
 from app.semantic.entities import get_entities
 from app.session_memory import get_session_manager
@@ -111,6 +111,53 @@ class AgentTurnRunner:
         )
         self.validator = get_contract_validator()
         self.session_manager = get_session_manager()
+        # Pre-warm catalog, entities, RBAC, and insight modules at startup so the first
+        # async turn never stalls the event loop on cold module imports or disk I/O (H1.1).
+        from app.brain.insight_context import table_insights as _ti  # noqa: F401
+        from app.brain.rbac import enforce_contract as _ec  # noqa: F401
+        from app.live_session import detect_screen_control_intent as _dsci  # noqa: F401
+        from app.semantic.normalize import load_catalog
+        get_entities()
+        load_catalog()
+
+    def _validate_contract(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Validates and repairs a contract so schema drift never causes an unhandled HTTP 500 (H1.3b)."""
+        return validate_and_repair_contract(contract)
+
+    def _prune_adk_sessions(self, user_id: str, session_id: str, max_sessions: int = 200, max_events: int = 40) -> None:
+        """Bounds ADK InMemorySessionService sessions and event history, stripping bulky `all_rows` (H1.3b)."""
+        app_map = getattr(self.session_service, "sessions", {}).get(self.runner.app_name, {})
+        if not app_map:
+            return
+        user_map = app_map.get(user_id, {})
+        sess = user_map.get(session_id)
+        if sess is not None and getattr(sess, "events", None):
+            for ev in sess.events:
+                if ev.content and ev.content.parts:
+                    for part in ev.content.parts:
+                        fr = getattr(part, "function_response", None)
+                        if fr is not None and isinstance(getattr(fr, "response", None), dict):
+                            resp_dict = fr.response
+                            resp_dict.pop("all_rows", None)
+                            if isinstance(resp_dict.get("result"), dict):
+                                resp_dict["result"].pop("all_rows", None)
+            if len(sess.events) > max_events:
+                trimmed = sess.events[-max_events:]
+                while trimmed and getattr(trimmed[0], "content", None) and getattr(trimmed[0].content, "role", None) != "user":
+                    trimmed.pop(0)
+                if trimmed:
+                    sess.events[:] = trimmed
+
+        # Bound total sessions across all personas
+        all_entries = [
+            (uid, sid, getattr(s_obj, "last_update_time", 0.0))
+            for uid, u_sessions in app_map.items()
+            for sid, s_obj in u_sessions.items()
+        ]
+        if len(all_entries) > max_sessions:
+            all_entries.sort(key=lambda item: item[2])
+            for uid, sid, _ts in all_entries[: len(all_entries) - max_sessions]:
+                app_map.get(uid, {}).pop(sid, None)
 
     async def execute_turn_async(
         self,
@@ -155,7 +202,7 @@ class AgentTurnRunner:
                     contract["insights_v2"] = [i.to_contract() for i in ins][:6]
             except Exception as e_ins:
                 logger.info(f"legacy insights skipped: {e_ins}")
-        self.validator.validate(contract)
+        self._validate_contract(contract)
         return contract
 
     async def _execute_turn_inner(
@@ -288,7 +335,7 @@ class AgentTurnRunner:
                 "ui_action": {"command": cmd, "value": val},
                 "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
             }
-            self.validator.validate(sc_contract)
+            self._validate_contract(sc_contract)
             session_state.record_turn(sc_contract, user_query=query)
             return sc_contract
 
@@ -307,7 +354,7 @@ class AgentTurnRunner:
             alt_cols = ["grade_id", "designation", "pay_scale_min_inr", "pay_scale_max_inr"]
             if access_dec.alternative_sql:
                 from app.tools.query_data import query_data as qd
-                res = qd(access_dec.alternative_sql, title="Permitted Alternative")
+                res = await asyncio.to_thread(qd, access_dec.alternative_sql, title="Permitted Alternative")
                 if res.get("status") == "success":
                     alt_rows = res.get("all_rows", res.get("rows", []))
                     alt_cols = res.get("columns", alt_cols)
@@ -353,7 +400,7 @@ class AgentTurnRunner:
                 ],
                 "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
             }
-            self.validator.validate(refusal_contract)
+            self._validate_contract(refusal_contract)
             session_state.record_turn(refusal_contract)
             return refusal_contract
 
@@ -408,7 +455,7 @@ class AgentTurnRunner:
                 "status_events": ["Yukti AI ready"],
                 "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
             }
-            self.validator.validate(conv_contract)
+            self._validate_contract(conv_contract)
             session_state.record_turn(conv_contract)
             return conv_contract
 
@@ -431,7 +478,7 @@ class AgentTurnRunner:
                     logger.exception(f"Transfer note drafting failed; falling back: {e_tn}")
                     tn = None
                 if tn is not None:
-                    self.validator.validate(tn)
+                    self._validate_contract(tn)
                     session_state.record_turn(tn, user_query=query)
                     return tn
 
@@ -475,11 +522,11 @@ class AgentTurnRunner:
                     f"COUNT(*) AS employees, "
                     f"COUNTIF(LOWER(cadre) = 'executive') AS executives, "
                     f"COUNTIF(LOWER(cadre) != 'executive') AS non_executives "
-                    f"FROM `ongc-hr-finance-agent.hrfin_gold.ssot_workforce_employee` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_workforce_employee` "
                     f"WHERE active_headcount = 1 AND wc_id = '{active_wc}' "
                     f"GROUP BY 1 ORDER BY 2 DESC"
                 )
-                res = qd(sql_disc, title=f"{city_lbl}: Active Workforce by Discipline")
+                res = await asyncio.to_thread(qd, sql_disc, title=f"{city_lbl}: Active Workforce by Discipline")
                 rows = res.get("all_rows") or res.get("rows", [])
                 cols = ["discipline", "employees", "executives", "non_executives"]
                 if rows:
@@ -525,7 +572,7 @@ class AgentTurnRunner:
                         "status_events": [f"Refined {city_lbl} workforce by discipline"],
                         "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
                     }
-                    self.validator.validate(disc_contract)
+                    self._validate_contract(disc_contract)
                     session_state.record_turn(disc_contract, user_query=query, all_rows=rows)
                     return disc_contract
 
@@ -533,12 +580,12 @@ class AgentTurnRunner:
             sql_disc = (
                 f"SELECT d.name AS discipline, SUM(s.total_executives) AS executives_ge_5yr, "
                 f"SUM(s.non_exempt_due_transfer) AS due_for_transfer "
-                f"FROM `ongc-hr-finance-agent.hrfin_gold.agg_headcount_tenure_summary` s "
-                f"LEFT JOIN `ongc-hr-finance-agent.hrfin_silver.dim_discipline` d ON s.discipline_id = d.discipline_id "
+                f"FROM `{GCP_PROJECT}.hrfin_gold.agg_headcount_tenure_summary` s "
+                f"LEFT JOIN `{GCP_PROJECT}.hrfin_silver.dim_discipline` d ON s.discipline_id = d.discipline_id "
                 f"WHERE s.wc_id = '{active_wc}' AND s.continuous_stay_months >= {min_stay} AND s.grade_id LIKE 'E%' "
                 f"GROUP BY 1 ORDER BY 2 DESC"
             )
-            res = qd(sql_disc, title="Executive Tenure Breakdown by Discipline")
+            res = await asyncio.to_thread(qd, sql_disc, title="Executive Tenure Breakdown by Discipline")
             rows = res.get("all_rows") or res.get("rows", [])
             cols = res.get("columns", ["discipline", "executives_ge_5yr", "due_for_transfer"])
             if rows:
@@ -584,7 +631,7 @@ class AgentTurnRunner:
                     "status_events": ["Refined breakdown by discipline"],
                     "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
                 }
-                self.validator.validate(disc_contract)
+                self._validate_contract(disc_contract)
                 session_state.record_turn(disc_contract, user_query=query, all_rows=rows)
                 return disc_contract
 
@@ -639,7 +686,7 @@ class AgentTurnRunner:
                 "status_events": ["Retrieved JRTP Clauses 3.1, 4.2 & 6.4"],
                 "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
             }
-            self.validator.validate(clause_contract)
+            self._validate_contract(clause_contract)
             session_state.record_turn(clause_contract)
             return clause_contract
 
@@ -661,7 +708,7 @@ class AgentTurnRunner:
                     f"SELECT current_grade_id AS grade_id, "
                     f"CASE WHEN LOWER(cadre) = 'executive' THEN 'Executive' ELSE 'Non-Executive' END AS cadre, "
                     f"COUNT(*) AS employees "
-                    f"FROM `ongc-hr-finance-agent.hrfin_gold.ssot_workforce_employee` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_workforce_employee` "
                     f"WHERE active_headcount = 1 AND wc_id = '{matched_wc}' "
                     f"GROUP BY 1, 2 ORDER BY 3 DESC"
                 )
@@ -670,11 +717,13 @@ class AgentTurnRunner:
                     f"active_headcount AS in_position_posts, "
                     f"vacancy_count_fy26 AS vacancies, "
                     f"contractor_headcount_fy26 AS contractors "
-                    f"FROM `ongc-hr-finance-agent.hrfin_gold.ssot_work_centre_360` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_work_centre_360` "
                     f"WHERE wc_id = '{matched_wc}'"
                 )
-                res_hc = qd(sql_hc, title="Workforce Headcount by Grade & Cadre")
-                res_posts = qd(sql_posts, title="Work Centre 360 Summary")
+                res_hc, res_posts = await asyncio.gather(
+                    asyncio.to_thread(qd, sql_hc, title="Workforce Headcount by Grade & Cadre"),
+                    asyncio.to_thread(qd, sql_posts, title="Work Centre 360 Summary"),
+                )
                 rows_hc = res_hc.get("all_rows") or res_hc.get("rows", [])
                 rows_posts = res_posts.get("all_rows") or res_posts.get("rows", [])
                 if rows_hc:
@@ -748,7 +797,7 @@ class AgentTurnRunner:
                         "status_events": [f"Verified active headcount for {wc_label} from BigQuery SSOT"],
                         "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
                     }
-                    self.validator.validate(hc_contract)
+                    self._validate_contract(hc_contract)
                     session_state.record_turn(hc_contract, user_query=query, all_rows=rows_hc)
                     return hc_contract
             else:
@@ -758,11 +807,11 @@ class AgentTurnRunner:
                     "active_headcount AS employees, "
                     "executive_headcount AS executives, "
                     "non_executive_headcount AS non_executives "
-                    "FROM `ongc-hr-finance-agent.hrfin_gold.ssot_work_centre_360` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_work_centre_360` "
                     "WHERE active_headcount > 0 "
                     "ORDER BY active_headcount DESC"
                 )
-                res_all = qd(sql_all, title="ONGC Active Workforce by Work Centre")
+                res_all = await asyncio.to_thread(qd, sql_all, title="ONGC Active Workforce by Work Centre")
                 rows_all = res_all.get("all_rows") or res_all.get("rows", [])
                 if rows_all:
                     total_emp = sum(int(float(r.get("employees", 0) or 0)) for r in rows_all)
@@ -815,7 +864,7 @@ class AgentTurnRunner:
                         "status_events": ["Verified company-wide active workforce from BigQuery SSOT"],
                         "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
                     }
-                    self.validator.validate(hc_all_contract)
+                    self._validate_contract(hc_all_contract)
                     session_state.record_turn(hc_all_contract, user_query=query, all_rows=rows_all)
                     return hc_all_contract
 
@@ -839,7 +888,7 @@ class AgentTurnRunner:
                     "CONCAT('$', CAST(CAST(FLOOR(lifting_cost_per_boe_usd / 3) * 3 AS INT64) AS STRING), '–$', CAST(CAST(FLOOR(lifting_cost_per_boe_usd / 3) * 3 + 3 AS INT64) AS STRING), '/BOE') AS bucket, "
                     "COUNT(*) AS fields, "
                     "ROUND(AVG(lifting_cost_per_boe_usd), 2) AS avg_metric "
-                    "FROM `ongc-hr-finance-agent.hrfin_gold.ssot_field_economics_360` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_field_economics_360` "
                     "WHERE fiscal_year = 'FY26' AND lifting_cost_per_boe_usd IS NOT NULL "
                     "GROUP BY FLOOR(lifting_cost_per_boe_usd / 3), bucket "
                     "ORDER BY FLOOR(lifting_cost_per_boe_usd / 3)"
@@ -855,7 +904,7 @@ class AgentTurnRunner:
                     "CONCAT(CAST(CAST(FLOOR(water_cut_pct / 10) * 10 AS INT64) AS STRING), '–', CAST(CAST(FLOOR(water_cut_pct / 10) * 10 + 10 AS INT64) AS STRING), '%') AS bucket, "
                     "COUNT(*) AS fields, "
                     "ROUND(AVG(water_cut_pct), 1) AS avg_metric "
-                    "FROM `ongc-hr-finance-agent.hrfin_gold.ssot_field_economics_360` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_field_economics_360` "
                     "WHERE fiscal_year = 'FY26' AND water_cut_pct IS NOT NULL "
                     "GROUP BY FLOOR(water_cut_pct / 10), bucket "
                     "ORDER BY FLOOR(water_cut_pct / 10)"
@@ -871,7 +920,7 @@ class AgentTurnRunner:
                     f"CONCAT('₹', CAST(CAST(FLOOR(fy26_gross_salary_lakh / 5) * 5 AS INT64) AS STRING), '–', CAST(CAST(FLOOR(fy26_gross_salary_lakh / 5) * 5 + 5 AS INT64) AS STRING), ' L') AS bucket, "
                     f"COUNT(*) AS employees, "
                     f"ROUND(AVG(fy26_gross_salary_lakh), 2) AS avg_metric "
-                    f"FROM `ongc-hr-finance-agent.hrfin_gold.ssot_workforce_employee` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_workforce_employee` "
                     f"WHERE active_headcount = 1 AND fy26_gross_salary_lakh > 0{wc_filter_sql} "
                     f"GROUP BY FLOOR(fy26_gross_salary_lakh / 5), bucket "
                     f"ORDER BY FLOOR(fy26_gross_salary_lakh / 5)"
@@ -887,7 +936,7 @@ class AgentTurnRunner:
                     f"CONCAT(CAST(CAST(FLOOR(fy26_overtime_hours / 40) * 40 AS INT64) AS STRING), '–', CAST(CAST(FLOOR(fy26_overtime_hours / 40) * 40 + 39 AS INT64) AS STRING), ' hrs') AS bucket, "
                     f"COUNT(*) AS employees, "
                     f"ROUND(AVG(fy26_overtime_hours), 1) AS avg_metric "
-                    f"FROM `ongc-hr-finance-agent.hrfin_gold.ssot_workforce_employee` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_workforce_employee` "
                     f"WHERE active_headcount = 1 AND fy26_overtime_hours > 0{wc_filter_sql} "
                     f"GROUP BY FLOOR(fy26_overtime_hours / 40), bucket "
                     f"ORDER BY FLOOR(fy26_overtime_hours / 40)"
@@ -903,7 +952,7 @@ class AgentTurnRunner:
                     f"CONCAT(CAST(CAST(FLOOR(fy26_apar_score / 5) * 5 AS INT64) AS STRING), '–', CAST(CAST(FLOOR(fy26_apar_score / 5) * 5 + 5 AS INT64) AS STRING), ' pts') AS bucket, "
                     f"COUNT(*) AS employees, "
                     f"ROUND(AVG(fy26_apar_score), 1) AS avg_metric "
-                    f"FROM `ongc-hr-finance-agent.hrfin_gold.ssot_workforce_employee` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_workforce_employee` "
                     f"WHERE active_headcount = 1 AND fy26_apar_score IS NOT NULL{wc_filter_sql} "
                     f"GROUP BY FLOOR(fy26_apar_score / 5), bucket "
                     f"ORDER BY FLOOR(fy26_apar_score / 5)"
@@ -921,7 +970,7 @@ class AgentTurnRunner:
                     f"CONCAT(CAST(CAST(FLOOR({col_expr} / {step_val}) * {step_val} AS INT64) AS STRING), '–', CAST(CAST(FLOOR({col_expr} / {step_val}) * {step_val} + {step_val} AS INT64) AS STRING), ' yrs') AS bucket, "
                     f"COUNT(*) AS employees, "
                     f"ROUND(AVG({col_expr}), 1) AS avg_metric "
-                    f"FROM `ongc-hr-finance-agent.hrfin_gold.ssot_workforce_employee` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_workforce_employee` "
                     f"WHERE active_headcount = 1 AND {col_expr} IS NOT NULL{wc_filter_sql} "
                     f"GROUP BY FLOOR({col_expr} / {step_val}), bucket "
                     f"ORDER BY FLOOR({col_expr} / {step_val})"
@@ -938,7 +987,7 @@ class AgentTurnRunner:
                     f"CONCAT(CAST(CAST(FLOOR(age_years / 5) * 5 AS INT64) AS STRING), '–', CAST(CAST(FLOOR(age_years / 5) * 5 + 4 AS INT64) AS STRING), ' yrs') AS bucket, "
                     f"COUNT(*) AS employees, "
                     f"ROUND(AVG(age_years), 1) AS avg_metric "
-                    f"FROM `ongc-hr-finance-agent.hrfin_gold.ssot_workforce_employee` "
+                    f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_workforce_employee` "
                     f"WHERE active_headcount = 1 AND age_years IS NOT NULL{wc_filter_sql} "
                     f"GROUP BY FLOOR(age_years / 5), bucket "
                     f"ORDER BY FLOOR(age_years / 5)"
@@ -949,7 +998,7 @@ class AgentTurnRunner:
                 val_col = "employees"
                 source_obj = "hrfin_gold.ssot_workforce_employee"
 
-            res_hist = qd(sql_hist, title=hist_title)
+            res_hist = await asyncio.to_thread(qd, sql_hist, title=hist_title)
             rows_hist = res_hist.get("all_rows") or res_hist.get("rows", [])
             if rows_hist:
                 total_n = sum(int(float(r.get(val_col, 0) or 0)) for r in rows_hist)
@@ -1010,7 +1059,7 @@ class AgentTurnRunner:
                     "status_events": [f"Computed binned histogram distribution from {source_obj}"],
                     "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
                 }
-                self.validator.validate(hist_contract)
+                self._validate_contract(hist_contract)
                 session_state.record_turn(hist_contract, user_query=query, all_rows=rows_hist)
                 return hist_contract
 
@@ -1042,8 +1091,9 @@ class AgentTurnRunner:
 
             wc_profile = {}
             if matched_wc:
-                res_wc = qd(
-                    f"SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_work_centre_360` WHERE wc_id = '{matched_wc}' LIMIT 1",
+                res_wc = await asyncio.to_thread(
+                    qd,
+                    f"SELECT * FROM `{GCP_PROJECT}.hrfin_gold.ssot_work_centre_360` WHERE wc_id = '{matched_wc}' LIMIT 1",
                     title="Work Centre 360 Profile for Document",
                 )
                 rows_wc = res_wc.get("all_rows") or res_wc.get("rows", [])
@@ -1064,7 +1114,8 @@ class AgentTurnRunner:
                 doc_type_req = "transfer_proposal"
 
             from app.tools.draft_document import DocumentDraftingEngine
-            doc_res = DocumentDraftingEngine().draft(
+            doc_res = await asyncio.to_thread(
+                DocumentDraftingEngine().draft,
                 doc_type=doc_type_req,
                 query=query,
                 version=1,
@@ -1124,7 +1175,7 @@ class AgentTurnRunner:
             }
             if doc_contract["visual"]["table"] is None:
                 del doc_contract["visual"]["table"]
-            self.validator.validate(doc_contract)
+            self._validate_contract(doc_contract)
             session_state.record_turn(doc_contract, user_query=query, all_rows=export_rows)
             return doc_contract
 
@@ -1177,7 +1228,7 @@ class AgentTurnRunner:
                     "status_events": ["Source attribution provided"],
                     "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
                 }
-                self.validator.validate(contract)
+                self._validate_contract(contract)
                 session_state.record_turn(contract)
                 return contract
 
@@ -1201,7 +1252,8 @@ class AgentTurnRunner:
         # Semantic Routing Check (Certified Query Library)
         router = get_semantic_router()
         active_state = getattr(session_state, "active_query_state", None)
-        route_decision = router.route(
+        route_decision = await asyncio.to_thread(
+            router.route,
             query=query,
             session_id=session_id,
             persona=norm_persona,
@@ -1246,7 +1298,7 @@ class AgentTurnRunner:
                                 rows=rows,
                                 title=vis.get("title", "Chart View"),
                             )
-                self.validator.validate(cached_contract)
+                self._validate_contract(cached_contract)
                 session_state.record_turn(cached_contract, user_query=query)
                 logger.info(f"Turn {turn_id} served from Verified Answer Cache in {cached_contract.get('latency_ms')}ms")
                 return cached_contract
@@ -1330,7 +1382,7 @@ class AgentTurnRunner:
                 "status_events": ["Execution error in BigQuery tool"],
                 "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
             }
-            self.validator.validate(contract_err)
+            self._validate_contract(contract_err)
             session_state.record_turn(contract_err)
             return contract_err
 
@@ -1511,6 +1563,7 @@ class AgentTurnRunner:
             visual_mode=visual_mode,
             voice_override=requested_chart_kind,
         )
+        self._prune_adk_sessions(norm_persona, session_id)
 
         # Replace codes with friendly human names across visual tables and charts
         if visual.get("table") and visual["table"].get("rows"):
@@ -1582,7 +1635,7 @@ class AgentTurnRunner:
             "tool_called": tool_calls_recorded[0]["name"] if tool_calls_recorded else None,
         }
 
-        self.validator.validate(contract)
+        self._validate_contract(contract)
         if (
             YUKTI_RESULT_CACHE
             and route_decision["route"] == "certified"
@@ -1625,7 +1678,7 @@ class AgentTurnRunner:
         contract = planned["contract"]
         meta = planned.get("meta") or {}
         contract["latency_ms"] = round((time.perf_counter() - t0) * 1000, 2)
-        self.validator.validate(contract)
+        self._validate_contract(contract)
         rows = meta.get("rows")
         session_state.record_turn(contract, user_query=query, all_rows=rows)
         if meta.get("spec") is not None:

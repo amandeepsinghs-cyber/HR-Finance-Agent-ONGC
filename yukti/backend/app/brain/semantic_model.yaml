@@ -154,13 +154,13 @@ subjects:
       revenue_cr: {expr: "ROUND(SUM(gross_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Gross revenue (₹ cr)", polarity: higher}
       opex_cr: {expr: "ROUND(SUM(total_opex_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Opex (₹ cr)", polarity: lower}
       production_boe: {expr: "ROUND(SUM(total_production_boe), 0)", aggregation: sum, unit: boe, label: "Production (BOE)", polarity: higher}
-      lifting_cost_usd_per_boe: {expr: "ROUND(SUM(total_opex_inr_cr * 10000000.0 / 88.33) / NULLIF(SUM(total_production_boe), 0), 2)", aggregation: ratio, unit: usd_per_boe, label: "Lifting cost ($/BOE)", polarity: lower}
+      lifting_cost_usd_per_boe: {expr: "ROUND(SUM(total_opex_inr_cr * 10000000.0 / {FX_INR_PER_USD}) / NULLIF(SUM(total_production_boe), 0), 2)", aggregation: ratio, unit: usd_per_boe, label: "Lifting cost ($/BOE)", polarity: lower}
       reserves_2p_mmtoe: {expr: "ROUND(SUM(reserves_2p_total_mmtoe), 2)", aggregation: sum, unit: mmtoe, label: "2P reserves (MMTOE)", polarity: higher}
       drilling_cost_cr: {expr: "ROUND(SUM(drilling_cost_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Drilling spend (₹ cr)"}
       ebitda_margin_pct: {expr: "ROUND(100 * SUM(ebitda_inr_cr) / NULLIF(SUM(gross_revenue_inr_cr), 0), 1)", aggregation: ratio, unit: pct, label: "EBITDA margin (profit margin)", polarity: higher}
       lifting_cost_inr_per_boe: {expr: "ROUND(SUM(total_opex_inr_cr * 10000000.0) / NULLIF(SUM(total_production_boe), 0), 0)", aggregation: ratio, unit: inr_per_boe, label: "Lifting cost (₹/BOE)", polarity: lower}
       pbt_margin_pct: {expr: "ROUND(100 * SUM(pbt_inr_cr) / NULLIF(SUM(gross_revenue_inr_cr), 0), 1)", aggregation: ratio, unit: pct, label: "PBT margin", polarity: higher}
-      manpower_cost_usd_per_boe: {expr: "ROUND(SUM(allocated_manpower_cost_inr_cr * 10000000.0 / 88.33) / NULLIF(SUM(total_production_boe), 0), 2)", aggregation: ratio, unit: usd_per_boe, label: "Manpower cost per BOE ($)", polarity: lower}
+      manpower_cost_usd_per_boe: {expr: "ROUND(SUM(allocated_manpower_cost_inr_cr * 10000000.0 / {FX_INR_PER_USD}) / NULLIF(SUM(total_production_boe), 0), 2)", aggregation: ratio, unit: usd_per_boe, label: "Manpower cost per BOE ($)", polarity: lower}
       manpower_cost_pct_of_revenue: {expr: "ROUND(100 * SUM(allocated_manpower_cost_inr_cr) / NULLIF(SUM(gross_revenue_inr_cr), 0), 1)", aggregation: ratio, unit: pct, label: "Employee cost as % of revenue", polarity: lower}
     companions: [pbt_cr, revenue_cr, ebitda_cr]
 

@@ -220,11 +220,18 @@ def query_data(
     except Exception as e1:
         err_msg = str(e1)
         logger.warning(f"BigQuery query execution error: {err_msg[:120]}. Running silent self-repair...")
-        # Phase 2: Silent self-repair retry
+        # Phase 2: Silent self-repair retry (H1.2: re-apply query-craft rules + re-validate SQL safety + dry-run)
         try:
             from app.tools.sql_generator import get_sql_generator
             sql_gen = get_sql_generator()
-            repaired_sql = sql_gen.repair_sql(sql=safe_sql, error_message=err_msg)
+            raw_repaired = sql_gen.repair_sql(sql=safe_sql, error_message=err_msg)
+            repaired_sql = sl.apply_query_craft_rules(raw_repaired)
+            is_safe2, safety_err2 = sl.validate_sql_safety(repaired_sql)
+            if not is_safe2:
+                raise ValueError(f"Repaired SQL failed safety validation: {safety_err2}")
+            ok_dry, _bytes2, dry_err2 = sl.dry_run_check(repaired_sql)
+            if not ok_dry:
+                raise ValueError(f"Repaired SQL failed dry-run check: {dry_err2}")
             query_job2 = sl.client.query(repaired_sql, job_config=job_config)
             result2 = query_job2.result()
 
@@ -276,3 +283,22 @@ def query_data(
                 "columns": [],
                 "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
             }
+
+
+async def query_data_async(
+    sql_query: str,
+    title: Optional[str] = None,
+    persona: str = "CMD",
+    voice_override: Optional[str] = None,
+    semantic_layer: Optional[SemanticLayer] = None,
+) -> Dict[str, Any]:
+    """Non-blocking async wrapper for query_data (H1.1: offloads BigQuery I/O to worker thread)."""
+    import asyncio
+    return await asyncio.to_thread(
+        query_data,
+        sql_query=sql_query,
+        title=title,
+        persona=persona,
+        voice_override=voice_override,
+        semantic_layer=semantic_layer,
+    )

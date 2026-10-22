@@ -33,6 +33,12 @@ FORBIDDEN_SQL_PATTERNS = [
     r"\bMERGE\b",
     r"\bEXECUTE\b",
     r"\bCALL\b",
+    r"\bEXPORT\b",
+    r"\bLOAD\b",
+    r"\bEXTERNAL_QUERY\b",
+    r"\bINFORMATION_SCHEMA\b",
+    r"\bSESSION_USER\b",
+    r"\b__TABLES__\b",
 ]
 
 SEMANTIC_LAYER_PROMPT = f"""
@@ -259,10 +265,21 @@ class SemanticLayer:
         return refined_sql
 
     def validate_sql_safety(self, sql: str) -> Tuple[bool, Optional[str]]:
-        """Enforces SELECT-only queries, dataset allow-listing, and absence of forbidden statements."""
-        sql_stripped = sql.strip().rstrip(";")
-        sql_upper = sql_stripped.upper()
+        """Enforces SELECT-only queries, project + dataset allow-listing, and absence of forbidden statements (H1.2)."""
+        if not sql or not sql.strip():
+            return False, "Empty SQL query."
 
+        # 1. Strip block/line comments and mask string literals so comments/strings cannot hide or fake tokens
+        no_comments = re.sub(r"/\*.*?\*/", " ", sql, flags=re.DOTALL)
+        no_comments = re.sub(r"--[^\r\n]*", " ", no_comments)
+        masked = re.sub(r"'(?:\\.|''|[^'])*'", "''", no_comments)
+        masked = re.sub(r'"(?:\\.|""|[^"])*"', '""', masked)
+
+        sql_stripped = masked.strip().rstrip(";").strip()
+        if ";" in sql_stripped:
+            return False, "Multiple SQL statements are not permitted."
+
+        sql_upper = sql_stripped.upper()
         if not (sql_upper.startswith("SELECT") or sql_upper.startswith("WITH")):
             return False, "Query must start with SELECT or WITH (read-only queries only)."
 
@@ -270,15 +287,49 @@ class SemanticLayer:
             if re.search(pattern, sql_upper):
                 return False, f"Forbidden SQL operation detected matching: {pattern}"
 
-        matches = re.findall(r"[`]?([a-zA-Z0-9_\-]+)\.([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)[`]?", sql)
-        for proj, dataset, table in matches:
+        # 2. Collect CTE aliases declared in WITH clauses so `FROM <cte>` is allowed
+        cte_names = {
+            m.group(1).lower()
+            for m in re.finditer(r"(?:\bWITH\b|,)\s*([a-zA-Z_][a-zA-Z0-9_]*)\s+AS\s*\(", sql_stripped, flags=re.IGNORECASE)
+        }
+
+        # 3. Normalize backticked identifier chains (e.g. `other-proj`.ds.t or `other-proj.ds.t` or `p`.`d`.`t`)
+        norm_ids = re.sub(r"`([^`]+)`", lambda m: m.group(1).replace(" ", ""), sql_stripped)
+        norm_ids = re.sub(r"\s*\.\s*", ".", norm_ids)
+
+        # 4. Every 3-part reference anywhere in the query must belong to (self.project_id, ALLOWED_DATASETS)
+        three_part = re.findall(r"(?<![a-zA-Z0-9_\-.])([a-zA-Z0-9_\-]+)\.([a-zA-Z_][a-zA-Z0-9_]*)\.([a-zA-Z_][a-zA-Z0-9_]*)", norm_ids)
+        for proj, dataset, _table in three_part:
+            if proj != self.project_id:
+                return False, f"Project '{proj}' is not in the allowed project '{self.project_id}'."
             if dataset not in ALLOWED_DATASETS:
                 return False, f"Dataset '{dataset}' is not in the allowed list: {ALLOWED_DATASETS}"
 
-        two_part = re.findall(r"(?:FROM|JOIN)\s+[`]?([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)[`]?", sql, flags=re.IGNORECASE)
-        for dataset, table in two_part:
-            if dataset not in ALLOWED_DATASETS and dataset != self.project_id:
-                return False, f"Dataset '{dataset}' is not in the allowed list: {ALLOWED_DATASETS}"
+        # 5. Every FROM / JOIN target (excluding subqueries `(`, UNNEST, and CTEs) must be in ALLOWED_DATASETS
+        #    Note: avoid `\s+` in lookbehind (Python `re` requires fixed-width lookbehind).
+        for m in re.finditer(r"\b(?:FROM|JOIN)\s+([a-zA-Z0-9_\-.]+)", norm_ids, flags=re.IGNORECASE):
+            ref = m.group(1).strip(".")
+            # Skip date/extract tokens like `EXTRACT(YEAR FROM col)` by checking preceding token isn't EXTRACT(...)
+            prefix = norm_ids[max(0, m.start() - 40):m.start()].upper()
+            if "EXTRACT(" in prefix or "SUBSTRING(" in prefix or "TRIM(" in prefix:
+                continue
+            parts = ref.split(".")
+            if len(parts) == 3:
+                proj, dataset, _table = parts
+                if proj != self.project_id:
+                    return False, f"Project '{proj}' is not in the allowed project '{self.project_id}'."
+                if dataset not in ALLOWED_DATASETS:
+                    return False, f"Dataset '{dataset}' is not in the allowed list: {ALLOWED_DATASETS}"
+            elif len(parts) == 2:
+                dataset, _table = parts
+                if dataset not in ALLOWED_DATASETS:
+                    return False, f"Dataset '{dataset}' is not in the allowed list: {ALLOWED_DATASETS}"
+            elif len(parts) == 1:
+                ident = parts[0].lower()
+                if ident not in cte_names and ident not in ("unnest",):
+                    return False, f"Unqualified table '{parts[0]}' is not allowed; specify dataset in {ALLOWED_DATASETS}."
+            else:
+                return False, f"Invalid table reference '{ref}'."
 
         return True, None
 

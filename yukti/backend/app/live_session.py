@@ -230,7 +230,10 @@ class LiveSessionManager:
     def _log_turn(self, role: str, text: str) -> None:
         cleaned = " ".join((text or "").split())
         if cleaned:
-            self.state.setdefault("log", []).append((role, cleaned[:RECAP_MAX_CHARS]))
+            log = self.state.setdefault("log", [])
+            log.append((role, cleaned[:RECAP_MAX_CHARS]))
+            if len(log) > 100:
+                self.state["log"] = log[:RECAP_KEEP_FIRST] + log[-(100 - RECAP_KEEP_FIRST):]
 
     def _recap_turns(self) -> Optional[List[types.Content]]:
         log = self.state.get("log") or []
@@ -406,6 +409,14 @@ class LiveSessionManager:
     async def _apply_screen_control(self, command: str, value: str) -> Dict[str, Any]:
         """Applies a voice screen-control action (`ui_control`), morphing the active contract or running canonical screen queries."""
         ui_res = run_ui_control(command, value)
+        if ui_res.get("status") == "ERROR":
+            err_msg = ui_res.get("error", f"Unrecognized screen control command: {command}")
+            logger.warning(f"[{self.session_id}] Screen control rejected: {err_msg}")
+            return {
+                "status": "ERROR",
+                "error": err_msg,
+                "spoken_summary": "I couldn't apply that screen command.",
+            }
         cmd_obj = (ui_res.get("data") or {}).get("command") or {"action": command.lower().strip(), "value": value.strip()}
         legacy_obj = (ui_res.get("data") or {}).get("ui_action") or to_legacy_ui_action(cmd_obj)
 
@@ -790,179 +801,202 @@ class LiveSessionManager:
             caption: List[str] = []
             turn_output = False
             tool_since_output = False
+            bg_tool_tasks: set[asyncio.Task] = set()
 
-            while self.active:
-                got_any = False
-                async for response in session.receive():
-                    got_any = True
-                    t_event = time.perf_counter()
-
-                    # 1. Session Resumption Handle Update
-                    sru = getattr(response, "session_resumption_update", None)
-                    if sru is not None and getattr(sru, "resumable", False) and getattr(sru, "new_handle", None):
-                        self.state["handle"] = sru.new_handle
-                        self.state["resumable"] = True
-
-                    # 2. GoAway signal
-                    if getattr(response, "go_away", None) is not None:
-                        logger.info(f"[{self.session_id}] Gemini Live GoAway")
-                        return "go_away"
-
-                    # 3. Tool Call from Gemini Live
-                    tc = getattr(response, "tool_call", None)
-                    if tc is not None:
-                        tool_since_output = True
-                        turn_state["tool_called_in_turn"] = True
-                        responses = []
-                        for fc in tc.function_calls or []:
-                            args = dict(fc.args or {})
-                            result = await self._execute_voice_tool(fc.name, args)
-                            self._log_turn("Tool", f"{fc.name} -> {result.get('spoken_summary', '')[:120]}")
-                            responses.append(
-                                types.FunctionResponse(
-                                    name=fc.name,
-                                    response={"result": result},
-                                    id=fc.id,
-                                )
+            async def _handle_tool_call_bg(tc_obj: Any) -> None:
+                try:
+                    responses = []
+                    for fc in tc_obj.function_calls or []:
+                        args = dict(fc.args or {})
+                        result = await self._execute_voice_tool(fc.name, args)
+                        self._log_turn("Tool", f"{fc.name} -> {result.get('spoken_summary', '')[:120]}")
+                        responses.append(
+                            types.FunctionResponse(
+                                name=fc.name,
+                                response={"result": result},
+                                id=fc.id,
                             )
+                        )
+                    if self.active and responses:
                         await session.send_tool_response(function_responses=responses)
+                except asyncio.CancelledError:
+                    logger.info(f"[{self.session_id}] Background voice tool call cancelled (barge-in or session close)")
+                except Exception as e_tc:
+                    logger.warning(f"[{self.session_id}] Background voice tool call error: {e_tc}")
 
-                    # 4. Server Content (Transcripts, Audio, Interrupted, Turn Complete)
-                    sc = getattr(response, "server_content", None)
-                    if sc is None:
-                        continue
+            try:
+                while self.active:
+                    got_any = False
+                    async for response in session.receive():
+                        got_any = True
+                        t_event = time.perf_counter()
 
-                    if getattr(sc, "interrupted", False):
-                        self._suppress_audio = False
-                        self._generating = False
-                        await self.send_json({"type": "interrupted"})
+                        # 1. Session Resumption Handle Update
+                        sru = getattr(response, "session_resumption_update", None)
+                        if sru is not None and getattr(sru, "resumable", False) and getattr(sru, "new_handle", None):
+                            self.state["handle"] = sru.new_handle
+                            self.state["resumable"] = True
 
-                    it = getattr(sc, "input_transcription", None)
-                    if it is not None and getattr(it, "text", None):
-                        self._suppress_audio = False  # safety net: a new user turn always gets its audio
-                        self.state.setdefault("heard", []).append(it.text)
-                        await self.send_json({
-                            "type": "user_transcript",
-                            "text": it.text,
-                            "is_final": bool(getattr(it, "finished", False)),
-                        })
+                        # 2. GoAway signal
+                        if getattr(response, "go_away", None) is not None:
+                            logger.info(f"[{self.session_id}] Gemini Live GoAway")
+                            return "go_away"
 
-                    ot = getattr(sc, "output_transcription", None)
-                    if ot is not None and getattr(ot, "text", None):
-                        turn_output = True
-                        if not self._is_speak_only:
-                            caption.append(ot.text)
-                            await self.send_json({
-                                "type": "agent_transcript",
-                                "text": ot.text,
-                                "is_final": bool(getattr(ot, "finished", False)),
-                            })
+                        # 3. Tool Call from Gemini Live — run off the receive loop so barge-in / interrupted frames are never blocked (H1.1)
+                        tc = getattr(response, "tool_call", None)
+                        if tc is not None:
+                            tool_since_output = True
+                            turn_state["tool_called_in_turn"] = True
+                            task = asyncio.create_task(_handle_tool_call_bg(tc))
+                            bg_tool_tasks.add(task)
+                            task.add_done_callback(bg_tool_tasks.discard)
 
-                    mt = getattr(sc, "model_turn", None)
-                    if mt is not None:
-                        self._generating = True
-                        for part in mt.parts or []:
-                            if getattr(part, "text", None) and not self._is_speak_only:
-                                caption.append(part.text)
-                                await self.send_json({
-                                    "type": "agent_transcript",
-                                    "text": part.text,
-                                    "is_final": False,
-                                })
-                            inline = getattr(part, "inline_data", None)
-                            if inline is not None and inline.data:
-                                turn_output = True
-                                chunk = inline.data
-                                turn_state["total_audio_bytes"] += len(chunk)
-                                if turn_state["t_first_audio_ms"] is None and self.t_turn_start:
-                                    turn_state["t_first_audio_ms"] = round((t_event - self.t_turn_start) * 1000, 2)
-                                if not self._suppress_audio:
-                                    await self.send_audio_chunk(chunk)
-
-                    if getattr(sc, "turn_complete", False):
-                        self._suppress_audio = False
-                        self._generating = False
-                        # CRITICAL URVI FIX: Swallow the empty turn_complete Gemini emits right after a tool call
-                        if not turn_output and tool_since_output:
+                        # 4. Server Content (Transcripts, Audio, Interrupted, Turn Complete)
+                        sc = getattr(response, "server_content", None)
+                        if sc is None:
                             continue
 
-                        turn_output = False
-                        tool_since_output = False
-                        full_text = "".join(caption).strip()
-                        caption = []
-                        heard = "".join(self.state.pop("heard", [])).strip()
+                        if getattr(sc, "interrupted", False):
+                            self._suppress_audio = False
+                            self._generating = False
+                            await self.send_json({"type": "interrupted"})
 
-                        if self._is_speak_only:
-                            self._is_speak_only = False
-                            logger.info(
-                                f"[{self.session_id}] Speak completed (audio_bytes={turn_state['total_audio_bytes']}, first_audio_ms={turn_state['t_first_audio_ms']})"
+                        it = getattr(sc, "input_transcription", None)
+                        if it is not None and getattr(it, "text", None):
+                            self._suppress_audio = False  # safety net: a new user turn always gets its audio
+                            self.state.setdefault("heard", []).append(it.text)
+                            await self.send_json({
+                                "type": "user_transcript",
+                                "text": it.text,
+                                "is_final": bool(getattr(it, "finished", False)),
+                            })
+
+                        ot = getattr(sc, "output_transcription", None)
+                        if ot is not None and getattr(ot, "text", None):
+                            turn_output = True
+                            if not self._is_speak_only:
+                                caption.append(ot.text)
+                                await self.send_json({
+                                    "type": "agent_transcript",
+                                    "text": ot.text,
+                                    "is_final": bool(getattr(ot, "finished", False)),
+                                })
+
+                        mt = getattr(sc, "model_turn", None)
+                        if mt is not None:
+                            self._generating = True
+                            for part in mt.parts or []:
+                                if getattr(part, "text", None) and not self._is_speak_only:
+                                    caption.append(part.text)
+                                    await self.send_json({
+                                        "type": "agent_transcript",
+                                        "text": part.text,
+                                        "is_final": False,
+                                    })
+                                inline = getattr(part, "inline_data", None)
+                                if inline is not None and inline.data:
+                                    turn_output = True
+                                    chunk = inline.data
+                                    turn_state["total_audio_bytes"] += len(chunk)
+                                    if turn_state["t_first_audio_ms"] is None and self.t_turn_start:
+                                        turn_state["t_first_audio_ms"] = round((t_event - self.t_turn_start) * 1000, 2)
+                                    if not self._suppress_audio:
+                                        await self.send_audio_chunk(chunk)
+
+                        if getattr(sc, "turn_complete", False):
+                            self._suppress_audio = False
+                            self._generating = False
+                            # CRITICAL URVI FIX: Swallow the empty turn_complete Gemini emits right after a tool call
+                            if not turn_output and (tool_since_output or bg_tool_tasks):
+                                continue
+
+                            turn_output = False
+                            tool_since_output = False
+                            full_text = "".join(caption).strip()
+                            caption = []
+                            heard = "".join(self.state.pop("heard", [])).strip()
+
+                            if self._is_speak_only:
+                                self._is_speak_only = False
+                                logger.info(
+                                    f"[{self.session_id}] Speak completed (audio_bytes={turn_state['total_audio_bytes']}, first_audio_ms={turn_state['t_first_audio_ms']})"
+                                )
+                                await self.send_json({
+                                    "type": "turn_complete",
+                                    "metrics": {
+                                        "audio_bytes_total": turn_state["total_audio_bytes"],
+                                        "speak_only": True,
+                                    },
+                                })
+                                self.t_turn_start = None
+                                turn_state["t_first_audio_ms"] = None
+                                turn_state["total_audio_bytes"] = 0
+                                turn_state["tool_called_in_turn"] = False
+                                continue
+
+                            # Safety net: if the user spoke a question (`heard`) and Gemini answered directly
+                            # without invoking `ask_yukti` or `control_screen`, run `turn_runner` so the canvas still updates!
+                            if heard and not turn_state["tool_called_in_turn"] and not bg_tool_tasks:
+                                q_low = heard.lower().strip().rstrip("?!.")
+                                greetings = {"hi", "hello", "hey", "yo", "namaste", "thanks", "thank you", "ok", "okay"}
+                                if q_low not in greetings and len(q_low) > 3:
+                                    sc_intent = detect_screen_control_intent(heard)
+                                    if sc_intent:
+                                        await self._apply_screen_control(
+                                            sc_intent.get("action") or sc_intent.get("command", ""),
+                                            sc_intent.get("value", ""),
+                                        )
+                                    else:
+                                        try:
+                                            from app.turn_runner import get_agent_turn_runner
+                                            trun = get_agent_turn_runner()
+                                            c = await trun.execute_turn_async(
+                                                query=heard,
+                                                session_id=self.session_id,
+                                                persona=self.persona,
+                                                language=self.language,
+                                            )
+                                            clean_c = dict(c)
+                                            ui_act = clean_c.pop("ui_action", None)
+                                            for k in ("latency_ms", "from_answer_cache", "generated_sql", "tool_called"):
+                                                clean_c.pop(k, None)
+                                            await self.send_json({"type": "contract", "contract": clean_c})
+                                            if ui_act:
+                                                await self.send_json({"type": "ui_action", **ui_act})
+                                        except Exception as e_safety:
+                                            logger.warning(f"[{self.session_id}] Safety-net turn_runner failed for heard={heard!r}: {e_safety}")
+
+                            if heard:
+                                self._log_turn("User", heard)
+                            if full_text:
+                                self._log_turn("Agent", full_text)
+
+                            t_complete_ms = (
+                                round((t_event - self.t_turn_start) * 1000, 2) if self.t_turn_start else None
                             )
                             await self.send_json({
                                 "type": "turn_complete",
+                                "full_text": full_text,
                                 "metrics": {
+                                    "ttfb_audio_ms": turn_state["t_first_audio_ms"],
+                                    "turn_total_ms": t_complete_ms,
                                     "audio_bytes_total": turn_state["total_audio_bytes"],
-                                    "speak_only": True,
+                                    "model_used": self.model_name,
                                 },
                             })
                             self.t_turn_start = None
                             turn_state["t_first_audio_ms"] = None
                             turn_state["total_audio_bytes"] = 0
                             turn_state["tool_called_in_turn"] = False
-                            continue
 
-                        # Safety net: if the user spoke a question (`heard`) and Gemini answered directly
-                        # without invoking `ask_yukti` or `control_screen`, run `turn_runner` so the canvas still updates!
-                        if heard and not turn_state["tool_called_in_turn"]:
-                            q_low = heard.lower().strip().rstrip("?!.")
-                            greetings = {"hi", "hello", "hey", "yo", "namaste", "thanks", "thank you", "ok", "okay"}
-                            if q_low not in greetings and len(q_low) > 3:
-                                sc_intent = detect_screen_control_intent(heard)
-                                if sc_intent:
-                                    await self._apply_screen_control(sc_intent["command"], sc_intent["value"])
-                                else:
-                                    with contextlib.suppress(Exception):
-                                        from app.turn_runner import get_agent_turn_runner
-                                        trun = get_agent_turn_runner()
-                                        c = await trun.execute_turn_async(
-                                            query=heard,
-                                            session_id=self.session_id,
-                                            persona=self.persona,
-                                            language=self.language,
-                                        )
-                                        clean_c = dict(c)
-                                        ui_act = clean_c.pop("ui_action", None)
-                                        for k in ("latency_ms", "from_answer_cache", "generated_sql", "tool_called"):
-                                            clean_c.pop(k, None)
-                                        await self.send_json({"type": "contract", "contract": clean_c})
-                                        if ui_act:
-                                            await self.send_json({"type": "ui_action", **ui_act})
-
-                        if heard:
-                            self._log_turn("User", heard)
-                        if full_text:
-                            self._log_turn("Agent", full_text)
-
-                        t_complete_ms = (
-                            round((t_event - self.t_turn_start) * 1000, 2) if self.t_turn_start else None
-                        )
-                        await self.send_json({
-                            "type": "turn_complete",
-                            "full_text": full_text,
-                            "metrics": {
-                                "ttfb_audio_ms": turn_state["t_first_audio_ms"],
-                                "turn_total_ms": t_complete_ms,
-                                "audio_bytes_total": turn_state["total_audio_bytes"],
-                                "model_used": self.model_name,
-                            },
-                        })
-                        self.t_turn_start = None
-                        turn_state["t_first_audio_ms"] = None
-                        turn_state["total_audio_bytes"] = 0
-                        turn_state["tool_called_in_turn"] = False
-
-                if not got_any:
-                    return "server_closed"
-            return "browser_closed"
+                    if not got_any:
+                        return "server_closed"
+                return "browser_closed"
+            finally:
+                for t_bg in list(bg_tool_tasks):
+                    t_bg.cancel()
+                if bg_tool_tasks:
+                    await asyncio.gather(*bg_tool_tasks, return_exceptions=True)
 
         async def guarded() -> str:
             try:

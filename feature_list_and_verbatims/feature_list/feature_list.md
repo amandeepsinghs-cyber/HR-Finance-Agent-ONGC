@@ -10,22 +10,22 @@
 
 | Feature ID | Feature Name | Source Verbatim | Priority | Category | Phase | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **FEAT-001** | **Scrollable Conversational Feed (History Preservation)** | V8 §3, V11 | **P0** | Frontend / UX | U2 | Specified |
-| **FEAT-002** | **Multi-Turn Context & Entity Carryover** | V11 | **P0** | Backend / Agent | B2 (via FEAT-009) | Built (B2, behind `YUKTI_PLANNER=1`) |
-| **FEAT-003** | **Visual Presentation & Charting Audit** | V7, V11 | **P1** | Visualization / UX | U5 | Specified |
-| **FEAT-004** | **Luminous Siri / Infinity Loop Voice Orb** | V12 | **P1** | UI / Animation | U3 | Specified |
-| **FEAT-005** | **Executive UI Modernization & Material Polish** | V12 | **P1** | UI / Design System | U1 + U4 | Specified |
-| **FEAT-006** | **CMD Actionable Employee-Level Roster (Drilldown)** | V13 | **P0** | Data / HR Actions | U5 (UI) + B3 (data) | Specified |
-| **FEAT-007** | **Answer Contract v2 (forward-compatible UI ↔ brain)** | V14 (D-4) | **P0** | Contract / Frontend | U2 | Specified |
-| **FEAT-008** | **Generated Semantic Layer (catalog = data truth)** | Audit 2026-10-22 | **P0** | Backend / Data | B1 | Specified |
-| **FEAT-009** | **QuerySpec Planner & Compiler (replaces keyword fast-paths)** | V11, V13, V14 (D-1) | **P0** | Backend / Agent | B2 | Built (B2, behind `YUKTI_PLANNER=1`; G4 approved) |
-| **FEAT-010** | **Granular-Data RBAC Policy (row/column masking)** | V3, V13, V14 (D-5) | **P0** | Governance | B3 (+ U5 UI states) | Specified (D-10, D-11) |
-| **FEAT-011** | **Insight Engine & Drill-down Chips ("granular insights")** | V13, V14 | **P0** | Backend / UX | B4 (+ U5 UI) | Specified |
-| **FEAT-012** | **Reliability, Safety & Performance Hardening** | Audit 2026-10-22 (P2/P3) | **P1** | Backend / Ops | H1 | Specified |
-| **FEAT-013** | **Voice Pipeline Quality (barge-in, mic lifecycle, no duplicate turns)** | V6, V8, audit | **P1** | Frontend / Voice | U3 | Specified |
-| **FEAT-014** | **Eval-Gated Release & Cloud Run Redeploy** | V14 (D-3) | **P1** | Quality / Ops | U0 + H1 | Specified |
-| **FEAT-015** | **Any-Chart Re-presentation & Chart Excellence** | V7, V15 | **P0** | Visualization / UX | U1.5 + U5.7–U5.9 | U1.5 done; U5 pending |
-| **FEAT-016** | **AI Aura visual language** (feathery Google-hue light for AI presence) | V16 | **P1** | UI / Brand | U1.6 (done), U4, U3 | Prototype approved (D-16) |
+| **FEAT-001** | **Scrollable Conversational Feed (History Preservation)** | V8 §3, V11 | **P0** | Frontend / UX | U2 | ✅ Done (U2, G4 approved) |
+| **FEAT-002** | **Multi-Turn Context & Entity Carryover** | V11 | **P0** | Backend / Agent | B2 (via FEAT-009) | ✅ Done (B2, G4 approved) |
+| **FEAT-003** | **Visual Presentation & Charting Audit** | V7, V11 | **P1** | Visualization / UX | U5 | ✅ Done (U5.1/U5.6/U5.9, G4 approved) |
+| **FEAT-004** | **Luminous Siri / Infinity Loop Voice Orb (Aurora Wave D-29)** | V12 | **P1** | UI / Animation | U3 | ✅ Done (U3 + Aurora redo, G4 approved) |
+| **FEAT-005** | **Executive UI Modernization & Material Polish** | V12 | **P1** | UI / Design System | U1 + U4 | ✅ Done (U1 + U4/U4.8, G4 approved) |
+| **FEAT-006** | **CMD Actionable Employee-Level Roster (Drilldown)** | V13 | **P0** | Data / HR Actions | U5 (UI) + B3 (data) | ✅ Done (U5.2 + B3.1/B3.5, G4 approved) |
+| **FEAT-007** | **Answer Contract v2 (forward-compatible UI ↔ brain)** | V14 (D-4) | **P0** | Contract / Frontend | U2 | ✅ Done (U2.1/U2.1b, G4 approved) |
+| **FEAT-008** | **Generated Semantic Layer (catalog = data truth)** | Audit 2026-10-22 | **P0** | Backend / Data | B1 | ✅ Done (B1, G4 approved) |
+| **FEAT-009** | **QuerySpec Planner & Compiler (replaces keyword fast-paths)** | V11, V13, V14 (D-1) | **P0** | Backend / Agent | B2 | ✅ Done (B2, G4 approved) |
+| **FEAT-010** | **Granular-Data RBAC Policy (row/column masking)** | V3, V13, V14 (D-5) | **P0** | Governance | B3 (+ U5 UI states) | ✅ Done (B3 + U5.2, G4 approved) |
+| **FEAT-011** | **Insight Engine & Drill-down Chips ("granular insights")** | V13, V14 | **P0** | Backend / UX | B4 (+ U5 UI) | ✅ Done (B4 + U5.4, G4 approved) |
+| **FEAT-012** | **Reliability, Safety & Performance Hardening** | Audit 2026-10-22 (P2/P3) | **P1** | Backend / Ops | H1 | ✅ Done (H1.1–H1.3b, G4 approved) |
+| **FEAT-013** | **Voice Pipeline Quality (barge-in, mic lifecycle, no duplicate turns)** | V6, V8, audit | **P1** | Frontend / Voice | U3 | ✅ Done (U3.3–U3.6, G4 approved) |
+| **FEAT-014** | **Eval-Gated Release & Cloud Run Redeploy** | V14 (D-3) | **P1** | Quality / Ops | U0 + H1 | ✅ Done (U0.4 + B1–B4 + H1.4/H1.5a; H1.5b ready on sign-off) |
+| **FEAT-015** | **Any-Chart Re-presentation & Chart Excellence** | V7, V15 | **P0** | Visualization / UX | U1.5 + U5.7–U5.9 | ✅ Done (U1.5 + U5.7–U5.9, G4 approved) |
+| **FEAT-016** | **AI Aura visual language** (feathery Google-hue light for AI presence) | V16 | **P1** | UI / Brand | U1.6 (done), U4, U3 | ✅ Done (U1.6 + U3 + U4, G4 approved) |
 
 > **Design Specifications Reference**: See [`design_recommendations_ui_and_orb.md`](./design_recommendations_ui_and_orb.md) for detailed UI glassmorphism and voice orb wave formulas.
 
@@ -45,9 +45,9 @@ Currently, asking a new question clears or completely replaces the screen. The u
 * **Card Interactivity in History**: Historic charts, tables, and document previews remain fully interactive (hover tooltips, tab switching, export triggers).
 
 ### 3. Acceptance Criteria
-- [ ] Asking Question B after Question A does not erase Question A's card.
-- [ ] The user can scroll up to view Question A's exact visual and tabular outputs.
-- [ ] Responsive across full-screen canvas and floating chat modes.
+- [x] Asking Question B after Question A does not erase Question A's card.
+- [x] The user can scroll up to view Question A's exact visual and tabular outputs.
+- [x] Responsive across full-screen canvas and floating chat modes.
 
 ---
 
@@ -62,8 +62,8 @@ Every question is currently evaluated in isolation. If a user asks *"How many em
 * **Session Reset Option**: A clear "New Session / Clear Context" action allowing the user to start a fresh topic when desired.
 
 ### 3. Acceptance Criteria
-- [ ] Follow-up questions referencing pronouns or implicit filters ("break them down", "compare this with last year", "show only loss-making ones") correctly resolve context from the immediate prior turn.
-- [ ] Session memory persists across voice and text turns within the current browser session.
+- [x] Follow-up questions referencing pronouns or implicit filters ("break them down", "compare this with last year", "show only loss-making ones") correctly resolve context from the immediate prior turn.
+- [x] Session memory persists across voice and text turns within the current browser session.
 
 ---
 
@@ -78,9 +78,9 @@ Conduct an exhaustive audit of all visual representations (charts, KPI metrics, 
 * Ensure visual hierarchy, color palette, and responsiveness match ONGC leadership expectations.
 
 ### 3. Acceptance Criteria
-- [ ] `docs/visual_audit.md` maps all 107 question-bank items to a visual type, with gaps listed.
-- [ ] Every mapped item renders its visual from a fixture (U5.6 sweep: 0 failures).
-- [ ] No data answer renders as plain text only when a visual type is mapped.
+- [x] `docs/visual_audit.md` maps all 107 question-bank items to a visual type, with gaps listed.
+- [x] Every mapped item renders its visual from a fixture (U5.6 sweep: 0 failures).
+- [x] No data answer renders as plain text only when a visual type is mapped.
 
 ---
 
@@ -99,9 +99,9 @@ The existing 3D Fibonacci particle orb feels chaotic, jittery, and overly techni
 * **Visual Polish**: Smooth gradient blending (ONGC deep saffron `#E85D04` / petroleum blue `#0077B6` / clean gold) with subtle background radial blur, ensuring zero visual noise or harsh edges.
 
 ### 3. Acceptance Criteria
-- [ ] No scattered or vibrating dots.
-- [ ] Smooth 60fps canvas or SVG rendering without CPU spikes.
-- [ ] Clear visual distinction between Idle, Listening, Thinking, and Speaking states.
+- [x] No scattered or vibrating dots.
+- [x] Smooth 60fps canvas or SVG rendering without CPU spikes.
+- [x] Clear visual distinction between Idle, Listening, Thinking, and Speaking states.
 
 ---
 
@@ -123,8 +123,8 @@ The current interface is functional but feels somewhat "basic" and flat. It need
   * Light-mode default optimized for reading formal documents and board memos.
 
 ### 3. Acceptance Criteria
-- [ ] Clean, uncluttered layout maintaining single-click access to all actions.
-- [ ] Polished executive styling for all rendered tables, charts, and document previews.
+- [x] Clean, uncluttered layout maintaining single-click access to all actions.
+- [x] Polished executive styling for all rendered tables, charts, and document previews.
 
 ---
 
@@ -150,10 +150,10 @@ Currently, HR tenure questions (e.g. *Delhi office for 5+ years*) only render an
     * *"Export to Excel / PDF"* (downloads active filtered list).
 
 ### 3. Acceptance Criteria
-- [ ] Asking for employee names in Delhi for 5+ years returns individual rows, not just aggregate counts.
-- [ ] Columns include Name, Designation, Grade, Total Tenure, and Delhi Station Tenure.
-- [ ] Table supports sorting by tenure and filtering by discipline/grade.
-- [ ] E1–E4 personas (E2_HR, E3_FIN) receive an aggregate or a refusal (no names), and `access.status` matches the text and the visual.
+- [x] Asking for employee names in Delhi for 5+ years returns individual rows, not just aggregate counts.
+- [x] Columns include Name, Designation, Grade, Total Tenure, and Delhi Station Tenure.
+- [x] Table supports sorting by tenure and filtering by discipline/grade.
+- [x] E1–E4 personas (E2_HR, E3_FIN) receive an aggregate or a refusal (no names), and `access.status` matches the text and the visual.
 
 ### 4. Update 2026-10-22 (audit + Verbatim 14)
 * **Data correction:** the roster data already exists in `hrfin_gold.ssot_workforce_employee` (`emp_name`, `grade_id`, `discipline_name`, `total_tenure_years`, `continuous_stay_years`, `wc_id`; all 692 active Delhi executives are named). The `dim_employee` / `fct_posting` tables proposed in `data_gap_analysis_employee_roster.md` do not exist and are **not needed**. Remaining data check: designation field (`grade_designation` in SSOT vs `current_designation` in `mart_workforce`).
@@ -180,9 +180,9 @@ The UI is built first (D-4), but it must render what the brain will produce late
 * The backend may emit the v2 fields **before** the brain exists (empty or heuristic), so the UI is exercised end to end.
 
 ### 3. Acceptance Criteria
-- [ ] All existing fixtures and 28 backend tests still validate.
-- [ ] New v2 fixtures (roster, compare, insights, drill-downs) validate and render.
-- [ ] TypeScript types match the schema (`tsc` clean).
+- [x] All existing fixtures and 28 backend tests still validate.
+- [x] New v2 fixtures (roster, compare, insights, drill-downs) validate and render.
+- [x] TypeScript types match the schema (`tsc` clean).
 
 ---
 
@@ -198,9 +198,9 @@ The hand-written catalog disagrees with BigQuery (`'active'` vs `'Active'`, `cad
 * A CI test fails if any code or value used in code or templates doesn't exist in the profiled catalog.
 
 ### 3. Acceptance Criteria
-- [ ] Zero catalog/data mismatches (test).
-- [ ] `session_memory`, `router`, `query_data` and `turn_runner` all use the single dictionary.
-- [ ] "last year" resolves to the last complete FY (FY26, anchor 19-Oct-2026, current FY27) per D-30 (was: "FY25 relative to the FY26 as-of date").
+- [x] Zero catalog/data mismatches (test).
+- [x] `session_memory`, `router`, `query_data` and `turn_runner` all use the single dictionary.
+- [x] "last year" resolves to the last complete FY (FY26, anchor 19-Oct-2026, current FY27) per D-30 (was: "FY25 relative to the FY26 as-of date").
 
 ---
 
@@ -216,10 +216,10 @@ About 1,000 lines of keyword fast-paths in `turn_runner.py` answer before the qu
 * Fast-paths are reduced to greeting and screen-control only. Runs behind `YUKTI_PLANNER=1` until its gate passes.
 
 ### 3. Acceptance Criteria
-- [ ] The flagship chain works: *Delhi 5+ yrs → give me their names → by discipline → compare with Mumbai → only E5 and above → last year → draft transfer note*.
-- [ ] Eval: root ≥ 80%, follow-ups ≥ 60% at the B2 gate (≥ 90% / ≥ 85% at H1).
-- [ ] No answer is produced from a keyword fast-path for data questions.
-- [ ] Finance flagship chain works: *most profitable / loss-making fields FY26 → by capex invested → under-invested vs reserves → vs MoU target → draft board note* (V4).
+- [x] The flagship chain works: *Delhi 5+ yrs → give me their names → by discipline → compare with Mumbai → only E5 and above → last year → draft transfer note*.
+- [x] Eval: root ≥ 80%, follow-ups ≥ 60% at the B2 gate (≥ 90% / ≥ 85% at H1).
+- [x] No answer is produced from a keyword fast-path for data questions.
+- [x] Finance flagship chain works: *most profitable / loss-making fields FY26 → by capex invested → under-invested vs reserves → vs MoU target → draft board note* (V4).
 
 ---
 
@@ -238,9 +238,9 @@ About 1,000 lines of keyword fast-paths in `turn_runner.py` answer before the qu
 * The UI shows a masked-column state (🔒 badge, policy reference) and an aggregate-instead banner.
 
 ### 3. Acceptance Criteria
-- [ ] RBAC matrix test: every persona × data class gives the expected outcome (100%).
-- [ ] Zero leaks in the eval refusal suite.
-- [ ] E2_HR "names in Delhi 5+ yrs" → aggregate summary or refusal, with `access.status` matching.
+- [x] RBAC matrix test: every persona × data class gives the expected outcome (100%).
+- [x] Zero leaks in the eval refusal suite.
+- [x] E2_HR "names in Delhi 5+ yrs" → aggregate summary or refusal, with `access.status` matching.
 
 ---
 
@@ -255,11 +255,11 @@ Answers narrate rows. Nothing computes the "so what": share, rank, change, gaps 
 * The narrator may cite only computed insight values. A numeric-grounding check rejects any number not in the result or insight set.
 
 ### 3. Acceptance Criteria
-- [ ] ≥ 2 grounded insights per data answer across the question bank.
-- [ ] 0 ungrounded numbers in the eval (automated check).
-- [ ] Drill-down chips execute as follow-up QuerySpec patches.
-- [ ] Finance answers (P&L, capex, under-investment) carry the same insight types as HR answers (V4).
-- [ ] Spoken answers are **brief: 2–4 sentences** (V8 §4: neither one-liner nor full answer).
+- [x] ≥ 2 grounded insights per data answer across the question bank.
+- [x] 0 ungrounded numbers in the eval (automated check).
+- [x] Drill-down chips execute as follow-up QuerySpec patches.
+- [x] Finance answers (P&L, capex, under-investment) carry the same insight types as HR answers (V4).
+- [x] Spoken answers are **brief: 2–4 sentences** (V8 §4: neither one-liner nor full answer).
 
 ---
 
@@ -318,10 +318,10 @@ The same data should be presentable in many ways. The system picks a sensible de
 * **Chart quality rubric** used at every visual review: hierarchy, clarity, labelling, colour semantics, density, accessibility (colour-blind-safe palette, contrast), motion, and consistency.
 
 ### 3. Acceptance Criteria
-- [ ] Compatibility matrix documented (`docs/chart_compatibility.md`) and implemented as one function used by voice, text and toolbar.
-- [ ] For every data-shape fixture, every compatible chart type renders without error (automated sweep), and incompatible requests show the nearest alternative plus an explanation.
-- [ ] "Show this as a pie chart" on a histogram card re-plots in ≤ 300 ms with no backend call, and the slices equal the bins.
-- [ ] Every chart type scores ≥ 4/5 on each rubric criterion in the U5 visual review (sponsor confirms).
+- [x] Compatibility matrix documented (`docs/chart_compatibility.md`) and implemented as one function used by voice, text and toolbar.
+- [x] For every data-shape fixture, every compatible chart type renders without error (automated sweep), and incompatible requests show the nearest alternative plus an explanation.
+- [x] "Show this as a pie chart" on a histogram card re-plots in ≤ 300 ms with no backend call, and the slices equal the bins.
+- [x] Every chart type scores ≥ 4/5 on each rubric criterion in the U5 visual review (sponsor confirms).
 
 ---
 
