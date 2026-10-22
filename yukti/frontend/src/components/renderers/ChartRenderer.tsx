@@ -52,7 +52,7 @@ export function useChartTokens(isDark: boolean): ChartTokens {
 
 function donutColors(plan: ChartPlan, t: ChartTokens): string[] {
   const n = plan.rows.length;
-  if (plan.ordinal) return ramp(t.dark ? '#C6E1FF' : '#B9DAFF', t.dark ? '#1F55C0' : '#0B3D91', n);
+  if (plan.ordinal) return ramp(t.sequential[1], t.sequential[5], n);
   return t.categorical.slice(0, n);
 }
 

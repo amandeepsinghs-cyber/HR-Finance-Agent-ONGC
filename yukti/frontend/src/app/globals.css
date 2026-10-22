@@ -5,56 +5,18 @@
 @tailwind utilities;
 
 @layer base {
+  /* Colour, typography, radius and motion tokens come from src/design/tokens.json
+     (generated into src/design/tokens.generated.css, imported in app/layout.tsx).
+     Only layout variables live here. */
   :root {
-    --canvas: #ffffff;
-    --surface: #f8f9fa;
-    --surface-2: #f1f3f4;
-    --card: #ffffff;
-    --ink: #1f1f1f;
-    --ink-2: #5f6368;
-    --ink-3: #80868b;
-    --hairline: rgba(31, 31, 31, 0.08);
-    --track: rgba(31, 31, 31, 0.06);
-    --accent: #3186ff;
-    --accent-soft: #76bbff;
-    --accent-deep: #1a56db;
-    --accent-pale: #e8f1ff;
-    --maroon: #8e000c;
-    --maroon-pale: #fbeaea;
-    --positive: #137333;
-    --positive-pale: #e6f4ea;
-    --card-shadow: 0 1px 2px rgba(31, 31, 31, 0.04), 0 8px 24px -12px rgba(31, 31, 31, 0.12);
-    --panel-shadow: 0 24px 64px -24px rgba(31, 31, 31, 0.28), 0 4px 14px -4px rgba(31, 31, 31, 0.08);
     --topbar-h: 4rem;
     --panel-w: clamp(22rem, 27vw, 32rem);
-  }
-
-  .dark {
-    --canvas: #121316;
-    --surface: #1a1b1f;
-    --surface-2: #222428;
-    --card: #17181b;
-    --ink: #e8eaed;
-    --ink-2: #a8adb4;
-    --ink-3: #7c828a;
-    --hairline: rgba(255, 255, 255, 0.08);
-    --track: rgba(255, 255, 255, 0.08);
-    --accent: #4c97ff;
-    --accent-soft: #8ec5ff;
-    --accent-deep: #2f6fe0;
-    --accent-pale: rgba(76, 151, 255, 0.14);
-    --maroon: #e0525c;
-    --maroon-pale: rgba(224, 82, 92, 0.14);
-    --positive: #81c995;
-    --positive-pale: rgba(129, 201, 149, 0.14);
-    --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -14px rgba(0, 0, 0, 0.7);
-    --panel-shadow: 0 28px 72px -24px rgba(0, 0, 0, 0.8), 0 4px 16px rgba(0, 0, 0, 0.4);
   }
 
   /* Fluid type scale: 15–16px on laptops, ~18.5px at 1920, ~22px at 2560 (readable at 5 m). */
   html {
     font-size: clamp(15px, calc(0.55vw + 8px), 24px);
-    font-family: 'Google Sans Text', 'Google Sans', Inter, 'Noto Sans Devanagari', system-ui, sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -78,7 +40,7 @@
   .card {
     background: var(--card);
     border: 1px solid var(--hairline);
-    border-radius: 1.25rem;
+    border-radius: var(--radius-card);
     box-shadow: var(--card-shadow);
   }
 
@@ -88,9 +50,9 @@
     padding: 1.1rem 1.25rem 1.05rem;
     background: var(--card);
     border: 1px solid var(--hairline);
-    border-radius: 1.25rem;
+    border-radius: var(--radius-card);
     box-shadow: var(--card-shadow);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
   }
   .kpi-tile[data-primary='true']::before {
     content: '';
@@ -218,13 +180,13 @@
   }
 
   .prose-doc h1 {
-    font-family: 'Google Sans', Inter, sans-serif;
+    font-family: var(--font-display);
     font-size: 1.35rem;
     font-weight: 600;
     margin: 0.4rem 0 0.8rem;
   }
   .prose-doc h2 {
-    font-family: 'Google Sans', Inter, sans-serif;
+    font-family: var(--font-display);
     font-size: 1.1rem;
     font-weight: 600;
     margin: 1.2rem 0 0.5rem;
@@ -274,13 +236,13 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(128, 134, 139, 0.28);
+  background: var(--scrollbar);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 134, 139, 0.5);
+  background: var(--scrollbar-hover);
   background-clip: padding-box;
 }
 

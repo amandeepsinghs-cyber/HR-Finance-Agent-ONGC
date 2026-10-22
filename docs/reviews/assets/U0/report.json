@@ -1,0 +1,178 @@
+[
+ {
+  "size": "1440x900",
+  "scene": "c1_delhi_tenure",
+  "ms": 2042,
+  "title": "Delhi HQ: Executives with ≥5 Years' Continuous Stay",
+  "form": "donut"
+ },
+ {
+  "size": "1440x900",
+  "scene": "c1_followup_e5",
+  "ms": 5010,
+  "title": "Delhi HQ: Executives with ≥5 Years' Continuous Stay",
+  "form": "ranked"
+ },
+ {
+  "size": "1440x900",
+  "scene": "c6_loss_fields",
+  "ms": 1958,
+  "title": "FY26 Field Profitability & Standalone P&L",
+  "form": "ranked"
+ },
+ {
+  "size": "1440x900",
+  "scene": "w1_brent60_waterfall",
+  "ms": 1971,
+  "title": "FY26 Field Profitability & Standalone P&L",
+  "form": "ranked"
+ },
+ {
+  "size": "1440x900",
+  "scene": "x7_parliament_reply",
+  "ms": 1615,
+  "title": "Draft Briefing Note: FY26 Field Profitability & Standalone P&L",
+  "form": null
+ },
+ {
+  "size": "1440x900",
+  "scene": "p1_clause",
+  "ms": 1972,
+  "title": "Minimum tenure at a station, and the maximum cumulative stay in o",
+  "form": "donut"
+ },
+ {
+  "size": "1440x900",
+  "scene": "map_headcount",
+  "ms": 2002,
+  "title": "Stations count as one cluster for tenure purposes",
+  "form": "ranked"
+ },
+ {
+  "size": "1440x900",
+  "scene": "c10_mou_bullet",
+  "ms": 1990,
+  "title": "How are we tracking against our mou targets with mopng/dpe for th",
+  "form": "line"
+ },
+ {
+  "size": "1440x900",
+  "scene": "c11_multiples",
+  "ms": 1980,
+  "title": "Assets added headcount but lost production over 5 years",
+  "form": "ranked"
+ },
+ {
+  "size": "1440x900",
+  "scene": "f6_receivables",
+  "ms": 1958,
+  "title": "How old are receivables from oil marketing companies and gas buye",
+  "form": "ranked"
+ },
+ {
+  "size": "1440x900",
+  "scene": "h10_table",
+  "ms": 1614,
+  "title": "Draft Briefing Note: How old are receivables from oil marketing companies and gas buye",
+  "form": null
+ },
+ {
+  "size": "1440x900",
+  "scene": "d2_refusal_e2",
+  "ms": 4906,
+  "title": "Access Restricted (D2)",
+  "form": null
+ },
+ {
+  "size": "1440x900",
+  "consoleErrors": []
+ },
+ {
+  "size": "1920x1080",
+  "scene": "c1_delhi_tenure",
+  "ms": 2022,
+  "title": "Delhi HQ: Executives with ≥5 Years' Continuous Stay",
+  "form": "donut"
+ },
+ {
+  "size": "1920x1080",
+  "scene": "c1_followup_e5",
+  "ms": 4070,
+  "title": "Delhi HQ: Executives with ≥5 Years' Continuous Stay",
+  "form": "ranked"
+ },
+ {
+  "size": "1920x1080",
+  "scene": "c6_loss_fields",
+  "ms": 1995,
+  "title": "FY26 Field Profitability & Standalone P&L",
+  "form": "ranked"
+ },
+ {
+  "size": "1920x1080",
+  "scene": "w1_brent60_waterfall",
+  "ms": 1968,
+  "title": "FY26 Field Profitability & Standalone P&L",
+  "form": "ranked"
+ },
+ {
+  "size": "1920x1080",
+  "scene": "x7_parliament_reply",
+  "ms": 1623,
+  "title": "Draft Briefing Note: FY26 Field Profitability & Standalone P&L",
+  "form": null
+ },
+ {
+  "size": "1920x1080",
+  "scene": "p1_clause",
+  "ms": 1997,
+  "title": "Minimum tenure at a station, and the maximum cumulative stay in o",
+  "form": "donut"
+ },
+ {
+  "size": "1920x1080",
+  "scene": "map_headcount",
+  "ms": 1966,
+  "title": "Stations count as one cluster for tenure purposes",
+  "form": "ranked"
+ },
+ {
+  "size": "1920x1080",
+  "scene": "c10_mou_bullet",
+  "ms": 1986,
+  "title": "How are we tracking against our mou targets with mopng/dpe for th",
+  "form": "line"
+ },
+ {
+  "size": "1920x1080",
+  "scene": "c11_multiples",
+  "ms": 1974,
+  "title": "Assets added headcount but lost production over 5 years",
+  "form": "ranked"
+ },
+ {
+  "size": "1920x1080",
+  "scene": "f6_receivables",
+  "ms": 2366,
+  "title": "How old are receivables from oil marketing companies and gas buye",
+  "form": "ranked"
+ },
+ {
+  "size": "1920x1080",
+  "scene": "h10_table",
+  "ms": 1616,
+  "title": "Draft Briefing Note: How old are receivables from oil marketing companies and gas buye",
+  "form": null
+ },
+ {
+  "size": "1920x1080",
+  "scene": "d2_refusal_e2",
+  "ms": 1750,
+  "title": "Access Restricted (D2)",
+  "form": null
+ },
+ {
+  "size": "1920x1080",
+  "consoleErrors": []
+ }
+]

@@ -17,7 +17,7 @@
 | **U0.2** | `O` | `BUILD.md`, feature list v2, this checklist, decision log, review template, `DELEGATION.md` | Docs exist, cross-linked, and every feature maps to ≥ 1 step | Doc review by reviewer agent | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U0.2.md) | ✅ (V15) |
 | **U0.3** | `S` | Resolve open decisions OD-1 … OD-5 | Each recorded as D-x in `DECISIONS.md` | Sponsor answers | ✅ (OD-5 deferred to B3) | n/a | ✅ | n/a (sponsor decision) | ✅ (V15) |
 | **U0.4** | `O→F + FL` | Re-run the cache-OFF eval on `baseline-v0.2`; build the fast **gate subset** (~120 turns) | Scorecard at `yukti/backend/eval/gates/U0.md`; subset script runs in < 15 min | Eval run log | ⬜ | [packet](docs/delegation/packets/U0.4.md) | | | |
-| **U0.5** | `FL` | Visual baseline: Playwright screenshots of the current UI (light/dark, key states) | `docs/reviews/assets/U0_*.png` | Screenshot script | ⬜ | [packet](docs/delegation/packets/U0.5.md) | | | |
+| **U0.5** | `FL` | Visual baseline: Playwright screenshots of the current UI (light/dark, key states) | `docs/reviews/assets/U0_*.png` | Screenshot script | ✅ | [packet](docs/delegation/packets/U0.5.md) | ✅ |✅ [evidence](docs/reviews/U0.5.md) (O spot-check) | |
 
 ---
 
@@ -25,7 +25,7 @@
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
-| **U1.1** | `O→F` | Design tokens (colour per OD-1, surfaces, borders, radii, shadows, motion durations) as CSS variables + Tailwind theme | One token source; no hard-coded hex in components (lint/grep check) | `grep` check + build | ⬜ | [packet](docs/delegation/packets/U1.1.md) | | | |
+| **U1.1** | `O→F` | Design tokens (colour per OD-1, surfaces, borders, radii, shadows, motion durations) as CSS variables + Tailwind theme | One token source; no hard-coded hex in components (lint/grep check) | `grep` check + build | ✅ | [packet](docs/delegation/packets/U1.1.md) | ✅ |✅ [review](docs/reviews/U1.1.md) | |
 | **U1.2** | `F` | Typography scale and tabular numerals for KPIs; number formatting (₹ Cr / Lakh, %) centralised | KPI numerals use `font-variant-numeric: tabular-nums`; all ₹/%/count formatting goes through one util (grep: 0 ad-hoc `toLocaleString` in components) | Screenshot diff | ⬜ | [packet](docs/delegation/packets/U1.2.md) | | | |
 | **U1.3** | `O→F` | Surface primitives: `Card`, `CardHeader`, `Chip`, `Badge`, `Toolbar` (frosted glass, hairline borders, ambient shadow) | Used by Canvas, Panel, TopBar; light + dark | Storybook-style demo page `/_design` | ⬜ | [packet](docs/delegation/packets/U1.3.md) | | | |
 | **U1.4** | `F` | Light theme as default; dark theme parity | No contrast failures on primary text (≥ 4.5:1) | Automated contrast check | ⬜ | [packet](docs/delegation/packets/U1.4.md) | | | |
@@ -52,7 +52,7 @@
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
-| **U3.1** | `O` | Canvas-2D ribbon renderer: 3–4 harmonic Bézier/sine ribbons on an ∞ path, gradient strokes, `lighter` blending, soft bloom | No dots/particles; DPR-aware; reduced-motion fallback | Visual review + rAF profile | ⬜ | n/a | | | |
+| **U3.1** | `O` | Canvas-2D ribbon renderer: 3–4 harmonic Bézier/sine ribbons on an ∞ path, gradient strokes, `lighter` blending, soft bloom | No dots/particles; DPR-aware; reduced-motion fallback; **`VoiceOrb.tsx` TEMP_ALLOW entry removed from `scripts/check_tokens.mjs` and `lint:tokens` OK** | Visual review + rAF profile | ⬜ | n/a | | | |
 | **U3.2** | `O` | State dynamics: idle (0.4–0.6 Hz breathe), listening (mic RMS → amplitude/thickness), thinking (orbiting pulse), speaking (playback analyser → resonance) | Each state has distinct parameters (frequency, amplitude, colour intensity per the spec table) verified in a 4-panel capture; the sponsor identifies all 4 states blind | Screen recording | ⬜ | n/a | | | |
 | **U3.3** | `O` | Single level source: raw worklet RMS for listening, output analyser for speaking; `getMicLevel` becomes a pure read | No synthetic floor; level reaches ~0 in silence | Unit + manual | ⬜ | n/a | | | |
 | **U3.4** | `O` | Barge-in fix: local stop drops incoming chunks + sends `interrupt`; threshold on raw RMS | On speakers Yukti isn't cut off by her own echo; a real interruption stops the audio within ≤ 300 ms | `voice_e2e_test.js` + manual | ⬜ | n/a | | | |

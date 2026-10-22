@@ -4,7 +4,7 @@
  */
 import * as echarts from 'echarts';
 import { ChartPlan, Row } from './plan';
-import { ChartTokens, px, hGradient, vGradient, tooltipBase, tooltipCard, ANIM } from './theme';
+import { ChartTokens, px, hGradient, vGradient, tooltipBase, tooltipCard, ANIM, alpha, labelOn } from './theme';
 import { fmtValue, fmtNum, humanizeKey, humanizeValue, toNumber, UnitInfo } from './format';
 
 type Opt = echarts.EChartsOption;
@@ -94,7 +94,7 @@ function categoryAxis(t: ChartTokens, labels: string[], horizontal: boolean, max
 
 function pill(t: ChartTokens, color: string) {
   return {
-    color: '#FFFFFF',
+    color: t.onAccent,
     backgroundColor: color,
     borderRadius: px(t, 10),
     padding: [px(t, 3), px(t, 8)],
@@ -326,7 +326,7 @@ export function donutOption(plan: ChartPlan, t: ChartTokens, colors: string[]): 
         itemStyle: { borderRadius: Math.round(6 * s), borderColor: t.surface, borderWidth: 2 },
         label: { show: false },
         labelLine: { show: false },
-        emphasis: { scale: true, scaleSize: Math.round(6 * s), itemStyle: { shadowBlur: 16, shadowColor: 'rgba(26,86,219,0.35)' } },
+        emphasis: { scale: true, scaleSize: Math.round(6 * s), itemStyle: { shadowBlur: 16, shadowColor: t.shadowAccent } },
         data: plan.rows.map((r) => ({ name: r.label, value: r.value, raw: r.raw })),
         animationType: 'expansion',
       } as any,
@@ -576,7 +576,7 @@ export function lineOption(plan: ChartPlan, t: ChartTokens, data: Record<string,
       universalTransition: { enabled: true },
       lineStyle: { width: px(t, 3) },
       areaStyle: single
-        ? { color: vGradient(t.dark ? 'rgba(76,151,255,0.35)' : 'rgba(49,134,255,0.28)', 'rgba(49,134,255,0)') }
+        ? { color: vGradient(alpha(t.accent, t.dark ? 0.35 : 0.28), alpha(t.accent, 0)) }
         : undefined,
       endLabel: { show: true, formatter: (p: any) => fmtValue(p.value, plan.unit), color: colors[idx % colors.length], fontWeight: 700, fontSize: px(t, 13) },
       data: data.map((r) => toNumber(r[k])),
@@ -586,7 +586,7 @@ export function lineOption(plan: ChartPlan, t: ChartTokens, data: Record<string,
               symbol: 'roundRect',
               symbolSize: [px(t, 44), px(t, 22)],
               itemStyle: { color: t.accentDeep },
-              label: { color: '#fff', fontSize: px(t, 11), fontWeight: 600, formatter: 'Peak' },
+              label: { color: t.onAccent, fontSize: px(t, 11), fontWeight: 600, formatter: 'Peak' },
               data: [{ type: 'max', symbolOffset: [0, -px(t, 20)] }],
             }
           : undefined,
@@ -611,7 +611,7 @@ export function groupedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
     tooltip: {
       ...tooltipBase(t),
       trigger: 'axis',
-      axisPointer: { type: 'shadow', shadowStyle: { color: t.dark ? 'rgba(255,255,255,0.04)' : 'rgba(49,134,255,0.06)' } },
+      axisPointer: { type: 'shadow', shadowStyle: { color: t.dark ? 'rgba(255,255,255,0.04)' : alpha(t.accent, 0.06) } },
       formatter: (ps: any) => tooltipCard(t, ps[0]?.name, ps.map((p: any) => [humanizeKey(p.seriesName), fmtValue(p.value, unitForKey(plan)(p.seriesName)), p.color])),
     },
     series: plan.seriesKeys.map((k, idx) => ({
@@ -634,7 +634,7 @@ export function stackedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
   const sorted = [...data].sort((a, b) => keys.reduce((s, k) => s + (toNumber(b[k]) || 0), 0) - keys.reduce((s, k) => s + (toNumber(a[k]) || 0), 0)).slice(0, 12);
   const labels = sorted.map((r) => humanizeValue(r[plan.dimKey]));
   const severe = (k: string) => /(>|over|above)\s*\d+|180|365|overdue/i.test(k);
-  const blues = ramp(t.dark ? '#C6E1FF' : '#B9DAFF', t.dark ? '#2F6FE0' : '#1A56DB', Math.max(1, keys.filter((k) => !severe(k)).length));
+  const blues = ramp(t.sequential[1], t.sequential[4], Math.max(1, keys.filter((k) => !severe(k)).length));
   let bi = 0;
   const colors = keys.map((k) => (severe(k) ? t.maroon : blues[bi++]));
   const totals = sorted.map((r) => keys.reduce((s, k) => s + (toNumber(r[k]) || 0), 0));
@@ -649,7 +649,7 @@ export function stackedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
     tooltip: {
       ...tooltipBase(t),
       trigger: 'axis',
-      axisPointer: { type: 'shadow', shadowStyle: { color: t.dark ? 'rgba(255,255,255,0.04)' : 'rgba(49,134,255,0.06)' } },
+      axisPointer: { type: 'shadow', shadowStyle: { color: t.dark ? 'rgba(255,255,255,0.04)' : alpha(t.accent, 0.06) } },
       formatter: (ps: any) => {
         const arr = (ps as any[]).filter((p) => p.seriesId !== 'total');
         const tot = totals[arr[0]?.dataIndex] || 0;
@@ -720,7 +720,7 @@ export function pieOption(plan: ChartPlan, t: ChartTokens, colors: string[]): Op
           length2: px(t, 14),
           lineStyle: { color: t.sub, width: 1.2 },
         },
-        emphasis: { scale: true, scaleSize: Math.round(7 * s), itemStyle: { shadowBlur: 18, shadowColor: 'rgba(26,86,219,0.35)' } },
+        emphasis: { scale: true, scaleSize: Math.round(7 * s), itemStyle: { shadowBlur: 18, shadowColor: t.shadowAccent } },
         data: plan.rows.map((r) => ({ name: r.label, value: r.value, raw: r.raw })),
         animationType: 'expansion',
       } as any,
@@ -839,9 +839,9 @@ export function areaOption(plan: ChartPlan, t: ChartTokens, data: Record<string,
   const opt = lineOption(plan, t, data);
   const series = (opt.series as any[]) || [];
   const palette = [
-    ['rgba(49,134,255,0.42)', 'rgba(49,134,255,0.03)'],
-    ['rgba(26,86,219,0.36)', 'rgba(26,86,219,0.02)'],
-    ['rgba(142,0,12,0.32)', 'rgba(142,0,12,0.02)'],
+    [alpha(t.accent, 0.42), alpha(t.accent, 0.03)],
+    [alpha(t.accentDeep, 0.36), alpha(t.accentDeep, 0.02)],
+    [alpha(t.maroon, 0.32), alpha(t.maroon, 0.02)],
   ];
   series.forEach((s, idx) => {
     const [cTop, cBot] = palette[idx % palette.length];
@@ -913,7 +913,7 @@ export function scatterOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
           borderColor: t.surface,
           borderWidth: 1.5,
           shadowBlur: 10,
-          shadowColor: 'rgba(49,134,255,0.25)',
+          shadowColor: alpha(t.accent, 0.25),
         },
         label: {
           show: pts.length <= 18,
@@ -976,7 +976,7 @@ export function treemapOption(plan: ChartPlan, t: ChartTokens, colors: string[])
         },
         label: {
           show: true,
-          color: '#FFFFFF',
+          color: t.onAccent,
           fontSize: px(t, 13),
           fontWeight: 600,
           formatter: (p: any) => {
@@ -991,6 +991,7 @@ export function treemapOption(plan: ChartPlan, t: ChartTokens, colors: string[])
           origValue: r.value,
           raw: r.raw,
           itemStyle: { color: r.value < 0 ? t.maroon : colors[i % colors.length] },
+          label: { color: labelOn(r.value < 0 ? t.maroon : colors[i % colors.length]) },
         })),
       } as any,
     ],
@@ -1027,12 +1028,12 @@ export function funnelOption(plan: ChartPlan, t: ChartTokens, colors: string[]):
         label: {
           show: true,
           position: 'inside',
-          color: '#FFFFFF',
+          color: t.onAccent,
           fontSize: px(t, 12),
           fontWeight: 600,
           formatter: (p: any) => `${p.name} · ${fmtValue(p.value, unit)}`,
         },
-        data: plan.rows.map((r) => ({ name: r.label, value: Math.max(0, r.value), raw: r.raw })),
+        data: plan.rows.map((r, i) => ({ name: r.label, value: Math.max(0, r.value), raw: r.raw, label: { color: labelOn(colors[i % colors.length]) } })),
       } as any,
     ],
   };

@@ -6,7 +6,7 @@ import { MapSpec } from '@/contracts/answerContract';
 import { INDIA_GEO_JSON } from '@/data/indiaGeoJson';
 import { EChart } from '@/charts/EChart';
 import { useChartTokens } from './ChartRenderer';
-import { px, tooltipBase, tooltipCard, ANIM } from '@/charts/theme';
+import { px, tooltipBase, tooltipCard, ANIM, alpha } from '@/charts/theme';
 import { fmtNum, humanizeValue } from '@/charts/format';
 
 interface MapRendererProps {
@@ -47,10 +47,10 @@ export const MapRenderer: React.FC<MapRendererProps> = ({ mapSpec, isDark = fals
             { offset: 1, color: neg ? t.maroon : t.accentDeep },
           ]),
           opacity: 0.88,
-          borderColor: t.dark ? 'rgba(255,255,255,0.65)' : '#FFFFFF',
+          borderColor: t.markerBorder,
           borderWidth: 1.5,
           shadowBlur: px(t, 14),
-          shadowColor: neg ? 'rgba(142,0,12,0.35)' : 'rgba(26,86,219,0.35)',
+          shadowColor: neg ? t.shadowMaroon : t.shadowAccent,
         },
         label: { show: top5.has(p.name) },
       };
@@ -87,10 +87,10 @@ export const MapRenderer: React.FC<MapRendererProps> = ({ mapSpec, isDark = fals
         center: [82.8, 22.6],
         silent: true,
         itemStyle: {
-          areaColor: t.dark ? '#1F2228' : '#EEF3FA',
-          borderColor: t.dark ? '#3A3F48' : '#B8C7DB',
+          areaColor: t.mapArea,
+          borderColor: t.mapBorder,
           borderWidth: 1.2,
-          shadowColor: t.dark ? 'rgba(0,0,0,0.5)' : 'rgba(26,86,219,0.12)',
+          shadowColor: t.dark ? 'rgba(0,0,0,0.5)' : alpha(t.accentDeep, 0.12),
           shadowBlur: px(t, 24),
           shadowOffsetY: px(t, 6),
         },
@@ -109,10 +109,10 @@ export const MapRenderer: React.FC<MapRendererProps> = ({ mapSpec, isDark = fals
             color: t.text,
             fontSize: px(t, 12),
             fontWeight: 600,
-            textBorderColor: t.dark ? '#121316' : '#FFFFFF',
+            textBorderColor: t.labelHalo,
             textBorderWidth: 3,
             formatter: (p: any) => `${p.name}\n{v|${fmtNum(p.value[2])}}`,
-            rich: { v: { color: t.sub, fontSize: px(t, 11), fontWeight: 500, textBorderColor: t.dark ? '#121316' : '#FFFFFF', textBorderWidth: 3 } },
+            rich: { v: { color: t.sub, fontSize: px(t, 11), fontWeight: 500, textBorderColor: t.labelHalo, textBorderWidth: 3 } },
           },
           labelLayout: { hideOverlap: true, moveOverlap: 'shiftY' },
           emphasis: { scale: 1.15, label: { show: true }, itemStyle: { opacity: 1 } },
