@@ -7,7 +7,7 @@ Voice-first HR & Finance agent for ONGC leadership (CMD, Director (HR), Director
 ## Repository layout
 | Path | What |
 |---|---|
-| `verbatims/` | User requirements (verbatim) |
+| `feature_list_and_verbatims/` | Feature backlog and user requirements (verbatim) |
 | `docs/` | Question bank, data requirements, **UX spec** (`ux_spec.md`), gate reviews, **`TODO_BACKLOG.md`** (deferred work) |
 | `data_bank/world_bible/` | Locked reference world: schema, calibration targets, questions (89 + 267 follow-ups) |
 | `data_bank/generators/` | Synthetic data generators (HR, ops, finance, governance, documents, gaps) |

@@ -11,6 +11,7 @@ from google.adk.agents import Agent
 from google.genai import types
 
 from app.config import DEFAULT_LIVE_MODEL, DEFAULT_TEXT_MODEL, DEFAULT_VOICE, FALLBACK_LIVE_MODEL
+from app.tools.certified_query import run_certified_query as execute_certified_query
 from app.tools.draft_document import DocumentDraftingEngine
 from app.tools.export_tool import DocumentExporter
 from app.tools.policy_search import PolicySearchEngine
@@ -40,7 +41,8 @@ CORE OPERATIONAL BEHAVIORS:
    - SOURCE INQUIRIES: Only when the user explicitly asks ("what's the source?", "where is this from?", "kiska data hai?"), speak the source in plain business language (e.g. "This comes from the audited HR posting records as of today, and the JRTP transfer policy."). Never speak database table or view names even then.
 
 3. MANDATORY TOOL USAGE FOR ONGC DATA & METRICS:
-   - You MUST call a tool (`query_data`, `search_policy`, `what_if`, or `draft_document`) for EVERY user question inquiring about ONGC data, metrics, headcount, policies, finances, or operations.
+   - You MUST call a tool (`run_certified_query`, `query_data`, `search_policy`, `what_if`, or `draft_document`) for EVERY user question inquiring about ONGC data, metrics, headcount, policies, finances, or operations.
+   - When the user inquiry matches a certified metric or question (e.g. C1 Delhi stay, C6 loss-making fields, C12 lifting cost, vacancies, capex), call `run_certified_query(query_id, params)` to execute the verified certified template, supplying parameter overrides as requested (e.g. wc_id, fiscal_year, min_stay_months).
    - Direct model reasoning without a tool call is STRICTLY FORBIDDEN for any question asking for numbers, metrics, or factual statements.
    - Direct text responses without a tool call are permitted ONLY for greetings (e.g. "hello", "good morning"), conversational pleasantries, and meta questions.
    - TOOL SELECTION RULES:
@@ -79,6 +81,40 @@ def query_data(sql_query: str, title: Optional[str] = None) -> Dict[str, Any]:
     Always follow the 5 Query-Craft rules and dataset allow-list.
     """
     return execute_query_data(sql_query=sql_query, title=title)
+
+
+def run_certified_query(
+    query_id: str,
+    params: Optional[Dict[str, Any]] = None,
+    wc_id: Optional[str] = None,
+    fiscal_year: Optional[str] = None,
+    min_stay_months: Optional[int] = None,
+    min_grade: Optional[str] = None,
+    field_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Executes a certified parameterized query template from the verified query library.
+    ALWAYS prefer calling `run_certified_query` first before `query_data` for standard questions:
+    - 'C1': Executives with >= N months continuous stay at a work centre (wc_id='WC-DEL'|'WC-MUM'|'WC-DDN'|'WC-AHM'|'WC-MEH'|'WC-ASM'|'WC-TRI', min_stay_months=60, min_grade='E5')
+    - 'C6': Field profitability and loss-making fields (fiscal_year='FY26'|'FY25')
+    - 'C10': MoU performance scorecard vs targets
+    - 'C11': Assets that added headcount vs production growth
+    - 'C12': Lifting cost per BOE across assets (fiscal_year='FY26')
+    - 'F6': Trade receivables ageing by customer
+    - 'H10': Annual transfer proposal roster
+    - 'X7': North-East vacancies category-wise
+    """
+    merged: Dict[str, Any] = dict(params or {})
+    if wc_id:
+        merged["wc_id"] = wc_id
+    if fiscal_year:
+        merged["fiscal_year"] = fiscal_year
+    if min_stay_months is not None:
+        merged["min_stay_months"] = min_stay_months
+    if min_grade:
+        merged["min_grade"] = min_grade
+    if field_id:
+        merged["field_id"] = field_id
+    return execute_certified_query(query_id=query_id, params=merged or None)
 
 
 def search_policy(query: str) -> Dict[str, Any]:
@@ -168,6 +204,7 @@ def create_yukti_agent(
         instruction=instruction,
         generate_content_config=gen_cfg,
         tools=[
+            run_certified_query,
             query_data,
             search_policy,
             what_if,

@@ -40,13 +40,42 @@ class DocumentExporter:
         self.oauth_provider = oauth_provider or GoogleOAuthProvider()
 
     def export_word(self, markdown_text: str, filename: str = "yukti_draft.docx") -> Path:
-        """Exports markdown document text into an executive Word (.docx) document."""
+        """Exports markdown document text into an executive Word (.docx) document with formatted tables."""
         out_path = self.exports_dir / filename
         doc = docx.Document()
 
+        table_buffer: List[List[str]] = []
+
+        def flush_table():
+            nonlocal table_buffer
+            if not table_buffer:
+                return
+            num_cols = max(len(r) for r in table_buffer)
+            if num_cols > 0:
+                tbl = doc.add_table(rows=len(table_buffer), cols=num_cols)
+                tbl.style = "Table Grid"
+                for r_idx, row_vals in enumerate(table_buffer):
+                    for c_idx, cell_val in enumerate(row_vals):
+                        if c_idx < num_cols:
+                            cell = tbl.cell(r_idx, c_idx)
+                            cell.text = cell_val
+                            if r_idx == 0:
+                                for run in cell.paragraphs[0].runs:
+                                    run.bold = True
+            table_buffer = []
+
         for line in markdown_text.splitlines():
             line_str = line.strip()
-            if not line_str:
+            if line_str.startswith("|") and line_str.endswith("|"):
+                cells = [c.strip() for c in line_str.strip("|").split("|")]
+                if all(set(c) <= {"-", ":", " "} for c in cells):
+                    continue
+                table_buffer.append(cells)
+                continue
+            else:
+                flush_table()
+
+            if not line_str or line_str == "---":
                 continue
             if line_str.startswith("# "):
                 doc.add_heading(line_str[2:], level=1)
@@ -55,14 +84,11 @@ class DocumentExporter:
             elif line_str.startswith("### "):
                 doc.add_heading(line_str[4:], level=3)
             elif line_str.startswith("- ") or line_str.startswith("* "):
-                doc.add_paragraph(line_str[2:], style="List Bullet")
-            elif line_str.startswith("|") and line_str.endswith("|"):
-                # Table row
-                p = doc.add_paragraph(line_str)
-                p.paragraph_format.left_indent = docx.shared.Inches(0.2)
+                doc.add_paragraph(line_str[2:].replace("**", ""), style="List Bullet")
             else:
-                doc.add_paragraph(line_str)
+                doc.add_paragraph(line_str.replace("**", ""))
 
+        flush_table()
         doc.save(str(out_path))
         return out_path
 

@@ -50,25 +50,57 @@ def compute_deterministic_summary(columns: List[str], rows: List[Dict[str, Any]]
         except Exception:
             pass
 
-    # Group / Rank by primary dimension (e.g. grade_id, field_name, discipline_id)
-    dim_cols = [c for c in columns if any(k in c.lower() for k in ["grade", "discipline", "field", "asset", "wc_", "city", "state"])]
-    if dim_cols and count_cols:
-        dim = dim_cols[0]
-        cnt = count_cols[0]
-        dim_totals: Dict[str, int] = {}
-        for r in rows:
-            d_val = str(r.get(dim, "Unknown"))
-            try:
-                c_val = int(r.get(cnt, 0) or 0)
-            except Exception:
-                c_val = 1
-            dim_totals[d_val] = dim_totals.get(d_val, 0) + c_val
+    # Friendly name mapping
+    DISCIPLINE_NAMES = {
+        "DISC-PRD": "Production", "DISC-DRL": "Drilling", "DISC-MEC": "Mechanical",
+        "DISC-ELE": "Electrical", "DISC-INS": "Instrumentation", "DISC-CHM": "Chemistry",
+        "DISC-CIV": "Civil", "DISC-GEO": "Geology", "DISC-GPS": "Geophysics (Surface)",
+        "DISC-GPW": "Geophysics (Wells)", "DISC-RES": "Reservoir", "DISC-HSE": "Environment & Safety (HSE)",
+        "DISC-FIN": "Finance", "DISC-HR": "HR", "DISC-MM": "Materials Management",
+        "DISC-LOG": "Logistics", "DISC-MED": "Medical", "DISC-SEC": "Security", "DISC-LEG": "Legal",
+    }
+    WORK_CENTRE_NAMES = {
+        "WC-DEL": "Delhi HQ", "WC-DDN": "Dehradun Tel Bhavan", "WC-MUM": "Mumbai",
+        "WC-TRI": "Tripura Asset", "WC-ASM": "Assam Asset", "WC-JOR": "Jorhat Asset",
+        "WC-AAB": "Assam & Arakan Basin", "WC-AHM": "Ahmedabad Asset", "WC-ANK": "Ankleshwar Asset",
+        "WC-MEH": "Mehsana Asset", "WC-CAM": "Cambay Asset", "WC-RAJ": "Rajahmundry Asset",
+        "WC-KKD": "Kakinada", "WC-CHN": "Chennai", "WC-KOL": "Kolkata", "WC-BOK": "Bokaro",
+        "WC-SIL": "Silchar", "WC-AGR": "Agartala", "WC-EOA": "Eastern Offshore Asset",
+        "WC-MHN": "Mumbai High North", "WC-MHS": "Mumbai High South", "WC-BAS": "Bassein & Satellite",
+        "WC-NEH": "Neelam & Heera", "WC-ROM": "Regional Office Mumbai",
+    }
 
-        # Sort descending
-        ranked = sorted(dim_totals.items(), key=lambda x: x[1], reverse=True)
-        summary["ranked_by_" + dim] = [{"name": k, "count": v} for k, v in ranked[:5]]
-        top_str = ", ".join(f"{k} {v}" for k, v in ranked[:3])
-        summary["top_ranked_text"] = f"Largest groups: {top_str}"
+    # Group / Rank by ALL present dimensions (e.g. discipline_id, grade_id, field_name, asset_name)
+    dim_cols = [c for c in columns if any(k in c.lower() for k in ["discipline", "grade", "field", "asset", "wc_", "city", "state"])]
+    if dim_cols and count_cols:
+        cnt = count_cols[0]
+        dimension_facts = []
+        summary["dimension_totals"] = {}
+
+        for dim in dim_cols:
+            dim_totals: Dict[str, int] = {}
+            for r in rows:
+                raw_d = str(r.get(dim, "Unknown")).strip()
+                # Apply friendly name
+                d_val = DISCIPLINE_NAMES.get(raw_d, WORK_CENTRE_NAMES.get(raw_d, raw_d))
+                try:
+                    c_val = int(r.get(cnt, 0) or 0)
+                except Exception:
+                    c_val = 1
+                dim_totals[d_val] = dim_totals.get(d_val, 0) + c_val
+
+            ranked = sorted(dim_totals.items(), key=lambda x: x[1], reverse=True)
+            summary["ranked_by_" + dim] = [{"name": k, "count": v} for k, v in ranked[:10]]
+            summary["dimension_totals"][dim] = dict(ranked)
+
+            top_items = [f"{k} ({v})" for k, v in ranked[:3] if v > 0]
+            if top_items:
+                dim_clean = "Discipline" if "disc" in dim.lower() else ("Grade" if "grade" in dim.lower() else dim)
+                dimension_facts.append(f"{dim_clean}: {', '.join(top_items)}")
+
+        summary["top_ranked_text"] = ". ".join(dimension_facts)
+        # Store structured label->value pairs for validation
+        summary["label_value_pairs"] = summary["dimension_totals"]
 
     return summary
 
@@ -121,40 +153,53 @@ def query_data(
             res_copy["latency_ms"] = round((time.perf_counter() - t0) * 1000, 2)
             return res_copy
 
-    # 4. Direct Execution with maximum_bytes_billed cap (eliminates dry-run overhead per latency plan)
+    # 4. Direct Execution with default_dataset and maximum_bytes_billed cap
+    job_config = bigquery.QueryJobConfig(
+        default_dataset=f"{GCP_PROJECT}.hrfin_silver",
+        labels=JOB_LABELS,
+        maximum_bytes_billed=MAX_BYTES_BILLED,
+    )
+
     try:
-        job_config = bigquery.QueryJobConfig(
-            labels=JOB_LABELS,
-            maximum_bytes_billed=MAX_BYTES_BILLED,
-        )
         query_job = sl.client.query(safe_sql, job_config=job_config)
         result = query_job.result()
 
         rows: List[Dict[str, Any]] = []
-        columns = [f.name for f in result.schema] if result.schema else []
+        raw_columns = [f.name for f in result.schema] if result.schema else []
+        col_rename_map = {}
+        for idx_c, c_name in enumerate(raw_columns):
+            if re.match(r"^f\d+_$", c_name, flags=re.IGNORECASE):
+                col_rename_map[c_name] = "employees" if any(w in safe_sql.lower() for w in ["workforce", "employee", "headcount", "stay", "post"]) else ("total_count" if idx_c == 0 else f"metric_{idx_c + 1}")
+            else:
+                col_rename_map[c_name] = c_name
+        columns = [col_rename_map[c] for c in raw_columns]
 
         for row in result:
             row_dict = {}
             for k, v in dict(row).items():
+                clean_k = col_rename_map.get(k, k)
                 if hasattr(v, "isoformat"):
-                    row_dict[k] = v.isoformat()
+                    row_dict[clean_k] = v.isoformat()
+                elif isinstance(v, (bool, int)):
+                    # Keep counts as ints (float() turned 419 into 419.0 in tables/charts).
+                    row_dict[clean_k] = v
                 elif hasattr(v, "__float__"):
                     try:
-                        row_dict[k] = float(v)
+                        row_dict[clean_k] = float(v)
                     except Exception:
-                        row_dict[k] = str(v)
+                        row_dict[clean_k] = str(v)
                 else:
-                    row_dict[k] = v
+                    row_dict[clean_k] = v
             rows.append(row_dict)
 
         elapsed_sec = round(time.perf_counter() - t0, 3)
         elapsed_ms = round(elapsed_sec * 1000, 2)
         total_bytes = query_job.total_bytes_processed or 0
 
-        # 4. Deterministic summary arithmetic in Python
+        # Deterministic summary arithmetic in Python
         det_summary = compute_deterministic_summary(columns=columns, rows=rows)
 
-        # 5. Determine chart selection per UX Spec §6
+        # Determine chart selection per UX Spec §6
         chart_kind = select_chart_kind(
             columns=columns,
             rows=rows,
@@ -188,11 +233,62 @@ def query_data(
             tool_cache.set_sql(safe_sql, persona, out)
         return out
 
-    except Exception as e:
-        logger.warning(f"BigQuery query execution error: {e}")
-        return {
-            "status": "error",
-            "error": str(e),
-            "sql": safe_sql,
-            "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
-        }
+    except Exception as e1:
+        err_msg = str(e1)
+        logger.warning(f"BigQuery query execution error: {err_msg[:120]}. Running silent self-repair...")
+        # Phase 2: Silent self-repair retry
+        try:
+            from app.tools.sql_generator import get_sql_generator
+            sql_gen = get_sql_generator()
+            repaired_sql = sql_gen.repair_sql(sql=safe_sql, error_message=err_msg)
+            query_job2 = sl.client.query(repaired_sql, job_config=job_config)
+            result2 = query_job2.result()
+
+            rows2: List[Dict[str, Any]] = []
+            columns2 = [f.name for f in result2.schema] if result2.schema else []
+            for row in result2:
+                row_dict = {}
+                for k, v in dict(row).items():
+                    if hasattr(v, "isoformat"):
+                        row_dict[k] = v.isoformat()
+                    elif hasattr(v, "__float__"):
+                        try:
+                            row_dict[k] = float(v)
+                        except Exception:
+                            row_dict[k] = str(v)
+                    else:
+                        row_dict[k] = v
+                rows2.append(row_dict)
+
+            elapsed_sec2 = round(time.perf_counter() - t0, 3)
+            det_summary2 = compute_deterministic_summary(columns=columns2, rows=rows2)
+            out2 = {
+                "status": "success",
+                "sql": repaired_sql,
+                "row_count": len(rows2),
+                "columns": columns2,
+                "deterministic_summary": det_summary2,
+                "rows": rows2[:15],
+                "all_rows": rows2,
+                "total_bytes_processed": query_job2.total_bytes_processed or 0,
+                "elapsed_seconds": elapsed_sec2,
+                "latency_ms": round(elapsed_sec2 * 1000, 2),
+                "chart_kind": "table",
+                "chart_spec": None,
+                "repaired": True,
+            }
+            if YUKTI_RESULT_CACHE:
+                tool_cache.set_sql(repaired_sql, persona, out2)
+            return out2
+        except Exception as e2:
+            logger.error(f"BigQuery silent self-repair failed: {e2}")
+            # Clean natural fallback without surfacing database error messages
+            return {
+                "status": "error",
+                "error": "Verified data not available for this query.",
+                "sql": safe_sql,
+                "row_count": 0,
+                "rows": [],
+                "columns": [],
+                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+            }

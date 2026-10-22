@@ -27,7 +27,7 @@ VERTEX_SEARCH_LOCATION = os.getenv("VERTEX_SEARCH_LOCATION", "global")
 VERTEX_SEARCH_ENGINE = "hrfin-doc-search-engine"
 
 # Models and Voices
-DEFAULT_TEXT_MODEL = os.getenv("YUKTI_TEXT_MODEL", "gemini-3.8-flash")
+DEFAULT_TEXT_MODEL = os.getenv("YUKTI_TEXT_MODEL", "gemini-2.5-flash")
 DEFAULT_LIVE_MODEL = os.getenv("YUKTI_LIVE_MODEL", "gemini-3.8-live")
 FALLBACK_LIVE_MODEL = "gemini-live-2.5-flash-native-audio"
 DEFAULT_VOICE = "Leda"

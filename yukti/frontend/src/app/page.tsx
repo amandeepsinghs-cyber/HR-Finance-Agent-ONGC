@@ -1,673 +1,900 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { PersonaType, AnswerContract, VisualContainer } from '@/contracts/answerContract';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { PersonaType, AnswerContract } from '@/contracts/answerContract';
 import { TopBar } from '@/components/TopBar';
 import { PersonaBanner } from '@/components/PersonaBanner';
-import { CanvasView } from '@/components/CanvasView';
-import { FloatingConversationPanel, ChatMessage } from '@/components/FloatingConversationPanel';
+import { CanvasView, HistoryItem } from '@/components/CanvasView';
+import { FloatingConversationPanel, ChatMessage, PanelMode } from '@/components/FloatingConversationPanel';
 import { OrbState } from '@/components/VoiceOrb';
 import { VoiceAudioEngine } from '@/services/audioAnalyser';
-import { FIXTURES, FixtureMeta } from '@/fixtures';
+import { FIXTURES } from '@/fixtures';
 import { routeQueryToFixture } from '@/services/mockRouter';
-import { yuktiClient } from '@/services/websocketClient';
-import { AlertCircle, RefreshCw, Radio } from 'lucide-react';
+import { yuktiClient, WsState } from '@/services/websocketClient';
+import { dispatchUi, labelOf, parseUiCommands, UiCommand, useUiCommands } from '@/services/uiCommands';
+import { cleanText } from '@/charts/format';
+import { AlertTriangle, MicOff, RefreshCw, X } from 'lucide-react';
 
-interface HistoryItem {
-  id: string;
-  question: string;
-  contract: AnswerContract;
-  timestamp: string;
-}
+type Backend = 'checking' | 'online' | 'offline';
+type Lang = 'en' | 'hi' | 'hi-en';
 
-const GREETING_CONTRACT: AnswerContract = {
+const STARTERS = [
+  'How many executives have been posted in Delhi for 5 years or more?',
+  'Which fields or assets were the most profitable and which made losses in FY26?',
+  'How are we tracking against our MoU targets with MoPNG/DPE for this year?',
+];
+
+const GREETING: AnswerContract = {
   turn_id: 'turn_greeting',
   language: 'en',
   spoken_summary: 'Hello, I am Yukti, your HR and Finance agent. Please tell me how I can help.',
   display_text: 'Hello, I am Yukti, your HR and Finance agent. Please tell me how I can help.',
-  visual: {
-    type: 'none',
-    mode: 'replace',
-    title: 'Executive Intelligence Canvas',
-  },
+  visual: { type: 'none', mode: 'replace' },
   sources: [],
-  suggestions: [
-    'How many executives have been posted in Delhi for 5 years or more?',
-    'Which fields or assets were the most profitable and which made losses in FY26?',
-    'How are we tracking against our MoU targets with MoPNG/DPE for this year?',
-  ],
+  suggestions: STARTERS,
   access: { status: 'allowed' },
 };
 
+const now = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const uid = (p: string) => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+
+/** Telemetry exposed for automated tests and the ?debug=1 overlay. */
+interface Telemetry {
+  lastVoiceAt: number | null;
+  firstAudioAt: number | null;
+  contractAt: number | null;
+  turns: { speechEndToFirstAudioMs: number | null; speechEndToCanvasMs: number | null; audioBytes: number; chunks: number }[];
+}
+
+function isGreetingContract(c: AnswerContract): boolean {
+  const noVisual = !c.visual || c.visual.type === 'none';
+  return noVisual && (/-000$/.test(c.turn_id || '') || /^hello|^namaste|नमस्ते/i.test(c.spoken_summary || ''));
+}
+
 export default function YuktiApp() {
-  // Theme & Language
-  const [isDark, setIsDark] = useState<boolean>(false);
-  const [language, setLanguage] = useState<'en' | 'hi' | 'hi-en'>('en');
-
-  // Mode: Live ADK backend (default) or Mock Mode (?mock=1)
-  const [isLiveMode, setIsLiveMode] = useState<boolean>(true);
-  const [backendHealthy, setBackendHealthy] = useState<boolean>(true);
-  const [micDeniedNotice, setMicDeniedNotice] = useState<boolean>(false);
-  const [isDebugMode, setIsDebugMode] = useState<boolean>(false);
-  const [lastVisualLatency, setLastVisualLatency] = useState<number | null>(null);
-
-  // Persona
+  const [isDark, setIsDark] = useState(false);
+  const [language, setLanguage] = useState<Lang>('en');
   const [persona, setPersona] = useState<PersonaType>('CMD');
+  const [isLiveMode, setIsLiveMode] = useState(true);
+  const [backend, setBackend] = useState<Backend>('checking');
+  const [isDebug, setIsDebug] = useState(false);
+  const [panelMode, setPanelMode] = useState<PanelMode>('docked');
 
-  // Panel Mode: 'docked' | 'minimised' | 'fullscreen'
-  const [panelMode, setPanelMode] = useState<'docked' | 'minimised' | 'fullscreen'>('docked');
-
-  // Audio Engine & Voice State
   const [orbState, setOrbState] = useState<OrbState>('idle');
-  const [isMicActive, setIsMicActive] = useState<boolean>(false);
-  const audioEngineRef = useRef<VoiceAudioEngine | null>(null);
+  const [isMicActive, setIsMicActive] = useState(false);
+  const [micError, setMicError] = useState<string | null>(null);
+  const [wsState, setWsState] = useState<WsState>('idle');
+  const [statusLine, setStatusLine] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [slow, setSlow] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [liveInterimText, setLiveInterimText] = useState<string>('');
 
-  // Demo index & active contract
-  const [currentFixtureIndex, setCurrentFixtureIndex] = useState<number>(-1);
-  const [contract, setContract] = useState<AnswerContract>(GREETING_CONTRACT);
-
-  // Canvas History
+  const [contract, setContract] = useState<AnswerContract>(GREETING);
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [currentHistoryIndex, setCurrentHistoryIndex] = useState<number>(0);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [fixtureIndex, setFixtureIndex] = useState(-1);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
-  // Chat message thread
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'msg_welcome',
-      role: 'agent',
-      spokenSummary: 'Hello, I am Yukti, your HR and Finance agent. Please tell me how I can help.',
-      text: 'Hello, I am Yukti, your HR and Finance agent. Please tell me how I can help.',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      suggestions: [
-        'How many executives have been posted in Delhi for 5 years or more?',
-        'Which fields or assets were the most profitable and which made losses in FY26?',
-        'How are we tracking against our MoU targets with MoPNG/DPE for this year?',
-      ],
-    },
-  ]);
+  const engineRef = useRef<VoiceAudioEngine | null>(null);
+  const micActiveRef = useRef(false);
+  const liveRef = useRef(true);
+  const personaRef = useRef<PersonaType>('CMD');
+  const langRef = useRef<Lang>('en');
+  const messagesRef = useRef<ChatMessage[]>([]);
+  const contractRef = useRef<AnswerContract>(GREETING);
+  const liveUserMsgRef = useRef<string | null>(null);
+  const liveAgentMsgRef = useRef<string | null>(null);
+  const lastUserQuestionRef = useRef<string>('');
+  const telemetryRef = useRef<Telemetry>({ lastVoiceAt: null, firstAudioAt: null, contractAt: null, turns: [] });
+  const abortRef = useRef<AbortController | null>(null);
+  const pttRef = useRef<{ down: number; startedByPress: boolean } | null>(null);
+  const wsAudioGotFirstChunkRef = useRef(false);
+  const runTypedTurnRef = useRef<(q: string) => Promise<void>>(async () => {});
+  const stopMicRef = useRef<(sendEnd?: boolean) => Promise<void>>(async () => {});
+  const [, forceTick] = useState(0);
 
-  // Check URL parameters for ?mock=1 override
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('mock') === '1') {
-        setIsLiveMode(false);
-      }
-      if (params.get('debug') === '1') {
-        setIsDebugMode(true);
-      }
-    }
+    micActiveRef.current = isMicActive;
+  }, [isMicActive]);
+  useEffect(() => {
+    liveRef.current = isLiveMode;
+  }, [isLiveMode]);
+  useEffect(() => {
+    personaRef.current = persona;
+  }, [persona]);
+  useEffect(() => {
+    langRef.current = language;
+  }, [language]);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+  useEffect(() => {
+    contractRef.current = contract;
+  }, [contract]);
+
+  // URL flags
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('mock') === '1') setIsLiveMode(false);
+    if (q.get('debug') === '1') setIsDebug(true);
+    if (q.get('theme') === 'dark') setIsDark(true);
   }, []);
 
-  // Initialize Audio Engine
+  // Theme class
   useEffect(() => {
-    const engine = new VoiceAudioEngine();
-    audioEngineRef.current = engine;
-
-    engine.setPlaybackEndHandler(() => {
-      setOrbState((curr) => (curr === 'speaking' ? 'idle' : curr));
-    });
-
-    return () => {
-      engine.stopMic();
-      engine.stopPlayback();
-    };
-  }, []);
-
-  // Check backend health and connect WebSocket when in Live mode
-  const initBackendConnection = useCallback(async () => {
-    const health = await yuktiClient.checkHealth();
-    setBackendHealthy(health.healthy);
-
-    if (health.healthy) {
-      await yuktiClient.connectWs({ persona, language, voice: 'Leda' });
-    }
-  }, [persona, language]);
-
-  useEffect(() => {
-    if (isLiveMode) {
-      initBackendConnection();
-    } else {
-      yuktiClient.disconnectWs();
-    }
-  }, [isLiveMode, initBackendConnection]);
-
-  // Wire WebSocket streaming events
-  useEffect(() => {
-    const handleAudioChunk = (b64Audio: string) => {
-      if (audioEngineRef.current) {
-        audioEngineRef.current.enqueue24kAudio(b64Audio);
-        setOrbState('speaking');
-      }
-    };
-
-    const handleUserTranscript = ({ text }: { text: string }) => {
-      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `u_tx_${Date.now()}`,
-          role: 'user',
-          text,
-          timestamp: now,
-        },
-      ]);
-    };
-
-    const handleAgentTranscript = ({ text }: { text: string }) => {
-      setMessages((prev) => {
-        const last = prev[prev.length - 1];
-        if (last && last.role === 'agent' && last.id.startsWith('a_tx_live')) {
-          return [
-            ...prev.slice(0, -1),
-            {
-              ...last,
-              text: last.text + text,
-            },
-          ];
-        }
-        return [
-          ...prev,
-          {
-            id: `a_tx_live_${Date.now()}`,
-            role: 'agent',
-            text,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          },
-        ];
-      });
-    };
-
-    const handleStatusEvent = (step: string) => {
-      setOrbState('thinking');
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `status_${Date.now()}`,
-          role: 'status',
-          text: step,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        },
-      ]);
-    };
-
-    const handleContract = (newContract: AnswerContract) => {
-      setContract(newContract);
-      if (newContract.language) {
-        setLanguage(newContract.language);
-      }
-
-      setHistory((prev) => [
-        ...prev,
-        {
-          id: newContract.turn_id || `hist_${Date.now()}`,
-          question: newContract.visual?.title || 'Live Query',
-          contract: newContract,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        },
-      ]);
-      setCurrentHistoryIndex(history.length);
-    };
-
-    const handleTurnComplete = () => {
-      setTimeout(() => {
-        if (!audioEngineRef.current?.isAudioPlaying()) {
-          setOrbState((curr) => (curr === 'thinking' || curr === 'speaking' ? 'idle' : curr));
-        }
-      }, 500);
-    };
-
-    yuktiClient.on('audio_chunk', handleAudioChunk);
-    yuktiClient.on('user_transcript', handleUserTranscript);
-    yuktiClient.on('agent_transcript', handleAgentTranscript);
-    yuktiClient.on('status_event', handleStatusEvent);
-    yuktiClient.on('contract', handleContract);
-    yuktiClient.on('turn_complete', handleTurnComplete);
-
-    return () => {
-      yuktiClient.off('audio_chunk', handleAudioChunk);
-      yuktiClient.off('user_transcript', handleUserTranscript);
-      yuktiClient.off('agent_transcript', handleAgentTranscript);
-      yuktiClient.off('status_event', handleStatusEvent);
-      yuktiClient.off('contract', handleContract);
-      yuktiClient.off('turn_complete', handleTurnComplete);
-    };
-  }, [history.length]);
-
-  // Update theme class on HTML element
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle('dark', isDark);
   }, [isDark]);
 
-  // Load scripted fixture into the active view
-  const loadFixture = useCallback(
-    async (index: number) => {
-      const idx = (index + FIXTURES.length) % FIXTURES.length;
-      setCurrentFixtureIndex(idx);
-      const target = FIXTURES[idx];
+  // Audio engine
+  useEffect(() => {
+    const engine = new VoiceAudioEngine();
+    engineRef.current = engine;
+    engine.setPlaybackStartHandler(() => setOrbState('speaking'));
+    engine.setPlaybackEndHandler(() => {
+      setOrbState((s) => (s === 'speaking' ? (micActiveRef.current ? 'listening' : 'idle') : s));
+    });
+    (window as any).__yukti = {
+      engine,
+      client: yuktiClient,
+      telemetry: telemetryRef.current,
+    };
+    forceTick((x) => x + 1);
+    return () => {
+      engine.stopMic();
+      engine.stopPlayback(false);
+    };
+  }, []);
 
-      if (target.data.persona && target.data.persona !== persona) {
-        setPersona(target.data.persona);
-        if (isLiveMode) {
-          yuktiClient.sendConfigWs({ persona: target.data.persona });
+  // Backend health (through the UI origin)
+  const checkBackend = useCallback(async () => {
+    const h = await yuktiClient.checkHealth();
+    setBackend(h.healthy ? 'online' : 'offline');
+    return h.healthy;
+  }, []);
+
+  useEffect(() => {
+    if (!isLiveMode) {
+      yuktiClient.disconnect();
+      return;
+    }
+    void checkBackend();
+    // Pre-connect /ws/live immediately on page mount (Urvi `VoiceAgentPanel` pattern)
+    // so Gemini Live is already warm & connected before the user clicks the mic/orb.
+    void yuktiClient.connect({ persona: personaRef.current, language: langRef.current, voice: 'Leda' });
+    const id = setInterval(checkBackend, 15000);
+    return () => clearInterval(id);
+  }, [isLiveMode, checkBackend]);
+
+  // ---------- Conversation helpers ----------
+  const pushMessage = useCallback((m: ChatMessage) => setMessages((prev) => [...prev, m]), []);
+
+  // Register global UI-command event bus handlers (Urvi `useUiCommands` pattern)
+  useUiCommands(
+    {
+      theme: (val) => setIsDark(val === 'dark'),
+      persona: (val) => {
+        if (val) {
+          setPersona(val as PersonaType);
+          personaRef.current = val as PersonaType;
+          void yuktiClient.reconfigure({ persona: val });
         }
-      }
-
-      setOrbState('thinking');
-
-      if (isLiveMode && backendHealthy) {
-        try {
-          const liveContract = await yuktiClient.executeTurnRest(
-            target.question,
-            target.data.persona || persona,
-            language
-          );
-          setContract(liveContract);
-          setOrbState('speaking');
-
-          const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          setHistory((prev) => [
-            ...prev,
-            {
-              id: liveContract.turn_id,
-              question: target.question,
-              contract: liveContract,
-              timestamp: now,
-            },
-          ]);
-          setCurrentHistoryIndex(history.length);
-
-          setMessages((prev) => [
-            ...prev,
-            { id: `u_${Date.now()}`, role: 'user', text: target.question, timestamp: now },
-            {
-              id: `a_${Date.now()}`,
-              role: 'agent',
-              spokenSummary: liveContract.spoken_summary,
-              text: liveContract.display_text,
-              timestamp: now,
-              suggestions: liveContract.suggestions,
-              accessStatus: liveContract.access.status,
-            },
-          ]);
-
-          setTimeout(() => {
-            setOrbState('idle');
-          }, 2400);
-          return;
-        } catch (e) {
-          console.warn('[LiveMode] Turn fallback to fixture:', e);
+      },
+      language: (val) => {
+        if (val) {
+          setLanguage(val as Lang);
+          langRef.current = val as Lang;
+          void yuktiClient.reconfigure({ language: val });
         }
-      }
-
-      // Mock Mode Fallback
-      setTimeout(() => {
-        setContract(target.data);
-        setOrbState('speaking');
-
-        setHistory((prev) => {
-          const exists = prev.findIndex((h) => h.id === target.id);
-          if (exists >= 0) {
-            setCurrentHistoryIndex(exists);
-            return prev;
-          }
-          const nextHist = [
-            ...prev,
-            {
-              id: target.id,
-              question: target.question,
-              contract: target.data,
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            },
-          ];
-          setCurrentHistoryIndex(nextHist.length - 1);
-          return nextHist;
+      },
+      open_screen: (val) => {
+        if (val === 'home') {
+          setContract(GREETING);
+        }
+      },
+      panel: (val) => {
+        if (val === 'expand') setPanelMode('fullscreen');
+        else if (val === 'dock') setPanelMode('docked');
+        else if (val === 'minimise' || val === 'close') setPanelMode('minimised');
+      },
+      history: (val) => {
+        setHistoryIndex((idx) => {
+          const nextIdx = val === 'forward' ? idx + 1 : Math.max(0, idx - 1);
+          setHistory((h) => {
+            if (h[nextIdx]) setContract(h[nextIdx].contract);
+            return h;
+          });
+          return nextIdx;
         });
-
-        const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        setMessages((prev) => [
-          ...prev,
-          { id: `msg_u_${Date.now()}`, role: 'user', text: target.question, timestamp: now },
-          {
-            id: `msg_a_${Date.now()}`,
-            role: 'agent',
-            spokenSummary: target.data.spoken_summary,
-            text: target.data.display_text,
-            timestamp: now,
-            suggestions: target.data.suggestions,
-            accessStatus: target.data.access.status,
-          },
-        ]);
-
-        setTimeout(() => {
-          setOrbState(isMicActive ? 'listening' : 'idle');
-        }, 2200);
-      }, 400);
-    },
-    [persona, isLiveMode, backendHealthy, language, history.length, isMicActive]
-  );
-
-  // Handle User Input Submission (typed input or starter chip)
-  const handleUserQuery = useCallback(
-    async (queryText: string) => {
-      // Barge-in: immediately stop playback
-      audioEngineRef.current?.stopPlayback();
-
-      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      setMessages((prev) => [
-        ...prev,
-        { id: `msg_u_${Date.now()}`, role: 'user', text: queryText, timestamp: now },
-      ]);
-
-      setOrbState('thinking');
-      const t0 = performance.now();
-
-      // 1. Live ADK Backend Execution
-      if (isLiveMode && backendHealthy) {
-        try {
-          const liveContract = await Promise.race([
-            yuktiClient.executeTurnRest(queryText, persona, language),
-            new Promise<never>((_, reject) =>
-              setTimeout(() => reject(new Error('Turn timeout after 120s')), 120000)
-            ),
-          ]);
-          setLastVisualLatency(Math.round(performance.now() - t0));
-          setContract(liveContract);
-          setOrbState('speaking');
-
-          if (liveContract.language) {
-            setLanguage(liveContract.language);
+      },
+      chart_kind: (val) => {
+        if (!val) return;
+        setContract((prev) => {
+          if (!prev?.visual || prev.visual.type === 'none') return prev;
+          const nextVis = { ...prev.visual };
+          const kind = val.toLowerCase();
+          if (kind === 'table' && nextVis.table) {
+            nextVis.type = 'table';
+            nextVis.mode = 'refine';
+          } else if (
+            [
+              'bar', 'hbar', 'stacked_bar', 'grouped_bar', 'pie', 'donut',
+              'histogram', 'line', 'area', 'combo', 'scatter', 'waterfall',
+              'treemap', 'heatmap', 'bullet', 'gauge', 'funnel',
+            ].includes(kind)
+          ) {
+            const rows = nextVis.table?.rows || (nextVis.chart as any)?.data || [];
+            const cols = nextVis.table?.columns || (rows[0] ? Object.keys(rows[0]) : []);
+            nextVis.type = 'chart';
+            nextVis.mode = 'refine';
+            nextVis.chart = {
+              ...(nextVis.chart || { x: cols[0] || 'label', y: cols[1] || 'value', data: rows }),
+              kind: kind as any,
+            };
           }
-
-          setHistory((prev) => [
-            ...prev,
-            {
-              id: liveContract.turn_id,
-              question: queryText,
-              contract: liveContract,
-              timestamp: now,
-            },
-          ]);
-          setCurrentHistoryIndex(history.length);
-
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: liveContract.turn_id || `msg_a_${Date.now()}`,
-              role: 'agent',
-              spokenSummary: liveContract.spoken_summary,
-              text: liveContract.display_text,
-              timestamp: now,
-              suggestions: liveContract.suggestions,
-              accessStatus: liveContract.access?.status,
-              sources: liveContract.sources,
-            },
-          ]);
-
-          setTimeout(() => {
-            setOrbState(isMicActive ? 'listening' : 'idle');
-          }, 2400);
-          return;
-        } catch (e: any) {
-          console.warn('[LiveTurn] Backend error:', e);
-          setOrbState('idle');
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `msg_err_${Date.now()}`,
-              role: 'agent',
-              text: `Backend communication error (${e?.message || 'timeout'}). Showing closest verified answer.`,
-              timestamp: now,
-            },
-          ]);
-        }
-      }
-
-      // 2. Mock Router Execution
-      const { fixture, contract: resultContract } = routeQueryToFixture(queryText, persona);
-
-      setTimeout(() => {
-        setContract(resultContract);
-        setOrbState('speaking');
-
-        setHistory((prev) => [
-          ...prev,
-          {
-            id: `hist_${Date.now()}`,
-            question: queryText,
-            contract: resultContract,
-            timestamp: now,
-          },
-        ]);
-        setCurrentHistoryIndex(history.length);
-
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `msg_a_${Date.now()}`,
-            role: 'agent',
-            spokenSummary: resultContract.spoken_summary,
-            text: resultContract.display_text,
-            timestamp: now,
-            suggestions: resultContract.suggestions,
-            accessStatus: resultContract.access.status,
-            sources: resultContract.sources,
-          },
-        ]);
-
-        setTimeout(() => {
-          setOrbState(isMicActive ? 'listening' : 'idle');
-        }, 2400);
-      }, 500);
+          return { ...prev, visual: nextVis };
+        });
+      },
+      export: (val) => {
+        // Backend /api/export returns {export_id, filename, format}; the file is then served
+        // from GET /api/export/{export_id}. Read the current contract from the ref (not inside a
+        // setState updater, which StrictMode double-invokes and would POST twice).
+        const v = (val || 'pdf').toLowerCase();
+        const fmt = v === 'xlsx' || v === 'sheets' || v === 'excel'
+          ? 'xlsx'
+          : v === 'docx' || v === 'word' || v === 'docs'
+            ? 'docx'
+            : 'pdf';
+        const prev = contractRef.current;
+        const title = prev?.visual?.title || 'Yukti_AI_Report';
+        const tbl = prev?.visual?.table;
+        const chartRows = ((prev?.visual?.chart as any)?.data as any[]) || [];
+        const rawRows: any[] = (tbl?.rows as any[]) || chartRows;
+        const columns: string[] = tbl?.columns || (rawRows[0] && !Array.isArray(rawRows[0]) ? Object.keys(rawRows[0]) : []);
+        // Backend expects rows as List[Dict]; zip array-shaped rows into objects.
+        const rows = rawRows.map((r) =>
+          Array.isArray(r) ? Object.fromEntries(columns.map((c, i) => [c, r[i]])) : r,
+        );
+        const docMd = prev?.visual?.document?.markdown || prev?.display_text || prev?.spoken_summary || '';
+        void yuktiClient
+          .exportFile({ format: fmt, title, content: docMd, columns, rows })
+          .then((res) => {
+            const href = res?.download_url || res?.url || (res?.export_id ? `/api/export/${encodeURIComponent(res.export_id)}` : '');
+            if (!href) return;
+            const a = document.createElement('a');
+            a.href = href;
+            a.download = res?.filename || `${title}.${res?.format || fmt}`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          })
+          .catch((e) => console.warn('[yukti] export failed', e));
+      },
     },
-    [isLiveMode, backendHealthy, persona, language, history.length, isMicActive]
+    [],
   );
 
-  // Toggle Microphone (Mic -> AudioWorklet 16 kHz PCM16 -> /ws/live)
-  const handleToggleMic = useCallback(async () => {
-    if (!audioEngineRef.current) return;
+  const handleUiAction = useCallback((action?: { action?: string; command?: string; value?: string }) => {
+    if (!action || (!action.command && !action.action)) return;
+    const cmd = (action.command || action.action || '').toLowerCase();
+    const val = (action.value || '').trim();
+    if (cmd === 'set_theme' || cmd === 'theme') {
+      dispatchUi({ action: 'theme', value: val === 'dark' ? 'dark' : 'light' });
+    } else if ((cmd === 'set_persona' || cmd === 'persona') && val) {
+      dispatchUi({ action: 'persona', value: val });
+    } else if ((cmd === 'set_language' || cmd === 'language') && val) {
+      dispatchUi({ action: 'language', value: val });
+    } else if (cmd === 'go_home' || (cmd === 'open_screen' && val === 'home')) {
+      dispatchUi({ action: 'open_screen', value: 'home' });
+    } else if (cmd === 'navigate_history' || cmd === 'history') {
+      dispatchUi({ action: 'history', value: val === 'forward' ? 'forward' : 'back' });
+    } else if (cmd === 'set_panel_mode' || cmd === 'panel') {
+      dispatchUi({ action: 'panel', value: val || 'dock' });
+    } else if ((cmd === 'set_chart_kind' || cmd === 'chart_kind') && val) {
+      dispatchUi({ action: 'chart_kind', value: val.toLowerCase() });
+    } else if (cmd === 'export') {
+      dispatchUi({ action: 'export', value: val || 'pdf' });
+    }
+  }, []);
 
-    if (isMicActive) {
-      audioEngineRef.current.stopMic();
-      if (isLiveMode) {
-        yuktiClient.sendAudioStreamEndWs();
+  const applyContract = useCallback((c: AnswerContract, question: string) => {
+    setContract(c);
+    if ((c as any).ui_action) handleUiAction((c as any).ui_action);
+    if (c.language && c.language !== langRef.current) setLanguage(c.language);
+    if (c.persona && c.persona !== personaRef.current) setPersona(c.persona);
+    if (liveRef.current) {
+      yuktiClient.sendContext({
+        persona: c.persona || personaRef.current,
+        language: c.language || langRef.current,
+        visual_type: c.visual?.type || 'none',
+        visual_title: c.visual?.title || '',
+      });
+    }
+    setHistory((prev) => {
+      const next = [...prev, { id: c.turn_id || uid('h'), question, contract: c, timestamp: now() }];
+      setHistoryIndex(next.length - 1);
+      return next;
+    });
+  }, [handleUiAction]);
+
+  // ---------- Live socket events ----------
+  useEffect(() => {
+    const onState = (s: WsState) => setWsState(s);
+
+    const onUserTranscript = ({ text, is_final }: { text: string; is_final: boolean }) => {
+      if (!text) return;
+      wsAudioGotFirstChunkRef.current = true;
+      setLiveInterimText('');
+      telemetryRef.current.firstAudioAt = null;
+      telemetryRef.current.contractAt = null;
+      engineRef.current?.resetTurnStats();
+      setMessages((prev) => {
+        const id = liveUserMsgRef.current;
+        const idx = id ? prev.findIndex((m) => m.id === id) : -1;
+        if (idx >= 0) {
+          const merged = (prev[idx].text + text).replace(/\s+/g, ' ');
+          lastUserQuestionRef.current = merged.trim();
+          // UI commands in Live transcripts are resolved server-side (screen_control) and arrive
+          // as 'ui_action' events; parsing them locally as well executed each command twice.
+          const copy = [...prev];
+          copy[idx] = { ...prev[idx], text: merged };
+          return copy;
+        }
+        const nid = uid('u_voice');
+        liveUserMsgRef.current = nid;
+        liveAgentMsgRef.current = null;
+        lastUserQuestionRef.current = text.trim();
+        return [...prev, { id: nid, role: 'user', text: text.trimStart(), timestamp: now(), viaVoice: true }];
+      });
+    };
+
+    const onAgentTranscript = ({ text }: { text: string; is_final: boolean }) => {
+      if (!text) return;
+      liveUserMsgRef.current = null;
+      setMessages((prev) => {
+        const id = liveAgentMsgRef.current;
+        const idx = id ? prev.findIndex((m) => m.id === id) : -1;
+        if (idx >= 0) {
+          const copy = [...prev];
+          copy[idx] = { ...prev[idx], text: (prev[idx].text + text).replace(/\s+/g, ' ') };
+          return copy;
+        }
+        const nid = uid('a_voice');
+        liveAgentMsgRef.current = nid;
+        return [...prev, { id: nid, role: 'agent', text: text.trimStart(), timestamp: now(), streaming: true }];
+      });
+    };
+
+    const onAudio = (b64: string) => {
+      wsAudioGotFirstChunkRef.current = true;
+      const tel = telemetryRef.current;
+      if (tel.firstAudioAt === null) tel.firstAudioAt = performance.now();
+      engineRef.current?.enqueue24kAudio(b64);
+    };
+
+    const onStatus = (step: string) => {
+      setStatusLine(step);
+      setOrbState((s) => (s === 'speaking' ? s : 'thinking'));
+    };
+
+    const onContract = (c: AnswerContract) => {
+      if (isGreetingContract(c)) return; // never let the session greeting overwrite the canvas
+      telemetryRef.current.contractAt = performance.now();
+      const q = lastUserQuestionRef.current || c.visual?.title || 'Voice question';
+      applyContract(c, q);
+      setStatusLine(null);
+      setMessages((prev) => {
+        const id = liveAgentMsgRef.current;
+        const idx = id ? prev.findIndex((m) => m.id === id) : -1;
+        const patch = { sources: c.sources, accessStatus: c.access?.status, streaming: false };
+        if (idx >= 0) {
+          const copy = [...prev];
+          copy[idx] = { ...prev[idx], ...patch, text: prev[idx].text || cleanText(c.display_text || c.spoken_summary) };
+          return copy;
+        }
+        const nid = uid('a_voice');
+        liveAgentMsgRef.current = nid;
+        return [...prev, { id: nid, role: 'agent', text: cleanText(c.display_text || c.spoken_summary), timestamp: now(), ...patch }];
+      });
+    };
+
+    const onInterrupted = () => {
+      engineRef.current?.stopPlayback(false);
+      engineRef.current?.acceptIncoming();
+      setOrbState(micActiveRef.current ? 'listening' : 'idle');
+    };
+
+    const onTurnComplete = () => {
+      const tel = telemetryRef.current;
+      const st = engineRef.current?.getTurnStats();
+      if (tel.lastVoiceAt) {
+        tel.turns.push({
+          speechEndToFirstAudioMs: tel.firstAudioAt ? Math.round(tel.firstAudioAt - tel.lastVoiceAt) : null,
+          speechEndToCanvasMs: tel.contractAt ? Math.round(tel.contractAt - tel.lastVoiceAt) : null,
+          audioBytes: st?.bytes || 0,
+          chunks: st?.chunks || 0,
+        });
       }
+      engineRef.current?.acceptIncoming();
+      liveUserMsgRef.current = null;
+      liveAgentMsgRef.current = null;
+      setStatusLine(null);
+      setMessages((prev) => prev.map((m) => (m.streaming ? { ...m, streaming: false } : m)));
+      if (!engineRef.current?.isAudioPlaying()) setOrbState(micActiveRef.current ? 'listening' : 'idle');
+    };
+
+    const onError = (e: { message: string }) => {
+      setStatusLine(null);
+      pushMessage({ id: uid('err'), role: 'error', text: `Voice session problem: ${e.message}`, timestamp: now() });
+      setOrbState(micActiveRef.current ? 'listening' : 'idle');
+    };
+
+    yuktiClient.on('ws_state', onState);
+    yuktiClient.on('user_transcript', onUserTranscript);
+    yuktiClient.on('agent_transcript', onAgentTranscript);
+    yuktiClient.on('audio_chunk', onAudio);
+    yuktiClient.on('status_event', onStatus);
+    yuktiClient.on('contract', onContract);
+    yuktiClient.on('ui_action', handleUiAction);
+    yuktiClient.on('interrupted', onInterrupted);
+    yuktiClient.on('turn_complete', onTurnComplete);
+    yuktiClient.on('error', onError);
+    return () => {
+      yuktiClient.off('ws_state', onState);
+      yuktiClient.off('user_transcript', onUserTranscript);
+      yuktiClient.off('agent_transcript', onAgentTranscript);
+      yuktiClient.off('audio_chunk', onAudio);
+      yuktiClient.off('status_event', onStatus);
+      yuktiClient.off('contract', onContract);
+      yuktiClient.off('ui_action', handleUiAction);
+      yuktiClient.off('interrupted', onInterrupted);
+      yuktiClient.off('turn_complete', onTurnComplete);
+      yuktiClient.off('error', onError);
+    };
+  }, [applyContract, pushMessage, handleUiAction]);
+
+  // Voice activity tracking (speech-end timestamp) + local barge-in (Urvi pattern: server-side VAD handles turn end)
+  useEffect(() => {
+    let loud = 0;
+    const id = setInterval(() => {
+      const eng = engineRef.current;
+      if (!eng || !micActiveRef.current) {
+        loud = 0;
+        return;
+      }
+      const lv = eng.getMicLevel();
+      if (lv > 0.08) {
+        telemetryRef.current.lastVoiceAt = performance.now();
+      }
+      if (eng.isAudioPlaying() && lv > 0.45) {
+        loud += 1;
+        if (loud >= 5) {
+          eng.stopPlayback(true);
+          setOrbState('listening');
+          loud = 0;
+        }
+      } else {
+        loud = 0;
+      }
+    }, 50);
+    return () => clearInterval(id);
+  }, []);
+
+  // ---------- Microphone (Urvi `VoiceAgentPanel` + `micCapture` pattern) ----------
+  const startMic = useCallback(async (deviceId?: string): Promise<boolean> => {
+    const eng = engineRef.current;
+    if (!eng) return false;
+    eng.unlock();
+    eng.stopPlayback(true);
+    setMicError(null);
+    setLiveInterimText('');
+    wsAudioGotFirstChunkRef.current = false;
+
+    // Broadcast to any other open Yukti tabs so they release getUserMedia & SpeechRecognition immediately
+    try {
+      const bc = new BroadcastChannel('yukti_voice_owner');
+      bc.postMessage({ type: 'claim_mic', sessionId: yuktiClient.getSessionId() });
+      bc.close();
+    } catch {}
+
+    // CRITICAL URVI PATTERN: Call getUserMedia(startMic) inside the user gesture FIRST,
+    // and start Chrome's built-in SpeechRecognition AFTER getUserMedia settles so getUserMedia never aborts SpeechRecognition.
+    const res = await eng.startMic((chunk) => {
+      if (liveRef.current) yuktiClient.sendAudioChunk(chunk);
+    }, deviceId);
+    if (!res.ok) {
+      eng.stopSpeechRecognition(false);
+      setMicError(res.message || 'Microphone unavailable.');
       setIsMicActive(false);
       setOrbState('idle');
-    } else {
-      // Barge-in: stop any running audio playback
-      audioEngineRef.current.stopPlayback();
+      return false;
+    }
 
-      const ok = await audioEngineRef.current.startMic((chunk) => {
-        if (isLiveMode) {
-          yuktiClient.sendAudioChunkWs(chunk);
+    eng.startSpeechRecognition(
+      langRef.current,
+      (interim) => setLiveInterimText(interim),
+      (finalText) => {
+        setLiveInterimText('');
+        if (!wsAudioGotFirstChunkRef.current && finalText.trim()) {
+          void stopMicRef.current(false);
+          void runTypedTurnRef.current(finalText.trim());
         }
-      });
-
-      if (ok) {
-        setIsMicActive(true);
-        setOrbState('listening');
-        setMicDeniedNotice(false);
-      } else {
-        setMicDeniedNotice(true);
-        setIsMicActive(false);
-        setOrbState('idle');
       }
-    }
-  }, [isMicActive, isLiveMode]);
+    );
 
-  // Handle Persona Change
-  const handlePersonaChange = (p: PersonaType) => {
-    setPersona(p);
-    if (isLiveMode) {
-      yuktiClient.sendConfigWs({ persona: p });
+    if (liveRef.current) {
+      void yuktiClient.connect({ persona: personaRef.current, language: langRef.current, voice: 'Leda' });
     }
-  };
+    setIsMicActive(true);
+    setOrbState('listening');
+    return true;
+  }, []);
 
-  // Keyboard navigation & shortcuts
+  const stopMic = useCallback(async (sendEnd = true) => {
+    const eng = engineRef.current;
+    eng?.stopSpeechRecognition(sendEnd);
+    eng?.stopMic();
+    setLiveInterimText('');
+    if (sendEnd && liveRef.current) {
+      yuktiClient.sendAudioStreamEnd();
+    }
+    setIsMicActive(false);
+    setOrbState((s) => (s === 'listening' ? 'idle' : s));
+  }, []);
+
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
+    stopMicRef.current = stopMic;
+  }, [stopMic]);
+
+  // Release mic & speech recognition in background tabs so multiple tabs never fight over Chrome's singleton SpeechRecognition
+  useEffect(() => {
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel('yukti_voice_owner');
+      bc.onmessage = (ev) => {
+        if (ev.data?.type === 'claim_mic' && ev.data?.sessionId !== yuktiClient.getSessionId()) {
+          if (micActiveRef.current) void stopMicRef.current(false);
+          yuktiClient.disconnect();
+        }
+      };
+    } catch {}
+    const onVisChange = () => {
+      if (document.visibilityState === 'hidden' && micActiveRef.current) {
+        void stopMicRef.current(false);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisChange);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisChange);
+      try {
+        bc?.close();
+      } catch {}
+    };
+  }, []);
+
+  const toggleMic = useCallback(async () => {
+    if (micActiveRef.current) await stopMic(true);
+    else await startMic();
+  }, [startMic, stopMic]);
+
+  const handleToggleMute = useCallback(() => {
+    setIsMuted((prev) => {
+      const next = !prev;
+      engineRef.current?.setMuted(next);
+      return next;
+    });
+  }, []);
+
+  const handleSelectMicDevice = useCallback(async (deviceId: string) => {
+    const eng = engineRef.current;
+    if (!eng) return;
+    eng.setPreferredDeviceId(deviceId);
+    if (micActiveRef.current) {
+      await stopMic(false);
+      await startMic(deviceId);
+    }
+  }, [startMic, stopMic]);
+
+  // ---------- Typed / chip turns (with Urvi Layer-A 0ms client-side UI command parser) ----------
+  const runTypedTurn = useCallback(
+    async (queryText: string) => {
+      const text = queryText.trim();
+      if (!text) return;
+      engineRef.current?.unlock();
+      engineRef.current?.stopPlayback(true);
+      abortRef.current?.abort();
+      lastUserQuestionRef.current = text;
+      pushMessage({ id: uid('u'), role: 'user', text, timestamp: now() });
+
+      // Layer A (Urvi `runLocalUi` pattern): if every clause is a plain UI command, execute in 0 ms in browser
+      const localUiCmds: UiCommand[] | null = parseUiCommands(text);
+      if (localUiCmds && localUiCmds.length > 0) {
+        localUiCmds.forEach(dispatchUi);
+        const summary = `↗ Done on screen: ${localUiCmds.map(labelOf).join(' · ')}.`;
+        pushMessage({
+          id: uid('a_ui'),
+          role: 'agent',
+          text: summary,
+          timestamp: now(),
+        });
+        if (!engineRef.current?.getMuted() && !liveRef.current) {
+          engineRef.current?.speakBrowserTts(
+            localUiCmds.map(labelOf).join(', '),
+            langRef.current,
+          );
+        }
         return;
       }
 
+      setBusy(true);
+      setSlow(false);
+      setStatusLine('Thinking…');
+      setOrbState('thinking');
+      const slowTimer = setTimeout(() => setSlow(true), 9000);
+
+      try {
+        let c: AnswerContract;
+        if (liveRef.current) {
+          const ac = new AbortController();
+          abortRef.current = ac;
+          const timeout = setTimeout(() => ac.abort(), 90000);
+          try {
+            const recentHist = messagesRef.current
+              .filter((m) => m.role === 'user' || m.role === 'agent')
+              .slice(-8)
+              .map((m) => ({ role: m.role, text: m.text }));
+            const curVis = contractRef.current?.visual;
+            const curSrc = (contractRef.current?.sources || []).find((s) => s.sql);
+            const uiCtx = curVis
+              ? {
+                  title: curVis.title || '',
+                  subtitle: (curVis as any).subtitle || '',
+                  chart_kind: curVis.chart?.kind || curVis.type,
+                  columns: curVis.table?.columns || [],
+                  rows: (curVis.table?.rows || curVis.chart?.data || []).slice(0, 50),
+                  sql: curSrc?.sql || '',
+                }
+              : {};
+            c = await yuktiClient.executeTurnRest(
+              text,
+              personaRef.current,
+              langRef.current,
+              2,
+              ac.signal,
+              recentHist,
+              uiCtx,
+            );
+          } finally {
+            clearTimeout(timeout);
+          }
+          setBackend('online');
+        } else {
+          await new Promise((r) => setTimeout(r, 450));
+          c = routeQueryToFixture(text, personaRef.current).contract;
+        }
+        applyContract(c, text);
+        const replyText = cleanText(c.display_text || c.spoken_summary);
+        pushMessage({
+          id: c.turn_id ? `${c.turn_id}_${Date.now()}` : uid('a'),
+          role: 'agent',
+          text: replyText,
+          timestamp: now(),
+          sources: c.sources,
+          accessStatus: c.access?.status,
+        });
+        // Speak every reply aloud: in Live mode use ONLY Leda 24 kHz Gemini Live stream (never Linux espeak browser TTS!)
+        const spokenText = cleanText(c.spoken_summary || c.display_text);
+        if (spokenText && !engineRef.current?.getMuted()) {
+          engineRef.current?.acceptIncoming();
+          if (liveRef.current) {
+            void yuktiClient
+              .connect({ persona: personaRef.current, language: langRef.current, voice: 'Leda' })
+              .then((ok) => {
+                if (ok) yuktiClient.sendSpeak(spokenText);
+              });
+          } else {
+            engineRef.current?.speakBrowserTts(spokenText, c.language || langRef.current);
+          }
+        }
+      } catch (e: any) {
+        const msg = /abort/i.test(String(e?.name || e?.message))
+          ? 'That took too long, so I stopped waiting. Please try again.'
+          : /unreachable|Failed to fetch|502|NetworkError/i.test(String(e?.message))
+          ? "I can't reach Yukti's server right now."
+          : `Something went wrong: ${e?.message || e}`;
+        pushMessage({ id: uid('err'), role: 'error', text: msg, timestamp: now(), retryText: text });
+        void checkBackend();
+      } finally {
+        clearTimeout(slowTimer);
+        setBusy(false);
+        setSlow(false);
+        setStatusLine(null);
+        setOrbState((s) => (s === 'speaking' ? 'speaking' : micActiveRef.current ? 'listening' : 'idle'));
+      }
+    },
+    [applyContract, pushMessage, checkBackend]
+  );
+
+  useEffect(() => {
+    runTypedTurnRef.current = runTypedTurn;
+  }, [runTypedTurn]);
+
+  // ---------- Demo (mock mode only) ----------
+  const loadFixture = useCallback(
+    (index: number) => {
+      const idx = (index + FIXTURES.length) % FIXTURES.length;
+      setFixtureIndex(idx);
+      const f = FIXTURES[idx];
+      if (f.data.persona && f.data.persona !== personaRef.current) setPersona(f.data.persona);
+      pushMessage({ id: uid('u'), role: 'user', text: f.question, timestamp: now() });
+      applyContract(f.data, f.question);
+      pushMessage({ id: uid('a'), role: 'agent', text: cleanText(f.data.display_text), timestamp: now(), sources: f.data.sources, accessStatus: f.data.access?.status });
+    },
+    [applyContract, pushMessage]
+  );
+
+  // ---------- Persona / language ----------
+  const handlePersonaChange = (p: PersonaType) => {
+    setPersona(p);
+    personaRef.current = p;
+    void yuktiClient.reconfigure({ persona: p });
+  };
+
+  const handleLanguageToggle = () => {
+    const next: Lang = language === 'en' ? 'hi' : language === 'hi' ? 'hi-en' : 'en';
+    setLanguage(next);
+    langRef.current = next;
+    void yuktiClient.reconfigure({ language: next });
+  };
+
+  // ---------- Keyboard: Space = clean toggle (immune to X11/CRD key auto-repeat storms) ----------
+  useEffect(() => {
+    let lastSpaceAt = 0;
+    const isTyping = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement;
+      return ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(el.tagName) || el.isContentEditable;
+    };
+    const down = (e: KeyboardEvent) => {
+      if (isTyping(e)) return;
       if (e.code === 'Space') {
         e.preventDefault();
-        loadFixture(currentFixtureIndex < 0 ? 0 : currentFixtureIndex + 1);
-      } else if (e.key === 'm' || e.key === 'M') {
-        handleToggleMic();
-      } else if (e.key === 't' || e.key === 'T') {
-        setIsDark((d) => !d);
-      } else if (e.key === 'f' || e.key === 'F') {
-        setPanelMode((m) => (m === 'fullscreen' ? 'docked' : 'fullscreen'));
-      } else if (e.key === 'Escape') {
-        setPanelMode('docked');
+        if (e.repeat) return;
+        const nowTs = performance.now();
+        if (nowTs - lastSpaceAt < 450) return;
+        lastSpaceAt = nowTs;
+        if (micActiveRef.current) void stopMic(true);
+        else void startMic();
+        return;
       }
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === 't' || e.key === 'T') setIsDark((d) => !d);
+      else if (e.key === 'f' || e.key === 'F') setPanelMode((m) => (m === 'fullscreen' ? 'docked' : 'fullscreen'));
+      else if (e.key === 'Escape') {
+        if (engineRef.current?.isAudioPlaying()) engineRef.current.stopPlayback(true);
+        setPanelMode((m) => (m === 'fullscreen' ? 'docked' : m));
+      } else if (!liveRef.current && e.key === 'ArrowRight') loadFixture(fixtureIndex + 1);
+      else if (!liveRef.current && e.key === 'ArrowLeft') loadFixture(Math.max(0, fixtureIndex - 1));
     };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentFixtureIndex, loadFixture, handleToggleMic]);
+    window.addEventListener('keydown', down);
+    return () => {
+      window.removeEventListener('keydown', down);
+    };
+  }, [startMic, stopMic, loadFixture, fixtureIndex]);
 
   const handleRestoreHistory = (item: HistoryItem, index: number) => {
     setContract(item.contract);
-    setCurrentHistoryIndex(index);
+    setHistoryIndex(index);
   };
 
-  const handleNavigateToAlternative = () => {
-    handleUserQuery('What are the station tenure norms and aggregate due counts?');
-  };
+  const micLevel = useCallback(() => engineRef.current?.getMicLevel() || 0, []);
+  const suggestions = (contract.suggestions && contract.suggestions.length ? contract.suggestions : STARTERS).slice(0, 4);
+  const offline = isLiveMode && backend === 'offline';
 
   return (
-    <div
-      className={`min-h-screen flex flex-col ${
-        isDark ? 'bg-canvas-dark text-textPrimary-dark' : 'bg-canvas-light text-textPrimary-light'
-      } transition-colors duration-200`}
-    >
-      {/* Top Navigation Bar */}
+    <div className="h-screen w-screen overflow-hidden grid grid-cols-[minmax(0,1fr)] grid-rows-[auto_auto_minmax(0,1fr)] bg-[var(--canvas)] text-[var(--ink)] transition-colors duration-300">
       <TopBar
         currentPersona={persona}
         onPersonaChange={handlePersonaChange}
         isDark={isDark}
         onThemeToggle={() => setIsDark((d) => !d)}
         language={language}
-        onLanguageToggle={() => setLanguage((l) => (l === 'en' ? 'hi' : l === 'hi' ? 'hi-en' : 'en'))}
+        onLanguageToggle={handleLanguageToggle}
         state={orbState}
-        onPrevDemo={() => loadFixture(currentFixtureIndex <= 0 ? 0 : currentFixtureIndex - 1)}
-        onNextDemo={() => loadFixture(currentFixtureIndex < 0 ? 0 : currentFixtureIndex + 1)}
-        currentDemoIndex={Math.max(0, currentFixtureIndex)}
-        totalDemos={FIXTURES.length}
+        statusLine={statusLine}
         isLiveMode={isLiveMode}
         onToggleLiveMode={() => setIsLiveMode((m) => !m)}
-        backendHealthy={backendHealthy}
+        backend={backend}
+        demo={!isLiveMode ? { index: Math.max(0, fixtureIndex), total: FIXTURES.length, onPrev: () => loadFixture(Math.max(0, fixtureIndex - 1)), onNext: () => loadFixture(fixtureIndex + 1) } : undefined}
+        micLevel={micLevel}
       />
 
-      {/* Backend Offline Banner */}
-      {isLiveMode && !backendHealthy && (
-        <div className="bg-rose-600 text-white px-6 py-2 text-xs md:text-sm flex items-center justify-between shadow-md z-20">
-          <div className="flex items-center gap-2 font-medium">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>
-              Backend offline at <code>http://localhost:8095</code>. Running with local mock fallback.
-            </span>
+      {/* Banners live in normal flow so nothing ever overlaps them */}
+      <div className="relative z-20">
+        {offline && (
+          <div role="alert" className="flex flex-wrap items-center justify-between gap-3 px-6 py-2.5 text-[0.85rem] bg-[var(--maroon-pale)] text-[var(--maroon)] border-b border-[var(--hairline)]">
+            <div className="flex items-center gap-2 font-medium">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>Yukti&apos;s server is not reachable. Voice and live answers are paused; I&apos;ll reconnect automatically.</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => void checkBackend()} className="chip !py-1">
+                <RefreshCw className="w-3.5 h-3.5" /> Retry now
+              </button>
+              <button onClick={() => setIsLiveMode(false)} className="chip !py-1">
+                Use demo answers
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={initBackendConnection}
-              className="flex items-center gap-1 bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded text-xs font-semibold transition-colors"
-            >
-              <RefreshCw className="w-3 h-3" />
-              <span>Retry</span>
+        )}
+        {micError && (
+          <div role="alert" className="flex items-center justify-between gap-3 px-6 py-2.5 text-[0.85rem] bg-[#FEF7E0] text-[#7A4F01] dark:bg-[rgba(253,214,99,0.12)] dark:text-[#FDD663] border-b border-[var(--hairline)]">
+            <div className="flex items-center gap-2 font-medium">
+              <MicOff className="w-4 h-4 shrink-0" />
+              <span>{micError} You can keep typing in the panel.</span>
+            </div>
+            <button onClick={() => setMicError(null)} className="icon-btn !w-7 !h-7" aria-label="Dismiss">
+              <X className="w-4 h-4" />
             </button>
-            <button
-              onClick={() => setIsLiveMode(false)}
-              className="bg-white text-rose-700 px-2.5 py-1 rounded text-xs font-bold hover:bg-rose-50 transition-colors"
-            >
-              Switch to Mock Mode
-            </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Microphone Denied Notice */}
-      {micDeniedNotice && (
-        <div className="bg-amber-500 text-white px-6 py-1.5 text-xs flex items-center justify-between shadow-xs z-20">
-          <div className="flex items-center gap-2 font-medium">
-            <Radio className="w-3.5 h-3.5 shrink-0" />
-            <span>Microphone permission denied. Switched automatically to typed input mode.</span>
-          </div>
-          <button onClick={() => setMicDeniedNotice(false)} className="text-xs font-bold underline">
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* Role Switching Notification Banner */}
-      <PersonaBanner persona={persona} />
-
-      {/* Main Work Area */}
-      <div className="flex-1 relative flex overflow-hidden">
-        {/* Full-width Canvas Area */}
+      <div className="relative min-h-0 min-w-0 overflow-hidden">
+        <PersonaBanner persona={persona} />
         <main
-          className={`flex-1 h-[calc(100vh-4rem)] transition-all duration-300 ${
-            panelMode === 'fullscreen'
-              ? 'hidden'
-              : panelMode === 'docked'
-              ? 'pr-0 lg:pr-[430px] xl:pr-[470px]'
-              : 'pr-0'
-          }`}
+          className={`h-full min-w-0 overflow-y-auto overflow-x-hidden transition-all duration-300 ${panelMode === 'fullscreen' ? 'opacity-20 pointer-events-none' : ''}`}
         >
           <CanvasView
             contract={contract}
             isDark={isDark}
             history={history}
-            currentHistoryIndex={currentHistoryIndex}
+            currentHistoryIndex={historyIndex}
             onRestoreHistory={handleRestoreHistory}
-            onNavigateToAlternative={handleNavigateToAlternative}
-            panelMode={panelMode}
-            onSelectStarter={(q) => handleUserQuery(q)}
+            onNavigateToAlternative={() => runTypedTurn(contract.access?.alternative || 'What are the station tenure norms?')}
+            onSelectStarter={runTypedTurn}
+            busy={busy}
+            statusLine={statusLine}
+            onTalk={toggleMic}
+            isMicActive={isMicActive}
+            orbState={orbState}
+            audioEngine={engineRef.current || undefined}
+            messages={messages}
+            liveInterimText={liveInterimText}
           />
         </main>
 
-        {/* Floating Conversation Panel on the Right */}
         <FloatingConversationPanel
           panelMode={panelMode}
           onModeChange={setPanelMode}
           isDark={isDark}
           messages={messages}
-          onSendMessage={handleUserQuery}
+          onSendMessage={runTypedTurn}
           orbState={orbState}
-          onOrbClick={() => {
-            if (panelMode === 'minimised') {
-              setPanelMode('docked');
-            } else {
-              handleToggleMic();
-            }
-          }}
           isMicActive={isMicActive}
-          onToggleMic={handleToggleMic}
-          audioEngine={audioEngineRef.current || undefined}
-          activeSuggestions={contract.suggestions}
-          onSelectSuggestion={handleUserQuery}
+          onToggleMic={toggleMic}
+          audioEngine={engineRef.current || undefined}
+          suggestions={suggestions}
+          onSelectSuggestion={runTypedTurn}
+          statusLine={statusLine}
+          slow={slow}
+          wsState={wsState}
+          isLiveMode={isLiveMode}
+          offline={offline}
+          onRetry={runTypedTurn}
+          onSelectMicDevice={handleSelectMicDevice}
+          isMuted={isMuted}
+          onToggleMute={handleToggleMute}
+          liveInterimText={liveInterimText}
+          isGreeting={!contract.visual || contract.visual.type === 'none'}
         />
       </div>
 
-      {/* Engineering Debug Overlay (?debug=1) */}
-      {isDebugMode && (
-        <div className="fixed bottom-4 left-4 z-50 bg-black/85 text-emerald-400 p-4 rounded-2xl border border-emerald-500/40 font-mono text-xs shadow-2xl backdrop-blur-md max-w-sm space-y-1 select-none">
-          <div className="text-[10px] uppercase font-bold text-emerald-300 tracking-wider pb-1 border-b border-emerald-500/30">
-            Yukti Live Telemetry (?debug=1)
-          </div>
-          <div>Audio TTFB (VAD End → 24k): <span className="font-bold text-white">{audioEngineRef.current?.getMeasuredAudioTtfb() ? `${audioEngineRef.current.getMeasuredAudioTtfb()} ms` : 'Waiting for mic...'}</span></div>
-          <div>Visual Latency: <span className="font-bold text-white">{lastVisualLatency ? `${lastVisualLatency} ms` : '—'}</span></div>
-          <div>Live Model: <span className="text-white">gemini-3.8-live</span></div>
-          <div>Speech Voice: <span className="text-white">Leda (24 kHz PCM)</span></div>
-          <div>Active Persona: <span className="text-white">{persona}</span></div>
-          <div>Backend Status: <span className={backendHealthy ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>{backendHealthy ? "Connected (port 8095)" : "Offline"}</span></div>
+      {isDebug && (
+        <div className="fixed bottom-4 left-4 z-50 bg-black/85 text-emerald-300 p-4 rounded-2xl font-mono text-[0.72rem] space-y-1 max-w-sm">
+          <div className="font-bold text-emerald-200">Yukti telemetry (?debug=1)</div>
+          <div>WS: {wsState} · sent {yuktiClient.counters.audioChunksSent} chunks / {yuktiClient.counters.audioBytesSent} B</div>
+          <div>Received audio: {yuktiClient.counters.audioChunksReceived} chunks / {yuktiClient.counters.audioBytesReceived} B</div>
+          <div>Last turn: {JSON.stringify(telemetryRef.current.turns.slice(-1)[0] || {})}</div>
         </div>
       )}
     </div>

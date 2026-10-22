@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { DocumentSpec } from '@/contracts/answerContract';
-import { FileText, Download, Share2, FileDown } from 'lucide-react';
+
 
 interface DocumentRendererProps {
   document: DocumentSpec;
@@ -126,9 +126,7 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({ document, is
   return (
     <div
       data-testid="document-renderer"
-      className={`rounded-2xl border flex flex-col h-[520px] max-h-[calc(100vh-16rem)] transition-all duration-300 overflow-hidden shadow-lg ${
-        isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
-      }`}
+      className="card flex flex-col h-[clamp(24rem,calc(100vh-22rem),52rem)] overflow-hidden"
     >
       {/* Official ONGC Letterhead Banner */}
       <div className="bg-ongc-maroon text-white px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 shrink-0">
@@ -164,26 +162,8 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({ document, is
         </div>
       </div>
 
-      {/* Document Action Bar */}
-      <div className="px-6 py-2 bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-300 shrink-0">
-        <div className="flex items-center gap-2 font-medium">
-          <FileText className="w-3.5 h-3.5 text-accent" />
-          <span>Official Executive Draft</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <button className="flex items-center gap-1 hover:text-accent transition-colors font-medium">
-            <Download className="w-3.5 h-3.5" />
-            <span>Download .docx</span>
-          </button>
-          <button className="flex items-center gap-1 hover:text-accent transition-colors font-medium">
-            <Share2 className="w-3.5 h-3.5" />
-            <span>Open in Google Docs</span>
-          </button>
-        </div>
-      </div>
-
       {/* Document Content Canvas - strictly scrolls internally */}
-      <div className="p-6 md:p-8 flex-1 overflow-y-auto min-h-0">
+      <div className="px-[2.2rem] py-[1.8rem] flex-1 overflow-y-auto min-h-0 text-[0.95rem] leading-[1.7] max-w-[60rem]">
         {renderFormattedMarkdown(markdownText)}
       </div>
     </div>

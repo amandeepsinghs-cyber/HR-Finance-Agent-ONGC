@@ -33,9 +33,7 @@ export const ClauseRenderer: React.FC<ClauseRendererProps> = ({ clause, isDark =
   return (
     <div
       data-testid="clause-renderer"
-      className={`rounded-2xl border p-6 md:p-8 flex flex-col h-[520px] max-h-[calc(100vh-16rem)] transition-all duration-300 overflow-hidden shadow-sm ${
-        isDark ? 'bg-zinc-900/95 border-zinc-800' : 'bg-white border-zinc-200'
-      }`}
+      className="card p-[1.6rem] flex flex-col h-[clamp(24rem,calc(100vh-22rem),46rem)] overflow-hidden"
     >
       {/* Top Banner (Fixed) */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800 pb-4 shrink-0">

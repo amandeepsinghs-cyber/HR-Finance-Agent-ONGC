@@ -114,3 +114,39 @@
 ## 10. Name, Greeting, Delegation of Remaining Choices (typed in chat, 20-Oct-2026 05:43)
 
 > "1. Yukti AI. 2. You can say just give a basic intro. We can refine. Like 'Hello I am Yukti, your HR and Finance agent. Please tell me how can I help?' Rest go with what is most suitable. Now go."
+
+---
+
+## 11. Multi-Turn History Preservation & Conversational Context (Audio, 22-Oct-2026 04:40)
+
+> "Now save this as first verbatims and then we will save a feature list.
+> 
+> Now currently the application is running, but I would like to see: if I'm asking a question and a response, every time I'm asking a question, the screen changes and I do not see the previous question. So basically in a way, every question, even in an interaction, becomes a new question without the reference to the history.
+> 
+> So what I would like in the application is, so if a person logs in and is there on their screen, if a person asks a question, let's say 'how many employees are there in New Delhi?', then it will show a screen. Now if the next question is asked, the second thing should appear, and then the first thing should not completely disappear. It should scroll up, as generally happens on let's say Gemini or any other interface of Claude or ChatGPT. So this is the first feature, I think, to preserve the history.
+> 
+> And secondly, when a person is responding, there should be certain context, right, that should be captured. So this is, I would say, the second.
+> 
+> So save this as a verbatim and as a feature list, and I would like to maybe separate out these verbatims so that it is clear what is expected.
+> 
+> And then I would like to review and audit, and make the most exhaustive list of how those visuals can be represented. Currently it is okay, but identify any gaps in a sense that how it can be made better. This will be the second thing. So let's implement this, like identify, build the feature list, and then we talk about the next. So save this verbatim first."
+
+---
+
+## 12. Voice Orb Elegance (Siri/Infinity Loops) & Executive UI Modernization (typed in chat, 22-Oct-2026 04:45)
+
+> "Now also save this in the feature list. The current orb seems chaotic. I was looking for something more elegant like what you see in Siri with those infinity link of loops that move. I saw we did something decent for AlphaFold. See what can be improved, log this as a feature request. Also the frontend seems a bit too basic, how can we make it better and more professional without losing the simplicity?"
+
+---
+
+## 13. CMD Named Employee Roster & Transfer Actionability (Audio, 22-Oct-2026 04:47)
+
+> "The second thing is when I'm asking for a question, let's say give me the... as a CMD, so sometimes I would like to know the name of the employees. A CMD should be able to see the name of the employees. For example, the question can be:
+> 
+> 'Can you give me a list of all the people who are employed in the Delhi office for more than 5 years? Give me their name, their designation, their seniority in terms of E1, E2, and their tenure in ONGC, and their time in the Delhi office.'
+> 
+> Currently it is only giving me an aggregated view, it is not giving me the exact name of the people.
+> 
+> Now as a CMD, these are the kind of information that he would like to see, so that an action can be taken on that. So see what is missing in this, also save it as a verbatim and a feature request. So it can only be generated once the data is there, then we will talk about okay what is needed in the data and any data gaps. Also save this first."
+
+

@@ -298,7 +298,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                     refusal_id="D3",
                 )
             # Check for field loss / profitability
-            if "which fields are loss-making" in q_low or "loss-making fields" in q_low:
+            if any(k in q_low for k in ["which fields are loss-making", "loss-making fields", "fields lost money", "fields made losses", "profitable and which made losses", "field profitability", "field p&l"]):
                 d = REFUSAL_DEFINITIONS["D4"]
                 return AccessDecision(
                     status="refused",

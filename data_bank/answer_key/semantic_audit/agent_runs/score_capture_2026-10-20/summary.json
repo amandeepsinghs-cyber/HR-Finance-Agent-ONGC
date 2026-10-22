@@ -1,0 +1,88 @@
+{
+  "root": {
+    "total": 89,
+    "pass": 27,
+    "pass_rate_pct": 30.3,
+    "official_pass": 0,
+    "official_pass_but_independent_fail": 0,
+    "judge_used": 33,
+    "insufficient_evidence": 0,
+    "upper_bound_pct": 30.3,
+    "reasons": {
+      "NO_DATA_ON_ANSWERABLE": 29,
+      "NUMBERS_DIFFER": 20,
+      "NUMERIC_UNCERTAIN": 6,
+      "POLICY_UNCERTAIN": 3,
+      "WRONG_PERIOD": 1,
+      "REFUSAL_MISSING": 1,
+      "ENTITY_MISMATCH": 1,
+      "WRONG_POLICY": 1
+    }
+  },
+  "followups": {
+    "total": 267,
+    "pass": 37,
+    "pass_rate_pct": 13.9,
+    "official_pass": 0,
+    "official_pass_but_independent_fail": 0,
+    "judge_used": 70,
+    "insufficient_evidence": 0,
+    "upper_bound_pct": 13.9,
+    "reasons": {
+      "NO_DATA_ON_ANSWERABLE": 155,
+      "NUMERIC_UNCERTAIN": 7,
+      "NUMBERS_DIFFER": 29,
+      "ENTITY_MISMATCH": 2,
+      "REFUSAL_MISSING": 2,
+      "POLICY_UNCERTAIN": 13,
+      "REFUSAL_EXPLANATION": 4,
+      "WRONG_POLICY": 17,
+      "WRONG_PERIOD": 1
+    }
+  },
+  "paraphrases": {
+    "total": 267,
+    "pass": 54,
+    "pass_rate_pct": 20.2,
+    "official_pass": 0,
+    "official_pass_but_independent_fail": 0,
+    "judge_used": 137,
+    "insufficient_evidence": 0,
+    "upper_bound_pct": 20.2,
+    "reasons": {
+      "NO_DATA_ON_ANSWERABLE": 79,
+      "NUMBERS_DIFFER": 71,
+      "ENTITY_MISMATCH": 7,
+      "NUMERIC_UNCERTAIN": 15,
+      "REFUSAL_MISSING": 6,
+      "REFUSAL_EXPLANATION": 19,
+      "POLICY_UNCERTAIN": 9,
+      "WRONG_PERIOD": 6,
+      "WRONG_POLICY": 1
+    }
+  },
+  "stress_test": {
+    "total": 150,
+    "WRONG": 123,
+    "ANSWERED": 13,
+    "HONEST_GAP": 14,
+    "pass_like": 27,
+    "pass_rate_pct": 18.0,
+    "official_pass": 0,
+    "judge_used": 52,
+    "insufficient_evidence": 0,
+    "reasons": {
+      "JUDGE": 46,
+      "NO_DATA_ON_ANSWERABLE": 76,
+      "INVENTED_ON_GAP": 1
+    }
+  },
+  "grand_total": {
+    "turns": 773,
+    "pass_like": 145,
+    "pass_rate_pct": 18.8,
+    "insufficient_evidence": 0,
+    "upper_bound_pct": 18.8,
+    "official_pass": 0
+  }
+}

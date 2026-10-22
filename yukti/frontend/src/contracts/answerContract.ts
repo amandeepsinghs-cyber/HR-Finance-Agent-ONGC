@@ -12,6 +12,7 @@ export type VisualType = 'chart' | 'table' | 'kpi' | 'clause' | 'document' | 'ma
 export type VisualMode = 'replace' | 'refine' | 'compare' | 'restore';
 
 export type ChartKind =
+  | 'pie'
   | 'donut'
   | 'bar'
   | 'hbar'
@@ -19,6 +20,7 @@ export type ChartKind =
   | 'grouped_bar'
   | 'line'
   | 'area'
+  | 'combo'
   | 'histogram'
   | 'box'
   | 'treemap'
@@ -26,8 +28,11 @@ export type ChartKind =
   | 'waterfall'
   | 'bullet'
   | 'gauge'
+  | 'funnel'
   | 'scatter'
-  | 'kpi';
+  | 'kpi'
+  | 'table'
+  | 'map';
 
 export interface ChartAnnotation {
   x: any;

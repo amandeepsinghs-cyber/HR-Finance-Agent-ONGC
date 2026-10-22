@@ -20,6 +20,12 @@ export function routeQueryToFixture(
     return { fixture: f, contract: f.data };
   }
 
+  // Brent $60
+  if (q.includes('brent') || q.includes('$60') || q.includes('crude drop') || q.includes('waterfall')) {
+    const f = FIXTURES.find(x => x.id === 'w1_waterfall')!;
+    return { fixture: f, contract: f.data };
+  }
+
   // Headcount vs production
   if (q.includes('production') && (q.includes('headcount') || q.includes('divergence') || q.includes('lost') || q.includes('added'))) {
     const f = FIXTURES.find(x => x.id === 'c11_combo')!;
@@ -29,12 +35,6 @@ export function routeQueryToFixture(
   // Loss fields / Profit fields
   if (q.includes('loss') || q.includes('profitable') || q.includes('mumbai high south') || q.includes('champang') || q.includes('pbt')) {
     const f = FIXTURES.find(x => x.id === 'c6_hbar')!;
-    return { fixture: f, contract: f.data };
-  }
-
-  // Brent $60
-  if (q.includes('brent') || q.includes('$60') || q.includes('60') || q.includes('crude drop') || q.includes('waterfall')) {
-    const f = FIXTURES.find(x => x.id === 'w1_waterfall')!;
     return { fixture: f, contract: f.data };
   }
 

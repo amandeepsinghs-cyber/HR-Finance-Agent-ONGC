@@ -1,0 +1,423 @@
+dev_phrasings:
+- en_dev: 'Tell me: how many executives have been posted in the delhi office for 5
+    years or more? break down by grade and discipline.'
+  hinglish_dev: 'Kripya batayein: how many executives have been posted in the delhi
+    office for 5 years or more? break down by grade and discipline.'
+  id: C1
+- en_dev: 'Tell me: who is overdue for transfer under the rotation policy, and which
+    hard or remote stations (ne, offshore) are short of people to receive them'
+  hinglish_dev: 'Kripya batayein: who is overdue for transfer under the rotation policy,
+    and which hard or remote stations (ne, offshore) are short of people to receive
+    them'
+  id: C2
+- en_dev: 'Tell me: which areas saw no headcount increase in the last 5 years, and
+    which saw the most'
+  hinglish_dev: 'Kripya batayein: which areas saw no headcount increase in the last
+    5 years, and which saw the most'
+  id: C3
+- en_dev: 'Tell me: how many e7+ (gm and above) officers retire in the next 3 years,
+    and which of those roles have no ready successor'
+  hinglish_dev: 'Kripya batayein: how many e7+ (gm and above) officers retire in the
+    next 3 years, and which of those roles have no ready successor'
+  id: C4
+- en_dev: 'Tell me: which disciplines (geoscience, drilling, reservoir, production)
+    face the biggest retirement-driven skill gap by 2030'
+  hinglish_dev: 'Kripya batayein: which disciplines (geoscience, drilling, reservoir,
+    production) face the biggest retirement-driven skill gap by 2030'
+  id: C5
+- en_dev: 'Tell me: which fields or assets were the most profitable and which made
+    losses in fy26'
+  hinglish_dev: 'Kripya batayein: which fields or assets were the most profitable
+    and which made losses in fy26'
+  id: C6
+- en_dev: 'Tell me: where have we invested the most capex in the last 5 years, and
+    which fields are under-invested relative to their reserves'
+  hinglish_dev: 'Kripya batayein: where have we invested the most capex in the last
+    5 years, and which fields are under-invested relative to their reserves'
+  id: C7
+- en_dev: 'Tell me: which loss-making mature fields are candidates for divestment,
+    a production enhancement contract, or a marginal-field offer'
+  hinglish_dev: 'Kripya batayein: which loss-making mature fields are candidates for
+    divestment, a production enhancement contract, or a marginal-field offer'
+  id: C8
+- en_dev: 'Tell me: which major projects are behind schedule or over budget, and by
+    how many crore'
+  hinglish_dev: 'Kripya batayein: which major projects are behind schedule or over
+    budget, and by how many crore'
+  id: C9
+- en_dev: 'Tell me: how are we tracking against our mou targets with mopng/dpe for
+    this year'
+  hinglish_dev: 'Kripya batayein: how are we tracking against our mou targets with
+    mopng/dpe for this year'
+  id: C10
+- en_dev: 'Tell me: which assets added headcount but lost production over 5 years'
+  hinglish_dev: 'Kripya batayein: which assets added headcount but lost production
+    over 5 years'
+  id: C11
+- en_dev: 'Tell me: what is the manpower cost per barrel of oil equivalent (boe),
+    by asset'
+  hinglish_dev: 'Kripya batayein: what is the manpower cost per barrel of oil equivalent
+    (boe), by asset'
+  id: C12
+- en_dev: 'Tell me: if we move 200 executives from delhi/dehradun to field assets,
+    what changes in cost and coverage'
+  hinglish_dev: 'Kripya batayein: if we move 200 executives from delhi/dehradun to
+    field assets, what changes in cost and coverage'
+  id: C13
+- en_dev: 'Tell me: prepare a one-page board note on the top 5 loss-making fields:
+    production, cost, staffing and a recommendation.'
+  hinglish_dev: 'Kripya batayein: prepare a one-page board note on the top 5 loss-making
+    fields: production, cost, staffing and a recommendation.'
+  id: C14
+- en_dev: 'Tell me: list the executives with more than 3 years at their current station
+    (rotation policy), by asset and grade.'
+  hinglish_dev: 'Kripya batayein: list the executives with more than 3 years at their
+    current station (rotation policy), by asset and grade.'
+  id: H1
+- en_dev: 'Tell me: which employees have never served in a hard or remote station'
+  hinglish_dev: 'Kripya batayein: which employees have never served in a hard or remote
+    station'
+  id: H2
+- en_dev: 'Tell me: what is the vacancy position (sanctioned vs. in-position) by asset
+    and discipline'
+  hinglish_dev: 'Kripya batayein: what is the vacancy position (sanctioned vs. in-position)
+    by asset and discipline'
+  id: H3
+- en_dev: "Tell me: what are attrition and voluntary-exit numbers by grade over the\
+    \ last 3 years? is mid-career attrition (e3\u2013e5) rising"
+  hinglish_dev: "Kripya batayein: what are attrition and voluntary-exit numbers by\
+    \ grade over the last 3 years? is mid-career attrition (e3\u2013e5) rising"
+  id: H4
+- en_dev: 'Tell me: how many dpc (promotion) cases are pending, and for how long'
+  hinglish_dev: 'Kripya batayein: how many dpc (promotion) cases are pending, and
+    for how long'
+  id: H5
+- en_dev: 'Tell me: are we compliant with reservation norms (sc/st/obc/ews/pwd) by
+    grade'
+  hinglish_dev: 'Kripya batayein: are we compliant with reservation norms (sc/st/obc/ews/pwd)
+    by grade'
+  id: H6
+- en_dev: 'Tell me: what is women''s representation by grade and asset, and what has
+    it been for offshore postings'
+  hinglish_dev: 'Kripya batayein: what is women''s representation by grade and asset,
+    and what has it been for offshore postings'
+  id: H7
+- en_dev: 'Tell me: what were training hours per executive last year, and which disciplines
+    are below target'
+  hinglish_dev: 'Kripya batayein: what were training hours per executive last year,
+    and which disciplines are below target'
+  id: H8
+- en_dev: 'Tell me: how many grievances and service litigations are pending, and how
+    old are they'
+  hinglish_dev: 'Kripya batayein: how many grievances and service litigations are
+    pending, and how old are they'
+  id: H9
+- en_dev: 'Tell me: generate an excel transfer proposal for fy27 using rotation rules.'
+  hinglish_dev: 'Kripya batayein: generate an excel transfer proposal for fy27 using
+    rotation rules.'
+  id: H10
+- en_dev: 'Tell me: what is the lifting cost ($/bbl) by asset, and which assets are
+    above the company average'
+  hinglish_dev: 'Kripya batayein: what is the lifting cost ($/bbl) by asset, and which
+    assets are above the company average'
+  id: F1
+- en_dev: 'Tell me: what is capex utilisation (budget vs. revised estimate vs. actual)
+    by asset for the current year'
+  hinglish_dev: 'Kripya batayein: what is capex utilisation (budget vs. revised estimate
+    vs. actual) by asset for the current year'
+  id: F2
+- en_dev: 'Tell me: what is the revenue, opex and ebitda for each field over 5 years'
+  hinglish_dev: 'Kripya batayein: what is the revenue, opex and ebitda for each field
+    over 5 years'
+  id: F3
+- en_dev: 'Tell me: how much did royalty, cess and windfall tax reduce realisation
+    per barrel this year'
+  hinglish_dev: 'Kripya batayein: how much did royalty, cess and windfall tax reduce
+    realisation per barrel this year'
+  id: F4
+- en_dev: 'Tell me: which contracts or vendors make up the top 80% of spend, and where
+    were the cost overruns'
+  hinglish_dev: 'Kripya batayein: which contracts or vendors make up the top 80% of
+    spend, and where were the cost overruns'
+  id: F5
+- en_dev: 'Tell me: how old are receivables from oil marketing companies and gas buyers,
+    by customer'
+  hinglish_dev: 'Kripya batayein: how old are receivables from oil marketing companies
+    and gas buyers, by customer'
+  id: F6
+- en_dev: 'Tell me: what is the employee cost as a percentage of revenue, by asset,
+    and how has it trended'
+  hinglish_dev: 'Kripya batayein: what is the employee cost as a percentage of revenue,
+    by asset, and how has it trended'
+  id: F7
+- en_dev: 'Tell me: what is the finding & development cost and reserve replacement
+    ratio, by basin'
+  hinglish_dev: 'Kripya batayein: what is the finding & development cost and reserve
+    replacement ratio, by basin'
+  id: F8
+- en_dev: 'Tell me: what are the forex exposure and hedging position on dollar-linked
+    contracts'
+  hinglish_dev: 'Kripya batayein: what are the forex exposure and hedging position
+    on dollar-linked contracts'
+  id: F9
+- en_dev: 'Tell me: generate a quarterly asset-wise p&l sheet.'
+  hinglish_dev: 'Kripya batayein: generate a quarterly asset-wise p&l sheet.'
+  id: F10
+- en_dev: 'Tell me: what is my leave balance, and how many earned leave days can i
+    encash'
+  hinglish_dev: 'Kripya batayein: what is my leave balance, and how many earned leave
+    days can i encash'
+  id: E1
+- en_dev: 'Tell me: when am i due for transfer, and what is the rotation policy for
+    my grade'
+  hinglish_dev: 'Kripya batayein: when am i due for transfer, and what is the rotation
+    policy for my grade'
+  id: E2
+- en_dev: 'Tell me: what is my medical reimbursement claim status'
+  hinglish_dev: 'Kripya batayein: what is my medical reimbursement claim status'
+  id: E3
+- en_dev: 'Tell me: what are the eligibility criteria for promotion from e2 to e3'
+  hinglish_dev: 'Kripya batayein: what are the eligibility criteria for promotion
+    from e2 to e3'
+  id: E4
+- en_dev: 'Tell me: what is the ta/da entitlement for an offshore posting'
+  hinglish_dev: 'Kripya batayein: what is the ta/da entitlement for an offshore posting'
+  id: E5
+- en_dev: 'Tell me: which training programmes can i take this year'
+  hinglish_dev: 'Kripya batayein: which training programmes can i take this year'
+  id: E6
+- en_dev: 'Tell me: what was ongc''s published annual profit last year? *(public data)*'
+  hinglish_dev: 'Kripya batayein: what was ongc''s published annual profit last year?
+    *(public data)*'
+  id: E7
+- en_dev: 'Tell me: what is the salary of my reporting officer'
+  hinglish_dev: 'Kripya batayein: what is the salary of my reporting officer'
+  id: D1
+- en_dev: 'Tell me: show me the draft transfer list for mumbai.'
+  hinglish_dev: 'Kripya batayein: show me the draft transfer list for mumbai.'
+  id: D2
+- en_dev: 'Tell me: who is getting promoted in the next dpc'
+  hinglish_dev: 'Kripya batayein: who is getting promoted in the next dpc'
+  id: D3
+- en_dev: 'Tell me: which fields are loss-making, and what is the capex plan for next
+    year'
+  hinglish_dev: 'Kripya batayein: which fields are loss-making, and what is the capex
+    plan for next year'
+  id: D4
+- en_dev: 'Tell me: list all employees in delhi with more than 5 years'' tenure.'
+  hinglish_dev: 'Kripya batayein: list all employees in delhi with more than 5 years''
+    tenure.'
+  id: D5
+- en_dev: 'Tell me: is any officer in my asset under vigilance inquiry'
+  hinglish_dev: 'Kripya batayein: is any officer in my asset under vigilance inquiry'
+  id: D6
+- en_dev: 'Tell me: what is the minimum tenure at a station, and the maximum cumulative
+    stay in one city'
+  hinglish_dev: 'Kripya batayein: what is the minimum tenure at a station, and the
+    maximum cumulative stay in one city'
+  id: P1
+- en_dev: 'Tell me: which stations count as one cluster for tenure purposes'
+  hinglish_dev: 'Kripya batayein: which stations count as one cluster for tenure purposes'
+  id: P2
+- en_dev: 'Tell me: am i exempt from transfer if i retire in 2 years'
+  hinglish_dev: 'Kripya batayein: am i exempt from transfer if i retire in 2 years'
+  id: P3
+- en_dev: 'Tell me: how many earned leave days can i accumulate and encash at retirement'
+  hinglish_dev: 'Kripya batayein: how many earned leave days can i accumulate and
+    encash at retirement'
+  id: P4
+- en_dev: 'Tell me: am i eligible for study leave, and what bond applies'
+  hinglish_dev: 'Kripya batayein: am i eligible for study leave, and what bond applies'
+  id: P5
+- en_dev: 'Tell me: can i accept a gift from a vendor at diwali? what is the limit'
+  hinglish_dev: 'Kripya batayein: can i accept a gift from a vendor at diwali? what
+    is the limit'
+  id: P6
+- en_dev: 'Tell me: what is my travel class and lodging allowance for official travel
+    to mumbai as an e2'
+  hinglish_dev: 'Kripya batayein: what is my travel class and lodging allowance for
+    official travel to mumbai as an e2'
+  id: P7
+- en_dev: 'Tell me: how do i raise a concern confidentially without being victimised'
+  hinglish_dev: 'Kripya batayein: how do i raise a concern confidentially without
+    being victimised'
+  id: P8
+- en_dev: 'Tell me: how do i file a posh complaint, and who is on the committee at
+    my station'
+  hinglish_dev: 'Kripya batayein: how do i file a posh complaint, and who is on the
+    committee at my station'
+  id: P9
+- en_dev: 'Tell me: what are the criteria for promotion from e3 to e4'
+  hinglish_dev: 'Kripya batayein: what are the criteria for promotion from e3 to e4'
+  id: P10
+- en_dev: 'Tell me: under the transfer policy, who in delhi has exceeded the cumulative-tenure
+    cap, and who is exempt because they retire soon'
+  hinglish_dev: 'Kripya batayein: under the transfer policy, who in delhi has exceeded
+    the cumulative-tenure cap, and who is exempt because they retire soon'
+  id: P11
+- en_dev: "Tell me: which executives are due for an e4\u2192e5 merit review and have\
+    \ **not** done a north-east or hard posting"
+  hinglish_dev: "Kripya batayein: which executives are due for an e4\u2192e5 merit\
+    \ review and have **not** done a north-east or hard posting"
+  id: P12
+- en_dev: 'Tell me: are we within the dpe 30% superannuation cap on benefits? how
+    much headroom is left'
+  hinglish_dev: 'Kripya batayein: are we within the dpe 30% superannuation cap on
+    benefits? how much headroom is left'
+  id: P13
+- en_dev: 'Tell me: our mou rating sets the performance-related pay pool. what''s
+    the pay impact if we drop from "excellent" to "very good"'
+  hinglish_dev: 'Kripya batayein: our mou rating sets the performance-related pay
+    pool. what''s the pay impact if we drop from "excellent" to "very good"'
+  id: P14
+- en_dev: 'Tell me: did we meet the 2% csr obligation in fy26? which states got the
+    most'
+  hinglish_dev: 'Kripya batayein: did we meet the 2% csr obligation in fy26? which
+    states got the most'
+  id: P15
+- en_dev: "Tell me: who has the authority to approve a \u20B950 crore drilling contract\
+    \ under the delegated powers"
+  hinglish_dev: "Kripya batayein: who has the authority to approve a \u20B950 crore\
+    \ drilling contract under the delegated powers"
+  id: P16
+- en_dev: 'Tell me: does our dividend policy allow a higher payout this year, given
+    the capex plan'
+  hinglish_dev: 'Kripya batayein: does our dividend policy allow a higher payout this
+    year, given the capex plan'
+  id: P17
+- en_dev: 'Tell me: show me the draft fy27 transfer order.'
+  hinglish_dev: 'Kripya batayein: show me the draft fy27 transfer order.'
+  id: P18
+- en_dev: 'Tell me: what are the full financial limits for directors in the delegated
+    powers'
+  hinglish_dev: 'Kripya batayein: what are the full financial limits for directors
+    in the delegated powers'
+  id: P19
+- en_dev: 'Tell me: summarise the board note on divesting marginal fields.'
+  hinglish_dev: 'Kripya batayein: summarise the board note on divesting marginal fields.'
+  id: P20
+- en_dev: "Tell me: \"which fields lost money in fy26?\" \u2192 \"why is field x losing?\"\
+    \ \u2192 \"how many people work there, and what do they cost?\" \u2192 \"draft\
+    \ a board note with options.\""
+  hinglish_dev: "Kripya batayein: \"which fields lost money in fy26?\" \u2192 \"why\
+    \ is field x losing?\" \u2192 \"how many people work there, and what do they cost?\"\
+    \ \u2192 \"draft a board note with options.\""
+  id: T1
+- en_dev: "Tell me: \"who in delhi has 5+ years?\" \u2192 \"which of them breach the\
+    \ transfer policy?\" \u2192 \"match them to vacancies at hard stations.\" \u2192\
+    \ \"export as an excel transfer proposal.\""
+  hinglish_dev: "Kripya batayein: \"who in delhi has 5+ years?\" \u2192 \"which of\
+    \ them breach the transfer policy?\" \u2192 \"match them to vacancies at hard\
+    \ stations.\" \u2192 \"export as an excel transfer proposal.\""
+  id: T2
+- en_dev: "Tell me: \"which gms retire in 2027?\" \u2192 \"who is ready to succeed\
+    \ each?\" \u2192 \"which successors haven't served in the north east?\""
+  hinglish_dev: "Kripya batayein: \"which gms retire in 2027?\" \u2192 \"who is ready\
+    \ to succeed each?\" \u2192 \"which successors haven't served in the north east?\""
+  id: T3
+- en_dev: 'Tell me: if brent falls to $60/bbl, which fields go into loss'
+  hinglish_dev: 'Kripya batayein: if brent falls to $60/bbl, which fields go into
+    loss'
+  id: W1
+- en_dev: 'Tell me: if we freeze hiring for 2 years, what will headcount be by discipline
+    in 2028, given retirements'
+  hinglish_dev: 'Kripya batayein: if we freeze hiring for 2 years, what will headcount
+    be by discipline in 2028, given retirements'
+  id: W2
+- en_dev: 'Tell me: if we move 200 executives from delhi/dehradun to field assets,
+    what happens to transfer-grant cost and asset coverage'
+  hinglish_dev: 'Kripya batayein: if we move 200 executives from delhi/dehradun to
+    field assets, what happens to transfer-grant cost and asset coverage'
+  id: W3
+- en_dev: 'Tell me: if the windfall tax is removed, how much does net realisation
+    per barrel improve'
+  hinglish_dev: 'Kripya batayein: if the windfall tax is removed, how much does net
+    realisation per barrel improve'
+  id: W4
+- en_dev: 'Tell me: "what is the total headcount by asset?" (aggregate, non-identifying)'
+  hinglish_dev: 'Kripya batayein: "what is the total headcount by asset?" (aggregate,
+    non-identifying)'
+  id: M1
+- en_dev: 'Tell me: "what is the capex utilisation by asset this year?" (aggregate)'
+  hinglish_dev: 'Kripya batayein: "what is the capex utilisation by asset this year?"
+    (aggregate)'
+  id: M2
+- en_dev: 'Tell me: "show me the salary and apar of employee 104523."'
+  hinglish_dev: 'Kripya batayein: "show me the salary and apar of employee 104523."'
+  id: M3
+- en_dev: 'Tell me: "which fields are loss-making?"'
+  hinglish_dev: 'Kripya batayein: "which fields are loss-making?"'
+  id: M4
+- en_dev: 'Tell me: cmd: "who tried to access confidential data this week?"'
+  hinglish_dev: 'Kripya batayein: cmd: "who tried to access confidential data this
+    week?"'
+  id: M5
+- en_dev: 'Tell me: how many contract workers vs. regular employees per asset, and
+    at what cost per boe'
+  hinglish_dev: 'Kripya batayein: how many contract workers vs. regular employees
+    per asset, and at what cost per boe'
+  id: X1
+- en_dev: 'Tell me: which assets rely most on contract labour for core operations'
+  hinglish_dev: 'Kripya batayein: which assets rely most on contract labour for core
+    operations'
+  id: X2
+- en_dev: 'Tell me: do assets with higher offshore overtime show a higher lost-time
+    injury rate'
+  hinglish_dev: 'Kripya batayein: do assets with higher offshore overtime show a higher
+    lost-time injury rate'
+  id: X3
+- en_dev: 'Tell me: what is our pension and post-retirement medical liability, and
+    its 5-year trend'
+  hinglish_dev: 'Kripya batayein: what is our pension and post-retirement medical
+    liability, and its 5-year trend'
+  id: X4
+- en_dev: 'Tell me: how did ongc videsh, mrpl and hpcl contribute to group profit
+    and dividend'
+  hinglish_dev: 'Kripya batayein: how did ongc videsh, mrpl and hpcl contribute to
+    group profit and dividend'
+  id: X5
+- en_dev: 'Tell me: how much capex went to ongc green / renewables vs. the net zero
+    2038 path, and how many people have been reskilled'
+  hinglish_dev: 'Kripya batayein: how much capex went to ongc green / renewables vs.
+    the net zero 2038 path, and how many people have been reskilled'
+  id: X6
+- en_dev: 'Tell me: draft a reply to a parliament question: "vacancies in ongc in
+    the north-east region, category-wise."'
+  hinglish_dev: 'Kripya batayein: draft a reply to a parliament question: "vacancies
+    in ongc in the north-east region, category-wise."'
+  id: X7
+- en_dev: 'Tell me: how many audit (cag) objections and right-to-information (rti)
+    applications are pending, and how old are they'
+  hinglish_dev: 'Kripya batayein: how many audit (cag) objections and right-to-information
+    (rti) applications are pending, and how old are they'
+  id: X8
+- en_dev: 'Tell me: csr spend by state and theme vs. the policy''s priority areas'
+  hinglish_dev: 'Kripya batayein: csr spend by state and theme vs. the policy''s priority
+    areas'
+  id: X9
+- en_dev: 'Tell me: *unprompted:* "3 projects slipped this week; 42 rotation cases
+    overdue; field x lifting cost up 12%."'
+  hinglish_dev: 'Kripya batayein: *unprompted:* "3 projects slipped this week; 42
+    rotation cases overdue; field x lifting cost up 12%."'
+  id: X10
+off_topic_prompts:
+- What is the current stock price of Apple on NASDAQ?
+- Explain the theory of general relativity by Einstein.
+- Who won the ICC Cricket World Cup in 2011?
+- How do I bake chocolate chip cookies at home?
+- What is the weather forecast for London this weekend?
+- What is the capital of Australia?
+- Can you write a poem about the monsoon rains in Mumbai?
+- How does Kubernetes schedule pods across worker nodes?
+- What is the population of Tokyo in 2026?
+- Who is the current Prime Minister of the United Kingdom?
+- How do I change the oil in a Honda Civic?
+- What is the latest score in the Premier League?
+- Write a quicksort implementation in Rust.
+- What are the health benefits of green tea?
+- How do quantum computers factor large prime numbers?
+- Explain the plot of the movie Inception.
+- What is the speed of light in vacuum?
+- How to apply for a tourist visa to Japan?
+- What are the symptoms of seasonal allergies?
+- What is the distance between Earth and Mars?

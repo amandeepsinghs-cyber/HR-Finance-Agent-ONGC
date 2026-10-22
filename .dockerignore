@@ -1,0 +1,25 @@
+# Exclude large local artifacts, virtualenvs, node_modules, and raw CSV/PDF landing files
+**/.venv
+**/node_modules
+**/.next
+**/__pycache__
+**/.pytest_cache
+.git
+spikes/
+wellpulse/
+docs/
+verbatims/
+knowledge/
+yukti/frontend/screenshots/
+yukti/backend/exports/
+data_bank/*
+!data_bank/answer_key
+!data_bank/world_bible
+data_bank/world_bible/*
+!data_bank/world_bible/reference
+!data_bank/landing
+data_bank/landing/*
+!data_bank/landing/documents
+data_bank/landing/documents/*
+!data_bank/landing/documents/rulebooks_clause_index.csv
+!data_bank/landing/documents/templates

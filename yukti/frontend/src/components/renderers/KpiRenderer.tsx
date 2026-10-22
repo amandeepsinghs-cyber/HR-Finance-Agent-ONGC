@@ -2,68 +2,125 @@
 
 import React from 'react';
 import { KpiTile } from '@/contracts/answerContract';
-import { formatIndianNumber } from '@/utils/numberFormat';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { fmtNum, cleanText } from '@/charts/format';
+import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
 interface KpiRendererProps {
   kpis: KpiTile[];
   isDark?: boolean;
+  hero?: boolean;
+  /** Optional mini-trend / distribution for the first tile. */
+  spark?: { values: number[]; kind: 'line' | 'bars'; highlight?: number };
 }
 
-export const KpiRenderer: React.FC<KpiRendererProps> = ({ kpis, isDark = false }) => {
-  if (!kpis || kpis.length === 0) return null;
+type Tone = 'up' | 'down' | 'neutral';
 
+function toneOf(kpi: KpiTile): Tone {
+  const d = (kpi.delta || '').toLowerCase();
+  if (/^\s*[-−]/.test(kpi.delta || '') || /loss|negative|drop|decline|below|overdue|steepest/.test(d)) return 'down';
+  if (/^\s*\+/.test(kpi.delta || '') || /profit|excellent|very good|met|growth|above|healthy/.test(d)) return 'up';
+  if (typeof kpi.value === 'number' && kpi.value < 0) return 'down';
+  return 'neutral';
+}
+
+function formatKpiValue(kpi: KpiTile): { prefix: string; num: string; suffix: string } {
+  const unit = (kpi.unit || '').trim();
+  if (typeof kpi.value !== 'number') return { prefix: '', num: String(kpi.value), suffix: unit };
+  const isCurrency = /₹|cr\b|crore/i.test(unit);
+  const v = kpi.value;
+  const neg = v < 0 ? '−' : '';
+  const num = fmtNum(Math.abs(v));
+  if (isCurrency) {
+    const rest = unit.replace(/₹\s*/g, '').trim();
+    return { prefix: `${neg}₹`, num, suffix: rest };
+  }
+  if (unit === '%' || unit.startsWith('%')) return { prefix: neg, num, suffix: unit };
+  return { prefix: neg, num, suffix: unit };
+}
+
+const Spark: React.FC<{ spark: NonNullable<KpiRendererProps['spark']> }> = ({ spark }) => {
+  const vals = spark.values.slice(0, 24);
+  if (vals.length < 2) return null;
+  const w = 120;
+  const h = 34;
+  const max = Math.max(...vals);
+  const min = Math.min(0, ...vals);
+  const y = (v: number) => h - ((v - min) / (max - min || 1)) * (h - 4) - 2;
+  if (spark.kind === 'bars') {
+    const bw = w / vals.length;
+    return (
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-[5.5rem] h-[1.6rem] shrink-0 -mt-0.5" aria-hidden>
+        {vals.map((v, i) => (
+          <rect
+            key={i}
+            x={i * bw + bw * 0.15}
+            y={y(v)}
+            width={bw * 0.7}
+            height={Math.max(1.5, h - 2 - y(v))}
+            rx={1.5}
+            fill={i === spark.highlight ? 'var(--accent-deep)' : 'var(--accent-soft)'}
+            opacity={i === spark.highlight ? 1 : 0.75}
+          />
+        ))}
+      </svg>
+    );
+  }
+  const pts = vals.map((v, i) => `${(i / (vals.length - 1)) * w},${y(v)}`).join(' ');
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-      {kpis.map((kpi, idx) => {
-        const isNum = typeof kpi.value === 'number';
-        const formattedVal = isNum ? formatIndianNumber(kpi.value) : kpi.value;
-        const delta = kpi.delta || '';
-        const isPositive = delta.startsWith('+') || delta.toLowerCase().includes('profit') || delta.toLowerCase().includes('excellent') || delta.toLowerCase().includes('norm met');
-        const isNegative = delta.startsWith('-') || delta.toLowerCase().includes('loss') || delta.toLowerCase().includes('negative') || delta.toLowerCase().includes('drop');
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-[5.5rem] h-[1.6rem] shrink-0 -mt-0.5" aria-hidden>
+      <defs>
+        <linearGradient id="kspark" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="var(--accent)" stopOpacity="0.35" />
+          <stop offset="1" stopColor="var(--accent)" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polygon points={`0,${h} ${pts} ${w},${h}`} fill="url(#kspark)" />
+      <polyline points={pts} fill="none" stroke="var(--accent)" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+};
 
+export const KpiRenderer: React.FC<KpiRendererProps> = ({ kpis, hero = false, spark }) => {
+  if (!kpis || kpis.length === 0) return null;
+  const tiles = kpis.slice(0, 4);
+  return (
+    <div
+      className="grid gap-[1rem] w-full"
+      style={{ gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${hero ? '16rem' : '13.5rem'}), 1fr))` }}
+    >
+      {tiles.map((kpi, idx) => {
+        const tone = toneOf(kpi);
+        const { prefix, num, suffix } = formatKpiValue(kpi);
+        const delta = cleanText(kpi.delta || '');
+        const showSpark = idx === 0 && spark;
         return (
-          <div
-            key={idx}
-            className={`p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden group ${
-              isDark
-                ? 'bg-zinc-900/90 border-zinc-800 hover:border-zinc-700'
-                : 'bg-white border-zinc-200/80 hover:border-blue-200 shadow-sm'
-            }`}
-          >
-            {/* Top Label */}
-            <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-2">
-              {kpi.label}
+          <div key={idx} className="kpi-tile group" data-tone={tone} data-primary={idx === 0 ? 'true' : undefined}>
+            <div className="flex items-start justify-between gap-3">
+              <div className="text-[0.78rem] font-medium tracking-[0.01em] text-[var(--ink-2)] truncate" title={kpi.label}>
+                {cleanText(kpi.label)}
+              </div>
+              {showSpark && <Spark spark={spark!} />}
             </div>
-
-            {/* Emphasized Big Numeral */}
-            <div className="flex items-baseline gap-2 mb-2">
-              <span data-testid="kpi-value" className="text-4xl md:text-5xl font-display font-bold tracking-tight text-zinc-900 dark:text-zinc-50 group-hover:text-accent transition-colors">
-                {formattedVal}
-              </span>
-              {kpi.unit && (
-                <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                  {kpi.unit}
-                </span>
-              )}
-            </div>
-
-            {/* Delta / Status Pill */}
-            {delta && (
-              <div className="flex items-center gap-1.5 pt-1">
+            <div className="flex items-end justify-between gap-3 mt-[0.35rem]">
+              <div className="flex items-baseline gap-[0.4rem] min-w-0">
                 <span
-                  className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    isPositive
-                      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-                      : isNegative
-                      ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
-                      : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
-                  }`}
+                  data-testid="kpi-value"
+                  className={`font-display font-semibold tabular-nums tracking-[-0.025em] leading-none ${
+                    hero ? 'text-[3.4rem]' : 'text-[2.6rem]'
+                  } ${tone === 'down' && typeof kpi.value === 'number' && kpi.value < 0 ? 'text-[var(--maroon)]' : 'text-[var(--ink)]'}`}
                 >
-                  {isPositive && <TrendingUp className="w-3 h-3" />}
-                  {isNegative && <TrendingDown className="w-3 h-3" />}
-                  {!isPositive && !isNegative && <Minus className="w-3 h-3" />}
-                  <span>{delta}</span>
+                  {prefix && <span className="text-[0.62em] align-[0.28em] mr-[0.04em] font-medium">{prefix}</span>}
+                  {num}
+                </span>
+                {suffix && <span className="text-[0.95rem] font-medium text-[var(--ink-2)] truncate">{suffix}</span>}
+              </div>
+            </div>
+            {delta && (
+              <div className="mt-[0.7rem]">
+                <span className="delta-chip" data-tone={tone}>
+                  {tone === 'up' && <ArrowUpRight className="w-[0.9em] h-[0.9em]" />}
+                  {tone === 'down' && <ArrowDownRight className="w-[0.9em] h-[0.9em]" />}
+                  <span className="truncate">{delta}</span>
                 </span>
               </div>
             )}

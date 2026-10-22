@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3200",
+    "dev": "node server.js --dev",
     "build": "next build",
-    "start": "next start -p 3200",
+    "start": "NODE_ENV=production node server.js",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "build:fixtures": "python3 scripts/build_fixtures.py",
     "check:fixtures": "python3 scripts/check_fixtures.py",
     "test:smoke": "node scripts/smoke_test.js",
-    "test:live": "node scripts/live_e2e_test.js"
+    "test:live": "node scripts/live_e2e_test.js",
+    "test:voice": "node scripts/voice_e2e_test.js",
+    "test:visual": "node scripts/visual_capture.js"
   },
   "dependencies": {
     "clsx": "^2.1.1",

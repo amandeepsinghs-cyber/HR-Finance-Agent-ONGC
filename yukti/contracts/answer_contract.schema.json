@@ -43,7 +43,7 @@
       "description": "Small declarative spec; the UI maps it to ECharts. No code from the model.",
       "required": ["kind", "data"],
       "properties": {
-        "kind": {"enum": ["donut", "bar", "hbar", "stacked_bar", "grouped_bar", "line", "area", "histogram", "box", "treemap", "heatmap", "waterfall", "bullet", "gauge", "scatter", "kpi"]},
+        "kind": {"enum": ["pie", "donut", "bar", "hbar", "stacked_bar", "grouped_bar", "line", "area", "combo", "histogram", "box", "treemap", "heatmap", "waterfall", "bullet", "gauge", "funnel", "scatter", "kpi", "table", "map"]},
         "data": {"type": "array", "items": {"type": "object"}},
         "x": {"type": "string"}, "y": {"type": "string"}, "series": {"type": "string"}, "value": {"type": "string"}, "category": {"type": "string"},
         "unit": {"type": "string"}, "sort": {"enum": ["asc", "desc", "none"]}, "top_n": {"type": "integer"},

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { PersonaType } from '@/contracts/answerContract';
-import { ShieldCheck, UserCheck, X } from 'lucide-react';
+import { UserCheck, X } from 'lucide-react';
 
 interface PersonaBannerProps {
   persona: PersonaType;
@@ -26,12 +26,12 @@ const PERSONA_DETAILS: Record<
   },
   E2_HR: {
     name: 'Pooja Verma',
-    title: 'Assistant Manager (E2 · HR)',
+    title: 'E2, HR',
     clearance: 'Officer Clearance: Personal records, published policy manuals, and authorized aggregate data.',
   },
   E3_FIN: {
     name: 'Rajesh Kulkarni',
-    title: 'Deputy Manager (E3 · Finance)',
+    title: 'E3, Finance',
     clearance: 'Officer Clearance: Assigned ledger books, published policy, and authorized expenditure aggregates.',
   },
 };
@@ -56,22 +56,16 @@ export const PersonaBanner: React.FC<PersonaBannerProps> = ({ persona }) => {
   const details = PERSONA_DETAILS[persona];
 
   return (
-    <div className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white px-6 py-2.5 flex items-center justify-between shadow-md text-xs md:text-sm animate-in slide-in-from-top-2 duration-200 z-20">
-      <div className="flex items-center gap-3">
-        <div className="p-1 rounded-lg bg-white/20">
-          <UserCheck className="w-4 h-4 text-white" />
-        </div>
-        <div>
-          <span className="font-bold text-white">
-            Now speaking as {details.name ? `${details.name} (${details.title})` : details.title}
-          </span>
-          <span className="opacity-90 ml-2 hidden sm:inline">— {details.clearance}</span>
-        </div>
-      </div>
-      <button
-        onClick={() => setVisible(false)}
-        className="p-1 rounded-md hover:bg-white/20 transition-colors text-white/80 hover:text-white"
-      >
+    <div
+      role="status"
+      data-testid="persona-banner"
+      className="absolute left-1/2 -translate-x-1/2 top-[1rem] z-40 flex items-center gap-3 pl-3 pr-2 py-2 rounded-full bg-[var(--ink)] text-[var(--canvas)] shadow-[var(--panel-shadow)] text-[0.86rem] max-w-[90%]"
+    >
+      <UserCheck className="w-4 h-4 shrink-0 opacity-80" />
+      <span className="font-medium truncate">
+        Now speaking as {details.name ? `${details.name} (${details.title})` : details.title}
+      </span>
+      <button onClick={() => setVisible(false)} className="p-1 rounded-full hover:bg-white/15 dark:hover:bg-black/10" aria-label="Dismiss">
         <X className="w-4 h-4" />
       </button>
     </div>

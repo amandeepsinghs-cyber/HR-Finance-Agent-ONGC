@@ -1,0 +1,81 @@
+{
+  "root": {
+    "total": 89,
+    "pass": 17,
+    "pass_rate_pct": 19.1,
+    "official_pass": 49,
+    "official_pass_but_independent_fail": 32,
+    "judge_used": 36,
+    "insufficient_evidence": 11,
+    "upper_bound_pct": 31.5,
+    "reasons": {
+      "NO_DATA_ON_ANSWERABLE": 34,
+      "NUMERIC_UNCERTAIN": 19,
+      "ENTITY_MISMATCH": 9,
+      "POLICY_UNCERTAIN": 7,
+      "WRONG_PERIOD": 2,
+      "REFUSAL_MISSING": 1
+    }
+  },
+  "followups": {
+    "total": 267,
+    "pass": 23,
+    "pass_rate_pct": 8.6,
+    "official_pass": 58,
+    "official_pass_but_independent_fail": 48,
+    "judge_used": 102,
+    "insufficient_evidence": 38,
+    "upper_bound_pct": 22.8,
+    "reasons": {
+      "NO_DATA_ON_ANSWERABLE": 148,
+      "NUMERIC_UNCERTAIN": 31,
+      "ENTITY_MISMATCH": 13,
+      "REFUSAL_MISSING": 2,
+      "POLICY_UNCERTAIN": 45,
+      "REFUSAL_EXPLANATION": 5
+    }
+  },
+  "paraphrases": {
+    "total": 267,
+    "pass": 21,
+    "pass_rate_pct": 7.9,
+    "official_pass": 100,
+    "official_pass_but_independent_fail": 80,
+    "judge_used": 159,
+    "insufficient_evidence": 49,
+    "upper_bound_pct": 26.2,
+    "reasons": {
+      "NO_DATA_ON_ANSWERABLE": 86,
+      "ENTITY_MISMATCH": 32,
+      "NUMERIC_UNCERTAIN": 72,
+      "REFUSAL_MISSING": 6,
+      "REFUSAL_EXPLANATION": 23,
+      "POLICY_UNCERTAIN": 22,
+      "WRONG_PERIOD": 5
+    }
+  },
+  "stress_test": {
+    "total": 150,
+    "WRONG": 126,
+    "ANSWERED": 11,
+    "HONEST_GAP": 13,
+    "pass_like": 24,
+    "pass_rate_pct": 16.0,
+    "official_pass": 66,
+    "judge_used": 46,
+    "insufficient_evidence": 7,
+    "reasons": {
+      "NO_DATA_ON_ANSWERABLE": 83,
+      "JUDGE": 41,
+      "INVENTED_ON_GAP": 2
+    }
+  },
+  "grand_total": {
+    "turns": 773,
+    "pass_like": 85,
+    "pass_rate_pct": 11.0,
+    "insufficient_evidence": 105,
+    "upper_bound_pct": 24.6,
+    "official_pass": 273
+  }
+}

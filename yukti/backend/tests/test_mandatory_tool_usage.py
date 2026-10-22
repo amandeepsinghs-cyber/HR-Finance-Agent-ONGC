@@ -30,7 +30,7 @@ async def test_data_query_calls_tool_or_blocks_ungrounded():
             "Numerical question returned direct model reasoning without calling a data tool!"
         )
     else:
-        assert tool in ("query_data", "what_if", "search_policy"), (
+        assert tool in ("run_certified_query", "query_data", "what_if", "search_policy"), (
             f"Expected enterprise tool call, got {tool}"
         )
 

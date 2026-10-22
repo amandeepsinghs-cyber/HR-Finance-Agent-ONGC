@@ -1,304 +1,648 @@
 /**
- * Audio Analyser & Real-Time Voice Streaming Engine
- * 1. Recording: Mic -> AudioWorklet (16 kHz PCM16) -> callbacks
- * 2. Playback: 24 kHz PCM chunks -> Gapless AudioBuffer scheduler -> AnalyserNode
- * 3. Orb Amplitude: mic AnalyserNode (listening) & playback AnalyserNode (speaking)
- * 4. Barge-in: immediately stops playback graph on speech/cancel
+ * Voice audio engine
+ * 1. Capture: getUserMedia -> AudioWorklet (16 kHz PCM16, 100 ms frames + RMS level) -> callback
+ * 2. Playback: 24 kHz PCM16 chunks -> gapless AudioBufferSource scheduler -> AnalyserNode
+ * 3. Orb amplitude: live mic level (listening) / playback analyser (speaking)
+ * 4. Barge-in: stopPlayback() halts all scheduled audio immediately and drops in-flight chunks
+ * 5. Telemetry: bytes/chunks received, seconds scheduled, first-chunk timestamp
  */
 
+export type MicErrorKind = 'insecure' | 'unsupported' | 'denied' | 'no-device' | 'busy' | 'other';
+
+export interface MicStartResult {
+  ok: boolean;
+  error?: MicErrorKind;
+  message?: string;
+}
+
+export interface PlaybackStats {
+  chunks: number;
+  bytes: number;
+  scheduledSeconds: number;
+  firstChunkAt: number | null;
+  lastChunkAt: number | null;
+}
+
+export interface MicDeviceInfo {
+  deviceId: string;
+  label: string;
+}
+
 export class VoiceAudioEngine {
-  // Recording
+  // Capture
   private recordCtx: AudioContext | null = null;
   private micStream: MediaStream | null = null;
-  private micAnalyser: AnalyserNode | null = null;
-  private workletNode: AudioWorkletNode | ScriptProcessorNode | null = null;
-  private isRecording: boolean = false;
+  private workletNode: AudioWorkletNode | null = null;
+  private sinkGain: GainNode | null = null;
   private onPcm16Chunk: ((chunk: ArrayBuffer) => void) | null = null;
+  private micLevel = 0; // smoothed 0..1
+  private recording = false;
+  private preferredDeviceId: string | null = null;
+  private activeDeviceLabel: string = '';
+  private devices: MicDeviceInfo[] = [];
+  private recognition: any = null;
+  private recognitionWantActive = false;
+  private flushRecognitionFn: (() => void) | null = null;
+  private lastSpeechActivityAt = 0;
+  private recordAnalyser: AnalyserNode | null = null;
+  private recordFreq: Uint8Array | null = null;
+  private mediaRecorder: MediaRecorder | null = null;
+  private recordedChunks: Blob[] = [];
+  private recordedMimeType: string = 'audio/webm';
+  private isMuted = false;
+  private synthSpeaking = false;
 
   // Playback
   private playCtx: AudioContext | null = null;
   private playAnalyser: AnalyserNode | null = null;
-  private nextPlayTime: number = 0;
-  private activeSources: AudioBufferSourceNode[] = [];
-  private isPlayingAudio: boolean = false;
+  private playFreq: Uint8Array | null = null;
+  private nextPlayTime = 0;
+  private activeSources: Set<AudioBufferSourceNode> = new Set();
   private onPlaybackEnded: (() => void) | null = null;
+  private onPlaybackStarted: (() => void) | null = null;
+  private onZeroSignal: ((deviceLabel: string) => void) | null = null;
+  private dropIncoming = false;
 
-  // Analyser data buffers
-  private micFreqData: Uint8Array | null = null;
-  private playFreqData: Uint8Array | null = null;
-  private syntheticPhase: number = 0;
+  private stats: PlaybackStats = { chunks: 0, bytes: 0, scheduledSeconds: 0, firstChunkAt: null, lastChunkAt: null };
+  private turnStats: PlaybackStats = { chunks: 0, bytes: 0, scheduledSeconds: 0, firstChunkAt: null, lastChunkAt: null };
+  private phase = 0;
 
-  // Telemetry & TTFB instrumentation
-  private speechEndTimestamp: number | null = null;
-  private firstAudioChunkTimestamp: number | null = null;
-  private measuredAudioTtfbMs: number | null = null;
+  /** Must be called from a user gesture (click / keydown) so Chrome allows audio output. */
+  public unlock(): void {
+    const ctx = this.getPlayContext();
+    if (ctx.state === 'suspended') void ctx.resume();
+  }
 
-  constructor() {}
-
-  /**
-   * Initializes playback audio context (24 kHz).
-   */
-  public getOrCreatePlayContext(): AudioContext {
+  private getPlayContext(): AudioContext {
     if (!this.playCtx || this.playCtx.state === 'closed') {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      this.playCtx = new AudioCtx({ sampleRate: 24000 });
+      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+      this.playCtx = new Ctx({ sampleRate: 24000 });
       this.playAnalyser = this.playCtx.createAnalyser();
       this.playAnalyser.fftSize = 256;
-      this.playAnalyser.smoothingTimeConstant = 0.8;
-      this.playAnalyser.connect(this.playCtx.destination);
-      this.playFreqData = new Uint8Array(this.playAnalyser.frequencyBinCount);
+      this.playAnalyser.smoothingTimeConstant = 0.75;
+      this.playFreq = new Uint8Array(this.playAnalyser.frequencyBinCount);
       this.nextPlayTime = this.playCtx.currentTime;
-    }
-    if (this.playCtx.state === 'suspended') {
-      this.playCtx.resume();
     }
     return this.playCtx;
   }
 
-  /**
-   * Starts microphone recording, downsampling to 16 kHz PCM16 via AudioWorklet.
-   */
-  public async startMic(onPcmChunk?: (chunk: ArrayBuffer) => void): Promise<boolean> {
-    try {
-      if (typeof window === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-        return false;
-      }
+  public isRecording(): boolean {
+    return this.recording;
+  }
 
-      this.onPcm16Chunk = onPcmChunk || null;
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      this.recordCtx = new AudioCtx();
+  public getMuted(): boolean {
+    return this.isMuted;
+  }
+
+  public setMuted(m: boolean): void {
+    this.isMuted = m;
+    if (m) this.stopPlayback(true);
+  }
+
+  /** Speaks text immediately via browser SpeechSynthesis (female Indian/English voice) when Leda stream isn't active. */
+  public speakBrowserTts(text: string, lang: 'en' | 'hi' | 'hi-en' = 'en'): void {
+    if (typeof window === 'undefined' || this.isMuted || !('speechSynthesis' in window)) return;
+    if (this.activeSources.size > 0) return; // Leda PCM stream is already playing
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = lang === 'hi' ? 'hi-IN' : 'en-IN';
+      u.rate = 1.03;
+      u.pitch = 1.05;
+      const voices = window.speechSynthesis.getVoices();
+      const preferred =
+        voices.find((v) => /hi-IN|en-IN/i.test(v.lang) && /female|lekha|veena|google|siri|heera|kalpana|neerja/i.test(v.name)) ||
+        voices.find((v) => /en-IN|hi-IN/i.test(v.lang)) ||
+        voices.find((v) => /female|samantha|victoria|google uk english female|zoe/i.test(v.name));
+      if (preferred) u.voice = preferred;
+      u.onstart = () => {
+        this.synthSpeaking = true;
+        this.onPlaybackStarted?.();
+      };
+      u.onend = () => {
+        this.synthSpeaking = false;
+        if (this.activeSources.size === 0) this.onPlaybackEnded?.();
+      };
+      u.onerror = () => {
+        this.synthSpeaking = false;
+        if (this.activeSources.size === 0) this.onPlaybackEnded?.();
+      };
+      window.speechSynthesis.speak(u);
+    } catch {}
+  }
+
+  /** Starts Chrome Web Speech API live speech recognition alongside PCM streaming. */
+  public startSpeechRecognition(
+    lang: 'en' | 'hi' | 'hi-en',
+    onInterim: (text: string) => void,
+    onFinalUtterance: (text: string) => void
+  ): void {
+    if (typeof window === 'undefined') return;
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return;
+    this.stopSpeechRecognition(false);
+    this.recognitionWantActive = true;
+    const launch = () => {
+      if (!this.recognitionWantActive) return;
+      if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
+      try {
+        const rec = new SR();
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.lang = lang === 'hi' ? 'hi-IN' : 'en-IN';
+        let consumedIndex = 0;
+        let latestUncommitted = '';
+        let silenceDebounce: ReturnType<typeof setTimeout> | null = null;
+        let lastResultCount = 0;
+
+        const commitUtterance = () => {
+          if (silenceDebounce) {
+            clearTimeout(silenceDebounce);
+            silenceDebounce = null;
+          }
+          const committed = latestUncommitted.trim();
+          if (committed) {
+            latestUncommitted = '';
+            consumedIndex = lastResultCount;
+            onFinalUtterance(committed);
+          }
+        };
+        this.flushRecognitionFn = commitUtterance;
+
+        rec.onaudiostart = () => {
+          this.lastSpeechActivityAt = performance.now();
+          this.micLevel = Math.max(this.micLevel, 0.35);
+        };
+        rec.onsoundstart = () => {
+          this.lastSpeechActivityAt = performance.now();
+          this.micLevel = Math.max(this.micLevel, 0.58);
+        };
+        rec.onspeechstart = () => {
+          this.lastSpeechActivityAt = performance.now();
+          this.micLevel = Math.max(this.micLevel, 0.72);
+        };
+        rec.onresult = (event: any) => {
+          this.lastSpeechActivityAt = performance.now();
+          lastResultCount = event.results.length;
+          const parts: string[] = [];
+          for (let i = consumedIndex; i < event.results.length; i++) {
+            const t = (event.results[i][0]?.transcript || '').trim();
+            if (t) parts.push(t);
+          }
+          const combined = parts.join(' ').replace(/\s+/g, ' ').trim();
+          if (combined) {
+            latestUncommitted = combined;
+            this.micLevel = Math.max(this.micLevel, 0.78);
+            onInterim(combined);
+            if (silenceDebounce) clearTimeout(silenceDebounce);
+            silenceDebounce = setTimeout(commitUtterance, 1250);
+          }
+        };
+        rec.onerror = () => {};
+        rec.onend = () => {
+          if (silenceDebounce) {
+            clearTimeout(silenceDebounce);
+            silenceDebounce = null;
+          }
+          const clean = latestUncommitted.trim();
+          if (clean) {
+            latestUncommitted = '';
+            onFinalUtterance(clean);
+          } else if (
+            this.recognitionWantActive &&
+            (typeof document === 'undefined' || document.visibilityState === 'visible')
+          ) {
+            setTimeout(launch, 250);
+          }
+        };
+        rec.start();
+        this.recognition = rec;
+      } catch {}
+    };
+    launch();
+  }
+
+  public stopSpeechRecognition(flush = true): void {
+    this.recognitionWantActive = false;
+    if (flush && this.flushRecognitionFn) {
+      try {
+        this.flushRecognitionFn();
+      } catch {}
+    }
+    this.flushRecognitionFn = null;
+    if (this.recognition) {
+      try {
+        this.recognition.stop();
+      } catch {}
+      this.recognition = null;
+    }
+  }
+
+  /** Stops MediaRecorder and resolves with a base64 audio string + mimeType. */
+  public async getRecordedAudioBase64(): Promise<{ base64: string; mimeType: string } | null> {
+    const mr = this.mediaRecorder;
+    if (!mr) return null;
+    return new Promise((resolve) => {
+      const finalize = () => {
+        const chunks = this.recordedChunks.slice();
+        this.recordedChunks = [];
+        this.mediaRecorder = null;
+        if (chunks.length === 0) {
+          resolve(null);
+          return;
+        }
+        const blob = new Blob(chunks, { type: this.recordedMimeType });
+        if (blob.size < 400) {
+          resolve(null);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const res = String(reader.result || '');
+          const b64 = res.includes(',') ? res.split(',')[1] : '';
+          resolve(b64 ? { base64: b64, mimeType: this.recordedMimeType } : null);
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(blob);
+      };
+      if (mr.state !== 'inactive') {
+        mr.onstop = finalize;
+        try {
+          mr.stop();
+        } catch {
+          finalize();
+        }
+      } else {
+        finalize();
+      }
+    });
+  }
+
+  public getDevices(): MicDeviceInfo[] {
+    return this.devices;
+  }
+
+  public getActiveDeviceLabel(): string {
+    return this.activeDeviceLabel;
+  }
+
+  public setPreferredDeviceId(deviceId: string | null): void {
+    this.preferredDeviceId = deviceId;
+  }
+
+  public async refreshDevices(): Promise<MicDeviceInfo[]> {
+    if (!navigator.mediaDevices?.enumerateDevices) return [];
+    const list = await navigator.mediaDevices.enumerateDevices();
+    this.devices = list
+      .filter((d) => d.kind === 'audioinput')
+      .map((d, idx) => ({
+        deviceId: d.deviceId,
+        label: d.label || `Microphone ${idx + 1}`,
+      }));
+    return this.devices;
+  }
+
+  public async startMic(onPcmChunk: (chunk: ArrayBuffer) => void, deviceIdOverride?: string): Promise<MicStartResult> {
+    if (typeof window === 'undefined') return { ok: false, error: 'unsupported' };
+    if (!window.isSecureContext) {
+      return {
+        ok: false,
+        error: 'insecure',
+        message: `The browser blocks the microphone on ${window.location.origin}. Open Yukti at http://localhost:3200 (port-forward 3200) or over HTTPS.`,
+      };
+    }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      return { ok: false, error: 'unsupported', message: 'This browser does not support microphone capture.' };
+    }
+    if (this.recording) return { ok: true };
+
+    this.onPcm16Chunk = onPcmChunk;
+    const targetDeviceId = deviceIdOverride ?? this.preferredDeviceId;
+    try {
+      // Exact Urvi (`wellpulse/frontend/src/live/micCapture.ts`) getUserMedia constraints:
+      // never auto-override deviceId unless the user explicitly selected one from the dropdown.
+      const audioConstraints: MediaTrackConstraints = {
+        channelCount: 1,
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      };
+      if (targetDeviceId) {
+        audioConstraints.deviceId = { exact: targetDeviceId };
+      }
       this.micStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
+        audio: audioConstraints,
         video: false,
       });
+      await this.refreshDevices();
+      const track = this.micStream.getAudioTracks()[0];
+      if (track) {
+        this.activeDeviceLabel = track.label || 'Default Microphone';
+      }
+    } catch (err: any) {
+      const name = err?.name || '';
+      if (name === 'NotAllowedError' || name === 'SecurityError') {
+        return {
+          ok: false,
+          error: 'denied',
+          message: 'Microphone access is blocked. Click the lock/tune icon in the address bar → Microphone → Allow, then try again.',
+        };
+      }
+      if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+        return { ok: false, error: 'no-device', message: 'No microphone was found. Connect a microphone and try again.' };
+      }
+      if (name === 'NotReadableError' || name === 'AbortError') {
+        return { ok: false, error: 'busy', message: 'The microphone is in use by another application.' };
+      }
+      return { ok: false, error: 'other', message: err?.message || 'Could not start the microphone.' };
+    }
 
+    try {
+      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+      this.recordCtx = new Ctx();
+      if (this.recordCtx.state === 'suspended') await this.recordCtx.resume();
       const source = this.recordCtx.createMediaStreamSource(this.micStream);
-      this.micAnalyser = this.recordCtx.createAnalyser();
-      this.micAnalyser.fftSize = 256;
-      this.micAnalyser.smoothingTimeConstant = 0.8;
-      source.connect(this.micAnalyser);
-      this.micFreqData = new Uint8Array(this.micAnalyser.frequencyBinCount);
+      this.recordAnalyser = this.recordCtx.createAnalyser();
+      this.recordAnalyser.fftSize = 256;
+      this.recordAnalyser.smoothingTimeConstant = 0.65;
+      this.recordFreq = new Uint8Array(this.recordAnalyser.frequencyBinCount);
+      source.connect(this.recordAnalyser);
+      this.sinkGain = this.recordCtx.createGain();
+      this.sinkGain.gain.value = 0;
+      this.sinkGain.connect(this.recordCtx.destination);
+      this.recording = true;
 
-      // Try AudioWorklet first
-      let workletReady = false;
+      // Primary path (exact Urvi `micCapture.ts` pattern): single AudioWorklet emitting 30 ms (480 samples) frames
+      let workletAttached = false;
       try {
         await this.recordCtx.audioWorklet.addModule('/audio-processor.js');
-        const node = new AudioWorkletNode(this.recordCtx, 'pcm16-downsampler');
+        const node = new AudioWorkletNode(this.recordCtx, 'pcm16-downsampler', {
+          processorOptions: { targetSampleRate: 16000, frameSamples: 480 },
+        });
         node.port.onmessage = (e) => {
-          if (this.onPcm16Chunk && e.data instanceof ArrayBuffer) {
-            this.onPcm16Chunk(e.data);
+          if (!this.recording) return;
+          const msg = e.data;
+          const handleBuf = (buf: ArrayBuffer) => {
+            const s16 = new Int16Array(buf);
+            let sum = 0;
+            for (let i = 0; i < s16.length; i++) {
+              const v = s16[i] / 32768;
+              sum += v * v;
+            }
+            const rms = Math.sqrt(sum / Math.max(1, s16.length));
+            const lv = Math.min(1, Math.sqrt(rms) * 2.0);
+            this.micLevel = this.micLevel * 0.45 + lv * 0.55;
+            this.onPcm16Chunk?.(buf);
+          };
+          if (msg instanceof ArrayBuffer) {
+            handleBuf(msg);
+          } else if (msg?.type === 'pcm' && msg.buffer) {
+            handleBuf(msg.buffer as ArrayBuffer);
+          } else if (msg?.type === 'level') {
+            const lv = Math.min(1, Math.sqrt((msg.rms as number) || 0) * 2.0);
+            this.micLevel = this.micLevel * 0.45 + lv * 0.55;
           }
         };
         source.connect(node);
+        node.connect(this.sinkGain);
+        node.port.postMessage({ enabled: true });
         this.workletNode = node;
-        workletReady = true;
-      } catch (err) {
-        console.warn('[VoiceAudioEngine] AudioWorklet not supported, using ScriptProcessor fallback');
+        workletAttached = true;
+      } catch {
+        workletAttached = false;
       }
 
-      if (!workletReady) {
-        // Fallback: ScriptProcessorNode
-        const bufferSize = 4096;
-        const spNode = this.recordCtx.createScriptProcessor(bufferSize, 1, 1);
-        const sampleRateRatio = this.recordCtx.sampleRate / 16000;
-
-        spNode.onaudioprocess = (e) => {
-          const inputData = e.inputBuffer.getChannelData(0);
-          const outLength = Math.floor(inputData.length / sampleRateRatio);
-          const pcm16 = new Int16Array(outLength);
-
-          for (let i = 0; i < outLength; i++) {
-            const idx = Math.floor(i * sampleRateRatio);
-            const s = Math.max(-1, Math.min(1, inputData[idx]));
-            pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+      // Fallback path ONLY if AudioWorklet is unavailable
+      if (!workletAttached) {
+        const sp = this.recordCtx.createScriptProcessor(2048, 1, 1);
+        const ratio = this.recordCtx.sampleRate / 16000;
+        let pos = 0;
+        let prev = 0;
+        let out = new Int16Array(480);
+        let outIdx = 0;
+        sp.onaudioprocess = (ev) => {
+          if (!this.recording) return;
+          const ch = ev.inputBuffer.getChannelData(0);
+          const n = ch.length;
+          let sumSq = 0;
+          let peakAbs = 0;
+          for (let i = 0; i < n; i++) {
+            const v = ch[i];
+            sumSq += v * v;
+            const av = Math.abs(v);
+            if (av > peakAbs) peakAbs = av;
           }
-
-          if (this.onPcm16Chunk) {
-            this.onPcm16Chunk(pcm16.buffer);
+          const rms = Math.sqrt(sumSq / Math.max(1, n));
+          const lv = Math.min(1, Math.sqrt(rms) * 2.2);
+          this.micLevel = this.micLevel * 0.45 + lv * 0.55;
+          const gain = peakAbs > 0.002 && peakAbs < 0.2 ? Math.min(3.5, 0.35 / peakAbs) : 1.0;
+          while (pos < n) {
+            const i0 = Math.floor(pos);
+            const frac = pos - i0;
+            const s0 = i0 - 1 >= 0 ? ch[i0 - 1] : prev;
+            const s1 = ch[i0];
+            let s = (s0 + (s1 - s0) * frac) * gain;
+            if (s > 1) s = 1;
+            else if (s < -1) s = -1;
+            out[outIdx++] = s < 0 ? s * 0x8000 : s * 0x7fff;
+            if (outIdx >= 480) {
+              const chunk = out;
+              this.onPcm16Chunk?.(chunk.buffer);
+              out = new Int16Array(480);
+              outIdx = 0;
+            }
+            pos += ratio;
           }
+          pos -= n;
+          prev = ch[n - 1];
         };
-        source.connect(spNode);
-        spNode.connect(this.recordCtx.destination);
-        this.workletNode = spNode;
+        source.connect(sp);
+        sp.connect(this.sinkGain);
       }
 
-      this.isRecording = true;
-      return true;
-    } catch (err) {
-      console.warn('[VoiceAudioEngine] Microphone permission denied or unavailable:', err);
-      this.isRecording = false;
-      return false;
+      return { ok: true };
+    } catch (err: any) {
+      this.stopMic();
+      return { ok: false, error: 'other', message: `Audio pipeline failed: ${err?.message || err}` };
     }
   }
 
   public stopMic(): void {
-    if (this.micStream) {
-      this.micStream.getTracks().forEach((t) => t.stop());
-      this.micStream = null;
-    }
-    if (this.workletNode) {
-      this.workletNode.disconnect();
-      this.workletNode = null;
-    }
-    if (this.recordCtx && this.recordCtx.state !== 'closed') {
-      this.recordCtx.close();
-      this.recordCtx = null;
-    }
-    this.micAnalyser = null;
-    this.micFreqData = null;
-    this.isRecording = false;
+    try {
+      this.workletNode?.port.postMessage('flush');
+    } catch {}
+    this.micStream?.getTracks().forEach((t) => t.stop());
+    this.micStream = null;
+    try {
+      this.workletNode?.disconnect();
+      this.sinkGain?.disconnect();
+    } catch {}
+    this.workletNode = null;
+    this.sinkGain = null;
+    this.recordAnalyser = null;
+    this.recordFreq = null;
+    if (this.recordCtx && this.recordCtx.state !== 'closed') void this.recordCtx.close();
+    this.recordCtx = null;
+    this.micLevel = 0;
+    this.recording = false;
   }
 
-  public markSpeechEnd(): void {
-    this.speechEndTimestamp = performance.now();
-    this.firstAudioChunkTimestamp = null;
+  /** 0..1 smoothed microphone level (0 when not recording). */
+  public getMicLevel(): number {
+    if (!this.recording && !this.recognitionWantActive) return 0;
+    if (this.recordAnalyser && this.recordFreq) {
+      this.recordAnalyser.getByteFrequencyData(this.recordFreq as any);
+      let sum = 0;
+      for (let i = 0; i < this.recordFreq.length; i++) sum += this.recordFreq[i];
+      const freqLv = Math.min(1, sum / this.recordFreq.length / 55);
+      this.micLevel = Math.max(this.micLevel * 0.82, freqLv);
+    }
+    const sinceSpeech = performance.now() - this.lastSpeechActivityAt;
+    if (sinceSpeech < 950) {
+      const decay = 1 - sinceSpeech / 950;
+      const cadence = 0.45 + 0.42 * Math.abs(Math.sin(performance.now() * 0.014)) * decay;
+      return Math.min(1, Math.max(this.micLevel, cadence));
+    }
+    // Natural decay + subtle active listening floor so the meter & orb visibly respond
+    this.micLevel *= 0.92;
+    const floor = 0.16 + 0.1 * Math.abs(Math.sin(performance.now() * 0.005));
+    return Math.max(floor, this.micLevel);
   }
 
-  public getMeasuredAudioTtfb(): number | null {
-    return this.measuredAudioTtfbMs;
-  }
-
-  /**
-   * Enqueues a 24 kHz raw PCM chunk (base64 or ArrayBuffer) for gapless playback.
-   */
-  public enqueue24kAudio(pcmData: string | ArrayBuffer): void {
-    if (this.speechEndTimestamp && this.firstAudioChunkTimestamp === null) {
-      this.firstAudioChunkTimestamp = performance.now();
-      this.measuredAudioTtfbMs = Math.round(this.firstAudioChunkTimestamp - this.speechEndTimestamp);
-    }
-
-    const playCtx = this.getOrCreatePlayContext();
-
-    let rawBuffer: ArrayBuffer;
-    if (typeof pcmData === 'string') {
-      const binary = atob(pcmData);
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-      }
-      rawBuffer = bytes.buffer;
-    } else {
-      rawBuffer = pcmData;
-    }
-
-    const int16View = new Int16Array(rawBuffer);
-    if (int16View.length === 0) return;
-
-    // Convert Int16 to Float32 [-1.0, 1.0]
-    const float32 = new Float32Array(int16View.length);
-    for (let i = 0; i < int16View.length; i++) {
-      float32[i] = int16View[i] / 32768.0;
-    }
-
-    const audioBuf = playCtx.createBuffer(1, float32.length, 24000);
-    audioBuf.copyToChannel(float32, 0);
-
-    const source = playCtx.createBufferSource();
-    source.buffer = audioBuf;
-
-    if (this.playAnalyser) {
-      source.connect(this.playAnalyser);
-    } else {
-      source.connect(playCtx.destination);
-    }
-
-    const now = playCtx.currentTime;
-    if (this.nextPlayTime < now) {
-      this.nextPlayTime = now;
-    }
-
-    source.start(this.nextPlayTime);
-    this.isPlayingAudio = true;
-    this.activeSources.push(source);
-
-    this.nextPlayTime += audioBuf.duration;
-
-    source.onended = () => {
-      const idx = this.activeSources.indexOf(source);
-      if (idx !== -1) {
-        this.activeSources.splice(idx, 1);
-      }
-      if (this.activeSources.length === 0) {
-        this.isPlayingAudio = false;
-        if (this.onPlaybackEnded) {
-          this.onPlaybackEnded();
-        }
-      }
-    };
-  }
-
-  /**
-   * Barge-in interruption: immediately stops playback graph.
-   */
-  public stopPlayback(): void {
-    for (const src of this.activeSources) {
-      try {
-        src.stop();
-        src.disconnect();
-      } catch (e) {}
-    }
-    this.activeSources = [];
-    if (this.playCtx) {
-      this.nextPlayTime = this.playCtx.currentTime;
-    }
-    this.isPlayingAudio = false;
-  }
+  // ---------- Playback ----------
 
   public setPlaybackEndHandler(cb: () => void): void {
     this.onPlaybackEnded = cb;
   }
 
-  public isAudioPlaying(): boolean {
-    return this.isPlayingAudio;
+  public setPlaybackStartHandler(cb: () => void): void {
+    this.onPlaybackStarted = cb;
   }
 
-  /**
-   * Returns current amplitude (0.0 to 1.0) for the 3D particle orb:
-   * - listening: real mic AnalyserNode
-   * - speaking: real playback AnalyserNode
-   * - thinking: animated swirl
-   * - idle: breathing drift
-   */
+  public setZeroSignalHandler(cb: (deviceLabel: string) => void): void {
+    this.onZeroSignal = cb;
+  }
+
+  public resetTurnStats(): void {
+    this.turnStats = { chunks: 0, bytes: 0, scheduledSeconds: 0, firstChunkAt: null, lastChunkAt: null };
+  }
+
+  public getStats(): PlaybackStats {
+    return { ...this.stats };
+  }
+
+  public getTurnStats(): PlaybackStats {
+    return { ...this.turnStats };
+  }
+
+  /** Accept audio again (call when a new agent turn starts / after server confirms interruption). */
+  public acceptIncoming(): void {
+    this.dropIncoming = false;
+  }
+
+  public enqueue24kAudio(pcmData: string | ArrayBuffer): void {
+    if (this.isMuted) return;
+    this.dropIncoming = false;
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window && this.synthSpeaking) {
+      try {
+        window.speechSynthesis.cancel();
+        this.synthSpeaking = false;
+      } catch {}
+    }
+    let raw: ArrayBuffer;
+    if (typeof pcmData === 'string') {
+      const bin = atob(pcmData);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      raw = bytes.buffer;
+    } else {
+      raw = pcmData;
+    }
+    const usable = raw.byteLength - (raw.byteLength % 2);
+    if (usable <= 0) return;
+    const int16 = new Int16Array(raw, 0, usable / 2);
+
+    const now = performance.now();
+    for (const s of [this.stats, this.turnStats]) {
+      s.chunks += 1;
+      s.bytes += usable;
+      s.scheduledSeconds += int16.length / 24000;
+      if (s.firstChunkAt === null) s.firstChunkAt = now;
+      s.lastChunkAt = now;
+    }
+
+    const ctx = this.getPlayContext();
+    if (ctx.state === 'suspended') void ctx.resume();
+    const f32 = new Float32Array(int16.length);
+    for (let i = 0; i < int16.length; i++) f32[i] = int16[i] / 32768;
+    const buf = ctx.createBuffer(1, f32.length, 24000);
+    buf.copyToChannel(f32, 0);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    // Connect directly to ctx.destination (Urvi `audioPlayer.ts` pattern) and in parallel to playAnalyser for orb visual
+    src.connect(ctx.destination);
+    if (this.playAnalyser) {
+      try {
+        src.connect(this.playAnalyser);
+      } catch {}
+    }
+
+    const wasIdle = this.activeSources.size === 0;
+    const t = Math.max(this.nextPlayTime, ctx.currentTime + 0.05);
+    src.start(t);
+    this.nextPlayTime = t + buf.duration;
+    this.activeSources.add(src);
+    if (wasIdle) this.onPlaybackStarted?.();
+    src.onended = () => {
+      this.activeSources.delete(src);
+      if (this.activeSources.size === 0) this.onPlaybackEnded?.();
+    };
+  }
+
+  /** Barge-in: stop all currently scheduled sources (Urvi `audioPlayer.interrupt()` pattern — never permanently mute future chunks). */
+  public stopPlayback(_dropInFlight = false): void {
+    const had = this.activeSources.size > 0 || this.synthSpeaking;
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {}
+    }
+    this.synthSpeaking = false;
+    this.activeSources.forEach((s) => {
+      try {
+        s.onended = null;
+        s.stop();
+        s.disconnect();
+      } catch {}
+    });
+    this.activeSources.clear();
+    if (this.playCtx) this.nextPlayTime = this.playCtx.currentTime;
+    this.dropIncoming = false;
+    if (had) this.onPlaybackEnded?.();
+  }
+
+  public isAudioPlaying(): boolean {
+    return this.activeSources.size > 0 || this.synthSpeaking;
+  }
+
+  /** Amplitude 0..1 for the particle orb. */
   public getAmplitude(mode: 'idle' | 'listening' | 'thinking' | 'speaking'): number {
-    this.syntheticPhase += 0.05;
-
+    this.phase += 0.055;
     if (mode === 'listening') {
-      if (this.micAnalyser && this.micFreqData) {
-        this.micAnalyser.getByteFrequencyData(this.micFreqData);
-        let sum = 0;
-        for (let i = 0; i < this.micFreqData.length; i++) {
-          sum += this.micFreqData[i];
-        }
-        const avg = sum / this.micFreqData.length;
-        return Math.min(1.0, Math.max(0.05, avg / 100.0));
-      }
-      return 0.2 + 0.15 * Math.sin(this.syntheticPhase * 2.5);
+      const liveLv = this.getMicLevel();
+      const harmonic = 0.22 + 0.14 * Math.sin(this.phase * 2.8) + 0.08 * Math.cos(this.phase * 4.3);
+      return Math.min(1, Math.max(liveLv, harmonic));
     }
-
     if (mode === 'speaking') {
-      if (this.playAnalyser && this.playFreqData && this.isPlayingAudio) {
-        this.playAnalyser.getByteFrequencyData(this.playFreqData);
+      if (this.playAnalyser && this.playFreq && this.activeSources.size > 0) {
+        this.playAnalyser.getByteFrequencyData(this.playFreq as any);
         let sum = 0;
-        for (let i = 0; i < this.playFreqData.length; i++) {
-          sum += this.playFreqData[i];
-        }
-        const avg = sum / this.playFreqData.length;
-        return Math.min(1.0, Math.max(0.1, avg / 90.0));
+        for (let i = 0; i < this.playFreq.length; i++) sum += this.playFreq[i];
+        return Math.min(1, Math.max(0.18, sum / this.playFreq.length / 70));
       }
-      // If synthetic speaking or before stream connects
-      return 0.35 + 0.25 * Math.abs(Math.sin(this.syntheticPhase * 3.5));
+      return 0.38 + 0.26 * Math.abs(Math.sin(this.phase * 3.8)) + 0.12 * Math.cos(this.phase * 6.1);
     }
-
-    if (mode === 'thinking') {
-      return 0.35 + 0.15 * Math.sin(this.syntheticPhase * 4.0);
-    }
-
-    // Idle
-    return 0.08 + 0.04 * Math.sin(this.syntheticPhase * 0.8);
+    if (mode === 'thinking') return 0.35 + 0.15 * Math.sin(this.phase * 4);
+    return 0.08 + 0.04 * Math.sin(this.phase * 0.8);
   }
 }

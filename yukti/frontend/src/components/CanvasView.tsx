@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { AnswerContract, SourceCitation } from '@/contracts/answerContract';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { AnswerContract, ChartKind, ChartSpec, SourceCitation } from '@/contracts/answerContract';
 import { ChartRenderer } from './renderers/ChartRenderer';
 import { TableRenderer } from './renderers/TableRenderer';
 import { KpiRenderer } from './renderers/KpiRenderer';
@@ -10,22 +11,15 @@ import { DocumentRenderer } from './renderers/DocumentRenderer';
 import { MapRenderer } from './renderers/MapRenderer';
 import { RefusalRenderer } from './renderers/RefusalRenderer';
 import { SourceChipsModal } from './SourceChipsModal';
-import { HistoryStrip } from './HistoryStrip';
-import {
-  Download,
-  Share2,
-  FileSpreadsheet,
-  FileText,
-  FileDown,
-  Info,
-  Database,
-  Scale,
-  Sparkles,
-  ChevronRight,
-  ExternalLink,
-} from 'lucide-react';
+import { VoiceOrb, OrbState } from './VoiceOrb';
+import { VoiceAudioEngine } from '@/services/audioAnalyser';
+import { LevelMeter } from './TopBar';
+import { sourceLabel, ChatMessage } from './FloatingConversationPanel';
+import { planChart } from '@/charts/plan';
+import { cleanText, humanizeKey, toNumber } from '@/charts/format';
+import { Download, ChevronRight, Database, Scale, FileText, Mic, Users, TrendingUp, Target, Check, Loader2, Volume2, BarChart3, PieChart, Activity, Table as TableIcon, SlidersHorizontal } from 'lucide-react';
 
-interface HistoryItem {
+export interface HistoryItem {
   id: string;
   question: string;
   contract: AnswerContract;
@@ -39,9 +33,96 @@ interface CanvasViewProps {
   currentHistoryIndex: number;
   onRestoreHistory: (item: HistoryItem, index: number) => void;
   onNavigateToAlternative?: () => void;
-  panelMode: 'docked' | 'minimised' | 'fullscreen';
   onSelectStarter?: (q: string) => void;
+  busy?: boolean;
+  statusLine?: string | null;
+  onTalk?: () => void;
+  isMicActive?: boolean;
+  orbState?: OrbState;
+  audioEngine?: VoiceAudioEngine;
+  messages?: ChatMessage[];
+  liveInterimText?: string;
 }
+
+const NOISE = /^(executed sql|grounding:|query:|sql query|voice turn completed|yukti ai connected|role:|served from|canvas visual|turn complete)/i;
+
+const EXPORT_LABELS: Record<string, string> = {
+  sheets: 'Google Sheets',
+  docs: 'Google Docs',
+  word: 'Word (.docx)',
+  pdf: 'PDF',
+  xlsx: 'Excel (.xlsx)',
+};
+
+const STARTER_CARDS = [
+  { icon: Users, tag: 'People · Delhi HQ', title: 'Station tenure (≥5 yrs)', q: 'How many executives have been posted in Delhi for 5 years or more?', sub: 'Grade & discipline breakdown across 419 executives' },
+  { icon: TrendingUp, tag: 'Finance · FY26 P&L', title: 'Field profitability & losses', q: 'Which fields or assets were the most profitable and which made losses in FY26?', sub: 'Top earners vs Champang (−₹4.93 Cr)' },
+  { icon: Target, tag: 'Performance · DPE', title: 'MoU target scorecard', q: 'How are we tracking against our MoU targets with MoPNG/DPE for this year?', sub: 'Actuals vs targets across key parameters' },
+];
+
+function eyebrowFor(c: AnswerContract): string {
+  const v = c.visual;
+  if (c.access?.status === 'refused' || v?.type === 'refusal') return 'Access restricted';
+  switch (v?.type) {
+    case 'clause':
+      return 'Policy';
+    case 'document':
+      return 'Draft document';
+    case 'map':
+      return 'Across India';
+    case 'table':
+      return 'Records';
+    default:
+      return v?.mode === 'refine' ? 'Refined view' : 'Executive Briefing';
+  }
+}
+
+function greetingWord(): string {
+  const h = new Date().getHours();
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+
+const Greeting: React.FC<{
+  onSelect?: (q: string) => void;
+  onTalk?: () => void;
+  isMicActive?: boolean;
+  orbState?: OrbState;
+  isDark?: boolean;
+  audioEngine?: VoiceAudioEngine;
+  messages?: ChatMessage[];
+  liveInterimText?: string;
+}> = ({ onTalk, isMicActive, orbState = 'idle', isDark = false, audioEngine, messages = [], liveInterimText }) => {
+  const lastTurn = messages[messages.length - 1];
+
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center text-center px-6 pt-4 pb-32 max-w-[68rem] mx-auto w-full" data-testid="greeting">
+      {/* Pure Minimalist Center-Stage AlphaEvolve Particle Voice Orb */}
+      <div className="relative flex flex-col items-center" data-testid="greeting-talk">
+        <div className="rounded-full p-3 bg-[radial-gradient(circle,var(--accent-pale)_0%,transparent_72%)] cursor-pointer">
+          <VoiceOrb
+            state={orbState}
+            isDark={isDark}
+            size={240}
+            onClick={onTalk}
+            audioEngine={audioEngine}
+            label={isMicActive ? 'Stop listening' : 'Start talking to Yukti'}
+          />
+        </div>
+      </div>
+
+      {/* Subtle single-line live transcript or conversational reply caption below orb */}
+      {liveInterimText ? (
+        <div className="mt-6 text-[1.02rem] text-[var(--ink-2)] font-normal max-w-[44rem] animate-pulse">
+          &ldquo;{liveInterimText}&rdquo;
+        </div>
+      ) : lastTurn ? (
+        <div className="mt-6 max-w-[42rem] text-center">
+          <p className="text-[1.02rem] leading-relaxed text-[var(--ink-2)]">{lastTurn.text}</p>
+        </div>
+      ) : null}
+    </div>
+  );
+};
 
 export const CanvasView: React.FC<CanvasViewProps> = ({
   contract,
@@ -50,431 +131,388 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
   currentHistoryIndex,
   onRestoreHistory,
   onNavigateToAlternative,
-  panelMode,
   onSelectStarter,
+  busy,
+  onTalk,
+  isMicActive,
+  orbState = 'idle',
+  audioEngine,
+  messages = [],
+  liveInterimText,
 }) => {
   const [selectedSource, setSelectedSource] = useState<SourceCitation | null>(null);
-  const [exportMenuOpen, setExportMenuOpen] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  const [canvasSourcesExpanded, setCanvasSourcesExpanded] = useState(false);
-  const [dryRunNotice, setDryRunNotice] = useState<{
-    open: boolean;
-    format: string;
-    url?: string;
-    localFile?: string;
-  } | null>(null);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exporting, setExporting] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const [sourcesOpen, setSourcesOpen] = useState(false);
+  const [overrideMode, setOverrideMode] = useState<'chart' | 'table' | null>(null);
+  const [overrideKind, setOverrideKind] = useState<ChartKind | null>(null);
+  const [overrideMetric, setOverrideMetric] = useState<string | null>(null);
+  const lastKeyRef = useRef<string>('');
 
   const visual = contract.visual;
-  const rawTitle = visual?.title || 'Executive Analysis';
-  const displayTitle = rawTitle.length > 70 ? rawTitle.slice(0, 68) + '…' : rawTitle;
+  const isGreeting = !visual || visual.type === 'none';
+  const refused = contract.access?.status === 'refused' || visual?.type === 'refusal';
 
-  const rawInsights = contract.insights || [];
-  const filteredInsights = rawInsights.filter((fact) => {
-    const f = fact.trim().toLowerCase();
-    return (
-      !f.startsWith('executed sql') &&
-      !f.startsWith('grounding:') &&
-      !f.startsWith('query:') &&
-      !f.startsWith('sql query')
-    );
-  });
-  const sources = contract.sources || [];
-  const exportOptions = contract.export_options || ['sheets', 'docs', 'pdf'];
+  // Reset manual toolbar overrides whenever a new turn or voice/chat re-plot arrives
+  useEffect(() => {
+    setOverrideMode(null);
+    setOverrideKind(null);
+    setOverrideMetric(null);
+  }, [contract.turn_id, visual?.type, visual?.chart?.kind]);
 
-  const isCacheHit =
-    contract.status_events?.some((s) => s.toLowerCase().includes('demo cache')) ||
-    contract.insights?.some((i) => i.toLowerCase().includes('demo cache'));
+  // Extract dataset rows + numeric columns for interactive Plotly/Dash switcher
+  const activeDataset = useMemo(() => {
+    const rawRows: Record<string, any>[] =
+      (visual?.chart?.data as Record<string, any>[]) ||
+      (visual?.table?.rows as Record<string, any>[]) ||
+      [];
+    if (!rawRows.length) return { rows: [], columns: [], numericCols: [], dimCol: 'label' };
+    const cols = visual?.table?.columns?.length ? visual.table.columns : Object.keys(rawRows[0] || {});
+    const numCols = cols.filter((k) => {
+      if (/^(lat|lon|lng|id|order|rank)$/i.test(k)) return false;
+      let n = 0;
+      for (const r of rawRows) if (toNumber(r?.[k]) !== null) n++;
+      return n >= Math.max(1, Math.ceil(rawRows.length * 0.7));
+    });
+    const dimCol =
+      visual?.chart?.category ||
+      visual?.chart?.x ||
+      cols.find((c) => !numCols.includes(c)) ||
+      cols[0] ||
+      'label';
+    return { rows: rawRows, columns: cols, numericCols: numCols, dimCol };
+  }, [visual]);
+
+  const effectiveVisualType = overrideMode || visual?.type;
+  const effectiveChartSpec = useMemo<ChartSpec | undefined>(() => {
+    if (!activeDataset.rows.length) return visual?.chart;
+    const baseSpec: ChartSpec = visual?.chart || {
+      kind: 'bar',
+      x: activeDataset.dimCol,
+      y: activeDataset.numericCols[0] || activeDataset.columns[1] || 'value',
+      category: activeDataset.dimCol,
+      value: activeDataset.numericCols[0] || activeDataset.columns[1] || 'value',
+      data: activeDataset.rows,
+    };
+    const nextKind = overrideKind || baseSpec.kind || 'bar';
+    const nextMetric = overrideMetric || baseSpec.value || baseSpec.y || activeDataset.numericCols[0];
+    return {
+      ...baseSpec,
+      kind: nextKind,
+      value: nextMetric,
+      y: nextMetric,
+      x: baseSpec.x || activeDataset.dimCol,
+      category: baseSpec.category || activeDataset.dimCol,
+      data: activeDataset.rows,
+    };
+  }, [visual?.chart, activeDataset, overrideKind, overrideMetric]);
+
+  const effectiveTableSpec = useMemo(() => {
+    if (visual?.table && visual.table.rows?.length) return visual.table;
+    if (!activeDataset.rows.length) return undefined;
+    return {
+      columns: activeDataset.columns,
+      rows: activeDataset.rows,
+    };
+  }, [visual?.table, activeDataset]);
+
+  const canSwitchVisual = !refused && activeDataset.rows.length > 0 && (visual?.type === 'chart' || visual?.type === 'table');
+  const activeKindPill = effectiveVisualType === 'table' ? 'table' : effectiveChartSpec?.kind || 'bar';
+
+  // Refine keeps the same key so the chart morphs in place; replace cross-fades.
+  const visualKey = useMemo(() => {
+    if (visual?.mode === 'refine' && lastKeyRef.current) return lastKeyRef.current;
+    lastKeyRef.current = contract.turn_id || String(Date.now());
+    return lastKeyRef.current;
+  }, [contract.turn_id, visual?.mode]);
+
+  const insights = (contract.insights || []).map(cleanText).filter((s) => s && !NOISE.test(s));
+  const sources = (contract.sources || []).filter((s, i, arr) => arr.findIndex((x) => sourceLabel(x) === sourceLabel(s)) === i);
+  const exportOptions = (contract.export_options || []).filter((o) => EXPORT_LABELS[o]);
+  const summaryBanner = cleanText(contract.display_text || contract.spoken_summary || '');
+
+  const spark = useMemo(() => {
+    if (visual?.type !== 'chart' || !visual.chart) return undefined;
+    const plan = planChart(visual.chart);
+    if (plan.rows.length < 3 || plan.form === 'bullet' || plan.form === 'waterfall') return undefined;
+    const vals = plan.rows.map((r) => r.value);
+    return { values: vals, kind: plan.timeLike ? ('line' as const) : ('bars' as const), highlight: vals.indexOf(Math.max(...vals)) };
+  }, [visual]);
 
   const handleExport = async (format: string) => {
-    setExportMenuOpen(false);
-    setExporting(true);
-    const title = (visual?.title || 'Yukti_Export').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
-    const content = visual?.document?.markdown || contract.display_text;
-    const columns = visual?.table?.columns || [];
-    const rows = (visual?.table?.rows as any[]) || [];
-
+    setExportOpen(false);
+    setExporting(format);
+    const title = (visual?.title || 'Yukti_Export').replace(/[^a-zA-Z0-9_-]+/g, '_').slice(0, 60);
+    const table = visual?.table;
+    const chartRows = visual?.chart?.data || [];
+    const columns = table?.columns || (chartRows[0] ? Object.keys(chartRows[0]) : []);
+    const rows = (table?.rows as any[]) || chartRows;
+    const content = visual?.document?.markdown || visual?.clause?.text || cleanText(contract.display_text);
     try {
-      const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-      const res = await fetch(`http://${host}:8095/api/export`, {
+      const res = await fetch('/api/export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ format, title, content, columns, rows }),
-      }).then((r) => r.json());
-
-      if (res?.mode === 'dry_run_simulation' || format.includes('docs') || format.includes('sheets')) {
-        setDryRunNotice({
-          open: true,
-          format: format.toUpperCase(),
-          url: res?.url || `https://docs.google.com/document/d/yukti-${Date.now()}/edit`,
-          localFile: res?.local_file || res?.file,
-        });
-      } else if (res?.export_id) {
-        // Direct download from Track C's deployed GET /api/export/{export_id}
-        const downloadUrl = `http://${host}:8095/api/export/${encodeURIComponent(res.export_id)}`;
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j?.message || `HTTP ${res.status}`);
+      if (j.url && /docs|sheets/.test(format)) {
+        setToast(`Created in ${EXPORT_LABELS[format]}. ${j.url.includes('yukti-') ? 'Workspace sign-in is not configured here, so a local copy was saved instead.' : ''}`);
+        if (!j.url.includes('yukti-')) window.open(j.url, '_blank', 'noopener');
+      } else if (j.export_id) {
         const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = res.filename || `${title}.${res.format || format}`;
+        a.href = `/api/export/${encodeURIComponent(j.export_id)}`;
+        a.download = j.filename || `${title}.${j.format || format}`;
         document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
+        a.remove();
+        setToast(`Downloading ${j.filename || EXPORT_LABELS[format]}`);
       }
     } catch (e: any) {
-      console.warn('Export error:', e);
-      alert(`Export note: Processed export request. (${e?.message || 'Ready'})`);
+      setToast(`Export failed: ${e?.message || e}`);
     } finally {
-      setExporting(false);
+      setExporting(null);
+      setTimeout(() => setToast(null), 4500);
     }
   };
 
+  const fixedHeight = effectiveVisualType === 'chart' || effectiveVisualType === 'map';
+  const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
+  const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
+
+  const PLOT_SWITCHER_OPTIONS: { id: ChartKind | 'table'; label: string }[] = [
+    { id: 'bar', label: 'Bar' },
+    { id: 'hbar', label: 'H-Bar' },
+    { id: 'pie', label: 'Pie' },
+    { id: 'donut', label: 'Donut' },
+    { id: 'histogram', label: 'Histogram' },
+    { id: 'line', label: 'Line' },
+    { id: 'area', label: 'Area' },
+    { id: 'scatter', label: 'Scatter' },
+    { id: 'treemap', label: 'Treemap' },
+    { id: 'waterfall', label: 'Waterfall' },
+    { id: 'table', label: 'Table' },
+  ];
+
   return (
-    <div className="w-full h-full flex flex-col justify-between overflow-y-auto p-6 md:p-8 space-y-6">
-      {/* Canvas Top Bar: Visual Title, Mode badge, Export Menu */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4 shrink-0">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-accent">
-              Primary Canvas Visual
-            </span>
-            {visual?.mode && (
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
-                {visual.mode}
-              </span>
-            )}
-            {isCacheHit && (
-              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
-                <span>⚡ Served from verified demo cache</span>
-              </span>
-            )}
-          </div>
-          <h2
-            data-testid="canvas-title"
-            title={rawTitle}
-            className="text-xl md:text-2xl font-display font-bold text-zinc-900 dark:text-zinc-50 truncate max-w-2xl md:max-w-3xl"
+    <div className="min-h-full flex flex-col px-[2.25rem] pt-[1.25rem] pb-[9.5rem] gap-[1.15rem] max-w-[104rem] mx-auto w-full" data-testid="canvas">
+      {busy && <div className="fixed left-0 right-0 top-[var(--topbar-h)] h-[2px] yk-shimmer z-20" aria-hidden />}
+
+      {isGreeting ? (
+        <Greeting
+          onSelect={onSelectStarter}
+          onTalk={onTalk}
+          isMicActive={isMicActive}
+          orbState={orbState}
+          isDark={isDark}
+          audioEngine={audioEngine}
+          messages={messages}
+          liveInterimText={liveInterimText}
+        />
+      ) : (
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={visualKey}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.32, ease: [0.2, 0.7, 0.2, 1] }}
+            className="flex flex-col gap-[1.1rem]"
           >
-            {displayTitle}
-          </h2>
-        </div>
-
-        {/* Export Button & Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setExportMenuOpen(!exportMenuOpen)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:border-accent text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-all shadow-sm"
-          >
-            <Download className="w-4 h-4 text-accent" />
-            <span>Export View</span>
-          </button>
-
-          {exportMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-xl py-2 z-40">
-              <div className="px-3 py-1 text-[10px] font-bold uppercase text-zinc-400">
-                Choose Format
-              </div>
-              {exportOptions.includes('sheets') && (
-                <button
-                  onClick={() => handleExport('Google Sheets')}
-                  className="w-full text-left px-3 py-2 text-xs flex items-center gap-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
-                >
-                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                  <span>Google Sheets</span>
-                </button>
-              )}
-              {exportOptions.includes('docs') && (
-                <button
-                  onClick={() => handleExport('Google Docs')}
-                  className="w-full text-left px-3 py-2 text-xs flex items-center gap-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
-                >
-                  <FileText className="w-4 h-4 text-blue-600" />
-                  <span>Google Docs</span>
-                </button>
-              )}
-              {exportOptions.includes('word') && (
-                <button
-                  onClick={() => handleExport('Microsoft Word (.docx)')}
-                  className="w-full text-left px-3 py-2 text-xs flex items-center gap-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
-                >
-                  <FileDown className="w-4 h-4 text-indigo-600" />
-                  <span>Word (.docx)</span>
-                </button>
-              )}
-              {exportOptions.includes('pdf') && (
-                <button
-                  onClick={() => handleExport('PDF')}
-                  className="w-full text-left px-3 py-2 text-xs flex items-center gap-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
-                >
-                  <FileDown className="w-4 h-4 text-rose-600" />
-                  <span>PDF Document</span>
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Primary KPI Numerals if provided */}
-      {visual?.kpis && visual.kpis.length > 0 && visual.type !== 'clause' && (
-        <div className="shrink-0">
-          <KpiRenderer kpis={visual.kpis} isDark={isDark} />
-        </div>
-      )}
-
-      {/* Main Visual Display (Grid or Split with Insight Card) */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[420px]">
-        {/* Left / Center Visual Renderer */}
-        <div
-          className={`${
-            filteredInsights.length > 0 ? 'lg:col-span-8' : 'lg:col-span-12'
-          } flex flex-col justify-center rounded-2xl border transition-all duration-300 p-4 md:p-6 ${
-            isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-zinc-200/90 shadow-sm'
-          }`}
-        >
-          {visual?.type === 'chart' && visual.chart && (
-            <ChartRenderer
-              spec={visual.chart}
-              isDark={isDark}
-              title={visual.title}
-            />
-          )}
-
-          {visual?.type === 'table' && visual.table && (
-            <TableRenderer table={visual.table} isDark={isDark} />
-          )}
-
-          {visual?.type === 'clause' && visual.clause && (
-            <ClauseRenderer clause={visual.clause} isDark={isDark} />
-          )}
-
-          {visual?.type === 'document' && visual.document && (
-            <DocumentRenderer document={visual.document} isDark={isDark} />
-          )}
-
-          {visual?.type === 'map' && visual.map && (
-            <MapRenderer mapSpec={visual.map} isDark={isDark} />
-          )}
-
-          {visual?.type === 'refusal' && (
-            <RefusalRenderer
-              access={contract.access}
-              isDark={isDark}
-              onViewAlternative={onNavigateToAlternative}
-            />
-          )}
-
-          {visual?.type === 'kpi' && visual.kpis && (
-            <div className="p-8">
-              <KpiRenderer kpis={visual.kpis} isDark={isDark} />
-            </div>
-          )}
-
-          {(!visual || visual.type === 'none') && (
-            <div className="flex flex-col items-center justify-center p-8 text-center space-y-6 max-w-2xl mx-auto my-auto animate-in fade-in zoom-in-95 duration-200">
-              <div className="w-16 h-16 rounded-2xl bg-white p-2 shadow-md ring-1 ring-zinc-200 dark:ring-zinc-700 flex items-center justify-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/brand/ongc_logo.png" alt="ONGC Logo" className="w-full h-full object-contain" />
-              </div>
-              <div className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-display font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-                  Hello, I am Yukti.
-                </h1>
-                <p className="text-base text-zinc-600 dark:text-zinc-400 max-w-lg mx-auto leading-relaxed font-medium">
-                  Your voice-first HR & Finance agent. Please tell me how I can help.
-                </p>
-              </div>
-
-              {/* 3 Starter Chips */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full pt-4">
-                <button
-                  onClick={() => onSelectStarter?.('How many executives have been posted in Delhi for 5 years or more?')}
-                  className="p-4 rounded-2xl border text-left transition-all hover:scale-[1.02] hover:border-accent bg-zinc-50 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700 shadow-xs group"
-                >
-                  <div className="text-xs font-bold uppercase tracking-wider text-accent mb-1 flex items-center justify-between">
-                    <span>Delhi Tenure</span>
-                    <ChevronRight className="w-3.5 h-3.5 opacity-60 group-hover:translate-x-0.5 transition-transform" />
+            {/* Header + Spoken Executive Takeaway Banner */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <div className={`text-[0.8rem] font-semibold uppercase tracking-wider ${refused ? 'text-[var(--maroon)]' : 'text-[var(--accent-deep)] dark:text-[var(--accent-soft)]'}`}>
+                    {eyebrowFor(contract)}
                   </div>
-                  <div className="text-xs text-zinc-700 dark:text-zinc-300 font-medium">
-                    Executives in Delhi 5+ years (JRTP Clause 3.0)
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => onSelectStarter?.('Which fields or assets were the most profitable and which made losses in FY26?')}
-                  className="p-4 rounded-2xl border text-left transition-all hover:scale-[1.02] hover:border-accent bg-zinc-50 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700 shadow-xs group"
-                >
-                  <div className="text-xs font-bold uppercase tracking-wider text-accent mb-1 flex items-center justify-between">
-                    <span>Field P&L</span>
-                    <ChevronRight className="w-3.5 h-3.5 opacity-60 group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                  <div className="text-xs text-zinc-700 dark:text-zinc-300 font-medium">
-                    FY26 profitable & loss-making fields
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => onSelectStarter?.('How are we tracking against our MoU targets with MoPNG/DPE for this year?')}
-                  className="p-4 rounded-2xl border text-left transition-all hover:scale-[1.02] hover:border-accent bg-zinc-50 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700 shadow-xs group"
-                >
-                  <div className="text-xs font-bold uppercase tracking-wider text-accent mb-1 flex items-center justify-between">
-                    <span>MoU Targets</span>
-                    <ChevronRight className="w-3.5 h-3.5 opacity-60 group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                  <div className="text-xs text-zinc-700 dark:text-zinc-300 font-medium">
-                    MoPNG / DPE performance scorecard
-                  </div>
-                </button>
-              </div>
-
-              <div className="pt-2 text-xs text-zinc-400 flex items-center gap-2 font-medium">
-                <span>Hands-free voice active</span>
-                <span>•</span>
-                <span>Press Spacebar to advance executive briefing</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right Insight Card */}
-        {filteredInsights.length > 0 && (
-          <div className="lg:col-span-4 flex flex-col space-y-4">
-            <div
-              className={`p-6 rounded-2xl border flex flex-col space-y-4 h-full ${
-                isDark ? 'bg-zinc-900/80 border-zinc-800' : 'bg-white border-zinc-200 shadow-sm'
-              }`}
-            >
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-accent border-b border-zinc-100 dark:border-zinc-800 pb-3">
-                <Sparkles className="w-4 h-4 text-accent" />
-                <span>Executive Insights & Takeaways</span>
-              </div>
-
-              <div className="space-y-3.5 flex-1 text-xs md:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                {filteredInsights.map((fact, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0" />
-                    <span>{fact}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 text-[11px] text-zinc-400">
-                Source: {sources[0]?.object || 'BigQuery hrfin_gold'}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Bottom Area: Collapsed Sources Row & History Strip */}
-      <div className="space-y-3 shrink-0 pt-2 border-t border-zinc-200 dark:border-zinc-800">
-        {/* Collapsed Source Row (collapsed by default: "Sources (N) ▸") */}
-        {sources.length > 0 && (
-          <div className="space-y-2">
-            <button
-              onClick={() => setCanvasSourcesExpanded(!canvasSourcesExpanded)}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:text-accent transition-colors select-none group"
-            >
-              <ChevronRight
-                className={`w-3.5 h-3.5 text-zinc-400 group-hover:text-accent transition-transform duration-150 ${
-                  canvasSourcesExpanded ? 'rotate-90 text-accent' : ''
-                }`}
-              />
-              <span>Sources ({sources.length})</span>
-            </button>
-
-            {canvasSourcesExpanded && (
-              <div className="space-y-3 pt-1 animate-in fade-in duration-150">
-                <div className="flex flex-wrap items-center gap-2">
-                  {sources.map((src, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setSelectedSource(src)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border border-zinc-200 dark:border-zinc-700 hover:border-accent bg-zinc-50 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-200 transition-all shadow-xs"
-                    >
-                      {src.kind === 'data' && <Database className="w-3.5 h-3.5 text-accent" />}
-                      {src.kind === 'policy' && <Scale className="w-3.5 h-3.5 text-ongc-maroon" />}
-                      {src.kind === 'document' && <FileText className="w-3.5 h-3.5 text-indigo-500" />}
-                      <span>
-                        {src.title || src.object || (src.clause ? `Clause ${src.clause}` : 'Source')}
-                      </span>
-                      <ChevronRight className="w-3 h-3 text-zinc-400" />
+                  <h1 data-testid="canvas-title" className="mt-0.5 font-display text-[1.75rem] font-semibold tracking-[-0.02em] leading-[1.18] line-clamp-2">
+                    {cleanText(visual?.title || 'Answer')}
+                  </h1>
+                </div>
+                {exportOptions.length > 0 && !refused && (
+                  <div className="relative shrink-0">
+                    <button onClick={() => setExportOpen((o) => !o)} className="chip !py-2" aria-haspopup="menu" aria-expanded={exportOpen} data-testid="export-button">
+                      {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4 text-[var(--accent)]" />}
+                      Export
                     </button>
-                  ))}
+                    {exportOpen && (
+                      <div role="menu" className="absolute right-0 top-[calc(100%+0.4rem)] w-[13rem] rounded-[1rem] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-40">
+                        {exportOptions.map((o) => (
+                          <button key={o} role="menuitem" onClick={() => handleExport(o)} className="w-full text-left px-3 py-2 rounded-[0.6rem] text-[0.86rem] hover:bg-[var(--surface)]">
+                            {EXPORT_LABELS[o]}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Yukti Executive Summary Banner directly below the title */}
+              {summaryBanner && !refused && (
+                <div className="flex items-start gap-3 px-4 py-3 rounded-[1rem] bg-[var(--surface)] border border-[var(--hairline)] text-[0.98rem] leading-[1.55]">
+                  <Volume2 className="w-4 h-4 mt-1 text-[var(--accent)] shrink-0" />
+                  <div className="text-[var(--ink)]">{summaryBanner}</div>
+                </div>
+              )}
+            </div>
+
+            {/* KPI hero numerals */}
+            {kpis.length > 0 && effectiveVisualType !== 'kpi' && !refused && <KpiRenderer kpis={kpis} isDark={isDark} spark={spark} />}
+
+            {/* Plotly/Dash Interactive Chart Switcher & Metric Pivot Toolbar */}
+            {canSwitchVisual && (
+              <div
+                className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2 rounded-[0.95rem] bg-[var(--surface)] border border-[var(--hairline)]"
+                data-testid="chart-switcher-toolbar"
+              >
+                <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Plot type switcher">
+                  <span className="inline-flex items-center gap-1.5 text-[0.76rem] font-semibold uppercase tracking-wider text-[var(--ink-3)] mr-1.5">
+                    <BarChart3 className="w-3.5 h-3.5 text-[var(--accent)]" />
+                    Plot View
+                  </span>
+                  {PLOT_SWITCHER_OPTIONS.map((opt) => {
+                    const isActive = activeKindPill === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        data-testid={`plot-switch-${opt.id}`}
+                        onClick={() => {
+                          if (opt.id === 'table') {
+                            setOverrideMode('table');
+                          } else {
+                            setOverrideMode('chart');
+                            setOverrideKind(opt.id as ChartKind);
+                          }
+                        }}
+                        className={`px-2.5 py-1 rounded-full text-[0.78rem] font-medium transition-all ${
+                          isActive
+                            ? 'bg-[var(--accent)] text-white shadow-sm'
+                            : 'text-[var(--ink-2)] hover:text-[var(--ink)] hover:bg-[var(--card)]'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {/* Caveat Text kept strictly inside the expanded Sources section */}
-                {contract.caveat && (
-                  <div className="p-3 rounded-xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 flex items-start gap-2 text-xs text-amber-900 dark:text-amber-200 leading-relaxed max-w-2xl">
-                    <span className="font-bold shrink-0 uppercase tracking-wider text-[10px] bg-amber-200/90 dark:bg-amber-800 text-amber-900 dark:text-amber-100 px-1.5 py-0.5 rounded mt-0.5">
-                      Data Caveat
+                {activeDataset.numericCols.length > 1 && effectiveVisualType === 'chart' && (
+                  <div className="flex items-center gap-2 text-[0.78rem]">
+                    <span className="inline-flex items-center gap-1 text-[var(--ink-2)] font-medium">
+                      <SlidersHorizontal className="w-3.5 h-3.5 text-[var(--accent)]" />
+                      Metric:
                     </span>
-                    <span>{contract.caveat}</span>
+                    <select
+                      aria-label="Select plot metric"
+                      data-testid="plot-metric-select"
+                      value={effectiveChartSpec?.value || activeDataset.numericCols[0]}
+                      onChange={(e) => setOverrideMetric(e.target.value)}
+                      className="px-2.5 py-1 rounded-[0.55rem] bg-[var(--card)] border border-[var(--hairline)] text-[var(--ink)] font-medium focus:outline-none focus:border-[var(--accent)]"
+                    >
+                      {activeDataset.numericCols.map((col) => (
+                        <option key={col} value={col}>
+                          {humanizeKey(col)}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
               </div>
             )}
-          </div>
-        )}
 
-        {/* History Strip */}
-        <HistoryStrip
-          history={history}
-          currentIndex={currentHistoryIndex}
-          onSelect={onRestoreHistory}
-          isDark={isDark}
-        />
-      </div>
-
-      {/* Source Detail Modal */}
-      <SourceChipsModal
-        source={selectedSource}
-        onClose={() => setSelectedSource(null)}
-        isDark={isDark}
-      />
-
-      {/* Google Workspace Dry-Run Export Notice Modal */}
-      {dryRunNotice?.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-150">
-          <div
-            className={`w-full max-w-lg rounded-2xl border p-6 shadow-2xl relative ${
-              isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-100' : 'bg-white border-zinc-200 text-zinc-900'
-            }`}
-          >
-            <div className="flex items-center gap-3 pb-3 border-b border-zinc-200 dark:border-zinc-800">
-              <div className="p-2.5 rounded-xl bg-blue-500/10 text-accent">
-                <FileText className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-accent">Google Workspace Integration</div>
-                <h3 className="text-lg font-bold">Google {dryRunNotice.format} Simulation (Dry Run)</h3>
-              </div>
-            </div>
-            <div className="py-4 space-y-3 text-xs md:text-sm text-zinc-600 dark:text-zinc-300">
-              <p>
-                The export was processed successfully. Because server-side Google Workspace OAuth credentials are not yet configured on this environment, this export operates in <strong>dry-run simulation mode</strong>.
-              </p>
-              {dryRunNotice.url && (
-                <div className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 font-mono text-xs text-accent break-all">
-                  Simulated Doc URL: {dryRunNotice.url}
-                </div>
-              )}
-              {dryRunNotice.localFile && (
-                <div className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 font-mono text-xs text-zinc-500 break-all">
-                  Local File: {dryRunNotice.localFile}
-                </div>
-              )}
-              <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-blue-900 dark:text-blue-200 text-xs">
-                To connect direct export to your corporate Google account, place <code>client_secret.json</code> in <code>yukti/backend</code> with Google Drive/Docs API scopes enabled.
-              </div>
-            </div>
-            <div className="flex justify-end pt-3 border-t border-zinc-200 dark:border-zinc-800">
-              <button
-                onClick={() => setDryRunNotice(null)}
-                className="px-4 py-2 rounded-xl bg-accent text-white text-xs font-semibold hover:bg-accent-dark transition-colors"
+            {/* Full-screen Visual + Key Takeaways */}
+            <div className={`grid gap-[1.25rem] ${insights.length && !refused ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
+              <section
+                className={`min-w-0 ${selfFramed ? '' : 'card p-[1.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
+                data-testid="visual-card"
+                data-visual-type={effectiveVisualType}
               >
-                Close
-              </button>
+                {effectiveVisualType === 'chart' && effectiveChartSpec && <ChartRenderer spec={effectiveChartSpec} isDark={isDark} title={visual?.title} />}
+                {effectiveVisualType === 'table' && effectiveTableSpec && <TableRenderer table={effectiveTableSpec} isDark={isDark} />}
+                {effectiveVisualType === 'clause' && visual?.clause && <ClauseRenderer clause={visual.clause} isDark={isDark} />}
+                {effectiveVisualType === 'document' && visual?.document && <DocumentRenderer document={visual.document} isDark={isDark} />}
+                {effectiveVisualType === 'map' && visual?.map && <MapRenderer mapSpec={visual.map} isDark={isDark} />}
+                {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} onViewAlternative={onNavigateToAlternative} />}
+                {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
+              </section>
+
+              {insights.length > 0 && !refused && (
+                <aside className="card p-[1.25rem] self-start" data-testid="insights">
+                  <div className="text-[0.82rem] font-medium text-[var(--ink-2)] mb-3">Key takeaways</div>
+                  <ul className="space-y-[0.85rem]">
+                    {insights.slice(0, 5).map((s, i) => (
+                      <li key={i} className="flex gap-2.5 text-[0.92rem] leading-[1.55]">
+                        <span className={`mt-[0.55rem] w-1.5 h-1.5 rounded-full shrink-0 ${i === 0 ? 'bg-[var(--accent)]' : 'bg-[var(--ink-3)]'}`} />
+                        <span className={i === 0 ? 'font-medium' : 'text-[var(--ink)]/90'}>{s}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </aside>
+              )}
             </div>
-          </div>
+
+            {/* Sources: collapsed, at the end; caveats only inside */}
+            {sources.length > 0 && (
+              <div className="pt-1" data-testid="canvas-sources">
+                <button onClick={() => setSourcesOpen((o) => !o)} className="inline-flex items-center gap-1 text-[0.82rem] font-medium text-[var(--ink-2)] hover:text-[var(--ink)]" aria-expanded={sourcesOpen}>
+                  <ChevronRight className={`w-4 h-4 transition-transform ${sourcesOpen ? 'rotate-90' : ''}`} />
+                  Sources ({sources.length})
+                </button>
+                {sourcesOpen && (
+                  <div className="mt-2 space-y-2.5">
+                    <div className="flex flex-wrap gap-2">
+                      {sources.map((s, i) => (
+                        <button key={i} onClick={() => setSelectedSource(s)} className="chip !text-[0.82rem]">
+                          {s.kind === 'policy' ? <Scale className="w-3.5 h-3.5 text-[#8E000C]" /> : s.kind === 'document' ? <FileText className="w-3.5 h-3.5 text-[var(--accent)]" /> : <Database className="w-3.5 h-3.5 text-[var(--accent)]" />}
+                          {sourceLabel(s)}
+                        </button>
+                      ))}
+                    </div>
+                    {contract.caveat && (
+                      <div className="max-w-[48rem] p-3 rounded-[0.9rem] bg-[#FEF7E0] dark:bg-[rgba(253,214,99,0.1)] text-[#7A4F01] dark:text-[#FDD663] text-[0.84rem] leading-relaxed">
+                        <span className="font-semibold">Data note · </span>
+                        {cleanText(contract.caveat)}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      )}
+
+      {/* History strip */}
+      {history.length > 1 && (
+        <nav className="mt-auto pt-3 border-t border-[var(--hairline)] flex items-center gap-2 overflow-x-auto" aria-label="Earlier answers" data-testid="history-strip">
+          <span className="text-[0.76rem] text-[var(--ink-3)] shrink-0 mr-1">Earlier</span>
+          {history.map((h, i) => (
+            <button
+              key={h.id + i}
+              onClick={() => onRestoreHistory(h, i)}
+              title={h.question}
+              className={`shrink-0 max-w-[15rem] truncate px-3 py-1.5 rounded-full text-[0.8rem] border transition-colors ${
+                i === currentHistoryIndex ? 'bg-[var(--accent-pale)] border-transparent text-[var(--accent-deep)] dark:text-[var(--accent-soft)] font-medium' : 'border-[var(--hairline)] text-[var(--ink-2)] hover:bg-[var(--surface)]'
+              }`}
+            >
+              {i === currentHistoryIndex && <Check className="inline w-3 h-3 mr-1 -mt-0.5" />}
+              {cleanText(h.contract.visual?.title || h.question)}
+            </button>
+          ))}
+        </nav>
+      )}
+
+      {toast && (
+        <div role="status" className="fixed left-1/2 -translate-x-1/2 bottom-28 z-50 px-4 py-2.5 rounded-full bg-[var(--ink)] text-[var(--canvas)] text-[0.86rem] shadow-lg">
+          {toast}
         </div>
       )}
+
+      <SourceChipsModal source={selectedSource} onClose={() => setSelectedSource(null)} isDark={isDark} />
     </div>
   );
 };

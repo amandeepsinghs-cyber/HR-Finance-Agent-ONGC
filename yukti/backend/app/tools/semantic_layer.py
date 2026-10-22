@@ -36,6 +36,22 @@ FORBIDDEN_SQL_PATTERNS = [
 SEMANTIC_LAYER_PROMPT = f"""
 BIGQUERY ENTERPRISE SCHEMAS & EXACT COLUMN CATALOG (Project: {GCP_PROJECT}):
 
+0. AUTHORITATIVE SINGLE SOURCE OF TRUTH (SSOT) 360° TABLES (USE THESE FIRST FOR ALL WORKFORCE, WORK CENTRE, FIELD, CORPORATE, AND HISTOGRAM/DISTRIBUTION QUERIES):
+   • `hrfin_gold.ssot_workforce_employee` (1 ROW PER EMPLOYEE — 42,171 total rows; 23,117 Active employees; ZERO fan-out):
+     - Exact Columns: emp_id, emp_name, name, gender, dob, doj, fiscal_year_joined, age_years, age_band, total_tenure_years, tenure_band, social_category, category, pwd_flag, pwd_category, home_state_code, grade_id, current_grade_id, cadre ('executive'|'non_executive'), group_class, grade_designation, grade_level_order, discipline_id, discipline_code, discipline_name, discipline_function, wc_id, current_wc_id, wc_name, wc_short_name, city, state, sector, cluster_id, cluster_name, hard_station_cat, onshore_offshore, wc_type, is_corporate_hq, current_designation, entry_mode, employment_status ('active'|'separated'), separation_date, retirement_date, years_to_retirement, is_retiring_within_3yr, has_hard_station_tenure, has_offshore_tenure, exemption_tag, exemption_reason_code, continuous_from_date, continuous_stay_months, continuous_stay_years, is_continuous_5yr_plus, is_superannuation_exempt, cumulative_cluster_years, has_breached_cluster_10yr_cap, fy26_apar_score, fy26_apar_rating, is_dpc_eligible, fy26_training_hours, fy26_training_days, fy26_programmes_completed, fy26_gross_salary_inr, fy26_gross_salary_lakh, avg_monthly_gross_inr, fy26_overtime_hours, fy26_overtime_amount_inr, fy26_prp_inr, el_balance_days, el_encashable_days, hpl_balance_days, active_headcount (1 if active else 0), in_position_strength (1 if active else 0).
+     - Example (Workforce count): `SELECT current_grade_id, cadre, COUNT(*) AS employees FROM hrfin_gold.ssot_workforce_employee WHERE active_headcount = 1 AND wc_id = 'WC-AHM' GROUP BY 1, 2 ORDER BY 3 DESC`
+     - Example (Age Histogram): `SELECT CONCAT(CAST(CAST(FLOOR(age_years / 5) * 5 AS INT64) AS STRING), '-', CAST(CAST(FLOOR(age_years / 5) * 5 + 4 AS INT64) AS STRING), ' yrs') AS age_bucket, COUNT(*) AS employees FROM hrfin_gold.ssot_workforce_employee WHERE active_headcount = 1 GROUP BY FLOOR(age_years / 5), age_bucket ORDER BY FLOOR(age_years / 5)`
+
+   • `hrfin_gold.ssot_work_centre_360` (1 ROW PER WORK CENTRE — 46 work centres; reconciles HR + Finance + Production + HSE + Governance):
+     - Exact Columns: wc_id, wc_name, short_name, city, state, sector, cluster_id, hard_station_cat, onshore_offshore, wc_type, is_corporate_hq, active_headcount, in_position_strength, executive_headcount, non_executive_headcount, women_headcount, women_pct, sc_headcount, st_headcount, obc_headcount, pwd_headcount, avg_age_years, avg_tenure_years, retiring_within_3yr_count, continuous_stay_5yr_plus_execs, due_for_transfer_execs, sanctioned_strength_fy26, vacancy_count_fy26, vacancy_rate_pct_fy26, backlog_vacancies_fy26, contractor_headcount_fy26, contractor_annual_cost_inr_cr_fy26, contractor_to_regular_ratio, apprentices_engaged_fy26, payroll_gross_inr_cr_fy26, overtime_hours_fy26, overtime_cost_inr_cr_fy26, training_hours_fy26, trained_employees_fy26, avg_apar_score_fy26, hse_incidents_fy26, lti_count_fy26, ltifr_fy26, env_incidents_fy26, active_grievances_count, posh_cases_fy26, production_oil_mmt_fy26, production_gas_bcm_fy26, production_total_boe_fy26, gross_revenue_inr_cr_fy26, total_opex_inr_cr_fy26, ebitda_inr_cr_fy26, lifting_cost_per_boe_usd_fy26, manpower_cost_per_boe_usd_fy26, boe_per_employee_fy26, capex_be_inr_cr_fy26, capex_re_inr_cr_fy26, capex_actual_inr_cr_fy26, capex_utilisation_pct_fy26.
+     - Example: `SELECT wc_name, active_headcount, executive_headcount, non_executive_headcount, sanctioned_strength_fy26, vacancy_count_fy26, contractor_headcount_fy26, payroll_gross_inr_cr_fy26 FROM hrfin_gold.ssot_work_centre_360 WHERE wc_id = 'WC-AHM'`
+
+   • `hrfin_gold.ssot_field_economics_360` (1 ROW PER FIELD × FISCAL YEAR — 53 rows per year across 10 FYs):
+     - Exact Columns: pnl_id, fiscal_year, field_id, field_name, basin, onshore_offshore, maturity, asset_wc_id, asset_name, oil_production_mt, gas_production_mmscm, condensate_production_mt, total_production_boe, water_cut_pct, well_downtime_hours, gas_utilisation_pct, active_producing_wells, oil_revenue_inr_cr, gas_revenue_inr_cr, gross_revenue_inr_cr, recomputed_gross_revenue_inr_cr, statutory_royalty_inr_cr, statutory_cess_inr_cr, statutory_windfall_tax_saed_inr_cr, net_revenue_inr_cr, recomputed_net_revenue_inr_cr, allocated_manpower_cost_inr_cr, total_opex_inr_cr, ebitda_inr_cr, recomputed_ebitda_inr_cr, ebitda_margin_pct, dda_depreciation_inr_cr, pbt_inr_cr, recomputed_pbt_inr_cr, lifting_cost_per_boe_usd, manpower_cost_per_boe_usd, boe_per_employee, is_loss_making_3yr_consecutive, is_divestment_candidate, pec_monetisation_potential_flag, root_cause_loss_code, reserves_2p_oil_mmt, reserves_2p_gas_bcm, reserves_2p_total_mmtoe, reserve_replacement_ratio_rrr_2p, finding_cost_usd_per_boe, development_cost_usd_per_boe, wells_drilled_count, exploratory_wells_count, development_wells_count, dry_holes_count, drilling_cost_inr_cr.
+
+   • `hrfin_gold.ssot_corporate_annual_360` (1 ROW PER FISCAL YEAR — Corporate Macro KPIs FY18–FY27):
+     - Exact Columns: fiscal_year, gross_revenue_inr_cr, offshore_revenue_inr_cr, onshore_revenue_inr_cr, statutory_levies_total_inr_cr, royalty_inr_cr, oidb_cess_inr_cr, saed_windfall_tax_inr_cr, employee_cost_total_inr_cr, operating_expenses_total_inr_cr, ebitda_inr_cr, dda_inr_cr, pbt_inr_cr, pat_inr_cr, total_capex_spent_inr_cr, dividend_per_share_inr, total_dividend_payout_inr_cr, dividend_payout_ratio_pct, lifting_cost_average_usd_boe, standalone_roce_pct, consolidated_pat_inr_cr, consolidated_roce_pct, csr_disbursed_inr_cr, csr_beneficiaries, mou_composite_score, mou_rating, receivables_outstanding_inr_cr, disputed_receivables_inr_cr, actuarial_liability_inr_cr, net_benefit_liability_inr_cr, renewable_installed_mw, renewable_generation_gwh, green_capex_inr_cr, apprentices_engaged.
+
 1. PREFERRED PRE-AGGREGATED GOLD SUMMARY TABLES (Use these first for fastest sub-second execution):
    • `hrfin_gold.agg_headcount_tenure_summary` (PREFERRED for executive station stay & transfer queries):
      - Exact Columns: wc_id, wc_name, cluster_id, cluster_name, hard_station_cat, grade_id, discipline_id, continuous_stay_months, continuous_stay_years, total_executives, exempt_retiring_3yr, non_exempt_due_transfer.
@@ -89,9 +105,9 @@ BIGQUERY ENTERPRISE SCHEMAS & EXACT COLUMN CATALOG (Project: {GCP_PROJECT}):
    • `hrfin_gold.mart_contract_workforce` (Contract Labor vs Regular Manpower & CLRA):
      - Exact Columns: contract_entry_id, contract_id, vendor_id, vendor_name, name, vendor_category, is_mse_vendor, wc_id, asset_wc_id, wc_name, short_name, state, sector, onshore_offshore, type, month, fiscal_year, service_category, discipline_id, grade_id, is_core_activity, contractor_headcount, headcount, regular_employee_count_matching, contractor_to_regular_ratio, monthly_cost_inr, contractor_cost_per_boe_usd, manpower_cost_per_boe_usd, clra_license_no, clra_compliance_status.
 
-   • `hrfin_gold.mart_workforce` (Workforce Cadre, Superannuations, and Demographics):
-     - Exact Columns: emp_id, name, gender, dob, doj, fiscal_year_joined, category, social_category, pwd_flag, current_grade_id, grade_id, cadre, group, discipline_id, discipline_name, function, wc_id, wc_name, short_name, city, state, hard_station_cat, onshore_offshore, employment_status, retirement_date, years_to_retirement, is_near_retirement_2yr, is_near_retirement_3yr, sanctioned_strength, in_position_strength, vacancy_count.
-     - Note: Active staff: `LOWER(employment_status) = 'active'`. Cadre: `LOWER(cadre) = 'executive'`.
+   • `hrfin_gold.mart_workforce` (Workforce Cadre, Superannuations, and Demographics — 1 ROW PER EMPLOYEE, 23,117 active employees total):
+     - Exact Columns: emp_id, name, gender, dob, doj, fiscal_year_joined, category, social_category, pwd_flag, current_grade_id, grade_id, cadre, group, discipline_id, discipline_name, function, wc_id, wc_name, short_name, city, state, hard_station_cat, onshore_offshore, employment_status, retirement_date, years_to_retirement, is_near_retirement_2yr, is_near_retirement_3yr.
+     - CRITICAL GRAIN RULE: `mart_workforce` is 1 row per employee (`emp_id` grain). To count employees in `mart_workforce`, ALWAYS use `COUNT(DISTINCT emp_id) AS employees` with `LOWER(employment_status) = 'active'` and ALWAYS group by `current_grade_id`, `cadre`, `discipline_name`, or `wc_name` so the visual shows a breakdown. NEVER use `SUM(in_position_strength)` or `SUM(sanctioned_strength)` on `mart_workforce`! For sanctioned vs in-position posts, query `hrfin_gold.agg_vacancies_summary WHERE fiscal_year = 'FY26'`.
 
    • `hrfin_gold.mart_capex_projects` (Major Capital Projects & Milestones):
      - Exact Columns: budget_id, fiscal_year, prj_id, project_name, sanctioned_cost_inr_cr, project_status, cost_overrun_inr_cr, schedule_slippage_months, delay_root_cause_category, asset_name, capex_utilisation_pct.
@@ -99,18 +115,65 @@ BIGQUERY ENTERPRISE SCHEMAS & EXACT COLUMN CATALOG (Project: {GCP_PROJECT}):
    • `hrfin_gold.mart_hse_incident` (Safety, LTIFR, and Process Safety):
      - Exact Columns: incident_id, wc_id, wc_name, onshore_offshore, incident_date, fiscal_year, incident_type, lost_time_injury_flag, days_lost, severity_tier ('Tier_1', 'Tier_2'), total_manhours_worked, calculated_ltifr, brief_description.
 
-2. SILVER OPERATIONAL TABLES (For granular transactions and foreign key dimensions):
-   • `hrfin_silver.employee_master`: emp_id, name, gender, dob, doj, current_grade_id, discipline_id, current_wc_id, employment_status ('Active'), retirement_date. (Note: name is `name`, work centre is `current_wc_id`).
-   • `hrfin_silver.dim_work_centre`: wc_id, name, short_name, city, state, hard_station_cat ('A', 'B', 'C'), onshore_offshore.
-   • `hrfin_silver.dim_grade`: grade_id, cadre, group, designation, pay_scale_min_inr, pay_scale_max_inr, typical_residency_years, level_order.
-   • `hrfin_silver.dim_field`: field_id, name, asset_wc_id, basin_name, onshore_offshore, discovery_year, hydrocarbon_type, maturity.
-   • `hrfin_silver.dim_discipline`: discipline_id, code, name, function, applicable_cadres. (Note: column for discipline name is `name`).
-   • `hrfin_silver.dim_vendor`: vendor_id, name, vendor_category, is_mse_vendor, mse_social_category, mse_women_owned_flag.
-   • `hrfin_silver.sanctioned_posts`: fiscal_year, wc_id, discipline_id, grade_id, sanctioned_strength, in_position_strength, vacancy_count.
-   • `hrfin_silver.corporate_financials`: fiscal_year, gross_revenue_inr_cr, total_opex_inr_cr, ebitda_inr_cr, pat_inr_cr, lifting_cost_average_usd_boe.
-   • `hrfin_silver.receivables`: invoice_id, customer_id, wc_id, outstanding_amount_inr_cr, aging_days, product_type, fiscal_year.
-   • `hrfin_silver.wells_drilled`: well_id, well_name, field_id, asset_wc_id, basin_name, well_type, result_status ('oil_discovery', 'gas_discovery', 'dry_hole'), drilling_cost_inr_cr, fiscal_year.
-   • `hrfin_silver.cag_paras`: cag_para_id, report_number, operating_department, para_subject, financial_implication_inr_cr, current_status, age_in_years, is_aged_over_3_years. (Note: column is `report_number`, not reference_number; `para_subject`, not subject_title).
+   • `hrfin_gold.v_headcount_asof` (Point-in-time Active Headcount View):
+     - Exact Columns: as_of_date, wc_id, wc_name, sector, cluster_id, hard_station_cat, grade_id, cadre, group, discipline_id, discipline_name, gender, category, pwd_flag, active_headcount.
+
+   • `hrfin_gold.mart_asset_productivity` (HR × Finance Asset Productivity — 1 row per asset × fiscal_year):
+     - Exact Columns: asset_wc_id, asset_name, sector, onshore_offshore, fiscal_year, regular_headcount, payroll_cost_inr_cr, oil_production_mmt, gas_production_bcm, condensate_production_mmt, total_liquids_production_mmt, total_production_mmtoe, total_production_boe, gross_revenue_inr_cr, total_opex_inr_cr, ebitda_inr_cr, manpower_cost_per_boe_inr, manpower_cost_per_boe_usd, boe_per_employee, revenue_per_employee_inr_cr.
+
+   • `hrfin_gold.mart_payroll_benefits` (Monthly Payroll, Overtime, Allowances & Benefits):
+     - Exact Columns: payroll_id, emp_id, emp_name, gender, category, month, fiscal_year, wc_id, wc_name, city, sector, grade_id, cadre, designation, discipline_id, cost_centre_id, basic_pay_inr, da_inr, hra_inr, cafeteria_allowances_inr, mining_offshore_allowance_inr, overtime_hours, overtime_amount_inr, prp_inr, gross_salary_inr, net_salary_inr, employer_cpf_inr, employer_prbs_inr, employer_prmb_inr, superannuation_benefit_pct, dpe_30pct_superannuation_compliance_flag.
+     - CRITICAL GRAIN RULE: `mart_payroll_benefits` is `payroll_id` (employee × month) grain. For actuarial liabilities (`benefit_liabilities`), query `hrfin_silver.benefit_liabilities` directly; for medical claims query `hrfin_silver.medical_claims`; for leave balances query `hrfin_silver.leave_ledger`.
+
+   • `hrfin_gold.mart_postings` (Posting & Transfer History with Continuous Stay):
+     - Exact Columns: posting_id, emp_id, emp_name, gender, category, wc_id, wc_name, short_name, city, sector, cluster_id, cluster_name, hard_station_cat, onshore_offshore, is_corporate_hq, from_date, to_date, fiscal_year, grade_id, current_grade_id, cadre, discipline_id, discipline_name, posting_type, order_no, tenure_months, is_current_posting, continuous_stay_months, continuous_stay_years, has_exceeded_station_5yr_cap, exemption_tag, total_transfer_cost_inr.
+
+   • `hrfin_gold.mart_promotions_dpc` (Promotions & DPC Cases):
+     - Exact Columns: promotion_id, emp_id, emp_name, gender, category, wc_id, wc_name, discipline_id, discipline_name, from_grade_id, to_grade_id, grade_id, effective_date, fiscal_year, dpc_id, promotion_mode, residency_years_completed, apar_benchmark_met, vigilance_cleared, hard_station_completed_flag, dpc_status, status, pending_reason, delay_bottleneck_reason, delay_months.
+
+   • `hrfin_gold.mart_training_development` (Training Attendance & Programmes):
+     - Exact Columns: training_record_id, emp_id, emp_name, gender, current_grade_id, grade_id, discipline_id, programme_id, programme_name, wc_id, wc_name, institute, category, start_date, end_date, fiscal_year, training_hours, training_days, completion_status, is_renewable_reskilling, training_category.
+
+   • `hrfin_gold.mart_procurement_contracts` (Purchase Orders, GeM & MSE Procurement):
+     - Exact Columns: po_line_id, po_number, vendor_id, vendor_name, vendor_category, is_mse_vendor, wc_id, wc_name, po_date, fiscal_year, service_contract_category, original_po_value_inr, revised_po_value_inr, actual_paid_amount_inr, cost_overrun_inr, overrun_reason, po_status, procurement_channel, gem_order_id, mse_vendor_social_category, is_gem_procurement, is_mse_sc_st_vendor, is_mse_women_vendor.
+
+   • `hrfin_gold.mart_production_reserves` (Monthly Field Production & Reserves):
+     - Exact Columns: prod_id, month, fiscal_year, field_id, field_name, basin, basin_name, onshore_offshore, asset_wc_id, wc_id, asset_name, oil_production_mt, gas_production_mmscm, condensate_production_mt, total_production_boe, water_cut_pct, gas_flared_mmscm, gas_utilisation_pct, active_producing_wells, well_downtime_hours, operational_uptime_pct. (For annual 2P reserves and RRR, query `hrfin_silver.reserves_annual` so monthly rows are never summed across a year).
+
+   • `hrfin_gold.mart_employee_relations` (Grievances, Litigation, ICC & POSH Summary):
+     - Exact Columns: case_id, emp_id, wc_id, wc_name, case_type, case_category, forum, filing_date, fiscal_year, status, interim_stay_granted, age_days, age_years, is_aged_over_3_years, subject_summary.
+
+   • `hrfin_gold.mart_energy_transition` (Green Energy Projects, Solar/Wind MW & Scope 1/2 Emissions):
+     - Exact Columns: transition_project_id, project_name, fiscal_year, technology_type, location_state_code, state_name, wc_id, wc_name, installed_capacity_mw, generation_gwh, scope1_avoided_emissions_mtco2e, scope2_avoided_emissions_mtco2e, annual_capex_inr_cr, cumulative_capex_inr_cr, engineers_reskilled_count, net_zero_2038_roadmap_milestone_met.
+
+   • `hrfin_gold.mart_governance_audit` & `hrfin_gold.v_env_incidents` (Governance, Parliament, CAG, RTI, Environmental Incidents):
+     - `v_env_incidents`: incident_id, date, fiscal_year, wc_id, wc_name, sector, onshore_offshore, field_id, field_name, basin, incident_type, severity, volume_released, volume_unit, regulator, notice_issued, penalty_inr_lakh, status, root_cause_category.
+
+   • `hrfin_gold.metric_definitions` & `hrfin_gold.glossary`:
+     - `metric_definitions`: metric_id, name, sql_expression, grain, unit, owner_domain, related_question_ids.
+     - `glossary`: term, full_form, definition, source_document, domain, category.
+
+2. SILVER OPERATIONAL TABLES (Authoritative single-grain tables — prefer these over multi-table marts for exact counts/sums):
+   • `hrfin_silver.employee_master`: emp_id, name, gender, dob, doj, current_grade_id, discipline_id, current_wc_id, category, pwd_flag, employment_status ('Active'), retirement_date. (23,117 active employees).
+   • `hrfin_silver.headcount_snapshot`: snapshot_id, month, fiscal_year, wc_id, grade_id, discipline_id, cadre, gender, category, pwd_flag, active_headcount (Monthly snapshot — filter `month = '2026-03'` for FY26 end or `month = '2026-09'` for latest Sep-2026; NEVER sum `active_headcount` across multiple months!).
+   • `hrfin_silver.sanctioned_posts`: fiscal_year, wc_id, discipline_id, grade_id, sanctioned_strength, in_position_strength, vacancy_count, backlog_vacancies, special_drive_flag.
+   • `hrfin_silver.posting_history`: posting_id, emp_id, wc_id, grade_id, discipline_id, from_date, to_date, posting_type, order_no, is_current.
+   • `hrfin_silver.promotion_history` & `hrfin_silver.dpc_cases`: promotion_id/dpc_id, emp_id, from_grade_id, to_grade_id, effective_date, fiscal_year, status, delay_months, delay_bottleneck_reason.
+   • `hrfin_silver.separations`: separation_id, emp_id, separation_date, fiscal_year, separation_type ('Superannuation', 'Resignation', 'VRS', 'Death'), last_grade_id, last_wc_id, exit_interview_reason.
+   • `hrfin_silver.payroll_monthly`: payroll_id, emp_id, month, fiscal_year, wc_id, grade_id, basic_pay_inr, da_inr, hra_inr, cafeteria_allowances_inr, mining_offshore_allowance_inr, overtime_hours, overtime_amount_inr, prp_inr, gross_salary_inr, net_salary_inr, employer_cpf_inr, employer_prbs_inr, employer_prmb_inr.
+   • `hrfin_silver.apar_ratings`: rating_id, emp_id, fiscal_year, numerical_score, final_rating, wc_id, grade_id.
+   • `hrfin_silver.succession_plan`: position_id, role_title, wc_id, grade_id, criticality_tier, incumbent_emp_id, incumbent_retire_date, successor_1_emp_id, successor_1_readiness, readiness_gap_reason.
+   • `hrfin_silver.training_records` & `hrfin_silver.training_calendar`: training_record_id, emp_id, programme_id, programme_name, institute, fiscal_year, training_hours, completion_status.
+   • `hrfin_silver.leave_ledger`: leave_id, emp_id, fiscal_year, leave_type ('EL', 'HPL', 'CL'), opening_balance_days, accrued_days, availed_days, encashed_days, closing_balance_days, encashable_balance_days.
+   • `hrfin_silver.medical_claims` & `hrfin_silver.travel_claims`: claim_id, emp_id, wc_id, fiscal_year, claimed_amount_inr, approved_amount_inr, status, turnaround_days.
+   • `hrfin_silver.grievances_litigation`, `hrfin_silver.vigilance_cases`, `hrfin_silver.posh_cases`, `hrfin_silver.icc_committees`: case/committee registers with status, filing_date, age_days, inquiry_days.
+   • `hrfin_silver.apprentices`: apprentice_id, trade, trade_category, wc_id, fiscal_year, start_date, end_date, stipend_inr_month, status, category, gender (FY26 engaged = 1,550).
+   • `hrfin_silver.contract_workforce`: contract_entry_id, contract_id, vendor_id, wc_id, month, fiscal_year, service_category, contractor_headcount, monthly_cost_inr, clra_compliance_status (Monthly snapshot — filter latest month or use `AVG(contractor_headcount)` per contract across months; never sum headcount across months!).
+   • `hrfin_silver.hse_incidents` & `hrfin_silver.env_incidents`: safety and environmental incident logs.
+   • `hrfin_silver.field_pnl_annual`, `hrfin_silver.production_monthly`, `hrfin_silver.reserves_annual`, `hrfin_silver.wells_drilled`, `hrfin_silver.cost_ledger`, `hrfin_silver.capex_budget`, `hrfin_silver.project_progress`, `hrfin_silver.purchase_orders`, `hrfin_silver.po_channel`, `hrfin_silver.receivables`, `hrfin_silver.forex_hedges`, `hrfin_silver.price_fx_monthly`.
+   • `hrfin_silver.corporate_financials`, `hrfin_silver.subsidiary_financials`, `hrfin_silver.csr_projects`, `hrfin_silver.mou_targets`, `hrfin_silver.benefit_liabilities`, `hrfin_silver.energy_transition`.
+   • `hrfin_silver.parliament_questions`, `hrfin_silver.cag_paras`, `hrfin_silver.rti_applications`, `hrfin_silver.board_agenda_index`, `hrfin_silver.access_audit_log`.
+   • Dimensions: `hrfin_silver.dim_work_centre` (wc_id, name, short_name, city, state, sector, cluster_id, hard_station_cat, onshore_offshore, type), `hrfin_silver.dim_grade`, `hrfin_silver.dim_discipline`, `hrfin_silver.dim_field`, `hrfin_silver.dim_vendor`, `hrfin_silver.dim_project`, `hrfin_silver.dim_cost_centre`, `hrfin_silver.dim_customer`.
 
 3. THE 5 CRITICAL QUERY-CRAFT RULES:
    Rule 1: Always use LOWER() on categoricals (e.g. `LOWER(onshore_offshore) = 'onshore'`, `LOWER(cadre) = 'executive'`, `LOWER(clra_compliance_status) = 'compliant'`).
@@ -154,20 +217,36 @@ class SemanticLayer:
         pattern = r"(?<![a-zA-Z0-9_\-\.`])(hrfin_gold|hrfin_silver|hrfin_docs)\.([a-zA-Z0-9_]+)"
         refined_sql = re.sub(pattern, f"`{self.project_id}`.\\1.\\2", refined_sql)
 
+        # Case-insensitive match on categorical columns. The captured VALUE must be lowercased
+        # (previously `.lower()` was applied to the replacement template, yielding e.g.
+        # `LOWER(cadre) = 'Executive'`, which matches 0 rows). Stored cadre values are
+        # 'executive' | 'non_executive'.
         refined_sql = re.sub(
             r"\bonshore_offshore\s*=\s*'([Oo]nshore|[Oo]ffshore)'",
-            r"LOWER(onshore_offshore) = '\1'".lower(),
+            lambda m: f"LOWER(onshore_offshore) = '{m.group(1).lower()}'",
             refined_sql,
             flags=re.IGNORECASE,
         )
         refined_sql = re.sub(
-            r"\bcadre\s*=\s*'([Ee]xecutive|[Nn]on-[Ee]xecutive)'",
-            r"LOWER(cadre) = '\1'".lower(),
+            r"\bcadre\s*=\s*'(executive|non[-_ ]executive)'",
+            lambda m: "LOWER(cadre) = '{}'".format(re.sub(r"[-_ ]", "_", m.group(1).lower())),
             refined_sql,
             flags=re.IGNORECASE,
         )
+        # Guard against summing group-level sanctioned/in-position columns across employee-grain mart_workforce
+        if "mart_workforce" in refined_sql.lower():
+            refined_sql = re.sub(
+                r"\bSUM\s*\(\s*(?:[a-zA-Z0-9_]+\.)?(?:in_position_strength|sanctioned_strength)\s*\)",
+                "COUNT(DISTINCT emp_id)",
+                refined_sql,
+                flags=re.IGNORECASE,
+            )
+
         if "LIMIT" not in refined_sql.upper() and not re.search(r"^\s*SELECT\s+COUNT\(", refined_sql, flags=re.IGNORECASE):
-            refined_sql = refined_sql.rstrip(";") + " LIMIT 100;"
+            # Aggregated (GROUP BY) results feed totals/insights, so a 100-row cap silently
+            # produced wrong totals. Keep a generous cap for aggregates; 100 for raw row listings.
+            is_aggregate = bool(re.search(r"\bGROUP\s+BY\b", refined_sql, flags=re.IGNORECASE))
+            refined_sql = refined_sql.rstrip().rstrip(";") + (" LIMIT 5000;" if is_aggregate else " LIMIT 100;")
         return refined_sql
 
     def validate_sql_safety(self, sql: str) -> Tuple[bool, Optional[str]]:

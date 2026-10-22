@@ -38,6 +38,9 @@ from app.turn_runner import get_agent_turn_runner
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("yukti.server")
 
+os.environ.setdefault("GOOGLE_CLOUD_PROJECT", GCP_PROJECT)
+os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "TRUE")
+
 app = FastAPI(
     title="Yukti AI Backend",
     version="1.0.0",
@@ -96,6 +99,21 @@ async def general_exception_handler(request, exc: Exception):
 @app.on_event("startup")
 async def startup_event():
     logger.info(f"Starting Yukti AI Backend. Project: {GCP_PROJECT} | Text Model: {DEFAULT_TEXT_MODEL} | Live Model: {DEFAULT_LIVE_MODEL}")
+
+    # Hydrate Verified Answer Cache from snapshot
+    from app.answer_cache import get_answer_cache
+    ans_cache = get_answer_cache()
+    snapshot_path = Path(__file__).resolve().parent.parent / "certified" / "answer_cache_warmup.json"
+    if snapshot_path.exists():
+        try:
+            with open(snapshot_path, "r", encoding="utf-8") as f:
+                entries = json.load(f)
+                for k, v in entries.items():
+                    ans_cache.backend.set(k, v)
+            logger.info(f"Hydrated {len(entries)} verified Answer Contracts into {ans_cache.backend_type} cache.")
+        except Exception as e:
+            logger.warning(f"Could not load answer cache snapshot: {e}")
+
     if YUKTI_DEMO_CACHE:
         logger.info("YUKTI_DEMO_CACHE=1 is enabled. Pre-warming root-only demo cache...")
         demo_cache.load()
@@ -109,6 +127,17 @@ class TurnRequest(BaseModel):
     persona: Optional[str] = "CMD"
     language: Optional[str] = "en"
     voice_override: Optional[str] = None
+    history: Optional[List[Dict[str, Any]]] = None
+    ui_context: Optional[Dict[str, Any]] = None
+
+
+class VoiceTurnRequest(BaseModel):
+    audio_base64: str
+    mime_type: Optional[str] = "audio/webm"
+    session_id: Optional[str] = None
+    persona: Optional[str] = "CMD"
+    language: Optional[str] = "en"
+    transcript_hint: Optional[str] = None
 
 
 class ExportRequest(BaseModel):
@@ -121,6 +150,8 @@ class ExportRequest(BaseModel):
 
 @app.get("/health")
 def health() -> Dict[str, Any]:
+    from app.answer_cache import get_answer_cache
+    ac = get_answer_cache()
     return {
         "status": "healthy",
         "agent": "Yukti AI",
@@ -129,6 +160,7 @@ def health() -> Dict[str, Any]:
         "text_model": DEFAULT_TEXT_MODEL,
         "live_model": DEFAULT_LIVE_MODEL,
         "default_voice": DEFAULT_VOICE,
+        "answer_cache": ac.stats(),
         "demo_cache_enabled": YUKTI_DEMO_CACHE,
     }
 
@@ -201,6 +233,8 @@ async def execute_turn(req: TurnRequest) -> Dict[str, Any]:
             persona=persona,
             language=req.language or "en",
             voice_override=req.voice_override,
+            history=req.history,
+            ui_context=req.ui_context,
         )
         return contract
     except Exception as exc:
@@ -209,6 +243,61 @@ async def execute_turn(req: TurnRequest) -> Dict[str, Any]:
             status_code=500,
             detail={"type": "error", "message": f"Turn execution failed: {str(exc)}", "retryable": True},
         )
+
+
+@app.post("/api/voice-turn")
+async def execute_voice_turn(req: VoiceTurnRequest) -> Dict[str, Any]:
+    """Transcribes browser audio via Gemini 2.5 Flash multimodal audio understanding and runs the turn."""
+    import base64
+    from google import genai
+    from google.genai import types as gtypes
+
+    session_id = req.session_id or f"sess-{int(time.time() * 1000)}"
+    persona = normalize_persona(req.persona)
+    transcript = (req.transcript_hint or "").strip()
+
+    if not transcript and req.audio_base64:
+        try:
+            audio_bytes = base64.b64decode(req.audio_base64)
+            mime = (req.mime_type or "audio/webm").split(";")[0].strip() or "audio/webm"
+            logger.info(f"[{session_id}] /api/voice-turn received {len(audio_bytes)}B ({mime})")
+            if len(audio_bytes) > 400:
+                client = genai.Client(vertexai=True, project=GCP_PROJECT, location="us-central1")
+                resp = await asyncio.to_thread(
+                    client.models.generate_content,
+                    model=DEFAULT_TEXT_MODEL,
+                    contents=[
+                        gtypes.Part.from_bytes(data=audio_bytes, mime_type=mime),
+                        gtypes.Part.from_text(
+                            text=(
+                                "Transcribe the user's spoken question or greeting into exact plain text "
+                                "(English, Hindi, or Hinglish as spoken). If there is no intelligible speech "
+                                "or only background noise/silence, output ONLY the word SILENCE."
+                            )
+                        ),
+                    ],
+                )
+                raw_tx = (resp.text or "").strip().strip('"').strip("'")
+                logger.info(f"[{session_id}] /api/voice-turn Gemini raw transcription: {raw_tx!r}")
+                if raw_tx and raw_tx.upper() != "SILENCE" and len(raw_tx) >= 2:
+                    transcript = raw_tx
+        except Exception as e:
+            logger.warning(f"[{session_id}] /api/voice-turn transcription error: {e}")
+
+    if not transcript:
+        return {"status": "silence", "transcript": ""}
+
+    contract = await turn_runner.execute_turn_async(
+        query=transcript,
+        session_id=session_id,
+        persona=persona,
+        language=req.language or "en",
+    )
+    return {
+        "status": "ok",
+        "transcript": transcript,
+        "contract": contract,
+    }
 
 
 @app.post("/api/export")

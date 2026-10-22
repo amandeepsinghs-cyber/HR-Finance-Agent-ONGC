@@ -140,6 +140,26 @@ class DocumentDraftingEngine:
     def __init__(self, templates_dir: Path = TEMPLATES_DIR):
         self.templates_dir = templates_dir
 
+    def _format_markdown_table(self, columns: List[str], rows: List[Dict[str, Any]], max_rows: int = 12) -> str:
+        if not columns or not rows:
+            return ""
+        cols = columns[:7]
+        header = "| " + " | ".join(str(c).replace("_", " ").title() for c in cols) + " |"
+        sep = "| " + " | ".join("---" for _ in cols) + " |"
+        body = []
+        for r in rows[:max_rows]:
+            vals = []
+            for c in cols:
+                v = r.get(c, "")
+                if isinstance(v, float):
+                    vals.append(f"{v:,.2f}")
+                elif isinstance(v, int):
+                    vals.append(f"{v:,}")
+                else:
+                    vals.append(str(v if v is not None else ""))
+            body.append("| " + " | ".join(vals) + " |")
+        return "\n".join([header, sep] + body)
+
     def draft(
         self,
         doc_type: str,
@@ -148,17 +168,92 @@ class DocumentDraftingEngine:
         instruction: Optional[str] = None,
         context_data: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Drafts or revises an official document."""
-        dt = doc_type.lower()
+        """Drafts or revises an official document, dynamically incorporating live session/BigQuery SSOT data."""
+        dt = (doc_type or "").lower()
+        q_l = (query or "").lower()
         key = "board_note"
-        if "parliament" in dt or "rajya sabha" in dt or "lok sabha" in dt or "x7" in dt:
+        if any(w in dt or w in q_l for w in ["parliament", "rajya sabha", "lok sabha", "unstarred", "x7"]):
             key = "parliament_reply"
-        elif "transfer" in dt or "agt" in dt or "h10" in dt:
+        elif any(w in dt or w in q_l for w in ["transfer", "agt", "redeployment", "rotation order", "h10"]):
             key = "transfer_proposal"
 
         base = DOCUMENT_TEMPLATES.get(key, DOCUMENT_TEMPLATES["board_note"])
         markdown = base["default_markdown"]
         title = base["title"]
+
+        # Check if the user is asking for a dynamic data-backed briefing note / memo / report from context or SSOT
+        ctx = context_data or {}
+        ctx_rows = ctx.get("rows") or []
+        ctx_cols = ctx.get("columns") or (list(ctx_rows[0].keys()) if ctx_rows and isinstance(ctx_rows[0], dict) else [])
+        ctx_title = ctx.get("title") or ""
+        wc_profile = ctx.get("wc_profile") or {}
+
+        is_canonical_template_request = (
+            ("parliament" in q_l and not ctx_rows)
+            or ("marginal" in q_l or "champang" in q_l)
+            or ("annual general transfer" in q_l or "agt" in q_l)
+        )
+
+        if (ctx_rows or wc_profile) and not is_canonical_template_request:
+            wc_name = wc_profile.get("wc_name") or ctx.get("wc_name") or "ONGC Enterprise Operations"
+            wc_id = wc_profile.get("wc_id") or ctx.get("wc_id") or "CORP-ALL"
+            doc_heading = "OFFICE MEMORANDUM & EXECUTIVE BRIEFING NOTE"
+            if "board" in q_l or "board" in dt:
+                doc_heading = "BOARD OF DIRECTORS | AGENDA BRIEFING NOTE"
+            elif "parliament" in q_l or "parliament" in dt:
+                doc_heading = "MINISTRY OF PETROLEUM & NATURAL GAS | PARLIAMENT BRIEFING"
+            elif "order" in q_l or "transfer" in q_l:
+                doc_heading = "CORPORATE HUMAN RESOURCES | ADMINISTRATIVE ORDER DRAFT"
+
+            subject_line = ctx_title if ctx_title and ctx_title != "Answer" else f"Operational & Workforce Review — {wc_name}"
+            title = f"Draft Briefing Note: {subject_line}"
+
+            wc_section = ""
+            if wc_profile:
+                act_hc = int(float(wc_profile.get("active_headcount", 0) or 0))
+                exec_hc = int(float(wc_profile.get("executive_headcount", 0) or 0))
+                non_exec_hc = int(float(wc_profile.get("non_executive_headcount", 0) or 0))
+                sanc_hc = int(float(wc_profile.get("sanctioned_strength", 0) or 0))
+                vac_hc = int(float(wc_profile.get("vacancy_count", 0) or 0))
+                cont_hc = int(float(wc_profile.get("contract_workforce_headcount", 0) or 0))
+                pay_cr = float(wc_profile.get("fy26_total_payroll_cr", 0) or 0)
+                stay_5y = int(float(wc_profile.get("execs_stay_ge_5yr", 0) or 0))
+                ret_3y = int(float(wc_profile.get("retiring_3yr_count", 0) or 0))
+                wc_section = f"""
+### 2. Work Centre 360° Key Indicators ({wc_name} · `{wc_id}`)
+- **In-Position Regular Strength (As of 19-Oct-2026):** **{act_hc:,}** employees (**{exec_hc:,}** Executives; **{non_exec_hc:,}** Non-Executives) against **{sanc_hc:,}** Sanctioned Posts (**{vac_hc:,}** Vacancies).
+- **Contractual & Outsourced Workforce:** **{cont_hc:,}** contract personnel deployed across operations.
+- **FY26 Annual Employee Cost (Payroll + Benefits):** **₹{pay_cr:,.2f} Crore**.
+- **Mobility & Succession Profile:** **{stay_5y:,}** executives with ≥5 years continuous station stay; **{ret_3y:,}** employees superannuating within 36 months.
+"""
+
+            md_table = self._format_markdown_table(ctx_cols, ctx_rows, max_rows=15)
+            table_section = f"\n### 3. Grounded Analytical Data Table ({len(ctx_rows)} Records)\n{md_table}\n" if md_table else ""
+
+            summary_para = ctx.get("summary_text") or (
+                f"This executive briefing note synthesizes audited enterprise records from the ONGC Single Source of Truth (SSOT) "
+                f"for {wc_name} as of 19th October 2026."
+            )
+
+            markdown = f"""# OIL AND NATURAL GAS CORPORATION LIMITED
+## {doc_heading}
+**File Ref:** `ONGC/CMD/BRIEF/2026/{wc_id}` | **Date:** 20th October 2026  
+**Classification:** INTERNAL — FOR EXECUTIVE REVIEW  
+**Subject:** **{subject_line}**
+
+---
+
+### 1. Executive Summary
+{summary_para}
+{wc_section}{table_section}
+### 4. Actionable Recommendations & Next Steps
+1. **Workforce & Cadre Alignment:** Align rotational deployments and special recruitment drives with sanctioned post gaps and upcoming superannuation windows under JRTP Rev. 4 guidelines.
+2. **Cost & Productivity Optimization:** Monitor unit manpower and lifting costs against FY27 MoU targets and quarterly budget estimates (BE/RE).
+3. **Compliance & Governance:** Record this briefing note in the executive decision register and circulate approved extracts to concerned Asset/Basin Managers.
+
+*Generated & Grounded by:* **Yukti AI (ONGC Executive Intelligence)**  
+*Source Attribution:* `hrfin_gold.ssot_work_centre_360` & `hrfin_gold.ssot_workforce_employee`
+"""
 
         # Apply revision instructions if requested
         if instruction:
@@ -170,7 +265,7 @@ class DocumentDraftingEngine:
             elif "pec" in ins_l:
                 markdown += "\n\n### Executive Revision Note\nOption A (Production Enhancement Contract - PEC) has been reaffirmed as the primary recommendation for immediate implementation."
             elif "hindi" in ins_l or "translate" in ins_l:
-                markdown = "# तेल एवं प्राकृतिक गैस निगम लिमिटेड\n## निदेशक मंडल | एजेंडा नोट\n**गोपनीय — केवल बोर्ड विचारार्थ**\n\n### 1. प्रस्ताव एवं कार्यकारी सारांश\nयह ज्ञापन सीमांत ऑनशोर क्षेत्रों में रणनीतिक हस्तक्षेप के लिए अनुमोदन चाहता है।"
+                markdown = "# तेल एवं प्राकृतिक गैस निगम लिमिटेड\n## निदेशक मंडल | एजेंडा नोट\n**गोपनीय — केवल बोर्ड विचारार्थ**\n\n### 1. प्रस्ताव एवं कार्यकारी सारांश\nयह ज्ञापन सीमांत ऑनशोर क्षेत्रों एवं कार्य केंद्रों में रणनीतिक हस्तक्षेप के लिए अनुमोदन चाहता है।"
 
         # Enforce name hygiene: strip real politicians
         markdown = sanitize_fictional_names(markdown)

@@ -13,6 +13,7 @@ interface VoiceOrbProps {
   onClick?: () => void;
   interactive?: boolean;
   audioEngine?: VoiceAudioEngine;
+  label?: string;
 }
 
 interface Point3D {
@@ -32,6 +33,7 @@ export const VoiceOrb: React.FC<VoiceOrbProps> = ({
   onClick,
   interactive = true,
   audioEngine,
+  label,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animFrameRef = useRef<number | null>(null);
@@ -101,22 +103,22 @@ export const VoiceOrb: React.FC<VoiceOrbProps> = ({
       if (state === 'idle') {
         speedY = 0.007;
         speedX = 0.002;
-        sphereScale *= (1 + 0.04 * Math.sin(Date.now() * 0.002));
+        sphereScale *= (1 + 0.045 * Math.sin(Date.now() * 0.0022));
       } else if (state === 'listening') {
-        speedY = 0.014;
-        speedX = 0.005;
-        sphereScale *= (1 + amplitude * 0.45);
-        waveDistortion = amplitude * 0.35;
+        speedY = 0.018 + amplitude * 0.025;
+        speedX = 0.007 + amplitude * 0.012;
+        sphereScale *= (1 + amplitude * 0.52);
+        waveDistortion = 0.12 + amplitude * 0.48;
       } else if (state === 'thinking') {
-        speedY = 0.045; // Fast swirl
-        speedX = 0.012;
-        sphereScale *= (1 + 0.12 * Math.sin(Date.now() * 0.008));
-        waveDistortion = 0.15;
+        speedY = 0.048; // Fast swirl
+        speedX = 0.014;
+        sphereScale *= (1 + 0.14 * Math.sin(Date.now() * 0.008));
+        waveDistortion = 0.18;
       } else if (state === 'speaking') {
-        speedY = 0.016;
-        speedX = 0.006;
-        sphereScale *= (1 + amplitude * 0.35);
-        waveDistortion = amplitude * 0.4;
+        speedY = 0.02 + amplitude * 0.022;
+        speedX = 0.008 + amplitude * 0.01;
+        sphereScale *= (1 + amplitude * 0.46);
+        waveDistortion = 0.14 + amplitude * 0.52;
       }
 
       localAngleY += speedY;
@@ -132,12 +134,33 @@ export const VoiceOrb: React.FC<VoiceOrbProps> = ({
       const centerX = width / 2;
       const centerY = height / 2;
 
+      // Concentric soundwave rings in listening / speaking states
+      if ((state === 'listening' || state === 'speaking') && amplitude > 0.15) {
+        const nowSec = Date.now() * 0.0025;
+        for (let ring = 0; ring < 2; ring++) {
+          const prog = (nowSec + ring * 0.5) % 1;
+          const ringRadius = sphereScale * (0.95 + prog * (0.55 + amplitude * 0.45)) * dpr;
+          const ringAlpha = (1 - prog) * (0.22 + amplitude * 0.28);
+          ctx.strokeStyle =
+            state === 'listening'
+              ? `rgba(49, 134, 255, ${ringAlpha.toFixed(3)})`
+              : `rgba(118, 187, 255, ${ringAlpha.toFixed(3)})`;
+          ctx.lineWidth = Math.max(1.2, 2.2 * dpr * (1 - prog * 0.5));
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, ringRadius, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
       const points = pointsRef.current;
 
       // Sort points back-to-front for proper depth blending
+      const nowMs = Date.now();
       const transformed = points.map((p) => {
-        // Dynamic ripple on sphere surface
-        const ripple = waveDistortion * Math.sin(p.phase + Date.now() * 0.006 + p.y * 4);
+        // Multi-harmonic dynamic ripple on sphere surface
+        const h1 = Math.sin(p.phase + nowMs * 0.007 + p.y * 4.5);
+        const h2 = 0.55 * Math.cos(p.phase * 1.7 - nowMs * 0.011 + p.x * 5.2);
+        const ripple = waveDistortion * (h1 + h2) * 0.72;
         const r = p.baseRadius * (1 + ripple);
 
         const x0 = p.x * r;
@@ -253,25 +276,24 @@ export const VoiceOrb: React.FC<VoiceOrbProps> = ({
   return (
     <div
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && onClick) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
-      aria-label={`Yukti Voice Orb (${state})`}
+      aria-label={label || `Yukti voice (${state})`}
+      title={label}
+      data-testid="voice-orb"
+      data-state={state}
       style={{ width: size, height: size }}
-      className={`relative flex items-center justify-center select-none transition-transform duration-300 ${
-        interactive ? 'cursor-pointer hover:scale-105 active:scale-95' : ''
+      className={`relative flex items-center justify-center select-none rounded-full transition-transform duration-300 ${
+        interactive ? 'cursor-pointer hover:scale-[1.03] active:scale-95' : ''
       } ${className}`}
     >
-      <canvas
-        ref={canvasRef}
-        style={{ width: size, height: size }}
-        className="block"
-      />
-      {/* State label badge pill below or centered */}
-      {interactive && state !== 'idle' && (
-        <div className="absolute -bottom-2 px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide uppercase shadow-sm transition-all duration-300 backdrop-blur-md bg-white/80 dark:bg-zinc-800/80 text-accent border border-accent/20">
-          {state}
-        </div>
-      )}
+      <canvas ref={canvasRef} style={{ width: size, height: size }} className="block" />
     </div>
   );
 };
