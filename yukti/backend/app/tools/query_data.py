@@ -13,6 +13,7 @@ from google.cloud import bigquery
 
 from app.config import BQ_LOCATION, GCP_PROJECT, JOB_LABELS, MAX_BYTES_BILLED
 from app.tools.chart_rules import build_chart_spec, select_chart_kind
+from app.semantic.entities import get_entities
 from app.tools.semantic_layer import SemanticLayer
 
 logger = logging.getLogger("yukti.tools.query_data")
@@ -50,25 +51,8 @@ def compute_deterministic_summary(columns: List[str], rows: List[Dict[str, Any]]
         except Exception:
             pass
 
-    # Friendly name mapping
-    DISCIPLINE_NAMES = {
-        "DISC-PRD": "Production", "DISC-DRL": "Drilling", "DISC-MEC": "Mechanical",
-        "DISC-ELE": "Electrical", "DISC-INS": "Instrumentation", "DISC-CHM": "Chemistry",
-        "DISC-CIV": "Civil", "DISC-GEO": "Geology", "DISC-GPS": "Geophysics (Surface)",
-        "DISC-GPW": "Geophysics (Wells)", "DISC-RES": "Reservoir", "DISC-HSE": "Environment & Safety (HSE)",
-        "DISC-FIN": "Finance", "DISC-HR": "HR", "DISC-MM": "Materials Management",
-        "DISC-LOG": "Logistics", "DISC-MED": "Medical", "DISC-SEC": "Security", "DISC-LEG": "Legal",
-    }
-    WORK_CENTRE_NAMES = {
-        "WC-DEL": "Delhi HQ", "WC-DDN": "Dehradun Tel Bhavan", "WC-MUM": "Mumbai",
-        "WC-TRI": "Tripura Asset", "WC-ASM": "Assam Asset", "WC-JOR": "Jorhat Asset",
-        "WC-AAB": "Assam & Arakan Basin", "WC-AHM": "Ahmedabad Asset", "WC-ANK": "Ankleshwar Asset",
-        "WC-MEH": "Mehsana Asset", "WC-CAM": "Cambay Asset", "WC-RAJ": "Rajahmundry Asset",
-        "WC-KKD": "Kakinada", "WC-CHN": "Chennai", "WC-KOL": "Kolkata", "WC-BOK": "Bokaro",
-        "WC-SIL": "Silchar", "WC-AGR": "Agartala", "WC-EOA": "Eastern Offshore Asset",
-        "WC-MHN": "Mumbai High North", "WC-MHS": "Mumbai High South", "WC-BAS": "Bassein & Satellite",
-        "WC-NEH": "Neelam & Heera", "WC-ROM": "Regional Office Mumbai",
-    }
+    # Friendly names come from the single entity dictionary (B1.2)
+    ents = get_entities()
 
     # Group / Rank by ALL present dimensions (e.g. discipline_id, grade_id, field_name, asset_name)
     dim_cols = [c for c in columns if any(k in c.lower() for k in ["discipline", "grade", "field", "asset", "wc_", "city", "state"])]
@@ -82,7 +66,7 @@ def compute_deterministic_summary(columns: List[str], rows: List[Dict[str, Any]]
             for r in rows:
                 raw_d = str(r.get(dim, "Unknown")).strip()
                 # Apply friendly name
-                d_val = DISCIPLINE_NAMES.get(raw_d, WORK_CENTRE_NAMES.get(raw_d, raw_d))
+                d_val = ents.friendly(raw_d)
                 try:
                     c_val = int(r.get(cnt, 0) or 0)
                 except Exception:

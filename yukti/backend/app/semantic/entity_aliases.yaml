@@ -1,0 +1,92 @@
+# Curated entity aliases (B1.2). Codes MUST exist in entities.json (enforced by
+# tests/test_catalog_consistency.py). Automatic aliases (lower-cased name,
+# short_name, short_name without "Asset"/"Basin", and the city when only one work
+# centre sits in it) are added by app/semantic/entities.py; list here only what
+# the data cannot provide: colloquial names, Hindi/Hinglish spellings, and the
+# preferred work centre for a city that hosts several.
+version: 1
+
+work_centres:
+  WC-DEL: [delhi, new delhi, delhi hq, delhi office, corporate hq, corporate office, deendayal urja bhawan, dilli, दिल्ली, नई दिल्ली]
+  WC-DDN: [dehradun, tel bhavan, dehradun office, देहरादून]
+  WC-MUM: [mumbai, bombay, bambai, mumbai high, मुंबई, मुम्बई]
+  WC-ROM: [ro mumbai, regional office mumbai, mumbai regional office]
+  WC-AHM: [ahmedabad, अहमदाबाद]
+  WC-ANK: [ankleshwar, अंकलेश्वर]
+  WC-MEH: [mehsana, मेहसाणा]
+  WC-CAM: [cambay, khambhat]
+  WC-ASM: [assam, assam asset, nazira, sivasagar, असम]
+  WC-JOR: [jorhat, जोरहाट]
+  WC-TRI: [tripura, agartala, त्रिपुरा]
+  WC-SIL: [silchar, cachar]
+  WC-AAB: [a&aa basin, assam arakan, assam-arakan basin, a and aa basin]
+  WC-EAS: [eastern offshore, eastern offshore asset, kakinada, kg offshore, kg deepwater]
+  WC-RAJ: [rajahmundry, rajamahendravaram]
+  WC-KGB: [kg basin, kg-pg basin, krishna godavari basin]
+  WC-CAU: [cauvery, cauvery asset, karaikal]
+  WC-CAB: [cauvery basin]
+  WC-ROC: [chennai, ro chennai, regional office chennai]
+  WC-ROK: [kolkata, ro kolkata, regional office kolkata, calcutta]
+  WC-ROV: [ro vadodara, regional office vadodara]
+  WC-BOK: [bokaro, cbm bokaro]
+  WC-RAJ-BSN: [jodhpur, rajasthan, rajasthan basin]
+  WC-NEH: [neelam, heera, neelam and heera, neelam & heera]
+  WC-BAS: [bassein, bassein and satellite, bassein & satellite]
+  WC-HAZ: [hazira, surat]
+  WC-URN: [uran]
+  WC-DAH: [dahej]
+  WC-WOB: [western offshore basin]
+  WC-WNB: [western onshore basin]
+
+# Subtitle notes shown next to a work centre (presentation only, not filters).
+work_centre_notes:
+  WC-MUM: "Regional Office: RO Mumbai"
+
+# Named groups of work centres (resolved by planner/compiler as wc_id IN (...)).
+regions:
+  north east: {sector: NE}
+  north-east: {sector: NE}
+  northeast: {sector: NE}
+  western offshore: {wc_ids: [WC-MUM, WC-NEH, WC-BAS]}
+  gujarat: {state: Gujarat, type: asset}
+  assam onshore: {wc_ids: [WC-ASM, WC-JOR]}
+  offshore: {onshore_offshore: offshore, type: asset}
+  onshore: {onshore_offshore: onshore, type: asset}
+  hard stations: {hard_station_cat: C}
+  corporate offices: {type: office}
+
+disciplines:
+  DISC-FIN: [finance, f&a, finance and accounts, accounts, वित्त]
+  DISC-HR: [hr, human resources, personnel, एचआर]
+  DISC-MM: [materials management, materials, mm, procurement]
+  DISC-DRL: [drilling, ड्रिलिंग]
+  DISC-PRD: [production, petroleum engineering, उत्पादन]
+  DISC-RES: [reservoir, reservoir engineering]
+  DISC-GEO: [geology, geologist, geologists]
+  DISC-GPS: [geophysics, surface geophysics, seismic]
+  DISC-GPW: [well geophysics, borehole geophysics]
+  DISC-IT: [information technology, it department, infocom]
+  DISC-HSE: [hse, safety, environment and safety]
+  DISC-MED: [medical, doctors]
+  DISC-LEG: [legal, law]
+
+# Discipline groups ("geoscience" = three disciplines).
+discipline_groups:
+  geoscience: [DISC-GEO, DISC-GPS, DISC-GPW]
+  geoscientists: [DISC-GEO, DISC-GPS, DISC-GPW]
+  engineering services: [DISC-MEC, DISC-ELE, DISC-INS, DISC-CIV]
+
+fields:
+  FLD-CHP: [champang]
+  FLD-BOR: [borholla]
+  FLD-MHN: [mumbai high north, mhn]
+  FLD-MHS: [mumbai high south, mhs]
+  FLD-KG982: [kg-dwn-98/2, kg dwn 98/2, kg 98/2, cluster ii, cluster-ii]
+
+grades:
+  E7: [gm, gms, general manager, general managers]
+  E8: [cgm, cgms, chief general manager]
+  E9: [ed, eds, executive director, ggm]
+  E6: [jgm, agm, additional gm]
+  E5: [dgm, dgms, deputy general manager]
+  E4: [chief manager, superintending engineer]

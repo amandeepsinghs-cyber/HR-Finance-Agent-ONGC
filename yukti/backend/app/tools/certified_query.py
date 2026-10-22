@@ -15,6 +15,7 @@ import yaml
 
 from app.config import BQ_LOCATION, GCP_PROJECT, JOB_LABELS, MAX_BYTES_BILLED
 from app.tool_cache import get_tool_cache
+from app.semantic.entities import get_entities
 
 logger = logging.getLogger("yukti.tools.certified_query")
 
@@ -178,14 +179,7 @@ def run_certified_query(
 
         cnt_cols = [c for c in schema_fields if any(k in c.lower() for k in ["count", "num_", "executives", "headcount", "strength", "posts", "vacanc"])]
         dimension_totals = {}
-        DISCIPLINE_NAMES = {
-            "DISC-PRD": "Production", "DISC-DRL": "Drilling", "DISC-MEC": "Mechanical",
-            "DISC-ELE": "Electrical", "DISC-INS": "Instrumentation", "DISC-CHM": "Chemistry",
-            "DISC-CIV": "Civil", "DISC-GEO": "Geology", "DISC-GPS": "Geophysics (Surface)",
-            "DISC-GPW": "Geophysics (Wells)", "DISC-RES": "Reservoir", "DISC-HSE": "Environment & Safety (HSE)",
-            "DISC-FIN": "Finance", "DISC-HR": "HR", "DISC-MM": "Materials Management",
-            "DISC-LOG": "Logistics", "DISC-MED": "Medical", "DISC-SEC": "Security", "DISC-LEG": "Legal",
-        }
+        ents = get_entities()  # single entity dictionary (B1.2)
 
         dim_cols = [c for c in schema_fields if any(k in c.lower() for k in ["discipline", "grade", "field", "asset", "wc_"])]
         if dim_cols and cnt_cols:
@@ -195,7 +189,7 @@ def run_certified_query(
                 d_totals = {}
                 for r in rows:
                     raw_d = str(r.get(dim, "Unknown")).strip()
-                    d_val = DISCIPLINE_NAMES.get(raw_d, raw_d)
+                    d_val = ents.friendly(raw_d)
                     try:
                         c_val = int(r.get(cnt, 0) or 0)
                     except Exception:

@@ -47,15 +47,11 @@ queries:
       - WC-MEH
       - WC-CAM
       - WC-RAJ
-      - WC-KKD
-      - WC-CHN
-      - WC-KOL
+      - WC-EAS
+      - WC-ROC
+      - WC-ROK
       - WC-BOK
       - WC-SIL
-      - WC-AGR
-      - WC-EOA
-      - WC-MHN
-      - WC-MHS
     min_stay_months:
       type: INT64
       default: 60
@@ -662,15 +658,11 @@ queries:
       - WC-MEH
       - WC-CAM
       - WC-RAJ
-      - WC-KKD
-      - WC-CHN
-      - WC-KOL
+      - WC-EAS
+      - WC-ROC
+      - WC-ROK
       - WC-BOK
       - WC-SIL
-      - WC-AGR
-      - WC-EOA
-      - WC-MHN
-      - WC-MHS
     min_stay_months:
       type: INT64
       default: 60
@@ -1932,15 +1924,11 @@ queries:
       - WC-MEH
       - WC-CAM
       - WC-RAJ
-      - WC-KKD
-      - WC-CHN
-      - WC-KOL
+      - WC-EAS
+      - WC-ROC
+      - WC-ROK
       - WC-BOK
       - WC-SIL
-      - WC-AGR
-      - WC-EOA
-      - WC-MHN
-      - WC-MHS
     min_stay_months:
       type: INT64
       default: 60
@@ -2752,15 +2740,11 @@ queries:
       - WC-MEH
       - WC-CAM
       - WC-RAJ
-      - WC-KKD
-      - WC-CHN
-      - WC-KOL
+      - WC-EAS
+      - WC-ROC
+      - WC-ROK
       - WC-BOK
       - WC-SIL
-      - WC-AGR
-      - WC-EOA
-      - WC-MHN
-      - WC-MHS
     min_stay_months:
       type: INT64
       default: 60
@@ -2823,13 +2807,13 @@ queries:
   parameterized_sql: "-- Answer Key SQL: W1\n-- Question: If Brent falls to $60/bbl, which fields go into loss?\n-- Type:\
     \ what_if\n\nWITH price_params AS (\n    SELECT\n        AVG(brent_usd_bbl) AS avg_brent,\n        AVG(ongc_crude_net_realisation_usd_bbl)\
     \ AS avg_realisation,\n        AVG(brent_usd_bbl - ongc_crude_net_realisation_usd_bbl) AS avg_discount\n    FROM `ongc-hr-finance-agent.hrfin_silver.price_fx_monthly`\n\
-    \    WHERE fiscal_year IN (@fiscal_year, '2026')\n),\nsim_brent60 AS (\n    SELECT\n        pnl.field_id,\n        f.name\
+    \    WHERE fiscal_year = @fiscal_year\n),\nsim_brent60 AS (\n    SELECT\n        pnl.field_id,\n        f.name\
     \ AS field_name,\n        f.onshore_offshore,\n        pnl.gross_revenue_inr_cr AS base_revenue_cr,\n        pnl.total_opex_inr_cr\
     \ AS base_opex_cr,\n        pnl.dda_depreciation_inr_cr AS base_dda_cr,\n        (pnl.oil_revenue_inr_cr * ((60.0 - params.avg_discount)\
     \ / params.avg_realisation) + pnl.gas_revenue_inr_cr) AS sim_gross_rev_cr,\n        SAFE_DIVIDE(pnl.statutory_royalty_inr_cr,\
     \ NULLIF(pnl.gross_revenue_inr_cr, 0)) AS eff_royalty_rate,\n        SAFE_DIVIDE(pnl.statutory_cess_inr_cr, NULLIF(pnl.gross_revenue_inr_cr,\
     \ 0)) AS eff_cess_rate\n    FROM `ongc-hr-finance-agent.hrfin_silver.field_pnl_annual` pnl\n    JOIN `ongc-hr-finance-agent.hrfin_silver.dim_field`\
-    \ f ON pnl.field_id = f.field_id\n    CROSS JOIN price_params params\n    WHERE pnl.fiscal_year IN (@fiscal_year, '2026')\
+    \ f ON pnl.field_id = f.field_id\n    CROSS JOIN price_params params\n    WHERE pnl.fiscal_year = @fiscal_year\
     \ AND pnl.line_type = 'field'\n)\nSELECT\n    field_id,\n    field_name,\n    onshore_offshore,\n    ROUND(sim_gross_rev_cr,\
     \ 2) AS sim_gross_revenue_inr_cr,\n    ROUND(base_opex_cr, 2) AS total_opex_inr_cr,\n    ROUND(sim_gross_rev_cr * (1.0\
     \ - eff_royalty_rate - eff_cess_rate) - base_opex_cr, 2) AS sim_ebitda_inr_cr,\n    ROUND(sim_gross_rev_cr * (1.0 - eff_royalty_rate\
@@ -2952,15 +2936,11 @@ queries:
       - WC-MEH
       - WC-CAM
       - WC-RAJ
-      - WC-KKD
-      - WC-CHN
-      - WC-KOL
+      - WC-EAS
+      - WC-ROC
+      - WC-ROK
       - WC-BOK
       - WC-SIL
-      - WC-AGR
-      - WC-EOA
-      - WC-MHN
-      - WC-MHS
     min_stay_months:
       type: INT64
       default: 36

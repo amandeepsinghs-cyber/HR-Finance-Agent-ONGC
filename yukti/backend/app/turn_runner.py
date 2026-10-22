@@ -20,8 +20,10 @@ from google.genai import types
 from app.access_control import check_access, normalize_persona
 from app.agent import create_yukti_agent
 from app.answer_composer import detect_language, get_contract_validator
+from app.brain.pipeline import planner_enabled, run_planner_turn
 from app.config import DEFAULT_TEXT_MODEL, VERTEX_TEXT_LOCATION
 from app.router import get_semantic_router
+from app.semantic.entities import get_entities
 from app.session_memory import get_session_manager
 from app.tools.chart_rules import (
     build_chart_spec,
@@ -57,38 +59,25 @@ def make_clean_title_and_subtitle(
     if "north east" in q_low or "vacanc" in q_low or entry_id == "X7":
         return "North-East Work Centre Vacancy Deficits", "Work Centres: Tripura Asset (113), Assam Asset (26), Assam & Arakan Basin (4) | Total: 143 Vacancies"
 
-        # 2. City & Work Centre tenure checks
-    city_wc_notes = {
-        "mumbai": ("Mumbai: Executives with ≥5 Years' Continuous Stay", "Work Centre: Mumbai High Asset | Regional Office: RO Mumbai | As of 19-Oct-2026"),
-        "delhi": ("Delhi HQ: Executives with ≥5 Years' Continuous Stay", "Work Centre: Delhi Corporate HQ | As of 19-Oct-2026"),
-        "dehradun": ("Dehradun: Executives with ≥5 Years' Continuous Stay", "Work Centre: Dehradun Tel Bhavan Corporate Administration | As of 19-Oct-2026"),
-        "ahmedabad": ("Ahmedabad Asset: Executives with ≥5 Years' Continuous Stay", "Work Centre: Ahmedabad Asset | As of 19-Oct-2026"),
-        "mehsana": ("Mehsana Asset: Executives with ≥5 Years' Continuous Stay", "Work Centre: Mehsana Asset | As of 19-Oct-2026"),
-        "ankleshwar": ("Ankleshwar Asset: Executives with ≥5 Years' Continuous Stay", "Work Centre: Ankleshwar Asset | As of 19-Oct-2026"),
-        "cambay": ("Cambay Asset: Executives with ≥5 Years' Continuous Stay", "Work Centre: Cambay Asset | As of 19-Oct-2026"),
-        "jorhat": ("Jorhat Asset: Executives with ≥5 Years' Continuous Stay", "Work Centre: Jorhat Asset | Station Category C | As of 19-Oct-2026"),
-        "rajahmundry": ("Rajahmundry Asset: Executives with ≥5 Years' Continuous Stay", "Work Centre: Rajahmundry Asset | As of 19-Oct-2026"),
-        "cauvery": ("Cauvery Asset: Executives with ≥5 Years' Continuous Stay", "Work Centre: Cauvery Asset | As of 19-Oct-2026"),
-        "tripura": ("Tripura Asset: Executives with ≥5 Years' Continuous Stay", "Work Centre: Tripura Asset | Station Category C | As of 19-Oct-2026"),
-        "assam": ("Assam Asset: Executives with ≥5 Years' Continuous Stay", "Work Centres: Assam Asset, Jorhat Asset | As of 19-Oct-2026"),
-    }
-
-    # Parameter wc_id takes top priority over query text
-    if wc_id:
-        wc_to_city_key = {
-            "WC-DEL": "delhi", "WC-DDN": "dehradun", "WC-MUM": "mumbai",
-            "WC-AHM": "ahmedabad", "WC-MEH": "mehsana", "WC-ANK": "ankleshwar",
-            "WC-CAM": "cambay", "WC-JOR": "jorhat", "WC-RAJ": "rajahmundry",
-            "WC-CAU": "cauvery", "WC-TRI": "tripura", "WC-ASM": "assam"
-        }
-        target_city = wc_to_city_key.get(wc_id)
-        if target_city and target_city in city_wc_notes:
-            return city_wc_notes[target_city]
-
-    for city_key, (t, sub) in city_wc_notes.items():
-        if city_key in q_low:
-            if any(k in q_low for k in ["stay", "year", "tenure", "saal", "kitne", "officer", "executive", "posted"]) or entry_id in ("C1", "H1"):
-                return t, sub
+    # 2. City & Work Centre tenure checks (names from the single entity dictionary, B1.2)
+    ents = get_entities()
+    target_wc = wc_id or ents.resolve_wc(q_low)
+    if target_wc and target_wc in ents.work_centres:
+        tenure_words = ["stay", "year", "tenure", "saal", "kitne", "officer", "executive", "posted"]
+        if wc_id or any(k in q_low for k in tenure_words) or entry_id in ("C1", "H1"):
+            a = ents.work_centres[target_wc]
+            city = str(a.get("city", ""))
+            label = city if city and city.lower() in q_low else ents.wc_name(target_wc)
+            full_name = ents.wc_name(target_wc, short=False)
+            short_name = ents.wc_name(target_wc)
+            if city and city.lower() in short_name.lower() and city.lower() not in full_name.lower():
+                full_name = f"{city} {full_name}"  # "Tel Bhavan Corporate Administration" -> "Dehradun Tel Bhavan ..."
+            sub = f"Work Centre: {full_name}"
+            if a.get("hard_station_cat") == "C":
+                sub += " | Station Category C"
+            if ents.wc_notes.get(target_wc):
+                sub += f" | {ents.wc_notes[target_wc]}"
+            return f"{label}: Executives with ≥5 Years' Continuous Stay", f"{sub} | As of 19-Oct-2026"
 
     clean = re.sub(r"^(How many|What is the|What are the|Which|Please show|Tell me about)\s+", "", query, flags=re.IGNORECASE).strip().rstrip("?")
     return clean[:65].capitalize(), "Audited ONGC Enterprise Records | As of 19-Oct-2026"
@@ -99,52 +88,12 @@ def make_clean_title(query: str) -> str:
     return t
 
 
-FRIENDLY_NAMES = {
-    # Disciplines
-    "DISC-FIN": "Finance",
-    "DISC-HR": "HR",
-    "DISC-DRL": "Drilling",
-    "DISC-PRD": "Production",
-    "DISC-MM": "Materials Management",
-    "DISC-IT": "IT & Infocom",
-    "DISC-GEO": "Geology",
-    "DISC-GP": "Geophysics",
-    "DISC-RES": "Reservoir",
-    "DISC-CHM": "Chemistry",
-    "DISC-LEG": "Legal",
-    "DISC-MED": "Medical",
-    "DISC-HSE": "HSE",
-    # Work Centres
-    "WC-DEL": "Delhi HQ",
-    "WC-DDN": "Dehradun",
-    "WC-MUM": "Mumbai",
-    "WC-TRI": "Tripura Asset",
-    "WC-ASM": "Assam Asset",
-    "WC-JOR": "Jorhat Asset",
-    "WC-AAB": "A&AA Basin",
-    "WC-SIL": "Silchar Basin",
-    "WC-INB": "INBIGS",
-    "WC-AHM": "Ahmedabad Asset",
-    "WC-ANK": "Ankleshwar Asset",
-    "WC-MEH": "Mehsana Asset",
-    "WC-CAM": "Cambay Asset",
-    "WC-RAJ": "Rajasthan Basin",
-}
-
-
 def replace_codes_with_friendly_names(obj: Any) -> Any:
-    """Recursively replaces technical discipline/work-centre codes with friendly human names."""
-    if isinstance(obj, str):
-        val = obj
-        for code, friendly in FRIENDLY_NAMES.items():
-            if code in val:
-                val = val.replace(code, friendly)
-        return val
-    elif isinstance(obj, dict):
-        return {k: replace_codes_with_friendly_names(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [replace_codes_with_friendly_names(item) for item in obj]
-    return obj
+    """Recursively replaces technical discipline/work-centre/field codes with friendly human names.
+
+    Delegates to the single entity dictionary (`app/semantic/entities.py`, B1.2).
+    """
+    return get_entities().replace_codes(obj)
 
 
 class AgentTurnRunner:
@@ -172,8 +121,14 @@ class AgentTurnRunner:
         voice_override: Optional[str] = None,
         history: Optional[List[Dict[str, Any]]] = None,
         ui_context: Optional[Dict[str, Any]] = None,
+        spec_patch: Optional[Dict[str, Any]] = None,
+        base_spec: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Runs a live agent turn through ADK with Gemini model."""
+        """Runs a live agent turn through ADK with Gemini model.
+
+        `spec_patch` / `base_spec` (contract v2) let a drill-down chip refine a specific card's
+        QuerySpec deterministically; they are used only when YUKTI_PLANNER=1.
+        """
         os.environ["GOOGLE_CLOUD_LOCATION"] = VERTEX_TEXT_LOCATION
         t0 = time.perf_counter()
         norm_persona = normalize_persona(persona)
@@ -411,6 +366,34 @@ class AgentTurnRunner:
             session_state.record_turn(conv_contract)
             return conv_contract
 
+        # B2.4: QuerySpec planner behind YUKTI_PLANNER=1. Data questions go planner -> compiler ->
+        # BigQuery; the keyword data fast-paths below (0b-0d) are skipped entirely in this mode, so
+        # only greeting and screen control answer before the question is understood. Anything the
+        # planner cannot answer (policy, what-if, documents, unknown metric) continues on the
+        # legacy path unchanged. Flag off = baseline behaviour.
+        planner_on = planner_enabled()
+        if planner_on:
+            patch_obj, base_obj = None, None
+            if spec_patch:
+                try:
+                    from app.brain.query_spec import QuerySpec, SpecPatch
+                    patch_obj = SpecPatch.model_validate(spec_patch)
+                    base_obj = QuerySpec.from_contract(base_spec) if base_spec else None
+                except Exception as e_patch:
+                    logger.warning(f"Ignoring invalid spec_patch/query_spec: {e_patch}")
+                    patch_obj, base_obj = None, None
+            try:
+                planned = await run_planner_turn(query, session_state, norm_persona, turn_id, det_lang, t0,
+                                                 patch_override=patch_obj, base_spec=base_obj)
+                if planned is not None:
+                    return self._finalize_planner_contract(planned, session_state, query, t0)
+            except Exception as e_plan:  # the planner must never take a turn down (G4 B2 F-4)
+                logger.exception(f"Planner pipeline failed; continuing on the legacy path: {e_plan}")
+            # The answer for this turn comes from the legacy path: mark the spec history so the next
+            # follow-up does not patch an older planner spec (G4 B2 F-6).
+            session_state.spec_history.append({})
+            session_state.spec_history[:] = session_state.spec_history[-20:]
+
         # 0b. Contextual Follow-Up Fast-Path ("Show breakdown by discipline", "What are the relevant policy rules?", "Only E5 and above")
         active_state = getattr(session_state, "active_query_state", None)
         active_cid = (active_state or {}).get("certified_id") or session_state.current_root_id or "C1"
@@ -418,9 +401,9 @@ class AgentTurnRunner:
         active_wc = active_params.get("wc_id") or session_state.active_entities.get("wc_id") or "WC-DEL"
         active_mode_kind = (active_state or {}).get("topic") or "tenure"
 
-        if "show breakdown by discipline" in q_clean or "breakdown by discipline" in q_clean or "by discipline" in q_clean:
+        if not planner_on and ("show breakdown by discipline" in q_clean or "breakdown by discipline" in q_clean or "by discipline" in q_clean):
             from app.tools.query_data import query_data as qd
-            city_lbl = FRIENDLY_NAMES.get(active_wc, active_wc)
+            city_lbl = get_entities().wc_name(active_wc)
             chart_k = requested_chart_kind or "hbar"
 
             if active_mode_kind == "workforce_headcount":
@@ -460,7 +443,7 @@ class AgentTurnRunner:
                             "type": "table" if chart_k == "table" else "chart",
                             "mode": "refine",
                             "title": title_disc,
-                            "subtitle": f"Work Centre: {city_lbl} ({active_wc}) | {total_emp:,} Active Employees Across {len(rows)} Disciplines",
+                            "subtitle": f"Work Centre: {city_lbl} | {total_emp:,} Active Employees Across {len(rows)} Disciplines",
                             "chart": chart_spec,
                             "table": {"columns": cols, "rows": rows[:25]},
                         },
@@ -542,7 +525,7 @@ class AgentTurnRunner:
                 session_state.record_turn(disc_contract, user_query=query, all_rows=rows)
                 return disc_contract
 
-        if "relevant policy rules" in q_clean or "policy guidelines" in q_clean or q_clean == "what are the relevant policy rules":
+        if not planner_on and ("relevant policy rules" in q_clean or "policy guidelines" in q_clean or q_clean == "what are the relevant policy rules"):
             clause_contract = {
                 "turn_id": turn_id,
                 "language": det_lang,
@@ -605,15 +588,10 @@ class AgentTurnRunner:
             "women", "female", "gender", "sc", "st", "obc", "pwd", "contract", "apprentice", "training", "overtime",
             "salary", "pay", "medical", "leave", "boe", "production", "added headcount", "c11", "histogram", "distribution",
         ]
-        if any(t in q_clean for t in hc_triggers) and not any(ex in q_clean for ex in hc_exclusions):
-            from app.router import WC_SYNONYMS
+        if not planner_on and any(t in q_clean for t in hc_triggers) and not any(ex in q_clean for ex in hc_exclusions):
             from app.tools.query_data import query_data as qd
 
-            matched_wc = None
-            for term, code in sorted(WC_SYNONYMS.items(), key=lambda x: len(x[0]), reverse=True):
-                if re.search(r"\b" + re.escape(term) + r"\b", q_clean):
-                    matched_wc = code
-                    break
+            matched_wc = get_entities().resolve_wc(q_clean)
 
             if matched_wc:
                 sql_hc = (
@@ -643,7 +621,7 @@ class AgentTurnRunner:
                     p0 = rows_posts[0] if rows_posts else {}
                     sanctioned = int(float(p0.get("sanctioned_posts", 0) or 0))
                     vacancies = int(float(p0.get("vacancies", 0) or 0))
-                    wc_label = FRIENDLY_NAMES.get(matched_wc, matched_wc)
+                    wc_label = get_entities().wc_name(matched_wc)
                     top_grade = rows_hc[0].get("grade_id", "E1")
                     top_grade_cnt = int(float(rows_hc[0].get("employees", 0) or 0))
 
@@ -683,7 +661,7 @@ class AgentTurnRunner:
                             "type": "table" if chart_k == "table" else "chart",
                             "mode": "replace",
                             "title": title_hc,
-                            "subtitle": f"Work Centre: {wc_label} ({matched_wc}) | Active Regular Rolls: {total_emp:,} | Sanctioned: {sanctioned:,} | As of 19-Oct-2026",
+                            "subtitle": f"Work Centre: {wc_label} | Active Regular Rolls: {total_emp:,} | Sanctioned: {sanctioned:,} | As of 19-Oct-2026",
                             "kpis": kpis,
                             "chart": chart_spec,
                             "table": {"columns": cols_hc, "rows": rows_hc[:20]},
@@ -779,22 +757,17 @@ class AgentTurnRunner:
                     return hc_all_contract
 
         # 0d. Live BigQuery Histogram & Distribution Engine ("draw a histogram", "histogram of employee ages", "distribution of lifting cost")
-        if requested_chart_kind == "histogram" or any(k in q_clean for k in ["histogram", "frequency distribution", "bell curve", "age distribution", "tenure distribution", "salary distribution", "pay distribution"]):
-            from app.router import WC_SYNONYMS
+        if not planner_on and (requested_chart_kind == "histogram" or any(k in q_clean for k in ["histogram", "frequency distribution", "bell curve", "age distribution", "tenure distribution", "salary distribution", "pay distribution"])):
             from app.tools.query_data import query_data as qd
 
-            matched_wc = None
-            for term, code in sorted(WC_SYNONYMS.items(), key=lambda x: len(x[0]), reverse=True):
-                if re.search(r"\b" + re.escape(term) + r"\b", q_clean):
-                    matched_wc = code
-                    break
+            matched_wc = get_entities().resolve_wc(q_clean)
             if not matched_wc and any(w in q_clean for w in ["there", "their", "these", "those", "here", "this work centre", "this station"]):
                 matched_wc = session_state.active_entities.get("wc_id")
             elif not matched_wc and session_state.active_entities.get("wc_id") and len(q_clean.split()) <= 7:
                 matched_wc = session_state.active_entities.get("wc_id")
 
             wc_filter_sql = f" AND wc_id = '{matched_wc}'" if matched_wc else ""
-            wc_scope_label = FRIENDLY_NAMES.get(matched_wc, matched_wc) if matched_wc else "ONGC Company-Wide"
+            wc_scope_label = get_entities().wc_name(matched_wc) if matched_wc else "ONGC Company-Wide"
 
             # Determine which variable to bin in BigQuery SSOT
             if any(k in q_clean for k in ["lifting cost", "cost per boe", "opex"]):
@@ -998,14 +971,9 @@ class AgentTurnRunner:
             "transfer proposal",
         ]
         if any(t in q_clean for t in draft_triggers):
-            from app.router import WC_SYNONYMS
             from app.tools.query_data import query_data as qd
 
-            matched_wc = None
-            for term, code in sorted(WC_SYNONYMS.items(), key=lambda x: len(x[0]), reverse=True):
-                if re.search(r"\b" + re.escape(term) + r"\b", q_clean):
-                    matched_wc = code
-                    break
+            matched_wc = get_entities().resolve_wc(q_clean)
             if not matched_wc:
                 matched_wc = (session_state.active_entities or {}).get("wc_id") or (getattr(session_state, "active_query_state", {}) or {}).get("params", {}).get("wc_id")
 
@@ -1434,18 +1402,10 @@ class AgentTurnRunner:
         if det_lang == "hi-en":
             # If model produced Devanagari script for Romanized Hinglish input, reconstruct into clean Romanized Hinglish
             if re.search(r"[\u0900-\u097F]", spoken_summary):
-                wc_term = "Dehradun" if "dehradun" in query.lower() else ("Mumbai" if "mumbai" in query.lower() else ("Delhi" if "delhi" in query.lower() else "work centre"))
-                tot = 560 if "mumbai" in query.lower() else 419
-                top_desc = ""
-                if tool_responses_recorded:
-                    tr_first = tool_responses_recorded[0]["response"]
-                    tot = tr_first.get("total_count") or tr_first.get("row_count") or tot
-                    dt = tr_first.get("dimension_totals", {})
-                    disc_t = dt.get("discipline_id", {})
-                    if disc_t:
-                        rk = sorted(disc_t.items(), key=lambda x: x[1], reverse=True)
-                        top_desc = f"Sabse zyada {rk[0][0]} ({rk[0][1]}) aur {rk[1][0]} ({rk[1][1]}) mein hain."
-                spoken_summary = f"{wc_term} mein 5 saal se zyada {tot} executives hain. {top_desc} Details screen par hain."
+                # Rebuild a Roman-script answer from the tool result only (bug audit 2.7): the old
+                # fallback hard-coded a Delhi/Mumbai tenure sentence for every topic and raised
+                # IndexError when only one discipline came back.
+                spoken_summary = self._hinglish_fallback(query, tool_responses_recorded)
             else:
                 spoken_summary = re.sub(r"Details are on screen\.", "Details screen par hain.", spoken_summary, flags=re.IGNORECASE)
                 spoken_summary = re.sub(r"विवरण स्क्रीन पर उपलब्ध हैं।?", "Details screen par hain.", spoken_summary)
@@ -1560,7 +1520,13 @@ class AgentTurnRunner:
         }
 
         self.validator.validate(contract)
-        if YUKTI_RESULT_CACHE and route_decision["route"] == "certified" and route_decision.get("query_id") and not requested_chart_kind:
+        if (
+            YUKTI_RESULT_CACHE
+            and route_decision["route"] == "certified"
+            and route_decision.get("query_id")
+            and not requested_chart_kind
+            and self._answer_is_cacheable(route_decision, tool_responses_recorded)
+        ):
             from app.answer_cache import get_answer_cache
             ans_cache = get_answer_cache()
             ans_cache.set_answer(
@@ -1571,6 +1537,69 @@ class AgentTurnRunner:
             )
         session_state.record_turn(contract, user_query=query)
         return contract
+
+    def _finalize_planner_contract(self, planned: Dict[str, Any], session_state: Any, query: str, t0: float) -> Dict[str, Any]:
+        """Validates a planner contract and stores the spec for follow-up patches (B2.5)."""
+        contract = planned["contract"]
+        meta = planned.get("meta") or {}
+        contract["latency_ms"] = round((time.perf_counter() - t0) * 1000, 2)
+        self.validator.validate(contract)
+        rows = meta.get("rows")
+        session_state.record_turn(contract, user_query=query, all_rows=rows)
+        if meta.get("spec") is not None:
+            session_state.spec_history.append(meta["spec"].to_contract())
+            session_state.spec_history[:] = session_state.spec_history[-20:]
+        return contract
+
+    @staticmethod
+    def _hinglish_fallback(query: str, tool_responses: List[Dict[str, Any]]) -> str:
+        """Roman-script Hinglish summary built only from the first tool result (no hard-coded numbers)."""
+        ents = get_entities()
+        resp = (tool_responses[0].get("response") if tool_responses else None) or {}
+        params = resp.get("params_applied") or {}
+        wc = params.get("wc_id") or ents.resolve_wc(query)
+        place = ents.wc_name(wc) if wc else ""
+        det = resp.get("deterministic_summary")
+        det = det if isinstance(det, dict) else {}
+        tot = resp.get("total_count") or det.get("total_count") or resp.get("row_count")
+        dims = resp.get("dimension_totals") or det.get("dimension_totals") or {}
+        disc = dims.get("discipline_id") or dims.get("discipline") or {}
+        ranked = sorted(disc.items(), key=lambda kv: kv[1], reverse=True)[:2]
+        top = ""
+        if ranked:
+            top = "Sabse zyada " + " aur ".join(f"{ents.friendly(k)} ({v})" for k, v in ranked) + " mein hain. "
+        if tot is None:
+            return "Jawab screen par hai. Details screen par hain."
+        if resp.get("query_id") == "C1" and params.get("min_stay_months"):
+            years = round(int(params["min_stay_months"]) / 12)
+            lead = f"{place or 'Is work centre'} mein {years} saal se zyada {tot} executives hain. "
+        else:
+            lead = (f"{place}: " if place else "") + f"kul {tot} records mile. "
+        return (lead + top + "Details screen par hain.").replace("  ", " ")
+
+    @staticmethod
+    def _answer_is_cacheable(route_decision: Dict[str, Any], tool_responses: List[Dict[str, Any]]) -> bool:
+        """Answer-cache poisoning guard (bug audit 2.6).
+
+        The answer cache is keyed by the router's (certified_id, params). A contract may only be
+        stored under that key if the model actually executed that certified query with those
+        parameters and got rows back; otherwise an unrelated / failed / free-SQL answer would be
+        served to every later asker of the certified question.
+        """
+        qid = route_decision.get("query_id")
+        want = {k: v for k, v in (route_decision.get("extracted_params") or {}).items() if v is not None}
+        for tr in tool_responses:
+            if tr.get("name") != "run_certified_query":
+                continue
+            resp = tr.get("response") or {}
+            if resp.get("query_id") != qid or resp.get("status") == "error":
+                continue
+            applied = resp.get("params_applied") or {}
+            if any(str(applied.get(k)) != str(v) for k, v in want.items()):
+                continue
+            if (resp.get("row_count") or len(resp.get("rows") or [])) > 0:
+                return True
+        return False
 
     def _extract_spoken_summary(self, model_text: str, language: str) -> str:
         """Extracts 2-3 clean spoken sentences, stripping table/dataset/clause tokens per User Decision."""

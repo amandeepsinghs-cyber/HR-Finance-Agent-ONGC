@@ -150,6 +150,10 @@ def select_chart_kind(
             }:
                 return vo
 
+    # 1b. Nothing to plot (e.g. a failed or empty query): a table, never an IndexError
+    if not columns or not rows:
+        return "table"
+
     # 2. Single row / single number KPI
     if len(rows) == 1 and len(columns) <= 2:
         return "kpi"

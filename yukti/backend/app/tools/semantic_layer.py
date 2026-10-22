@@ -7,6 +7,8 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, Tuple
 from google.cloud import bigquery
+
+from app.semantic.normalize import normalize_categorical_filters
 from app.config import (
     ALLOWED_DATASETS,
     BQ_LOCATION,
@@ -38,7 +40,7 @@ BIGQUERY ENTERPRISE SCHEMAS & EXACT COLUMN CATALOG (Project: {GCP_PROJECT}):
 
 0. AUTHORITATIVE SINGLE SOURCE OF TRUTH (SSOT) 360° TABLES (USE THESE FIRST FOR ALL WORKFORCE, WORK CENTRE, FIELD, CORPORATE, AND HISTOGRAM/DISTRIBUTION QUERIES):
    • `hrfin_gold.ssot_workforce_employee` (1 ROW PER EMPLOYEE — 42,171 total rows; 23,117 Active employees; ZERO fan-out):
-     - Exact Columns: emp_id, emp_name, name, gender, dob, doj, fiscal_year_joined, age_years, age_band, total_tenure_years, tenure_band, social_category, category, pwd_flag, pwd_category, home_state_code, grade_id, current_grade_id, cadre ('executive'|'non_executive'), group_class, grade_designation, grade_level_order, discipline_id, discipline_code, discipline_name, discipline_function, wc_id, current_wc_id, wc_name, wc_short_name, city, state, sector, cluster_id, cluster_name, hard_station_cat, onshore_offshore, wc_type, is_corporate_hq, current_designation, entry_mode, employment_status ('active'|'separated'), separation_date, retirement_date, years_to_retirement, is_retiring_within_3yr, has_hard_station_tenure, has_offshore_tenure, exemption_tag, exemption_reason_code, continuous_from_date, continuous_stay_months, continuous_stay_years, is_continuous_5yr_plus, is_superannuation_exempt, cumulative_cluster_years, has_breached_cluster_10yr_cap, fy26_apar_score, fy26_apar_rating, is_dpc_eligible, fy26_training_hours, fy26_training_days, fy26_programmes_completed, fy26_gross_salary_inr, fy26_gross_salary_lakh, avg_monthly_gross_inr, fy26_overtime_hours, fy26_overtime_amount_inr, fy26_prp_inr, el_balance_days, el_encashable_days, hpl_balance_days, active_headcount (1 if active else 0), in_position_strength (1 if active else 0).
+     - Exact Columns: emp_id, emp_name, name, gender, dob, doj, fiscal_year_joined, age_years, age_band, total_tenure_years, tenure_band, social_category, category, pwd_flag, pwd_category, home_state_code, grade_id, current_grade_id, cadre ('executive'|'non_executive'|'board'), group_class, grade_designation, grade_level_order, discipline_id, discipline_code, discipline_name, discipline_function, wc_id, current_wc_id, wc_name, wc_short_name, city, state, sector, cluster_id, cluster_name, hard_station_cat, onshore_offshore, wc_type, is_corporate_hq, current_designation, entry_mode, employment_status ('Active'|'Separated'), separation_date, retirement_date, years_to_retirement, is_retiring_within_3yr, has_hard_station_tenure, has_offshore_tenure, exemption_tag, exemption_reason_code, continuous_from_date, continuous_stay_months, continuous_stay_years, is_continuous_5yr_plus, is_superannuation_exempt, cumulative_cluster_years, has_breached_cluster_10yr_cap, fy26_apar_score, fy26_apar_rating, is_dpc_eligible, fy26_training_hours, fy26_training_days, fy26_programmes_completed, fy26_gross_salary_inr, fy26_gross_salary_lakh, avg_monthly_gross_inr, fy26_overtime_hours, fy26_overtime_amount_inr, fy26_prp_inr, el_balance_days, el_encashable_days, hpl_balance_days, active_headcount (1 if active else 0), in_position_strength (1 if active else 0).
      - Example (Workforce count): `SELECT current_grade_id, cadre, COUNT(*) AS employees FROM hrfin_gold.ssot_workforce_employee WHERE active_headcount = 1 AND wc_id = 'WC-AHM' GROUP BY 1, 2 ORDER BY 3 DESC`
      - Example (Age Histogram): `SELECT CONCAT(CAST(CAST(FLOOR(age_years / 5) * 5 AS INT64) AS STRING), '-', CAST(CAST(FLOOR(age_years / 5) * 5 + 4 AS INT64) AS STRING), ' yrs') AS age_bucket, COUNT(*) AS employees FROM hrfin_gold.ssot_workforce_employee WHERE active_headcount = 1 GROUP BY FLOOR(age_years / 5), age_bucket ORDER BY FLOOR(age_years / 5)`
 
@@ -155,16 +157,16 @@ BIGQUERY ENTERPRISE SCHEMAS & EXACT COLUMN CATALOG (Project: {GCP_PROJECT}):
 
 2. SILVER OPERATIONAL TABLES (Authoritative single-grain tables — prefer these over multi-table marts for exact counts/sums):
    • `hrfin_silver.employee_master`: emp_id, name, gender, dob, doj, current_grade_id, discipline_id, current_wc_id, category, pwd_flag, employment_status ('Active'), retirement_date. (23,117 active employees).
-   • `hrfin_silver.headcount_snapshot`: snapshot_id, month, fiscal_year, wc_id, grade_id, discipline_id, cadre, gender, category, pwd_flag, active_headcount (Monthly snapshot — filter `month = '2026-03'` for FY26 end or `month = '2026-09'` for latest Sep-2026; NEVER sum `active_headcount` across multiple months!).
+   • `hrfin_silver.headcount_snapshot`: snapshot_id, month, fiscal_year, wc_id, grade_id, discipline_id, gender, category, pwd_flag, age_band, tenure_band, headcount, active_headcount, on_leave_headcount (no cadre column: executives are `grade_id LIKE 'E%'`; Monthly snapshot — filter `month = '2026-03'` for FY26 end or `month = '2026-09'` for latest Sep-2026; NEVER sum `active_headcount` across multiple months!).
    • `hrfin_silver.sanctioned_posts`: fiscal_year, wc_id, discipline_id, grade_id, sanctioned_strength, in_position_strength, vacancy_count, backlog_vacancies, special_drive_flag.
-   • `hrfin_silver.posting_history`: posting_id, emp_id, wc_id, grade_id, discipline_id, from_date, to_date, posting_type, order_no, is_current.
+   • `hrfin_silver.posting_history`: posting_id, emp_id, wc_id, grade_id, discipline_id, designation, from_date, to_date, posting_type, order_no, is_current_posting, exemption_tag, exemption_reason_code.
    • `hrfin_silver.promotion_history` & `hrfin_silver.dpc_cases`: promotion_id/dpc_id, emp_id, from_grade_id, to_grade_id, effective_date, fiscal_year, status, delay_months, delay_bottleneck_reason.
    • `hrfin_silver.separations`: separation_id, emp_id, separation_date, fiscal_year, separation_type ('Superannuation', 'Resignation', 'VRS', 'Death'), last_grade_id, last_wc_id, exit_interview_reason.
    • `hrfin_silver.payroll_monthly`: payroll_id, emp_id, month, fiscal_year, wc_id, grade_id, basic_pay_inr, da_inr, hra_inr, cafeteria_allowances_inr, mining_offshore_allowance_inr, overtime_hours, overtime_amount_inr, prp_inr, gross_salary_inr, net_salary_inr, employer_cpf_inr, employer_prbs_inr, employer_prmb_inr.
-   • `hrfin_silver.apar_ratings`: rating_id, emp_id, fiscal_year, numerical_score, final_rating, wc_id, grade_id.
-   • `hrfin_silver.succession_plan`: position_id, role_title, wc_id, grade_id, criticality_tier, incumbent_emp_id, incumbent_retire_date, successor_1_emp_id, successor_1_readiness, readiness_gap_reason.
+   • `hrfin_silver.apar_ratings`: apar_id, emp_id, fiscal_year, numerical_score, final_rating, wc_id, grade_id.
+   • `hrfin_silver.succession_plan`: position_id, role_title, wc_id, discipline_id, fiscal_year, criticality_tier, incumbent_emp_id, incumbent_retire_date, successor_1_emp_id, successor_1_readiness, readiness_gap_reason.
    • `hrfin_silver.training_records` & `hrfin_silver.training_calendar`: training_record_id, emp_id, programme_id, programme_name, institute, fiscal_year, training_hours, completion_status.
-   • `hrfin_silver.leave_ledger`: leave_id, emp_id, fiscal_year, leave_type ('EL', 'HPL', 'CL'), opening_balance_days, accrued_days, availed_days, encashed_days, closing_balance_days, encashable_balance_days.
+   • `hrfin_silver.leave_ledger`: leave_id, emp_id, fiscal_year, leave_type ('EL', 'HPL', 'CL'), transaction_type, days_count, from_date, to_date, closing_balance_days, encashable_balance_days.
    • `hrfin_silver.medical_claims` & `hrfin_silver.travel_claims`: claim_id, emp_id, wc_id, fiscal_year, claimed_amount_inr, approved_amount_inr, status, turnaround_days.
    • `hrfin_silver.grievances_litigation`, `hrfin_silver.vigilance_cases`, `hrfin_silver.posh_cases`, `hrfin_silver.icc_committees`: case/committee registers with status, filing_date, age_days, inquiry_days.
    • `hrfin_silver.apprentices`: apprentice_id, trade, trade_category, wc_id, fiscal_year, start_date, end_date, stipend_inr_month, status, category, gender (FY26 engaged = 1,550).
@@ -181,10 +183,10 @@ BIGQUERY ENTERPRISE SCHEMAS & EXACT COLUMN CATALOG (Project: {GCP_PROJECT}):
      `lifting_cost_per_boe = ROUND(SUM(total_opex_inr_cr * 10000000.0 / 88.33) / NULLIF(SUM(total_production_boe), 0), 2)`
      `manpower_cost_per_boe = ROUND(SUM(allocated_manpower_cost_inr_cr * 10000000.0 / 88.33) / NULLIF(SUM(total_production_boe), 0), 2)`
    Rule 3: ASSET & REGIONAL RESOLUTION:
-     - Offshore Regions: Western Offshore includes Mumbai High (`WC-MHN`, `WC-MHS`), Neelam & Heera (`WC-N&H`), and Bassein & Satellite (`WC-B&S`). Eastern Offshore includes Eastern Offshore Asset / KG Basin (`WC-EOA`). Do not label Eastern Offshore as Western Offshore.
+     - Offshore Regions: Western Offshore includes Mumbai High Asset (`WC-MUM`; fields `FLD-MHN`, `FLD-MHS`), Neelam & Heera (`WC-NEH`), and Bassein & Satellite (`WC-BAS`). Eastern Offshore is the Eastern Offshore Asset at Kakinada (`WC-EAS`, KG-DWN-98/2 field `FLD-KG982`). Do not label Eastern Offshore as Western Offshore.
      - Gujarat Onshore: use `state = 'Gujarat'` or `wc_id IN ('WC-AHM', 'WC-ANK', 'WC-MEH', 'WC-CAM')`. Never invent 'gujarat asset'.
      - Assam Onshore: use `state = 'Assam'` or `wc_id IN ('WC-ASM', 'WC-JOR')`.
-     - North-East (NE): strictly means states AS, TR, AR, NL, MZ, MN, ML, SK (`state_code IN ('AS', 'TR', 'AR', 'NL', 'MZ', 'MN', 'ML', 'SK')` or `wc_id IN ('WC-ASM', 'WC-TRI', 'WC-AAB', 'WC-JOR', 'WC-SIL', 'WC-INB')`). DO NOT equate NE with hard_station_cat='C'. Total FY26 NE executive vacancies = 143.
+     - North-East (NE): `sector = 'NE'` in `dim_work_centre` / `ssot_work_centre_360`, i.e. `wc_id IN ('WC-ASM', 'WC-TRI', 'WC-AAB', 'WC-JOR', 'WC-SIL', 'WC-INB')`. DO NOT equate NE with hard_station_cat='C'. Total FY26 NE executive vacancies = 143.
      - Never make unverified causal claims; cite data drivers (such as water cut or mature field age) only when present in query results.
    Rule 4: Multi-Tool Policy + Data Turns: If an inquiry involves both corporate policy rules and quantitative employee numbers (e.g. P11 retention beyond 10-year cluster cap, pre-retirement exemptions, transfer eligibility), call BOTH `search_policy` to retrieve the clause AND `query_data` to fetch exact headcounts.
    Rule 5: Rank not threshold: never use arbitrary hardcoded cutoff filters that risk returning 0 rows; use dynamic quantiles, `ORDER BY ... DESC LIMIT 10`.
@@ -213,9 +215,16 @@ class SemanticLayer:
         """Applies query-craft rules (LOWER on categoricals, project qualification, and row limits)."""
         refined_sql = sql
 
+        # Case-correct categorical literals against the profiled catalog (B1.3): e.g.
+        # `employment_status = 'active'` -> `'Active'` (the data's spelling), which used to return 0 rows.
+        # Runs before project qualification (G4 B1 r1 finding F-1); the table regex also accepts
+        # qualified names.
+        refined_sql = normalize_categorical_filters(refined_sql)
+
         # Qualify unadorned datasets with project ID
         pattern = r"(?<![a-zA-Z0-9_\-\.`])(hrfin_gold|hrfin_silver|hrfin_docs)\.([a-zA-Z0-9_]+)"
         refined_sql = re.sub(pattern, f"`{self.project_id}`.\\1.\\2", refined_sql)
+
 
         # Case-insensitive match on categorical columns. The captured VALUE must be lowercased
         # (previously `.lower()` was applied to the replacement template, yielding e.g.
