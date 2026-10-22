@@ -41,6 +41,7 @@ const GOOD_WORDS = /\b(excellent|very good|healthy|met|achieved|above target|on 
 
 export function toneOf(kpi: KpiTile): Tone {
   const d = kpi.delta || '';
+  if (/\bnot\s+(met|on track|achieved|healthy)\b/i.test(d)) return 'bad'; // negation beats GOOD_WORDS
   if (BAD_WORDS.test(d)) return 'bad';
   if (GOOD_WORDS.test(d)) return 'good';
   // Otherwise: sign/direction words decide direction, and metric polarity decides meaning.
