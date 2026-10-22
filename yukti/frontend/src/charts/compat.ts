@@ -157,7 +157,7 @@ export function compatibility(p: DataProfile, kind: ReplotKind): { status: Replo
       if (PART_OF_WHOLE.includes(kind)) {
         if (p.hasNegative) return { status: 'alternative', alternative: 'hbar', note: `${an(label(kind)).replace(/^a/, 'A')} can't show losses, so gains and losses are shown as bars.` };
         if (p.shape === 'multi_measure') return { status: 'transform', note: `Showing ${humanizeKey(p.primary)}; pick another metric from the menu.` };
-        if (p.n > 10 && (kind === 'pie' || kind === 'donut')) return { status: 'transform', note: `Top 9 shown; the remaining ${p.n - 9} are grouped as Others.` };
+        if (p.n > 8 && (kind === 'pie' || kind === 'donut')) return { status: 'transform', note: `Top 7 shown; the remaining ${p.n - 7} are grouped as Others.` };
         return { status: 'native' };
       }
       if (kind === 'line' || kind === 'area') {
@@ -166,9 +166,9 @@ export function compatibility(p: DataProfile, kind: ReplotKind): { status: Replo
       }
       if (kind === 'histogram') {
         if (p.ordinal) return { status: 'native' };
-        if (p.n >= 8 && !p.hasNegative) return { status: 'transform', note: `Distribution of ${humanizeKey(p.primary).toLowerCase()} across ${p.n} ${humanizeKey(p.dimKey).toLowerCase()} values.` };
-        if (p.n >= 8) return { status: 'transform', note: `Distribution of ${humanizeKey(p.primary).toLowerCase()} across ${p.n} items.` };
-        return { status: 'alternative', alternative: 'bar', note: 'Too few values for a distribution, so here is a bar chart.' };
+        // a distribution needs enough values to be honest (the planner draws < 30 values as ranked bars anyway)
+        if (p.n >= 30) return { status: 'transform', note: `Distribution of ${humanizeKey(p.primary).toLowerCase()} across ${p.n} ${humanizeKey(p.dimKey).toLowerCase()} values.` };
+        return { status: 'alternative', alternative: 'hbar', note: `Only ${p.n} values — too few for a distribution, so here is a ranked bar chart.` };
       }
       if (kind === 'scatter') return p.measures.length >= 2 ? { status: 'native' } : { status: 'alternative', alternative: 'bar', note: 'A scatter plot needs two measures; there is one here.' };
       if (kind === 'grouped_bar' || kind === 'stacked_bar') {

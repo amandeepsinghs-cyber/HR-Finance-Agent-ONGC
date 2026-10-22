@@ -8,8 +8,8 @@ One engine (`replot(visual, kind)`) serves voice ("show as pie"), typed commands
 
 | Data shape | Example | bar | hbar | donut | pie | line | area | histogram | scatter | treemap | waterfall | funnel | grouped_bar | stacked_bar | bullet | table |
 |---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Categorical, positive (`categorical`) | Headcount by work centre (14) | ✅ | ✅ | 🔄 | 🔄 | ↪️ | ↪️ | 🔄 | ↪️ | ✅ | ↪️ | ↪️ | ↪️ | ↪️ | ↪️ | ✅ |
-| Categorical with losses (`categorical`) | Field P&L FY26 (12, some negative) | ✅ | ✅ | ↪️ | ↪️ | ↪️ | ↪️ | 🔄 | ↪️ | ↪️ | ✅ | ↪️ | ↪️ | ↪️ | ↪️ | ✅ |
+| Categorical, positive (`categorical`) | Headcount by work centre (14) | ✅ | ✅ | 🔄 | 🔄 | ↪️ | ↪️ | ↪️ | ↪️ | ✅ | ↪️ | ↪️ | ↪️ | ↪️ | ↪️ | ✅ |
+| Categorical with losses (`categorical`) | Field P&L FY26 (12, some negative) | ✅ | ✅ | ↪️ | ↪️ | ↪️ | ↪️ | ↪️ | ↪️ | ↪️ | ✅ | ↪️ | ↪️ | ↪️ | ↪️ | ✅ |
 | Ordinal, multi-measure (`multi_measure`) | Delhi 5+ yrs by grade (count/exempt/due) | ✅ | ✅ | 🔄 | 🔄 | ✅ | ✅ | ✅ | ✅ | 🔄 | ✅ | 🔄 | ✅ | ✅ | ↪️ | ✅ |
 | Time series (`time`) | Revenue FY22–FY26 | ✅ | ✅ | ↪️ | ↪️ | ✅ | ✅ | ↪️ | ↪️ | ↪️ | ✅ | ↪️ | ↪️ | ↪️ | ↪️ | ✅ |
 | Distribution (binned) (`distribution`) | Age bands | ✅ | ✅ | 🔄 | 🔄 | ✅ | ✅ | ✅ | ↪️ | ✅ | ↪️ | ✅ | ↪️ | ↪️ | ↪️ | ✅ |
@@ -27,11 +27,11 @@ One engine (`replot(visual, kind)`) serves voice ("show as pie"), typed commands
 - **Bullet:** needs a target column; otherwise ranked bars. **Scatter:** needs two measures.
 
 ## Notes shown to the user
-- **Categorical, positive → donut** (transform): Top 9 shown; the remaining 5 are grouped as Others.
-- **Categorical, positive → pie** (transform): Top 9 shown; the remaining 5 are grouped as Others.
+- **Categorical, positive → donut** (transform): Top 7 shown; the remaining 7 are grouped as Others.
+- **Categorical, positive → pie** (transform): Top 7 shown; the remaining 7 are grouped as Others.
 - **Categorical, positive → line** (alternative): A line suggests a trend over time; these are separate categories, so here is a bar chart.
 - **Categorical, positive → area** (alternative): An area suggests a trend over time; these are separate categories, so here is a bar chart.
-- **Categorical, positive → histogram** (transform): Distribution of headcount across 14 work centre values.
+- **Categorical, positive → histogram** (alternative): Only 14 values — too few for a distribution, so here is a ranked bar chart.
 - **Categorical, positive → scatter** (alternative): A scatter plot needs two measures; there is one here.
 - **Categorical, positive → waterfall** (alternative): A waterfall shows gains and losses building a total; these are all positive, so a ranked bar chart.
 - **Categorical, positive → funnel** (alternative): A funnel needs ordered stages; these are separate categories, so a ranked bar chart.
@@ -42,7 +42,7 @@ One engine (`replot(visual, kind)`) serves voice ("show as pie"), typed commands
 - **Categorical with losses → pie** (alternative): A pie can't show losses, so gains and losses are shown as bars.
 - **Categorical with losses → line** (alternative): A line suggests a trend over time; these are separate categories, so here is a bar chart.
 - **Categorical with losses → area** (alternative): An area suggests a trend over time; these are separate categories, so here is a bar chart.
-- **Categorical with losses → histogram** (transform): Distribution of profit (₹ cr) across 12 items.
+- **Categorical with losses → histogram** (alternative): Only 12 values — too few for a distribution, so here is a ranked bar chart.
 - **Categorical with losses → scatter** (alternative): A scatter plot needs two measures; there is one here.
 - **Categorical with losses → treemap** (alternative): A treemap can't show losses, so gains and losses are shown as bars.
 - **Categorical with losses → funnel** (alternative): A funnel can't show losses, so gains and losses are shown as bars.

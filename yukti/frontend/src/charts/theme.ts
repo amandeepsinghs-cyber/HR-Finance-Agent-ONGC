@@ -132,6 +132,12 @@ export const ANIM = {
   animationEasingUpdate: TOKENS.chartMotion.easingUpdate as 'cubicInOut',
 };
 
+/** Chart motion honouring prefers-reduced-motion (rubric C7): no animation at all when the user asks for it. */
+export function anim(): typeof ANIM | { animation: false } {
+  if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return { animation: false };
+  return ANIM;
+}
+
 /** `#RRGGBB` (or an existing rgb/rgba string) → rgba with the given alpha. */
 export function alpha(color: string, a: number): string {
   if (color.startsWith('#') && color.length >= 7) {

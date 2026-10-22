@@ -151,11 +151,16 @@ t('B2: ordinal histogram draws the existing buckets (prebinned), never re-bins b
   assert.notEqual(pie.note, 'Slices are the histogram bins.');
 });
 t('I1: categorical → histogram → bar returns the categories, not bins', () => {
-  const h = replot(V.categorical, 'histogram');
+  const big = { type: 'chart', mode: 'replace', chart: { kind: 'hbar', x: 'asset', y: 'pbt_cr', data: Array.from({ length: 40 }, (_, i) => ({ asset: `Asset ${i}`, pbt_cr: 100 + ((i * 37) % 900) })) } } as VisualContainer;
+  const h = replot(big, 'histogram');
+  assert.equal(h.applied, 'histogram');
   const bar = replot(h.visual, 'bar');
-  assert.deepEqual(bar.visual.chart?.data, replot(V.categorical, 'bar').visual.chart?.data);
+  assert.deepEqual(bar.visual.chart?.data, replot(big, 'bar').visual.chart?.data);
+  // few values → honest fallback, not a 14-value "distribution"
+  assert.equal(replot(V.categorical, 'histogram').applied, 'hbar');
   // but pie from that histogram reuses the bins
   assert.match(replot(h.visual, 'pie').note || '', /bins/);
+  void V;
 });
 t('I2: Indian FY labels "2022-23" are time, not a distribution', () => {
   const v = { type: 'chart', mode: 'replace', chart: { kind: 'line', x: 'fiscal', y: 'pat_cr', data: ['2021-22', '2022-23', '2023-24', '2024-25'].map((f, i) => ({ fiscal: f, pat_cr: 30000 + i })) } } as VisualContainer;

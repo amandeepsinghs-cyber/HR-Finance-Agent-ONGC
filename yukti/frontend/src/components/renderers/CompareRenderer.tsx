@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import * as echarts from 'echarts';
 import { CompareSpec, CompareItem } from '@/contracts/answerContract';
 import { useChartTokens } from './ChartRenderer';
-import { ChartTokens, px, tooltipBase, tooltipCard, ANIM, alpha } from '@/charts/theme';
-import { parseUnit, fmtValue, cleanText, toNumber, UnitInfo } from '@/charts/format';
+import { ChartTokens, px, tooltipBase, tooltipCard, anim, alpha } from '@/charts/theme';
+import { parseUnit, fmtValue, fmtShare, cleanText, toNumber, UnitInfo } from '@/charts/format';
 import { normalizeRows } from '@/charts/normalize';
 import { EChart } from '@/charts/EChart';
 import { KpiRenderer } from './KpiRenderer';
@@ -78,7 +78,7 @@ function buildSingleBarOption(
   return {
     backgroundColor: 'transparent',
     textStyle: { fontFamily: t.font, color: t.text },
-    ...ANIM,
+    ...anim(),
     grid: {
       left: px(t, 8),
       right: px(t, 16),
@@ -150,6 +150,12 @@ export const CompareRenderer: React.FC<CompareRendererProps> = ({
     return cats;
   }, [extracted]);
 
+  // U5.9: sites differ in size (2,450 vs 6,820) — "% of site" puts each grade on the same footing.
+  const [asShare, setAsShare] = useState(false);
+  const totals = useMemo(() => extracted.map((e) => Array.from(e.map.values()).reduce((s, v) => s + v, 0)), [extracted]);
+  const shareOf = (idx: number, v: number | null) => (v === null ? null : (v / Math.max(1e-9, totals[idx] || 0)) * 100);
+  const shareUnit: UnitInfo = { kind: 'percent', noun: '', label: '% of site' };
+
   const resolvedUnit = unit || compare?.metric || items[0]?.chart?.unit;
   const unitInfo = useMemo(() => parseUnit(resolvedUnit, compare?.metric), [resolvedUnit, compare?.metric]);
 
@@ -163,7 +169,7 @@ export const CompareRenderer: React.FC<CompareRendererProps> = ({
     return {
       backgroundColor: 'transparent',
       textStyle: { fontFamily: t.font, color: t.text },
-      ...ANIM,
+      ...anim(),
       legend: {
         top: 0,
         left: 0,
@@ -174,9 +180,9 @@ export const CompareRenderer: React.FC<CompareRendererProps> = ({
         data: items.map((i) => i.label),
       },
       grid: {
-        left: px(t, 12),
+        left: px(t, 28),
         right: px(t, 24),
-        top: px(t, 44),
+        top: px(t, 52),
         bottom: px(t, 8),
         containLabel: true,
       },
@@ -195,7 +201,7 @@ export const CompareRenderer: React.FC<CompareRendererProps> = ({
           const catName = list[0]?.name || '';
           const rows: [string, string, string?][] = items.map((item, idx) => {
             const val = extracted[idx]?.map.has(catName) ? extracted[idx].map.get(catName)! : null;
-            const formattedVal = val !== null ? fmtValue(val, unitInfo) : '—';
+            const formattedVal = val !== null ? `${fmtValue(val, unitInfo)} · ${fmtShare(shareOf(idx, val) as number)}` : '—';
             return [item.label, formattedVal, colors[idx % colors.length]];
           });
 
@@ -204,8 +210,8 @@ export const CompareRenderer: React.FC<CompareRendererProps> = ({
             const v1 = extracted[1]?.map.has(catName) ? extracted[1].map.get(catName)! : null;
             const diffLabel = `${items[0].label} − ${items[1].label}`;
             if (v0 !== null && v1 !== null) {
-              const diff = v0 - v1;
-              rows.push([diffLabel, fmtValue(diff, unitInfo, { sign: true })]);
+              const diff = asShare ? (shareOf(0, v0) as number) - (shareOf(1, v1) as number) : v0 - v1;
+              rows.push([diffLabel, asShare ? `${diff > 0 ? '+' : diff < 0 ? '−' : ''}${Math.abs(diff).toFixed(1)} pts` : fmtValue(diff, unitInfo, { sign: true })]);
             } else {
               rows.push([diffLabel, '—']);
             }
@@ -230,14 +236,15 @@ export const CompareRenderer: React.FC<CompareRendererProps> = ({
       },
       yAxis: {
         type: 'value',
-        name: unitInfo.label || undefined,
-        nameLocation: 'end',
-        nameGap: px(t, 14),
+        // Rubric C3: unit name centred and rotated along the axis, clear of the legend row.
+        name: (asShare ? shareUnit.label : unitInfo.label) || undefined,
+        nameLocation: 'middle',
+        nameRotate: 90,
+        nameGap: px(t, 48),
         nameTextStyle: {
           color: t.sub,
           fontSize: px(t, 12),
           fontFamily: t.font,
-          align: 'left',
         },
         splitNumber: 4,
         axisLine: { show: false },
@@ -247,12 +254,12 @@ export const CompareRenderer: React.FC<CompareRendererProps> = ({
           color: t.sub,
           fontSize: px(t, 12),
           fontFamily: t.font,
-          formatter: (v: number) => fmtValue(v, unitInfo, { compact: true }),
+          formatter: (v: number) => (asShare ? `${Math.round(v)}%` : fmtValue(v, unitInfo, { compact: true })),
         },
       },
       series: items.map((item, idx) => {
         const info = extracted[idx];
-        const seriesData = categories.map((cat) => (info.map.has(cat) ? info.map.get(cat)! : null));
+        const seriesData = categories.map((cat) => (info.map.has(cat) ? (asShare ? shareOf(idx, info.map.get(cat)!) : info.map.get(cat)!) : null));
         return {
           id: idx === 0 ? 'main' : `s${idx}`,
           name: item.label,
@@ -267,17 +274,18 @@ export const CompareRenderer: React.FC<CompareRendererProps> = ({
           label: {
             show: categories.length <= 12,
             position: 'top',
-            color: t.sub,
-            fontSize: px(t, 11),
+            color: t.text,
+            fontSize: px(t, 12),
+            fontWeight: 500,
             fontFamily: t.font,
             formatter: (p: any) =>
-              p.value !== null && p.value !== undefined ? fmtValue(p.value, unitInfo, { compact: true }) : '',
+              p.value !== null && p.value !== undefined ? (asShare ? fmtShare(p.value) : fmtValue(p.value, unitInfo, { compact: true })) : '',
           },
           data: seriesData,
         };
       }),
     };
-  }, [items, categories, extracted, t, unitInfo, colors]);
+  }, [items, categories, extracted, t, unitInfo, colors, asShare, totals]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!items.length) {
     return (
@@ -408,6 +416,25 @@ export const CompareRenderer: React.FC<CompareRendererProps> = ({
         className="w-full h-[26rem] min-h-[22rem] p-4 rounded-xl border border-[var(--hairline)] bg-[var(--card)]"
         data-testid="compare-chart-container"
       >
+        {unitInfo.kind === 'count' && items.length >= 2 && (
+          <div className="relative z-10 float-right -mb-8 flex gap-1 rounded-full border border-[var(--hairline)] p-0.5 text-[0.8125rem]" role="group" aria-label="Measure">
+            {[
+              { k: false, label: 'Count' },
+              { k: true, label: '% of site' },
+            ].map((o) => (
+              <button
+                key={o.label}
+                type="button"
+                data-testid={o.k ? 'compare-mode-share' : 'compare-mode-count'}
+                aria-pressed={asShare === o.k}
+                onClick={() => setAsShare(o.k)}
+                className={`rounded-full px-3 py-0.5 font-medium transition-colors ${asShare === o.k ? 'bg-[var(--accent-pale)] text-[var(--ink)]' : 'text-[var(--ink-2)] hover:text-[var(--ink)]'}`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        )}
         <EChart
           option={groupedOption}
           testId="compare-chart"

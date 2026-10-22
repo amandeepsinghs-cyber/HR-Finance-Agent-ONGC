@@ -44,7 +44,12 @@ export interface ChartPlan {
   hasNegative: boolean;
   total: number;
   annotations: { x: any; label: string }[];
+  /** Raw values (sorted desc) when a histogram was requested over fewer than SPARSE_N values: drawn ranked. */
+  sparseRows?: Row[];
 }
+
+/** Below this many raw values a histogram (and its density line) misleads; the renderer ranks the values. */
+export const SPARSE_N = 30;
 
 const ORDINAL_RE = /^(E\d+|W\d+|GRP-[A-Z]|FY\s?\d{2,4}(-\d{2})?|Q[1-4]|\d{4}(-\d{2})?|[<>≤≥]\s?\d+|\d+\s?[-–]\s?\d+|\d+\+?\s?(days|yrs?|years?)?)/i;
 const TIME_KEY_RE = /(year|month|quarter|date|^fy$|fiscal|period)/i;
@@ -125,6 +130,7 @@ export function planChart(spec: ChartSpec): ChartPlan {
 
   let form: ChartForm;
   let seriesKeys: string[] = [valueKey];
+  let sparseRows: Row[] | undefined;
 
   if (data.length === 1 && kind !== 'bullet' && kind !== 'pie' && kind !== 'donut') {
     form = 'kpi';
@@ -151,7 +157,10 @@ export function planChart(spec: ChartSpec): ChartPlan {
     if (metricKeys.length >= 2) seriesKeys = metricKeys.slice(0, 6);
     form = 'line';
   } else if (kind === 'bar') {
-    form = 'column';
+    // U5.9 (C3): columns are for ordinal / time categories. Many (> 8) or long-named (> 12 chars) nominal
+    // categories read as ranked H-bars instead of rotated, truncated column labels.
+    const nominalCrowded = !ordinal && !timeLike && (rows.length > 8 || labels.some((l) => l.length > 12));
+    form = nominalCrowded ? (hasNegative ? 'diverging' : 'ranked') : 'column';
   } else if (kind === 'hbar') {
     form = hasNegative ? 'diverging' : 'ranked';
   } else if ((kind === 'grouped_bar' || kind === 'stacked_bar' || !!spec.series) && metricKeys.length >= 2) {
@@ -196,6 +205,9 @@ export function planChart(spec: ChartSpec): ChartPlan {
     /bin|bucket|range|band|bracket/i.test(dimKey) ||
     labels.filter((l) => /[-–+<>≤≥]|\bto\b/i.test(l)).length >= Math.ceil(labels.length * 0.5));
   if (form === 'histogram' && !looksBinned && rows.length >= 5) {
+    // U5.9: fewer than 30 raw values can't support a histogram + density line; the renderer draws them ranked
+    // (same "Distribution of …" semantics). plan.rows stay binned so "histogram → pie" still gives slices = bins.
+    if (rows.length < SPARSE_N) sparseRows = [...rows].sort((a, b) => b.value - a.value);
     const vals = rows.map((r) => r.value).filter((v) => Number.isFinite(v));
     const minV = Math.min(...vals);
     const maxV = Math.max(...vals);
@@ -263,9 +275,10 @@ export function planChart(spec: ChartSpec): ChartPlan {
   }
   if ((form === 'donut' || form === 'pie') && rows.length > 1 && !ordinal) {
     rows = [...rows].sort((a, b) => b.value - a.value);
-    if (rows.length > 10) {
-      const rest = rows.slice(9);
-      rows = [...rows.slice(0, 9), { label: `Others (${rest.length})`, raw: {}, value: rest.reduce((s, r) => s + r.value, 0) }];
+    // Rubric family standard: ≤ 8 slices → top 7 + one muted "Others" bucket.
+    if (rows.length > 8) {
+      const rest = rows.slice(7);
+      rows = [...rows.slice(0, 7), { label: `Others (${rest.length})`, raw: {}, value: rest.reduce((s, r) => s + r.value, 0) }];
     }
   }
 
@@ -284,5 +297,6 @@ export function planChart(spec: ChartSpec): ChartPlan {
     hasNegative,
     total,
     annotations: spec.annotations || [],
+    ...(sparseRows ? { sparseRows } : {}),
   };
 }
