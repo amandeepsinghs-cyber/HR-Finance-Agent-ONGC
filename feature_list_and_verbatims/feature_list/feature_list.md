@@ -200,7 +200,7 @@ The hand-written catalog disagrees with BigQuery (`'active'` vs `'Active'`, `cad
 ### 3. Acceptance Criteria
 - [ ] Zero catalog/data mismatches (test).
 - [ ] `session_memory`, `router`, `query_data` and `turn_runner` all use the single dictionary.
-- [ ] "last year" resolves to FY25 relative to the FY26 as-of date.
+- [ ] "last year" resolves to the last complete FY (FY26, anchor 19-Oct-2026, current FY27) per D-30 (was: "FY25 relative to the FY26 as-of date").
 
 ---
 

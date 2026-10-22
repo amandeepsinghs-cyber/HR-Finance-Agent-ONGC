@@ -104,8 +104,8 @@ def parameterize_sql(sql_content: str, qid: str) -> tuple[str, dict]:
             "description": "ONGC Work Centre code",
             "allowed_values": [
                 "WC-DEL", "WC-DDN", "WC-MUM", "WC-TRI", "WC-ASM", "WC-JOR", "WC-AAB",
-                "WC-AHM", "WC-ANK", "WC-MEH", "WC-CAM", "WC-RAJ", "WC-KKD", "WC-CHN",
-                "WC-KOL", "WC-BOK", "WC-SIL", "WC-AGR", "WC-EOA", "WC-MHN", "WC-MHS"
+                "WC-AHM", "WC-ANK", "WC-MEH", "WC-CAM", "WC-RAJ", "WC-EAS", "WC-ROC",
+                "WC-ROK", "WC-BOK", "WC-SIL"
             ],
         }
 

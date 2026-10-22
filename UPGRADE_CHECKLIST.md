@@ -16,7 +16,7 @@
 | **U0.1** | `O` | Commit and tag the baseline | `baseline-v0.2` tag exists; tree clean | `git log`, `git tag` | ✅ | n/a | ✅ | waived (V14) | ✅ (V14) |
 | **U0.2** | `O` | `BUILD.md`, feature list v2, this checklist, decision log, review template, `DELEGATION.md` | Docs exist, cross-linked, and every feature maps to ≥ 1 step | Doc review by reviewer agent | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U0.2.md) | ✅ (V15) |
 | **U0.3** | `S` | Resolve open decisions OD-1 … OD-5 | Each recorded as D-x in `DECISIONS.md` | Sponsor answers | ✅ (OD-5 deferred to B3) | n/a | ✅ | n/a (sponsor decision) | ✅ (V15) |
-| **U0.4** | `O→F + FL` | Re-run the cache-OFF eval on `baseline-v0.2`; build the fast **gate subset** (~120 turns) | Scorecard at `yukti/backend/eval/gates/U0.md`; subset script runs in < 15 min | Eval run log | ⬜ | [packet](docs/delegation/packets/U0.4.md) | | | |
+| **U0.4** | `O→F + FL` | Re-run the cache-OFF eval on `baseline-v0.2`; build the fast **gate subset** (~120 turns) | Scorecard at `yukti/backend/eval/gates/U0.md`; subset script runs in < 15 min | Eval run log | ✅ (executed by O: subset, script and runs; no F/FL packet) | n/a | ✅ | ✅ [review](docs/reviews/B1.md) | |
 | **U0.5** | `FL` | Visual baseline: Playwright screenshots of the current UI (light/dark, key states) | `docs/reviews/assets/U0_*.png` | Screenshot script | ✅ | [packet](docs/delegation/packets/U0.5.md) | ✅ |✅ [evidence](docs/reviews/U0.5.md) (O spot-check) | |
 
 ---
@@ -98,11 +98,11 @@
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
-| **B1.1** | `O→F` | Catalog generator from INFORMATION_SCHEMA + profiled values → `semantic_catalog.json` | Covers: `hrfin_gold.ssot_workforce_employee`, `ssot_work_centre_360`, `ssot_field_economics_360`, `ssot_corporate_annual_360`, all `hrfin_gold.mart_*`/`agg_*`, and the `hrfin_silver` tables referenced in `semantic_layer.py` + `certified/library.yaml` (list frozen in the B1.1 packet) | Script run + diff | ⬜ | [packet](docs/delegation/packets/B1.1.md) | | | |
-| **B1.2** | `O` | Single entity dictionary (WC/field/discipline codes ↔ names ↔ aliases incl. Hindi/Hinglish); remove duplicates in `session_memory`/`router`/`turn_runner`/`query_data` | One import site; old maps deleted | grep + tests | ⬜ | n/a | | | |
-| **B1.3** | `O→F` | Case-insensitive categorical filter normalisation; FY resolution ("last year" = FY25) | Unit tests on rewrites + FY resolver | `pytest` | ⬜ | [packet](docs/delegation/packets/B1.3.md) | | | |
-| **B1.4** | `F` | Catalog consistency CI test (codes/values used in code and templates exist in data) | Test fails on an injected bad code | `pytest` | ⬜ | [packet](docs/delegation/packets/B1.4.md) | | | |
-| **B1.5** | `FL→O` | Gate-subset eval for B1 | Scorecard `yukti/backend/eval/gates/B1.md`; no regression vs the previous gate | Eval run log | ⬜ | [packet](docs/delegation/packets/B1.5.md) | | | |
+| **B1.1** | `O→F` | Catalog generator from INFORMATION_SCHEMA + profiled values → `semantic_catalog.json` | Covers: `hrfin_gold.ssot_workforce_employee`, `ssot_work_centre_360`, `ssot_field_economics_360`, `ssot_corporate_annual_360`, all `hrfin_gold.mart_*`/`agg_*`, and the `hrfin_silver` tables referenced in `semantic_layer.py` + `certified/library.yaml` (list frozen in the B1.1 packet) | Script run + diff | ✅ | [packet](docs/delegation/packets/B1.1.md) | ✅ | ✅ [review](docs/reviews/B1.md) | |
+| **B1.2** | `O` | Single entity dictionary (WC/field/discipline codes ↔ names ↔ aliases incl. Hindi/Hinglish); remove duplicates in `session_memory`/`router`/`turn_runner`/`query_data` | One import site; old maps deleted | grep + tests | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B1.md) | |
+| **B1.3** | `O→F` | Case-insensitive categorical filter normalisation; FY resolution ("last year" = FY25) | Unit tests on rewrites + FY resolver | `pytest` | ✅ (D-30 FY convention) | [packet](docs/delegation/packets/B1.3.md) | ✅ | ✅ [review](docs/reviews/B1.md) | |
+| **B1.4** | `F` | Catalog consistency CI test (codes/values used in code and templates exist in data) | Test fails on an injected bad code | `pytest` | ✅ | [packet](docs/delegation/packets/B1.4.md) | ✅ | ✅ [review](docs/reviews/B1.md) | |
+| **B1.5** | `FL→O` | Gate-subset eval for B1 | Scorecard `yukti/backend/eval/gates/B1.md`; no regression vs the previous gate | Eval run log | ✅ (run by O, not FL) | n/a | ✅ | ✅ [review](docs/reviews/B1.md) · [gate](yukti/backend/eval/gates/B1.md) | |
 
 ## Phase B2: QuerySpec Planner & Compiler (FEAT-009, FEAT-002) · *gate: eval root ≥ 80%, follow-ups ≥ 60%*
 
@@ -172,13 +172,13 @@
 | Phase | Date | Sponsor confirmation | Review links | Scorecard | Tag |
 |---|---|---|---|---|---|
 | Baseline | 2026-10-22 | ✅ "commit the current version… baseline build" (V14) | waived (V14) | 2026-10-20 eval (pre-fix) | `baseline-v0.2` |
-| U0 | 2026-10-22 | ✅ "go ahead" (V15) | [`U0.2.md`](docs/reviews/U0.2.md) | `gates/U0.md` (U0.4 pending, runs in parallel) | `upgrade-U0` |
+| U0 | 2026-10-22 | ✅ "go ahead" (V15) | [`U0.2.md`](docs/reviews/U0.2.md), [`B1.md`](docs/reviews/B1.md) (U0.4) | `gates/U0.md` | `upgrade-U0` |
 | U1 | 2026-10-22 | ✅ order + aura approved (D-18) | [`U1.1`](docs/reviews/U1.1.md), [`U1.2/U1.4`](docs/reviews/U1.2_U1.4.md), [`U1.3/U1.5`](docs/reviews/U1.3_U1.5.md) | n/a (visual) | `upgrade-U1` |
 | U2 | | ⬜ | | n/a (UI tests) | `upgrade-U2` |
 | U3 | | ⬜ | | n/a (voice tests) | `upgrade-U3` |
 | U4 | | ⬜ | | n/a (visual) | `upgrade-U4` |
 | U5 | | ⬜ | | fixture sweep | `upgrade-U5` |
-| B1 | | ⬜ | | `gates/B1.md` | `upgrade-B1` |
+| B1 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B1.md`](docs/reviews/B1.md) | `gates/B1.md` | — (G5 at final acceptance) |
 | B2 | | ⬜ | | `gates/B2.md` | `upgrade-B2` |
 | B3 | | ⬜ | | `gates/B3.md` | `upgrade-B3` |
 | B4 | | ⬜ | | `gates/B4.md` | `upgrade-B4` |

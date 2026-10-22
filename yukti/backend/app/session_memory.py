@@ -11,44 +11,12 @@ import re
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
+from app.semantic.entities import CODE_RE, get_entities
+
 logger = logging.getLogger("yukti.session_memory")
 
 
-WC_NAME_MAP: Dict[str, Tuple[str, str]] = {
-    "delhi": ("WC-DEL", "Delhi Corporate HQ"),
-    "new delhi": ("WC-DEL", "Delhi Corporate HQ"),
-    "corporate hq": ("WC-DEL", "Delhi Corporate HQ"),
-    "dehradun": ("WC-DDN", "Dehradun"),
-    "mumbai": ("WC-MUM", "Mumbai"),
-    "ahmedabad": ("WC-AHM", "Ahmedabad Asset"),
-    "ankleshwar": ("WC-ANK", "Ankleshwar Asset"),
-    "mehsana": ("WC-MEH", "Mehsana Asset"),
-    "cambay": ("WC-CAM", "Cambay Asset"),
-    "vadodara": ("WC-VAD", "Vadodara"),
-    "hazira": ("WC-HAZ", "Hazira Plant"),
-    "uran": ("WC-URN", "Uran Plant"),
-    "assam": ("WC-ASM", "Assam Asset"),
-    "sivasagar": ("WC-ASM", "Assam Asset"),
-    "nazira": ("WC-ASM", "Assam Asset"),
-    "jorhat": ("WC-JRH", "Jorhat Asset"),
-    "silchar": ("WC-SIL", "Cachar Forward Base"),
-    "cachar": ("WC-SIL", "Cachar Forward Base"),
-    "tripura": ("WC-TRI", "Tripura Asset"),
-    "agartala": ("WC-TRI", "Tripura Asset"),
-    "rajahmundry": ("WC-RJM", "Rajahmundry Asset"),
-    "kakinada": ("WC-KKD", "Eastern Offshore Asset (Kakinada)"),
-    "eastern offshore": ("WC-KKD", "Eastern Offshore Asset (Kakinada)"),
-    "cauvery": ("WC-CAU", "Cauvery Asset"),
-    "karaikal": ("WC-CAU", "Cauvery Asset"),
-    "chennai": ("WC-CHN", "Chennai"),
-    "kolkata": ("WC-KOL", "Kolkata"),
-    "bokaro": ("WC-BOK", "Bokaro CBM Asset"),
-    "jodhpur": ("WC-JOD", "Jodhpur"),
-    "neelam": ("WC-NHB", "Neelam & Heera Asset"),
-    "heera": ("WC-NHB", "Neelam & Heera Asset"),
-    "bassein": ("WC-BSB", "Bassein & Satellite Asset"),
-    "mumbai high": ("WC-MHA", "Mumbai High Asset"),
-}
+# Work-centre names/aliases come from the single entity dictionary (B1.2).
 
 
 @dataclass
@@ -110,17 +78,19 @@ class SessionState:
         if not text:
             return
         t_low = text.lower()
-        for name, (wc_id, wc_label) in sorted(WC_NAME_MAP.items(), key=lambda x: len(x[0]), reverse=True):
-            if re.search(r"\b" + re.escape(name) + r"\b", t_low):
-                self.active_entities["wc_id"] = wc_id
-                self.active_entities["wc_name"] = wc_label
-                self.active_entities["location"] = wc_label
-                break
+        ents = get_entities()
+        wc_id = ents.resolve_wc(t_low)
+        if wc_id:
+            wc_label = ents.wc_name(wc_id, short=False)
+            self.active_entities["wc_id"] = wc_id
+            self.active_entities["wc_name"] = wc_label
+            self.active_entities["location"] = wc_label
 
-        wc_code_match = re.search(r"\b(WC-[A-Z]{3})\b", text)
-        if wc_code_match:
-            code = wc_code_match.group(1)
-            self.active_entities["wc_id"] = code
+        for m in CODE_RE.finditer(text):
+            code = m.group(1)
+            if code in ents.work_centres:
+                self.active_entities["wc_id"] = code
+                break
 
         fy_match = re.search(r"\b(FY2[0-9])\b", text, re.IGNORECASE)
         if fy_match:
@@ -138,7 +108,7 @@ class SessionState:
     def _extract_entities_from_sql(self, sql: str) -> None:
         if not sql:
             return
-        m_wc = re.search(r"wc_id\s*=\s*['\"](WC-[A-Z0-9]+)['\"]", sql, re.IGNORECASE)
+        m_wc = re.search(r"wc_id\s*=\s*['\"](WC-[A-Z0-9]+(?:-[A-Z0-9]+)?)['\"]", sql, re.IGNORECASE)
         if m_wc:
             self.active_entities["wc_id"] = m_wc.group(1).upper()
         m_fld = re.search(r"field_id\s*=\s*['\"](FLD-[A-Z0-9]+)['\"]", sql, re.IGNORECASE)

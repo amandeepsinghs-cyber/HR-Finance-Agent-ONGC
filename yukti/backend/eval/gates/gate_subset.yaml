@@ -1,0 +1,19 @@
+# Yukti AI fast gate subset (U0.4). FROZEN: do not edit after the U0 baseline,
+# otherwise later gates are no longer comparable with gates/U0.md.
+# 120 scored turns = 40 roots + 30 in-session follow-ups (10 chains x 3) +
+# 30 paraphrases (10 roots x formal/casual/hinglish) + 20 held-out stress prompts.
+# Selection rationale: every question group (C/H/F/E/D/P/W/M) is represented,
+# both flagship chains (C1 Delhi tenure, C6 field P&L) are included in all three
+# root/follow-up/paraphrase suites, and 4 refusal roots guard RBAC regressions.
+version: 1
+roots: [C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12, C13, C14,
+        H1, H3, H4, H5, H7, H8,
+        F1, F2, F3, F4, F5, F7, F8,
+        E1, E7,
+        D1, D2, D4, D5,
+        P1, P11, P15,
+        W1, W2,
+        M1, M3]
+followup_chains: [C1, C2, C6, C7, C10, C12, H3, F1, F3, M1]
+paraphrases: [C1, C3, C6, C10, C12, H3, H7, F1, F7, W1]
+stress_idx: [1, 8, 15, 22, 29, 36, 43, 50, 57, 64, 71, 78, 85, 92, 99, 106, 113, 120, 127, 134]

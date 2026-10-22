@@ -16,6 +16,8 @@ from typing import Any, Dict, List, Optional, Tuple
 from google import genai
 
 from app.config import GCP_PROJECT, VERTEX_LOCATION
+from app.semantic.entities import get_entities
+from app.semantic.normalize import fiscal_years_for_sql, resolve_fy
 from app.tools.certified_query import get_certified_entry, list_certified_queries
 
 logger = logging.getLogger("yukti.router")
@@ -33,57 +35,8 @@ REFUSAL_TO_DATA_MAP = {
     "M4": "C6",  # Loss-making fields
 }
 
-# Work Centre resolution dictionary
-WC_SYNONYMS = {
-    "delhi": "WC-DEL",
-    "delhi hq": "WC-DEL",
-    "new delhi": "WC-DEL",
-    "dehradun": "WC-DDN",
-    "tel bhavan": "WC-DDN",
-    "mumbai": "WC-MUM",
-    "tripura": "WC-TRI",
-    "agartala": "WC-TRI",
-    "assam": "WC-ASM",
-    "nazira": "WC-ASM",
-    "sivasagar": "WC-ASM",
-    "jorhat": "WC-JOR",
-    "silchar": "WC-SIL",
-    "cambay": "WC-CAM",
-    "mehsana": "WC-MEH",
-    "ahmedabad": "WC-AHM",
-    "ankleshwar": "WC-ANK",
-    "rajahmundry": "WC-RAJ",
-    "kakinada": "WC-KKD",
-    "chennai": "WC-CHN",
-    "kolkata": "WC-KOL",
-    "bokaro": "WC-BOK",
-    "eastern offshore": "WC-EOA",
-    "mumbai high": "WC-MHN",
-    "neelam": "WC-N&H",
-    "heera": "WC-N&H",
-    "bassein": "WC-B&S",
-}
-
-# Fiscal year synonyms
-FY_SYNONYMS = {
-    "fy26": "FY26",
-    "fy 26": "FY26",
-    "2025-26": "FY26",
-    "2026": "FY26",
-    "this year": "FY26",
-    "current year": "FY26",
-    "fy25": "FY25",
-    "fy 25": "FY25",
-    "2024-25": "FY25",
-    "last year": "FY26",
-    "previous year": "FY26",
-    "pichle saal": "FY26",
-    "fy25": "FY25",
-    "fy 25": "FY25",
-    "2024-25": "FY25",
-    "fy23": "FY23",
-    "fy22": "FY22",
-}
+# Work-centre / field names and fiscal-year phrases are resolved by the single entity
+# dictionary and the FY resolver (B1.2 / B1.3, decision D-30); no local maps here.
 
 
 def _cosine_similarity(v1: List[float], v2: List[float]) -> float:
@@ -169,18 +122,17 @@ class SemanticRouter:
                 extracted[p_k] = p_meta["default"]
 
         # 1. Resolve Work Centre
+        ents = get_entities()
         if "wc_id" in param_defs:
-            for term, code in WC_SYNONYMS.items():
-                if re.search(r"\b" + re.escape(term) + r"\b", q_lower):
-                    extracted["wc_id"] = code
-                    break
+            wc = ents.resolve_wc(q_lower)
+            if wc:
+                extracted["wc_id"] = wc
 
         # 2. Resolve Fiscal Year
         if "fiscal_year" in param_defs:
-            for term, fy in FY_SYNONYMS.items():
-                if term in q_lower:
-                    extracted["fiscal_year"] = fy
-                    break
+            fy = resolve_fy(q_lower, available=fiscal_years_for_sql(entry.get("parameterized_sql", "")) or None)
+            if fy and fy.get("fy"):
+                extracted["fiscal_year"] = fy["fy"]
 
         # 3. Resolve Minimum Stay Duration (months or years)
         if "min_stay_months" in param_defs:
@@ -199,10 +151,9 @@ class SemanticRouter:
 
         # 5. Resolve Field
         if "field_id" in param_defs:
-            if "champang" in q_lower:
-                extracted["field_id"] = "FLD-CHP"
-            elif "mumbai high" in q_lower:
-                extracted["field_id"] = "FLD-MHN"
+            fld = ents.resolve_field(q_lower)
+            if fld:
+                extracted["field_id"] = fld
 
         return extracted
 

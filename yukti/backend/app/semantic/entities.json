@@ -1,0 +1,1067 @@
+{
+ "disciplines": {
+  "DISC-AUT": {
+   "code": "AUT",
+   "function": "technical",
+   "name": "Auto / Transport Engineering"
+  },
+  "DISC-CC": {
+   "code": "CC",
+   "function": "support",
+   "name": "Corporate Communications"
+  },
+  "DISC-CHM": {
+   "code": "CHM",
+   "function": "technical",
+   "name": "Chemistry"
+  },
+  "DISC-CIV": {
+   "code": "CIV",
+   "function": "technical",
+   "name": "Civil"
+  },
+  "DISC-CSR": {
+   "code": "CSR",
+   "function": "support",
+   "name": "Corporate Social Responsibility"
+  },
+  "DISC-DRL": {
+   "code": "DRL",
+   "function": "technical",
+   "name": "Drilling"
+  },
+  "DISC-ELE": {
+   "code": "ELE",
+   "function": "technical",
+   "name": "Electrical"
+  },
+  "DISC-FIN": {
+   "code": "FIN",
+   "function": "finance",
+   "name": "Finance & Accounts (F&A)"
+  },
+  "DISC-FIR": {
+   "code": "FIR",
+   "function": "support",
+   "name": "Fire Services"
+  },
+  "DISC-GEO": {
+   "code": "GEO",
+   "function": "technical",
+   "name": "Geology"
+  },
+  "DISC-GPS": {
+   "code": "GPS",
+   "function": "technical",
+   "name": "Geophysics (Surface)"
+  },
+  "DISC-GPW": {
+   "code": "GPW",
+   "function": "technical",
+   "name": "Geophysics (Wells)"
+  },
+  "DISC-HR": {
+   "code": "HR",
+   "function": "hr",
+   "name": "Human Resources (HR)"
+  },
+  "DISC-HSE": {
+   "code": "HSE",
+   "function": "technical",
+   "name": "Environment & Safety (HSE)"
+  },
+  "DISC-IE": {
+   "code": "IE",
+   "function": "technical",
+   "name": "Industrial Engineering"
+  },
+  "DISC-INS": {
+   "code": "INS",
+   "function": "technical",
+   "name": "Instrumentation"
+  },
+  "DISC-IT": {
+   "code": "IT",
+   "function": "technical",
+   "name": "Information Technology"
+  },
+  "DISC-LEG": {
+   "code": "LEG",
+   "function": "support",
+   "name": "Legal"
+  },
+  "DISC-LOG": {
+   "code": "LOG",
+   "function": "support",
+   "name": "Logistics & Shipping"
+  },
+  "DISC-MAR": {
+   "code": "MAR",
+   "function": "technical",
+   "name": "Marine / Naval Architecture"
+  },
+  "DISC-MEC": {
+   "code": "MEC",
+   "function": "technical",
+   "name": "Mechanical"
+  },
+  "DISC-MED": {
+   "code": "MED",
+   "function": "support",
+   "name": "Medical Services"
+  },
+  "DISC-MM": {
+   "code": "MM",
+   "function": "support",
+   "name": "Materials Management (MM)"
+  },
+  "DISC-OL": {
+   "code": "OL",
+   "function": "support",
+   "name": "Official Language (Rajbhasha)"
+  },
+  "DISC-PRD": {
+   "code": "PRD",
+   "function": "technical",
+   "name": "Production"
+  },
+  "DISC-RES": {
+   "code": "RES",
+   "function": "technical",
+   "name": "Reservoir"
+  },
+  "DISC-SEC": {
+   "code": "SEC",
+   "function": "support",
+   "name": "Security"
+  },
+  "DISC-SECY": {
+   "code": "SECY",
+   "function": "support",
+   "name": "Secretarial & Board Affairs"
+  },
+  "DISC-TEL": {
+   "code": "TEL",
+   "function": "technical",
+   "name": "Telecommunications"
+  },
+  "DISC-WEL": {
+   "code": "WEL",
+   "function": "technical",
+   "name": "Well Services"
+  }
+ },
+ "fields": {
+  "FLD-ADI": {
+   "asset_wc_id": "WC-CAU",
+   "basin": "Cauvery Basin",
+   "name": "Adiyakkamangalam",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-AGT": {
+   "asset_wc_id": "WC-TRI",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Agartala Dome",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-ANK": {
+   "asset_wc_id": "WC-ANK",
+   "basin": "Western Onshore Basin",
+   "name": "Ankleshwar",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-B17": {
+   "asset_wc_id": "WC-BAS",
+   "basin": "Western Offshore Basin",
+   "name": "B-173A / B-Series Clusters",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-BAG": {
+   "asset_wc_id": "WC-RAJ-BSN",
+   "basin": "Jodhpur (Rajasthan) Basin",
+   "name": "Baghewala",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-BAL": {
+   "asset_wc_id": "WC-MEH",
+   "basin": "Western Onshore Basin",
+   "name": "Balol",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-BAR": {
+   "asset_wc_id": "WC-TRI",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Baramura",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-BAS": {
+   "asset_wc_id": "WC-BAS",
+   "basin": "Western Offshore Basin",
+   "name": "Bassein",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-BEC": {
+   "asset_wc_id": "WC-MEH",
+   "basin": "Western Onshore Basin",
+   "name": "Bechraji",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-BOK": {
+   "asset_wc_id": "WC-BOK",
+   "basin": "MBA Basin (Mahanadi-Bengal-Andaman)",
+   "name": "CBM Bokaro",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-BOR": {
+   "asset_wc_id": "WC-JOR",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Borholla",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-CAM": {
+   "asset_wc_id": "WC-CAM",
+   "basin": "Western Onshore Basin",
+   "name": "Cambay",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-CHA": {
+   "asset_wc_id": "WC-ASM",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Charali",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-CHP": {
+   "asset_wc_id": "WC-JOR",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Champang",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-CS1": {
+   "asset_wc_id": "WC-BAS",
+   "basin": "Western Offshore Basin",
+   "name": "C-Series Clusters",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-D1": {
+   "asset_wc_id": "WC-BAS",
+   "basin": "Western Offshore Basin",
+   "name": "D-1 Field",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-DAM": {
+   "asset_wc_id": "WC-BAS",
+   "basin": "Western Offshore Basin",
+   "name": "Daman",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-GAN": {
+   "asset_wc_id": "WC-ANK",
+   "basin": "Western Onshore Basin",
+   "name": "Gandhar",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-GEL": {
+   "asset_wc_id": "WC-ASM",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Geleki",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-HEE": {
+   "asset_wc_id": "WC-NEH",
+   "basin": "Western Offshore Basin",
+   "name": "Heera",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-JHA": {
+   "asset_wc_id": "WC-BOK",
+   "basin": "MBA Basin (Mahanadi-Bengal-Andaman)",
+   "name": "Jharia CBM",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-JHL": {
+   "asset_wc_id": "WC-AHM",
+   "basin": "Western Onshore Basin",
+   "name": "Jhalora",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-JOT": {
+   "asset_wc_id": "WC-MEH",
+   "basin": "Western Onshore Basin",
+   "name": "Jotana",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-KAL": {
+   "asset_wc_id": "WC-AHM",
+   "basin": "Western Onshore Basin",
+   "name": "Kalol",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-KAT": {
+   "asset_wc_id": "WC-CAM",
+   "basin": "Western Onshore Basin",
+   "name": "Kathana",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-KES": {
+   "asset_wc_id": "WC-RAJ",
+   "basin": "KG-PG Basin",
+   "name": "Kesanapalli",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-KG982": {
+   "asset_wc_id": "WC-EAS",
+   "basin": "KG-PG Basin",
+   "name": "KG-DWN-98/2 Cluster-II",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-KHO": {
+   "asset_wc_id": "WC-JOR",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Khoraghat",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-KON": {
+   "asset_wc_id": "WC-TRI",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Konaban",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-KOS": {
+   "asset_wc_id": "WC-ANK",
+   "basin": "Western Onshore Basin",
+   "name": "Kosamba",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-KUT": {
+   "asset_wc_id": "WC-CAU",
+   "basin": "Cauvery Basin",
+   "name": "Kuthalam",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-LAK": {
+   "asset_wc_id": "WC-ASM",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Lakwa",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-LAN": {
+   "asset_wc_id": "WC-MEH",
+   "basin": "Western Onshore Basin",
+   "name": "Lanwa",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-LIN": {
+   "asset_wc_id": "WC-MEH",
+   "basin": "Western Onshore Basin",
+   "name": "Linch",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-MHN": {
+   "asset_wc_id": "WC-MUM",
+   "basin": "Western Offshore Basin",
+   "name": "Mumbai High North",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-MHS": {
+   "asset_wc_id": "WC-MUM",
+   "basin": "Western Offshore Basin",
+   "name": "Mumbai High South",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-MOR": {
+   "asset_wc_id": "WC-RAJ",
+   "basin": "KG-PG Basin",
+   "name": "Mori",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-MOT": {
+   "asset_wc_id": "WC-ANK",
+   "basin": "Western Onshore Basin",
+   "name": "Motwan",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-MUK": {
+   "asset_wc_id": "WC-NEH",
+   "basin": "Western Offshore Basin",
+   "name": "Mukta",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-NAN": {
+   "asset_wc_id": "WC-AHM",
+   "basin": "Western Onshore Basin",
+   "name": "Nandej",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-NAR": {
+   "asset_wc_id": "WC-CAU",
+   "basin": "Cauvery Basin",
+   "name": "Narimanam",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-NAW": {
+   "asset_wc_id": "WC-AHM",
+   "basin": "Western Onshore Basin",
+   "name": "Nawagam",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-NEE": {
+   "asset_wc_id": "WC-NEH",
+   "basin": "Western Offshore Basin",
+   "name": "Neelam",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-PAN": {
+   "asset_wc_id": "WC-NEH",
+   "basin": "Western Offshore Basin",
+   "name": "Panna",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-PAS": {
+   "asset_wc_id": "WC-RAJ",
+   "basin": "KG-PG Basin",
+   "name": "Pasarlapudi",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-RAT": {
+   "asset_wc_id": "WC-NEH",
+   "basin": "Western Offshore Basin",
+   "name": "Ratna & R-Series",
+   "onshore_offshore": "offshore"
+  },
+  "FLD-RDS": {
+   "asset_wc_id": "WC-ASM",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Rudrasagar",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-ROK": {
+   "asset_wc_id": "WC-TRI",
+   "basin": "Assam & Assam-Arakan Basin",
+   "name": "Rokhia",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-SND": {
+   "asset_wc_id": "WC-AHM",
+   "basin": "Western Onshore Basin",
+   "name": "Sanand",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-SNT": {
+   "asset_wc_id": "WC-MEH",
+   "basin": "Western Onshore Basin",
+   "name": "Santhal",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-SOB": {
+   "asset_wc_id": "WC-MEH",
+   "basin": "Western Onshore Basin",
+   "name": "Sobhasan",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-TAT": {
+   "asset_wc_id": "WC-RAJ",
+   "basin": "KG-PG Basin",
+   "name": "Tatipaka",
+   "onshore_offshore": "onshore"
+  },
+  "FLD-VIR": {
+   "asset_wc_id": "WC-AHM",
+   "basin": "Western Onshore Basin",
+   "name": "Viraj",
+   "onshore_offshore": "onshore"
+  }
+ },
+ "generated_at": "2026-10-22T08:06:27+00:00",
+ "grades": {
+  "CMD": {
+   "cadre": "board",
+   "designation": "Chairman & Managing Director (CMD) / CEO",
+   "level_order": 15
+  },
+  "DIR": {
+   "cadre": "board",
+   "designation": "Functional Director",
+   "level_order": 14
+  },
+  "E0": {
+   "cadre": "executive",
+   "designation": "Assistant Officer / Graduate Trainee",
+   "level_order": 1
+  },
+  "E1": {
+   "cadre": "executive",
+   "designation": "Assistant Executive Engineer (AEE) / Officer",
+   "level_order": 2
+  },
+  "E2": {
+   "cadre": "executive",
+   "designation": "Assistant Executive Engineer (AEE) / Deputy Manager",
+   "level_order": 3
+  },
+  "E3": {
+   "cadre": "executive",
+   "designation": "Executive Engineer (EE) / Manager",
+   "level_order": 4
+  },
+  "E4": {
+   "cadre": "executive",
+   "designation": "Superintending Engineer (SE) / Chief Manager",
+   "level_order": 5
+  },
+  "E5": {
+   "cadre": "executive",
+   "designation": "Deputy General Manager (DGM)",
+   "level_order": 6
+  },
+  "E6": {
+   "cadre": "executive",
+   "designation": "Joint General Manager (JGM) / Addl. GM",
+   "level_order": 7
+  },
+  "E7": {
+   "cadre": "executive",
+   "designation": "General Manager (GM)",
+   "level_order": 8
+  },
+  "E8": {
+   "cadre": "executive",
+   "designation": "Chief General Manager (CGM)",
+   "level_order": 9
+  },
+  "E9": {
+   "cadre": "executive",
+   "designation": "Executive Director (ED) / Group General Manager",
+   "level_order": 10
+  },
+  "GRP-B": {
+   "cadre": "non_executive",
+   "designation": "Senior Technician / Foreman / Assistant Superintendent (W5–W7)",
+   "level_order": 11
+  },
+  "GRP-C": {
+   "cadre": "non_executive",
+   "designation": "Junior Technician / Rigman / Production Operator (W3–W4)",
+   "level_order": 12
+  },
+  "GRP-D": {
+   "cadre": "non_executive",
+   "designation": "Field Attendant / Helper / Support Staff (W1–W2)",
+   "level_order": 13
+  }
+ },
+ "source": {
+  "disciplines": "hrfin_silver.dim_discipline",
+  "fields": "hrfin_gold.ssot_field_economics_360",
+  "grades": "hrfin_silver.dim_grade",
+  "work_centres": "hrfin_silver.dim_work_centre"
+ },
+ "version": 1,
+ "work_centres": {
+  "WC-AAB": {
+   "city": "Jorhat",
+   "cluster_id": "CL-NE-ASSAM",
+   "hard_station_cat": "C",
+   "name": "Assam & Assam-Arakan Basin",
+   "onshore_offshore": "onshore",
+   "sector": "NE",
+   "short_name": "A&AA Basin",
+   "state": "Assam",
+   "type": "basin"
+  },
+  "WC-ACA": {
+   "city": "Dehradun",
+   "cluster_id": "CL-DDN",
+   "hard_station_cat": "A",
+   "name": "ONGC Academy",
+   "onshore_offshore": "corporate",
+   "sector": "Northern",
+   "short_name": "ONGC Academy",
+   "state": "Uttarakhand",
+   "type": "institute"
+  },
+  "WC-AHM": {
+   "city": "Ahmedabad",
+   "cluster_id": "CL-AHM-MEH",
+   "hard_station_cat": "A",
+   "name": "Ahmedabad Asset",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Ahmedabad Asset",
+   "state": "Gujarat",
+   "type": "asset"
+  },
+  "WC-ANK": {
+   "city": "Ankleshwar",
+   "cluster_id": "CL-CAM-ANK-VAD",
+   "hard_station_cat": "B",
+   "name": "Ankleshwar Asset",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Ankleshwar Asset",
+   "state": "Gujarat",
+   "type": "asset"
+  },
+  "WC-ASM": {
+   "city": "Nazira",
+   "cluster_id": "CL-NE-ASSAM",
+   "hard_station_cat": "C",
+   "name": "Assam Asset",
+   "onshore_offshore": "onshore",
+   "sector": "NE",
+   "short_name": "Assam Asset",
+   "state": "Assam",
+   "type": "asset"
+  },
+  "WC-ATI": {
+   "city": "Betul",
+   "cluster_id": "CL-GOA",
+   "hard_station_cat": "A",
+   "name": "ATI Goa (Advanced Training Institute fka IPSHEM)",
+   "onshore_offshore": "corporate",
+   "sector": "Western",
+   "short_name": "ATI Goa",
+   "state": "Goa",
+   "type": "institute"
+  },
+  "WC-BAS": {
+   "city": "Mumbai",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "C",
+   "name": "Bassein & Satellite Asset",
+   "onshore_offshore": "offshore",
+   "sector": "Western",
+   "short_name": "Bassein & Satellite",
+   "state": "Maharashtra",
+   "type": "asset"
+  },
+  "WC-BOK": {
+   "city": "Bokaro",
+   "cluster_id": "CL-BOK",
+   "hard_station_cat": "C",
+   "name": "CBM Bokaro Asset",
+   "onshore_offshore": "onshore",
+   "sector": "Eastern",
+   "short_name": "CBM Bokaro",
+   "state": "Jharkhand",
+   "type": "asset"
+  },
+  "WC-CAB": {
+   "city": "Chennai",
+   "cluster_id": "CL-CAU-CHN",
+   "hard_station_cat": "A",
+   "name": "Cauvery Basin",
+   "onshore_offshore": "onshore",
+   "sector": "Southern",
+   "short_name": "Cauvery Basin",
+   "state": "Tamil Nadu",
+   "type": "basin"
+  },
+  "WC-CAM": {
+   "city": "Cambay",
+   "cluster_id": "CL-CAM-ANK-VAD",
+   "hard_station_cat": "B",
+   "name": "Cambay Asset",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Cambay Asset",
+   "state": "Gujarat",
+   "type": "asset"
+  },
+  "WC-CAU": {
+   "city": "Karaikal",
+   "cluster_id": "CL-CAU-CHN",
+   "hard_station_cat": "B",
+   "name": "Cauvery Asset",
+   "onshore_offshore": "onshore",
+   "sector": "Southern",
+   "short_name": "Cauvery Asset",
+   "state": "Tamil Nadu",
+   "type": "asset"
+  },
+  "WC-CEW": {
+   "city": "Vadodara",
+   "cluster_id": "CL-CAM-ANK-VAD",
+   "hard_station_cat": "A",
+   "name": "CEWELL (Centre for Excellence in Well Logging)",
+   "onshore_offshore": "corporate",
+   "sector": "Western",
+   "short_name": "CEWELL",
+   "state": "Gujarat",
+   "type": "institute"
+  },
+  "WC-DAH": {
+   "city": "Dahej",
+   "cluster_id": "CL-CAM-ANK-VAD",
+   "hard_station_cat": "B",
+   "name": "Dahej C2-C3 Plant",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Dahej Plant",
+   "state": "Gujarat",
+   "type": "plant"
+  },
+  "WC-DDN": {
+   "city": "Dehradun",
+   "cluster_id": "CL-DDN",
+   "hard_station_cat": "A",
+   "name": "Tel Bhavan Corporate Administration",
+   "onshore_offshore": "corporate",
+   "sector": "Northern",
+   "short_name": "Dehradun Tel Bhavan",
+   "state": "Uttarakhand",
+   "type": "office"
+  },
+  "WC-DEL": {
+   "city": "New Delhi",
+   "cluster_id": "CL-DEL",
+   "hard_station_cat": "A",
+   "name": "Corporate HQ Delhi (Deendayal Urja Bhawan)",
+   "onshore_offshore": "corporate",
+   "sector": "Northern",
+   "short_name": "Delhi HQ",
+   "state": "Delhi",
+   "type": "office"
+  },
+  "WC-DRL": {
+   "city": "Mumbai",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "B",
+   "name": "Corporate Drilling Services",
+   "onshore_offshore": "offshore",
+   "sector": "Western",
+   "short_name": "Drilling Services",
+   "state": "Maharashtra",
+   "type": "service"
+  },
+  "WC-EAS": {
+   "city": "Kakinada",
+   "cluster_id": "CL-KG",
+   "hard_station_cat": "C",
+   "name": "Eastern Offshore Asset",
+   "onshore_offshore": "offshore",
+   "sector": "Eastern",
+   "short_name": "Eastern Offshore",
+   "state": "Andhra Pradesh",
+   "type": "asset"
+  },
+  "WC-FRB": {
+   "city": "Dehradun",
+   "cluster_id": "CL-DDN",
+   "hard_station_cat": "A",
+   "name": "Frontier Basin",
+   "onshore_offshore": "onshore",
+   "sector": "Northern",
+   "short_name": "Frontier Basin",
+   "state": "Uttarakhand",
+   "type": "basin"
+  },
+  "WC-GEO": {
+   "city": "Dehradun",
+   "cluster_id": "CL-DDN",
+   "hard_station_cat": "A",
+   "name": "GEOPIC (Geodata Processing & Interpretation Centre)",
+   "onshore_offshore": "corporate",
+   "sector": "Northern",
+   "short_name": "GEOPIC",
+   "state": "Uttarakhand",
+   "type": "institute"
+  },
+  "WC-GLS": {
+   "city": "Vadodara",
+   "cluster_id": "CL-CAM-ANK-VAD",
+   "hard_station_cat": "A",
+   "name": "Geophysical & Logging Services",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Geophysical Services",
+   "state": "Gujarat",
+   "type": "service"
+  },
+  "WC-HAZ": {
+   "city": "Surat",
+   "cluster_id": "CL-CAM-ANK-VAD",
+   "hard_station_cat": "B",
+   "name": "Hazira Gas Processing Plant",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Hazira Plant",
+   "state": "Gujarat",
+   "type": "plant"
+  },
+  "WC-IDW": {
+   "city": "Dehradun",
+   "cluster_id": "CL-DDN",
+   "hard_station_cat": "A",
+   "name": "IDWE (Institute of Drilling & Well Engineering fka IDT)",
+   "onshore_offshore": "corporate",
+   "sector": "Northern",
+   "short_name": "IDWE",
+   "state": "Uttarakhand",
+   "type": "institute"
+  },
+  "WC-IEO": {
+   "city": "Panvel",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "A",
+   "name": "IEOT/IPEOT (Institute of Engineering and Ocean Technology)",
+   "onshore_offshore": "corporate",
+   "sector": "Western",
+   "short_name": "IEOT",
+   "state": "Maharashtra",
+   "type": "institute"
+  },
+  "WC-INB": {
+   "city": "Jorhat",
+   "cluster_id": "CL-NE-ASSAM",
+   "hard_station_cat": "C",
+   "name": "INBIGS (Institute of Biotechnology & Geotectonic Studies)",
+   "onshore_offshore": "corporate",
+   "sector": "NE",
+   "short_name": "INBIGS",
+   "state": "Assam",
+   "type": "institute"
+  },
+  "WC-IOG": {
+   "city": "Panvel",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "A",
+   "name": "IOGPT (Institute of Oil & Gas Production Technology)",
+   "onshore_offshore": "corporate",
+   "sector": "Western",
+   "short_name": "IOGPT",
+   "state": "Maharashtra",
+   "type": "institute"
+  },
+  "WC-IRS": {
+   "city": "Ahmedabad",
+   "cluster_id": "CL-AHM-MEH",
+   "hard_station_cat": "A",
+   "name": "IRS (Institute of Reservoir Studies)",
+   "onshore_offshore": "corporate",
+   "sector": "Western",
+   "short_name": "IRS",
+   "state": "Gujarat",
+   "type": "institute"
+  },
+  "WC-JOR": {
+   "city": "Jorhat",
+   "cluster_id": "CL-NE-ASSAM",
+   "hard_station_cat": "C",
+   "name": "Jorhat Asset",
+   "onshore_offshore": "onshore",
+   "sector": "NE",
+   "short_name": "Jorhat Asset",
+   "state": "Assam",
+   "type": "asset"
+  },
+  "WC-KDM": {
+   "city": "Dehradun",
+   "cluster_id": "CL-DDN",
+   "hard_station_cat": "A",
+   "name": "KDMIPE (K. D. Malaviya Institute of Petroleum Exploration)",
+   "onshore_offshore": "corporate",
+   "sector": "Northern",
+   "short_name": "KDMIPE",
+   "state": "Uttarakhand",
+   "type": "institute"
+  },
+  "WC-KGB": {
+   "city": "Rajahmundry",
+   "cluster_id": "CL-KG",
+   "hard_station_cat": "B",
+   "name": "KG-PG Basin",
+   "onshore_offshore": "onshore",
+   "sector": "Southern",
+   "short_name": "KG Basin",
+   "state": "Andhra Pradesh",
+   "type": "basin"
+  },
+  "WC-LOG": {
+   "city": "Mumbai",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "B",
+   "name": "Offshore Logistics & Marine Services",
+   "onshore_offshore": "offshore",
+   "sector": "Western",
+   "short_name": "Offshore Logistics",
+   "state": "Maharashtra",
+   "type": "service"
+  },
+  "WC-MBA": {
+   "city": "Kolkata",
+   "cluster_id": "CL-KOL",
+   "hard_station_cat": "A",
+   "name": "MBA Basin (Mahanadi-Bengal-Andaman)",
+   "onshore_offshore": "onshore",
+   "sector": "Eastern",
+   "short_name": "MBA Basin",
+   "state": "West Bengal",
+   "type": "basin"
+  },
+  "WC-MEH": {
+   "city": "Mehsana",
+   "cluster_id": "CL-AHM-MEH",
+   "hard_station_cat": "A",
+   "name": "Mehsana Asset",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Mehsana Asset",
+   "state": "Gujarat",
+   "type": "asset"
+  },
+  "WC-MUM": {
+   "city": "Mumbai",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "C",
+   "name": "Mumbai High Asset",
+   "onshore_offshore": "offshore",
+   "sector": "Western",
+   "short_name": "Mumbai High",
+   "state": "Maharashtra",
+   "type": "asset"
+  },
+  "WC-NEH": {
+   "city": "Mumbai",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "C",
+   "name": "Neelam & Heera Asset",
+   "onshore_offshore": "offshore",
+   "sector": "Western",
+   "short_name": "Neelam & Heera",
+   "state": "Maharashtra",
+   "type": "asset"
+  },
+  "WC-RAJ": {
+   "city": "Rajahmundry",
+   "cluster_id": "CL-KG",
+   "hard_station_cat": "B",
+   "name": "Rajahmundry Asset",
+   "onshore_offshore": "onshore",
+   "sector": "Southern",
+   "short_name": "Rajahmundry Asset",
+   "state": "Andhra Pradesh",
+   "type": "asset"
+  },
+  "WC-RAJ-BSN": {
+   "city": "Jodhpur",
+   "cluster_id": "CL-JOD",
+   "hard_station_cat": "C",
+   "name": "Jodhpur (Rajasthan) Basin",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Rajasthan Basin",
+   "state": "Rajasthan",
+   "type": "basin"
+  },
+  "WC-ROC": {
+   "city": "Chennai",
+   "cluster_id": "CL-CAU-CHN",
+   "hard_station_cat": "A",
+   "name": "Regional Office Chennai",
+   "onshore_offshore": "corporate",
+   "sector": "Southern",
+   "short_name": "RO Chennai",
+   "state": "Tamil Nadu",
+   "type": "office"
+  },
+  "WC-ROK": {
+   "city": "Kolkata",
+   "cluster_id": "CL-KOL",
+   "hard_station_cat": "A",
+   "name": "Regional Office Kolkata",
+   "onshore_offshore": "corporate",
+   "sector": "Eastern",
+   "short_name": "RO Kolkata",
+   "state": "West Bengal",
+   "type": "office"
+  },
+  "WC-ROM": {
+   "city": "Mumbai",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "A",
+   "name": "Regional Office Mumbai",
+   "onshore_offshore": "corporate",
+   "sector": "Western",
+   "short_name": "RO Mumbai",
+   "state": "Maharashtra",
+   "type": "office"
+  },
+  "WC-ROV": {
+   "city": "Vadodara",
+   "cluster_id": "CL-CAM-ANK-VAD",
+   "hard_station_cat": "A",
+   "name": "Regional Office Vadodara",
+   "onshore_offshore": "corporate",
+   "sector": "Western",
+   "short_name": "RO Vadodara",
+   "state": "Gujarat",
+   "type": "office"
+  },
+  "WC-SIL": {
+   "city": "Silchar",
+   "cluster_id": "CL-NE-ASSAM",
+   "hard_station_cat": "C",
+   "name": "Silchar Basin",
+   "onshore_offshore": "onshore",
+   "sector": "NE",
+   "short_name": "Silchar Basin",
+   "state": "Assam",
+   "type": "basin"
+  },
+  "WC-TRI": {
+   "city": "Agartala",
+   "cluster_id": "CL-NE-TRIPURA",
+   "hard_station_cat": "C",
+   "name": "Tripura Asset",
+   "onshore_offshore": "onshore",
+   "sector": "NE",
+   "short_name": "Tripura Asset",
+   "state": "Tripura",
+   "type": "asset"
+  },
+  "WC-URN": {
+   "city": "Uran",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "B",
+   "name": "Uran Gas Processing Plant",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Uran Plant",
+   "state": "Maharashtra",
+   "type": "plant"
+  },
+  "WC-WEL": {
+   "city": "Panvel",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "B",
+   "name": "Corporate Well Services",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Well Services",
+   "state": "Maharashtra",
+   "type": "service"
+  },
+  "WC-WNB": {
+   "city": "Vadodara",
+   "cluster_id": "CL-CAM-ANK-VAD",
+   "hard_station_cat": "A",
+   "name": "Western Onshore Basin",
+   "onshore_offshore": "onshore",
+   "sector": "Western",
+   "short_name": "Western Onshore Basin",
+   "state": "Gujarat",
+   "type": "basin"
+  },
+  "WC-WOB": {
+   "city": "Mumbai",
+   "cluster_id": "CL-MUM",
+   "hard_station_cat": "A",
+   "name": "Western Offshore Basin",
+   "onshore_offshore": "offshore",
+   "sector": "Western",
+   "short_name": "Western Offshore Basin",
+   "state": "Maharashtra",
+   "type": "basin"
+  }
+ }
+}
