@@ -16,6 +16,7 @@ import {
 import { ChartRenderer } from '@/components/renderers/ChartRenderer';
 import { KpiRenderer } from '@/components/renderers/KpiRenderer';
 import { TableRenderer } from '@/components/renderers/TableRenderer';
+import { AuraShowcase } from './AuraShowcase';
 import {
   KPI_SAMPLES,
   TABLE_SAMPLE,
@@ -129,6 +130,8 @@ export default function DesignSystemPage() {
         </header>
 
         {/* 1. Typography */}
+        <AuraShowcase />
+
         <Card as="section" data-testid="ds-typography">
           <CardHeader
             eyebrow="Type scale & Numerals"

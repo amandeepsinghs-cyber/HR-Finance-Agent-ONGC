@@ -24,7 +24,8 @@
 | **FEAT-012** | **Reliability, Safety & Performance Hardening** | Audit 2026-10-22 (P2/P3) | **P1** | Backend / Ops | H1 | Specified |
 | **FEAT-013** | **Voice Pipeline Quality (barge-in, mic lifecycle, no duplicate turns)** | V6, V8, audit | **P1** | Frontend / Voice | U3 | Specified |
 | **FEAT-014** | **Eval-Gated Release & Cloud Run Redeploy** | V14 (D-3) | **P1** | Quality / Ops | U0 + H1 | Specified |
-| **FEAT-015** | **Any-Chart Re-presentation & Chart Excellence** | V7, V15 | **P0** | Visualization / UX | U1.5 + U5.7–U5.9 | Specified |
+| **FEAT-015** | **Any-Chart Re-presentation & Chart Excellence** | V7, V15 | **P0** | Visualization / UX | U1.5 + U5.7–U5.9 | U1.5 done; U5 pending |
+| **FEAT-016** | **AI Aura visual language** (feathery Google-hue light for AI presence) | V16 | **P1** | UI / Brand | U1.6 (done), U4, U3 | Prototype approved (D-16) |
 
 > **Design Specifications Reference**: See [`design_recommendations_ui_and_orb.md`](./design_recommendations_ui_and_orb.md) for detailed UI glassmorphism and voice orb wave formulas.
 
@@ -321,3 +322,15 @@ The same data should be presentable in many ways. The system picks a sensible de
 - [ ] For every data-shape fixture, every compatible chart type renders without error (automated sweep), and incompatible requests show the nearest alternative plus an explanation.
 - [ ] "Show this as a pie chart" on a histogram card re-plots in ≤ 300 ms with no backend call, and the slices equal the bins.
 - [ ] Every chart type scores ≥ 4/5 on each rubric criterion in the U5 visual review (sponsor confirms).
+
+---
+
+## FEAT-016: AI Aura Visual Language
+
+**Source:** Verbatim 16 · **Decision:** D-16 · **Prototype:** `/design-system` → "AI Aura" (U1.6)
+
+* Google brand hues rendered as **feathery pastel light** (never solid): a thin rotating arc with an outside-only halo for the ask bar, orb and newest-answer edge, plus a pale bloom behind the greeting.
+* Motion encodes state: idle (slow drift, 16 s), listening (6 s), thinking (2.8 s); reduced-motion safe.
+* **Scope:** AI-presence elements only. Never data, page backgrounds or text.
+
+**Acceptance:** U4 ask bar, greeting and newest-answer edge plus the U3 orb use the aura tokens/classes; `lint:tokens` and `lint:contrast` OK; sponsor confirms in the main app at the U4/U3 gates.
