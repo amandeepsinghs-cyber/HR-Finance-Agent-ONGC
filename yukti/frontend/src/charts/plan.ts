@@ -3,7 +3,7 @@
  * overriding the backend's suggested kind when it is weak.
  */
 import { ChartSpec } from '@/contracts/answerContract';
-import { UnitInfo, parseUnit, toNumber, humanizeValue } from './format';
+import { UnitInfo, parseUnit, toNumber, humanizeValue, fmtInt, fmtNum } from './format';
 
 export type ChartForm =
   | 'pie'
@@ -164,15 +164,24 @@ export function planChart(spec: ChartSpec): ChartPlan {
     const minV = Math.min(...vals);
     const maxV = Math.max(...vals);
     if (maxV > minV) {
-      const kBins = Math.min(8, Math.max(5, Math.round(Math.sqrt(vals.length) + 2)));
-      const step = (maxV - minV) / kBins;
+      const kBins0 = Math.min(8, Math.max(5, Math.round(Math.sqrt(vals.length) + 2)));
+      // Integer data (ages, years, counts) → integer bin edges ("22–26"), never "22.0–26.8".
+      const allInt = vals.every((v) => Number.isInteger(v));
+      const step = allInt ? Math.max(1, Math.ceil((maxV - minV + 1) / kBins0)) : (maxV - minV) / kBins0;
+      const kBins = allInt ? Math.ceil((maxV - minV + 1) / step) : kBins0;
+      const sorted = [...vals].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      const median = sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+      const mean = vals.reduce((s, v) => s + v, 0) / vals.length;
       const binned: Row[] = [];
       for (let i = 0; i < kBins; i++) {
         const lo = minV + i * step;
-        const hi = i === kBins - 1 ? maxV : minV + (i + 1) * step;
-        const hits = rows.filter((r) => (i === kBins - 1 ? r.value >= lo && r.value <= hi : r.value >= lo && r.value < hi));
-        const fmtB = (n: number) => (Math.abs(step) >= 10 ? Math.round(n).toLocaleString('en-IN') : n.toFixed(1));
-        const label = `${fmtB(lo)}–${fmtB(hi)}`;
+        const hi = allInt ? Math.min(maxV, lo + step - 1) : i === kBins - 1 ? maxV : minV + (i + 1) * step;
+        const hits = rows.filter((r) =>
+          allInt ? r.value >= lo && r.value <= hi : i === kBins - 1 ? r.value >= lo && r.value <= hi : r.value >= lo && r.value < hi,
+        );
+        const fmtB = (n: number) => (allInt || Math.abs(step) >= 10 ? fmtInt(Math.round(n)) : fmtNum(n, 1));
+        const label = allInt && lo === hi ? fmtB(lo) : `${fmtB(lo)}–${fmtB(hi)}`;
         binned.push({
           label,
           value: hits.length,
@@ -181,6 +190,19 @@ export function planChart(spec: ChartSpec): ChartPlan {
             count: hits.length,
             share_pct: Number(((hits.length / rows.length) * 100).toFixed(1)),
             members: hits.slice(0, 3).map((h) => h.label).join(', '),
+            // value-axis stats for mean/median markers (category index space: bin i spans [i-0.5, i+0.5])
+            ...(i === 0
+              ? {
+                  __stats: {
+                    mean: (mean - minV) / step - 0.5,
+                    median: (median - minV) / step - 0.5,
+                    lo: -0.5,
+                    hi: kBins - 0.5,
+                    meanValue: mean,
+                    medianValue: median,
+                  },
+                }
+              : {}),
           },
         });
       }

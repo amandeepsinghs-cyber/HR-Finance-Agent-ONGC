@@ -1,7 +1,7 @@
 # Yukti AI: Step-by-Step Upgrade Checklist (`UPGRADE_CHECKLIST.md`)
 
 **Process:** every step goes through the five gates in [`BUILD.md`](BUILD.md) §4. **Features:** [`feature_list.md`](feature_list_and_verbatims/feature_list/feature_list.md) · **Decisions:** [`docs/DECISIONS.md`](docs/DECISIONS.md) · **Reviews:** `docs/reviews/<step-id>.md`
-**Baseline:** `baseline-v0.2` (`fbe3594`) · **Order:** U0 → U1 → U2 → U3 → U4 → U5 → B1 → B2 → B3 → B4 → H1 (D-4)
+**Baseline:** `baseline-v0.2` (`fbe3594`) · **Order:** U0 → U1 → **U4 → U3 → U2 → U5** (visual-first, D-17) → B1 → B2 → B3 → B4 → H1
 
 **Owner legend:** `O` Opus lead · `F` Flash · `FL` Flash-lite · `O→F` Opus skeleton, Flash completes · `F→O` Flash drafts, Opus finalises · `FL→O` Flash-lite runs, Opus interprets · `O→F + FL` Opus specifies, Flash builds, Flash-lite runs · `O + S` Opus executes with sponsor go-ahead · `S` Sponsor. Rules in [`DELEGATION.md`](DELEGATION.md); **every step gets a G4 review by a fresh Opus reviewer (R-O); F/FL steps also get the delegation consistency checks**.
 **Gate legend per step:** `G1` spec confirmed · `G3` verified (evidence) · `G4` independent review approved (link) · `G5` sponsor sign-off (phase end). **Packet** files are written by Opus at G1, before delegation; links show `n/a` for Opus-owned steps.
@@ -17,7 +17,7 @@
 | **U0.2** | `O` | `BUILD.md`, feature list v2, this checklist, decision log, review template, `DELEGATION.md` | Docs exist, cross-linked, and every feature maps to ≥ 1 step | Doc review by reviewer agent | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U0.2.md) | ✅ (V15) |
 | **U0.3** | `S` | Resolve open decisions OD-1 … OD-5 | Each recorded as D-x in `DECISIONS.md` | Sponsor answers | ✅ (OD-5 deferred to B3) | n/a | ✅ | n/a (sponsor decision) | ✅ (V15) |
 | **U0.4** | `O→F + FL` | Re-run the cache-OFF eval on `baseline-v0.2`; build the fast **gate subset** (~120 turns) | Scorecard at `yukti/backend/eval/gates/U0.md`; subset script runs in < 15 min | Eval run log | ⬜ | [packet](docs/delegation/packets/U0.4.md) | | | |
-| **U0.5** | `FL` | Visual baseline: Playwright screenshots of the current UI (light/dark, key states) | `docs/reviews/assets/U0_*.png` | Screenshot script | ⬜ | [packet](docs/delegation/packets/U0.5.md) | | | |
+| **U0.5** | `FL` | Visual baseline: Playwright screenshots of the current UI (light/dark, key states) | `docs/reviews/assets/U0_*.png` | Screenshot script | ✅ | [packet](docs/delegation/packets/U0.5.md) | ✅ |✅ [evidence](docs/reviews/U0.5.md) (O spot-check) | |
 
 ---
 
@@ -25,11 +25,12 @@
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
-| **U1.1** | `O→F` | Design tokens (colour per OD-1, surfaces, borders, radii, shadows, motion durations) as CSS variables + Tailwind theme | One token source; no hard-coded hex in components (lint/grep check) | `grep` check + build | ⬜ | [packet](docs/delegation/packets/U1.1.md) | | | |
-| **U1.2** | `F` | Typography scale and tabular numerals for KPIs; number formatting (₹ Cr / Lakh, %) centralised | KPI numerals use `font-variant-numeric: tabular-nums`; all ₹/%/count formatting goes through one util (grep: 0 ad-hoc `toLocaleString` in components) | Screenshot diff | ⬜ | [packet](docs/delegation/packets/U1.2.md) | | | |
-| **U1.3** | `O→F` | Surface primitives: `Card`, `CardHeader`, `Chip`, `Badge`, `Toolbar` (frosted glass, hairline borders, ambient shadow) | Used by Canvas, Panel, TopBar; light + dark | Storybook-style demo page `/_design` | ⬜ | [packet](docs/delegation/packets/U1.3.md) | | | |
-| **U1.4** | `F` | Light theme as default; dark theme parity | No contrast failures on primary text (≥ 4.5:1) | Automated contrast check | ⬜ | [packet](docs/delegation/packets/U1.4.md) | | | |
-| **U1.5** | `O→F` | **Chart design system** (FEAT-015): ECharts theme from tokens (categorical/sequential/diverging palettes), typography, grid/axis/label/tooltip standards, animation timings, Indian number formats, light/dark parity; chart quality rubric doc | One `yukti` ECharts theme used by every chart; rubric at `docs/chart_quality_rubric.md`; 6 reference charts (bar, hbar, donut, line, histogram, treemap) on `/_design` score ≥ 4/5 on the rubric | Screenshot review vs rubric (light + dark) | ⬜ | [packet](docs/delegation/packets/U1.5.md) | | | |
+| **U1.1** | `O→F` | Design tokens (colour per OD-1, surfaces, borders, radii, shadows, motion durations) as CSS variables + Tailwind theme | One token source; no hard-coded hex in components (lint/grep check) | `grep` check + build | ✅ | [packet](docs/delegation/packets/U1.1.md) | ✅ |✅ [review](docs/reviews/U1.1.md) | |
+| **U1.2** | `F` | Typography scale and tabular numerals for KPIs; number formatting (₹ Cr / Lakh, %) centralised | KPI numerals use `font-variant-numeric: tabular-nums`; all ₹/%/count formatting goes through one util (grep: 0 ad-hoc `toLocaleString` in components) | Screenshot diff | ✅ | [packet](docs/delegation/packets/U1.2.md) | ✅ |✅ [review](docs/reviews/U1.2_U1.4.md) | |
+| **U1.3** | `O→F` | Surface primitives: `Card`, `CardHeader`, `Chip`, `Badge`, `Toolbar` (frosted glass, hairline borders, ambient shadow) | Primitives (`Card`, `CardHeader`, `Chip`, `Badge`, `ContextChips`, `Toolbar`, `IconButton`) exported from `src/components/ui/primitives.tsx`; rendered on the `/design-system` showcase page in light + dark; tokens only (lint OK). Adoption: new components from U2 on (TurnCard U2.3); legacy Canvas/Panel/TopBar migrated in U4 (D-15) | `/design-system` showcase page (screenshots light + dark) | ✅ | [packet](docs/delegation/packets/U1.3.md) | ✅ |✅ [review](docs/reviews/U1.3_U1.5.md) | |
+| **U1.4** | `F` | Light theme as default; dark theme parity | No contrast failures on primary text (≥ 4.5:1) | Automated contrast check | ✅ | [packet](docs/delegation/packets/U1.4.md) | ✅ |✅ [review](docs/reviews/U1.2_U1.4.md) | |
+| **U1.5** | `O` (Flash part not needed; reference charts built in U1.3 page) | **Chart design system** (FEAT-015): ECharts theme from tokens (categorical/sequential/diverging palettes), typography, grid/axis/label/tooltip standards, animation timings, Indian number formats, light/dark parity; chart quality rubric doc | One `yukti` ECharts theme used by every chart; rubric at `docs/chart_quality_rubric.md`; 6 reference charts (bar, hbar, donut, line, histogram, treemap) on `/design-system` score ≥ 4/5 on the rubric | Screenshot review vs rubric (light + dark) | ✅ | n/a | ✅ |✅ [review](docs/reviews/U1.3_U1.5.md) | |
+| **U1.6** | `O` | **AI Aura** (FEAT-016, Verbatim 16): aura tokens (ring + bloom tints of Google hues), `.yk-aura-ring` (rotating arc + outside-only feathered halo, idle/listening/thinking speeds, reduced-motion safe) and `.yk-aura-bloom`; prototype on `/design-system` | Sponsor confirms the feel against the AI Mode reference; tokens-only (lint OK) | Screenshots light/dark vs reference photo | ✅ | n/a | ✅ | ✅ sponsor-reviewed prototype (3 iterations) | ✅ ("yes", 06:57) |
 
 ---
 
@@ -52,7 +53,7 @@
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
-| **U3.1** | `O` | Canvas-2D ribbon renderer: 3–4 harmonic Bézier/sine ribbons on an ∞ path, gradient strokes, `lighter` blending, soft bloom | No dots/particles; DPR-aware; reduced-motion fallback | Visual review + rAF profile | ⬜ | n/a | | | |
+| **U3.1** | `O` | Canvas-2D ribbon renderer: 3–4 harmonic Bézier/sine ribbons on an ∞ path, gradient strokes, `lighter` blending, soft bloom | No dots/particles; DPR-aware; reduced-motion fallback; **`VoiceOrb.tsx` TEMP_ALLOW entry removed from `scripts/check_tokens.mjs` and `lint:tokens` OK** | Visual review + rAF profile | ⬜ | n/a | | | |
 | **U3.2** | `O` | State dynamics: idle (0.4–0.6 Hz breathe), listening (mic RMS → amplitude/thickness), thinking (orbiting pulse), speaking (playback analyser → resonance) | Each state has distinct parameters (frequency, amplitude, colour intensity per the spec table) verified in a 4-panel capture; the sponsor identifies all 4 states blind | Screen recording | ⬜ | n/a | | | |
 | **U3.3** | `O` | Single level source: raw worklet RMS for listening, output analyser for speaking; `getMicLevel` becomes a pure read | No synthetic floor; level reaches ~0 in silence | Unit + manual | ⬜ | n/a | | | |
 | **U3.4** | `O` | Barge-in fix: local stop drops incoming chunks + sends `interrupt`; threshold on raw RMS | On speakers Yukti isn't cut off by her own echo; a real interruption stops the audio within ≤ 300 ms | `voice_e2e_test.js` + manual | ⬜ | n/a | | | |
@@ -169,7 +170,7 @@
 |---|---|---|---|---|---|
 | Baseline | 2026-10-22 | ✅ "commit the current version… baseline build" (V14) | waived (V14) | 2026-10-20 eval (pre-fix) | `baseline-v0.2` |
 | U0 | 2026-10-22 | ✅ "go ahead" (V15) | [`U0.2.md`](docs/reviews/U0.2.md) | `gates/U0.md` (U0.4 pending, runs in parallel) | `upgrade-U0` |
-| U1 | | ⬜ | | n/a (visual) | `upgrade-U1` |
+| U1 | 2026-10-22 | ✅ order + aura approved (D-18) | [`U1.1`](docs/reviews/U1.1.md), [`U1.2/U1.4`](docs/reviews/U1.2_U1.4.md), [`U1.3/U1.5`](docs/reviews/U1.3_U1.5.md) | n/a (visual) | `upgrade-U1` |
 | U2 | | ⬜ | | n/a (UI tests) | `upgrade-U2` |
 | U3 | | ⬜ | | n/a (voice tests) | `upgrade-U3` |
 | U4 | | ⬜ | | n/a (visual) | `upgrade-U4` |

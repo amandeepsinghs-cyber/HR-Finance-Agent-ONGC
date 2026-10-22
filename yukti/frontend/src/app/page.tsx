@@ -827,7 +827,7 @@ export default function YuktiApp() {
           </div>
         )}
         {micError && (
-          <div role="alert" className="flex items-center justify-between gap-3 px-6 py-2.5 text-[0.85rem] bg-[#FEF7E0] text-[#7A4F01] dark:bg-[rgba(253,214,99,0.12)] dark:text-[#FDD663] border-b border-[var(--hairline)]">
+          <div role="alert" className="flex items-center justify-between gap-3 px-6 py-2.5 text-[0.85rem] bg-warning-pale text-warning border-b border-[var(--hairline)]">
             <div className="flex items-center gap-2 font-medium">
               <MicOff className="w-4 h-4 shrink-0" />
               <span>{micError} You can keep typing in the panel.</span>

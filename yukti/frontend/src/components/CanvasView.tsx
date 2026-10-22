@@ -467,13 +467,13 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
                     <div className="flex flex-wrap gap-2">
                       {sources.map((s, i) => (
                         <button key={i} onClick={() => setSelectedSource(s)} className="chip !text-[0.82rem]">
-                          {s.kind === 'policy' ? <Scale className="w-3.5 h-3.5 text-[#8E000C]" /> : s.kind === 'document' ? <FileText className="w-3.5 h-3.5 text-[var(--accent)]" /> : <Database className="w-3.5 h-3.5 text-[var(--accent)]" />}
+                          {s.kind === 'policy' ? <Scale className="w-3.5 h-3.5 text-ongc-maroon" /> : s.kind === 'document' ? <FileText className="w-3.5 h-3.5 text-[var(--accent)]" /> : <Database className="w-3.5 h-3.5 text-[var(--accent)]" />}
                           {sourceLabel(s)}
                         </button>
                       ))}
                     </div>
                     {contract.caveat && (
-                      <div className="max-w-[48rem] p-3 rounded-[0.9rem] bg-[#FEF7E0] dark:bg-[rgba(253,214,99,0.1)] text-[#7A4F01] dark:text-[#FDD663] text-[0.84rem] leading-relaxed">
+                      <div className="max-w-[48rem] p-3 rounded-[0.9rem] bg-warning-pale text-warning text-[0.84rem] leading-relaxed">
                         <span className="font-semibold">Data note · </span>
                         {cleanText(contract.caveat)}
                       </div>

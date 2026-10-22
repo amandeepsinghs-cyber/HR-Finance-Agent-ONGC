@@ -1,7 +1,9 @@
 /**
  * Chart theme tokens (AlphaEvolve deck + ONGC maroon), light & dark.
+ * All colours are read from the single design-token source: src/design/tokens.json (U1.1).
  */
 import * as echarts from 'echarts';
+import TOKENS from '@/design/tokens.json';
 
 export interface ChartTokens {
   dark: boolean;
@@ -22,6 +24,18 @@ export interface ChartTokens {
   positive: string;
   band: [string, string, string];
   categorical: string[];
+  /** ramp ordered LOW→HIGH magnitude (light: light→dark tints drawn with separating borders; dark: dim→bright, each step ≥3:1 on the card) */
+  sequential: string[];
+  /** marker outline on maps/scatter */
+  markerBorder: string;
+  shadowAccent: string;
+  shadowMaroon: string;
+  /** halo/stroke colour drawn behind on-chart labels (matches the canvas) */
+  labelHalo: string;
+  mapArea: string;
+  mapBorder: string;
+  /** text colour on top of accent/maroon fills */
+  onAccent: string;
   font: string;
   /** font scale relative to 16px root (big-screen legibility) */
   scale: number;
@@ -34,52 +48,41 @@ export function rootScale(): number {
 }
 
 export function getTokens(dark: boolean): ChartTokens {
+  // Values come from the single token source (src/design/tokens.json, U1.1). Read directly from
+  // JSON (not computed CSS) so charts are correct even before the <html class="dark"> toggle lands.
   const scale = rootScale();
-  return dark
-    ? {
-        dark,
-        text: '#E8EAED',
-        sub: '#A8ADB4',
-        faint: '#6B7078',
-        grid: 'rgba(255,255,255,0.07)',
-        axis: 'rgba(255,255,255,0.18)',
-        surface: '#17181B',
-        tooltipBg: 'rgba(32,33,36,0.96)',
-        tooltipBorder: 'rgba(255,255,255,0.10)',
-        accent: '#4C97FF',
-        accentSoft: '#8EC5FF',
-        accentDeep: '#2F6FE0',
-        accentPale: 'rgba(118,187,255,0.22)',
-        maroon: '#E0525C',
-        maroonSoft: '#B83A43',
-        positive: '#5BB974',
-        band: ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.09)', 'rgba(255,255,255,0.14)'],
-        categorical: ['#4C97FF', '#8EC5FF', '#2F6FE0', '#C6E1FF', '#9AA0A6', '#5F84C9', '#E0525C', '#6B7078', '#B5D7FF'],
-        font: "'Google Sans Text', 'Google Sans', Inter, 'Noto Sans Devanagari', system-ui, sans-serif",
-        scale,
-      }
-    : {
-        dark,
-        text: '#1F1F1F',
-        sub: '#5F6368',
-        faint: '#9AA0A6',
-        grid: 'rgba(31,31,31,0.07)',
-        axis: '#DADCE0',
-        surface: '#FFFFFF',
-        tooltipBg: 'rgba(255,255,255,0.98)',
-        tooltipBorder: '#E3E6EA',
-        accent: '#3186FF',
-        accentSoft: '#76BBFF',
-        accentDeep: '#1A56DB',
-        accentPale: '#DCEBFF',
-        maroon: '#8E000C',
-        maroonSoft: '#C2414B',
-        positive: '#1E8E3E',
-        band: ['#F1F3F4', '#E8EAED', '#DADCE0'],
-        categorical: ['#3186FF', '#76BBFF', '#1A56DB', '#B9DAFF', '#80868B', '#5C8FE6', '#8E000C', '#BDC1C6', '#0B3D91'],
-        font: "'Google Sans Text', 'Google Sans', Inter, 'Noto Sans Devanagari', system-ui, sans-serif",
-        scale,
-      };
+  const th = dark ? TOKENS.themes.dark : TOKENS.themes.light;
+  const pal = dark ? TOKENS.chartPalettes.dark : TOKENS.chartPalettes.light;
+  return {
+    dark,
+    text: th['chart-text'],
+    sub: th['chart-sub'],
+    faint: th['chart-faint'],
+    grid: th['chart-grid'],
+    axis: th['chart-axis'],
+    surface: th.card,
+    tooltipBg: th['chart-tooltip-bg'],
+    tooltipBorder: th['chart-tooltip-border'],
+    accent: th.accent,
+    accentSoft: th['accent-soft'],
+    accentDeep: th['accent-deep'],
+    accentPale: th['accent-pale'],
+    maroon: pal.diverging.negative,
+    maroonSoft: pal.diverging.negativeSoft,
+    positive: th['positive-fill'],
+    band: [th['chart-band-1'], th['chart-band-2'], th['chart-band-3']],
+    categorical: pal.categorical,
+    sequential: pal.sequential,
+    labelHalo: th['chart-label-halo'],
+    mapArea: th['chart-map-area'],
+    mapBorder: th['chart-map-border'],
+    markerBorder: th['chart-marker-border'],
+    shadowAccent: th['chart-shadow-accent'],
+    shadowMaroon: th['chart-shadow-maroon'],
+    onAccent: th['on-accent'],
+    font: TOKENS.typography['font-sans'],
+    scale,
+  };
 }
 
 export const px = (t: ChartTokens, base: number) => Math.round(base * t.scale);
@@ -123,8 +126,35 @@ export function tooltipCard(t: ChartTokens, title: string, rows: [string, string
 }
 
 export const ANIM = {
-  animationDuration: 700,
-  animationDurationUpdate: 650,
-  animationEasing: 'cubicOut' as const,
-  animationEasingUpdate: 'cubicInOut' as const,
+  animationDuration: TOKENS.chartMotion.enterMs,
+  animationDurationUpdate: TOKENS.chartMotion.updateMs,
+  animationEasing: TOKENS.chartMotion.easing as 'cubicOut',
+  animationEasingUpdate: TOKENS.chartMotion.easingUpdate as 'cubicInOut',
 };
+
+/** `#RRGGBB` (or an existing rgb/rgba string) → rgba with the given alpha. */
+export function alpha(color: string, a: number): string {
+  if (color.startsWith('#') && color.length >= 7) {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16));
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  }
+  const m = color.match(/rgba?\(([^)]+)\)/);
+  if (m) {
+    const [r, g, b] = m[1].split(',').map((v) => v.trim());
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  }
+  return color;
+}
+
+/** Readable label colour for text drawn ON a fill: dark ink on light fills, white on dark fills (WCAG luminance). */
+export function labelOn(fill: string): string {
+  if (!fill.startsWith('#') || fill.length < 7) return TOKENS.themes.light['on-accent'];
+  const lin = (c: number) => {
+    const v = c / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  };
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(fill.slice(i, i + 2), 16));
+  const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  // contrast vs white = 1.05/(L+0.05); vs ink(#1F1F1F, L≈0.0137) = (L+0.05)/0.0637
+  return 1.05 / (L + 0.05) >= (L + 0.05) / 0.0637 ? TOKENS.themes.light['on-accent'] : TOKENS.themes.light.ink;
+}

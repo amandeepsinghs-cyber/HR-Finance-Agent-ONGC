@@ -107,10 +107,10 @@ export const TopBar: React.FC<TopBarProps> = ({
   }, [open]);
 
   const dotColor =
-    state === 'listening' ? 'text-[var(--accent)]' : state === 'thinking' ? 'text-[#E37400]' : state === 'speaking' ? 'text-[var(--accent-deep)]' : 'text-[var(--ink-3)]';
+    state === 'listening' ? 'text-[var(--accent)]' : state === 'thinking' ? 'text-ongc-amber' : state === 'speaking' ? 'text-[var(--accent-deep)]' : 'text-[var(--ink-3)]';
 
   const conn = !isLiveMode
-    ? { label: 'Demo answers', cls: 'bg-[#FEF7E0] text-[#7A4F01] dark:bg-[rgba(253,214,99,0.12)] dark:text-[#FDD663]', dot: 'bg-[#F9AB00]' }
+    ? { label: 'Demo answers', cls: 'bg-warning-pale text-warning', dot: 'bg-warning-fill' }
     : backend === 'online'
     ? { label: 'Live', cls: 'bg-[var(--positive-pale)] text-[var(--positive)]', dot: 'bg-[var(--positive)]' }
     : backend === 'checking'
@@ -139,7 +139,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             data-testid="persona-button"
             className="flex items-center gap-2 pl-3 pr-2 py-[0.4rem] rounded-full border border-[var(--hairline)] bg-[var(--card)] hover:bg-[var(--surface)] text-[0.85rem] transition-colors"
           >
-            <span className="w-2 h-2 rounded-full bg-[#8E000C]" />
+            <span className="w-2 h-2 rounded-full bg-ongc-maroon" />
             <span className="text-[var(--ink-2)]">Speaking as</span>
             <span className="font-semibold">{active.label}</span>
             <ChevronDown className={`w-4 h-4 text-[var(--ink-3)] transition-transform ${open ? 'rotate-180' : ''}`} />

@@ -330,8 +330,8 @@ export const FloatingConversationPanel: React.FC<Props> = ({
           aria-pressed={isMicActive}
           className={`shrink-0 h-[2.65rem] rounded-full flex items-center justify-center gap-2 transition-all font-medium text-[0.84rem] ${
             isMicActive
-              ? 'px-3.5 bg-[#8E000C] text-white shadow-[0_6px_18px_-4px_rgba(142,0,12,0.85)]'
-              : 'w-[2.65rem] bg-[var(--accent)] text-white hover:bg-[var(--accent-deep)] shadow-[0_4px_14px_-4px_rgba(49,134,255,0.75)]'
+              ? 'px-3.5 bg-ongc-maroon text-white shadow-[0_6px_18px_-4px_rgb(var(--maroonRgb)/0.85)]'
+              : 'w-[2.65rem] bg-[var(--accent)] text-white hover:bg-[var(--accent-deep)] shadow-[0_4px_14px_-4px_rgb(var(--accentRgb)/0.75)]'
           }`}
           title={isMicActive ? 'Stop listening' : 'Talk to Yukti (or press Space)'}
         >

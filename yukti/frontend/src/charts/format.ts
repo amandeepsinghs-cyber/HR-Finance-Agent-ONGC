@@ -133,6 +133,12 @@ export function groupIndian(intStr: string): string {
   return (neg ? '-' : '') + rest + ',' + last3;
 }
 
+/** Indian-grouped integer: 1234567 -> "12,34,567". */
+export function fmtInt(n: number): string {
+  if (n === null || n === undefined || !Number.isFinite(n)) return '—';
+  return groupIndian(String(Math.round(n)));
+}
+
 /** Indian grouping with sensible precision (419, 7,132, 46.2, 3.88). */
 export function fmtNum(v: number, decimals?: number): string {
   if (v === null || v === undefined || Number.isNaN(v)) return '—';
@@ -144,13 +150,26 @@ export function fmtNum(v: number, decimals?: number): string {
   return groupIndian(i) + (fs ? `.${fs}` : '');
 }
 
+/** Percent formatting: 21.5 -> "21.5%". Handles NaN / ±Infinity -> "—". */
+export function fmtPct(value: number, decimals = 1): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '—';
+  return `${fmtNum(value, decimals)}%`;
+}
+
+/** Distribution share as a percent: (part / total) * 100. */
+export function sharePct(part: number, total: number, decimals = 1): string {
+  if (part === null || part === undefined || !Number.isFinite(part)) return '—';
+  if (total === null || total === undefined || !Number.isFinite(total)) return '—';
+  return fmtPct((part / Math.max(1e-9, total)) * 100, decimals);
+}
+
 /** Compact Indian: 1,35,000 -> "1.35 L", 2,31,17,000 -> "2.31 Cr" (for counts); currency handled separately. */
 export function fmtCompact(v: number): string {
   const abs = Math.abs(v);
   const sign = v < 0 ? '-' : '';
   if (abs >= 1e7) return `${sign}${(abs / 1e7).toFixed(abs >= 1e8 ? 0 : 1).replace(/\.0$/, '')} Cr`;
   if (abs >= 1e5) return `${sign}${(abs / 1e5).toFixed(abs >= 1e6 ? 0 : 1).replace(/\.0$/, '')} L`;
-  if (abs >= 1e3) return `${sign}${(abs / 1e3).toFixed(abs >= 1e4 ? 0 : 1).replace(/\.0$/, '')}k`;
+  // Indian convention: no 'k' — below 1 lakh show grouped digits (1,500 / 25,000).
   return fmtNum(v);
 }
 
@@ -162,7 +181,7 @@ export function fmtValue(v: number, unit: UnitInfo, opts: { compact?: boolean; s
       const abs = Math.abs(v);
       const neg = v < 0 ? '−' : sign;
       if (opts.compact && abs >= 1e5) return `${neg}₹${(abs / 1e5).toFixed(2).replace(/\.?0+$/, '')} L Cr`;
-      if (opts.compact && abs >= 1e4) return `${neg}₹${(abs / 1e3).toFixed(0)}k Cr`;
+      // Indian convention: no 'k'. Below 1 lakh crore show full grouped crores (₹80,000 Cr).
       return `${neg}₹${fmtNum(abs)} Cr`;
     }
     case 'percent':
