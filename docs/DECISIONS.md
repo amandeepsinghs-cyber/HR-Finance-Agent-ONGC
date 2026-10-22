@@ -32,6 +32,7 @@ Every decision that changes scope, behaviour, policy or process is recorded here
 | D-21 | 2026-10-22 | **Greeting copy:** time-aware, persona-aware "Good morning, Chairman. I'm Yukti, your HR & Finance agent." | Recommended default, approved with U4 go-ahead | U4.5 |
 | D-22 | 2026-10-22 | **Top bar height criterion restated in rem:** `--topbar-h: 3.5rem` on the fluid root scale (≈56 px on laptops, larger on big screens for 5 m legibility) instead of a fixed 56 px (G4 U4 recommendation) | Agent per reviewer; sponsor sees at U4 gate | U4.1 |
 | D-23 | 2026-10-22 | **U4.8 legacy-migration deferred to U2:** `CanvasView` is restructured into the conversation feed (TurnCard) in U2, so migrating its remaining ad-hoc classes now would be redone. TopBar and ask bar already use the primitives | Agent (change control); sponsor sees at U4 gate | U4.8, U2 |
+| D-24 | 2026-10-22 | **Single final acceptance:** the sponsor waives per-phase G5 sign-offs for U3, U2, U5, B1–B4, H1 and will review/accept everything together at the end. G1–G4 (spec, build, verify, **independent review per step**) continue unchanged. Phases are merged into the integration branch `upgrade/integration` (not `main`); merge to `main` and Cloud Run redeploy (H1.5b) wait for the final acceptance | Sponsor 07:27 | All remaining phases |
 ---
 
 ## Open decisions (need sponsor input)

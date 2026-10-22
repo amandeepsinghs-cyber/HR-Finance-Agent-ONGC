@@ -165,5 +165,6 @@ The U0 step re-runs the eval on `baseline-v0.2` because the P1 fixes changed beh
 | Date | Change | By |
 |---|---|---|
 | 2026-10-22 | Baseline `baseline-v0.2` committed and tagged; this charter created; overnight plan archived | Agent (sponsor-approved, Verbatim 14) |
+| 2026-10-22 | **D-24:** per-phase G5 waived; single final acceptance; phases merge into `upgrade/integration` |
 | 2026-10-22 | **U0 signed off** ("go ahead", V15). Decisions D-10…D-14 recorded; FEAT-015 (any-chart re-plot + chart excellence) added with steps U1.5, U5.7–U5.9 |
 | 2026-10-22 | `DELEGATION.md` added (Opus/Flash/Flash-lite split, separate Opus review of all Flash work); doc set passed G4 review in 3 rounds ([U0.2 review](docs/reviews/U0.2.md)) | Agent (sponsor request 05:26) |
