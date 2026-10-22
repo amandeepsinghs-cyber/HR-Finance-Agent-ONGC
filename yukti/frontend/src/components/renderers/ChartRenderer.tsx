@@ -52,7 +52,8 @@ export function useChartTokens(isDark: boolean): ChartTokens {
 
 function donutColors(plan: ChartPlan, t: ChartTokens): string[] {
   const n = plan.rows.length;
-  if (plan.ordinal) return ramp(t.sequential[1], t.sequential[5], n);
+  // Rubric C4: lightest ordinal slice must stay visible (light: from sequential[2]; dark: from [0], ≥3:1).
+  if (plan.ordinal) return ramp(t.sequential[t.dark ? 0 : 2], t.sequential[5], n);
   return t.categorical.slice(0, n);
 }
 
@@ -61,15 +62,16 @@ const DonutWithLegend: React.FC<{ plan: ChartPlan; t: ChartTokens; isPie?: boole
   const option = useMemo(() => (isPie ? pieOption(plan, t, colors) : donutOption(plan, t, colors)), [plan, t, isPie]); // eslint-disable-line react-hooks/exhaustive-deps
   const maxV = Math.max(...plan.rows.map((r) => r.value));
   return (
-    <div className="grid h-full grid-cols-1 md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)] gap-6 items-center">
+    <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)] md:grid-rows-[minmax(0,1fr)] gap-6 items-center">
       <div className="h-full min-h-[18rem]">
         <EChart option={option} testId={isPie ? 'chart-pie' : 'chart-donut'} />
       </div>
-      <ul className="flex flex-col gap-[0.35rem] text-[0.9rem] self-center max-h-full overflow-y-auto pr-1" aria-label="Legend">
+      {/* Rubric C3/C5: legend never clips. It scrolls within the card, and dense mode applies for > 6 rows. */}
+      <ul className={`flex flex-col self-center max-h-full min-h-0 overflow-y-auto pr-1 ${plan.rows.length > 6 ? 'gap-0 text-[0.8rem]' : 'gap-[0.35rem] text-[0.9rem]'}`} aria-label="Legend">
         {plan.rows.map((r, i) => {
           const pct = (r.value / Math.max(1, plan.total)) * 100;
           return (
-            <li key={r.label} className="grid grid-cols-[0.75rem_minmax(0,1fr)_auto_3.2rem] items-center gap-3 py-[0.3rem] border-b border-[var(--hairline)] last:border-0">
+            <li key={r.label} className={`grid grid-cols-[0.75rem_minmax(0,1fr)_auto_3.2rem] items-center gap-3 ${plan.rows.length > 6 ? 'py-[0.1rem]' : 'py-[0.3rem]'} border-b border-[var(--hairline)] last:border-0`}>
               <span className="w-3 h-3 rounded-[4px]" style={{ background: colors[i % colors.length] }} />
               <span className="truncate font-medium text-[var(--ink)]" title={r.label}>
                 {r.label}

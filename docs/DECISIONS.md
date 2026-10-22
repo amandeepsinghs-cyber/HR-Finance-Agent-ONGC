@@ -23,6 +23,7 @@ Every decision that changes scope, behaviour, policy or process is recorded here
 | D-12 | 2026-10-22 | **Commit cadence:** local commits on `upgrade/*` after each G4-approved step; never push; merge to `main` and tag only at G5 | V15 (OD-4) | All steps |
 | D-13 | 2026-10-22 | **Colour system (provisional):** Aurora tokens for the UI system, with ONGC saffron/petroleum blue as brand accents (orb glow, logo, highlights). This is the recommended OD-1 option, adopted on "go ahead"; **the sponsor confirms visually at the U1 gate** | V15 ("go ahead"), agent recommendation | U1, U3 |
 | D-14 | 2026-10-22 | **Any-chart re-presentation + chart excellence** become an explicit feature (FEAT-015), with a chart design system in U1 and a compatibility/transform engine in U5 | V15 | FEAT-003, FEAT-015, U1.5, U5.7–U5.9 |
+| D-15 | 2026-10-22 | **U1.3 adoption scope:** primitives are built and showcased in U1; legacy `CanvasView`/`FloatingConversationPanel`/`TopBar` migrate in U4 (they are rebuilt there), and new components (TurnCard, U2.3) use primitives from day one. This avoids migrating code that U2/U4 replace. The `/_design` route is renamed `/design-system` (Next.js treats `_`-prefixed folders as private) | Agent (change control, BUILD §4); sponsor sees it at the U1 gate | U1.3, U2.3, U4 |
 ---
 
 ## Open decisions (need sponsor input)

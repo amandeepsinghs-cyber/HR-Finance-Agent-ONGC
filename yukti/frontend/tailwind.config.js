@@ -58,6 +58,12 @@ module.exports = {
         hindi: ['Noto Sans Devanagari', 'Inter', 'sans-serif'],
       },
       fontSize: {
+        'display': ['2.25rem', { lineHeight: '1.15', letterSpacing: '-0.02em', fontWeight: '600' }],
+        'headline': ['1.6rem', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '600' }],
+        'title': ['1.15rem', { lineHeight: '1.35', fontWeight: '600' }],
+        'body': ['0.95rem', { lineHeight: '1.6' }],
+        'label': ['0.8rem', { lineHeight: '1.3', letterSpacing: '0.01em', fontWeight: '500' }],
+        'caption': ['0.72rem', { lineHeight: '1.3', letterSpacing: '0.02em' }],
         'kpi-giant': ['4.5rem', { lineHeight: '1.05', letterSpacing: '-0.03em' }],
         'kpi-large': ['3.25rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
         'kpi-medium': ['2.25rem', { lineHeight: '1.15', letterSpacing: '-0.01em' }],

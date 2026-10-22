@@ -89,7 +89,7 @@ export const TableRenderer: React.FC<TableRendererProps> = ({ table, maxRows = 2
               {columns.map((c, ci) => {
                 const { text, numeric, negative } = cellText(c, r[c]);
                 return (
-                  <td key={c} className={`${numeric ? 'num' : ''} ${negative ? 'neg' : ''} ${ci === 0 ? 'first' : ''}`}>
+                  <td key={c} className={`${numeric ? 'num tabular-nums' : ''} ${negative ? 'neg' : ''} ${ci === 0 ? 'first' : ''}`}>
                     {text}
                   </td>
                 );

@@ -226,6 +226,10 @@
     font-weight: 600;
     color: var(--ink-2);
   }
+
+  .tabular {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
 }
 
 ::-webkit-scrollbar {

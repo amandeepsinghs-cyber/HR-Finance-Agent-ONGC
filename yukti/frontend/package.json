@@ -11,6 +11,7 @@
     "start": "NODE_ENV=production node server.js",
     "lint": "next lint",
     "lint:tokens": "node scripts/check_tokens.mjs",
+    "lint:contrast": "node scripts/check_contrast.mjs",
     "typecheck": "tsc --noEmit",
     "build:fixtures": "python3 scripts/build_fixtures.py",
     "check:fixtures": "python3 scripts/check_fixtures.py",
