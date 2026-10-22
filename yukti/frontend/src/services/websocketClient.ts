@@ -62,6 +62,8 @@ export class YuktiApiClient {
   private wantOpen = false;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempts = 0;
+  /** Backend fell back to text-only mode (connection_status: degraded): socket open but voice ignored. */
+  private voiceDegraded = false;
   public counters: WsCounters = { audioChunksSent: 0, audioBytesSent: 0, audioChunksReceived: 0, audioBytesReceived: 0, messagesReceived: 0 };
 
   constructor() {
@@ -74,6 +76,21 @@ export class YuktiApiClient {
 
   public getState(): WsState {
     return this.state;
+  }
+
+  /** True only when Gemini Live actually owns spoken turns (socket open and not in text fallback). */
+  public isLiveVoiceReady(): boolean {
+    return this.state === 'open' && !this.voiceDegraded;
+  }
+
+  /** "New session" (U2.6): fresh session id so the backend starts with no conversation context. */
+  public resetSession(): string {
+    const wasWanted = this.wantOpen;
+    this.disconnect();
+    this.sessionId = `sess-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    this.voiceDegraded = false;
+    if (wasWanted) void this.connect();
+    return this.sessionId;
   }
 
   private wsUrl(): string {
@@ -130,12 +147,21 @@ export class YuktiApiClient {
         q.forEach((m) => ws.send(m));
         resolve(true);
       };
-      ws.onmessage = (ev) => this.handleMessage(ev);
+      ws.onmessage = (ev) => {
+        if (this.ws !== ws) return; // late frames from a replaced / reset session socket (U2.6)
+        this.handleMessage(ev);
+      };
       ws.onerror = () => {
+        if (this.ws !== ws) return; // stale socket (after reconfigure/disconnect): ignore (U3.6)
         this.setState('error');
       };
       ws.onclose = () => {
-        if (this.ws === ws) this.ws = null;
+        if (this.ws !== ws) {
+          resolve(false);
+          return; // a late close from a replaced socket must not mark the new one closed or reconnect
+        }
+        this.ws = null;
+        this.voiceDegraded = false;
         this.setState('closed');
         resolve(false);
         if (this.wantOpen) this.scheduleReconnect();
@@ -159,6 +185,7 @@ export class YuktiApiClient {
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
     this.reconnectTimer = null;
     this.pending = [];
+    this.voiceDegraded = false;
     if (this.ws) {
       try {
         this.ws.close();
@@ -191,6 +218,7 @@ export class YuktiApiClient {
     }
     switch (msg.type) {
       case 'connection_status':
+        this.voiceDegraded = msg.status === 'degraded';
         this.emit('connection_status', { ready: msg.status === 'ready', ...msg });
         break;
       case 'contract':
@@ -290,6 +318,13 @@ export class YuktiApiClient {
       this.counters.audioBytesSent += bytes.length;
     }
     return ok;
+  }
+
+  /** Barge-in (U3.4): ask the server to stop the current reply. */
+  public sendInterrupt(): boolean {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return false;
+    this.ws.send(JSON.stringify({ type: 'interrupt' }));
+    return true;
   }
 
   public sendAudioStreamEnd(): void {

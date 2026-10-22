@@ -16,7 +16,6 @@ const srcDir = join(root, 'src');
 const EXCLUDED_DIRS = ['src/design', 'src/fixtures', 'src/data'];
 // Files allowed temporarily because a checklist step replaces them wholesale.
 const TEMP_ALLOW = {
-  'src/components/VoiceOrb.tsx': 'U3.1 (infinity-ribbon orb rewrite)',
 };
 
 function getFiles(dir) {
