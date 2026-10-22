@@ -67,7 +67,7 @@ const DonutWithLegend: React.FC<{ plan: ChartPlan; t: ChartTokens; isPie?: boole
         <EChart option={option} testId={isPie ? 'chart-pie' : 'chart-donut'} />
       </div>
       {/* Rubric C3/C5: legend never clips. It scrolls within the card, and dense mode applies for > 6 rows. */}
-      <ul className={`flex flex-col self-center max-h-full min-h-0 overflow-y-auto pr-1 ${plan.rows.length > 6 ? 'gap-0 text-[0.8rem]' : 'gap-[0.35rem] text-[0.9rem]'}`} aria-label="Legend">
+      <ul className={`flex flex-col self-center max-h-full min-h-0 overflow-y-auto pr-1 ${plan.rows.length > 6 ? 'gap-0 text-[0.875rem]' : 'gap-[0.35rem] text-[0.9rem]'}`} aria-label="Legend">
         {plan.rows.map((r, i) => {
           const pct = (r.value / Math.max(1, plan.total)) * 100;
           return (

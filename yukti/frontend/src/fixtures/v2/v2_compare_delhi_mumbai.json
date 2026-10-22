@@ -1,0 +1,293 @@
+{
+  "turn_id": "turn_v2_compare_delhi_mumbai",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Comparing executive headcount across grades E0 to E9 between Delhi Corporate HQ and Mumbai Western Offshore. Mumbai maintains a higher operational workforce of 6,820 executives compared to Delhi's 2,450. However, Delhi concentrates a higher proportion of senior management at grade E7 and above (12% vs 6.2%).",
+  "display_text": "Headcount comparison across grades E0–E9 for Delhi HQ (WC-DEL) vs Mumbai Western Offshore (WC-MUM) from hrfin_gold.ssot_workforce_employee [1]. Mumbai leads in junior to mid operational grades (6820), while Delhi has higher senior leadership concentration (12% vs 6.2%).",
+  "contract_version": 2,
+  "visual": {
+    "type": "chart",
+    "mode": "compare",
+    "title": "Headcount Comparison: Delhi HQ vs Mumbai (Western Offshore) by Grade",
+    "chart": {
+      "kind": "grouped_bar",
+      "x": "grade",
+      "unit": "Executives",
+      "data": [
+        {
+          "grade": "E0",
+          "Delhi": 45,
+          "Mumbai": 120
+        },
+        {
+          "grade": "E1",
+          "Delhi": 180,
+          "Mumbai": 620
+        },
+        {
+          "grade": "E2",
+          "Delhi": 390,
+          "Mumbai": 1340
+        },
+        {
+          "grade": "E3",
+          "Delhi": 460,
+          "Mumbai": 1480
+        },
+        {
+          "grade": "E4",
+          "Delhi": 410,
+          "Mumbai": 1210
+        },
+        {
+          "grade": "E5",
+          "Delhi": 380,
+          "Mumbai": 980
+        },
+        {
+          "grade": "E6",
+          "Delhi": 290,
+          "Mumbai": 650
+        },
+        {
+          "grade": "E7",
+          "Delhi": 195,
+          "Mumbai": 280
+        },
+        {
+          "grade": "E8",
+          "Delhi": 75,
+          "Mumbai": 110
+        },
+        {
+          "grade": "E9",
+          "Delhi": 25,
+          "Mumbai": 30
+        }
+      ]
+    },
+    "compare": {
+      "metric": "headcount",
+      "shared_axis": true,
+      "items": [
+        {
+          "label": "Delhi HQ",
+          "chart": {
+            "kind": "bar",
+            "x": "grade",
+            "y": "headcount",
+            "unit": "Executives",
+            "data": [
+              {
+                "grade": "E0",
+                "headcount": 45
+              },
+              {
+                "grade": "E1",
+                "headcount": 180
+              },
+              {
+                "grade": "E2",
+                "headcount": 390
+              },
+              {
+                "grade": "E3",
+                "headcount": 460
+              },
+              {
+                "grade": "E4",
+                "headcount": 410
+              },
+              {
+                "grade": "E5",
+                "headcount": 380
+              },
+              {
+                "grade": "E6",
+                "headcount": 290
+              },
+              {
+                "grade": "E7",
+                "headcount": 195
+              },
+              {
+                "grade": "E8",
+                "headcount": 75
+              },
+              {
+                "grade": "E9",
+                "headcount": 25
+              }
+            ]
+          },
+          "kpis": [
+            {
+              "label": "Total Headcount",
+              "value": 2450,
+              "unit": "Executives"
+            },
+            {
+              "label": "E7+ Share",
+              "value": 12,
+              "unit": "%"
+            }
+          ],
+          "filter": {
+            "field": "wc_id",
+            "op": "=",
+            "value": "DEL"
+          }
+        },
+        {
+          "label": "Mumbai (Western Offshore)",
+          "chart": {
+            "kind": "bar",
+            "x": "grade",
+            "y": "headcount",
+            "unit": "Executives",
+            "data": [
+              {
+                "grade": "E0",
+                "headcount": 120
+              },
+              {
+                "grade": "E1",
+                "headcount": 620
+              },
+              {
+                "grade": "E2",
+                "headcount": 1340
+              },
+              {
+                "grade": "E3",
+                "headcount": 1480
+              },
+              {
+                "grade": "E4",
+                "headcount": 1210
+              },
+              {
+                "grade": "E5",
+                "headcount": 980
+              },
+              {
+                "grade": "E6",
+                "headcount": 650
+              },
+              {
+                "grade": "E7",
+                "headcount": 280
+              },
+              {
+                "grade": "E8",
+                "headcount": 110
+              },
+              {
+                "grade": "E9",
+                "headcount": 30
+              }
+            ]
+          },
+          "kpis": [
+            {
+              "label": "Total Headcount",
+              "value": 6820,
+              "unit": "Executives"
+            },
+            {
+              "label": "E7+ Share",
+              "value": 6.2,
+              "unit": "%"
+            }
+          ],
+          "filter": {
+            "field": "wc_id",
+            "op": "=",
+            "value": "MUM"
+          }
+        }
+      ]
+    }
+  },
+  "insights_v2": [
+    {
+      "text": "Mumbai has 2.8x the total executive headcount of Delhi, driven by offshore operational installations.",
+      "kind": "comparison"
+    },
+    {
+      "text": "Delhi exhibits nearly double the concentration of senior executives (E7+) at 12% versus 6.2% in Mumbai.",
+      "kind": "outlier",
+      "value": 12,
+      "unit": "%",
+      "ref": "Delhi HQ"
+    }
+  ],
+  "drilldowns": [
+    {
+      "label": "Only senior leadership (E7+)",
+      "question": "Compare senior leadership (E7–E9) between Delhi and Mumbai",
+      "spec_patch": {
+        "add_filters": [
+          {
+            "field": "grade",
+            "op": "in",
+            "value": [
+              "E7",
+              "E8",
+              "E9"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "context_chips": [
+    {
+      "label": "CMD",
+      "kind": "role"
+    },
+    {
+      "label": "Headcount",
+      "kind": "subject"
+    },
+    {
+      "label": "Delhi vs Mumbai",
+      "kind": "filter"
+    }
+  ],
+  "query_spec": {
+    "version": 1,
+    "domain": "hr",
+    "metric": "headcount",
+    "aggregation": "count",
+    "dimensions": [
+      "grade",
+      "wc_id"
+    ],
+    "filters": [
+      {
+        "field": "wc_id",
+        "op": "in",
+        "value": [
+          "DEL",
+          "MUM"
+        ]
+      }
+    ]
+  },
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.ssot_workforce_employee"
+    }
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "word",
+    "pdf"
+  ]
+}

@@ -128,7 +128,7 @@ export const KpiRenderer: React.FC<KpiRendererProps> = ({ kpis, hero = false, sp
         return (
           <div key={idx} className="kpi-tile group" data-tone={tone} data-primary={idx === 0 ? 'true' : undefined}>
             <div className="flex items-start justify-between gap-3">
-              <div className="text-[0.78rem] font-medium tracking-[0.01em] text-[var(--ink-2)] truncate" title={kpi.label}>
+              <div className="text-label text-[var(--ink-2)] truncate" title={kpi.label}>
                 {cleanText(kpi.label)}
               </div>
               {showSpark && <Spark spark={spark!} />}

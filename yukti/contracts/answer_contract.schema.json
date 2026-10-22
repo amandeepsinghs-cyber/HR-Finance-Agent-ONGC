@@ -3,52 +3,899 @@
   "$id": "yukti/answer_contract.schema.json",
   "title": "Yukti AI answer contract (agent → UI), one per agent turn",
   "type": "object",
-  "required": ["turn_id", "language", "spoken_summary", "display_text", "access", "sources"],
+  "required": [
+    "turn_id",
+    "language",
+    "spoken_summary",
+    "display_text",
+    "access",
+    "sources"
+  ],
   "properties": {
-    "turn_id": {"type": "string"},
-    "language": {"enum": ["en", "hi", "hi-en"]},
-    "persona": {"enum": ["CMD", "DIR_HR", "DIR_FIN", "E2_HR", "E3_FIN"]},
-    "spoken_summary": {"type": "string", "description": "2–4 sentences for Leda to speak; Indian number system"},
-    "display_text": {"type": "string", "maxLength": 600, "description": "brief thread text with inline citation markers [1]"},
+    "turn_id": {
+      "type": "string"
+    },
+    "language": {
+      "enum": [
+        "en",
+        "hi",
+        "hi-en"
+      ]
+    },
+    "persona": {
+      "enum": [
+        "CMD",
+        "DIR_HR",
+        "DIR_FIN",
+        "E2_HR",
+        "E3_FIN"
+      ]
+    },
+    "spoken_summary": {
+      "type": "string",
+      "description": "2–4 sentences for Leda to speak; Indian number system"
+    },
+    "display_text": {
+      "type": "string",
+      "maxLength": 600,
+      "description": "brief thread text with inline citation markers [1]"
+    },
     "visual": {
       "type": "object",
-      "required": ["type", "mode"],
+      "required": [
+        "type",
+        "mode"
+      ],
       "properties": {
-        "type": {"enum": ["chart", "table", "kpi", "clause", "document", "map", "refusal", "none"]},
-        "mode": {"enum": ["replace", "refine", "compare", "restore"]},
-        "title": {"type": "string"},
-        "chart": {"$ref": "#/$defs/chart_spec"},
-        "table": {"type": "object", "properties": {"columns": {"type": "array", "items": {"type": "string"}}, "rows": {"type": "array"}}},
-        "kpis": {"type": "array", "items": {"type": "object", "properties": {"label": {"type": "string"}, "value": {"type": ["number", "string"]}, "unit": {"type": "string"}, "delta": {"type": "string"}}}},
-        "clause": {"type": "object", "properties": {"doc_id": {"type": "string"}, "doc_title": {"type": "string"}, "clause_ref": {"type": "string"}, "text": {"type": "string"}, "highlight": {"type": "string"}}},
-        "document": {"type": "object", "properties": {"doc_type": {"type": "string"}, "title": {"type": "string"}, "markdown": {"type": "string"}, "template_id": {"type": "string"}, "version": {"type": "integer"}}},
-        "map": {"type": "object", "properties": {"points": {"type": "array", "items": {"type": "object", "properties": {"wc_id": {"type": "string"}, "name": {"type": "string"}, "lat": {"type": "number"}, "lon": {"type": "number"}, "value": {"type": "number"}}}}}}
+        "type": {
+          "enum": [
+            "chart",
+            "table",
+            "kpi",
+            "clause",
+            "document",
+            "map",
+            "refusal",
+            "none"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "replace",
+            "refine",
+            "compare",
+            "restore"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "chart": {
+          "$ref": "#/$defs/chart_spec"
+        },
+        "table": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "rows": {
+              "type": "array"
+            },
+            "masking": {
+              "type": "object",
+              "required": [
+                "level"
+              ],
+              "properties": {
+                "level": {
+                  "enum": [
+                    "none",
+                    "partial",
+                    "aggregate",
+                    "refused"
+                  ]
+                },
+                "masked_columns": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "rule_ref": {
+                  "type": "string"
+                }
+              }
+            },
+            "total_rows": {
+              "type": "integer",
+              "description": "Full row count when rows[] is a page/sample"
+            },
+            "row_actions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "enum": [
+                      "draft_transfer_note",
+                      "open_profile",
+                      "add_to_watchlist",
+                      "ask"
+                    ]
+                  },
+                  "question_template": {
+                    "type": "string",
+                    "description": "e.g. 'Draft a transfer note for {emp_name}'"
+                  },
+                  "min_role": {
+                    "enum": [
+                      "CMD",
+                      "DIR_HR",
+                      "DIR_FIN",
+                      "E2_HR",
+                      "E3_FIN"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "kpis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "value": {
+                "type": [
+                  "number",
+                  "string"
+                ]
+              },
+              "unit": {
+                "type": "string"
+              },
+              "delta": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "clause": {
+          "type": "object",
+          "properties": {
+            "doc_id": {
+              "type": "string"
+            },
+            "doc_title": {
+              "type": "string"
+            },
+            "clause_ref": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            },
+            "highlight": {
+              "type": "string"
+            }
+          }
+        },
+        "document": {
+          "type": "object",
+          "properties": {
+            "doc_type": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "markdown": {
+              "type": "string"
+            },
+            "template_id": {
+              "type": "string"
+            },
+            "version": {
+              "type": "integer"
+            }
+          }
+        },
+        "map": {
+          "type": "object",
+          "properties": {
+            "points": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "wc_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "lat": {
+                    "type": "number"
+                  },
+                  "lon": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "compare": {
+          "type": "object",
+          "description": "Side-by-side comparison (visual.mode = 'compare')",
+          "required": [
+            "items"
+          ],
+          "properties": {
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 4,
+              "items": {
+                "type": "object",
+                "required": [
+                  "label"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "chart": {
+                    "$ref": "#/$defs/chart_spec"
+                  },
+                  "kpis": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": [
+                            "number",
+                            "string"
+                          ]
+                        },
+                        "unit": {
+                          "type": "string"
+                        },
+                        "delta": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "filter": {
+                    "$ref": "#/$defs/filter"
+                  }
+                }
+              }
+            },
+            "metric": {
+              "type": "string"
+            },
+            "shared_axis": {
+              "type": "boolean"
+            }
+          }
+        }
       }
     },
-    "insights": {"type": "array", "maxItems": 4, "items": {"type": "string"}},
-    "sources": {"type": "array", "items": {"type": "object", "required": ["kind"], "properties": {
-      "kind": {"enum": ["data", "policy", "document"]},
-      "object": {"type": "string"}, "query_id": {"type": "string"}, "sql": {"type": "string"},
-      "doc_id": {"type": "string"}, "clause": {"type": "string"}, "title": {"type": "string"}}}},
-    "suggestions": {"type": "array", "maxItems": 3, "items": {"type": "string"}},
-    "access": {"type": "object", "required": ["status"], "properties": {
-      "status": {"enum": ["allowed", "partial", "refused"]},
-      "reason": {"type": "string"}, "rule_ref": {"type": "string"}, "alternative": {"type": "string"}}},
-    "export_options": {"type": "array", "items": {"enum": ["sheets", "docs", "word", "pdf", "xlsx"]}},
-    "status_events": {"type": "array", "items": {"type": "string"}, "description": "e.g. 'querying postings…' shown while thinking"}
+    "insights": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "string"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "data",
+              "policy",
+              "document"
+            ]
+          },
+          "object": {
+            "type": "string"
+          },
+          "query_id": {
+            "type": "string"
+          },
+          "sql": {
+            "type": "string"
+          },
+          "doc_id": {
+            "type": "string"
+          },
+          "clause": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "suggestions": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "string"
+      }
+    },
+    "access": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "allowed",
+            "partial",
+            "refused"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "rule_ref": {
+          "type": "string"
+        },
+        "alternative": {
+          "type": "string"
+        }
+      }
+    },
+    "export_options": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "sheets",
+          "docs",
+          "word",
+          "pdf",
+          "xlsx"
+        ]
+      }
+    },
+    "status_events": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "e.g. 'querying postings…' shown while thinking"
+    },
+    "contract_version": {
+      "enum": [
+        1,
+        2
+      ],
+      "description": "Absent = 1. Version 2 adds the optional fields below (U2.1); all are optional so v1 producers stay valid."
+    },
+    "insights_v2": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/insight"
+      }
+    },
+    "drilldowns": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/drilldown"
+      }
+    },
+    "context_chips": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": [
+          "label"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "role",
+              "subject",
+              "population",
+              "period",
+              "source",
+              "filter"
+            ]
+          }
+        }
+      }
+    },
+    "query_spec": {
+      "$ref": "#/$defs/query_spec"
+    },
+    "caveat": {
+      "type": "string",
+      "description": "data note shown inside Sources (caveats, assumptions)"
+    },
+    "ui_action": {
+      "type": "object",
+      "description": "optional screen command bundled with the answer (e.g. chart_kind)",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "command": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    }
   },
   "$defs": {
     "chart_spec": {
       "type": "object",
       "description": "Small declarative spec; the UI maps it to ECharts. No code from the model.",
-      "required": ["kind", "data"],
+      "required": [
+        "kind",
+        "data"
+      ],
       "properties": {
-        "kind": {"enum": ["pie", "donut", "bar", "hbar", "stacked_bar", "grouped_bar", "line", "area", "combo", "histogram", "box", "treemap", "heatmap", "waterfall", "bullet", "gauge", "funnel", "scatter", "kpi", "table", "map"]},
-        "data": {"type": "array", "items": {"type": "object"}},
-        "x": {"type": "string"}, "y": {"type": "string"}, "series": {"type": "string"}, "value": {"type": "string"}, "category": {"type": "string"},
-        "unit": {"type": "string"}, "sort": {"enum": ["asc", "desc", "none"]}, "top_n": {"type": "integer"},
-        "annotations": {"type": "array", "items": {"type": "object", "properties": {"x": {}, "label": {"type": "string"}}}},
-        "target": {"type": "number"}
+        "kind": {
+          "enum": [
+            "pie",
+            "donut",
+            "bar",
+            "hbar",
+            "stacked_bar",
+            "grouped_bar",
+            "line",
+            "area",
+            "combo",
+            "histogram",
+            "box",
+            "treemap",
+            "heatmap",
+            "waterfall",
+            "bullet",
+            "gauge",
+            "funnel",
+            "scatter",
+            "kpi",
+            "table",
+            "map"
+          ]
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "x": {
+          "type": "string"
+        },
+        "y": {
+          "type": "string"
+        },
+        "series": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "sort": {
+          "enum": [
+            "asc",
+            "desc",
+            "none"
+          ]
+        },
+        "top_n": {
+          "type": "integer"
+        },
+        "annotations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "x": {},
+              "label": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "target": {
+          "type": "number"
+        }
+      }
+    },
+    "filter": {
+      "type": "object",
+      "required": [
+        "field",
+        "op"
+      ],
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "op": {
+          "enum": [
+            "=",
+            "!=",
+            ">",
+            ">=",
+            "<",
+            "<=",
+            "in",
+            "not_in",
+            "between",
+            "like"
+          ]
+        },
+        "value": {
+          "description": "scalar for = != > >= < <= like; array for in / not_in; [low, high] for between"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "const": "between"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "op": {
+                "enum": [
+                  "in",
+                  "not_in"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "array"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "query_spec": {
+      "type": "object",
+      "description": "Frozen, versioned description of the data question (U2.1 / B2). The UI may echo it back with a spec_patch for refinements.",
+      "required": [
+        "version",
+        "metric"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "domain": {
+          "enum": [
+            "hr",
+            "finance",
+            "policy"
+          ]
+        },
+        "metric": {
+          "type": "string"
+        },
+        "aggregation": {
+          "enum": [
+            "count",
+            "sum",
+            "avg",
+            "min",
+            "max",
+            "distinct_count",
+            "ratio"
+          ]
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/filter"
+          }
+        },
+        "period": {
+          "type": "object",
+          "properties": {
+            "fy": {
+              "type": "string",
+              "pattern": "^FY\\d{2}$"
+            },
+            "from": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            },
+            "grain": {
+              "enum": [
+                "year",
+                "quarter",
+                "month",
+                "day"
+              ]
+            }
+          }
+        },
+        "grain": {
+          "enum": [
+            "aggregate",
+            "row"
+          ]
+        },
+        "sort": {
+          "type": "object",
+          "properties": {
+            "by": {
+              "type": "string"
+            },
+            "dir": {
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "spec_patch": {
+      "type": "object",
+      "description": "Partial query_spec merged onto the current one (refine in place)",
+      "properties": {
+        "add_filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/filter"
+          }
+        },
+        "remove_filters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "period": {
+          "type": "object",
+          "properties": {
+            "fy": {
+              "type": "string",
+              "pattern": "^FY\\d{2}$"
+            },
+            "from": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            },
+            "grain": {
+              "enum": [
+                "year",
+                "quarter",
+                "month",
+                "day"
+              ]
+            }
+          }
+        },
+        "grain": {
+          "enum": [
+            "aggregate",
+            "row"
+          ]
+        },
+        "sort": {
+          "type": "object",
+          "properties": {
+            "by": {
+              "type": "string"
+            },
+            "dir": {
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "chart_kind": {
+          "enum": [
+            "pie",
+            "donut",
+            "bar",
+            "hbar",
+            "stacked_bar",
+            "grouped_bar",
+            "line",
+            "area",
+            "combo",
+            "histogram",
+            "box",
+            "treemap",
+            "heatmap",
+            "waterfall",
+            "bullet",
+            "gauge",
+            "funnel",
+            "scatter",
+            "kpi",
+            "table",
+            "map"
+          ]
+        },
+        "metric": {
+          "type": "string"
+        },
+        "aggregation": {
+          "enum": [
+            "count",
+            "sum",
+            "avg",
+            "min",
+            "max",
+            "distinct_count",
+            "ratio"
+          ]
+        },
+        "compare": {
+          "type": "object",
+          "description": "split the current answer into side-by-side entities",
+          "required": [
+            "field",
+            "values"
+          ],
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "values": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 4
+            }
+          }
+        }
+      }
+    },
+    "insight": {
+      "type": "object",
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "headline",
+            "trend",
+            "outlier",
+            "risk",
+            "comparison",
+            "note"
+          ]
+        },
+        "value": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "unit": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string",
+          "description": "row/category the insight refers to (for highlight)"
+        }
+      }
+    },
+    "drilldown": {
+      "type": "object",
+      "required": [
+        "label"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "spec_patch": {
+          "$ref": "#/$defs/spec_patch"
+        }
       }
     }
   }

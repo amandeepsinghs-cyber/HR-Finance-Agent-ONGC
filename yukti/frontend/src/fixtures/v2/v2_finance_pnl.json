@@ -1,0 +1,182 @@
+{
+  "turn_id": "turn_v2_finance_pnl",
+  "language": "en",
+  "persona": "DIR_FIN",
+  "spoken_summary": "Field-wise profit and loss performance for fiscal year 2026 across twelve primary producing assets. Total net surplus is 36,150 crore rupees, with Mumbai High generating 22,450 crore rupees. Four frontier and mature fields registered operating losses requiring portfolio review.",
+  "display_text": "FY26 asset-level profit & loss statement across 12 producing fields from hrfin_gold.ssot_asset_pnl [1]. Mumbai High (22,450 Cr) and Bassein remain primary profit contributors, while 4 fields report net losses under prevailing realization and lifting cost structures.",
+  "contract_version": 2,
+  "visual": {
+    "type": "chart",
+    "mode": "replace",
+    "title": "Field-wise Profit & Loss (P&L), FY26",
+    "chart": {
+      "kind": "hbar",
+      "x": "field",
+      "y": "profit_cr",
+      "unit": "₹ Cr",
+      "sort": "desc",
+      "data": [
+        {
+          "field": "Mumbai High",
+          "profit_cr": 22450
+        },
+        {
+          "field": "Bassein",
+          "profit_cr": 8920
+        },
+        {
+          "field": "Gandhar",
+          "profit_cr": 4150
+        },
+        {
+          "field": "Ankleshwar",
+          "profit_cr": 1820
+        },
+        {
+          "field": "Ravva",
+          "profit_cr": 1240
+        },
+        {
+          "field": "Neelam & Heera",
+          "profit_cr": 980
+        },
+        {
+          "field": "Cambay",
+          "profit_cr": 310
+        },
+        {
+          "field": "Cauvery",
+          "profit_cr": 150
+        },
+        {
+          "field": "Rajasthan",
+          "profit_cr": -320
+        },
+        {
+          "field": "Jorhat",
+          "profit_cr": -680
+        },
+        {
+          "field": "Tripura",
+          "profit_cr": -1120
+        },
+        {
+          "field": "KG Deepwater",
+          "profit_cr": -1750
+        }
+      ]
+    },
+    "kpis": [
+      {
+        "label": "Net Profit",
+        "value": 36150,
+        "unit": "₹ Cr",
+        "delta": "+8.4% vs FY25"
+      },
+      {
+        "label": "Loss-Making Fields",
+        "value": 4,
+        "unit": "Fields",
+        "delta": "-1 vs FY25"
+      },
+      {
+        "label": "Top Asset (Mumbai High)",
+        "value": 22450,
+        "unit": "₹ Cr",
+        "delta": "62.1% of total"
+      }
+    ]
+  },
+  "insights_v2": [
+    {
+      "text": "Net field-level profit for FY26 reached ₹36,150 Cr, driven by offshore production gains.",
+      "kind": "headline",
+      "value": 36150,
+      "unit": "₹ Cr"
+    },
+    {
+      "text": "Mumbai High generated ₹22,450 Cr, contributing over 62.1% of net operational surplus.",
+      "kind": "outlier",
+      "value": 22450,
+      "unit": "₹ Cr",
+      "ref": "Mumbai High"
+    },
+    {
+      "text": "Four fields (Rajasthan, Jorhat, Tripura, KG Deepwater) recorded cumulative losses of ₹3,870 Cr due to high operating and drilling amortizations.",
+      "kind": "risk",
+      "value": -3870,
+      "unit": "₹ Cr",
+      "ref": "KG Deepwater"
+    }
+  ],
+  "drilldowns": [
+    {
+      "label": "Loss-making asset breakdown",
+      "question": "Break down OPEX and lifting costs for the 4 loss-making fields",
+      "spec_patch": {
+        "add_filters": [
+          {
+            "field": "profit_cr",
+            "op": "<",
+            "value": 0
+          }
+        ],
+        "dimensions": [
+          "field",
+          "cost_head"
+        ]
+      }
+    },
+    {
+      "label": "Offshore vs Onshore P&L",
+      "question": "Compare total profit between offshore and onshore assets",
+      "spec_patch": {
+        "dimensions": [
+          "asset_type"
+        ]
+      }
+    }
+  ],
+  "context_chips": [
+    {
+      "label": "DIR_FIN",
+      "kind": "role"
+    },
+    {
+      "label": "FY26",
+      "kind": "period"
+    },
+    {
+      "label": "Profit & Loss",
+      "kind": "subject"
+    },
+    {
+      "label": "₹ Cr",
+      "kind": "filter"
+    }
+  ],
+  "query_spec": {
+    "version": 1,
+    "domain": "finance",
+    "metric": "profit_cr",
+    "aggregation": "sum",
+    "period": {
+      "fy": "FY26"
+    }
+  },
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.ssot_asset_pnl"
+    }
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "word",
+    "pdf"
+  ]
+}

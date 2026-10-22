@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { PersonaType, AnswerContract } from '@/contracts/answerContract';
 import { TopBar } from '@/components/TopBar';
 import { PersonaBanner } from '@/components/PersonaBanner';
-import { CanvasView, HistoryItem } from '@/components/CanvasView';
+import { CanvasView } from '@/components/CanvasView';
+import { feedReducer, applyChartKind, latestAnswered, isReplotOf, Turn } from '@/state/feed';
 import { FloatingConversationPanel, ChatMessage, PanelMode } from '@/components/FloatingConversationPanel';
 import { OrbState } from '@/components/VoiceOrb';
 import { VoiceAudioEngine } from '@/services/audioAnalyser';
@@ -70,9 +71,9 @@ export default function YuktiApp() {
   const [isMuted, setIsMuted] = useState(false);
   const [liveInterimText, setLiveInterimText] = useState<string>('');
 
-  const [contract, setContract] = useState<AnswerContract>(GREETING);
-  const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
+  // Conversation feed (U2.2): every turn stays on screen; the "current" answer is the latest answered turn.
+  const [turns, dispatchFeed] = useReducer(feedReducer, [] as Turn[]);
+  const contract: AnswerContract = latestAnswered(turns)?.contract || GREETING;
   const [fixtureIndex, setFixtureIndex] = useState(-1);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
@@ -83,6 +84,17 @@ export default function YuktiApp() {
   const langRef = useRef<Lang>('en');
   const messagesRef = useRef<ChatMessage[]>([]);
   const contractRef = useRef<AnswerContract>(GREETING);
+  const turnsRef = useRef<Turn[]>([]);
+  // Live voice turn tracking (feed card for the spoken question; agent text if no contract arrives)
+  const voiceTurnRef = useRef<string | null>(null);
+  const voiceQRef = useRef<string>('');
+  const voiceAgentTextRef = useRef<string>('');
+  const voiceUiOnlyRef = useRef(false);
+  // The voice card whose question the backend is currently answering (set when its tool work starts), so a late
+  // contract lands on ITS card even if the user has already asked the next question (U2 G4 R2-1).
+  const toolTurnRef = useRef<string | null>(null);
+  // Bumped by "New conversation": late answers from the old session must not land in the fresh feed (U2 G4 #4).
+  const sessionEpochRef = useRef(0);
   const liveUserMsgRef = useRef<string | null>(null);
   const liveAgentMsgRef = useRef<string | null>(null);
   const lastUserQuestionRef = useRef<string>('');
@@ -111,7 +123,8 @@ export default function YuktiApp() {
   }, [messages]);
   useEffect(() => {
     contractRef.current = contract;
-  }, [contract]);
+    turnsRef.current = turns;
+  }, [contract, turns]);
 
   // URL flags
   useEffect(() => {
@@ -188,9 +201,7 @@ export default function YuktiApp() {
         }
       },
       open_screen: (val) => {
-        if (val === 'home') {
-          setContract(GREETING);
-        }
+        if (val === 'home') window.dispatchEvent(new CustomEvent('yukti:feed-nav', { detail: 'top' }));
       },
       panel: (val) => {
         if (val === 'expand') setPanelMode('fullscreen');
@@ -198,42 +209,13 @@ export default function YuktiApp() {
         else if (val === 'minimise' || val === 'close') setPanelMode('minimised');
       },
       history: (val) => {
-        setHistoryIndex((idx) => {
-          const nextIdx = val === 'forward' ? idx + 1 : Math.max(0, idx - 1);
-          setHistory((h) => {
-            if (h[nextIdx]) setContract(h[nextIdx].contract);
-            return h;
-          });
-          return nextIdx;
-        });
+        // Feed (U2): "go back" / "next" scroll between turn cards instead of swapping one canvas.
+        window.dispatchEvent(new CustomEvent('yukti:feed-nav', { detail: val === 'forward' ? 'forward' : 'back' }));
       },
       chart_kind: (val) => {
         if (!val) return;
-        setContract((prev) => {
-          if (!prev?.visual || prev.visual.type === 'none') return prev;
-          const nextVis = { ...prev.visual };
-          const kind = val.toLowerCase();
-          if (kind === 'table' && nextVis.table) {
-            nextVis.type = 'table';
-            nextVis.mode = 'refine';
-          } else if (
-            [
-              'bar', 'hbar', 'stacked_bar', 'grouped_bar', 'pie', 'donut',
-              'histogram', 'line', 'area', 'combo', 'scatter', 'waterfall',
-              'treemap', 'heatmap', 'bullet', 'gauge', 'funnel',
-            ].includes(kind)
-          ) {
-            const rows = nextVis.table?.rows || (nextVis.chart as any)?.data || [];
-            const cols = nextVis.table?.columns || (rows[0] ? Object.keys(rows[0]) : []);
-            nextVis.type = 'chart';
-            nextVis.mode = 'refine';
-            nextVis.chart = {
-              ...(nextVis.chart || { x: cols[0] || 'label', y: cols[1] || 'value', data: rows }),
-              kind: kind as any,
-            };
-          }
-          return { ...prev, visual: nextVis };
-        });
+        // Re-plot updates the CURRENT card in place (U2.5); no backend call, no new card.
+        dispatchFeed({ type: 'refine', update: (c) => applyChartKind(c, val) });
       },
       export: (val) => {
         // Backend /api/export returns {export_id, filename, format}; the file is then served
@@ -297,8 +279,16 @@ export default function YuktiApp() {
     }
   }, []);
 
-  const applyContract = useCallback((c: AnswerContract, question: string) => {
-    setContract(c);
+  const applyContract = useCallback((c: AnswerContract, question: string, turnId?: string, epoch?: number) => {
+    if (epoch !== undefined && epoch !== sessionEpochRef.current) return; // answer from before "New conversation"
+    const current = latestAnswered(turnsRef.current)?.contract;
+    if (isReplotOf(c, current)) {
+      // Backend re-plot of the current card (e.g. voice "show as pie"): refine in place, drop the command's card.
+      dispatchFeed({ type: 'refine', update: (prev) => ({ ...prev, visual: c.visual }) });
+      if (turnId) dispatchFeed({ type: 'drop', id: turnId });
+    } else {
+      dispatchFeed({ type: 'answer', id: turnId, contract: c, question, newId: uid('t') });
+    }
     if ((c as any).ui_action) handleUiAction((c as any).ui_action);
     if (c.language && c.language !== langRef.current) setLanguage(c.language);
     if (c.persona && c.persona !== personaRef.current) setPersona(c.persona);
@@ -310,16 +300,26 @@ export default function YuktiApp() {
         visual_title: c.visual?.title || '',
       });
     }
-    setHistory((prev) => {
-      const next = [...prev, { id: c.turn_id || uid('h'), question, contract: c, timestamp: now() }];
-      setHistoryIndex(next.length - 1);
-      return next;
-    });
   }, [handleUiAction]);
 
   // ---------- Live socket events ----------
   useEffect(() => {
-    const onState = (s: WsState) => setWsState(s);
+    // End the current voice card (U2 G4 #1): keep partial spoken text, drop pure screen commands, or mark failed.
+    const settleVoiceTurn = (mode: 'settle' | 'fail', msg?: string, interrupted = false) => {
+      const id = voiceTurnRef.current;
+      if (!id) return;
+      voiceTurnRef.current = null;
+      if (mode === 'fail') dispatchFeed({ type: 'fail', id, error: msg || 'The voice turn was interrupted.' });
+      else if (voiceUiOnlyRef.current) dispatchFeed({ type: 'drop', id });
+      else {
+        const text = cleanText(voiceAgentTextRef.current) || (interrupted ? 'You interrupted before Yukti finished answering.' : '');
+        dispatchFeed({ type: 'settle', id, text });
+      }
+    };
+    const onState = (s: WsState) => {
+      setWsState(s);
+      if ((s === 'closed' || s === 'error') && voiceTurnRef.current) settleVoiceTurn('fail', 'The voice connection dropped before Yukti answered. Please ask again.');
+    };
 
     const onUserTranscript = ({ text, is_final }: { text: string; is_final: boolean }) => {
       if (!text) return;
@@ -329,29 +329,35 @@ export default function YuktiApp() {
       telemetryRef.current.firstAudioAt = null;
       telemetryRef.current.contractAt = null;
       engineRef.current?.resetTurnStats();
-      setMessages((prev) => {
-        const id = liveUserMsgRef.current;
-        const idx = id ? prev.findIndex((m) => m.id === id) : -1;
-        if (idx >= 0) {
-          const merged = (prev[idx].text + text).replace(/\s+/g, ' ');
-          lastUserQuestionRef.current = merged.trim();
-          // UI commands in Live transcripts are resolved server-side (screen_control) and arrive
-          // as 'ui_action' events; parsing them locally as well executed each command twice.
-          const copy = [...prev];
-          copy[idx] = { ...prev[idx], text: merged };
-          return copy;
-        }
+      const curId = liveUserMsgRef.current;
+      if (curId) {
+        voiceQRef.current = (voiceQRef.current + text).replace(/\s+/g, ' ');
+        lastUserQuestionRef.current = voiceQRef.current.trim();
+        // UI commands in Live transcripts are resolved server-side (screen_control) and arrive
+        // as 'ui_action' events; parsing them locally as well executed each command twice.
+        if (voiceTurnRef.current) dispatchFeed({ type: 'question', id: voiceTurnRef.current, question: voiceQRef.current.trim() });
+        const merged = voiceQRef.current;
+        setMessages((prev) => prev.map((m) => (m.id === curId ? { ...m, text: merged } : m)));
+      } else {
         const nid = uid('u_voice');
         liveUserMsgRef.current = nid;
         liveAgentMsgRef.current = null;
+        voiceQRef.current = text.trimStart();
         lastUserQuestionRef.current = text.trim();
-        return [...prev, { id: nid, role: 'user', text: text.trimStart(), timestamp: now(), viaVoice: true }];
-      });
+        // A spoken question gets its own feed card immediately (pending until the answer lands).
+        settleVoiceTurn('settle', undefined, true); // a new question ends any previous voice card (e.g. after barge-in)
+        voiceTurnRef.current = nid;
+        voiceAgentTextRef.current = '';
+        voiceUiOnlyRef.current = false;
+        dispatchFeed({ type: 'ask', id: nid, question: text.trim(), viaVoice: true });
+        setMessages((prev) => [...prev, { id: nid, role: 'user', text: text.trimStart(), timestamp: now(), viaVoice: true }]);
+      }
     };
 
     const onAgentTranscript = ({ text }: { text: string; is_final: boolean }) => {
       if (!text) return;
       liveUserMsgRef.current = null;
+      if (voiceTurnRef.current) voiceAgentTextRef.current += text;
       setMessages((prev) => {
         const id = liveAgentMsgRef.current;
         const idx = id ? prev.findIndex((m) => m.id === id) : -1;
@@ -374,6 +380,7 @@ export default function YuktiApp() {
     };
 
     const onStatus = (step: string) => {
+      if (voiceTurnRef.current) toolTurnRef.current = voiceTurnRef.current; // backend is working on this card
       setStatusLine(step);
       setOrbState((s) => (s === 'speaking' ? s : 'thinking'));
     };
@@ -382,7 +389,12 @@ export default function YuktiApp() {
       if (isGreetingContract(c)) return; // never let the session greeting overwrite the canvas
       telemetryRef.current.contractAt = performance.now();
       const q = lastUserQuestionRef.current || c.visual?.title || 'Voice question';
-      applyContract(c, q);
+      // Prefer the card whose tool run produced this contract; a dropped card makes it a no-op (stale), never
+      // filling the next question's card.
+      const target = toolTurnRef.current || voiceTurnRef.current || undefined;
+      applyContract(c, q, target, sessionEpochRef.current);
+      if (voiceTurnRef.current === target) voiceTurnRef.current = null;
+      toolTurnRef.current = null;
       setStatusLine(null);
       setMessages((prev) => {
         const id = liveAgentMsgRef.current;
@@ -400,6 +412,7 @@ export default function YuktiApp() {
     };
 
     const onInterrupted = () => {
+      settleVoiceTurn('settle', undefined, true); // keep what Yukti had said so far (or note the interruption)
       engineRef.current?.stopPlayback(false);
       engineRef.current?.acceptIncoming();
       setOrbState(micActiveRef.current ? 'listening' : 'idle');
@@ -417,6 +430,8 @@ export default function YuktiApp() {
         });
       }
       engineRef.current?.acceptIncoming();
+      // A voice turn with no contract: keep the spoken reply as a text card; drop pure screen commands.
+      settleVoiceTurn('settle');
       liveUserMsgRef.current = null;
       liveAgentMsgRef.current = null;
       setStatusLine(null);
@@ -425,6 +440,7 @@ export default function YuktiApp() {
     };
 
     const onError = (e: { message: string }) => {
+      settleVoiceTurn('fail', `Voice session problem: ${e.message}`);
       setStatusLine(null);
       pushMessage({ id: uid('err'), role: 'error', text: `Voice session problem: ${e.message}`, timestamp: now() });
       setOrbState(micActiveRef.current ? 'listening' : 'idle');
@@ -436,7 +452,11 @@ export default function YuktiApp() {
     yuktiClient.on('audio_chunk', onAudio);
     yuktiClient.on('status_event', onStatus);
     yuktiClient.on('contract', onContract);
-    yuktiClient.on('ui_action', handleUiAction);
+    const onUiActionLive = (a?: { action?: string; command?: string; value?: string }) => {
+      if (voiceTurnRef.current) voiceUiOnlyRef.current = true;
+      handleUiAction(a);
+    };
+    yuktiClient.on('ui_action', onUiActionLive);
     yuktiClient.on('interrupted', onInterrupted);
     yuktiClient.on('turn_complete', onTurnComplete);
     yuktiClient.on('error', onError);
@@ -447,7 +467,7 @@ export default function YuktiApp() {
       yuktiClient.off('audio_chunk', onAudio);
       yuktiClient.off('status_event', onStatus);
       yuktiClient.off('contract', onContract);
-      yuktiClient.off('ui_action', handleUiAction);
+      yuktiClient.off('ui_action', onUiActionLive);
       yuktiClient.off('interrupted', onInterrupted);
       yuktiClient.off('turn_complete', onTurnComplete);
       yuktiClient.off('error', onError);
@@ -620,7 +640,6 @@ export default function YuktiApp() {
       if (!text) return;
       engineRef.current?.unlock();
       engineRef.current?.stopPlayback(true);
-      abortRef.current?.abort();
       lastUserQuestionRef.current = text;
       pushMessage({ id: uid('u'), role: 'user', text, timestamp: now() });
 
@@ -645,6 +664,12 @@ export default function YuktiApp() {
         return;
       }
 
+      // A real question supersedes the one in flight (screen commands above never abort it — U2 G4 #5).
+      abortRef.current?.abort();
+      const epoch = sessionEpochRef.current;
+      const tid = uid('t');
+      dispatchFeed({ type: 'ask', id: tid, question: text });
+      let myAc: AbortController | null = null;
       setBusy(true);
       setSlow(false);
       setStatusLine('Thinking…');
@@ -656,6 +681,7 @@ export default function YuktiApp() {
         if (liveRef.current) {
           const ac = new AbortController();
           abortRef.current = ac;
+          myAc = ac;
           const timeout = setTimeout(() => ac.abort(), 90000);
           try {
             const recentHist = messagesRef.current
@@ -691,7 +717,8 @@ export default function YuktiApp() {
           await new Promise((r) => setTimeout(r, 450));
           c = routeQueryToFixture(text, personaRef.current).contract;
         }
-        applyContract(c, text);
+        if (epoch !== sessionEpochRef.current) return; // "New conversation" happened meanwhile
+        applyContract(c, text, tid, epoch);
         const replyText = cleanText(c.display_text || c.spoken_summary);
         pushMessage({
           id: c.turn_id ? `${c.turn_id}_${Date.now()}` : uid('a'),
@@ -716,15 +743,24 @@ export default function YuktiApp() {
           }
         }
       } catch (e: any) {
+        if (epoch !== sessionEpochRef.current) return;
+        if (myAc && abortRef.current !== myAc) {
+          // superseded by a newer question: not an error the user needs to see
+          dispatchFeed({ type: 'fail', id: tid, error: 'Stopped: you asked a newer question.' });
+          return;
+        }
         const msg = /abort/i.test(String(e?.name || e?.message))
           ? 'That took too long, so I stopped waiting. Please try again.'
           : /unreachable|Failed to fetch|502|NetworkError/i.test(String(e?.message))
           ? "I can't reach Yukti's server right now."
           : `Something went wrong: ${e?.message || e}`;
         pushMessage({ id: uid('err'), role: 'error', text: msg, timestamp: now(), retryText: text });
+        dispatchFeed({ type: 'fail', id: tid, error: msg });
         void checkBackend();
       } finally {
         clearTimeout(slowTimer);
+        // a newer turn (or a reset) owns the busy/status state
+        if (epoch !== sessionEpochRef.current || (myAc && abortRef.current !== myAc)) return;
         setBusy(false);
         setSlow(false);
         setStatusLine(null);
@@ -746,7 +782,7 @@ export default function YuktiApp() {
       const f = FIXTURES[idx];
       if (f.data.persona && f.data.persona !== personaRef.current) setPersona(f.data.persona);
       pushMessage({ id: uid('u'), role: 'user', text: f.question, timestamp: now() });
-      applyContract(f.data, f.question);
+      applyContract({ ...f.data, turn_id: `${f.data.turn_id}_${Date.now()}` }, f.question);
       pushMessage({ id: uid('a'), role: 'agent', text: cleanText(f.data.display_text), timestamp: now(), sources: f.data.sources, accessStatus: f.data.access?.status });
     },
     [applyContract, pushMessage]
@@ -800,10 +836,27 @@ export default function YuktiApp() {
     };
   }, [startMic, stopMic, loadFixture, fixtureIndex]);
 
-  const handleRestoreHistory = (item: HistoryItem, index: number) => {
-    setContract(item.contract);
-    setHistoryIndex(index);
-  };
+  // "New conversation" (U2.6): clear the feed, the chat and the backend context (fresh session id).
+  const handleNewSession = useCallback(() => {
+    sessionEpochRef.current += 1;
+    abortRef.current?.abort();
+    abortRef.current = null;
+    engineRef.current?.stopPlayback(true);
+    engineRef.current?.acceptIncoming();
+    voiceTurnRef.current = null;
+    liveUserMsgRef.current = null;
+    liveAgentMsgRef.current = null;
+    lastUserQuestionRef.current = '';
+    toolTurnRef.current = null;
+    dispatchFeed({ type: 'reset' });
+    setMessages([]);
+    setStatusLine(null);
+    setBusy(false);
+    setSlow(false);
+    setLiveInterimText('');
+    yuktiClient.resetSession();
+    setOrbState(micActiveRef.current ? 'listening' : 'idle');
+  }, []);
 
   const micLevel = useCallback(() => engineRef.current?.getMicLevel() || 0, []);
   const suggestions = (contract.suggestions && contract.suggestions.length ? contract.suggestions : STARTERS).slice(0, 4);
@@ -860,17 +913,23 @@ export default function YuktiApp() {
 
       <div className="relative min-h-0 min-w-0 overflow-hidden">
         <PersonaBanner persona={persona} />
+        {/* U2.7: the scroll area ends above the floating ask bar / orb (reserved band), so the bar never covers
+            the active card; the band height follows the panel mode. */}
         <main
-          className={`h-full min-w-0 overflow-y-auto overflow-x-hidden transition-all duration-300 ${panelMode === 'fullscreen' ? 'opacity-20 pointer-events-none' : ''}`}
+          style={{ height: turns.length && panelMode !== 'fullscreen' ? `calc(100% - ${panelMode === 'minimised' ? '9.25rem' : '5.75rem'})` : '100%' }}
+          className={`min-w-0 overflow-y-auto overflow-x-hidden transition-[height,opacity] duration-300 ${panelMode === 'fullscreen' ? 'opacity-20 pointer-events-none' : ''}`}
         >
           <CanvasView
-            contract={contract}
+            turns={turns}
             isDark={isDark}
-            history={history}
-            currentHistoryIndex={historyIndex}
-            onRestoreHistory={handleRestoreHistory}
-            onNavigateToAlternative={() => runTypedTurn(contract.access?.alternative || 'What are the station tenure norms?')}
+            onNavigateToAlternative={(alt) => runTypedTurn(alt || 'What are the station tenure norms?')}
             onSelectStarter={runTypedTurn}
+            onAsk={runTypedTurn}
+            onRetry={(q, turnId) => {
+              if (turnId) dispatchFeed({ type: 'drop', id: turnId }); // retry replaces the error card
+              void runTypedTurn(q);
+            }}
+            onNewSession={handleNewSession}
             busy={busy}
             statusLine={statusLine}
             onTalk={toggleMic}
@@ -893,7 +952,8 @@ export default function YuktiApp() {
           isMicActive={isMicActive}
           onToggleMic={toggleMic}
           audioEngine={engineRef.current || undefined}
-          suggestions={suggestions}
+          // Follow-ups now live inside the latest answer card (U2.3); the floating chips overlapped data.
+          suggestions={turns.length ? [] : suggestions}
           onSelectSuggestion={runTypedTurn}
           statusLine={statusLine}
           slow={slow}
@@ -905,7 +965,7 @@ export default function YuktiApp() {
           isMuted={isMuted}
           onToggleMute={handleToggleMute}
           liveInterimText={liveInterimText}
-          isGreeting={!contract.visual || contract.visual.type === 'none'}
+          isGreeting={turns.length === 0}
         />
       </div>
 
