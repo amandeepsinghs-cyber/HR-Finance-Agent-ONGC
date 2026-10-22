@@ -30,6 +30,7 @@ Every decision that changes scope, behaviour, policy or process is recorded here
 | D-19 | 2026-10-22 | **U4 scope approved** (docs/design/U4_spec.md) | Sponsor "go ahead" 06:59 | U4 |
 | D-20 | 2026-10-22 | **KPI deltas coloured by meaning** (green = good, maroon = bad, per metric polarity; e.g. falling vacancy rate = green) | Recommended default, approved with U4 go-ahead | U4.3 |
 | D-21 | 2026-10-22 | **Greeting copy:** time-aware, persona-aware "Good morning, Chairman. I'm Yukti, your HR & Finance agent." | Recommended default, approved with U4 go-ahead | U4.5 |
+| D-22 | 2026-10-22 | **Top bar height criterion restated in rem:** `--topbar-h: 3.5rem` on the fluid root scale (≈56 px on laptops, larger on big screens for 5 m legibility) instead of a fixed 56 px (G4 U4 recommendation) | Agent per reviewer; sponsor sees at U4 gate | U4.1 |
 ---
 
 ## Open decisions (need sponsor input)

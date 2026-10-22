@@ -187,10 +187,10 @@ export const FloatingConversationPanel: React.FC<Props> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === '/') {
+      if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey && !e.isComposing && !e.defaultPrevented) {
         const target = e.target as HTMLElement | null;
         const tag = target?.tagName?.toLowerCase();
-        if (tag === 'input' || tag === 'textarea' || target?.isContentEditable) {
+        if (tag === 'input' || tag === 'textarea' || tag === 'select' || target?.isContentEditable) {
           return;
         }
         e.preventDefault();

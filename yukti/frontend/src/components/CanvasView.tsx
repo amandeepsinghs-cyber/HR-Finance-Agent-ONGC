@@ -68,7 +68,7 @@ const STARTERS: Record<string, Starter[]> = {
     { icon: Scale, tag: 'Policy', title: 'Station tenure and rotation rules', q: 'What is the minimum tenure at a station, and the maximum cumulative stay in one city?' },
   ],
   DIR_HR: [
-    { icon: Users, tag: 'People · Transfers', title: 'Officers overdue for rotation', q: 'How many executives have been posted in Delhi for 5 years or more?' },
+    { icon: Users, tag: 'People · Transfers', title: 'Delhi HQ: 5+ year postings', q: 'How many executives have been posted in Delhi for 5 years or more?' },
     { icon: Target, tag: 'People · Succession', title: 'E7+ retiring in 3 years without a successor', q: 'How many E7+ officers retire in the next 3 years, and which roles have no ready successor?' },
     { icon: TrendingUp, tag: 'Finance · People cost', title: 'Payroll and overtime by work centre', q: 'What is the FY26 payroll and overtime cost by work centre?' },
     { icon: Scale, tag: 'Policy', title: 'Transfer policy for long-stay officers', q: 'What does the transfer policy say about officers posted 5 years or more?' },
@@ -142,6 +142,9 @@ const Greeting: React.FC<{
 }> = ({ onSelect, onTalk, isMicActive, orbState = 'idle', isDark = false, audioEngine, messages = [], liveInterimText, persona = 'CMD' }) => {
   const lastTurn = messages[messages.length - 1];
   const starters = STARTERS[persona] || STARTERS.CMD;
+  // Time-aware greeting computed on the client after mount (server render may run in UTC).
+  const [hello, setHello] = useState('Hello');
+  useEffect(() => setHello(greetingWord()), []);
   const name = ADDRESS[persona] || 'Chairman';
 
   return (
@@ -164,7 +167,7 @@ const Greeting: React.FC<{
         </div>
 
         <h1 className="mt-6 text-display font-display text-[var(--ink)]">
-          {greetingWord()}, {name}
+          {hello}, {name}
         </h1>
         <p className="mt-2 text-body text-[var(--ink-2)]">I&apos;m Yukti, your HR &amp; Finance agent. Ask by voice or type below.</p>
 
@@ -219,13 +222,41 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
   const [selectedSource, setSelectedSource] = useState<SourceCitation | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const [freshGlow, setFreshGlow] = useState(false);
+  const [glow, setGlow] = useState<'listening' | 'fade' | 'off'>('off');
+  const seenTurns = useRef<Set<string>>(new Set());
   useEffect(() => {
-    if (!contract.turn_id || !contract.visual || contract.visual.type === 'none') return;
-    setFreshGlow(true);
-    const id = window.setTimeout(() => setFreshGlow(false), 4000);
-    return () => window.clearTimeout(id);
+    setMoreOpen(false);
+    const tid = contract.turn_id;
+    if (!tid || !contract.visual || contract.visual.type === 'none') return;
+    if (seenTurns.current.has(tid)) return; // restored from history: not the newest answer
+    seenTurns.current.add(tid);
+    setGlow('listening');
+    const t1 = window.setTimeout(() => setGlow('fade'), 4000);
+    const t2 = window.setTimeout(() => setGlow('off'), 5600); // stop the animated layers entirely
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
   }, [contract.turn_id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // More menu: outside click / Escape close; focus first item on open
+  const moreRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!moreOpen) return;
+    moreRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
+    const onDoc = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMoreOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [moreOpen]);
   const [exporting, setExporting] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
@@ -365,6 +396,9 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
   const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
 
+  // Wide tables (> 7 columns) take the full width; takeaways stack below (no horizontal clipping).
+  const wideTable = effectiveVisualType === 'table' && (effectiveTableSpec?.columns?.length || 0) > 7;
+
   const pickKind = (id: ChartKind | 'table') => {
     if (id === 'table') {
       setOverrideMode('table');
@@ -376,9 +410,12 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
 
   // Context chips (U4.2): role · subject · period · source, derived from the contract.
   const titleText = cleanText(visual?.title || '');
-  const fyMatch = (titleText + ' ' + summaryBanner).match(/\bFY\s?\d{2}(?:-\d{2})?\b/i);
+  const fyMatch = (titleText + ' ' + summaryBanner).match(/\bFY\s?\d{2}(?:\d{2})?(?:-\d{2})?\b/i);
+  const populationRaw = (visual?.chart?.unit || '').replace(/[₹%$]|\bcr(ore)?s?\b|\/boe\b/gi, '').trim();
+  // Only meaningful populations (e.g. "Executives"); generic unit words are not context.
+  const population = /^(count|value|number|n|units?|records?|rows?|score|weightage)?$/i.test(populationRaw) ? '' : populationRaw;
   const subject = titleText.includes(':') ? titleText.split(':')[0].trim() : '';
-  const contextChips = [ROLE_SHORT[persona || contract.persona || 'CMD'] || 'CMD', subject, eyebrowFor(contract), fyMatch ? fyMatch[0].toUpperCase().replace(/\s/, '') : ''].filter(
+  const contextChips = [ROLE_SHORT[persona || contract.persona || 'CMD'] || 'CMD', subject, population, fyMatch ? fyMatch[0].toUpperCase().replace(/\s/, '') : ''].filter(
     (x, i, arr) => x && arr.indexOf(x) === i,
   );
   const firstSource = sources[0];
@@ -456,15 +493,14 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
             {canSwitchVisual && (
               <div className="flex flex-wrap items-center justify-between gap-3" data-testid="chart-switcher-toolbar">
                 <div className="flex items-center gap-2">
-                  <div role="radiogroup" aria-label="Plot type" className="inline-flex items-center gap-0.5 p-0.5 rounded-pill bg-[var(--surface)] border border-[var(--hairline)]">
+                  <div role="group" aria-label="Plot type" className="inline-flex items-center gap-0.5 p-0.5 rounded-pill bg-[var(--surface)] border border-[var(--hairline)]">
                     {PRIMARY_KINDS.map((opt) => {
                       const isActive = activeKindPill === opt.id;
                       return (
                         <button
                           key={opt.id}
                           type="button"
-                          role="radio"
-                          aria-checked={isActive}
+                          aria-pressed={isActive}
                           data-testid={`plot-switch-${opt.id}`}
                           onClick={() => pickKind(opt.id)}
                           className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-pill text-label font-medium transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
@@ -477,7 +513,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
                       );
                     })}
                   </div>
-                  <div className="relative">
+                  <div className="relative" ref={moreRef}>
                     <button
                       type="button"
                       onClick={() => setMoreOpen((o) => !o)}
@@ -535,9 +571,9 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
             )}
 
             {/* Full-screen Visual + Key Takeaways */}
-            <div className={`grid gap-[1.25rem] ${insights.length && !refused ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
+            <div className={`grid gap-[1.25rem] ${insights.length && !refused && !wideTable ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
               {/* Newest-answer aura edge (U4.7): glows briefly when a fresh answer lands, then fades */}
-              <div data-aura={freshGlow ? 'listening' : 'fade'} className="yk-aura-ring rounded-card min-w-0">
+              <div data-aura={glow} className="yk-aura-ring rounded-card min-w-0 self-start w-full">
               <section
                 className={`yk-aura-surface min-w-0 ${selfFramed ? '' : 'card p-[1.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
                 data-testid="visual-card"

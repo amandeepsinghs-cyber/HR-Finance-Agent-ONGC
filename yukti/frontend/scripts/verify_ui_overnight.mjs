@@ -35,6 +35,8 @@ async function main() {
   // Test interactive Plot View Switcher pills on the Canvas
   for (const kind of ['pie', 'histogram', 'scatter', 'treemap', 'table', 'bar']) {
     console.log(`[3] Clicking interactive plot switcher pill: ${kind}...`);
+    // U4.3: secondary chart types live in the "More" menu
+    if (!(await page.locator(`[data-testid="plot-switch-${kind}"]`).isVisible())) await page.locator('[data-testid="plot-switch-more"]').click();
     await page.locator(`[data-testid="plot-switch-${kind}"]`).click();
     await page.waitForTimeout(350);
   }

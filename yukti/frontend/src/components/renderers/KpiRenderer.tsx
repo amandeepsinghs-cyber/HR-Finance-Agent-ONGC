@@ -19,7 +19,9 @@ export type Polarity = 'higher_is_better' | 'lower_is_better';
 
 export function polarityOf(kpi: KpiTile): Polarity {
   const label = (kpi.label || '').toLowerCase();
-  if (/vacanc|attrition|lifting cost|cost per|opex|overtime|ltifr|incident|grievance|receivable|overdue|loss|debt|absent|separation|backlog|downtime|water cut/i.test(label)) {
+  // Profit-type metrics are higher-is-better even when the label mentions loss (e.g. "Net profit/(loss)").
+  if (/profit|p&l|\bpbt\b|\bpat\b|ebitda|revenue|margin/i.test(label)) return 'higher_is_better';
+  if (/vacanc|attrition|lifting cost|cost per|opex|overtime|ltifr|incident|grievance|receivable|overdue|\bloss(es)?\b|debt|absent|separation|backlog|downtime|water cut/i.test(label)) {
     return 'lower_is_better';
   }
   return 'higher_is_better';
@@ -33,7 +35,15 @@ export function directionOf(kpi: KpiTile): Direction {
   return 'neutral';
 }
 
+// Words that already carry meaning are mapped straight to good/bad (never flipped by polarity).
+const BAD_WORDS = /\b(loss(es)?|loss-making|overdue|breach(ed)?|below target|missed|negative|deficit|critical|poor)\b/i;
+const GOOD_WORDS = /\b(excellent|very good|healthy|met|achieved|above target|on track|surplus)\b/i;
+
 export function toneOf(kpi: KpiTile): Tone {
+  const d = kpi.delta || '';
+  if (BAD_WORDS.test(d)) return 'bad';
+  if (GOOD_WORDS.test(d)) return 'good';
+  // Otherwise: sign/direction words decide direction, and metric polarity decides meaning.
   const dir = directionOf(kpi);
   if (dir === 'neutral') return 'neutral';
   const pol = polarityOf(kpi);

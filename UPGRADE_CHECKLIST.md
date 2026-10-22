@@ -67,7 +67,7 @@
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
-| **U4.1** | `O` (executed by Opus per U4 spec) | TopBar: persona, language, theme, session, connection state; quiet and compact | Single row ≤ 56 px; ≤ 7 controls; every action one click | Screenshot review | 🟦 | [packet](docs/delegation/packets/U4.1.md) | | | |
+| **U4.1** | `O` (executed by Opus per U4 spec) | TopBar: persona, language, theme, session, connection state; quiet and compact | Single row of `3.5rem` on the fluid scale (D-22); ≤ 7 controls; every action one click | Screenshot review | 🟦 | [packet](docs/delegation/packets/U4.1.md) | | | |
 | **U4.2** | `O` (moved from F: same file as Opus-owned U4.6/U4.7, to avoid concurrent edits) | Context chips on every card (`CMD · Delhi HQ · Executives · FY26 · Source`) from `context_chips` / derived | Present on all data cards | Playwright | 🟦 | [packet](docs/delegation/packets/U4.2.md) | | | |
 | **U4.3** | `F` | KPI cards with delta pills; table polish (sticky header, zebra, inline bars, number alignment) | Sticky header, zebra rows, right-aligned tabular numbers, inline bars for numeric columns, KPI delta pill (▲/▼ + colour per tokens) | Screenshot diff vs U0 | 🟦 | [packet](docs/delegation/packets/U4.3.md) | | | |
 | **U4.4** | `F` | Contextual voice pill: chat collapses to a glowing pill when a full-screen visual is shown; expands on hover/voice | Pill collapses within 300 ms when a visual is full-screen; expands on hover or voice activity; never covers the active chart's data area | Playwright | 🟦 | [packet](docs/delegation/packets/U4.4.md) | | | |

@@ -133,12 +133,12 @@ export const TopBar: React.FC<TopBarProps> = ({
       </div>
 
       {/* Centre: one state pill (state · connection). Clicking toggles live/demo. */}
-      <button
-        onClick={onToggleLiveMode}
+      <div
         data-testid="voice-state"
         data-state={state}
-        title={isLiveMode ? 'Connected to the live agent. Click to use offline demo answers.' : 'Using offline demo answers. Click to go live.'}
-        className="hidden md:flex items-center gap-2.5 pl-2 pr-3.5 py-1 rounded-pill bg-[var(--surface)] border border-[var(--hairline)] text-label max-w-[38vw] hover:bg-[var(--surface-2)] transition-colors"
+        role="status"
+        aria-live="polite"
+        className="flex items-center gap-2.5 pl-2 pr-1.5 py-1 rounded-pill bg-[var(--surface)] border border-[var(--hairline)] text-label max-w-[38vw]"
       >
         <span data-aura={auraState} className="yk-aura-ring rounded-full w-6 h-6 shrink-0">
           <span className={`yk-aura-surface rounded-full w-full h-full grid place-items-center bg-[var(--card)] ${stateTone}`}>
@@ -147,12 +147,19 @@ export const TopBar: React.FC<TopBarProps> = ({
         </span>
         <span className="font-medium text-[var(--ink)]">{STATE_LABEL[state]}</span>
         {statusLine && state === 'thinking' && <span className="text-[var(--ink-2)] truncate font-normal">· {statusLine}</span>}
-        <span aria-hidden className="w-px h-4 bg-[var(--hairline)]" />
-        <span data-testid="connection-pill" className="flex items-center gap-1.5 text-[var(--ink-2)] font-normal">
+        <span aria-hidden className="hidden md:block w-px h-4 bg-[var(--hairline)]" />
+        <button
+          type="button"
+          onClick={onToggleLiveMode}
+          data-testid="connection-pill"
+          aria-label={isLiveMode ? `Connection: ${conn.label}. Switch to offline demo answers` : 'Connection: demo answers. Switch to live agent'}
+          title={isLiveMode ? 'Connected to the live agent. Click to use offline demo answers.' : 'Using offline demo answers. Click to go live.'}
+          className="flex items-center gap-1.5 px-2 py-0.5 rounded-pill text-[var(--ink-2)] font-normal hover:bg-[var(--surface-2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+        >
           <span className={`w-1.5 h-1.5 rounded-full ${connDot}`} />
           {conn.label}
-        </span>
-      </button>
+        </button>
+      </div>
 
       {/* Right: role · language · theme */}
       <div className="flex items-center justify-end gap-1.5 shrink-0 flex-1">
