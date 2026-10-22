@@ -144,10 +144,10 @@
 |---|---|---|---|---|---|---|---|---|---|
 | **H1.1** | `O` | Async BigQuery/embeddings; voice tool calls off the receive loop | No event-loop blocking > 100 ms under 3 concurrent sessions | Load script | ⬜ | n/a | | | |
 | **H1.2** | `O` | SQL safety (re-validate repaired SQL, parameterised fallbacks, hardened allow-list) | Injection/bypass tests pass | `pytest` | ⬜ | n/a | | | |
-| **H1.3a** | `O` | Security hardening: export filename sanitisation (path traversal), `server.js` HTTPS backend + upstream abort | Traversal tests blocked; https backend proxy works; aborted request cancels upstream | `pytest` / node test | ⬜ | n/a | | | |
+| **H1.3a** | `O` | Security hardening: export filename sanitisation (path traversal), `server.js` HTTPS backend + upstream abort | Traversal tests blocked; https backend proxy works; aborted request cancels upstream | `pytest` / node test | ✅ | n/a | ✅ | ✅ [review](docs/reviews/H1.3a_H1.5a.md) | |
 | **H1.3b** | `F` | Memory bounds (sessions, ADK events, visual history), cache immutability, contract-validation error handling | Regression test per item; memory flat over a 200-turn soak | `pytest` + soak script | ⬜ | [packet](docs/delegation/packets/H1.3b.md) | | | |
 | **H1.4** | `FL` | Full 773-turn eval | Targets in `BUILD.md` §6 | `yukti/backend/eval/gates/H1.md` | ⬜ | [packet](docs/delegation/packets/H1.4.md) | | | |
-| **H1.5a** | `F` | Update `Dockerfile` / `.dockerignore` / `start_cloudrun.sh` for the new build | `docker build` succeeds locally or via Cloud Build; image runs `/health` 200 | Build log | ⬜ | [packet](docs/delegation/packets/H1.5a.md) | | | |
+| **H1.5a** | `F` | Update `Dockerfile` / `.dockerignore` / `start_cloudrun.sh` for the new build | `docker build` succeeds locally or via Cloud Build; image runs `/health` 200 | Build log | 🟡 files done; image build + /health at H1.5b | [packet](docs/delegation/packets/H1.5a.md) | ✅ | ✅ files [review](docs/reviews/H1.3a_H1.5a.md) | |
 | **H1.5b** | `O + S` | **Redeploy Cloud Run** (only after sponsor go-ahead) + smoke test | `/health` 200 via proxy; flagship HR + finance chains work on the Cloud Run URL; previous revision noted for rollback | Smoke test | ⬜ | n/a | | | |
 | **H1.6** | `F` | Final docs: README, APP_LINK, change log, demo script | README/APP_LINK/demo script reviewed against a live run of the flagship HR + finance chains; every documented command executed successfully | Reviewer agent | ⬜ | [packet](docs/delegation/packets/H1.6.md) | | | |
 

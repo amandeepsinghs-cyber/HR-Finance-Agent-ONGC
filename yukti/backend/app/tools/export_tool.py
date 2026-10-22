@@ -5,6 +5,7 @@ via a pluggable credential provider with an audited dry-run mode.
 
 import json
 import logging
+import re
 from pathlib import Path
 import time
 from typing import Any, Dict, List, Optional
@@ -39,9 +40,29 @@ class DocumentExporter:
         self.exports_dir.mkdir(parents=True, exist_ok=True)
         self.oauth_provider = oauth_provider or GoogleOAuthProvider()
 
+    def safe_path(self, filename: str, default_ext: str, force: bool = True) -> Path:
+        """H1.3a: resolve an export filename strictly inside exports_dir.
+
+        Keeps only the base name, replaces anything outside [A-Za-z0-9_.-], blocks dot-files / empty names and
+        verifies the resolved path is still under exports_dir (no '../', absolute paths or symlink escapes).
+        """
+        base = Path(str(filename or "")).name
+        stem, dot, ext = base.rpartition(".")
+        if not dot:
+            stem, ext = base, default_ext
+        if force:
+            ext = default_ext  # the writer decides the format; a caller can't make docx bytes land in .pdf
+        stem = re.sub(r"[^A-Za-z0-9_\-]", "_", stem).strip("._-")[:120] or "yukti_export"
+        ext = re.sub(r"[^A-Za-z0-9]", "", ext)[:8].lower() or default_ext
+        out = (self.exports_dir / f"{stem}.{ext}").resolve()
+        root = self.exports_dir.resolve()
+        if root not in out.parents:
+            raise ValueError("export path escapes the exports directory")
+        return out
+
     def export_word(self, markdown_text: str, filename: str = "yukti_draft.docx") -> Path:
         """Exports markdown document text into an executive Word (.docx) document with formatted tables."""
-        out_path = self.exports_dir / filename
+        out_path = self.safe_path(filename, "docx")
         doc = docx.Document()
 
         table_buffer: List[List[str]] = []
@@ -100,7 +121,7 @@ class DocumentExporter:
         sheet_name: str = "ONGC_Data",
     ) -> Path:
         """Exports tabular rows to formatted Excel workbook (.xlsx)."""
-        out_path = self.exports_dir / filename
+        out_path = self.safe_path(filename, "xlsx")
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = sheet_name
@@ -120,7 +141,7 @@ class DocumentExporter:
 
     def export_pdf(self, markdown_text: str, filename: str = "yukti_doc.pdf") -> Path:
         """Exports text into a clean printable PDF."""
-        out_path = self.exports_dir / filename
+        out_path = self.safe_path(filename, "pdf")
         c = canvas.Canvas(str(out_path), pagesize=letter)
         width, height = letter
 
@@ -145,11 +166,11 @@ class DocumentExporter:
         c.save()
         return out_path
 
-    def export_google_docs(self, title: str, markdown_text: str) -> Dict[str, Any]:
+    def export_google_docs(self, title: str, markdown_text: str, file_id: Optional[str] = None) -> Dict[str, Any]:
         """Exports to Google Docs via OAuth or dry-run mock link."""
         if not self.oauth_provider.is_authenticated():
-            # Dry-run mock link mode for demonstration
-            doc_id = f"yukti-doc-{int(time.time())}"
+            # Dry-run mock link mode for demonstration; the local copy uses the minted export id (no collisions)
+            doc_id = file_id or f"yukti-doc-{int(time.time() * 1000)}"
             mock_url = f"https://docs.google.com/document/d/{doc_id}/edit"
             local_file = self.export_word(markdown_text, f"{doc_id}.docx")
             return {
@@ -166,7 +187,7 @@ class DocumentExporter:
     def export_google_sheets(self, title: str, columns: List[str], rows: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Exports to Google Sheets via OAuth or dry-run mock link."""
         if not self.oauth_provider.is_authenticated():
-            sheet_id = f"yukti-sheet-{int(time.time())}"
+            sheet_id = f"yukti-sheet-{int(time.time() * 1000)}"
             mock_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit"
             local_file = self.export_xlsx(columns, rows, f"{sheet_id}.xlsx")
             return {

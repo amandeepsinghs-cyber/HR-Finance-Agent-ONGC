@@ -6,6 +6,8 @@ and strictly answering from BigQuery and Vertex AI Search.
 
 import logging
 import os
+import re
+import uuid
 from typing import Any, Dict, List, Optional
 from google.adk.agents import Agent
 from google.genai import types
@@ -166,14 +168,18 @@ def draft_document(
 def export_document(format: str, title: str, content: str) -> Dict[str, Any]:
     """Exports documents or tabular statements to Word (.docx), Excel (.xlsx), PDF, or Google Docs/Sheets."""
     fmt = format.lower()
+    # H1.3a: the title comes from the model — never use it as a raw path (DocumentExporter.safe_path also guards)
+    title = re.sub(r"[^A-Za-z0-9_\-]", "_", str(title or "Yukti_Export"))[:80] or "Yukti_Export"
+    export_id = f"exp_{uuid.uuid4().hex}"  # minted id: no cross-user overwrite, no server path back to the model
     if "word" in fmt or "docx" in fmt:
-        path = _EXPORT_ENGINE.export_word(markdown_text=content, filename=f"{title}.docx")
-        return {"status": "success", "file": str(path), "format": "docx"}
+        _EXPORT_ENGINE.export_word(markdown_text=content, filename=f"{export_id}.docx")
+        return {"status": "success", "export_id": export_id, "filename": f"{title}.docx", "format": "docx"}
     elif "pdf" in fmt:
-        path = _EXPORT_ENGINE.export_pdf(markdown_text=content, filename=f"{title}.pdf")
-        return {"status": "success", "file": str(path), "format": "pdf"}
+        _EXPORT_ENGINE.export_pdf(markdown_text=content, filename=f"{export_id}.pdf")
+        return {"status": "success", "export_id": export_id, "filename": f"{title}.pdf", "format": "pdf"}
     elif "doc" in fmt:
-        return _EXPORT_ENGINE.export_google_docs(title=title, markdown_text=content)
+        res = _EXPORT_ENGINE.export_google_docs(title=title, markdown_text=content, file_id=export_id)
+        return {"status": "success", "export_id": export_id, "filename": f"{title}.docx", "format": "docs", "url": res.get("url")}
     return {"status": "success", "format": fmt}
 
 

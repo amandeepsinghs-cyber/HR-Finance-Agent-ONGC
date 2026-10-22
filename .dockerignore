@@ -23,3 +23,12 @@ data_bank/landing/*
 data_bank/landing/documents/*
 !data_bank/landing/documents/rulebooks_clause_index.csv
 !data_bank/landing/documents/templates
+
+# H1.5a: local-only artifacts
+feature_list_and_verbatims/
+style_guide/
+Google homepage theme-*/
+yukti/backend/eval/runs/
+yukti/backend/tests/
+yukti/frontend/scripts/test_*
+**/tsconfig.tsbuildinfo

@@ -305,11 +305,30 @@ async def execute_voice_turn(req: VoiceTurnRequest) -> Dict[str, Any]:
     }
 
 
+try:
+    EXPORT_TTL_SECONDS = int(os.getenv("YUKTI_EXPORT_TTL_SECONDS", "3600"))
+except ValueError:
+    EXPORT_TTL_SECONDS = 3600
+
+
+def _sweep_old_exports() -> None:
+    """H1.3a: Cloud Run's filesystem is RAM — delete exports older than the TTL (default 1 h)."""
+    cutoff = time.time() - EXPORT_TTL_SECONDS
+    try:
+        for f in EXPORTS_DIR.glob("*"):
+            if f.is_file() and not f.name.startswith(".") and f.stat().st_mtime < cutoff:
+                f.unlink(missing_ok=True)
+    except Exception as exc:  # never fail an export because of housekeeping
+        logger.warning(f"export sweep skipped: {exc}")
+
+
 @app.post("/api/export")
 def create_export(req: ExportRequest) -> Dict[str, Any]:
     """Generates an export file and returns {export_id, filename, format}."""
     fmt = req.format.lower().strip()
-    export_id = f"exp_{int(time.time()*1000)}_{uuid.uuid4().hex[:6]}"
+    # H1.3a: 128-bit random ids (unguessable — downloads are unauthenticated); old files are swept on each create
+    export_id = f"exp_{uuid.uuid4().hex}"
+    _sweep_old_exports()
     clean_title = re.sub(r"[^a-zA-Z0-9_\-]", "_", req.title or "Yukti_Export")
     
     try:
@@ -327,7 +346,7 @@ def create_export(req: ExportRequest) -> Dict[str, Any]:
             return {"export_id": export_id, "filename": filename, "format": "xlsx"}
         elif "docs" in fmt:
             filename = f"{clean_title}.docx"
-            res = exporter.export_google_docs(title=clean_title, markdown_text=req.content or "")
+            res = exporter.export_google_docs(title=clean_title, markdown_text=req.content or "", file_id=export_id)
             return {"export_id": export_id, "filename": filename, "format": "docs", "url": res.get("url")}
         raise HTTPException(
             status_code=400,
@@ -339,15 +358,21 @@ def create_export(req: ExportRequest) -> Dict[str, Any]:
         logger.exception(f"Export creation failed: {exc}")
         raise HTTPException(
             status_code=500,
-            detail={"type": "error", "message": f"Export failed: {str(exc)}", "retryable": True},
+            detail={"type": "error", "message": "Export failed. Please try again.", "retryable": True},  # no internals
         )
 
 
 @app.get("/api/export/{export_id}")
 def download_export(export_id: str):
     """Downloads an exported file securely from the exports directory only."""
-    clean_id = re.sub(r"[^a-zA-Z0-9_\-]", "", export_id)
-    matches = list(EXPORTS_DIR.glob(f"{clean_id}.*"))
+    # H1.3a: only ids we mint (exp_<32 hex>) are servable; anything else is a 404 (no globbing on user input)
+    if not re.fullmatch(r"exp_[0-9a-f]{32}", export_id or ""):
+        raise HTTPException(
+            status_code=404,
+            detail={"type": "error", "message": "Export not found.", "retryable": False},
+        )
+    root = EXPORTS_DIR.resolve()
+    matches = [p for p in EXPORTS_DIR.glob(f"{export_id}.*") if p.resolve().parent == root and p.suffix.lower() in (".docx", ".xlsx", ".pdf", ".csv")]
     if not matches:
         raise HTTPException(
             status_code=404,

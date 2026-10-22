@@ -3,7 +3,7 @@
  *
  * Wraps Next.js and proxies backend traffic through the UI origin so the browser
  * only ever talks to ONE port (forward only port 3200 from your laptop):
- *   /api/turn, /api/export, /api/export/{id}, /health  -> YUKTI_BACKEND_URL (HTTP)
+ *   /api/turn, /api/export, /api/export/{id}, /health  -> YUKTI_BACKEND_URL (HTTP or HTTPS, e.g. Cloud Run)
  *   /ws/live                                          -> YUKTI_BACKEND_URL (WebSocket upgrade)
  * Everything else (pages, assets, HMR websocket) is served by Next.
  *
@@ -13,7 +13,9 @@
  *         YUKTI_BACKEND_URL (default http://127.0.0.1:8095)
  */
 const http = require('http');
+const https = require('https');
 const net = require('net');
+const tls = require('tls');
 const { parse } = require('url');
 const next = require('next');
 
@@ -21,7 +23,10 @@ const dev = process.argv.includes('--dev') || process.env.NODE_ENV === 'developm
 const port = parseInt(process.env.PORT || '3200', 10);
 const host = process.env.HOST || '0.0.0.0';
 const backend = new URL(process.env.YUKTI_BACKEND_URL || 'http://127.0.0.1:8095');
-const backendPort = parseInt(backend.port || '80', 10);
+// H1.3a: https backends (Cloud Run) are proxied over TLS for both HTTP and the WebSocket upgrade
+const secure = backend.protocol === 'https:' || backend.protocol === 'wss:';
+const backendPort = parseInt(backend.port || (secure ? '443' : '80'), 10);
+const httpLib = secure ? https : http;
 
 const PROXY_HTTP = [/^\/api\/turn(\/|$|\?)/, /^\/api\/voice-turn(\/|$|\?)/, /^\/api\/export(\/|$|\?)/, /^\/health(\/|$|\?)/];
 const isProxiedHttp = (p) => PROXY_HTTP.some((re) => re.test(p));
@@ -33,15 +38,25 @@ function proxyHttp(req, res) {
   const headers = { ...req.headers, host: backend.host };
   headers['x-forwarded-host'] = req.headers.host || '';
   headers['x-forwarded-for'] = req.socket.remoteAddress || '';
-  const upstream = http.request(
-    { hostname: backend.hostname, port: backendPort, method: req.method, path: req.url, headers },
+  const upstream = httpLib.request(
+    { hostname: backend.hostname, port: backendPort, method: req.method, path: req.url, headers, servername: backend.hostname },
     (up) => {
       res.writeHead(up.statusCode || 502, up.headers);
+      up.on('aborted', () => res.destroy()); // backend died mid-stream: end the client response, don't hang
       up.pipe(res);
     }
   );
   upstream.setTimeout(180000, () => upstream.destroy(new Error('upstream timeout')));
+  // H1.3a: when the browser gives up (AbortController / tab closed), cancel the backend request too, so a
+  // superseded question doesn't keep running BigQuery + Gemini work for nobody.
+  const abortUpstream = () => {
+    if (!res.writableEnded) upstream.destroy(new Error('client aborted'));
+  };
+  req.on('aborted', abortUpstream);
+  res.on('close', abortUpstream);
   upstream.on('error', (err) => {
+    if (err && err.message === 'client aborted') return; // nobody is listening any more
+    if (res.headersSent) return res.destroy(); // never append JSON to a partial body
     if (!res.headersSent) {
       res.writeHead(502, { 'content-type': 'application/json' });
     }
@@ -51,7 +66,7 @@ function proxyHttp(req, res) {
 }
 
 function proxyWs(req, socket, head) {
-  const upstream = net.connect(backendPort, backend.hostname, () => {
+  const onConnect = () => {
     const lines = [`${req.method} ${req.url} HTTP/${req.httpVersion}`];
     for (let i = 0; i < req.rawHeaders.length; i += 2) {
       const k = req.rawHeaders[i];
@@ -61,7 +76,10 @@ function proxyWs(req, socket, head) {
     upstream.write(lines.join('\r\n') + '\r\n\r\n');
     if (head && head.length) upstream.write(head);
     socket.pipe(upstream).pipe(socket);
-  });
+  };
+  const upstream = secure
+    ? tls.connect({ port: backendPort, host: backend.hostname, servername: backend.hostname }, onConnect)
+    : net.connect(backendPort, backend.hostname, onConnect);
   upstream.setNoDelay(true);
   socket.setNoDelay(true);
   const close = () => {
