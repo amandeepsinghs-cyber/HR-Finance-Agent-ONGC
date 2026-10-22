@@ -27,6 +27,9 @@ Every decision that changes scope, behaviour, policy or process is recorded here
 | D-16 | 2026-10-22 | **AI Aura approved** (Verbatim 16, prototype v3): Google brand hues (#EA4335/#FBBC04/#34A853/#4285F4 + Gemini violet) rendered as feathery pastel light: a thin rotating arc with an outside-only halo on the ask bar and orb, and a pale bloom behind the greeting. **Scope (resolves OD-6): AI-presence elements only**; never data, page backgrounds or text. Supersedes D-13's "ONGC accents" for the AI layer; the UI/data palette from U1 is unchanged and confirmed | Sponsor "yes" 06:57 | U3, U4, FEAT-016 |
 | D-17 | 2026-10-22 | **Phase order changed to visual-first:** U4 → U3 → U2 → U5, then B1–B4, H1 (none of these UI phases depends on another's output) | Sponsor 06:45 | Checklist order |
 | D-18 | 2026-10-22 | **U1 accepted** (design-system foundation + aura). Merged to `main`, tag `upgrade-U1` | Sponsor (order + aura approval) | U1 |
+| D-19 | 2026-10-22 | **U4 scope approved** (docs/design/U4_spec.md) | Sponsor "go ahead" 06:59 | U4 |
+| D-20 | 2026-10-22 | **KPI deltas coloured by meaning** (green = good, maroon = bad, per metric polarity; e.g. falling vacancy rate = green) | Recommended default, approved with U4 go-ahead | U4.3 |
+| D-21 | 2026-10-22 | **Greeting copy:** time-aware, persona-aware "Good morning, Chairman. I'm Yukti, your HR & Finance agent." | Recommended default, approved with U4 go-ahead | U4.5 |
 ---
 
 ## Open decisions (need sponsor input)

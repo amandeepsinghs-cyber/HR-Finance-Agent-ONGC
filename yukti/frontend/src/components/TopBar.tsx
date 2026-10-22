@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { PersonaType } from '@/contracts/answerContract';
 import { OrbState } from './VoiceOrb';
 import { Sun, Moon, ChevronDown, Check, SkipBack, SkipForward, Languages } from 'lucide-react';
+import { IconButton } from './ui/primitives';
 
 interface TopBarProps {
   currentPersona: PersonaType;
@@ -106,30 +107,68 @@ export const TopBar: React.FC<TopBarProps> = ({
     };
   }, [open]);
 
-  const dotColor =
+  // Single state pill: interaction state + connection merged (U4.1). Dot colour = token, aura when Yukti is active.
+  const stateTone =
     state === 'listening' ? 'text-[var(--accent)]' : state === 'thinking' ? 'text-ongc-amber' : state === 'speaking' ? 'text-[var(--accent-deep)]' : 'text-[var(--ink-3)]';
-
   const conn = !isLiveMode
-    ? { label: 'Demo answers', cls: 'bg-warning-pale text-warning', dot: 'bg-warning-fill' }
+    ? { label: 'Demo', tone: 'warning' as const }
     : backend === 'online'
-    ? { label: 'Live', cls: 'bg-[var(--positive-pale)] text-[var(--positive)]', dot: 'bg-[var(--positive)]' }
+    ? { label: 'Live', tone: 'positive' as const }
     : backend === 'checking'
-    ? { label: 'Connecting', cls: 'bg-[var(--surface-2)] text-[var(--ink-2)]', dot: 'bg-[var(--ink-3)] animate-pulse' }
-    : { label: 'Offline', cls: 'bg-[var(--maroon-pale)] text-[var(--maroon)]', dot: 'bg-[var(--maroon)] animate-pulse' };
+    ? { label: 'Connecting', tone: 'neutral' as const }
+    : { label: 'Offline', tone: 'maroon' as const };
+  const connDot = { warning: 'bg-warning-fill', positive: 'bg-[var(--positive-fill)]', neutral: 'bg-[var(--ink-3)] animate-pulse', maroon: 'bg-[var(--maroon)] animate-pulse' }[conn.tone];
+  const auraState = state === 'listening' || state === 'speaking' ? 'listening' : state === 'thinking' ? 'thinking' : 'off';
 
   return (
-    <header className="relative z-30 h-[var(--topbar-h)] px-[1.5rem] flex items-center justify-between gap-4 border-b border-[var(--hairline)] bg-[color-mix(in_srgb,var(--canvas)_88%,transparent)] backdrop-blur-xl">
-      <div className="flex items-center gap-[1rem] min-w-0">
-        <div className="flex items-center gap-[0.7rem] shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/ongc_logo.png" alt="ONGC" className="w-[2.4rem] h-[2.4rem] rounded-[0.6rem] object-contain bg-white ring-1 ring-[var(--hairline)] p-[2px]" />
-          <div className="leading-tight">
-            <div className="font-display font-semibold text-[1.12rem] tracking-[-0.01em]">Yukti</div>
-            <div className="text-[0.72rem] text-[var(--ink-2)] whitespace-nowrap">HR &amp; Finance · ONGC</div>
-          </div>
+    <header className="relative z-30 h-[var(--topbar-h)] px-6 flex items-center justify-between gap-4 border-b border-[var(--hairline)] bg-[var(--glass)] backdrop-blur-xl">
+      {/* Brand */}
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/ongc_logo.png" alt="ONGC" className="w-8 h-8 rounded-[var(--radius-sm)] object-contain bg-[var(--card)] ring-1 ring-[var(--hairline)] p-[2px]" />
+        <div className="leading-tight min-w-0">
+          <div className="font-display font-semibold text-title tracking-[-0.01em] text-[var(--ink)]">Yukti</div>
+          <div className="text-caption text-[var(--ink-3)] whitespace-nowrap">HR &amp; Finance · ONGC</div>
         </div>
+      </div>
 
-        <span className="h-6 w-px bg-[var(--hairline)]" />
+      {/* Centre: one state pill (state · connection). Clicking toggles live/demo. */}
+      <button
+        onClick={onToggleLiveMode}
+        data-testid="voice-state"
+        data-state={state}
+        title={isLiveMode ? 'Connected to the live agent. Click to use offline demo answers.' : 'Using offline demo answers. Click to go live.'}
+        className="hidden md:flex items-center gap-2.5 pl-2 pr-3.5 py-1 rounded-pill bg-[var(--surface)] border border-[var(--hairline)] text-label max-w-[38vw] hover:bg-[var(--surface-2)] transition-colors"
+      >
+        <span data-aura={auraState} className="yk-aura-ring rounded-full w-6 h-6 shrink-0">
+          <span className={`yk-aura-surface rounded-full w-full h-full grid place-items-center bg-[var(--card)] ${stateTone}`}>
+            {state === 'listening' && micLevel ? <LevelMeter level={micLevel} active className={stateTone} /> : <span className={`w-2 h-2 rounded-full bg-current ${state !== 'idle' ? 'animate-pulse' : ''}`} />}
+          </span>
+        </span>
+        <span className="font-medium text-[var(--ink)]">{STATE_LABEL[state]}</span>
+        {statusLine && state === 'thinking' && <span className="text-[var(--ink-2)] truncate font-normal">· {statusLine}</span>}
+        <span aria-hidden className="w-px h-4 bg-[var(--hairline)]" />
+        <span data-testid="connection-pill" className="flex items-center gap-1.5 text-[var(--ink-2)] font-normal">
+          <span className={`w-1.5 h-1.5 rounded-full ${connDot}`} />
+          {conn.label}
+        </span>
+      </button>
+
+      {/* Right: role · language · theme */}
+      <div className="flex items-center justify-end gap-1.5 shrink-0 flex-1">
+        {demo && (
+          <div className="flex items-center gap-0.5 rounded-pill bg-[var(--surface)] border border-[var(--hairline)] p-0.5 text-caption" title="Demo script (← / →)">
+            <button onClick={demo.onPrev} className="icon-btn !w-7 !h-7" aria-label="Previous demo answer">
+              <SkipBack className="w-3.5 h-3.5" />
+            </button>
+            <span className="px-1 tabular-nums text-[var(--ink-2)]">
+              {demo.index + 1}/{demo.total}
+            </span>
+            <button onClick={demo.onNext} className="icon-btn !w-7 !h-7" aria-label="Next demo answer">
+              <SkipForward className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
 
         <div className="relative" ref={ddRef}>
           <button
@@ -137,15 +176,15 @@ export const TopBar: React.FC<TopBarProps> = ({
             aria-haspopup="listbox"
             aria-expanded={open}
             data-testid="persona-button"
-            className="flex items-center gap-2 pl-3 pr-2 py-[0.4rem] rounded-full border border-[var(--hairline)] bg-[var(--card)] hover:bg-[var(--surface)] text-[0.85rem] transition-colors"
+            title="Switch role (access level)"
+            className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-pill hover:bg-[var(--surface)] text-label transition-colors"
           >
-            <span className="w-2 h-2 rounded-full bg-ongc-maroon" />
-            <span className="text-[var(--ink-2)]">Speaking as</span>
-            <span className="font-semibold">{active.label}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-ongc-maroon" />
+            <span className="font-semibold text-[var(--ink)]">{active.name ? `${active.label} · ${active.name}` : active.role}</span>
             <ChevronDown className={`w-4 h-4 text-[var(--ink-3)] transition-transform ${open ? 'rotate-180' : ''}`} />
           </button>
           {open && (
-            <div role="listbox" className="absolute left-0 top-[calc(100%+0.5rem)] w-[18rem] rounded-[1rem] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-50">
+            <div role="listbox" className="absolute right-0 top-[calc(100%+0.5rem)] w-[18rem] rounded-[var(--radius-lg)] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-50">
               {PERSONAS.map((p) => {
                 const sel = p.id === currentPersona;
                 return (
@@ -158,14 +197,14 @@ export const TopBar: React.FC<TopBarProps> = ({
                       onPersonaChange(p.id);
                       setOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-[0.7rem] flex items-center justify-between gap-3 transition-colors ${sel ? 'bg-[var(--accent-pale)]' : 'hover:bg-[var(--surface)]'}`}
+                    className={`w-full text-left px-3 py-2 rounded-[var(--radius-md)] flex items-center justify-between gap-3 transition-colors ${sel ? 'bg-[var(--accent-pale)]' : 'hover:bg-[var(--surface)]'}`}
                   >
                     <span className="min-w-0">
-                      <span className="block text-[0.88rem] font-semibold">
-                        {p.label}
+                      <span className="block text-label font-semibold text-[var(--ink)]">
+                        {p.role}
                         {p.name && <span className="font-normal text-[var(--ink-2)]"> · {p.name}</span>}
                       </span>
-                      <span className="block text-[0.75rem] text-[var(--ink-2)]">{p.role}</span>
+                      <span className="block text-caption text-[var(--ink-3)]">{p.id.startsWith('E') ? 'Aggregates only (names hidden)' : 'Full access incl. named records'}</span>
                     </span>
                     {sel && <Check className="w-4 h-4 text-[var(--accent)] shrink-0" />}
                   </button>
@@ -174,53 +213,15 @@ export const TopBar: React.FC<TopBarProps> = ({
             </div>
           )}
         </div>
-      </div>
 
-      {/* Interaction state (always visible) */}
-      <div
-        data-testid="voice-state"
-        data-state={state}
-        className="hidden md:flex items-center gap-2 px-3.5 py-[0.35rem] rounded-full bg-[var(--surface)] border border-[var(--hairline)] text-[0.82rem] max-w-[34vw]"
-      >
-        {state === 'listening' && micLevel ? (
-          <LevelMeter level={micLevel} active className={dotColor} />
-        ) : (
-          <span className={`w-2 h-2 rounded-full bg-current ${dotColor} ${state !== 'idle' ? 'animate-pulse' : ''}`} />
-        )}
-        <span className="font-medium">{STATE_LABEL[state]}</span>
-        {statusLine && state === 'thinking' && <span className="text-[var(--ink-2)] truncate">· {statusLine}</span>}
-      </div>
-
-      <div className="flex items-center gap-2 shrink-0">
-        {demo && (
-          <div className="flex items-center gap-1 rounded-full bg-[var(--surface)] border border-[var(--hairline)] p-0.5 text-[0.78rem]" title="Demo script (← / →)">
-            <button onClick={demo.onPrev} className="icon-btn !w-7 !h-7" aria-label="Previous demo answer">
-              <SkipBack className="w-3.5 h-3.5" />
-            </button>
-            <span className="px-1 tabular-nums text-[var(--ink-2)]">
-              {demo.index + 1}/{demo.total}
-            </span>
-            <button onClick={demo.onNext} className="icon-btn !w-7 !h-7" aria-label="Next demo answer">
-              <SkipForward className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
-        <button
-          onClick={onToggleLiveMode}
-          data-testid="connection-pill"
-          title={isLiveMode ? 'Connected to the live agent. Click to use offline demo answers.' : 'Using offline demo answers. Click to go live.'}
-          className={`flex items-center gap-1.5 px-3 py-[0.35rem] rounded-full text-[0.8rem] font-medium transition-colors ${conn.cls}`}
-        >
-          <span className={`w-2 h-2 rounded-full ${conn.dot}`} />
-          {conn.label}
-        </button>
-        <button onClick={onLanguageToggle} className="flex items-center gap-1.5 px-3 py-[0.35rem] rounded-full border border-[var(--hairline)] text-[0.8rem] font-medium hover:bg-[var(--surface)]" title="Answer language">
-          <Languages className="w-4 h-4 text-[var(--accent)]" />
+        <span aria-hidden className="w-px h-5 bg-[var(--hairline)] mx-1" />
+        <button onClick={onLanguageToggle} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-pill text-label font-medium text-[var(--ink-2)] hover:bg-[var(--surface)] hover:text-[var(--ink)]" title="Answer language">
+          <Languages className="w-4 h-4" />
           {language === 'hi' ? 'हिन्दी' : language === 'hi-en' ? 'Hinglish' : 'English'}
         </button>
-        <button onClick={onThemeToggle} className="icon-btn border border-[var(--hairline)] !rounded-full" aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'} data-testid="theme-toggle">
-          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </button>
+        <IconButton onClick={onThemeToggle} label={isDark ? 'Switch to light mode' : 'Switch to dark mode'} data-testid="theme-toggle">
+          {isDark ? <Sun /> : <Moon />}
+        </IconButton>
       </div>
     </header>
   );

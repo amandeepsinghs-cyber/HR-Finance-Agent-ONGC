@@ -9,7 +9,7 @@
      (generated into src/design/tokens.generated.css, imported in app/layout.tsx).
      Only layout variables live here. */
   :root {
-    --topbar-h: 4rem;
+    --topbar-h: 3.5rem;
     --panel-w: clamp(22rem, 27vw, 32rem);
   }
 

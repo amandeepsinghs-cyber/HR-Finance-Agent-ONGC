@@ -860,6 +860,7 @@ export default function YuktiApp() {
             audioEngine={engineRef.current || undefined}
             messages={messages}
             liveInterimText={liveInterimText}
+            persona={persona}
           />
         </main>
 

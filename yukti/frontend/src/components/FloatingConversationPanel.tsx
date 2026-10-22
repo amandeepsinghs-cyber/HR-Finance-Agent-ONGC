@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SourceCitation } from '@/contracts/answerContract';
+import { Chip } from './ui/primitives';
 import { VoiceOrb, OrbState } from './VoiceOrb';
 import { VoiceAudioEngine } from '@/services/audioAnalyser';
 import { WsState } from '@/services/websocketClient';
@@ -267,7 +268,7 @@ export const FloatingConversationPanel: React.FC<Props> = ({
       {/* Status or Live Speech Banner */}
       {(statusLine || liveInterimText) && (
         <div
-          className="pointer-events-auto self-center px-4 py-1.5 rounded-full bg-[var(--card)] border border-[var(--hairline)] shadow-md flex items-center gap-2 text-[0.82rem] text-[var(--ink-2)]"
+          className="pointer-events-auto self-center px-4 py-1.5 rounded-pill bg-[var(--glass)] backdrop-blur-md border border-[var(--hairline)] shadow-[var(--card-shadow)] flex items-center gap-2 text-label text-[var(--ink-2)]"
           data-testid="status-line"
         >
           <span className="flex gap-1">
@@ -281,32 +282,27 @@ export const FloatingConversationPanel: React.FC<Props> = ({
         </div>
       )}
 
-      {/* Single-Line Greyed-Out Suggestions at the Bottom */}
-      {suggestions.length > 0 && (
-        <div
-          className="pointer-events-auto flex items-center justify-center gap-3 overflow-x-auto no-scrollbar px-3 py-0.5 text-[0.76rem] text-[var(--ink-3)]"
-          data-testid="suggestions"
-        >
-          {suggestions.map((s, idx) => (
-            <React.Fragment key={s}>
-              {idx > 0 && <span className="opacity-35 select-none" aria-hidden>·</span>}
-              <button
-                type="button"
-                onClick={() => onSelectSuggestion(s)}
-                className="shrink-0 truncate max-w-[20rem] text-[var(--ink-3)] hover:text-[var(--ink-2)] transition-colors bg-transparent border-0 p-0 font-normal"
-                title={s}
-              >
-                {s}
-              </button>
-            </React.Fragment>
+      {/* Suggested follow-ups (U4.6): readable chips, wrap instead of truncating; hidden on the home screen */}
+      {suggestions.length > 0 && !isGreeting && (
+        <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 px-2" data-testid="suggestions">
+          {suggestions.slice(0, 3).map((s) => (
+            <Chip key={s} size="sm" onClick={() => onSelectSuggestion(s)} title={s} className="bg-[var(--glass)] backdrop-blur-md max-w-full">
+              <span className="whitespace-normal text-left">{s}</span>
+            </Chip>
           ))}
         </div>
       )}
 
       {/* Bottom Floating Command & Voice Dock */}
+      {/* Ask bar with the AI aura ring (D-16): drift when idle, sweep while listening/speaking, fast while thinking */}
+      <div
+        data-testid="ask-bar"
+        data-aura={orbState === 'thinking' ? 'thinking' : orbState === 'listening' || orbState === 'speaking' ? 'listening' : 'idle'}
+        className="yk-aura-ring pointer-events-auto rounded-pill"
+      >
       <form
         onSubmit={send}
-        className="pointer-events-auto flex items-center gap-2.5 px-3 py-2 rounded-full bg-[color-mix(in_srgb,var(--card)_95%,transparent)] backdrop-blur-2xl border border-[var(--hairline)] shadow-[var(--panel-shadow)]"
+        className="yk-aura-surface flex items-center gap-2.5 px-3 py-2 rounded-pill bg-[var(--card)] border border-[var(--hairline)] shadow-[var(--panel-shadow)]"
       >
         {/* Docked Mini Particle Orb (when visual is on screen) */}
         {!isGreeting && (
@@ -415,6 +411,7 @@ export const FloatingConversationPanel: React.FC<Props> = ({
           <ArrowUp className="w-4 h-4" />
         </button>
       </form>
+      </div>
     </div>
   );
 };
