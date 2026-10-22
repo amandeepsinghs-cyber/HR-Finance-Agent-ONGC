@@ -16,6 +16,11 @@ import { DocumentRenderer } from './renderers/DocumentRenderer';
 import { MapRenderer } from './renderers/MapRenderer';
 import { RefusalRenderer } from './renderers/RefusalRenderer';
 import { SourceChipsModal } from './SourceChipsModal';
+import { RosterTable } from './renderers/RosterTable';
+import { CompareRenderer } from './renderers/CompareRenderer';
+import { replot, profile, ReplotResult, ReplotKind } from '@/charts/compat';
+import { normalizeRows } from '@/charts/normalize';
+import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
 import { sourceLabel } from './FloatingConversationPanel';
 import { planChart } from '@/charts/plan';
 import { cleanText, humanizeKey, toNumber } from '@/charts/format';
@@ -46,6 +51,10 @@ const MORE_KINDS: { id: ChartKind; label: string }[] = [
   { id: 'scatter', label: 'Scatter' },
   { id: 'treemap', label: 'Treemap' },
   { id: 'waterfall', label: 'Waterfall' },
+  { id: 'funnel', label: 'Funnel' },
+  { id: 'grouped_bar', label: 'Grouped bar' },
+  { id: 'stacked_bar', label: 'Stacked bar' },
+  { id: 'bullet', label: 'Bullet (vs target)' },
 ];
 const ROLE_SHORT: Record<string, string> = { CMD: 'CMD', DIR_HR: 'Director HR', DIR_FIN: 'Director Finance', E2_HR: 'E2 · HR', E3_FIN: 'E3 · Finance' };
 
@@ -66,6 +75,14 @@ function eyebrowFor(c: AnswerContract): string {
   }
 }
 
+/** djb2 hash of the plotted rows (test hook: toolbar vs voice/typed re-plot equality) */
+function sigOf(data: unknown): number {
+  const str = JSON.stringify(data || []);
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+  return h >>> 0;
+}
+
 export interface AnswerCardProps {
   contract: AnswerContract;
   isDark?: boolean;
@@ -75,12 +92,14 @@ export interface AnswerCardProps {
   /** latest card in the feed: shows follow-up chips */
   isLatest?: boolean;
   onNavigateToAlternative?: () => void;
-  /** ask a follow-up question (drill-down / suggestion chips) */
-  onAsk?: (q: string) => void;
+  /** toolbar re-plot: written into this turn's contract so toolbar, voice and typed commands share one state */
+  onReplot?: (visual: VisualContainer) => void;
+  /** ask a follow-up question (drill-down / suggestion chips); drill-downs carry a spec_patch (U5.4) */
+  onAsk?: (q: string, specPatch?: SpecPatch) => void;
 }
 
 /** Spoken-only / conversational answer (no visual): a quiet text card. */
-const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: string; q: string }[]; onAsk?: (q: string) => void }> = ({ contract, followUps = [], onAsk }) => {
+const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: string; q: string; patch?: SpecPatch }[]; onAsk?: (q: string, patch?: SpecPatch) => void }> = ({ contract, followUps = [], onAsk }) => {
   const text = cleanText(contract.display_text || contract.spoken_summary || '');
   return (
     <article className="flex flex-col gap-3" data-testid="answer-card" data-visual-type="none">
@@ -91,7 +110,7 @@ const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: stri
       {onAsk && followUps.length > 0 && (
         <nav aria-label="Follow-up questions" className="flex flex-wrap items-center gap-2" data-testid="follow-ups">
           {followUps.map((f) => (
-            <button key={f.label} type="button" onClick={() => onAsk(f.q)} className="chip !py-1.5 !text-label" data-testid="follow-up-chip">
+            <button key={f.label} type="button" onClick={() => onAsk(f.q, (f as { patch?: SpecPatch }).patch)} className="chip !py-1.5 !text-label" data-testid="follow-up-chip">
               <CornerDownRight className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
               {cleanText(f.label)}
             </button>
@@ -102,7 +121,7 @@ const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: stri
   );
 };
 
-export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false, persona, fresh = false, isLatest = false, onNavigateToAlternative, onAsk }) => {
+export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false, persona, fresh = false, isLatest = false, onNavigateToAlternative, onAsk, onReplot }) => {
   const [selectedSource, setSelectedSource] = useState<SourceCitation | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -147,9 +166,9 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   const toastTimer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(toastTimer.current), []);
   const [sourcesOpen, setSourcesOpen] = useState(false);
-  const [overrideMode, setOverrideMode] = useState<'chart' | 'table' | null>(null);
-  const [overrideKind, setOverrideKind] = useState<ChartKind | null>(null);
-  const [overrideMetric, setOverrideMetric] = useState<string | null>(null);
+  // Toolbar re-plots go through the same engine as voice/typed commands (U5.7/U5.8): identical output.
+  const [override, setOverride] = useState<ReplotResult | null>(null);
+  const [metric, setMetric] = useState<string | null>(null);
   const lastKeyRef = useRef<string>('');
 
   const visual = contract.visual;
@@ -158,69 +177,32 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
 
   // Reset manual toolbar overrides whenever a new turn or voice/chat re-plot arrives
   useEffect(() => {
-    setOverrideMode(null);
-    setOverrideKind(null);
-    setOverrideMetric(null);
+    setOverride(null);
+    setMetric(null);
   }, [contract.turn_id, visual?.type, visual?.chart?.kind]);
 
-  // Extract dataset rows + numeric columns for interactive Plotly/Dash switcher
-  const activeDataset = useMemo(() => {
-    const rawRows: Record<string, any>[] =
-      (visual?.chart?.data as Record<string, any>[]) ||
-      (visual?.table?.rows as Record<string, any>[]) ||
-      [];
-    if (!rawRows.length) return { rows: [], columns: [], numericCols: [], dimCol: 'label' };
-    const cols = visual?.table?.columns?.length ? visual.table.columns : Object.keys(rawRows[0] || {});
-    const numCols = cols.filter((k) => {
-      if (/^(lat|lon|lng|id|order|rank)$/i.test(k)) return false;
-      let n = 0;
-      for (const r of rawRows) if (toNumber(r?.[k]) !== null) n++;
-      return n >= Math.max(1, Math.ceil(rawRows.length * 0.7));
-    });
-    const dimCol =
-      visual?.chart?.category ||
-      visual?.chart?.x ||
-      cols.find((c) => !numCols.includes(c)) ||
-      cols[0] ||
-      'label';
-    return { rows: rawRows, columns: cols, numericCols: numCols, dimCol };
-  }, [visual]);
-
-  const effectiveVisualType = overrideMode || visual?.type;
-  const effectiveChartSpec = useMemo<ChartSpec | undefined>(() => {
-    if (!activeDataset.rows.length) return visual?.chart;
-    const baseSpec: ChartSpec = visual?.chart || {
-      kind: 'bar',
-      x: activeDataset.dimCol,
-      y: activeDataset.numericCols[0] || activeDataset.columns[1] || 'value',
-      category: activeDataset.dimCol,
-      value: activeDataset.numericCols[0] || activeDataset.columns[1] || 'value',
-      data: activeDataset.rows,
-    };
-    const nextKind = overrideKind || baseSpec.kind || 'bar';
-    const nextMetric = overrideMetric || baseSpec.value || baseSpec.y || activeDataset.numericCols[0];
-    return {
-      ...baseSpec,
-      kind: nextKind,
-      value: nextMetric,
-      y: nextMetric,
-      x: baseSpec.x || activeDataset.dimCol,
-      category: baseSpec.category || activeDataset.dimCol,
-      data: activeDataset.rows,
-    };
-  }, [visual?.chart, activeDataset, overrideKind, overrideMetric]);
-
+  // Data profile of the answer (original rows, preserved across re-plots in visual.source)
+  const prof = useMemo(() => profile(visual), [visual]);
+  const effVisual = override?.visual || visual;
+  const effectiveVisualType = effVisual?.type;
+  const effectiveChartSpec = effVisual?.chart;
   const effectiveTableSpec = useMemo(() => {
-    if (visual?.table && visual.table.rows?.length) return visual.table;
-    if (!activeDataset.rows.length) return undefined;
-    return {
-      columns: activeDataset.columns,
-      rows: activeDataset.rows,
-    };
-  }, [visual?.table, activeDataset]);
+    const t = effVisual?.table;
+    if (!t?.rows?.length) return t && t.columns ? t : prof.rows.length ? { columns: prof.columns, rows: prof.rows } : undefined;
+    return { ...t, rows: normalizeRows(t.columns, t.rows as unknown[]) };
+  }, [effVisual, prof]);
+  const replotNote = override?.note || visual?.replot_note;
 
-  const canSwitchVisual = !refused && activeDataset.rows.length > 0 && (visual?.type === 'chart' || visual?.type === 'table');
-  const activeKindPill = effectiveVisualType === 'table' ? 'table' : effectiveChartSpec?.kind || 'bar';
+  const canSwitchVisual = !refused && prof.rows.length > 0 && (visual?.type === 'chart' || visual?.type === 'table');
+  const activeKindPill: ReplotKind = effectiveVisualType === 'table' ? 'table' : (effectiveChartSpec?.kind as ReplotKind) || 'bar';
+  const measures = prof.measures;
+
+  // Named-people tables get the roster component (sort / filter / search / select / actions / masking).
+  const t0 = effectiveTableSpec;
+  const isRoster =
+    effectiveVisualType === 'table' &&
+    !!t0 &&
+    (!!t0.masking || !!t0.row_actions?.length || (t0.columns || []).some((c) => /^(emp_name|employee_name|emp_id|employee_id)$/i.test(c)));
 
   // Refine keeps the same key so the chart morphs in place; replace cross-fades.
   const visualKey = useMemo(() => {
@@ -229,7 +211,11 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     return lastKeyRef.current;
   }, [contract.turn_id, visual?.mode]);
 
-  const insights = (contract.insights_v2?.length ? contract.insights_v2.map((i) => i.text) : contract.insights || []).map(cleanText).filter((s) => s && !NOISE.test(s));
+  const insightItems: { text: string; kind?: string }[] = (contract.insights_v2?.length
+    ? contract.insights_v2.map((i) => ({ text: cleanText(i.text), kind: i.kind }))
+    : (contract.insights || []).map((t) => ({ text: cleanText(t) }))
+  ).filter((x) => x.text && !NOISE.test(x.text));
+  const insights = insightItems.map((x) => x.text);
   const sources = (contract.sources || []).filter((s, i, arr) => arr.findIndex((x) => sourceLabel(x) === sourceLabel(s)) === i);
   // U2.3: every answer card offers Sheets, Docs, Word and PDF (plus anything else the backend lists) — unless the
   // backend deliberately sent an empty list (e.g. restricted content).
@@ -247,14 +233,13 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     return { values: vals, kind: plan.timeLike ? ('line' as const) : ('bars' as const), highlight: vals.indexOf(Math.max(...vals)) };
   }, [visual]);
 
-  const handleExport = async (format: string) => {
+  const handleExport = async (format: string, pick?: { columns: string[]; rows: Record<string, any>[] }) => {
     setExportOpen(false);
     setExporting(format);
     const title = (visual?.title || 'Yukti_Export').replace(/[^a-zA-Z0-9_-]+/g, '_').slice(0, 60);
-    const table = visual?.table;
-    const chartRows = visual?.chart?.data || [];
-    const columns = table?.columns || (chartRows[0] ? Object.keys(chartRows[0]) : []);
-    const rows = (table?.rows as any[]) || chartRows;
+    // U5.5: export the answer's own rows, normalised (array rows → objects); roster exports pass the selection.
+    const columns = pick?.columns || prof.columns;
+    const rows = pick?.rows || prof.rows;
     const content = visual?.document?.markdown || visual?.clause?.text || cleanText(contract.display_text);
     try {
       const res = await fetch('/api/export', {
@@ -287,20 +272,21 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     }
   };
 
-  const fixedHeight = effectiveVisualType === 'chart' || effectiveVisualType === 'map';
+  const fixedHeight = (effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map';
   const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
 
   // Wide tables (> 7 columns) take the full width; takeaways stack below (no horizontal clipping).
   const wideTable = effectiveVisualType === 'table' && (effectiveTableSpec?.columns?.length || 0) > 7;
 
-  const pickKind = (id: ChartKind | 'table') => {
-    if (id === 'table') {
-      setOverrideMode('table');
-    } else {
-      setOverrideMode('chart');
-      setOverrideKind(id as ChartKind);
-    }
+  const applyReplot = (r: ReplotResult) => {
+    if (onReplot) onReplot({ ...r.visual, replot_note: r.note } as VisualContainer);
+    else setOverride(r);
+  };
+  const pickKind = (id: ReplotKind) => applyReplot(replot(effVisual, id, { metric: metric || undefined }));
+  const pickMetric = (m: string) => {
+    setMetric(m);
+    applyReplot(replot(effVisual, activeKindPill, { metric: m }));
   };
 
   // Context chips (U4.2): role · subject · period · source, derived from the contract.
@@ -319,8 +305,8 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   const sourceTag = firstSource ? (firstSource.kind === 'policy' ? 'Policy' : firstSource.kind === 'document' ? 'Document' : 'SSOT') : undefined;
 
   // Follow-up chips (U2.3 / U5.4): drill-downs first, else the agent's suggestions; latest card only.
-  const followUps = (contract.drilldowns?.length
-    ? contract.drilldowns.map((d) => ({ label: d.label, q: d.question || d.label }))
+  const followUps: { label: string; q: string; patch?: SpecPatch }[] = (contract.drilldowns?.length
+    ? contract.drilldowns.map((d) => ({ label: d.label, q: d.question || d.label, patch: d.spec_patch }))
     : (contract.suggestions || []).map((s) => ({ label: s, q: s }))
   ).slice(0, 4);
 
@@ -438,18 +424,18 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
                 </div>
               </div>
 
-              {activeDataset.numericCols.length > 1 && effectiveVisualType === 'chart' && (
+              {measures.length > 1 && effectiveVisualType === 'chart' && (
                 <label className="flex items-center gap-2 text-label text-[var(--ink-2)]">
                   <SlidersHorizontal className="w-3.5 h-3.5" aria-hidden />
                   Metric
                   <select
                     aria-label="Select plot metric"
                     data-testid="plot-metric-select"
-                    value={effectiveChartSpec?.value || activeDataset.numericCols[0]}
-                    onChange={(e) => setOverrideMetric(e.target.value)}
+                    value={metric || (effectiveChartSpec?.value && measures.includes(effectiveChartSpec.value) ? effectiveChartSpec.value : prof.primary)}
+                    onChange={(e) => pickMetric(e.target.value)}
                     className="px-2.5 py-1 rounded-[var(--radius-sm)] bg-[var(--card)] border border-[var(--hairline)] text-[var(--ink)] font-medium focus:outline-none focus:border-[var(--accent)]"
                   >
-                    {activeDataset.numericCols.map((col) => (
+                    {measures.map((col) => (
                       <option key={col} value={col}>
                         {humanizeKey(col)}
                       </option>
@@ -460,6 +446,13 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
             </div>
           )}
 
+          {replotNote && canSwitchVisual && (
+            <p className="-mt-1 flex items-center gap-1.5 text-label font-normal text-[var(--ink-2)]" role="status" data-testid="replot-note">
+              <Sparkles className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
+              {replotNote}
+            </p>
+          )}
+
           {/* Full-screen Visual + Key Takeaways */}
           <div className={`grid gap-[1.25rem] ${insights.length && !refused && !wideTable ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
             {/* Newest-answer aura edge (U4.7): glows briefly when a fresh answer lands, then fades */}
@@ -468,9 +461,43 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               className={`yk-aura-surface min-w-0 ${selfFramed ? '' : 'card p-[1.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
               data-testid="visual-card"
               data-visual-type={effectiveVisualType}
+              data-chart-kind={effectiveVisualType === 'chart' ? effectiveChartSpec?.kind : effectiveVisualType}
+              data-points={effectiveVisualType === 'chart' ? effectiveChartSpec?.data?.length : effectiveTableSpec?.rows?.length}
+              data-sig={effectiveVisualType === 'chart' ? sigOf(effectiveChartSpec?.data) : 0}
             >
-              {effectiveVisualType === 'chart' && effectiveChartSpec && <ChartRenderer spec={effectiveChartSpec} isDark={isDark} title={visual?.title} />}
-              {effectiveVisualType === 'table' && effectiveTableSpec && <TableRenderer table={effectiveTableSpec} isDark={isDark} />}
+              {effectiveVisualType === 'chart' && effVisual?.compare?.items?.length ? (
+                <CompareRenderer compare={effVisual.compare} isDark={isDark} unit={effVisual.chart?.unit} />
+              ) : (
+                effectiveVisualType === 'chart' && effectiveChartSpec && <ChartRenderer spec={effectiveChartSpec} isDark={isDark} title={visual?.title} />
+              )}
+              {effectiveVisualType === 'table' && effectiveTableSpec && isRoster && (
+                <RosterTable
+                  table={effectiveTableSpec}
+                  persona={persona || contract.persona}
+                  onRowAction={(actionId, rows) => {
+                    const act = effectiveTableSpec.row_actions?.find((a) => a.id === actionId);
+                    const clean = (v: unknown) => (v === undefined || v === null || String(v).includes('•') ? '' : String(v));
+                    const names = rows.map((r) => [clean(r.emp_name || r.name), clean(r.emp_id) ? `(${clean(r.emp_id)})` : ''].filter(Boolean).join(' ')).slice(0, 25);
+                    const who = names.join(', ') + (rows.length > 25 ? ` and ${rows.length - 25} more` : '');
+                    const q = act?.question_template && rows.length === 1
+                      ? act.question_template.replace(/\{(\w+)\}/g, (_, k) => clean(rows[0][k]))
+                      : `${act?.label || 'Draft a transfer note'} for ${rows.length} ${rows.length === 1 ? 'officer' : 'officers'}: ${who}`;
+                    // the FULL selection travels as a filter on the roster's query (never truncated)
+                    const ids = rows.map((r) => clean(r.emp_id)).filter(Boolean);
+                    const nm = rows.map((r) => clean(r.emp_name || r.name)).filter(Boolean);
+                    onAsk?.(
+                      q,
+                      ids.length === rows.length
+                        ? { add_filters: [{ field: 'emp_id', op: 'in', value: ids }] }
+                        : nm.length
+                          ? { add_filters: [{ field: 'emp_name', op: 'in', value: nm }] } // ids masked for this role
+                          : undefined,
+                    );
+                  }}
+                  onExport={(columns, rows) => void handleExport('xlsx', { columns, rows })}
+                />
+              )}
+              {effectiveVisualType === 'table' && effectiveTableSpec && !isRoster && <TableRenderer table={effectiveTableSpec} isDark={isDark} />}
               {effectiveVisualType === 'clause' && visual?.clause && <ClauseRenderer clause={visual.clause} isDark={isDark} />}
               {effectiveVisualType === 'document' && visual?.document && <DocumentRenderer document={visual.document} isDark={isDark} />}
               {effectiveVisualType === 'map' && visual?.map && <MapRenderer mapSpec={visual.map} isDark={isDark} />}
@@ -483,10 +510,19 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               <aside className="card p-[1.25rem] self-start" data-testid="insights">
                 <div className="text-label text-[var(--ink-2)] mb-3">Key takeaways</div>
                 <ul className="space-y-[0.85rem]">
-                  {insights.slice(0, 5).map((s, i) => (
-                    <li key={i} className="flex gap-2.5 text-[0.92rem] leading-[1.55]">
-                      <span className={`mt-[0.55rem] w-1.5 h-1.5 rounded-full shrink-0 ${i === 0 ? 'bg-[var(--accent)]' : 'bg-[var(--ink-3)]'}`} />
-                      <span className={i === 0 ? 'font-medium' : 'text-[var(--ink)]/90'}>{s}</span>
+                  {insightItems.slice(0, 5).map((it, i) => (
+                    <li key={i} className="flex gap-2.5 text-[0.92rem] leading-[1.55]" data-testid="insight" data-kind={it.kind || ''}>
+                      <span
+                        className={`mt-[0.55rem] w-1.5 h-1.5 rounded-full shrink-0 ${
+                          it.kind === 'risk' ? 'bg-[var(--maroon)]' : i === 0 || it.kind === 'headline' ? 'bg-[var(--accent)]' : 'bg-[var(--ink-3)]'
+                        }`}
+                      />
+                      <span className={i === 0 ? 'font-medium' : 'text-[var(--ink)]/90'}>
+                        {it.kind && it.kind !== 'headline' && it.kind !== 'note' && (
+                          <span className={`mr-1.5 text-label font-medium capitalize ${it.kind === 'risk' ? 'text-[var(--maroon)]' : 'text-[var(--accent-deep)] dark:text-[var(--accent-soft)]'}`}>{it.kind}</span>
+                        )}
+                        {it.text}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -527,7 +563,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
       {isLatest && onAsk && followUps.length > 0 && !refused && (
         <nav aria-label="Follow-up questions" className="flex flex-wrap items-center gap-2" data-testid="follow-ups">
           {followUps.map((f) => (
-            <button key={f.label} type="button" onClick={() => onAsk(f.q)} className="chip !py-1.5 !text-label" data-testid="follow-up-chip">
+            <button key={f.label} type="button" onClick={() => onAsk(f.q, (f as { patch?: SpecPatch }).patch)} className="chip !py-1.5 !text-label" data-testid="follow-up-chip">
               <CornerDownRight className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
               {cleanText(f.label)}
             </button>

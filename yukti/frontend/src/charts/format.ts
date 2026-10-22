@@ -20,6 +20,12 @@ const ACR_MAP: Record<string, string> = Object.fromEntries(ACRONYMS.map((a) => [
 
 const KEY_LABELS: Record<string, string> = {
   grade: 'Grade',
+  emp_name: 'Name',
+  employee_name: 'Name',
+  emp_id: 'Employee ID',
+  employee_id: 'Employee ID',
+  continuous_stay_years: 'Stay (years)',
+  posted_since: 'Posted since',
   grade_id: 'Grade',
   current_grade_id: 'Grade',
   wc_id: 'Work centre',

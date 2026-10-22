@@ -8,6 +8,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnswerCard } from './AnswerCard';
 import type { Turn } from '@/state/feed';
+import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
 import { cleanText } from '@/charts/format';
 import { AlertTriangle, ArrowDown, Mic, Plus, RotateCcw } from 'lucide-react';
 
@@ -17,10 +18,11 @@ interface ConversationFeedProps {
   persona?: string;
   statusLine?: string | null;
   liveInterimText?: string;
-  onAsk?: (q: string) => void;
+  onAsk?: (q: string, specPatch?: SpecPatch) => void;
   onRetry?: (q: string, turnId?: string) => void;
   onNewSession?: () => void;
   onNavigateToAlternative?: (q?: string) => void;
+  onReplot?: (turnId: string, visual: VisualContainer) => void;
 }
 
 const timeOf = (ms?: number) => (ms ? new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
@@ -81,6 +83,7 @@ export const ConversationFeed: React.FC<ConversationFeedProps> = ({
   onRetry,
   onNewSession,
   onNavigateToAlternative,
+  onReplot,
 }) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const scrollerRef = useRef<HTMLElement | null>(null);
@@ -231,6 +234,7 @@ export const ConversationFeed: React.FC<ConversationFeedProps> = ({
                   fresh={!!t.fresh && isLast}
                   isLatest={isLast}
                   onAsk={onAsk}
+                  onReplot={onReplot ? (v) => onReplot(t.id, v) : undefined}
                   onNavigateToAlternative={() => onNavigateToAlternative?.(t.contract?.access?.alternative)}
                 />
               )}

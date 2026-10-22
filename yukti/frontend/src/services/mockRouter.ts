@@ -1,5 +1,6 @@
 import { AnswerContract, PersonaType } from '@/contracts/answerContract';
 import { FIXTURES, FixtureMeta } from '@/fixtures';
+import { V2_FIXTURES } from '@/fixtures/v2';
 
 export function routeQueryToFixture(
   query: string,
@@ -13,6 +14,21 @@ export function routeQueryToFixture(
     const f = FIXTURES.find(x => x.id === 'd2_refusal')!;
     return { fixture: f, contract: f.data };
   }
+
+  // Contract-v2 demo answers (U5): roster, masking by role, compare, insights + drill-downs, finance P&L
+  const v2 = (id: string) => {
+    const f = V2_FIXTURES.find((x) => x.id === id);
+    return f ? { fixture: f, contract: f.data } : null;
+  };
+  const hrPeople = /(executive|officer|employee|people|staff)/.test(q);
+  const wantsNames = hrPeople && /\b(names?|list|who are|roster|which officers|show me the people)\b/.test(q);
+  if (wantsNames && (currentPersona === 'E2_HR' || currentPersona === 'E3_FIN')) { const r = v2('v2_roster_aggregate_e2'); if (r) return r; }
+  if (wantsNames && currentPersona === 'DIR_FIN') { const r = v2('v2_roster_partial_dirfin'); if (r) return r; }
+  if (wantsNames && /(all.?india|8 years|eight years|2,?000|everyone)/.test(q)) { const r = v2('v2_roster_2000'); if (r) return r; }
+  if (wantsNames && /delhi/.test(q)) { const r = v2('v2_roster_419'); if (r) return r; }
+  if ((currentPersona === 'CMD' || currentPersona === 'DIR_HR') && /(compare|\bvs\b|versus)/.test(q) && /delhi/.test(q) && /mumbai/.test(q)) { const r = v2('v2_compare_delhi_mumbai'); if (r) return r; }
+  if (/headcount by work cent(re|er)|work cent(re|er) headcount/.test(q)) { const r = v2('v2_insights_drilldowns'); if (r) return r; }
+  if (/profit and loss|p&l|p & l/.test(q)) { const r = v2('v2_finance_pnl'); if (r) return r; }
 
   // Refine E5+
   if (q.includes('e5') || q.includes('senior') || q.includes('only e5')) {

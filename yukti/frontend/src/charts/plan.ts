@@ -64,6 +64,29 @@ function isTextKey(data: Record<string, any>[], k?: string): k is string {
   return data.some((r) => r[k] !== null && r[k] !== undefined && toNumber(r[k]) === null);
 }
 
+/** Unit family of a measure from its key / spec unit (U5.6): series of different families never share an axis. */
+function unitFamily(key: string): string {
+  const k = key.toLowerCase();
+  if (/(_cr|crore|₹|inr|revenue|profit|capex|opex|cost|pbt|pat)\b|_cr$/.test(k)) return 'inr';
+  if (/(_pct|percent|%|share|ratio|rate|achiev|growth)/.test(k)) return 'pct';
+  if (/(_usd|\$|usd|per_boe|boe)/.test(k)) return 'usd';
+  if (/(mmt|mmscm|bcm|production|output|volume)/.test(k)) return 'vol';
+  if (/(count|headcount|employees|executives|people|officers|^n$)/.test(k)) return 'count';
+  return 'other';
+}
+
+/** True when the measures can't honestly share one value axis: different unit families or > 25× apart in size. */
+export function mixedUnits(data: Record<string, any>[], keys: string[]): boolean {
+  if (keys.length < 2) return false;
+  const fams = new Set(keys.map(unitFamily).filter((f) => f !== 'other'));
+  if (fams.size > 1) return true;
+  const med = keys.map((k) => {
+    const v = data.map((r) => Math.abs(toNumber(r[k]) ?? 0)).filter((x) => x > 0).sort((a, b) => a - b);
+    return v.length ? v[Math.floor(v.length / 2)] : 0;
+  }).filter((m) => m > 0);
+  return med.length >= 2 && Math.max(...med) / Math.min(...med) > 25;
+}
+
 export function planChart(spec: ChartSpec): ChartPlan {
   const data = (spec.data || []).filter((r) => r && typeof r === 'object' && !Array.isArray(r));
   const nums = numericKeys(data);
@@ -154,11 +177,24 @@ export function planChart(spec: ChartSpec): ChartPlan {
     form = 'ranked';
   }
 
+  // U5.6: several measures in different units (e.g. MoU: ₹ Cr capex + % achievement + MMT crude) must not share one
+  // axis — split into small multiples (one panel per measure) instead of a misleading single line/bar chart.
+  if ((form === 'line' || form === 'area' || form === 'grouped' || form === 'stacked') && kind !== 'scatter') {
+    const multi = metricKeys.filter((k) => !/^(target|target_pct|target_value)$/i.test(k)).slice(0, 4);
+    if (multi.length >= 2 && mixedUnits(data, multi)) {
+      form = 'multiples';
+      seriesKeys = multi;
+    }
+  }
+
   // Auto-bin into contiguous frequency intervals if form === 'histogram' and rows aren't already binned intervals
   const looksBinned =
+    (spec as any).prebinned !== false &&
+    (!!(spec as any).prebinned ||
+    ordinal || // grades / ranges sent as a histogram by the backend are already buckets (G4 R2)
     dimKey === 'bin' ||
     /bin|bucket|range|band|bracket/i.test(dimKey) ||
-    labels.filter((l) => /[-–+<>≤≥]|\bto\b/i.test(l)).length >= Math.ceil(labels.length * 0.5);
+    labels.filter((l) => /[-–+<>≤≥]|\bto\b/i.test(l)).length >= Math.ceil(labels.length * 0.5));
   if (form === 'histogram' && !looksBinned && rows.length >= 5) {
     const vals = rows.map((r) => r.value).filter((v) => Number.isFinite(v));
     const minV = Math.min(...vals);

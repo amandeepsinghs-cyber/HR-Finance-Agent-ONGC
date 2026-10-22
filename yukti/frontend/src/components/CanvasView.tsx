@@ -7,6 +7,7 @@ import { ChatMessage } from './FloatingConversationPanel';
 import { ConversationFeed } from './ConversationFeed';
 import { AnswerCard } from './AnswerCard';
 import type { Turn } from '@/state/feed';
+import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
 import { latestAnswered } from '@/state/feed';
 import { Users, TrendingUp, Target, Scale, BarChart3, Activity } from 'lucide-react';
 
@@ -16,9 +17,10 @@ interface CanvasViewProps {
   isDark?: boolean;
   onNavigateToAlternative?: (q?: string) => void;
   onSelectStarter?: (q: string) => void;
-  onAsk?: (q: string) => void;
+  onAsk?: (q: string, specPatch?: SpecPatch) => void;
   onRetry?: (q: string, turnId?: string) => void;
   onNewSession?: () => void;
+  onReplot?: (turnId: string, visual: VisualContainer) => void;
   busy?: boolean;
   statusLine?: string | null;
   onTalk?: () => void;
@@ -165,6 +167,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
   onAsk,
   onRetry,
   onNewSession,
+  onReplot,
   busy,
   statusLine,
   onTalk,
@@ -202,6 +205,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
           onAsk={onAsk}
           onRetry={onRetry}
           onNewSession={onNewSession}
+          onReplot={onReplot}
           onNavigateToAlternative={onNavigateToAlternative}
         />
       ) : latest?.contract ? (
@@ -213,6 +217,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
           fresh={latest.fresh}
           isLatest
           onAsk={onAsk}
+          onReplot={onReplot ? (v) => onReplot(latest.id, v) : undefined}
           onNavigateToAlternative={() => onNavigateToAlternative?.(latest.contract?.access?.alternative)}
         />
       ) : null}

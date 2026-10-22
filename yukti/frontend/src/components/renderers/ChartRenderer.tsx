@@ -89,14 +89,30 @@ const DonutWithLegend: React.FC<{ plan: ChartPlan; t: ChartTokens; isPie?: boole
   );
 };
 
+/** Panel title for small multiples (each panel = one measure, its own unit axis). */
+function withTitle(opt: any, title: string, t: ChartTokens): any {
+  if (!opt) return opt;
+  return { ...opt, title: { text: title, left: 0, top: 0, textStyle: { color: t.text, fontSize: Math.round(14 * ((t as any).scale || 1)), fontWeight: 600 } }, grid: Array.isArray(opt.grid) ? opt.grid.map((g: any) => ({ ...g, top: Math.max(+g.top || 0, 40) })) : { ...(opt.grid || {}), top: 40 } };
+}
+
 const SmallMultiples: React.FC<{ plan: ChartPlan; spec: ChartSpec; t: ChartTokens }> = ({ plan, spec, t }) => {
   const data = (spec.data || []) as Record<string, any>[];
   const first = plan.seriesKeys[0];
-  const order = [...data].sort((a, b) => (toNumber(b[first]) || 0) - (toNumber(a[first]) || 0));
+  // Time series / ordered buckets keep their order (one line or column per measure); categories are ranked.
+  const ordered = plan.timeLike || plan.ordinal;
+  const order = ordered ? data : [...data].sort((a, b) => (toNumber(b[first]) || 0) - (toNumber(a[first]) || 0));
   const panels = plan.seriesKeys.map((k) => {
     const rows: Row[] = order.map((r) => ({ label: humanizeValue(r[plan.dimKey]), raw: r, value: toNumber(r[k]) ?? 0 }));
-    const sub: ChartPlan = { ...plan, valueKey: k, rows, unit: parseUnit(spec.unit, k), total: rows.reduce((s, r) => s + r.value, 0) };
-    return { k, option: rankedOption(sub, t, { compact: true, title: humanizeKey(k), labelPx: 115 }) };
+    // keep a shared unit (e.g. "Executives") when the split was only by size; drop it when families differ
+    const sharedUnit = new Set(plan.seriesKeys.map((x) => parseUnit(spec.unit, x).kind)).size === 1 ? spec.unit : undefined;
+    const sub: ChartPlan = { ...plan, valueKey: k, seriesKeys: [k], rows, unit: parseUnit(sharedUnit, k), total: rows.reduce((s, r) => s + r.value, 0) };
+    const asLine = plan.timeLike || spec.kind === 'line' || spec.kind === 'area';
+    const option = asLine
+      ? withTitle(lineOption(sub, t, order), humanizeKey(k), t)
+      : plan.ordinal
+        ? withTitle(columnOption(sub, t), humanizeKey(k), t)
+        : rankedOption(sub, t, { compact: true, title: humanizeKey(k), labelPx: 115 });
+    return { k, option };
   });
   return (
     <div className="grid h-full gap-6" style={{ gridTemplateColumns: `repeat(${Math.min(panels.length, 3)}, minmax(0, 1fr))` }}>

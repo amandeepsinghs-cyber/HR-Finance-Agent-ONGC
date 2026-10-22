@@ -2,7 +2,8 @@
  * Conversation feed state (U2.2): an ordered list of turns (question → answer) that replaces the single
  * `contract` + history strip. Pure reducer so it can be unit-tested without React.
  */
-import type { AnswerContract, ChartKind } from '@/contracts/answerContract';
+import type { AnswerContract, SpecPatch } from '@/contracts/answerContract';
+import { replot, profile, ReplotKind, ALL_KINDS } from '@/charts/compat';
 
 export type TurnStatus = 'pending' | 'done' | 'error';
 
@@ -15,17 +16,19 @@ export interface Turn {
   askedAt: number;
   answeredAt?: number;
   viaVoice?: boolean;
+  /** drill-down patch the question was asked with (kept for Retry) */
+  specPatch?: SpecPatch;
   /** true for answers that arrived live in this view (drives the newest-answer glow); false for restores */
   fresh?: boolean;
 }
 
 export type FeedAction =
-  | { type: 'ask'; id: string; question: string; viaVoice?: boolean; at?: number }
+  | { type: 'ask'; id: string; question: string; viaVoice?: boolean; at?: number; specPatch?: SpecPatch }
   | { type: 'question'; id: string; question: string }
   | { type: 'answer'; contract: AnswerContract; id?: string; question?: string; at?: number; newId?: string }
   | { type: 'fail'; id: string; error: string }
   | { type: 'settle'; id: string; text?: string; at?: number }
-  | { type: 'refine'; update: (c: AnswerContract) => AnswerContract }
+  | { type: 'refine'; update: (c: AnswerContract) => AnswerContract; id?: string }
   | { type: 'drop'; id: string }
   | { type: 'reset' };
 
@@ -44,7 +47,7 @@ export function feedReducer(state: Turn[], a: FeedAction): Turn[] {
   switch (a.type) {
     case 'ask': {
       if (state.some((t) => t.id === a.id)) return state;
-      return [...state, { id: a.id, question: a.question, status: 'pending', askedAt: now(a.at), viaVoice: a.viaVoice }];
+      return [...state, { id: a.id, question: a.question, status: 'pending', askedAt: now(a.at), viaVoice: a.viaVoice, specPatch: a.specPatch }];
     }
     case 'question':
       return state.map((t) => (t.id === a.id ? { ...t, question: a.question } : t));
@@ -87,9 +90,11 @@ export function feedReducer(state: Turn[], a: FeedAction): Turn[] {
       return state.map((x) => (x.id === a.id ? { ...x, status: 'done', contract: textContract(text, x.id), answeredAt: now(a.at), fresh: true } : x));
     }
     case 'refine': {
-      // Re-plot / "show as table" updates the CURRENT (latest answered) card in place (U2.5).
+      // Re-plot / "show as table" updates the CURRENT (latest answered) card in place (U2.5) — or a specific
+      // card when the toolbar of a historic card is used.
       for (let i = state.length - 1; i >= 0; i--) {
         const t = state[i];
+        if (a.id && t.id !== a.id) continue;
         if (t.status === 'done' && t.contract) {
           const next = a.update(t.contract);
           if (next === t.contract) return state;
@@ -144,31 +149,15 @@ export const latestAnswered = (turns: Turn[]): Turn | undefined => {
   return undefined;
 };
 
-const CHART_KINDS = [
-  'bar', 'hbar', 'stacked_bar', 'grouped_bar', 'pie', 'donut', 'histogram', 'line', 'area', 'combo',
-  'scatter', 'waterfall', 'treemap', 'heatmap', 'bullet', 'gauge', 'funnel',
-];
-
-/** Pure "show this as <kind>" transform used by voice/text commands (and later the U5.7 engine). */
+/** "Show this as <kind>" for voice/typed commands: the same engine as the toolbar (U5.7/U5.8), note attached. */
 export function applyChartKind(prev: AnswerContract, kindRaw: string): AnswerContract {
   if (!prev?.visual || prev.visual.type === 'none') return prev;
-  const kind = kindRaw.toLowerCase();
-  const nextVis = { ...prev.visual };
-  if (kind === 'table') {
-    const rows = nextVis.table?.rows || (nextVis.chart?.data as any[]) || [];
-    if (!rows.length) return prev;
-    nextVis.table = nextVis.table || { columns: rows[0] ? Object.keys(rows[0]) : [], rows };
-    nextVis.type = 'table';
-    nextVis.mode = 'refine';
-  } else if (CHART_KINDS.includes(kind)) {
-    const rows = (nextVis.table?.rows as any[]) || (nextVis.chart?.data as any[]) || [];
-    if (!rows.length) return prev;
-    const cols = nextVis.table?.columns || (rows[0] ? Object.keys(rows[0]) : []);
-    nextVis.type = 'chart';
-    nextVis.mode = 'refine';
-    nextVis.chart = { ...(nextVis.chart || { x: cols[0] || 'label', y: cols[1] || 'value', data: rows }), kind: kind as ChartKind };
-  } else {
-    return prev;
-  }
-  return { ...prev, visual: nextVis };
+  const kind = kindRaw.toLowerCase() as ReplotKind;
+  if (!REPLOT_KINDS.includes(kind)) return prev;
+  if (!profile(prev.visual).rows.length) return prev;
+  const r = replot(prev.visual, kind);
+  if (r.visual === prev.visual) return prev;
+  return { ...prev, visual: { ...r.visual, replot_note: r.note } };
 }
+
+const REPLOT_KINDS: ReplotKind[] = ALL_KINDS;
