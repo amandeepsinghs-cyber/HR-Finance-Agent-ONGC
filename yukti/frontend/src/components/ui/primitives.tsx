@@ -204,7 +204,7 @@ export interface ContextChipsProps extends React.HTMLAttributes<HTMLDivElement> 
 export function ContextChips({ items, source, className, ...rest }: ContextChipsProps) {
   const parts = items.filter(Boolean);
   return (
-    <div data-ui="context-chips" className={clsx('flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-[var(--ink-3)]', className)} {...rest}>
+    <div data-ui="context-chips" className={clsx('flex flex-wrap items-center gap-x-2 gap-y-1 text-label font-normal text-[var(--ink-3)]', className)} {...rest}>
       {parts.map((p, i) => (
         <React.Fragment key={i}>
           {i > 0 && <span aria-hidden className="text-[var(--ink-3)]">·</span>}

@@ -1,0 +1,239 @@
+{
+  "turn_id": "turn_v2_insights_drilldowns",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Total executive headcount across fourteen ONGC work centres for fiscal year 2026. Mumbai Western Offshore remains the largest work centre with 6,820 executives, followed by Delhi HQ with 2,450. North-East assets including Jorhat and Sivasagar deploy 2,040 executives with localized vacancy challenges.",
+  "display_text": "FY26 executive distribution across 14 ONGC work centres [1]. Western Offshore (Mumbai) accounts for the largest deployment (6820, 29.8%), followed by Delhi Corporate HQ and Dehradun. Interactive drilldowns and category insights available.",
+  "contract_version": 2,
+  "visual": {
+    "type": "chart",
+    "mode": "replace",
+    "title": "Executive Headcount by Work Centre, FY26",
+    "chart": {
+      "kind": "hbar",
+      "x": "work_centre",
+      "y": "headcount",
+      "unit": "Executives",
+      "sort": "desc",
+      "data": [
+        {
+          "work_centre": "Mumbai (Western Offshore)",
+          "headcount": 6820
+        },
+        {
+          "work_centre": "Delhi (Corporate HQ)",
+          "headcount": 2450
+        },
+        {
+          "work_centre": "Dehradun (GEOPIC/KDMIPE)",
+          "headcount": 1890
+        },
+        {
+          "work_centre": "Ahmedabad",
+          "headcount": 1640
+        },
+        {
+          "work_centre": "Ankleshwar",
+          "headcount": 1520
+        },
+        {
+          "work_centre": "Vadodara",
+          "headcount": 1380
+        },
+        {
+          "work_centre": "Mehsana",
+          "headcount": 1290
+        },
+        {
+          "work_centre": "Rajahmundry",
+          "headcount": 1150
+        },
+        {
+          "work_centre": "Sivasagar",
+          "headcount": 1080
+        },
+        {
+          "work_centre": "Jorhat",
+          "headcount": 960
+        },
+        {
+          "work_centre": "Chennai",
+          "headcount": 840
+        },
+        {
+          "work_centre": "Kolkata",
+          "headcount": 710
+        },
+        {
+          "work_centre": "Karaikal",
+          "headcount": 620
+        },
+        {
+          "work_centre": "Agartala",
+          "headcount": 540
+        }
+      ]
+    },
+    "kpis": [
+      {
+        "label": "Total Headcount",
+        "value": 22890,
+        "unit": "Executives"
+      },
+      {
+        "label": "Work Centres",
+        "value": 14,
+        "unit": "Locations"
+      },
+      {
+        "label": "Largest Centre",
+        "value": "Mumbai",
+        "unit": "6,820 Execs"
+      }
+    ]
+  },
+  "insights_v2": [
+    {
+      "text": "Total FY26 executive strength reaches 22,890 across 14 major work centres.",
+      "kind": "headline",
+      "value": 22890,
+      "unit": "Executives"
+    },
+    {
+      "text": "Mumbai Western Offshore constitutes 29.8% of ONGC's total executive workforce with 6,820 executives.",
+      "kind": "outlier",
+      "value": 6820,
+      "unit": "Executives",
+      "ref": "Mumbai (Western Offshore)"
+    },
+    {
+      "text": "Assam assets (Sivasagar and Jorhat) together deploy 2,040 executives in active exploration blocks.",
+      "kind": "trend",
+      "value": 2040,
+      "unit": "Executives",
+      "ref": "Jorhat"
+    },
+    {
+      "text": "Mehsana and Ankleshwar face near-term rotational shortages in mechanical and electrical disciplines.",
+      "kind": "risk",
+      "ref": "Mehsana"
+    }
+  ],
+  "drilldowns": [
+    {
+      "label": "Mumbai offshore vs onshore",
+      "question": "Break down Mumbai headcount into offshore and onshore installations",
+      "spec_patch": {
+        "add_filters": [
+          {
+            "field": "wc_id",
+            "op": "=",
+            "value": "MUM"
+          }
+        ],
+        "dimensions": [
+          "facility_type"
+        ]
+      }
+    },
+    {
+      "label": "Delhi HQ disciplines",
+      "question": "Show discipline breakdown for Delhi Corporate HQ",
+      "spec_patch": {
+        "add_filters": [
+          {
+            "field": "wc_id",
+            "op": "=",
+            "value": "DEL"
+          }
+        ],
+        "dimensions": [
+          "discipline"
+        ],
+        "chart_kind": "hbar"
+      }
+    },
+    {
+      "label": "North-East assets grade mix",
+      "question": "Show grade distribution across Jorhat, Sivasagar, and Agartala",
+      "spec_patch": {
+        "add_filters": [
+          {
+            "field": "wc_id",
+            "op": "in",
+            "value": [
+              "JOR",
+              "SIV",
+              "AGA"
+            ]
+          }
+        ],
+        "dimensions": [
+          "grade"
+        ]
+      }
+    },
+    {
+      "label": "Compare Delhi and Mumbai",
+      "question": "Compare Delhi HQ and Mumbai headcount by grade",
+      "spec_patch": {
+        "add_filters": [
+          {
+            "field": "wc_id",
+            "op": "in",
+            "value": [
+              "DEL",
+              "MUM"
+            ]
+          }
+        ],
+        "dimensions": [
+          "grade",
+          "wc_id"
+        ],
+        "chart_kind": "grouped_bar"
+      }
+    }
+  ],
+  "context_chips": [
+    {
+      "label": "CMD",
+      "kind": "role"
+    },
+    {
+      "label": "FY26",
+      "kind": "period"
+    },
+    {
+      "label": "Work Centres",
+      "kind": "population"
+    }
+  ],
+  "query_spec": {
+    "version": 1,
+    "domain": "hr",
+    "metric": "headcount",
+    "aggregation": "count",
+    "dimensions": [
+      "wc_id"
+    ],
+    "period": {
+      "fy": "FY26"
+    }
+  },
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.ssot_workforce_employee"
+    }
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "word",
+    "pdf"
+  ]
+}
