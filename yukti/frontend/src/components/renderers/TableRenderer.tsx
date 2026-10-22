@@ -42,9 +42,31 @@ export const TableRenderer: React.FC<TableRendererProps> = ({ table, maxRows = 2
   const [sort, setSort] = useState<{ key: string; dir: 1 | -1 } | null>(null);
 
   const numericCols = useMemo(
-    () => new Set(columns.filter((c) => rows.filter((r) => toNumber(r[c]) !== null).length >= Math.max(1, rows.length * 0.8) && !/(^|_)(id|code)$/i.test(c))),
+    () =>
+      new Set(
+        columns.filter(
+          (c) =>
+            rows.filter((r) => toNumber(r[c]) !== null).length >= Math.max(1, rows.length * 0.8) &&
+            !/(^|_)(id|code|year|fy)$/i.test(c)
+        )
+      ),
     [columns, rows]
   );
+
+  const firstNumCol = useMemo(() => columns.find((c) => numericCols.has(c)), [columns, numericCols]);
+
+  const maxAbsVal = useMemo(() => {
+    if (!firstNumCol) return 0;
+    let max = 0;
+    for (const r of rows) {
+      const n = toNumber(r[firstNumCol]);
+      if (n !== null && !isNaN(n)) {
+        const abs = Math.abs(n);
+        if (abs > max) max = abs;
+      }
+    }
+    return max;
+  }, [firstNumCol, rows]);
 
   const sorted = useMemo(() => {
     if (!sort) return rows;
@@ -88,9 +110,22 @@ export const TableRenderer: React.FC<TableRendererProps> = ({ table, maxRows = 2
             <tr key={i}>
               {columns.map((c, ci) => {
                 const { text, numeric, negative } = cellText(c, r[c]);
+                const isFirstNum = c === firstNumCol;
+                const numVal = isFirstNum ? toNumber(r[c]) : null;
+                const barPct =
+                  isFirstNum && numVal !== null
+                    ? maxAbsVal > 0
+                      ? Math.min(100, Math.max(0, (Math.abs(numVal) / maxAbsVal) * 100))
+                      : 0
+                    : null;
                 return (
                   <td key={c} className={`${numeric ? 'num tabular-nums' : ''} ${negative ? 'neg' : ''} ${ci === 0 ? 'first' : ''}`}>
-                    {text}
+                    <span>{text}</span>
+                    {isFirstNum && barPct !== null && (
+                      <div className="bar-cell" aria-hidden="true">
+                        <div className="bar-fill" style={{ width: `${barPct}%` }} />
+                      </div>
+                    )}
                   </td>
                 );
               })}

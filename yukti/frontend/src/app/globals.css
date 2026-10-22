@@ -80,10 +80,12 @@
     background: var(--surface-2);
     color: var(--ink-2);
   }
+  .delta-chip[data-tone='good'],
   .delta-chip[data-tone='up'] {
     background: var(--positive-pale);
     color: var(--positive);
   }
+  .delta-chip[data-tone='bad'],
   .delta-chip[data-tone='down'] {
     background: var(--maroon-pale);
     color: var(--maroon);
@@ -112,6 +114,7 @@
     font-weight: 600;
     font-size: 0.78rem;
     letter-spacing: 0.01em;
+    text-transform: none;
     text-align: left;
     padding: 0.7rem 1rem;
     border-bottom: 1px solid var(--hairline);
@@ -141,6 +144,27 @@
   .data-table td.neg {
     color: var(--maroon);
     font-weight: 600;
+  }
+  .data-table .bar-cell {
+    display: block;
+    width: 6rem;
+    max-width: 6rem;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--track);
+    margin-top: 0.25rem;
+    margin-left: auto;
+    overflow: hidden;
+  }
+  .data-table .bar-cell .bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+  .data-table td.neg .bar-cell .bar-fill,
+  .data-table .bar-cell.neg .bar-fill {
+    background: var(--maroon);
   }
 
   .chip {
@@ -351,6 +375,11 @@
 .yk-aura-ring[data-aura='idle'] { --yk-aura-speed: 16s; }
 .yk-aura-ring[data-aura='listening'] { --yk-aura-speed: 6s; }
 .yk-aura-ring[data-aura='thinking'] { --yk-aura-speed: 2.8s; }
+/* fade: newest-answer glow dissolves gently instead of switching off */
+.yk-aura-ring::before,
+.yk-aura-ring::after { transition: opacity 1.4s ease; }
+.yk-aura-ring[data-aura='fade']::before,
+.yk-aura-ring[data-aura='fade']::after { opacity: 0; }
 .yk-aura-ring[data-aura='off']::before,
 .yk-aura-ring[data-aura='off']::after { display: none; }
 

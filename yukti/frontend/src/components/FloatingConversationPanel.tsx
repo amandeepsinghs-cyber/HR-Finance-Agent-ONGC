@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 import { SourceCitation } from '@/contracts/answerContract';
-import { Chip } from './ui/primitives';
+import { Chip, IconButton } from './ui/primitives';
 import { VoiceOrb, OrbState } from './VoiceOrb';
 import { VoiceAudioEngine } from '@/services/audioAnalyser';
 import { WsState } from '@/services/websocketClient';
@@ -170,7 +171,40 @@ export const FloatingConversationPanel: React.FC<Props> = ({
   const [micDevices, setMicDevices] = useState<{ deviceId: string; label: string }[]>([]);
   const [activeMicLabel, setActiveMicLabel] = useState<string>('');
   const threadRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
   const micLevel = useCallback(() => audioEngine?.getMicLevel() || 0, [audioEngine]);
+
+  const collapsed =
+    !isGreeting &&
+    panelMode === 'docked' &&
+    !hovered &&
+    !focused &&
+    orbState === 'idle' &&
+    !isMicActive &&
+    !input;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/') {
+        const target = e.target as HTMLElement | null;
+        const tag = target?.tagName?.toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || target?.isContentEditable) {
+          return;
+        }
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const expandBar = useCallback(() => {
+    setFocused(true);
+    inputRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     if (!audioEngine) return;
@@ -282,9 +316,15 @@ export const FloatingConversationPanel: React.FC<Props> = ({
         </div>
       )}
 
-      {/* Suggested follow-ups (U4.6): readable chips, wrap instead of truncating; hidden on the home screen */}
+      {/* Suggested follow-ups (U4.6): readable chips, wrap instead of truncating; hidden on the home screen or when collapsed */}
       {suggestions.length > 0 && !isGreeting && (
-        <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 px-2" data-testid="suggestions">
+        <div
+          className={clsx(
+            'pointer-events-auto flex flex-wrap items-center justify-center gap-2 px-2',
+            collapsed && 'hidden',
+          )}
+          data-testid="suggestions"
+        >
           {suggestions.slice(0, 3).map((s) => (
             <Chip key={s} size="sm" onClick={() => onSelectSuggestion(s)} title={s} className="bg-[var(--glass)] backdrop-blur-md max-w-full">
               <span className="whitespace-normal text-left">{s}</span>
@@ -297,120 +337,188 @@ export const FloatingConversationPanel: React.FC<Props> = ({
       {/* Ask bar with the AI aura ring (D-16): drift when idle, sweep while listening/speaking, fast while thinking */}
       <div
         data-testid="ask-bar"
-        data-aura={orbState === 'thinking' ? 'thinking' : orbState === 'listening' || orbState === 'speaking' ? 'listening' : 'idle'}
-        className="yk-aura-ring pointer-events-auto rounded-pill"
-      >
-      <form
-        onSubmit={send}
-        className="yk-aura-surface flex items-center gap-2.5 px-3 py-2 rounded-pill bg-[var(--card)] border border-[var(--hairline)] shadow-[var(--panel-shadow)]"
-      >
-        {/* Docked Mini Particle Orb (when visual is on screen) */}
-        {!isGreeting && (
-          <div className="shrink-0 -my-1">
-            <VoiceOrb
-              state={orbState}
-              isDark={isDark}
-              size={48}
-              onClick={onToggleMic}
-              audioEngine={audioEngine}
-              label={isMicActive ? 'Stop listening' : 'Start talking'}
-            />
-          </div>
+        data-collapsed={collapsed || undefined}
+        data-aura={collapsed ? 'idle' : orbState === 'thinking' ? 'thinking' : orbState === 'listening' || orbState === 'speaking' ? 'listening' : 'idle'}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onFocusCapture={() => setFocused(true)}
+        onBlurCapture={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            setFocused(false);
+          }
+        }}
+        className={clsx(
+          'yk-aura-ring pointer-events-auto rounded-pill self-center transition-[width] duration motion-reduce:transition-none',
+          collapsed ? 'w-[15rem] h-12' : 'w-full',
         )}
-
-        {/* Mic Button */}
-        <button
-          type="button"
-          onClick={onToggleMic}
-          data-testid="mic-button"
-          aria-pressed={isMicActive}
-          className={`shrink-0 h-[2.65rem] rounded-full flex items-center justify-center gap-2 transition-all font-medium text-[0.84rem] ${
-            isMicActive
-              ? 'px-3.5 bg-ongc-maroon text-white shadow-[0_6px_18px_-4px_rgb(var(--maroonRgb)/0.85)]'
-              : 'w-[2.65rem] bg-[var(--accent)] text-white hover:bg-[var(--accent-deep)] shadow-[0_4px_14px_-4px_rgb(var(--accentRgb)/0.75)]'
-          }`}
-          title={isMicActive ? 'Stop listening' : 'Talk to Yukti (or press Space)'}
+      >
+        <form
+          onSubmit={send}
+          onClick={collapsed ? expandBar : undefined}
+          className={clsx(
+            'yk-aura-surface rounded-pill bg-[var(--card)] border border-[var(--hairline)] shadow-[var(--panel-shadow)] flex items-center',
+            collapsed
+              ? 'h-12 px-2.5 justify-between cursor-pointer select-none'
+              : 'gap-2.5 px-3 py-2',
+          )}
         >
-          {isMicActive ? (
+          {/* Collapsed Aura Pill contents (U4.4) */}
+          {collapsed && (
             <>
-              <LevelMeter level={micLevel} active />
-              <Square className="w-3.5 h-3.5 fill-current" />
+              <div className="flex items-center gap-2 min-w-0">
+                <IconButton
+                  label="Talk to Yukti"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleMic();
+                  }}
+                  data-testid="mic-button"
+                  className="!w-8 !h-8 !rounded-full shrink-0 text-[var(--accent)] hover:text-[var(--accent-deep)] hover:bg-[var(--accent-pale)]"
+                >
+                  <Mic className="w-4 h-4" />
+                </IconButton>
+                <span className="text-label text-[var(--ink-2)] truncate">Ask Yukti</span>
+              </div>
+              <kbd className="px-1.5 py-0.5 text-caption text-[var(--ink-3)] border border-[var(--hairline)] rounded bg-[var(--surface)] font-mono shrink-0">
+                /
+              </kbd>
             </>
-          ) : (
-            <Mic className="w-[1.15rem] h-[1.15rem]" />
           )}
-        </button>
 
-        {/* Microphone Device Selector (shown when mic has enumerated devices) */}
-        {micDevices.length > 1 && (
-          <select
-            aria-label="Select Microphone"
-            value={micDevices.find((d) => d.label === activeMicLabel)?.deviceId || ''}
-            onChange={(e) => onSelectMicDevice?.(e.target.value)}
-            className="hidden sm:block text-[0.72rem] bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--hairline)] rounded-full px-2.5 py-1 max-w-[9.5rem] truncate focus:outline-none"
-            title={`Active microphone: ${activeMicLabel || 'Default'}`}
+          {/* Expanded contents */}
+          {!collapsed && (
+            <>
+              {/* Docked Mini Particle Orb (when visual is on screen) */}
+              {!isGreeting && (
+                <div className="shrink-0 -my-1">
+                  <VoiceOrb
+                    state={orbState}
+                    isDark={isDark}
+                    size={48}
+                    onClick={onToggleMic}
+                    audioEngine={audioEngine}
+                    label={isMicActive ? 'Stop listening' : 'Start talking'}
+                  />
+                </div>
+              )}
+
+              {/* Mic Button */}
+              <button
+                type="button"
+                onClick={onToggleMic}
+                data-testid="mic-button"
+                aria-pressed={isMicActive}
+                className={`shrink-0 h-[2.65rem] rounded-full flex items-center justify-center gap-2 transition-all font-medium text-[0.84rem] ${
+                  isMicActive
+                    ? 'px-3.5 bg-ongc-maroon text-white shadow-[0_6px_18px_-4px_rgb(var(--maroonRgb)/0.85)]'
+                    : 'w-[2.65rem] bg-[var(--accent)] text-white hover:bg-[var(--accent-deep)] shadow-[0_4px_14px_-4px_rgb(var(--accentRgb)/0.75)]'
+                }`}
+                title={isMicActive ? 'Stop listening' : 'Talk to Yukti (or press Space)'}
+              >
+                {isMicActive ? (
+                  <>
+                    <LevelMeter level={micLevel} active />
+                    <Square className="w-3.5 h-3.5 fill-current" />
+                  </>
+                ) : (
+                  <Mic className="w-[1.15rem] h-[1.15rem]" />
+                )}
+              </button>
+
+              {/* Microphone Device Selector (shown when mic has enumerated devices) */}
+              {micDevices.length > 1 && (
+                <select
+                  aria-label="Select Microphone"
+                  value={micDevices.find((d) => d.label === activeMicLabel)?.deviceId || ''}
+                  onChange={(e) => onSelectMicDevice?.(e.target.value)}
+                  className="hidden sm:block text-[0.72rem] bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--hairline)] rounded-full px-2.5 py-1 max-w-[9.5rem] truncate focus:outline-none"
+                  title={`Active microphone: ${activeMicLabel || 'Default'}`}
+                >
+                  {micDevices.map((d) => (
+                    <option key={d.deviceId} value={d.deviceId}>
+                      {d.label}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </>
+          )}
+
+          {/* Text Prompt Input (mounted in both states) */}
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' && !input) {
+                setHovered(false);
+                e.currentTarget.blur();
+              }
+            }}
+            placeholder={isMicActive ? (liveInterimText || 'Listening… speak naturally') : 'Ask Yukti anything about HR, Finance, policies, or draft a note…'}
+            data-testid="chat-input"
+            className={clsx(
+              collapsed
+                ? 'sr-only'
+                : 'flex-1 min-w-0 h-[2.65rem] px-3 rounded-full bg-transparent text-[0.95rem] placeholder:text-[var(--ink-3)] focus:outline-none',
+            )}
+          />
+
+          {!collapsed && (
+            <>
+              {/* Speaker / Voice Mute Toggle */}
+              <button
+                type="button"
+                onClick={onToggleMute}
+                className={`icon-btn !w-9 !h-9 rounded-full border border-[var(--hairline)] ${
+                  isMuted ? 'text-[var(--maroon)] bg-[var(--maroon-pale)]' : 'text-[var(--accent)] bg-[var(--surface)]'
+                }`}
+                title={isMuted ? 'Voice output muted — click to unmute' : 'Voice output active (Leda) — click to mute'}
+                aria-label="Toggle voice output"
+              >
+                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              </button>
+            </>
+          )}
+
+          {/* Transcript History Drawer Toggle */}
+          <button
+            type="button"
+            onClick={() => setThreadOpen((o) => !o)}
+            className={clsx(
+              collapsed
+                ? 'sr-only'
+                : 'icon-btn !w-9 !h-9 rounded-full border border-[var(--hairline)] relative',
+              !collapsed && (showHistoryDrawer ? 'bg-[var(--accent-pale)] text-[var(--accent-deep)]' : 'bg-[var(--surface)] text-[var(--ink-2)]'),
+            )}
+            title="Toggle conversation transcript"
+            aria-label="Toggle conversation transcript"
+            data-testid="panel-minimise"
           >
-            {micDevices.map((d) => (
-              <option key={d.deviceId} value={d.deviceId}>
-                {d.label}
-              </option>
-            ))}
-          </select>
-        )}
+            <MessageSquare className="w-4 h-4" />
+            {messages.length > 0 && !collapsed && (
+              <span className="absolute -top-1 -right-1 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-[var(--accent)] text-white text-[0.65rem] font-bold grid place-items-center">
+                {messages.length}
+              </span>
+            )}
+          </button>
 
-        {/* Text Prompt Input */}
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={isMicActive ? (liveInterimText || 'Listening… speak naturally') : 'Ask Yukti anything about HR, Finance, policies, or draft a note…'}
-          data-testid="chat-input"
-          className="flex-1 min-w-0 h-[2.65rem] px-3 rounded-full bg-transparent text-[0.95rem] placeholder:text-[var(--ink-3)] focus:outline-none"
-        />
-
-        {/* Speaker / Voice Mute Toggle */}
-        <button
-          type="button"
-          onClick={onToggleMute}
-          className={`icon-btn !w-9 !h-9 rounded-full border border-[var(--hairline)] ${
-            isMuted ? 'text-[var(--maroon)] bg-[var(--maroon-pale)]' : 'text-[var(--accent)] bg-[var(--surface)]'
-          }`}
-          title={isMuted ? 'Voice output muted — click to unmute' : 'Voice output active (Leda) — click to mute'}
-          aria-label="Toggle voice output"
-        >
-          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-        </button>
-
-        {/* Transcript History Drawer Toggle */}
-        <button
-          type="button"
-          onClick={() => setThreadOpen((o) => !o)}
-          className={`icon-btn !w-9 !h-9 rounded-full border border-[var(--hairline)] relative ${
-            showHistoryDrawer ? 'bg-[var(--accent-pale)] text-[var(--accent-deep)]' : 'bg-[var(--surface)] text-[var(--ink-2)]'
-          }`}
-          title="Toggle conversation transcript"
-          aria-label="Toggle conversation transcript"
-          data-testid="panel-minimise"
-        >
-          <MessageSquare className="w-4 h-4" />
-          {messages.length > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-[var(--accent)] text-white text-[0.65rem] font-bold grid place-items-center">
-              {messages.length}
-            </span>
-          )}
-        </button>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={!input.trim()}
-          data-testid="send-button"
-          aria-label="Send"
-          className="shrink-0 w-[2.65rem] h-[2.65rem] rounded-full grid place-items-center bg-[var(--ink)] text-[var(--canvas)] disabled:opacity-25 transition-opacity"
-        >
-          <ArrowUp className="w-4 h-4" />
-        </button>
-      </form>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={!input.trim()}
+            data-testid="send-button"
+            aria-label="Send"
+            className={clsx(
+              collapsed
+                ? 'sr-only'
+                : 'shrink-0 w-[2.65rem] h-[2.65rem] rounded-full grid place-items-center bg-[var(--ink)] text-[var(--canvas)] disabled:opacity-25 transition-opacity',
+            )}
+          >
+            <ArrowUp className="w-4 h-4" />
+          </button>
+        </form>
       </div>
     </div>
   );

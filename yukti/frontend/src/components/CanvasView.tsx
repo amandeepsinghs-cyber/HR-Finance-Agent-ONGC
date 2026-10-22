@@ -17,6 +17,7 @@ import { LevelMeter } from './TopBar';
 import { sourceLabel, ChatMessage } from './FloatingConversationPanel';
 import { planChart } from '@/charts/plan';
 import { cleanText, humanizeKey, toNumber } from '@/charts/format';
+import { ContextChips } from './ui/primitives';
 import { Download, ChevronRight, Database, Scale, FileText, Mic, Users, TrendingUp, Target, Check, Loader2, Volume2, BarChart3, PieChart, Activity, Table as TableIcon, SlidersHorizontal } from 'lucide-react';
 
 export interface HistoryItem {
@@ -86,6 +87,23 @@ const STARTERS: Record<string, Starter[]> = {
   ],
 };
 STARTERS.E3_FIN = STARTERS.E2_HR;
+
+const PRIMARY_KINDS: { id: ChartKind | 'table'; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: 'bar', label: 'Bar', icon: BarChart3 },
+  { id: 'hbar', label: 'H-Bar', icon: BarChart3 },
+  { id: 'donut', label: 'Donut', icon: PieChart },
+  { id: 'line', label: 'Line', icon: Activity },
+  { id: 'histogram', label: 'Histogram', icon: BarChart3 },
+  { id: 'table', label: 'Table', icon: TableIcon },
+];
+const MORE_KINDS: { id: ChartKind; label: string }[] = [
+  { id: 'pie', label: 'Pie' },
+  { id: 'area', label: 'Area' },
+  { id: 'scatter', label: 'Scatter' },
+  { id: 'treemap', label: 'Treemap' },
+  { id: 'waterfall', label: 'Waterfall' },
+];
+const ROLE_SHORT: Record<string, string> = { CMD: 'CMD', DIR_HR: 'Director HR', DIR_FIN: 'Director Finance', E2_HR: 'E2 · HR', E3_FIN: 'E3 · Finance' };
 
 const ADDRESS: Record<string, string> = { CMD: 'Chairman', DIR_HR: 'Director', DIR_FIN: 'Director', E2_HR: 'Pooja', E3_FIN: 'Rajesh' };
 
@@ -200,6 +218,14 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
 }) => {
   const [selectedSource, setSelectedSource] = useState<SourceCitation | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [freshGlow, setFreshGlow] = useState(false);
+  useEffect(() => {
+    if (!contract.turn_id || !contract.visual || contract.visual.type === 'none') return;
+    setFreshGlow(true);
+    const id = window.setTimeout(() => setFreshGlow(false), 4000);
+    return () => window.clearTimeout(id);
+  }, [contract.turn_id]); // eslint-disable-line react-hooks/exhaustive-deps
   const [exporting, setExporting] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
@@ -339,19 +365,24 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
   const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
 
-  const PLOT_SWITCHER_OPTIONS: { id: ChartKind | 'table'; label: string }[] = [
-    { id: 'bar', label: 'Bar' },
-    { id: 'hbar', label: 'H-Bar' },
-    { id: 'pie', label: 'Pie' },
-    { id: 'donut', label: 'Donut' },
-    { id: 'histogram', label: 'Histogram' },
-    { id: 'line', label: 'Line' },
-    { id: 'area', label: 'Area' },
-    { id: 'scatter', label: 'Scatter' },
-    { id: 'treemap', label: 'Treemap' },
-    { id: 'waterfall', label: 'Waterfall' },
-    { id: 'table', label: 'Table' },
-  ];
+  const pickKind = (id: ChartKind | 'table') => {
+    if (id === 'table') {
+      setOverrideMode('table');
+    } else {
+      setOverrideMode('chart');
+      setOverrideKind(id as ChartKind);
+    }
+  };
+
+  // Context chips (U4.2): role · subject · period · source, derived from the contract.
+  const titleText = cleanText(visual?.title || '');
+  const fyMatch = (titleText + ' ' + summaryBanner).match(/\bFY\s?\d{2}(?:-\d{2})?\b/i);
+  const subject = titleText.includes(':') ? titleText.split(':')[0].trim() : '';
+  const contextChips = [ROLE_SHORT[persona || contract.persona || 'CMD'] || 'CMD', subject, eyebrowFor(contract), fyMatch ? fyMatch[0].toUpperCase().replace(/\s/, '') : ''].filter(
+    (x, i, arr) => x && arr.indexOf(x) === i,
+  );
+  const firstSource = sources[0];
+  const sourceTag = firstSource ? (firstSource.kind === 'policy' ? 'Policy' : firstSource.kind === 'document' ? 'Document' : 'SSOT') : undefined;
 
   return (
     <div className="min-h-full flex flex-col px-[2.25rem] pt-[1.25rem] pb-[9.5rem] gap-[1.15rem] max-w-[104rem] mx-auto w-full" data-testid="canvas">
@@ -379,27 +410,28 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
             transition={{ duration: 0.32, ease: [0.2, 0.7, 0.2, 1] }}
             className="flex flex-col gap-[1.1rem]"
           >
-            {/* Header + Spoken Executive Takeaway Banner */}
-            <div className="flex flex-col gap-2">
+            {/* Header (U4.2): eyebrow, title, context chips, actions; quiet lead paragraph */}
+            <header className="flex flex-col gap-2.5">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <div className={`text-[0.8rem] font-semibold uppercase tracking-wider ${refused ? 'text-[var(--maroon)]' : 'text-[var(--accent-deep)] dark:text-[var(--accent-soft)]'}`}>
+                  <div className={`text-label uppercase tracking-[0.08em] ${refused ? 'text-[var(--maroon)]' : 'text-[var(--accent-deep)] dark:text-[var(--accent-soft)]'}`}>
                     {eyebrowFor(contract)}
                   </div>
-                  <h1 data-testid="canvas-title" className="mt-0.5 font-display text-[1.75rem] font-semibold tracking-[-0.02em] leading-[1.18] line-clamp-2">
+                  <h1 data-testid="canvas-title" className="mt-1 font-display text-headline text-[var(--ink)] line-clamp-2">
                     {cleanText(visual?.title || 'Answer')}
                   </h1>
+                  <ContextChips className="mt-2" items={contextChips} source={sourceTag} data-testid="context-chips" />
                 </div>
                 {exportOptions.length > 0 && !refused && (
                   <div className="relative shrink-0">
                     <button onClick={() => setExportOpen((o) => !o)} className="chip !py-2" aria-haspopup="menu" aria-expanded={exportOpen} data-testid="export-button">
-                      {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4 text-[var(--accent)]" />}
+                      {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" />}
                       Export
                     </button>
                     {exportOpen && (
-                      <div role="menu" className="absolute right-0 top-[calc(100%+0.4rem)] w-[13rem] rounded-[1rem] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-40">
+                      <div role="menu" className="absolute right-0 top-[calc(100%+0.4rem)] w-[13rem] rounded-[var(--radius-lg)] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-40">
                         {exportOptions.map((o) => (
-                          <button key={o} role="menuitem" onClick={() => handleExport(o)} className="w-full text-left px-3 py-2 rounded-[0.6rem] text-[0.86rem] hover:bg-[var(--surface)]">
+                          <button key={o} role="menuitem" onClick={() => handleExport(o)} className="w-full text-left px-3 py-2 rounded-[var(--radius-sm)] text-label hover:bg-[var(--surface)]">
                             {EXPORT_LABELS[o]}
                           </button>
                         ))}
@@ -409,68 +441,87 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
                 )}
               </div>
 
-              {/* Yukti Executive Summary Banner directly below the title */}
               {summaryBanner && !refused && (
-                <div className="flex items-start gap-3 px-4 py-3 rounded-[1rem] bg-[var(--surface)] border border-[var(--hairline)] text-[0.98rem] leading-[1.55]">
-                  <Volume2 className="w-4 h-4 mt-1 text-[var(--accent)] shrink-0" />
-                  <div className="text-[var(--ink)]">{summaryBanner}</div>
-                </div>
+                <p className="flex items-start gap-2.5 max-w-[72rem] text-body text-[var(--ink-2)]" data-testid="answer-lead">
+                  <Volume2 className="w-4 h-4 mt-[0.3rem] text-[var(--ink-3)] shrink-0" aria-hidden />
+                  <span>{summaryBanner}</span>
+                </p>
               )}
-            </div>
+            </header>
 
             {/* KPI hero numerals */}
             {kpis.length > 0 && effectiveVisualType !== 'kpi' && !refused && <KpiRenderer kpis={kpis} isDark={isDark} spark={spark} />}
 
-            {/* Plotly/Dash Interactive Chart Switcher & Metric Pivot Toolbar */}
+            {/* Chart switcher (U4.3): compact segmented control, top 6 + "More" */}
             {canSwitchVisual && (
-              <div
-                className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2 rounded-[0.95rem] bg-[var(--surface)] border border-[var(--hairline)]"
-                data-testid="chart-switcher-toolbar"
-              >
-                <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Plot type switcher">
-                  <span className="inline-flex items-center gap-1.5 text-[0.76rem] font-semibold uppercase tracking-wider text-[var(--ink-3)] mr-1.5">
-                    <BarChart3 className="w-3.5 h-3.5 text-[var(--accent)]" />
-                    Plot View
-                  </span>
-                  {PLOT_SWITCHER_OPTIONS.map((opt) => {
-                    const isActive = activeKindPill === opt.id;
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        data-testid={`plot-switch-${opt.id}`}
-                        onClick={() => {
-                          if (opt.id === 'table') {
-                            setOverrideMode('table');
-                          } else {
-                            setOverrideMode('chart');
-                            setOverrideKind(opt.id as ChartKind);
-                          }
-                        }}
-                        className={`px-2.5 py-1 rounded-full text-[0.78rem] font-medium transition-all ${
-                          isActive
-                            ? 'bg-[var(--accent)] text-white shadow-sm'
-                            : 'text-[var(--ink-2)] hover:text-[var(--ink)] hover:bg-[var(--card)]'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    );
-                  })}
+              <div className="flex flex-wrap items-center justify-between gap-3" data-testid="chart-switcher-toolbar">
+                <div className="flex items-center gap-2">
+                  <div role="radiogroup" aria-label="Plot type" className="inline-flex items-center gap-0.5 p-0.5 rounded-pill bg-[var(--surface)] border border-[var(--hairline)]">
+                    {PRIMARY_KINDS.map((opt) => {
+                      const isActive = activeKindPill === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          role="radio"
+                          aria-checked={isActive}
+                          data-testid={`plot-switch-${opt.id}`}
+                          onClick={() => pickKind(opt.id)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-pill text-label font-medium transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
+                            isActive ? 'bg-[var(--card)] text-[var(--ink)] shadow-[var(--card-shadow)]' : 'text-[var(--ink-2)] hover:text-[var(--ink)]'
+                          }`}
+                        >
+                          <opt.icon className="w-3.5 h-3.5" />
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setMoreOpen((o) => !o)}
+                      aria-haspopup="menu"
+                      aria-expanded={moreOpen}
+                      data-testid="plot-switch-more"
+                      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-pill text-label font-medium border border-[var(--hairline)] transition-colors ${
+                        MORE_KINDS.some((k) => k.id === activeKindPill) ? 'bg-[var(--accent-pale)] text-[var(--accent-deep)] dark:text-[var(--accent-soft)]' : 'text-[var(--ink-2)] hover:bg-[var(--surface)]'
+                      }`}
+                    >
+                      {MORE_KINDS.find((k) => k.id === activeKindPill)?.label || 'More'}
+                      <ChevronRight className={`w-3.5 h-3.5 transition-transform ${moreOpen ? '-rotate-90' : 'rotate-90'}`} />
+                    </button>
+                    {moreOpen && (
+                      <div role="menu" className="absolute left-0 top-[calc(100%+0.4rem)] w-[11rem] rounded-[var(--radius-lg)] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-40">
+                        {MORE_KINDS.map((opt) => (
+                          <button
+                            key={opt.id}
+                            role="menuitem"
+                            data-testid={`plot-switch-${opt.id}`}
+                            onClick={() => {
+                              pickKind(opt.id);
+                              setMoreOpen(false);
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-[var(--radius-sm)] text-label hover:bg-[var(--surface)] ${activeKindPill === opt.id ? 'font-semibold text-[var(--ink)]' : 'text-[var(--ink-2)]'}`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {activeDataset.numericCols.length > 1 && effectiveVisualType === 'chart' && (
-                  <div className="flex items-center gap-2 text-[0.78rem]">
-                    <span className="inline-flex items-center gap-1 text-[var(--ink-2)] font-medium">
-                      <SlidersHorizontal className="w-3.5 h-3.5 text-[var(--accent)]" />
-                      Metric:
-                    </span>
+                  <label className="flex items-center gap-2 text-label text-[var(--ink-2)]">
+                    <SlidersHorizontal className="w-3.5 h-3.5" aria-hidden />
+                    Metric
                     <select
                       aria-label="Select plot metric"
                       data-testid="plot-metric-select"
                       value={effectiveChartSpec?.value || activeDataset.numericCols[0]}
                       onChange={(e) => setOverrideMetric(e.target.value)}
-                      className="px-2.5 py-1 rounded-[0.55rem] bg-[var(--card)] border border-[var(--hairline)] text-[var(--ink)] font-medium focus:outline-none focus:border-[var(--accent)]"
+                      className="px-2.5 py-1 rounded-[var(--radius-sm)] bg-[var(--card)] border border-[var(--hairline)] text-[var(--ink)] font-medium focus:outline-none focus:border-[var(--accent)]"
                     >
                       {activeDataset.numericCols.map((col) => (
                         <option key={col} value={col}>
@@ -478,15 +529,17 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
                         </option>
                       ))}
                     </select>
-                  </div>
+                  </label>
                 )}
               </div>
             )}
 
             {/* Full-screen Visual + Key Takeaways */}
             <div className={`grid gap-[1.25rem] ${insights.length && !refused ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
+              {/* Newest-answer aura edge (U4.7): glows briefly when a fresh answer lands, then fades */}
+              <div data-aura={freshGlow ? 'listening' : 'fade'} className="yk-aura-ring rounded-card min-w-0">
               <section
-                className={`min-w-0 ${selfFramed ? '' : 'card p-[1.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
+                className={`yk-aura-surface min-w-0 ${selfFramed ? '' : 'card p-[1.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
                 data-testid="visual-card"
                 data-visual-type={effectiveVisualType}
               >
@@ -498,6 +551,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
                 {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} onViewAlternative={onNavigateToAlternative} />}
                 {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
               </section>
+              </div>
 
               {insights.length > 0 && !refused && (
                 <aside className="card p-[1.25rem] self-start" data-testid="insights">

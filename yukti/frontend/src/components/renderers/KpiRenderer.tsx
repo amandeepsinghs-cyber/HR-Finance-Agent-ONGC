@@ -13,14 +13,34 @@ interface KpiRendererProps {
   spark?: { values: number[]; kind: 'line' | 'bars'; highlight?: number };
 }
 
-type Tone = 'up' | 'down' | 'neutral';
+export type Tone = 'good' | 'bad' | 'neutral';
+export type Direction = 'up' | 'down' | 'neutral';
+export type Polarity = 'higher_is_better' | 'lower_is_better';
 
-function toneOf(kpi: KpiTile): Tone {
+export function polarityOf(kpi: KpiTile): Polarity {
+  const label = (kpi.label || '').toLowerCase();
+  if (/vacanc|attrition|lifting cost|cost per|opex|overtime|ltifr|incident|grievance|receivable|overdue|loss|debt|absent|separation|backlog|downtime|water cut/i.test(label)) {
+    return 'lower_is_better';
+  }
+  return 'higher_is_better';
+}
+
+export function directionOf(kpi: KpiTile): Direction {
   const d = (kpi.delta || '').toLowerCase();
   if (/^\s*[-−]/.test(kpi.delta || '') || /loss|negative|drop|decline|below|overdue|steepest/.test(d)) return 'down';
   if (/^\s*\+/.test(kpi.delta || '') || /profit|excellent|very good|met|growth|above|healthy/.test(d)) return 'up';
   if (typeof kpi.value === 'number' && kpi.value < 0) return 'down';
   return 'neutral';
+}
+
+export function toneOf(kpi: KpiTile): Tone {
+  const dir = directionOf(kpi);
+  if (dir === 'neutral') return 'neutral';
+  const pol = polarityOf(kpi);
+  if ((dir === 'up' && pol === 'higher_is_better') || (dir === 'down' && pol === 'lower_is_better')) {
+    return 'good';
+  }
+  return 'bad';
 }
 
 function formatKpiValue(kpi: KpiTile): { prefix: string; num: string; suffix: string } {
@@ -89,6 +109,7 @@ export const KpiRenderer: React.FC<KpiRendererProps> = ({ kpis, hero = false, sp
       style={{ gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${hero ? '16rem' : '13.5rem'}), 1fr))` }}
     >
       {tiles.map((kpi, idx) => {
+        const direction = directionOf(kpi);
         const tone = toneOf(kpi);
         const { prefix, num, suffix } = formatKpiValue(kpi);
         const delta = cleanText(kpi.delta || '');
@@ -107,7 +128,7 @@ export const KpiRenderer: React.FC<KpiRendererProps> = ({ kpis, hero = false, sp
                   data-testid="kpi-value"
                   className={`font-display font-semibold tabular-nums tracking-[-0.025em] leading-none ${
                     hero ? 'text-[3.4rem]' : 'text-[2.6rem]'
-                  } ${tone === 'down' && typeof kpi.value === 'number' && kpi.value < 0 ? 'text-[var(--maroon)]' : 'text-[var(--ink)]'}`}
+                  } ${typeof kpi.value === 'number' && kpi.value < 0 ? 'text-[var(--maroon)]' : 'text-[var(--ink)]'}`}
                 >
                   {prefix && <span className="text-[0.62em] align-[0.28em] mr-[0.04em] font-medium">{prefix}</span>}
                   {num}
@@ -118,8 +139,8 @@ export const KpiRenderer: React.FC<KpiRendererProps> = ({ kpis, hero = false, sp
             {delta && (
               <div className="mt-[0.7rem]">
                 <span className="delta-chip" data-tone={tone}>
-                  {tone === 'up' && <ArrowUpRight className="w-[0.9em] h-[0.9em]" />}
-                  {tone === 'down' && <ArrowDownRight className="w-[0.9em] h-[0.9em]" />}
+                  {direction === 'up' && <ArrowUpRight className="w-[0.9em] h-[0.9em]" />}
+                  {direction === 'down' && <ArrowDownRight className="w-[0.9em] h-[0.9em]" />}
                   <span className="truncate">{delta}</span>
                 </span>
               </div>
