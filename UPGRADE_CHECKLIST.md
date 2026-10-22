@@ -120,23 +120,23 @@
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
-| **B3.1** | `O→F` | Roster grain in compiler (name, emp_id, designation, grade, discipline, ONGC tenure, station tenure, exemption, retiring ≤ 3 yrs) | Delhi 5+ yrs roster matches a direct BigQuery count and sample | bq spot check | ⬜ | [packet](docs/delegation/packets/B3.1.md) | | | |
-| **B3.2** | `FL→O` | Resolve the designation field (`grade_designation` vs `current_designation`) | Field populated for ≥ 99% of rows | bq check | ⬜ | [packet](docs/delegation/packets/B3.2.md) | | | |
-| **B3.3** | `O` | `rbac_policy.yaml` (persona class × data class → allow/mask/aggregate/refuse) applied pre- and post-query | RBAC matrix test 100% | `pytest` | ⬜ | n/a | | | |
-| **B3.4** | `O` | Consistency rule: `access.status`, text and visual agree; small-cell suppression (< 5) for aggregates | E2_HR names query → aggregate/refusal, status consistent | Scripted test | ⬜ | n/a | | | |
-| **B3.5** | `O→F` | Row action: "Draft Transfer Note" from selected roster rows → document with those employees | Document lists the selected people correctly; exports | API + UI test | ⬜ | [packet](docs/delegation/packets/B3.5.md) | | | |
-| **B3.6** | `FL→O` | Gate-subset eval for B3 | Scorecard `yukti/backend/eval/gates/B3.md`; no regression vs the previous gate | Eval run log | ⬜ | [packet](docs/delegation/packets/B3.6.md) | | | |
+| **B3.1** | `O→F` | Roster grain in compiler (name, emp_id, designation, grade, discipline, ONGC tenure, station tenure, exemption, retiring ≤ 3 yrs) | Delhi 5+ yrs roster matches a direct BigQuery count and sample | bq spot check | ✅ (executed by O, not F) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/B3.md) | |
+| **B3.2** | `FL→O` | Resolve the designation field (`grade_designation` vs `current_designation`) | Field populated for ≥ 99% of rows | bq check | ✅ (executed by O, not FL; D-33) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/B3.md) | |
+| **B3.3** | `O` | `rbac_policy.yaml` (persona class × data class → allow/mask/aggregate/refuse) applied pre- and post-query | RBAC matrix test 100% | `pytest` | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B3.md) | |
+| **B3.4** | `O` | Consistency rule: `access.status`, text and visual agree; small-cell suppression (< 5) for aggregates | E2_HR names query → aggregate/refusal, status consistent | Scripted test | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B3.md) | |
+| **B3.5** | `O→F` | Row action: "Draft Transfer Note" from selected roster rows → document with those employees | Document lists the selected people correctly; exports | API + UI test | ✅ | [packet](docs/delegation/packets/B3.5.md) | ✅ | ✅ [review](docs/reviews/B3.md) | |
+| **B3.6** | `FL→O` | Gate-subset eval for B3 | Scorecard `yukti/backend/eval/gates/B3.md`; no regression vs the previous gate | Eval run log | ✅ (executed by O, not FL) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/B3.md) · [gate](yukti/backend/eval/gates/B3.md) | |
 
 ## Phase B4: Insight Engine (FEAT-011) · *gate: ≥ 2 grounded insights/answer; 0 invented numbers*
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
-| **B4.1** | `O→F` | Insight library (share, rank, delta vs last year, vs sanctioned/target, outliers, concentration, named exceptions, policy flags) | Unit tests per insight type | `pytest` | ⬜ | [packet](docs/delegation/packets/B4.1.md) | | | |
-| **B4.2** | `O` | Drill-down chip generator (names / by grade / compare / trend / draft) as spec patches | Chips executable; ≥ 2 per data answer | Scripted test | ⬜ | n/a | | | |
-| **B4.3** | `O` | Narrator limited to computed facts + numeric-grounding check | 0 ungrounded numbers on the gate subset; spoken answers 2–4 sentences (V8 §4) | Automated check | ⬜ | n/a | | | |
-| **B4.4** | `F` | Board note / transfer note drafting uses correct SSOT columns (fixes the zero values) | No zero placeholders where data exists | Document check | ⬜ | [packet](docs/delegation/packets/B4.4.md) | | | |
-| **B4.5** | `O→F` | **Finance flagship chain** (V4): loss-making / most profitable fields FY26 → by capex invested → under-invested vs reserves → vs MoU target → draft board note | Golden test passes end to end; ≥ 2 grounded insights per answer; Director (Finance) persona verified | Scripted API test + Playwright | ⬜ | [packet](docs/delegation/packets/B4.5.md) | | | |
-| **B4.6** | `FL→O` | Gate-subset eval for B4 | Scorecard `yukti/backend/eval/gates/B4.md`; no regression vs the previous gate | Eval run log | ⬜ | [packet](docs/delegation/packets/B4.6.md) | | | |
+| **B4.1** | `O→F` | Insight library (share, rank, delta vs last year, vs sanctioned/target, outliers, concentration, named exceptions, policy flags) | Unit tests per insight type | `pytest` | ✅ | [packet](docs/delegation/packets/B4.1.md) | ✅ | ✅ [review](docs/reviews/B4.md) | |
+| **B4.2** | `O` | Drill-down chip generator (names / by grade / compare / trend / draft) as spec patches | Chips executable; ≥ 2 per data answer | Scripted test | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B4.md) | |
+| **B4.3** | `O` | Narrator limited to computed facts + numeric-grounding check | 0 ungrounded numbers on the gate subset; spoken answers 2–4 sentences (V8 §4) | Automated check | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B4.md) | |
+| **B4.4** | `F` | Board note / transfer note drafting uses correct SSOT columns (fixes the zero values) | No zero placeholders where data exists | Document check | ✅ | [packet](docs/delegation/packets/B4.4.md) | ✅ | ✅ [review](docs/reviews/B4.md) | |
+| **B4.5** | `O→F` | **Finance flagship chain** (V4): loss-making / most profitable fields FY26 → by capex invested → under-invested vs reserves → vs MoU target → draft board note | Golden test passes end to end; ≥ 2 grounded insights per answer; Director (Finance) persona verified | Scripted API test + Playwright | ✅ (executed by O, not F) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/B4.md) | |
+| **B4.6** | `FL→O` | Gate-subset eval for B4 | Scorecard `yukti/backend/eval/gates/B4.md`; no regression vs the previous gate | Eval run log | ✅ (executed by O, not FL) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/B4.md) · [gate](yukti/backend/eval/gates/B4.md) | |
 
 ## Phase H1: Harden, Full Eval & Deploy (FEAT-012, FEAT-014) · *gate: eval targets met; Cloud Run verified*
 

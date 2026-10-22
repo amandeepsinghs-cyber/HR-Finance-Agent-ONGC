@@ -19,6 +19,11 @@ from app.brain.compiler import CompileError, get_compiler
 from app.brain.planner import Plan, get_planner
 from app.brain.presenter import build_visual, context_chips, localise_rows, narrate, scope_phrases, total_rows
 from app.brain.query_spec import QuerySpec, SpecPatch, apply_patch
+from app.brain.drilldowns import make_drilldowns
+from app.brain.insights import compute_insights
+from app.brain.narrator import allowed_numbers, compose_spoken
+from app.brain.rbac import decide, row_actions, suppress_small_cells, to_aggregate
+from app.brain.insight_context import build_insight_context, derived_numbers, previous_period_spec
 
 logger = logging.getLogger("yukti.brain.pipeline")
 
@@ -48,13 +53,27 @@ def _planner_allowed(query: str, persona: str) -> bool:
     return True
 
 
-# Junior personas (D-11, OD-5 option a). B2 keeps them on the governed legacy path; B3's policy
-# engine (app/brain/rbac.py) replaces this set with the rbac_policy.yaml persona classes.
-_SENIOR_PERSONAS = {"CMD", "DIR_HR", "DIR_FIN"}
+_COUNT_UNITS = {"employees", "posts", "workers", "incidents"}
+
+
+def _count_columns(compiled) -> List[str]:
+    """Value columns that hold counts of people/posts (semantic-model units), plus `_n`-gated others."""
+    from app.brain.semantic_model import get_semantic_model
+    sm = get_semantic_model()
+    out = []
+    for c in compiled.value_columns:
+        m = sm.metrics.get(c)
+        if m is not None and m.unit in _COUNT_UNITS and m.aggregation in ("count", "sum"):
+            out.append(c)
+        elif m is None and compiled.unit in _COUNT_UNITS and not c.endswith("_pct"):
+            out.append(c)  # template / as-of columns (hc_start, hc_end, headcount_change, headcount)
+    return out  # other measures (averages, ratios) are suppressed only through the `_n` cell count
 
 
 def _is_junior(persona: str) -> bool:
-    return persona not in _SENIOR_PERSONAS  # unknown personas are treated as junior
+    """Persona class from rbac_policy.yaml (B3); unknown personas are junior."""
+    from app.brain.rbac import persona_class
+    return persona_class(persona) == "junior"
 
 
 def _title(spec: QuerySpec, compiled) -> str:
@@ -79,8 +98,9 @@ async def run_planner_turn(
     base_spec: Optional[QuerySpec] = None,
 ) -> Optional[Dict[str, Any]]:
     """Returns a contract (dict) or None to fall back to the legacy path."""
-    # RBAC first, for every input incl. client-sent spec patches (G4 B2 F-1).
-    if _is_junior(persona) and os.getenv("YUKTI_PLANNER_JUNIOR", "0") != "1":
+    # B3: junior personas use the planner under the RBAC policy engine (pre-query decision on the
+    # compiled spec, post-query masking). YUKTI_PLANNER_JUNIOR=0 restores the B2 behaviour.
+    if _is_junior(persona) and os.getenv("YUKTI_PLANNER_JUNIOR", "1") != "1":
         return None
     if patch_override is None and not _planner_allowed(query, persona):
         return None
@@ -119,8 +139,20 @@ async def run_planner_turn(
 
     spec = plan.spec
     compiler = get_compiler()
+    policy = None
     try:
         compiled = compiler.compile(spec)
+        # B3.3 pre-query policy on the compiled spec (data classes of metric + roster columns) and
+        # on the question's topic (pay / APAR / vigilance ...).
+        policy = decide(persona, compiled.data_classes, query)
+        if policy.action == "refuse":
+            return {"contract": _refusal_contract(policy, spec, persona, turn_id, language, t0), "meta": {"spec": None}}
+        if policy.action == "aggregate":
+            spec = to_aggregate(spec)
+            compiled = compiler.compile(spec)
+            status.append("RBAC: names restricted for this role; answering with aggregate counts (D-11)")
+        if _is_junior(persona) and compiled.grain == "aggregate":
+            compiled = compiler.compile(spec, cell_count=True)  # per-cell population for suppression
         result = await compiler.execute(compiled)
     except CompileError as e:
         logger.info(f"planner compile fallback: {e}")
@@ -136,13 +168,36 @@ async def run_planner_turn(
         return None
     n_total = total_rows(result)
     columns, rows, code_maps = localise_rows(compiled, result)
+    junior = _is_junior(persona)
+    suppressed = 0
+    if junior and compiled.grain == "aggregate":
+        # Count columns come from the semantic model (unit + aggregation), not from column names
+        # (G4 B3 B-1); averages/ratios are suppressed when their cell holds < 5 people (`_n`).
+        rows, suppressed = suppress_small_cells(rows, _count_columns(compiled), by_name=False)
+        if columns and "_n" in columns:
+            rows, n_cells = suppress_small_cells(rows, list(compiled.value_columns), cell_count_col="_n",
+                                                 value_check=False)
+            suppressed += n_cells
+        columns = [c for c in columns if c != "_n"]
+        if any(c == "_n" for c in compiled.value_columns):
+            compiled.value_columns = [c for c in compiled.value_columns if c != "_n"]
     mode = "replace"
     if plan.is_followup:
         mode = "compare" if spec.is_compare() else "refine"
     title = _title(spec, compiled)
     subtitle = " · ".join(scope_phrases(spec, compiled))
     visual = build_visual(spec, compiled, columns, rows, plan.chart_kind, title, subtitle, mode, n_total)
-    spoken = narrate(spec, compiled, columns, rows, n_total)
+    headline = narrate(spec, compiled, columns, rows, n_total)
+    # B4: deterministic insights (+ previous-FY comparison where the subject has fiscal years),
+    # drill-down chips, and a narrator limited to computed facts with a numeric-grounding check.
+    prev_rows = await _previous_period_rows(spec, compiled, compiler)
+    insights = compute_insights(build_insight_context(spec, compiled, rows, n_total, prev_rows,
+                                                      scope_phrases(spec, compiled)))
+    allowed = allowed_numbers(rows, insights, spec, extra=derived_numbers(compiled, rows, n_total))
+    told = compose_spoken(headline, insights, allowed)
+    spoken = told["text"]
+    if told["ungrounded"]:
+        status.append(f"Narrator: ungrounded numbers removed {told['ungrounded']}")
     notes = list(compiled.notes) + [f"Not applied: {d}" for d in compiled.dropped]
 
     contract: Dict[str, Any] = {
@@ -152,7 +207,9 @@ async def run_planner_turn(
         "spoken_summary": spoken,
         "display_text": spoken[:590],
         "visual": visual,
-        "insights": [s for s in spoken.split(". ") if s and "on screen" not in s][:3] or [spoken[:200]],
+        "insights": [i.text for i in insights][:4] or [s for s in headline.split(". ") if s and "on screen" not in s][:3],
+        "insights_v2": [i.to_contract() for i in insights][:6],
+        "drilldowns": make_drilldowns(spec, persona, compiled.grain),
         "sources": [{"kind": "data", "object": ", ".join(compiled.tables), "sql": compiled.sql}],
         "suggestions": [],
         "access": {"status": "allowed"},
@@ -167,11 +224,73 @@ async def run_planner_turn(
     }
     if notes:
         contract["caveat"] = "; ".join(notes)[:300]
+    # B3.4 consistency: access status, text and visual agree.
+    tbl = visual.get("table")
+    if policy is not None and policy.action == "aggregate":
+        contract["access"] = {"status": "partial", "reason": policy.reason or "Names restricted for this role",
+                              "rule_ref": policy.rule_ref or "D-11"}
+        if isinstance(tbl, dict):
+            tbl["masking"] = {"level": "aggregate", "masked_columns": ["name", "emp_id"],
+                              "reason": policy.reason or "Names restricted for this role", "rule_ref": "D-11"}
+        lead = "Names are restricted for your role, so here are the counts instead. "
+        contract["spoken_summary"] = lead + contract["spoken_summary"]
+        contract["display_text"] = contract["spoken_summary"][:590]
+    elif isinstance(tbl, dict):
+        tbl["masking"] = {"level": "none"}
+    if suppressed and isinstance(tbl, dict):
+        tbl.setdefault("masking", {"level": "aggregate"})
+        tbl["masking"]["level"] = "aggregate"
+        tbl["masking"]["reason"] = f"{suppressed} cell(s) below 5 shown as <5 (D-11 small-cell rule)"
+        tbl["masking"]["rule_ref"] = "D-11"
+        if contract["access"]["status"] == "allowed":
+            contract["access"] = {"status": "partial", "reason": tbl["masking"]["reason"], "rule_ref": "D-11"}
+        note = "Groups under 5 people are shown as <5 and left out of totals (D-11)."
+        contract["caveat"] = (contract.get("caveat", "") + "; " if contract.get("caveat") else "") + note
+        if note not in contract["spoken_summary"]:
+            contract["spoken_summary"] = contract["spoken_summary"].rstrip() + " Groups under 5 people are shown as <5."
+            contract["display_text"] = contract["spoken_summary"][:590]
+    if compiled.grain == "row" and isinstance(tbl, dict):
+        actions = row_actions(persona, compiled.subject)
+        if actions:
+            tbl["row_actions"] = actions
 
     # B3/B4 hooks (RBAC masking, insights, drill-downs) are applied by the caller via `postprocess`.
     meta = {"compiled": compiled, "result": result, "columns": columns, "rows": rows, "code_maps": code_maps,
             "plan": plan, "spec": spec}
     return {"contract": contract, "meta": meta}
+
+
+async def _previous_period_rows(spec: QuerySpec, compiled, compiler) -> Optional[List[Dict[str, Any]]]:
+    """Same question one FY earlier (delta vs last year insight); None when not applicable or on error."""
+    prev_spec = previous_period_spec(spec, compiled)
+    if prev_spec is None:
+        return None
+    try:
+        cq = compiler.compile(prev_spec)
+        res = await compiler.execute(cq)
+        _, rows, _ = localise_rows(cq, res)
+        return rows
+    except Exception as e:
+        logger.info(f"previous-period insight skipped: {e}")
+        return None
+
+
+def _refusal_contract(policy, spec: QuerySpec, persona: str, turn_id: str, language: str, t0: float) -> Dict[str, Any]:
+    """Refusal card for a planner question the policy refuses (D-11); never ships granular data."""
+    reason = policy.reason or "This information is confidential for your role."
+    spoken = f"I can't share that for your role. {reason} I can show aggregate workforce counts instead."
+    return {
+        "turn_id": turn_id, "language": language, "persona": persona,
+        "spoken_summary": spoken, "display_text": spoken[:590],
+        "visual": {"type": "refusal", "mode": "replace", "title": "Access restricted",
+                   "table": {"columns": [], "rows": [],
+                             "masking": {"level": "refused", "reason": reason, "rule_ref": "D-11"}}},
+        "insights": [reason], "sources": [{"kind": "policy", "title": policy.rule_ref or "D-11"}],
+        "suggestions": [], "access": {"status": "refused", "reason": reason, "rule_ref": policy.rule_ref or "D-11"},
+        "export_options": ["pdf"], "status_events": [f"RBAC: refused ({policy.trigger}) for {policy.persona_class}"],
+        "latency_ms": round((time.perf_counter() - t0) * 1000, 2), "contract_version": 2,
+        "query_spec": spec.to_contract(),
+    }
 
 
 def _replot(plan: Plan, prev: QuerySpec, session_state: Any, persona: str, turn_id: str, language: str,
@@ -191,10 +310,14 @@ def _replot(plan: Plan, prev: QuerySpec, session_state: Any, persona: str, turn_
         last["chart"] = build_chart_spec(kind=kind, columns=cols, rows=rows, title=last.get("title"))
     last["mode"] = "refine"
     spoken = f"Here is the same data as a {kind.replace('_', ' ')}."
+    from app.brain.insight_context import table_insights
+    rep_ins = table_insights(cols, rows)
     contract = {
         "turn_id": turn_id, "language": language, "persona": persona,
         "spoken_summary": spoken, "display_text": spoken, "visual": last,
-        "insights": [f"Re-plotted as {kind}"],
+        "insights": [i.text for i in rep_ins][:4] or [f"Re-plotted as {kind}"],
+        "insights_v2": [i.to_contract() for i in rep_ins][:6],
+        "drilldowns": make_drilldowns(prev, persona, prev.grain),
         "sources": [{"kind": "data", "object": "session", "sql": session_state.last_sql or ""}],
         "suggestions": [], "access": {"status": "allowed"}, "export_options": ["sheets", "xlsx", "pdf"],
         "status_events": ["Re-plotted current data (no new query)"],

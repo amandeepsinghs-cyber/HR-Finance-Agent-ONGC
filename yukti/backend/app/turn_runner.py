@@ -124,6 +124,52 @@ class AgentTurnRunner:
         spec_patch: Optional[Dict[str, Any]] = None,
         base_spec: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
+        """Runs a turn, then applies the post-query RBAC guard to the contract (B3.4).
+
+        `enforce_contract` runs on EVERY path (planner, fast paths, legacy LLM): a junior persona
+        never receives named / pay / APAR columns, small cells are suppressed, and access.status,
+        text and visual agree (consistency rule, FEAT-010).
+        """
+        contract = await self._execute_turn_inner(
+            query=query, session_id=session_id, persona=persona, language=language,
+            voice_override=voice_override, history=history, ui_context=ui_context,
+            spec_patch=spec_patch, base_spec=base_spec,
+        )
+        from app.brain.rbac import enforce_contract, persona_class
+        # The more restrictive of the request persona and the contract persona (G4 B3 I-2).
+        req_persona = normalize_persona(persona)
+        persona_eff = req_persona if persona_class(req_persona) == "junior" else (contract.get("persona") or req_persona)
+        contract = enforce_contract(contract, persona_eff)
+        if persona_class(persona_eff) == "junior" or (contract.get("access") or {}).get("status") != "allowed":
+            self._sync_session_after_enforce(session_id, contract)
+        # B4: legacy-path data answers also carry deterministic insights (computed from the table
+        # actually shown, after RBAC masking) so every data answer has insights_v2.
+        vis = contract.get("visual") or {}
+        tbl = vis.get("table") or {}
+        if (not contract.get("insights_v2") and vis.get("type") in ("chart", "table", "kpi")
+                and contract.get("access", {}).get("status") != "refused" and tbl.get("rows")):
+            try:
+                from app.brain.insight_context import table_insights
+                ins = table_insights(tbl.get("columns") or [], tbl.get("rows") or [])
+                if ins:
+                    contract["insights_v2"] = [i.to_contract() for i in ins][:6]
+            except Exception as e_ins:
+                logger.info(f"legacy insights skipped: {e_ins}")
+        self.validator.validate(contract)
+        return contract
+
+    async def _execute_turn_inner(
+        self,
+        query: str,
+        session_id: str,
+        persona: str = "CMD",
+        language: str = "en",
+        voice_override: Optional[str] = None,
+        history: Optional[List[Dict[str, Any]]] = None,
+        ui_context: Optional[Dict[str, Any]] = None,
+        spec_patch: Optional[Dict[str, Any]] = None,
+        base_spec: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """Runs a live agent turn through ADK with Gemini model.
 
         `spec_patch` / `base_spec` (contract v2) let a drill-down chip refine a specific card's
@@ -372,6 +418,23 @@ class AgentTurnRunner:
         # planner cannot answer (policy, what-if, documents, unknown metric) continues on the
         # legacy path unchanged. Flag off = baseline behaviour.
         planner_on = planner_enabled()
+        # B3.5: transfer note from the selected roster rows (row action: spec_patch add_filters
+        # emp_id|emp_name in [...] or ui_context) or the roster on screen. Runs before the planner so a
+        # row-action patch is never interpreted as a query refinement.
+        if planner_on:
+            from app.brain.documents import is_transfer_note_request, transfer_note_contract
+            if is_transfer_note_request(query):
+                try:
+                    tn = await transfer_note_contract(query, session_state, norm_persona, turn_id, det_lang, t0,
+                                                      ui_context=ui_context, spec_patch=spec_patch)
+                except Exception as e_tn:
+                    logger.exception(f"Transfer note drafting failed; falling back: {e_tn}")
+                    tn = None
+                if tn is not None:
+                    self.validator.validate(tn)
+                    session_state.record_turn(tn, user_query=query)
+                    return tn
+
         if planner_on:
             patch_obj, base_obj = None, None
             if spec_patch:
@@ -1538,6 +1601,25 @@ class AgentTurnRunner:
         session_state.record_turn(contract, user_query=query)
         return contract
 
+    def _sync_session_after_enforce(self, session_id: str, contract: Dict[str, Any]) -> None:
+        """Session memory keeps the ENFORCED contract (masked rows/text), so later turns (drafts,
+        re-plots) can never resurface data the persona may not see (G4 B3 B-3)."""
+        st = self.session_manager.sessions.get(session_id)
+        if not st or not st.turns:
+            return
+        last = st.turns[-1]
+        for k in ("spoken_summary", "display_text", "visual", "insights", "access", "caveat"):
+            if k in contract:
+                last[k] = contract[k]
+            else:
+                last.pop(k, None)
+        vis = contract.get("visual") or {}
+        if st.visual_history:
+            st.visual_history[-1] = vis
+        tbl = vis.get("table") or {}
+        st.last_rows = list(tbl.get("rows") or [])[:2000]
+        st.last_columns = list(tbl.get("columns") or [])
+
     def _finalize_planner_contract(self, planned: Dict[str, Any], session_state: Any, query: str, t0: float) -> Dict[str, Any]:
         """Validates a planner contract and stores the spec for follow-up patches (B2.5)."""
         contract = planned["contract"]
@@ -1548,7 +1630,9 @@ class AgentTurnRunner:
         session_state.record_turn(contract, user_query=query, all_rows=rows)
         if meta.get("spec") is not None:
             session_state.spec_history.append(meta["spec"].to_contract())
-            session_state.spec_history[:] = session_state.spec_history[-20:]
+        else:
+            session_state.spec_history.append({})  # refusal: the next follow-up must not patch an older spec
+        session_state.spec_history[:] = session_state.spec_history[-20:]
         return contract
 
     @staticmethod

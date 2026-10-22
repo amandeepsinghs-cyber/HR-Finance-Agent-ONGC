@@ -34,6 +34,8 @@ from app.semantic.normalize import (
 logger = logging.getLogger("yukti.brain.compiler")
 
 ROW_LIMIT_DEFAULT = 2000
+# Subjects with one row per person: COUNT(*) per group is the number of people in the cell.
+CELL_COUNT_SUBJECTS = {"workforce", "separations"}
 # Work-centre attributes (entities.json) usable as filters on any subject keyed by wc/asset.
 WC_ATTRIBUTE_FIELDS = {"sector": "sector", "state": "state", "hard_station_cat": "hard_station_cat",
                        "onshore_offshore": "onshore_offshore", "wc_type": "type", "city": "city"}
@@ -200,7 +202,9 @@ class Compiler:
         return out
 
     # ------------------------------------------------------------ compile
-    def compile(self, spec: QuerySpec) -> CompiledQuery:
+    def compile(self, spec: QuerySpec, cell_count: bool = False) -> CompiledQuery:
+        """`cell_count=True` adds `COUNT(*) AS _n` per group on employee-grain subjects, so junior
+        aggregates of averages/ratios can be suppressed when a cell holds < 5 people (D-11)."""
         subject, metric, template = self.model.resolve_metric(spec.metric)
         if template:
             return self._compile_template(template, spec)
@@ -324,6 +328,8 @@ class Compiler:
         for mn in metrics:
             select.append(f"{subject.metrics[mn].expr} AS {mn}")
             data_classes.add(subject.metrics[mn].data_class)
+        if cell_count and subject.name in CELL_COUNT_SUBJECTS:
+            select.append("COUNT(*) AS _n")
         sql = f"SELECT {', '.join(select)} FROM {_q(table)}"
         if where:
             sql += f" WHERE {' AND '.join(where)}"
