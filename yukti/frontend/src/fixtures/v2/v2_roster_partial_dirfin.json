@@ -1,0 +1,655 @@
+{
+  "turn_id": "turn_v2_roster_partial_dirfin",
+  "language": "en",
+  "persona": "DIR_FIN",
+  "spoken_summary": "Displaying the Delhi HQ executive roster for Finance review with employee identifiers and exact station tenures masked under data governance rule RBAC-HR-02. The first sixty records of the four hundred nineteen eligible executives are shown. Grade, discipline, and station location remain fully visible for financial planning.",
+  "display_text": "Delhi HQ executive roster (5+ years continuous stay) under DIR_FIN persona [1]. In compliance with RBAC-HR-02, personal identifiers (emp_id, posted_since) and exact tenure years are masked. Showing first 60 of 419 matching records.",
+  "contract_version": 2,
+  "visual": {
+    "type": "table",
+    "mode": "replace",
+    "title": "Delhi HQ: executives with 5+ years stay (Finance View)",
+    "table": {
+      "columns": [
+        "emp_name",
+        "emp_id",
+        "grade",
+        "discipline",
+        "work_centre",
+        "continuous_stay_years",
+        "posted_since"
+      ],
+      "rows": [
+        {
+          "emp_name": "Harish Singh",
+          "emp_id": "••••",
+          "grade": "E9",
+          "discipline": "Drilling",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Vivek Singh",
+          "emp_id": "••••",
+          "grade": "E9",
+          "discipline": "Finance & Accounts",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Rakesh Sharma",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "Civil",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Naresh Sharma",
+          "emp_id": "••••",
+          "grade": "E9",
+          "discipline": "Civil",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Vandana Patel",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Chemistry",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Smita Patel",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "IT",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Ashok Singh",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "IT",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Kishore Verma",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "HR",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Seema Verma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Geology",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Suresh Patel",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "Electrical",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Sunita Sharma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Geophysics",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Arun Singh",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Materials Management",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Seema Patel",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Finance & Accounts",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Gaurav Singh",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "Reservoir",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Abhay Sharma",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "IT",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Pratibha Patel",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Chemistry",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Gaurav Verma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Drilling",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Vijay Sharma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Mechanical",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Manoj Gupta",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "Geophysics",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Rakesh Verma",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "Drilling",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Shobha Verma",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "Materials Management",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Rajesh Verma",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "Geology",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Kishore Singh",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Materials Management",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Priya Patel",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "Mechanical",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Alok Singh",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Electrical",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Vijay Verma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Electrical",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Neha Singh",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Geology",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Swati Sharma",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Civil",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Radhika Patel",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Geophysics",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Radhika Verma",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Chemistry",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Dinesh Verma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Civil",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Aarti Verma",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "Finance & Accounts",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Manoj Verma",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Chemistry",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Rashmi Patel",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "HR",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Asha Verma",
+          "emp_id": "••••",
+          "grade": "E8",
+          "discipline": "Production",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Divya Singh",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "HR",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Abhay Patel",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Mechanical",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Vinod Singh",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Electrical",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Geeta Singh",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Finance & Accounts",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Shweta Singh",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Drilling",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Nitin Sharma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Geophysics",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Brijesh Verma",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Drilling",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Maya Sharma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Production",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Rekha Sharma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Reservoir",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Shilpa Sharma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Production",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Kiran Sharma",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Materials Management",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Seema Sharma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "IT",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Sandeep Verma",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Production",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Kavita Gupta",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Mechanical",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Mahesh Sharma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Civil",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Rekha Verma",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Mechanical",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Brijesh Singh",
+          "emp_id": "••••",
+          "grade": "E7",
+          "discipline": "Finance & Accounts",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Pramod Verma",
+          "emp_id": "••••",
+          "grade": "E5",
+          "discipline": "Geophysics",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Pankaj Patel",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Finance & Accounts",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Swati Patel",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "HR",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Manju Patel",
+          "emp_id": "••••",
+          "grade": "E5",
+          "discipline": "Civil",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Usha Patel",
+          "emp_id": "••••",
+          "grade": "E5",
+          "discipline": "Geophysics",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Ranjana Sharma",
+          "emp_id": "••••",
+          "grade": "E5",
+          "discipline": "Geology",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Rajiv Singh",
+          "emp_id": "••••",
+          "grade": "E6",
+          "discipline": "Finance & Accounts",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        },
+        {
+          "emp_name": "Vinay Singh",
+          "emp_id": "••••",
+          "grade": "E5",
+          "discipline": "Production",
+          "work_centre": "Delhi (Corporate HQ)",
+          "continuous_stay_years": "••••",
+          "posted_since": "••••"
+        }
+      ],
+      "total_rows": 419,
+      "masking": {
+        "level": "partial",
+        "masked_columns": [
+          "emp_id",
+          "posted_since",
+          "continuous_stay_years"
+        ],
+        "reason": "Personal identifiers and exact tenures are limited to HR and the CMD.",
+        "rule_ref": "RBAC-HR-02"
+      }
+    },
+    "kpis": [
+      {
+        "label": "Total Delhi 5+ Yr",
+        "value": 419,
+        "unit": "Officers"
+      },
+      {
+        "label": "Sample Displayed",
+        "value": 60,
+        "unit": "Rows"
+      }
+    ]
+  },
+  "insights_v2": [
+    {
+      "text": "Employee identifiers and exact tenure years are redacted under RBAC-HR-02 for non-HR leadership roles.",
+      "kind": "note"
+    }
+  ],
+  "context_chips": [
+    {
+      "label": "DIR_FIN",
+      "kind": "role"
+    },
+    {
+      "label": "Delhi HQ",
+      "kind": "subject"
+    },
+    {
+      "label": "Partial Access",
+      "kind": "filter"
+    }
+  ],
+  "query_spec": {
+    "version": 1,
+    "domain": "hr",
+    "metric": "headcount",
+    "aggregation": "count",
+    "grain": "row",
+    "filters": [
+      {
+        "field": "wc_id",
+        "op": "=",
+        "value": "DEL"
+      },
+      {
+        "field": "continuous_stay_years",
+        "op": ">=",
+        "value": 5
+      },
+      {
+        "field": "employment_status",
+        "op": "=",
+        "value": "Active"
+      }
+    ],
+    "sort": {
+      "by": "continuous_stay_years",
+      "dir": "desc"
+    },
+    "limit": 60
+  },
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.ssot_workforce_employee"
+    }
+  ],
+  "access": {
+    "status": "partial",
+    "reason": "Personal identifiers and exact tenures are limited to HR and the CMD.",
+    "rule_ref": "RBAC-HR-02"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "word",
+    "pdf"
+  ]
+}

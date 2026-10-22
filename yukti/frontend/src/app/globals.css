@@ -75,7 +75,7 @@
     max-width: 100%;
     padding: 0.2rem 0.6rem;
     border-radius: 999px;
-    font-size: 0.78rem;
+    font-size: 0.875rem; /* U2.7: ≥ 14 px at 1440p */
     font-weight: 500;
     background: var(--surface-2);
     color: var(--ink-2);
@@ -180,7 +180,7 @@
     border: 1px solid var(--hairline);
     background: var(--card);
     color: var(--ink);
-    font-size: 0.85rem;
+    font-size: 0.875rem; /* U2.7: ≥ 14 px at 1440p */
     font-weight: 500;
     transition: background 0.2s, border-color 0.2s, color 0.2s;
   }

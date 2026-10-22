@@ -1,0 +1,136 @@
+{
+  "turn_id": "turn_v2_roster_aggregate_e2",
+  "language": "en",
+  "persona": "E2_HR",
+  "spoken_summary": "Aggregated Delhi HQ executive counts by grade for officers with five or more years of continuous stay. In accordance with rule RBAC-HR-01, individual roster rows are restricted and summary totals are presented. Across all grades, four hundred nineteen executives meet the criteria.",
+  "display_text": "Aggregated grade breakdown for 419 Delhi HQ executives with 5+ years continuous stay [1]. Individual personnel records are restricted under RBAC-HR-01; aggregate grade counts displayed.",
+  "contract_version": 2,
+  "visual": {
+    "type": "table",
+    "mode": "replace",
+    "title": "Delhi HQ: 5+ years stay by grade (Aggregate Summary)",
+    "table": {
+      "columns": [
+        "grade",
+        "executives"
+      ],
+      "rows": [
+        {
+          "grade": "E1",
+          "executives": 35
+        },
+        {
+          "grade": "E2",
+          "executives": 90
+        },
+        {
+          "grade": "E3",
+          "executives": 87
+        },
+        {
+          "grade": "E4",
+          "executives": 67
+        },
+        {
+          "grade": "E5",
+          "executives": 57
+        },
+        {
+          "grade": "E6",
+          "executives": 35
+        },
+        {
+          "grade": "E7",
+          "executives": 33
+        },
+        {
+          "grade": "E8",
+          "executives": 12
+        },
+        {
+          "grade": "E9",
+          "executives": 3
+        }
+      ],
+      "total_rows": 9,
+      "masking": {
+        "level": "aggregate",
+        "reason": "Individual records are not available at your level; showing totals only.",
+        "rule_ref": "RBAC-HR-01"
+      }
+    },
+    "kpis": [
+      {
+        "label": "Total Executives",
+        "value": 419,
+        "unit": "Officers"
+      }
+    ]
+  },
+  "insights_v2": [
+    {
+      "text": "Total 419 executives aggregated across grades E1 through E9.",
+      "kind": "headline",
+      "value": 419,
+      "unit": "Executives"
+    }
+  ],
+  "context_chips": [
+    {
+      "label": "E2_HR",
+      "kind": "role"
+    },
+    {
+      "label": "Delhi HQ",
+      "kind": "subject"
+    },
+    {
+      "label": "Aggregate Only",
+      "kind": "filter"
+    }
+  ],
+  "query_spec": {
+    "version": 1,
+    "domain": "hr",
+    "metric": "headcount",
+    "aggregation": "count",
+    "grain": "aggregate",
+    "dimensions": [
+      "grade"
+    ],
+    "filters": [
+      {
+        "field": "wc_id",
+        "op": "=",
+        "value": "DEL"
+      },
+      {
+        "field": "continuous_stay_years",
+        "op": ">=",
+        "value": 5
+      },
+      {
+        "field": "employment_status",
+        "op": "=",
+        "value": "Active"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.ssot_workforce_employee"
+    }
+  ],
+  "access": {
+    "status": "partial",
+    "reason": "Individual records are not available at your level; showing totals only.",
+    "rule_ref": "RBAC-HR-01"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "word",
+    "pdf"
+  ]
+}
