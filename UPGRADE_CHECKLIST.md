@@ -108,13 +108,13 @@
 
 | Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
 |---|---|---|---|---|---|---|---|---|---|
-| **B2.1** | `O` | `QuerySpec` model + patch semantics | Unit tests for patch ops (filter add, compare, grain switch, time shift) | `pytest` | ⬜ | n/a | | | |
-| **B2.2** | `O` | Planner (Gemini structured output) using catalog summary + previous spec | ≥ 30 golden specs (HR + finance flagship chains, paraphrases, Hinglish) correct | Golden tests | ⬜ | n/a | | | |
-| **B2.2b** | `F` | Golden-test cases (≥ 30) written from O-specified chains (HR + finance flagship, paraphrases, Hinglish) | Each case: question, prior spec, expected spec; O approves the expected specs | `pytest` collection | ⬜ | [packet](docs/delegation/packets/B2.2b.md) | | | |
-| **B2.3** | `O` | Compiler: certified-template match → generated SQL → dry-run → async execute | 100% of compiled SQL passes dry-run on the golden set | `pytest` + BigQuery dry-run | ⬜ | n/a | | | |
-| **B2.4** | `O` | Wire behind `YUKTI_PLANNER=1`; shrink fast-paths to greeting + screen control | Flag off = baseline behaviour; flag on = planner | Both modes tested | ⬜ | n/a | | | |
-| **B2.5** | `O` | Session stores spec history; follow-ups resolve as patches; `query_spec` echoed in the contract | Flagship 7-turn chain passes end to end | Scripted API test | ⬜ | n/a | | | |
-| **B2.6** | `FL→O` | Gate eval (subset) | Root ≥ 80%, follow-ups ≥ 60%, no RBAC regressions | `yukti/backend/eval/gates/B2.md` | ⬜ | [packet](docs/delegation/packets/B2.6.md) | | | |
+| **B2.1** | `O` | `QuerySpec` model + patch semantics | Unit tests for patch ops (filter add, compare, grain switch, time shift) | `pytest` | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B2.md) | |
+| **B2.2** | `O` | Planner (Gemini structured output) using catalog summary + previous spec | ≥ 30 golden specs (HR + finance flagship chains, paraphrases, Hinglish) correct | Golden tests | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B2.md) | |
+| **B2.2b** | `F` | Golden-test cases (≥ 30) written from O-specified chains (HR + finance flagship, paraphrases, Hinglish) | Each case: question, prior spec, expected spec; O approves the expected specs | `pytest` collection | ✅ | [packet](docs/delegation/packets/B2.2b.md) | ✅ | ✅ [review](docs/reviews/B2.md) | |
+| **B2.3** | `O` | Compiler: certified-template match → generated SQL → dry-run → async execute | 100% of compiled SQL passes dry-run on the golden set | `pytest` + BigQuery dry-run | ✅ (D-32: semantic-model compilation; C7 template + parity test) | n/a | ✅ | ✅ [review](docs/reviews/B2.md) | |
+| **B2.4** | `O` | Wire behind `YUKTI_PLANNER=1`; shrink fast-paths to greeting + screen control | Flag off = baseline behaviour; flag on = planner | Both modes tested | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B2.md) | |
+| **B2.5** | `O` | Session stores spec history; follow-ups resolve as patches; `query_spec` echoed in the contract | Flagship 7-turn chain passes end to end | Scripted API test | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B2.md) | |
+| **B2.6** | `FL→O` | Gate eval (subset) | Root ≥ 80%, follow-ups ≥ 60%, no RBAC regressions | `yukti/backend/eval/gates/B2.md` | ✅ (D-31 lenient scale; run by O, not FL) | n/a (run by O) | ✅ | ✅ [review](docs/reviews/B2.md) · [gate](yukti/backend/eval/gates/B2.md) | |
 
 ## Phase B3: Granular Data + RBAC Policy (FEAT-006 data, FEAT-010) · *gate: roster correct vs BigQuery; RBAC matrix 100%* · *needs OD-2, OD-3*
 
@@ -179,7 +179,7 @@
 | U4 | | ⬜ | | n/a (visual) | `upgrade-U4` |
 | U5 | | ⬜ | | fixture sweep | `upgrade-U5` |
 | B1 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B1.md`](docs/reviews/B1.md) | `gates/B1.md` | — (G5 at final acceptance) |
-| B2 | | ⬜ | | `gates/B2.md` | `upgrade-B2` |
+| B2 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B2.md`](docs/reviews/B2.md) | `gates/B2.md` | — (G5 at final acceptance) |
 | B3 | | ⬜ | | `gates/B3.md` | `upgrade-B3` |
 | B4 | | ⬜ | | `gates/B4.md` | `upgrade-B4` |
 | H1 | | ⬜ | | `gates/H1.md` | `upgrade-H1` |

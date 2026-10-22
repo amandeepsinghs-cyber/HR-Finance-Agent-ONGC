@@ -129,6 +129,9 @@ class TurnRequest(BaseModel):
     voice_override: Optional[str] = None
     history: Optional[List[Dict[str, Any]]] = None
     ui_context: Optional[Dict[str, Any]] = None
+    # Contract v2 drill-down (B2.5/B4.2): a chip sends its spec_patch plus the card's query_spec.
+    spec_patch: Optional[Dict[str, Any]] = None
+    query_spec: Optional[Dict[str, Any]] = None
 
 
 class VoiceTurnRequest(BaseModel):
@@ -235,6 +238,8 @@ async def execute_turn(req: TurnRequest) -> Dict[str, Any]:
             voice_override=req.voice_override,
             history=req.history,
             ui_context=req.ui_context,
+            spec_patch=req.spec_patch,
+            base_spec=req.query_spec,
         )
         return contract
     except Exception as exc:

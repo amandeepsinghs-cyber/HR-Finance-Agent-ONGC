@@ -11,14 +11,14 @@
 | Feature ID | Feature Name | Source Verbatim | Priority | Category | Phase | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **FEAT-001** | **Scrollable Conversational Feed (History Preservation)** | V8 §3, V11 | **P0** | Frontend / UX | U2 | Specified |
-| **FEAT-002** | **Multi-Turn Context & Entity Carryover** | V11 | **P0** | Backend / Agent | B2 (via FEAT-009) | Specified |
+| **FEAT-002** | **Multi-Turn Context & Entity Carryover** | V11 | **P0** | Backend / Agent | B2 (via FEAT-009) | Built (B2, behind `YUKTI_PLANNER=1`) |
 | **FEAT-003** | **Visual Presentation & Charting Audit** | V7, V11 | **P1** | Visualization / UX | U5 | Specified |
 | **FEAT-004** | **Luminous Siri / Infinity Loop Voice Orb** | V12 | **P1** | UI / Animation | U3 | Specified |
 | **FEAT-005** | **Executive UI Modernization & Material Polish** | V12 | **P1** | UI / Design System | U1 + U4 | Specified |
 | **FEAT-006** | **CMD Actionable Employee-Level Roster (Drilldown)** | V13 | **P0** | Data / HR Actions | U5 (UI) + B3 (data) | Specified |
 | **FEAT-007** | **Answer Contract v2 (forward-compatible UI ↔ brain)** | V14 (D-4) | **P0** | Contract / Frontend | U2 | Specified |
 | **FEAT-008** | **Generated Semantic Layer (catalog = data truth)** | Audit 2026-10-22 | **P0** | Backend / Data | B1 | Specified |
-| **FEAT-009** | **QuerySpec Planner & Compiler (replaces keyword fast-paths)** | V11, V13, V14 (D-1) | **P0** | Backend / Agent | B2 | Specified |
+| **FEAT-009** | **QuerySpec Planner & Compiler (replaces keyword fast-paths)** | V11, V13, V14 (D-1) | **P0** | Backend / Agent | B2 | Built (B2, behind `YUKTI_PLANNER=1`; G4 approved) |
 | **FEAT-010** | **Granular-Data RBAC Policy (row/column masking)** | V3, V13, V14 (D-5) | **P0** | Governance | B3 (+ U5 UI states) | Specified (D-10, D-11) |
 | **FEAT-011** | **Insight Engine & Drill-down Chips ("granular insights")** | V13, V14 | **P0** | Backend / UX | B4 (+ U5 UI) | Specified |
 | **FEAT-012** | **Reliability, Safety & Performance Hardening** | Audit 2026-10-22 (P2/P3) | **P1** | Backend / Ops | H1 | Specified |

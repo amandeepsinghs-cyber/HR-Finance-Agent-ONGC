@@ -35,6 +35,8 @@ from eval.run_eval import CheckpointManager, FullEvaluator  # noqa: E402
 
 EVAL_DIR = Path(__file__).resolve().parent
 SUBSET_PATH = EVAL_DIR / "gates" / "gate_subset.yaml"
+# A hung turn (network read error inside the ADK loop) counts as a failure instead of blocking the gate.
+TURN_TIMEOUT_S = float(os.getenv("YUKTI_GATE_TURN_TIMEOUT", "150"))
 
 _NUM_RE = re.compile(r"(?<![A-Za-z])-?\d[\d,]*(?:\.\d+)?")
 
@@ -126,10 +128,12 @@ class GateEvaluator(FullEvaluator):
                     stress_item: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         t0 = time.perf_counter()
         try:
-            res = await self.runner.execute_turn_async(query=query, session_id=session_id, persona=persona)
+            res = await asyncio.wait_for(
+                self.runner.execute_turn_async(query=query, session_id=session_id, persona=persona),
+                timeout=TURN_TIMEOUT_S)
             rec = self.score_entry(entry_id=entry_id, contract=res, expected=expected, persona=persona,
                                    is_stress_test=is_stress, stress_item=stress_item)
-        except Exception as e:  # scored as a failure, never hidden
+        except Exception as e:  # scored as a failure (incl. TimeoutError), never hidden
             res = {}
             rec = {"entry_id": entry_id, "overall_pass": False, "schema_valid": False, "refusal_ok": False,
                    "tool_ok": False, "citation_ok": False, "numeric_ok": False,
@@ -191,7 +195,8 @@ class GateEvaluator(FullEvaluator):
             out = []
             async with sem:
                 try:
-                    await self.runner.execute_turn_async(q["question"], session_id=sess, persona="CMD")
+                    await asyncio.wait_for(self.runner.execute_turn_async(q["question"], session_id=sess, persona="CMD"),
+                                           timeout=TURN_TIMEOUT_S)
                 except Exception:
                     pass
             for fu in q.get("followups", []):

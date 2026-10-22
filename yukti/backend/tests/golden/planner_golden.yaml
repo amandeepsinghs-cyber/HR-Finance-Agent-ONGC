@@ -1,0 +1,405 @@
+- id: G01
+  question: "How many executives have been posted in the Delhi office for 5 years or more?"
+  prior: null
+  expect:
+    intent: data
+    metric: headcount
+    grain: aggregate
+    dimensions: []
+    filters:
+      - {field: wc, op: "=", value: WC-DEL}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+  spec:
+    version: 1
+    domain: hr
+    metric: headcount
+    grain: aggregate
+    dimensions: []
+    filters:
+      - {field: wc, op: "=", value: WC-DEL}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+
+- id: G02
+  question: "Give me their names"
+  prior: G01
+  expect:
+    is_followup: true
+    grain: row
+    filters:
+      - {field: wc, op: "=", value: WC-DEL}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+  spec:
+    version: 1
+    domain: hr
+    metric: headcount
+    grain: row
+    dimensions: []
+    filters:
+      - {field: wc, op: "=", value: WC-DEL}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+
+- id: G03
+  question: "Break it down by discipline"
+  prior: G02
+  expect:
+    grain: aggregate
+    dimensions: [discipline]
+    filters:
+      - {field: wc, op: "=", value: WC-DEL}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+  spec:
+    version: 1
+    domain: hr
+    metric: headcount
+    grain: aggregate
+    dimensions: [discipline]
+    filters:
+      - {field: wc, op: "=", value: WC-DEL}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+
+- id: G04
+  question: "Compare with Mumbai"
+  prior: G03
+  expect:
+    dimensions: [wc, discipline]
+    filters:
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+      - {field: wc, op: in, value: [WC-DEL, WC-MUM]}
+  spec:
+    version: 1
+    domain: hr
+    metric: headcount
+    grain: aggregate
+    dimensions: [wc, discipline]
+    filters:
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+      - {field: wc, op: in, value: [WC-DEL, WC-MUM]}
+
+- id: G05
+  question: "Only E5 and above"
+  prior: G04
+  expect:
+    dimensions: [wc, discipline]
+    filters:
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+      - {field: wc, op: in, value: [WC-DEL, WC-MUM]}
+      - {field: grade, op: ">=", value: E5}
+  spec:
+    version: 1
+    domain: hr
+    metric: headcount
+    grain: aggregate
+    dimensions: [wc, discipline]
+    filters:
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+      - {field: wc, op: in, value: [WC-DEL, WC-MUM]}
+      - {field: grade, op: ">=", value: E5}
+
+- id: G06
+  question: "What about last year?"
+  prior: G05
+  expect:
+    period: {fy: FY26}
+    filters:
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+      - {field: wc, op: in, value: [WC-DEL, WC-MUM]}
+      - {field: grade, op: ">=", value: E5}
+  spec:
+    version: 1
+    domain: hr
+    metric: headcount
+    grain: aggregate
+    dimensions: [wc, discipline]
+    filters:
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+      - {field: wc, op: in, value: [WC-DEL, WC-MUM]}
+      - {field: grade, op: ">=", value: E5}
+    period:
+      fy: FY26
+
+- id: G07
+  question: "Draft a transfer note for them"
+  prior: G06
+  expect:
+    intent: document
+
+- id: G08
+  question: "Mumbai mein 5 saal se zyada kitne executives hain?"
+  prior: null
+  expect:
+    metric: headcount
+    filters:
+      - {field: wc, op: "=", value: WC-MUM}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+
+- id: G09
+  question: "Dilli HQ mein paanch saal se zyada officers kitne hain?"
+  prior: null
+  expect:
+    metric: headcount
+    filters:
+      - {field: wc, op: "=", value: WC-DEL}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+
+- id: G10
+  question: "How many officers in Dehradun have stayed more than five years?"
+  prior: null
+  expect:
+    metric: headcount
+    filters:
+      - {field: wc, op: "=", value: WC-DDN}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+
+- id: G11
+  question: "Delhi HQ executives with 5+ years of station tenure, by grade"
+  prior: null
+  expect:
+    metric: headcount
+    dimensions: [grade]
+    filters:
+      - {field: wc, op: "=", value: WC-DEL}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+
+- id: G12
+  question: "What about Mumbai?"
+  prior: G01
+  expect:
+    is_followup: true
+    filters:
+      - {field: wc, op: "=", value: WC-MUM}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+  spec:
+    version: 1
+    domain: hr
+    metric: headcount
+    grain: aggregate
+    dimensions: []
+    filters:
+      - {field: wc, op: "=", value: WC-MUM}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+
+- id: G13
+  question: "List them"
+  prior: G12
+  expect:
+    grain: row
+    filters:
+      - {field: wc, op: "=", value: WC-MUM}
+      - {field: cadre, op: "=", value: executive}
+      - {field: station_tenure_years, op: ">=", value: 5}
+
+- id: G14
+  question: "Which fields were the most profitable and which made losses in FY26?"
+  prior: null
+  expect:
+    metric: pbt_cr
+    dimensions: [field]
+    period: {fy: FY26}
+    filters: []
+  spec:
+    version: 1
+    domain: finance
+    metric: pbt_cr
+    grain: aggregate
+    dimensions: [field]
+    filters: []
+    period:
+      fy: FY26
+
+- id: G15
+  question: "Show the same by capex invested"
+  prior: G14
+  expect:
+    metric: capex_actual_cr
+    dimensions: [asset]
+  spec:
+    version: 1
+    domain: finance
+    metric: capex_actual_cr
+    grain: aggregate
+    dimensions: [asset]
+    filters: []
+    period:
+      fy: FY26
+
+- id: G16
+  question: "Which assets are under-invested relative to their reserves?"
+  prior: G15
+  expect:
+    metric: capex_vs_reserves
+
+- id: G17
+  question: "How are we tracking against our MoU targets this year?"
+  prior: null
+  expect:
+    metric: mou_scorecard
+    period: {fy: FY27}
+
+- id: G18
+  question: "Draft a board note on this"
+  prior: G14
+  expect:
+    intent: document
+
+- id: G19
+  question: "Which fields lost money last year?"
+  prior: null
+  expect:
+    metric: pbt_cr
+    dimensions: [field]
+    period: {fy: FY26}
+
+- id: G20
+  question: "Lifting cost by asset in FY26"
+  prior: null
+  expect:
+    metric: lifting_cost_usd_per_boe
+    dimensions: [asset]
+    period: {fy: FY26}
+
+- id: G21
+  question: "What was ONGC's profit last year?"
+  prior: null
+  expect:
+    metric: pat_cr
+    period: {fy: FY26}
+
+- id: G22
+  question: "Capex by asset over the last five years"
+  prior: null
+  expect:
+    metric: capex_actual_cr
+    dimensions: [asset]
+    period: {from: FY22, to: FY26}
+
+- id: G23
+  question: "Show me Champang's P&L"
+  prior: null
+  expect:
+    metric_in: [pbt_cr, ebitda_cr, revenue_cr]
+    filters_include:
+      - {field: field, op: "=", value: FLD-CHP}
+
+- id: G24
+  question: "What is the vacancy position by asset and discipline?"
+  prior: null
+  expect:
+    metric_in: [vacancies, sanctioned_posts, in_position, vacancy_rate_pct]
+    dimensions: [wc, discipline]
+
+- id: G25
+  question: "North East vacancies by work centre"
+  prior: null
+  expect:
+    metric_in: [vacancies, vacancy_rate_pct]
+    dimensions: [wc]
+    filter_fields_any: [region, sector, wc]
+
+- id: G26
+  question: "How many women employees are there in each work centre?"
+  prior: null
+  expect:
+    metric_in: [headcount, women_share_pct]
+    dimensions: [wc]
+
+- id: G27
+  question: "How many GMs retire in the next 3 years?"
+  prior: null
+  expect:
+    metric_in: [retiring_within_3yr, headcount]
+    filters_include:
+      - {field: grade, op: "=", value: E7}
+
+- id: G28
+  question: "Average age of employees in Ahmedabad"
+  prior: null
+  expect:
+    metric: avg_age
+    filters_include:
+      - {field: wc, op: "=", value: WC-AHM}
+
+- id: G29
+  question: "Training hours per executive by discipline"
+  prior: null
+  expect:
+    metric: training_hours_per_employee
+    dimensions: [discipline]
+    filters_include:
+      - {field: cadre, op: "=", value: executive}
+
+- id: G30
+  question: "Show this as a pie chart"
+  prior: G03
+  expect:
+    intent: replot
+
+- id: G31
+  question: "What is the minimum tenure at a station as per the transfer policy?"
+  prior: null
+  expect:
+    intent: policy
+
+- id: G32
+  question: "Pichle saal kitna profit hua?"
+  prior: null
+  expect:
+    metric: pat_cr
+    period: {fy: FY26}
+
+- id: G33
+  question: "Compare Delhi and Mumbai headcount"
+  prior: null
+  expect:
+    metric: headcount
+    dimensions_include: [wc]
+    filters_include:
+      - {field: wc, op: in, value: [WC-DEL, WC-MUM]}
+
+- id: G34
+  question: "Revenue for each field over the last 5 years"
+  prior: null
+  expect:
+    metric: revenue_cr
+    dimensions_include: [field]
+    period: {from: FY22, to: FY26}
+
+- id: G35
+  question: 'If Brent falls to $60, which fields go into loss?'
+  prior: null
+  expect:
+    intent: what_if
+
+# --- Added by Opus after G4 B2 review (F-9: explicit year-wise breakdowns must keep the fy dimension)
+- id: G36
+  question: "Capex by asset year-wise over the last 5 years"
+  prior: null
+  expect:
+    metric: capex_actual_cr
+    dimensions: [asset, fy]
+    period: {from: FY22, to: FY26}
+
+- id: G37
+  question: "Show PAT by fiscal year for the last 5 years"
+  prior: null
+  expect:
+    metric: pat_cr
+    dimensions_include: [fy]
+    period: {from: FY22, to: FY26}

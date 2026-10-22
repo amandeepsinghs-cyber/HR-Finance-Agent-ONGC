@@ -20,6 +20,7 @@ from google.genai import types
 from app.access_control import check_access, normalize_persona
 from app.agent import create_yukti_agent
 from app.answer_composer import detect_language, get_contract_validator
+from app.brain.pipeline import planner_enabled, run_planner_turn
 from app.config import DEFAULT_TEXT_MODEL, VERTEX_TEXT_LOCATION
 from app.router import get_semantic_router
 from app.semantic.entities import get_entities
@@ -120,8 +121,14 @@ class AgentTurnRunner:
         voice_override: Optional[str] = None,
         history: Optional[List[Dict[str, Any]]] = None,
         ui_context: Optional[Dict[str, Any]] = None,
+        spec_patch: Optional[Dict[str, Any]] = None,
+        base_spec: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Runs a live agent turn through ADK with Gemini model."""
+        """Runs a live agent turn through ADK with Gemini model.
+
+        `spec_patch` / `base_spec` (contract v2) let a drill-down chip refine a specific card's
+        QuerySpec deterministically; they are used only when YUKTI_PLANNER=1.
+        """
         os.environ["GOOGLE_CLOUD_LOCATION"] = VERTEX_TEXT_LOCATION
         t0 = time.perf_counter()
         norm_persona = normalize_persona(persona)
@@ -359,6 +366,34 @@ class AgentTurnRunner:
             session_state.record_turn(conv_contract)
             return conv_contract
 
+        # B2.4: QuerySpec planner behind YUKTI_PLANNER=1. Data questions go planner -> compiler ->
+        # BigQuery; the keyword data fast-paths below (0b-0d) are skipped entirely in this mode, so
+        # only greeting and screen control answer before the question is understood. Anything the
+        # planner cannot answer (policy, what-if, documents, unknown metric) continues on the
+        # legacy path unchanged. Flag off = baseline behaviour.
+        planner_on = planner_enabled()
+        if planner_on:
+            patch_obj, base_obj = None, None
+            if spec_patch:
+                try:
+                    from app.brain.query_spec import QuerySpec, SpecPatch
+                    patch_obj = SpecPatch.model_validate(spec_patch)
+                    base_obj = QuerySpec.from_contract(base_spec) if base_spec else None
+                except Exception as e_patch:
+                    logger.warning(f"Ignoring invalid spec_patch/query_spec: {e_patch}")
+                    patch_obj, base_obj = None, None
+            try:
+                planned = await run_planner_turn(query, session_state, norm_persona, turn_id, det_lang, t0,
+                                                 patch_override=patch_obj, base_spec=base_obj)
+                if planned is not None:
+                    return self._finalize_planner_contract(planned, session_state, query, t0)
+            except Exception as e_plan:  # the planner must never take a turn down (G4 B2 F-4)
+                logger.exception(f"Planner pipeline failed; continuing on the legacy path: {e_plan}")
+            # The answer for this turn comes from the legacy path: mark the spec history so the next
+            # follow-up does not patch an older planner spec (G4 B2 F-6).
+            session_state.spec_history.append({})
+            session_state.spec_history[:] = session_state.spec_history[-20:]
+
         # 0b. Contextual Follow-Up Fast-Path ("Show breakdown by discipline", "What are the relevant policy rules?", "Only E5 and above")
         active_state = getattr(session_state, "active_query_state", None)
         active_cid = (active_state or {}).get("certified_id") or session_state.current_root_id or "C1"
@@ -366,7 +401,7 @@ class AgentTurnRunner:
         active_wc = active_params.get("wc_id") or session_state.active_entities.get("wc_id") or "WC-DEL"
         active_mode_kind = (active_state or {}).get("topic") or "tenure"
 
-        if "show breakdown by discipline" in q_clean or "breakdown by discipline" in q_clean or "by discipline" in q_clean:
+        if not planner_on and ("show breakdown by discipline" in q_clean or "breakdown by discipline" in q_clean or "by discipline" in q_clean):
             from app.tools.query_data import query_data as qd
             city_lbl = get_entities().wc_name(active_wc)
             chart_k = requested_chart_kind or "hbar"
@@ -490,7 +525,7 @@ class AgentTurnRunner:
                 session_state.record_turn(disc_contract, user_query=query, all_rows=rows)
                 return disc_contract
 
-        if "relevant policy rules" in q_clean or "policy guidelines" in q_clean or q_clean == "what are the relevant policy rules":
+        if not planner_on and ("relevant policy rules" in q_clean or "policy guidelines" in q_clean or q_clean == "what are the relevant policy rules"):
             clause_contract = {
                 "turn_id": turn_id,
                 "language": det_lang,
@@ -553,7 +588,7 @@ class AgentTurnRunner:
             "women", "female", "gender", "sc", "st", "obc", "pwd", "contract", "apprentice", "training", "overtime",
             "salary", "pay", "medical", "leave", "boe", "production", "added headcount", "c11", "histogram", "distribution",
         ]
-        if any(t in q_clean for t in hc_triggers) and not any(ex in q_clean for ex in hc_exclusions):
+        if not planner_on and any(t in q_clean for t in hc_triggers) and not any(ex in q_clean for ex in hc_exclusions):
             from app.tools.query_data import query_data as qd
 
             matched_wc = get_entities().resolve_wc(q_clean)
@@ -722,7 +757,7 @@ class AgentTurnRunner:
                     return hc_all_contract
 
         # 0d. Live BigQuery Histogram & Distribution Engine ("draw a histogram", "histogram of employee ages", "distribution of lifting cost")
-        if requested_chart_kind == "histogram" or any(k in q_clean for k in ["histogram", "frequency distribution", "bell curve", "age distribution", "tenure distribution", "salary distribution", "pay distribution"]):
+        if not planner_on and (requested_chart_kind == "histogram" or any(k in q_clean for k in ["histogram", "frequency distribution", "bell curve", "age distribution", "tenure distribution", "salary distribution", "pay distribution"])):
             from app.tools.query_data import query_data as qd
 
             matched_wc = get_entities().resolve_wc(q_clean)
@@ -1501,6 +1536,19 @@ class AgentTurnRunner:
                 contract=contract,
             )
         session_state.record_turn(contract, user_query=query)
+        return contract
+
+    def _finalize_planner_contract(self, planned: Dict[str, Any], session_state: Any, query: str, t0: float) -> Dict[str, Any]:
+        """Validates a planner contract and stores the spec for follow-up patches (B2.5)."""
+        contract = planned["contract"]
+        meta = planned.get("meta") or {}
+        contract["latency_ms"] = round((time.perf_counter() - t0) * 1000, 2)
+        self.validator.validate(contract)
+        rows = meta.get("rows")
+        session_state.record_turn(contract, user_query=query, all_rows=rows)
+        if meta.get("spec") is not None:
+            session_state.spec_history.append(meta["spec"].to_contract())
+            session_state.spec_history[:] = session_state.spec_history[-20:]
         return contract
 
     @staticmethod

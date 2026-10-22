@@ -35,6 +35,8 @@ class SessionState:
     last_sql: Optional[str] = None
     last_user_query: Optional[str] = None
     last_turn_time: float = field(default_factory=time.time)
+    # B2.5: QuerySpec history (contract-v2 `query_spec` dicts), newest last; follow-ups patch [-1].
+    spec_history: List[Dict[str, Any]] = field(default_factory=list)
 
     def record_turn(
         self,
