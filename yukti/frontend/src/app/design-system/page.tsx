@@ -130,7 +130,7 @@ export default function DesignSystemPage() {
         </header>
 
         {/* 1. Typography */}
-        <AuraShowcase />
+        <AuraShowcase isDark={isDark} />
 
         <Card as="section" data-testid="ds-typography">
           <CardHeader

@@ -229,7 +229,7 @@ export const FloatingConversationPanel: React.FC<Props> = ({
     return (
       <div className="fixed bottom-[1.5rem] right-[1.5rem] z-40 flex flex-col items-center gap-2" data-testid="minimised-orb">
         <div className="relative rounded-full bg-[var(--card)] shadow-[var(--panel-shadow)] border border-[var(--hairline)]">
-          <VoiceOrb state={orbState} isDark={isDark} size={96} onClick={onToggleMic} audioEngine={audioEngine} label={isMicActive ? 'Stop listening' : 'Start talking'} />
+          <VoiceOrb state={orbState} isDark={isDark} size={96} onClick={onToggleMic} audioEngine={audioEngine} label={isMicActive ? 'Stop listening' : 'Start talking'} pressed={!!isMicActive} />
           <button onClick={() => onModeChange('docked')} className="absolute -top-1 -left-1 w-8 h-8 grid place-items-center rounded-full bg-[var(--card)] border border-[var(--hairline)] shadow-md text-[var(--ink-2)] hover:text-[var(--ink)]" aria-label="Open command bar">
             <Maximize2 className="w-3.5 h-3.5" />
           </button>
@@ -398,6 +398,7 @@ export const FloatingConversationPanel: React.FC<Props> = ({
                     onClick={onToggleMic}
                     audioEngine={audioEngine}
                     label={isMicActive ? 'Stop listening' : 'Start talking'}
+                    pressed={!!isMicActive}
                   />
                 </div>
               )}

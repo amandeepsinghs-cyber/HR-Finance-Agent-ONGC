@@ -189,6 +189,11 @@ class LiveSessionManager:
         self.voice = voice or DEFAULT_VOICE
         self.language = language or "en"
         self.active = True
+        # U3.4 barge-in: set when the browser sends `interrupt`; audio of the current reply is dropped
+        # server-side until Gemini confirms the interruption or the turn completes.
+        self._suppress_audio = False
+        # True while Gemini is producing the current reply (first model_turn part → turn_complete/interrupted).
+        self._generating = False
         self.session_state = get_session_manager().get_or_create(
             session_id=session_id,
             persona=persona,
@@ -770,7 +775,11 @@ class LiveSessionManager:
                     await session.send_realtime_input(audio_stream_end=True)
 
                 elif msg_type == "interrupt":
-                    await self.send_json({"type": "interrupted"})
+                    # Do not echo `interrupted` (that re-opened the browser's drop gate while old-reply
+                    # chunks were still in flight); just stop forwarding this reply's audio.
+                    # Only suppress while Gemini is still generating; after turn_complete nothing more of the old
+                    # reply will arrive, and a stale flag would silence the answer to the interrupting question.
+                    self._suppress_audio = self._generating
 
                 elif msg_type == "ping":
                     await self.send_json({"type": "pong", "time": time.time()})
@@ -824,10 +833,13 @@ class LiveSessionManager:
                         continue
 
                     if getattr(sc, "interrupted", False):
+                        self._suppress_audio = False
+                        self._generating = False
                         await self.send_json({"type": "interrupted"})
 
                     it = getattr(sc, "input_transcription", None)
                     if it is not None and getattr(it, "text", None):
+                        self._suppress_audio = False  # safety net: a new user turn always gets its audio
                         self.state.setdefault("heard", []).append(it.text)
                         await self.send_json({
                             "type": "user_transcript",
@@ -848,6 +860,7 @@ class LiveSessionManager:
 
                     mt = getattr(sc, "model_turn", None)
                     if mt is not None:
+                        self._generating = True
                         for part in mt.parts or []:
                             if getattr(part, "text", None) and not self._is_speak_only:
                                 caption.append(part.text)
@@ -863,9 +876,12 @@ class LiveSessionManager:
                                 turn_state["total_audio_bytes"] += len(chunk)
                                 if turn_state["t_first_audio_ms"] is None and self.t_turn_start:
                                     turn_state["t_first_audio_ms"] = round((t_event - self.t_turn_start) * 1000, 2)
-                                await self.send_audio_chunk(chunk)
+                                if not self._suppress_audio:
+                                    await self.send_audio_chunk(chunk)
 
                     if getattr(sc, "turn_complete", False):
+                        self._suppress_audio = False
+                        self._generating = False
                         # CRITICAL URVI FIX: Swallow the empty turn_complete Gemini emits right after a tool call
                         if not turn_output and tool_since_output:
                             continue

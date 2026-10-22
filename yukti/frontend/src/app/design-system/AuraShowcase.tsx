@@ -7,6 +7,7 @@
 import React from 'react';
 import { Mic, Sparkles, ArrowUp } from 'lucide-react';
 import { Card, CardHeader, CardBody } from '@/components/ui/primitives';
+import { VoiceOrb, OrbState } from '@/components/VoiceOrb';
 
 type AuraState = 'idle' | 'listening' | 'thinking';
 
@@ -31,7 +32,7 @@ function AskBar({ state, label }: { state: AuraState; label: string }) {
   );
 }
 
-export function AuraShowcase() {
+export function AuraShowcase({ isDark = false }: { isDark?: boolean }) {
   return (
     <Card as="section" data-testid="ds-aura">
       <CardHeader
@@ -57,6 +58,16 @@ export function AuraShowcase() {
           <AskBar state="idle" label="Idle · slow drift" />
           <AskBar state="listening" label="Listening · gentle sweep" />
           <AskBar state="thinking" label="Thinking · faster sweep" />
+        </div>
+
+        {/* 3. Infinity-ribbon voice orb in its four states (U3) */}
+        <div data-testid="ds-orb-states" className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {(['idle', 'listening', 'thinking', 'speaking'] as OrbState[]).map((st) => (
+            <div key={st} className="flex flex-col items-center gap-2 rounded-card border border-[var(--hairline)] bg-[var(--card)] py-6">
+              <VoiceOrb state={st} isDark={isDark} size={150} interactive={false} />
+              <span className="text-label capitalize text-[var(--ink-2)]">{st}</span>
+            </div>
+          ))}
         </div>
 
         {/* 3. Orb placeholder glow (final ribbon orb arrives in U3) */}

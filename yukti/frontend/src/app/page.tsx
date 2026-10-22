@@ -141,8 +141,8 @@ export default function YuktiApp() {
     };
     forceTick((x) => x + 1);
     return () => {
-      engine.stopMic();
-      engine.stopPlayback(false);
+      engine.dispose();
+      if (engineRef.current === engine) engineRef.current = null;
     };
   }, []);
 
@@ -324,6 +324,7 @@ export default function YuktiApp() {
     const onUserTranscript = ({ text, is_final }: { text: string; is_final: boolean }) => {
       if (!text) return;
       wsAudioGotFirstChunkRef.current = true;
+      engineRef.current?.acceptIncoming(); // a new user turn: its reply audio must play (U3.4)
       setLiveInterimText('');
       telemetryRef.current.firstAudioAt = null;
       telemetryRef.current.contractAt = null;
@@ -462,30 +463,44 @@ export default function YuktiApp() {
         loud = 0;
         return;
       }
-      const lv = eng.getMicLevel();
-      if (lv > 0.08) {
+      // U3.3/U3.4: decisions use the RAW mic level (no floor/cadence), so room noise or echo can't trigger barge-in.
+      const lv = eng.getRawMicLevel();
+      if (lv > 0.12) {
         telemetryRef.current.lastVoiceAt = performance.now();
       }
-      if (eng.isAudioPlaying() && lv > 0.45) {
+      // Leaky counter: brief dips between syllables don't reset it; ~4 loud ticks (200 ms) trigger (U3.4).
+      if (eng.isAudioPlaying() && lv > 0.5) {
         loud += 1;
-        if (loud >= 5) {
-          eng.stopPlayback(true);
+        if (loud >= 4) {
+          eng.stopPlayback(true); // drops the rest of this reply locally
+          yuktiClient.sendInterrupt(); // and tells the server to stop generating
           setOrbState('listening');
           loud = 0;
         }
       } else {
-        loud = 0;
+        loud = Math.max(0, loud - 1);
       }
     }, 50);
     return () => clearInterval(id);
   }, []);
 
   // ---------- Microphone (Urvi `VoiceAgentPanel` + `micCapture` pattern) ----------
+  const micStartingRef = useRef(false);
   const startMic = useCallback(async (deviceId?: string): Promise<boolean> => {
     const eng = engineRef.current;
     if (!eng) return false;
+    if (micStartingRef.current) return false; // U3.5: ignore rapid double-clicks while a start is in flight
+    micStartingRef.current = true;
+    try {
+      return await startMicBody(eng, deviceId);
+    } finally {
+      micStartingRef.current = false;
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const startMicBody = async (eng: VoiceAudioEngine, deviceId?: string): Promise<boolean> => {
     eng.unlock();
-    eng.stopPlayback(true);
+    eng.stopPlayback(false);
     setMicError(null);
     setLiveInterimText('');
     wsAudioGotFirstChunkRef.current = false;
@@ -504,7 +519,7 @@ export default function YuktiApp() {
     }, deviceId);
     if (!res.ok) {
       eng.stopSpeechRecognition(false);
-      setMicError(res.message || 'Microphone unavailable.');
+      if (!res.cancelled) setMicError(res.message || 'Microphone unavailable.');
       setIsMicActive(false);
       setOrbState('idle');
       return false;
@@ -515,6 +530,8 @@ export default function YuktiApp() {
       (interim) => setLiveInterimText(interim),
       (finalText) => {
         setLiveInterimText('');
+        // Browser SR is a FALLBACK only: when the Live socket is open, Gemini Live owns the turn (no duplicate REST turn).
+        if (liveRef.current && yuktiClient.isLiveVoiceReady()) return;
         if (!wsAudioGotFirstChunkRef.current && finalText.trim()) {
           void stopMicRef.current(false);
           void runTypedTurnRef.current(finalText.trim());
@@ -528,11 +545,12 @@ export default function YuktiApp() {
     setIsMicActive(true);
     setOrbState('listening');
     return true;
-  }, []);
+  };
 
   const stopMic = useCallback(async (sendEnd = true) => {
     const eng = engineRef.current;
-    eng?.stopSpeechRecognition(sendEnd);
+    // Flush the browser SR only when it is acting as the fallback (Live closed); otherwise cancel it silently.
+    eng?.stopSpeechRecognition(sendEnd && !(liveRef.current && yuktiClient.isLiveVoiceReady()));
     eng?.stopMic();
     setLiveInterimText('');
     if (sendEnd && liveRef.current) {
@@ -609,6 +627,7 @@ export default function YuktiApp() {
       // Layer A (Urvi `runLocalUi` pattern): if every clause is a plain UI command, execute in 0 ms in browser
       const localUiCmds: UiCommand[] | null = parseUiCommands(text);
       if (localUiCmds && localUiCmds.length > 0) {
+        engineRef.current?.acceptIncoming();
         localUiCmds.forEach(dispatchUi);
         const summary = `↗ Done on screen: ${localUiCmds.map(labelOf).join(' · ')}.`;
         pushMessage({

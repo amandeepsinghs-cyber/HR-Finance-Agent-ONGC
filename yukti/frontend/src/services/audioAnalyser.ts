@@ -13,6 +13,8 @@ export interface MicStartResult {
   ok: boolean;
   error?: MicErrorKind;
   message?: string;
+  /** true when stopMic() won the race against a pending start: not an error to show the user */
+  cancelled?: boolean;
 }
 
 export interface PlaybackStats {
@@ -35,7 +37,12 @@ export class VoiceAudioEngine {
   private workletNode: AudioWorkletNode | null = null;
   private sinkGain: GainNode | null = null;
   private onPcm16Chunk: ((chunk: ArrayBuffer) => void) | null = null;
-  private micLevel = 0; // smoothed 0..1
+  private micLevel = 0; // smoothed 0..1 (display only)
+  /** Raw per-frame mic RMS level 0..1 from the worklet: no floor, no synthetic cadence (U3.3). Used for barge-in. */
+  private rawMicLevel = 0;
+  /** In-flight startMic() promise (U3.5): concurrent calls share it instead of opening a second stream. */
+  private startingPromise: Promise<MicStartResult> | null = null;
+  private stopRequestedDuringStart = false;
   private recording = false;
   private preferredDeviceId: string | null = null;
   private activeDeviceLabel: string = '';
@@ -43,9 +50,7 @@ export class VoiceAudioEngine {
   private recognition: any = null;
   private recognitionWantActive = false;
   private flushRecognitionFn: (() => void) | null = null;
-  private lastSpeechActivityAt = 0;
-  private recordAnalyser: AnalyserNode | null = null;
-  private recordFreq: Uint8Array | null = null;
+  private cancelRecognitionFn: (() => void) | null = null;
   private mediaRecorder: MediaRecorder | null = null;
   private recordedChunks: Blob[] = [];
   private recordedMimeType: string = 'audio/webm';
@@ -65,7 +70,6 @@ export class VoiceAudioEngine {
 
   private stats: PlaybackStats = { chunks: 0, bytes: 0, scheduledSeconds: 0, firstChunkAt: null, lastChunkAt: null };
   private turnStats: PlaybackStats = { chunks: 0, bytes: 0, scheduledSeconds: 0, firstChunkAt: null, lastChunkAt: null };
-  private phase = 0;
 
   /** Must be called from a user gesture (click / keydown) so Chrome allows audio output. */
   public unlock(): void {
@@ -154,6 +158,8 @@ export class VoiceAudioEngine {
         let latestUncommitted = '';
         let silenceDebounce: ReturnType<typeof setTimeout> | null = null;
         let lastResultCount = 0;
+        let cancelled = false; // set when this recognizer is stopped without flush (U3.6)
+        let fatal = false;
 
         const commitUtterance = () => {
           if (silenceDebounce) {
@@ -161,7 +167,7 @@ export class VoiceAudioEngine {
             silenceDebounce = null;
           }
           const committed = latestUncommitted.trim();
-          if (committed) {
+          if (committed && !cancelled) {
             latestUncommitted = '';
             consumedIndex = lastResultCount;
             onFinalUtterance(committed);
@@ -169,20 +175,8 @@ export class VoiceAudioEngine {
         };
         this.flushRecognitionFn = commitUtterance;
 
-        rec.onaudiostart = () => {
-          this.lastSpeechActivityAt = performance.now();
-          this.micLevel = Math.max(this.micLevel, 0.35);
-        };
-        rec.onsoundstart = () => {
-          this.lastSpeechActivityAt = performance.now();
-          this.micLevel = Math.max(this.micLevel, 0.58);
-        };
-        rec.onspeechstart = () => {
-          this.lastSpeechActivityAt = performance.now();
-          this.micLevel = Math.max(this.micLevel, 0.72);
-        };
+        // U3.3: SpeechRecognition events no longer inject synthetic mic levels; the meter shows real RMS only.
         rec.onresult = (event: any) => {
-          this.lastSpeechActivityAt = performance.now();
           lastResultCount = event.results.length;
           const parts: string[] = [];
           for (let i = consumedIndex; i < event.results.length; i++) {
@@ -192,23 +186,27 @@ export class VoiceAudioEngine {
           const combined = parts.join(' ').replace(/\s+/g, ' ').trim();
           if (combined) {
             latestUncommitted = combined;
-            this.micLevel = Math.max(this.micLevel, 0.78);
             onInterim(combined);
             if (silenceDebounce) clearTimeout(silenceDebounce);
             silenceDebounce = setTimeout(commitUtterance, 1250);
           }
         };
-        rec.onerror = () => {};
+        rec.onerror = (ev: any) => {
+          // Fatal errors (permission, unsupported, network on Cloudtop) must not relaunch in a loop.
+          if (['not-allowed', 'service-not-allowed', 'audio-capture', 'network', 'language-not-supported'].includes(ev?.error)) fatal = true;
+        };
         rec.onend = () => {
           if (silenceDebounce) {
             clearTimeout(silenceDebounce);
             silenceDebounce = null;
           }
           const clean = latestUncommitted.trim();
-          if (clean) {
+          if (clean && !cancelled) {
             latestUncommitted = '';
             onFinalUtterance(clean);
           } else if (
+            !cancelled &&
+            !fatal &&
             this.recognitionWantActive &&
             (typeof document === 'undefined' || document.visibilityState === 'visible')
           ) {
@@ -217,6 +215,13 @@ export class VoiceAudioEngine {
         };
         rec.start();
         this.recognition = rec;
+        this.cancelRecognitionFn = () => {
+          cancelled = true;
+          if (silenceDebounce) {
+            clearTimeout(silenceDebounce);
+            silenceDebounce = null;
+          }
+        };
       } catch {}
     };
     launch();
@@ -229,6 +234,9 @@ export class VoiceAudioEngine {
         this.flushRecognitionFn();
       } catch {}
     }
+    // Without flush, the stopped recognizer must never emit a late utterance (U3.6).
+    this.cancelRecognitionFn?.();
+    this.cancelRecognitionFn = null;
     this.flushRecognitionFn = null;
     if (this.recognition) {
       try {
@@ -303,6 +311,24 @@ export class VoiceAudioEngine {
   }
 
   public async startMic(onPcmChunk: (chunk: ArrayBuffer) => void, deviceIdOverride?: string): Promise<MicStartResult> {
+    if (this.recording) return { ok: true };
+    if (this.startingPromise) return this.startingPromise; // double-click: share the in-flight start
+    this.stopRequestedDuringStart = false;
+    this.startingPromise = this.startMicInner(onPcmChunk, deviceIdOverride).finally(() => {
+      this.startingPromise = null;
+    });
+    const res = await this.startingPromise;
+    if (res.ok && this.stopRequestedDuringStart) {
+      // stopMic() was called while getUserMedia was pending: release everything now.
+      // Callers that joined this same in-flight start (double-click) are cancelled too, which is intended:
+      // the user's latest intent was "stop".
+      this.stopMic();
+      return { ok: false, error: 'other', message: 'Microphone start was cancelled.', cancelled: true };
+    }
+    return res;
+  }
+
+  private async startMicInner(onPcmChunk: (chunk: ArrayBuffer) => void, deviceIdOverride?: string): Promise<MicStartResult> {
     if (typeof window === 'undefined') return { ok: false, error: 'unsupported' };
     if (!window.isSecureContext) {
       return {
@@ -362,11 +388,6 @@ export class VoiceAudioEngine {
       this.recordCtx = new Ctx();
       if (this.recordCtx.state === 'suspended') await this.recordCtx.resume();
       const source = this.recordCtx.createMediaStreamSource(this.micStream);
-      this.recordAnalyser = this.recordCtx.createAnalyser();
-      this.recordAnalyser.fftSize = 256;
-      this.recordAnalyser.smoothingTimeConstant = 0.65;
-      this.recordFreq = new Uint8Array(this.recordAnalyser.frequencyBinCount);
-      source.connect(this.recordAnalyser);
       this.sinkGain = this.recordCtx.createGain();
       this.sinkGain.gain.value = 0;
       this.sinkGain.connect(this.recordCtx.destination);
@@ -391,6 +412,7 @@ export class VoiceAudioEngine {
             }
             const rms = Math.sqrt(sum / Math.max(1, s16.length));
             const lv = Math.min(1, Math.sqrt(rms) * 2.0);
+            this.rawMicLevel = lv;
             this.micLevel = this.micLevel * 0.45 + lv * 0.55;
             this.onPcm16Chunk?.(buf);
           };
@@ -400,6 +422,7 @@ export class VoiceAudioEngine {
             handleBuf(msg.buffer as ArrayBuffer);
           } else if (msg?.type === 'level') {
             const lv = Math.min(1, Math.sqrt((msg.rms as number) || 0) * 2.0);
+            this.rawMicLevel = lv;
             this.micLevel = this.micLevel * 0.45 + lv * 0.55;
           }
         };
@@ -434,6 +457,7 @@ export class VoiceAudioEngine {
           }
           const rms = Math.sqrt(sumSq / Math.max(1, n));
           const lv = Math.min(1, Math.sqrt(rms) * 2.2);
+          this.rawMicLevel = lv; // fallback path feeds barge-in too
           this.micLevel = this.micLevel * 0.45 + lv * 0.55;
           const gain = peakAbs > 0.002 && peakAbs < 0.2 ? Math.min(3.5, 0.35 / peakAbs) : 1.0;
           while (pos < n) {
@@ -468,6 +492,7 @@ export class VoiceAudioEngine {
   }
 
   public stopMic(): void {
+    if (this.startingPromise) this.stopRequestedDuringStart = true;
     try {
       this.workletNode?.port.postMessage('flush');
     } catch {}
@@ -479,34 +504,32 @@ export class VoiceAudioEngine {
     } catch {}
     this.workletNode = null;
     this.sinkGain = null;
-    this.recordAnalyser = null;
-    this.recordFreq = null;
     if (this.recordCtx && this.recordCtx.state !== 'closed') void this.recordCtx.close();
     this.recordCtx = null;
     this.micLevel = 0;
+    this.rawMicLevel = 0;
     this.recording = false;
+  }
+
+  /** Raw (unsmoothed, no floor) mic level 0..1: the honest signal used for barge-in decisions (U3.3). */
+  public getRawMicLevel(): number {
+    return this.recording ? this.rawMicLevel : 0;
+  }
+
+  /** Output (Yukti voice) level 0..1 from the playback analyser; 0 when silent (U3.2 speaking state). */
+  public getOutputLevel(): number {
+    if (!this.playAnalyser || !this.playFreq || this.activeSources.size === 0) return 0;
+    this.playAnalyser.getByteFrequencyData(this.playFreq as any);
+    let sum = 0;
+    for (let i = 0; i < this.playFreq.length; i++) sum += this.playFreq[i];
+    return Math.min(1, sum / this.playFreq.length / 70);
   }
 
   /** 0..1 smoothed microphone level (0 when not recording). */
   public getMicLevel(): number {
-    if (!this.recording && !this.recognitionWantActive) return 0;
-    if (this.recordAnalyser && this.recordFreq) {
-      this.recordAnalyser.getByteFrequencyData(this.recordFreq as any);
-      let sum = 0;
-      for (let i = 0; i < this.recordFreq.length; i++) sum += this.recordFreq[i];
-      const freqLv = Math.min(1, sum / this.recordFreq.length / 55);
-      this.micLevel = Math.max(this.micLevel * 0.82, freqLv);
-    }
-    const sinceSpeech = performance.now() - this.lastSpeechActivityAt;
-    if (sinceSpeech < 950) {
-      const decay = 1 - sinceSpeech / 950;
-      const cadence = 0.45 + 0.42 * Math.abs(Math.sin(performance.now() * 0.014)) * decay;
-      return Math.min(1, Math.max(this.micLevel, cadence));
-    }
-    // Natural decay + subtle active listening floor so the meter & orb visibly respond
-    this.micLevel *= 0.92;
-    const floor = 0.16 + 0.1 * Math.abs(Math.sin(performance.now() * 0.005));
-    return Math.max(floor, this.micLevel);
+    // Pure read (U3.3): smoothed worklet level for display. No synthetic floor or cadence, so silence reads ~0.
+    if (!this.recording) return 0;
+    return this.micLevel;
   }
 
   // ---------- Playback ----------
@@ -542,7 +565,8 @@ export class VoiceAudioEngine {
 
   public enqueue24kAudio(pcmData: string | ArrayBuffer): void {
     if (this.isMuted) return;
-    this.dropIncoming = false;
+    // After a barge-in, the rest of the interrupted reply is discarded until acceptIncoming() (U3.4).
+    if (this.dropIncoming) return;
     if (typeof window !== 'undefined' && 'speechSynthesis' in window && this.synthSpeaking) {
       try {
         window.speechSynthesis.cancel();
@@ -617,7 +641,8 @@ export class VoiceAudioEngine {
     });
     this.activeSources.clear();
     if (this.playCtx) this.nextPlayTime = this.playCtx.currentTime;
-    this.dropIncoming = false;
+    // dropInFlight=true (barge-in): ignore remaining chunks of this reply until a new turn starts.
+    this.dropIncoming = _dropInFlight;
     if (had) this.onPlaybackEnded?.();
   }
 
@@ -625,24 +650,14 @@ export class VoiceAudioEngine {
     return this.activeSources.size > 0 || this.synthSpeaking;
   }
 
-  /** Amplitude 0..1 for the particle orb. */
-  public getAmplitude(mode: 'idle' | 'listening' | 'thinking' | 'speaking'): number {
-    this.phase += 0.055;
-    if (mode === 'listening') {
-      const liveLv = this.getMicLevel();
-      const harmonic = 0.22 + 0.14 * Math.sin(this.phase * 2.8) + 0.08 * Math.cos(this.phase * 4.3);
-      return Math.min(1, Math.max(liveLv, harmonic));
-    }
-    if (mode === 'speaking') {
-      if (this.playAnalyser && this.playFreq && this.activeSources.size > 0) {
-        this.playAnalyser.getByteFrequencyData(this.playFreq as any);
-        let sum = 0;
-        for (let i = 0; i < this.playFreq.length; i++) sum += this.playFreq[i];
-        return Math.min(1, Math.max(0.18, sum / this.playFreq.length / 70));
-      }
-      return 0.38 + 0.26 * Math.abs(Math.sin(this.phase * 3.8)) + 0.12 * Math.cos(this.phase * 6.1);
-    }
-    if (mode === 'thinking') return 0.35 + 0.15 * Math.sin(this.phase * 4);
-    return 0.08 + 0.04 * Math.sin(this.phase * 0.8);
+  /** Release every audio resource (U3.5): stop mic + playback and close the 24 kHz playback context. */
+  public dispose(): void {
+    this.stopSpeechRecognition(false);
+    this.stopMic();
+    this.stopPlayback(false);
+    if (this.playCtx && this.playCtx.state !== 'closed') void this.playCtx.close();
+    this.playCtx = null;
+    this.playAnalyser = null;
+    this.playFreq = null;
   }
 }

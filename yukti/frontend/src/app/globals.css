@@ -319,11 +319,6 @@
   }
 }
 
-@keyframes yk-aura-breathe {
-  0%, 100% { opacity: calc(var(--aura-glow-opacity) * 0.75); transform: scale(0.98); }
-  50% { opacity: var(--aura-glow-opacity); transform: scale(1.02); }
-}
-
 /* Ring: a thin, clear Google-hue arc that sweeps around the element, with a soft halo OUTSIDE only
    (masked so no colour bleeds into the content area). */
 .yk-aura-ring {
@@ -393,17 +388,16 @@
   inset: -20%;
   pointer-events: none;
   background:
-    radial-gradient(38% 42% at 30% 40%, var(--aura-blue) 0%, transparent 70%),
-    radial-gradient(34% 38% at 62% 32%, var(--aura-red) 0%, transparent 70%),
-    radial-gradient(30% 34% at 70% 66%, var(--aura-yellow) 0%, transparent 70%),
-    radial-gradient(32% 36% at 40% 70%, var(--aura-green) 0%, transparent 70%);
-  filter: blur(48px);
+    radial-gradient(40% 44% at 30% 40%, var(--aura-blue) 0%, color-mix(in srgb, var(--aura-blue) 40%, transparent) 35%, transparent 78%),
+    radial-gradient(36% 40% at 62% 32%, var(--aura-red) 0%, color-mix(in srgb, var(--aura-red) 40%, transparent) 35%, transparent 78%),
+    radial-gradient(32% 36% at 70% 66%, var(--aura-yellow) 0%, color-mix(in srgb, var(--aura-yellow) 40%, transparent) 35%, transparent 78%),
+    radial-gradient(34% 38% at 40% 70%, var(--aura-green) 0%, color-mix(in srgb, var(--aura-green) 40%, transparent) 35%, transparent 78%);
+  /* U3.7 perf: static, no CSS blur. Any animation (even opacity-only) on this page-sized layer
+     re-composites every frame and dropped 4K to ~16 fps; the VoiceOrb's own halo carries the breathing. */
   opacity: var(--aura-glow-opacity);
-  animation: yk-aura-breathe 9s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .yk-aura-ring::before,
-  .yk-aura-ring::after,
-  .yk-aura-bloom { animation: none; }
+  .yk-aura-ring::after { animation: none; }
 }

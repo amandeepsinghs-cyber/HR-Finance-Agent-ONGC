@@ -145,6 +145,17 @@ const Greeting: React.FC<{
   // Time-aware greeting computed on the client after mount (server render may run in UTC).
   const [hello, setHello] = useState('Hello');
   useEffect(() => setHello(greetingWord()), []);
+  // Orb scales with the fluid type scale (rem), so it keeps its proportion on 4K / big screens.
+  const [orbPx, setOrbPx] = useState(156);
+  useEffect(() => {
+    const fit = () => {
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      setOrbPx(Math.round(Math.min(300, Math.max(140, rem * 9.75))));
+    };
+    fit();
+    window.addEventListener('resize', fit);
+    return () => window.removeEventListener('resize', fit);
+  }, []);
   const name = ADDRESS[persona] || 'Chairman';
 
   return (
@@ -159,10 +170,11 @@ const Greeting: React.FC<{
           <VoiceOrb
             state={orbState}
             isDark={isDark}
-            size={132}
+            size={orbPx}
             onClick={onTalk}
             audioEngine={audioEngine}
             label={isMicActive ? 'Stop listening' : 'Start talking to Yukti'}
+            pressed={!!isMicActive}
           />
         </div>
 
