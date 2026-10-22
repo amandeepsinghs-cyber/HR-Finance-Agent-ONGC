@@ -22,6 +22,11 @@ DIM_PLURAL = {"discipline": "disciplines", "work_centre": "work centres", "grade
               "asset": "assets", "fiscal_year": "years", "cadre": "cadres", "gender": "groups"}
 
 
+def _num(v: Any) -> float:
+    """Numeric value of a cell; suppressed ("<5") or missing cells count as 0 (G4 B3 B-2)."""
+    return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else 0.0
+
+
 def is_additive(compiled: CompiledQuery) -> bool:
     """Only count/sum results may be added across groups (an average of averages is not a fact)."""
     return compiled.aggregation in ("count", "sum") and compiled.unit not in (
@@ -139,11 +144,11 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             groups.setdefault(str(r.get(lead)), []).append(r)
         items = []
         for label, grp in groups.items():
-            total = sum(float(g.get(val) or 0) for g in grp) if is_additive(compiled) else (
+            total = sum(_num(g.get(val)) for g in grp) if is_additive(compiled) else (
                 grp[0].get(val) if len(grp) == 1 else None)
             item: Dict[str, Any] = {"label": label, "kpis": []}
             if total is not None:
-                item["kpis"].append({"label": compiled.metric_label, "value": round(float(total), 2),
+                item["kpis"].append({"label": compiled.metric_label, "value": round(_num(total), 2) if not isinstance(total, str) else total,
                                      "unit": UNIT_WORDS.get(compiled.unit, "")})
             if len(dims) > 1:
                 item["chart"] = build_chart_spec(kind="hbar", columns=[dims[1], val], rows=grp, title=label, unit=unit)
@@ -210,13 +215,13 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
         for r in rows:
             k = str(r.get(lead))
             counts[k] = counts.get(k, 0) + 1
-            totals[k] = totals.get(k, 0.0) + float(r.get(val) or 0)
+            totals[k] = totals.get(k, 0.0) + _num(r.get(val))
         if not additive and any(c > 1 for c in counts.values()):
             # averages/ratios split by a second dimension: name each group's highest value instead of a sum
             best: Dict[str, Dict[str, Any]] = {}
             for r in rows:
                 k = str(r.get(lead))
-                if k not in best or float(r.get(val) or 0) > float(best[k].get(val) or 0):
+                if k not in best or _num(r.get(val)) > _num(best[k].get(val)):
                     best[k] = r
             parts = [f"{k}: highest {b.get(dims[1])} ({fmt_num(b.get(val), compiled.unit)})" for k, b in best.items()]
             return f"{compiled.metric_label} — " + "; ".join(parts) + ". Details are on screen."
@@ -224,7 +229,7 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
         others = [s for s in scope_phrases(spec, compiled) if " vs " not in s]
         s = f"{compiled.metric_label} — " + " vs ".join(parts) + (f" ({', '.join(others)})." if others else ".")
         if len(dims) > 1:
-            top = max(rows, key=lambda r: float(r.get(val) or 0))
+            top = max(rows, key=lambda r: _num(r.get(val)))
             s += f" The largest single group is {top.get(dims[1])} in {top.get(lead)} ({fmt_num(top.get(val), compiled.unit)})."
         return s + " Details are on screen."
     dim = dims[0]
@@ -235,9 +240,9 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
         # several breakdowns: rank the first one by its total so names are not repeated
         agg: Dict[Any, float] = {}
         for r in rows:
-            agg[r.get(dim)] = agg.get(r.get(dim), 0.0) + float(r.get(val) or 0)
+            agg[r.get(dim)] = agg.get(r.get(dim), 0.0) + _num(r.get(val))
         rows = [{dim: k, val: v} for k, v in agg.items()]
-    ranked = sorted(rows, key=lambda r: float(r.get(val) or 0), reverse=True)
+    ranked = sorted(rows, key=lambda r: _num(r.get(val)), reverse=True)
     plural = DIM_PLURAL.get(dim, "groups")
     if dim == "fiscal_year":
         first, last = rows[0], rows[-1]
@@ -246,14 +251,14 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
                 + " The trend is on screen.")
     s = ""
     if additive:
-        total = sum(float(r.get(val) or 0) for r in rows)
+        total = sum(_num(r.get(val)) for r in rows)
         s = f"{fmt_num(total, compiled.unit)}" + (f" {unit_word}" if unit_word and compiled.unit not in ("inr_cr", "inr_lakh") else "") + f" across {len(rows)} {plural}"
         s += f" ({scope}). " if scope else ". "
     top = ranked[:2]
     s += "Highest: " + " and ".join(f"{r.get(dim)} ({fmt_num(r.get(val), compiled.unit)})" for r in top) + "."
     neg = [r for r in rows if isinstance(r.get(val), (int, float)) and r.get(val) < 0]
     if "change" in (val or ""):
-        flat = [r for r in rows if float(r.get(val) or 0) <= 0]
+        flat = [r for r in rows if _num(r.get(val)) <= 0]
         s += f" {len(flat)} of {len(rows)} {plural} saw no increase."
         neg = []
     if neg:

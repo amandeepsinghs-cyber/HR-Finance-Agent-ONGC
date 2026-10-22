@@ -19,14 +19,31 @@ class _State:
         self.turns, self.spec_history, self.last_rows = [], hist or [], []
 
 
-def test_f1_junior_with_client_spec_patch_never_reaches_planner():
+def test_f1_junior_with_client_spec_patch_never_gets_names(monkeypatch):
+    """B2: juniors never reached the planner. B3: they do, under the RBAC policy — a client-sent
+    `grain=row` patch is turned into aggregate counts (D-11), never a named roster (live BigQuery)."""
     from app.brain import pipeline
     spec = QuerySpec(metric="headcount", filters=[Filter(field="wc", value="WC-DEL")])
-    for persona in ("E2_HR", "E3_FIN", "UNKNOWN"):
-        out = asyncio.run(pipeline.run_planner_turn(
-            "Show the names", _State([spec.to_contract()]), persona, "t-1", "en", time.perf_counter(),
-            patch_override=SpecPatch(grain="row"), base_spec=spec))
-        assert out is None, persona
+    monkeypatch.setenv("YUKTI_PLANNER_JUNIOR", "0")
+    out = asyncio.run(pipeline.run_planner_turn(
+        "Show the names", _State([spec.to_contract()]), "E2_HR", "t-0", "en", time.perf_counter(),
+        patch_override=SpecPatch(grain="row"), base_spec=spec))
+    assert out is None  # B2 behaviour still available behind the switch
+    monkeypatch.setenv("YUKTI_PLANNER_JUNIOR", "1")
+
+    async def both():
+        res = []
+        for persona in ("E2_HR", "E3_FIN", "UNKNOWN"):
+            res.append(await pipeline.run_planner_turn(
+                "Show the names", _State([spec.to_contract()]), persona, "t-1", "en", time.perf_counter(),
+                patch_override=SpecPatch(grain="row"), base_spec=spec))
+        return res
+
+    for out in asyncio.run(both()):
+        c = out["contract"]
+        cols = set(c["visual"]["table"]["columns"])
+        assert "name" not in cols and "emp_id" not in cols
+        assert c["access"]["status"] == "partial" and c["query_spec"]["grain"] == "aggregate"
 
 
 def test_f5_unsupported_filter_falls_back_instead_of_widening():

@@ -1,0 +1,64 @@
+# Yukti RBAC policy (B3.3, FEAT-010). Persona class x data class -> allow | mask | aggregate | refuse.
+# Decisions: D-5 / D-10 (CMD and Directors see everything incl. individual pay and APAR),
+#            D-11 (E1–E4: aggregate by default, no names, cells < 5 suppressed; refuse pay,
+#                  APAR, vigilance, POSH, medical), OD-5 option (a): E2_HR / E3_FIN are the junior class.
+# Applied pre-query to the QuerySpec (app/brain/rbac.py: decide) and post-query to the result
+# and to every contract (enforce_contract), so a refusal never ships a granular table.
+version: 1
+rule_refs:
+  D-10: "D-10: CMD and Directors see granular and statutory-confidential data"
+  D-11: "D-11: E1–E4 officers see aggregates only (no names; cells under 5 suppressed); pay, APAR, vigilance, POSH and medical records are refused"
+
+persona_classes:
+  leadership: [CMD]
+  director: [DIR_HR, DIR_FIN]
+  junior: [E2_HR, E3_FIN]
+
+data_classes:
+  general:   "Aggregates and non-personal facts"
+  named:     "Individual-level rows: names, employee ids, designation, tenure, posting"
+  pay:       "Individual or aggregate compensation (salary, allowances, PRP)"
+  apar:      "Performance appraisal ratings/scores"
+  sensitive: "Vigilance, POSH, medical, disciplinary records"
+
+matrix:
+  leadership: {general: allow, named: allow, pay: allow, apar: allow, sensitive: allow}
+  director:   {general: allow, named: allow, pay: allow, apar: allow, sensitive: allow}
+  junior:     {general: allow, named: aggregate, pay: refuse, apar: refuse, sensitive: refuse}
+
+small_cell_threshold: 5          # junior aggregates: counts below this are shown as "<5"
+aggregate_dimension_default: grade   # roster -> counts by grade when names are not allowed
+
+# Result columns that carry a data class (post-query masking on any path, incl. the legacy LLM path).
+column_classes:
+  named: [emp_id, emp_name, name, employee_name, incumbent_emp_id, successor_1_emp_id, successor_2_emp_id,
+          reporting_officer_emp_id, reviewing_officer_emp_id]
+  pay: [gross_salary_inr, net_salary_inr, basic_pay_inr, da_inr, hra_inr, fy26_gross_salary_inr,
+        fy26_gross_salary_lakh, avg_monthly_gross_inr, prp_inr, fy26_prp_inr, overtime_amount_inr,
+        avg_gross_salary_lakh, cafeteria_allowances_inr]
+  apar: [fy26_apar_score, fy26_apar_rating, numerical_score, final_rating, avg_apar_score, apar_score]
+  sensitive: [vigilance_status, posh_case_id, diagnosis, medical_condition]
+
+# Pattern classification for result columns not in the exact lists (legacy SQL aliases).
+column_patterns:
+  named: ["^emp_?name$", "^employee_?name$", "^name$", "^emp_?id$", "_emp_id$", "^officer_?name$"]
+  pay: ["salary", "_pay$", "^pay_", "gross_pay", "basic_pay", "ctc", "^prp", "_prp", "allowance", "wage", "remuneration", "emolument", "bonus", "increment"]
+  apar: ["apar", "appraisal", "performance_rating", "performance_score"]
+  sensitive: ["vigilance", "posh", "medical", "diagnosis", "disciplinary"]
+
+# Question topics that are sensitive regardless of the metric (pre-query text guard for juniors;
+# matched on word boundaries).
+topic_keywords:
+  pay: [salary, salaries, pay of, gross pay, average pay, take-home pay, take home pay, compensation, ctc, wages,
+        wage, remuneration, emoluments, prp, performance related pay, bonus, increment, allowance of, perks]
+  apar: [apar, apars, appraisal rating, appraisal score, performance rating, performance score]
+  sensitive: [vigilance, posh, sexual harassment, medical history, medical record, medical records, health record,
+              health records, disciplinary]
+
+row_actions:
+  - id: draft_transfer_note
+    label: "Draft Transfer Note"
+    action: draft_transfer_note
+    question_template: "Draft a transfer note for the selected {n} employees"
+    min_role: DIR_HR
+    subjects: [workforce]

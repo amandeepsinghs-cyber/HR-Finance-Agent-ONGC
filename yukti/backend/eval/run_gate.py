@@ -157,6 +157,24 @@ class GateEvaluator(FullEvaluator):
         rec["row_count"] = len(((res.get("visual") or {}).get("table") or {}).get("rows") or []) if res else 0
         rec["access_status"] = ((res.get("access") or {}).get("status")) if res else None
         rec["has_query_spec"] = bool(res.get("query_spec")) if res else False
+        # B4 metrics: insights / drill-downs per data answer and numeric grounding of the spoken answer
+        vis = (res.get("visual") or {}) if res else {}
+        rec["is_data_answer"] = bool(res) and vis.get("type") in ("chart", "table", "kpi") and \
+            (res.get("access") or {}).get("status") != "refused" and bool((vis.get("table") or {}).get("rows"))
+        rec["n_insights_v2"] = len(res.get("insights_v2") or []) if res else 0
+        rec["n_drilldowns"] = len(res.get("drilldowns") or []) if res else 0
+        if res and rec["has_query_spec"]:
+            from app.brain.narrator import grounding_violations
+            allowed = set(answer_numbers(res))
+            allowed |= {abs(x) for x in allowed}
+            for i in res.get("insights_v2") or []:
+                for x in _NUM_RE.findall(str(i.get("text", ""))):
+                    v = _to_float(x)
+                    if v is not None:
+                        allowed.add(v)
+            rec["ungrounded"] = grounding_violations(res.get("spoken_summary") or "", allowed)
+        else:
+            rec["ungrounded"] = None
         self.contracts[entry_id] = res
         return rec
 
@@ -235,6 +253,11 @@ def summarize(records: List[Dict[str, Any]]) -> Dict[str, Any]:
             "refusal_ok": sum(1 for r in items if r.get("refusal_ok")),
             "schema_ok": sum(1 for r in items if r.get("schema_valid")),
             "exceptions": sum(1 for r in items if str(r.get("failure_class") or "").startswith("Execution Exception")),
+            "data_answers": sum(1 for r in items if r.get("is_data_answer")),
+            "data_with_2plus_insights": sum(1 for r in items if r.get("is_data_answer") and (r.get("n_insights_v2") or 0) >= 2),
+            "planner_with_2plus_chips": sum(1 for r in items if r.get("has_query_spec") and (r.get("n_drilldowns") or 0) >= 2),
+            "planner_answers": sum(1 for r in items if r.get("has_query_spec")),
+            "ungrounded_answers": sum(1 for r in items if r.get("ungrounded")),
             "p50_ms": round(lats[len(lats) // 2], 0) if lats else 0,
             "p95_ms": round(lats[int(len(lats) * 0.95)], 0) if lats else 0,
         }
@@ -242,11 +265,12 @@ def summarize(records: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 def scorecard_md(label: str, summary: Dict[str, Any], meta: Dict[str, Any]) -> str:
-    lines = [f"| Suite | Turns | Lenient pass | Strict pass (anchor) | Anchor ok / checked | Refusal ok | Schema ok | Exceptions | p50 ms | p95 ms |",
-             "|---|---|---|---|---|---|---|---|---|---|"]
+    lines = [f"| Suite | Turns | Lenient pass | Strict pass (anchor) | Anchor ok / checked | Refusal ok | Schema ok | Exceptions | p50 ms | p95 ms | Data ans. ≥2 insights | Planner ≥2 chips | Ungrounded |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for suite, s in summary.items():
         lines.append(f"| {suite} | {s['total']} | {s['lenient_pass']} ({s['lenient_pct']}%) | {s['strict_pass']} ({s['strict_pct']}%) | "
-                     f"{s['anchor_ok']}/{s['anchor_checked']} | {s['refusal_ok']} | {s['schema_ok']} | {s['exceptions']} | {s['p50_ms']} | {s['p95_ms']} |")
+                     f"{s['anchor_ok']}/{s['anchor_checked']} | {s['refusal_ok']} | {s['schema_ok']} | {s['exceptions']} | {s['p50_ms']} | {s['p95_ms']} | "
+                     f"{s['data_with_2plus_insights']}/{s['data_answers']} | {s['planner_with_2plus_chips']}/{s['planner_answers']} | {s['ungrounded_answers']} |")
     head = (f"**Gate:** {label} · **Run:** {meta['timestamp']} · **Model:** {meta['model']} · "
             f"**Flags:** YUKTI_PLANNER={meta['planner']} · cache OFF · **Wall time:** {meta['elapsed_s']} s")
     return head + "\n\n" + "\n".join(lines)

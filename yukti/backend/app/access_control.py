@@ -36,7 +36,8 @@ REFUSAL_DEFINITIONS = {
         "reason": "Individual compensation, basic pay, and allowances are strictly confidential personal data under ONGC CDA Rules and DPE guidelines.",
         "rule_ref": "ONGC CDA Rules 1994, Rule 5.0 (Confidentiality of Personal Information) & DPE Executive Compensation Guidelines.",
         "alternative": "Public executive pay scale bands (E0 to E9) and statutory DA/allowance brackets.",
-        "restricted_personas": {"E2_HR", "E3_FIN", "DIR_HR", "DIR_FIN"},
+        # D-10: CMD and Directors see individual pay; only E1–E4 are refused (D-11).
+        "restricted_personas": {"E2_HR", "E3_FIN"},
         "alternative_sql": """SELECT
     grade_id,
     designation,
@@ -173,7 +174,8 @@ LIMIT 5;"""
         "reason": "Individual compensation and annual performance appraisal ratings (APAR) for specific employees are strictly confidential personal records.",
         "rule_ref": "ONGC CDA Rules 1994, Rule 5.0 (Confidentiality of Personal Records) & Right to Privacy guidelines.",
         "alternative": "Official procedure for an officer to access their own appraisal and pay slip via Employee Self Service (ESS) portal.",
-        "restricted_personas": {"E2_HR", "E3_FIN", "DIR_HR", "DIR_FIN"},
+        # D-10: CMD and Directors see individual pay and APAR; only E1–E4 are refused (D-11).
+        "restricted_personas": {"E2_HR", "E3_FIN"},
         "alternative_sql": """SELECT
     grade_id,
     designation,
@@ -203,6 +205,23 @@ LIMIT 5;"""
 }
 
 
+# B3 (D-11): topic refusals that have no question in the original bank.
+REFUSAL_DEFINITIONS["R-POSH"] = {
+    "reason": "POSH complaints and Internal Committee proceedings are confidential under the POSH Act 2013.",
+    "rule_ref": "Sexual Harassment of Women at Workplace Act 2013, Section 16 (confidentiality)",
+    "alternative": "The POSH policy, the complaint procedure and the Internal Committee contacts for your station.",
+    "restricted_personas": {"E2_HR", "E3_FIN"},
+    "alternative_sql": None,
+}
+REFUSAL_DEFINITIONS["R-MED"] = {
+    "reason": "Individual medical and health records are confidential personal data.",
+    "rule_ref": "ONGC Medical Attendance & Treatment Rules (confidentiality) · D-11",
+    "alternative": "Aggregate medical-claim volumes and turnaround times by work centre.",
+    "restricted_personas": {"E2_HR", "E3_FIN"},
+    "alternative_sql": None,
+}
+
+
 @dataclass
 class AccessDecision:
     status: str  # "allowed", "partial", "refused"
@@ -218,7 +237,8 @@ def normalize_persona(persona: Optional[str]) -> str:
     if not persona:
         return "CMD"
     p_clean = persona.strip().lower()
-    return PERSONA_ALIASES.get(p_clean, persona.upper() if persona.upper() in VALID_PERSONAS else "CMD")
+    # Unknown persona strings get the most restrictive class (E1–E4), never CMD (G4 B3 I-1).
+    return PERSONA_ALIASES.get(p_clean, persona.upper() if persona.upper() in VALID_PERSONAS else "E2_HR")
 
 
 def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[str] = None) -> AccessDecision:
@@ -246,24 +266,39 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                 refusal_id=root_id,
             )
         elif normalized_persona == "CMD":
-            # For D1 / M3, individual salary is confidential personal data even for CMD per CDA Rule 5.0,
-            # but authorized aggregate pay scale is provided
-            if root_id in ("D1", "M3") and (entry_id == root_id or (entry_id and "__why" in entry_id)):
-                # D1 and M3 root/why are audited refusals in INDEX.md
-                return AccessDecision(
-                    status="refused",
-                    reason=ref_def["reason"],
-                    rule_ref=ref_def["rule_ref"],
-                    alternative=ref_def["alternative"],
-                    alternative_sql=ref_def["alternative_sql"],
-                    refusal_id=root_id,
-                )
+            # D-10 (B3): the CMD sees individual pay and APAR too; the former CMD refusal for D1/M3
+            # (CDA Rule 5.0 reading) is superseded by the sponsor decision.
             return AccessDecision(status="allowed")
 
     # 2. Text / Query keyword heuristic for novel queries
     if query:
         q_low = query.lower()
         if normalized_persona in ("E2_HR", "E3_FIN"):
+            # D-11 (B3): pay, APAR and vigilance/POSH/medical topics are refused for E1–E4, whatever the
+            # wording (topic keywords live in app/brain/rbac_policy.yaml).
+            from app.brain.rbac import topic_classes
+            topics = topic_classes(query)
+            if topics:
+                q_l = query.lower()
+                if "apar" in topics:
+                    rid = "M3"
+                elif "pay" in topics:
+                    rid = "D1"
+                elif "posh" in q_l or "harassment" in q_l:
+                    rid = "R-POSH"
+                elif "medical" in q_l or "health" in q_l:
+                    rid = "R-MED"
+                else:
+                    rid = "D6"
+                d = REFUSAL_DEFINITIONS[rid]
+                return AccessDecision(
+                    status="refused",
+                    reason=d["reason"],
+                    rule_ref=d["rule_ref"] + " · D-11",
+                    alternative=d["alternative"],
+                    alternative_sql=d["alternative_sql"],
+                    refusal_id=rid,
+                )
             # Check for salary of other person
             if "salary of my reporting officer" in q_low or ("salary" in q_low and "reporting officer" in q_low):
                 d = REFUSAL_DEFINITIONS["D1"]
