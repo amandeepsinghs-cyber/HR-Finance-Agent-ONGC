@@ -8,8 +8,10 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnswerCard } from './AnswerCard';
 import type { Turn } from '@/state/feed';
+import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
 import { cleanText } from '@/charts/format';
 import { AlertTriangle, ArrowDown, Mic, Plus, RotateCcw } from 'lucide-react';
+import { Card, Chip } from './ui/primitives';
 
 interface ConversationFeedProps {
   turns: Turn[];
@@ -17,10 +19,11 @@ interface ConversationFeedProps {
   persona?: string;
   statusLine?: string | null;
   liveInterimText?: string;
-  onAsk?: (q: string) => void;
+  onAsk?: (q: string, specPatch?: SpecPatch) => void;
   onRetry?: (q: string, turnId?: string) => void;
   onNewSession?: () => void;
   onNavigateToAlternative?: (q?: string) => void;
+  onReplot?: (turnId: string, visual: VisualContainer) => void;
 }
 
 const timeOf = (ms?: number) => (ms ? new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
@@ -40,7 +43,7 @@ const QuestionBubble: React.FC<{ turn: Turn }> = ({ turn }) => (
 );
 
 const PendingCard: React.FC<{ statusLine?: string | null }> = ({ statusLine }) => (
-  <div className="card px-[1.35rem] py-[1.2rem] max-w-[72rem]" data-testid="turn-pending" role="status" aria-live="polite">
+  <Card className="px-[1.35rem] py-[1.2rem] max-w-[72rem]" data-testid="turn-pending" role="status" aria-live="polite">
     <div className="flex items-center gap-3 text-label text-[var(--ink-2)]">
       <span className="relative inline-flex w-2.5 h-2.5">
         <span className="absolute inset-0 rounded-full bg-[var(--accent)] opacity-60 animate-ping" />
@@ -53,23 +56,23 @@ const PendingCard: React.FC<{ statusLine?: string | null }> = ({ statusLine }) =
       <div className="h-3 rounded-full yk-shimmer w-[86%]" />
       <div className="h-3 rounded-full yk-shimmer w-[44%]" />
     </div>
-  </div>
+  </Card>
 );
 
 const ErrorCard: React.FC<{ turn: Turn; onRetry?: (q: string, turnId?: string) => void }> = ({ turn, onRetry }) => (
-  <div className="card px-[1.35rem] py-[1.1rem] max-w-[72rem] border-[var(--maroon-pale)]" data-testid="turn-error" role="alert">
+  <Card className="px-[1.35rem] py-[1.1rem] max-w-[72rem] !border-[var(--maroon-pale)]" data-testid="turn-error" role="alert">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-2.5 text-label text-[var(--maroon)]">
         <AlertTriangle className="w-4 h-4 shrink-0" aria-hidden />
         {turn.error || 'Something went wrong.'}
       </div>
       {onRetry && (
-        <button type="button" className="chip !py-1.5" onClick={() => onRetry(turn.question, turn.id)} data-testid="turn-retry">
+        <Chip className="!py-1.5" onClick={() => onRetry(turn.question, turn.id)} data-testid="turn-retry">
           <RotateCcw className="w-3.5 h-3.5" aria-hidden /> Try again
-        </button>
+        </Chip>
       )}
     </div>
-  </div>
+  </Card>
 );
 
 export const ConversationFeed: React.FC<ConversationFeedProps> = ({
@@ -81,6 +84,7 @@ export const ConversationFeed: React.FC<ConversationFeedProps> = ({
   onRetry,
   onNewSession,
   onNavigateToAlternative,
+  onReplot,
 }) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const scrollerRef = useRef<HTMLElement | null>(null);
@@ -202,9 +206,9 @@ export const ConversationFeed: React.FC<ConversationFeedProps> = ({
           {answered < turns.length ? ` · ${turns.length - answered} in progress` : ''}
         </div>
         {onNewSession && (
-          <button type="button" onClick={onNewSession} className="chip !py-1.5 !text-label" data-testid="new-session" title="Start a fresh conversation (clears context)">
+          <Chip onClick={onNewSession} className="!py-1.5 !text-label" data-testid="new-session" title="Start a fresh conversation (clears context)">
             <Plus className="w-3.5 h-3.5" aria-hidden /> New conversation
-          </button>
+          </Chip>
         )}
       </header>
 
@@ -231,6 +235,7 @@ export const ConversationFeed: React.FC<ConversationFeedProps> = ({
                   fresh={!!t.fresh && isLast}
                   isLatest={isLast}
                   onAsk={onAsk}
+                  onReplot={onReplot ? (v) => onReplot(t.id, v) : undefined}
                   onNavigateToAlternative={() => onNavigateToAlternative?.(t.contract?.access?.alternative)}
                 />
               )}

@@ -268,25 +268,23 @@ export const FloatingConversationPanel: React.FC<Props> = ({
               <span>Conversation History ({messages.length})</span>
             </div>
             <div className="flex items-center gap-1">
-              <button
-                type="button"
+              <IconButton
                 onClick={() => onModeChange(full ? 'docked' : 'fullscreen')}
-                className="icon-btn !w-7 !h-7"
-                aria-label={full ? 'Exit full screen' : 'Full screen'}
+                className="!w-7 !h-7 [&>svg]:!w-3.5 [&>svg]:!h-3.5"
+                label={full ? 'Exit full screen' : 'Full screen'}
               >
                 {full ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-              </button>
-              <button
-                type="button"
+              </IconButton>
+              <IconButton
                 onClick={() => {
                   setThreadOpen(false);
                   if (full) onModeChange('docked');
                 }}
-                className="icon-btn !w-7 !h-7"
-                aria-label="Close transcript"
+                className="!w-7 !h-7 [&>svg]:!w-4 [&>svg]:!h-4"
+                label="Close transcript"
               >
                 <X className="w-4 h-4" />
-              </button>
+              </IconButton>
             </div>
           </div>
           <div ref={threadRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3" data-testid="thread">
@@ -469,31 +467,30 @@ export const FloatingConversationPanel: React.FC<Props> = ({
           {!collapsed && (
             <>
               {/* Speaker / Voice Mute Toggle */}
-              <button
-                type="button"
+              <IconButton
                 onClick={onToggleMute}
-                className={`icon-btn !w-9 !h-9 rounded-full border border-[var(--hairline)] ${
-                  isMuted ? 'text-[var(--maroon)] bg-[var(--maroon-pale)]' : 'text-[var(--accent)] bg-[var(--surface)]'
-                }`}
-                title={isMuted ? 'Voice output muted — click to unmute' : 'Voice output active (Leda) — click to mute'}
+                className={clsx(
+                  '!w-9 !h-9 !rounded-full border border-[var(--hairline)] [&>svg]:!w-4 [&>svg]:!h-4',
+                  isMuted ? '!text-[var(--maroon)] !bg-[var(--maroon-pale)]' : '!text-[var(--accent)] !bg-[var(--surface)]',
+                )}
+                label={isMuted ? 'Voice output muted — click to unmute' : 'Voice output active (Leda) — click to mute'}
                 aria-label="Toggle voice output"
               >
                 {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-              </button>
+              </IconButton>
             </>
           )}
 
           {/* Transcript History Drawer Toggle */}
-          <button
-            type="button"
+          <IconButton
             onClick={() => setThreadOpen((o) => !o)}
             className={clsx(
               collapsed
                 ? 'sr-only'
-                : 'icon-btn !w-9 !h-9 rounded-full border border-[var(--hairline)] relative',
-              !collapsed && (showHistoryDrawer ? 'bg-[var(--accent-pale)] text-[var(--accent-deep)]' : 'bg-[var(--surface)] text-[var(--ink-2)]'),
+                : '!w-9 !h-9 !rounded-full border border-[var(--hairline)] relative [&>svg]:!w-4 [&>svg]:!h-4',
+              !collapsed && (showHistoryDrawer ? '!bg-[var(--accent-pale)] !text-[var(--accent-deep)]' : '!bg-[var(--surface)] !text-[var(--ink-2)]'),
             )}
-            title="Toggle conversation transcript"
+            label="Toggle conversation transcript"
             aria-label="Toggle conversation transcript"
             data-testid="panel-minimise"
           >
@@ -503,7 +500,7 @@ export const FloatingConversationPanel: React.FC<Props> = ({
                 {messages.length}
               </span>
             )}
-          </button>
+          </IconButton>
 
           {/* Submit Button */}
           <button

@@ -7,8 +7,10 @@ import { ChatMessage } from './FloatingConversationPanel';
 import { ConversationFeed } from './ConversationFeed';
 import { AnswerCard } from './AnswerCard';
 import type { Turn } from '@/state/feed';
+import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
 import { latestAnswered } from '@/state/feed';
 import { Users, TrendingUp, Target, Scale, BarChart3, Activity } from 'lucide-react';
+import { Card } from './ui/primitives';
 
 interface CanvasViewProps {
   /** conversation feed (U2.2); empty = greeting */
@@ -16,9 +18,10 @@ interface CanvasViewProps {
   isDark?: boolean;
   onNavigateToAlternative?: (q?: string) => void;
   onSelectStarter?: (q: string) => void;
-  onAsk?: (q: string) => void;
+  onAsk?: (q: string, specPatch?: SpecPatch) => void;
   onRetry?: (q: string, turnId?: string) => void;
   onNewSession?: () => void;
+  onReplot?: (turnId: string, visual: VisualContainer) => void;
   busy?: boolean;
   statusLine?: string | null;
   onTalk?: () => void;
@@ -89,11 +92,12 @@ const Greeting: React.FC<{
   const [hello, setHello] = useState('Hello');
   useEffect(() => setHello(greetingWord()), []);
   // Orb scales with the fluid type scale (rem), so it keeps its proportion on 4K / big screens.
-  const [orbPx, setOrbPx] = useState(156);
+  const [orbPx, setOrbPx] = useState(208);
   useEffect(() => {
     const fit = () => {
       const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-      setOrbPx(Math.round(Math.min(300, Math.max(140, rem * 9.75))));
+      // the aurora wave is wide: give it room on the greeting (≈ 208 px at 1440p, scales on 4K)
+      setOrbPx(Math.round(Math.min(380, Math.max(170, rem * 13))));
     };
     fit();
     window.addEventListener('resize', fit);
@@ -136,10 +140,12 @@ const Greeting: React.FC<{
           {starters.map((c) => {
             const Icon = c.icon;
             return (
-              <button
+              <Card
                 key={c.title}
+                as={'button' as any}
+                variant="glass"
                 onClick={() => onSelect?.(c.q)}
-                className="group text-left rounded-card border border-[var(--hairline)] bg-[var(--glass)] backdrop-blur-md shadow-[var(--card-shadow)] px-5 py-4 transition duration-fast hover:-translate-y-0.5 hover:border-[var(--accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+                className="group text-left px-5 py-4 transition duration-fast hover:-translate-y-0.5 hover:border-[var(--accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
               >
                 <span className="flex items-center gap-2 text-caption uppercase tracking-[0.06em] text-[var(--ink-3)]">
                   <Icon className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" />
@@ -148,7 +154,7 @@ const Greeting: React.FC<{
                 <span className="mt-2 block text-label font-semibold text-[var(--ink)] leading-snug group-hover:text-[var(--accent-deep)] dark:group-hover:text-[var(--accent-soft)]">
                   {c.title}
                 </span>
-              </button>
+              </Card>
             );
           })}
         </div>
@@ -165,6 +171,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
   onAsk,
   onRetry,
   onNewSession,
+  onReplot,
   busy,
   statusLine,
   onTalk,
@@ -202,6 +209,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
           onAsk={onAsk}
           onRetry={onRetry}
           onNewSession={onNewSession}
+          onReplot={onReplot}
           onNavigateToAlternative={onNavigateToAlternative}
         />
       ) : latest?.contract ? (
@@ -213,6 +221,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
           fresh={latest.fresh}
           isLatest
           onAsk={onAsk}
+          onReplot={onReplot ? (v) => onReplot(latest.id, v) : undefined}
           onNavigateToAlternative={() => onNavigateToAlternative?.(latest.contract?.access?.alternative)}
         />
       ) : null}

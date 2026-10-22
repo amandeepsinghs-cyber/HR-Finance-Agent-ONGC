@@ -20,6 +20,12 @@ const ACR_MAP: Record<string, string> = Object.fromEntries(ACRONYMS.map((a) => [
 
 const KEY_LABELS: Record<string, string> = {
   grade: 'Grade',
+  emp_name: 'Name',
+  employee_name: 'Name',
+  emp_id: 'Employee ID',
+  employee_id: 'Employee ID',
+  continuous_stay_years: 'Stay (years)',
+  posted_since: 'Posted since',
   grade_id: 'Grade',
   current_grade_id: 'Grade',
   wc_id: 'Work centre',
@@ -173,23 +179,29 @@ export function fmtCompact(v: number): string {
   return fmtNum(v);
 }
 
+/** Share label with a fixed single decimal ("6.0%" beside "5.6%", never "6%" beside "5.6%"). */
+export function fmtShare(value: number): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '—';
+  return `${value.toFixed(1)}%`;
+}
+
 export function fmtValue(v: number, unit: UnitInfo, opts: { compact?: boolean; sign?: boolean; withNoun?: boolean } = {}): string {
   if (v === null || v === undefined || Number.isNaN(v)) return '—';
-  const sign = opts.sign && v > 0 ? '+' : '';
+  // Typographic minus (U+2212) for every negative, compact or not (rubric C8: one look across charts).
+  const sign = v < 0 ? '−' : opts.sign && v > 0 ? '+' : '';
+  const abs = Math.abs(v);
   switch (unit.kind) {
     case 'currency': {
-      const abs = Math.abs(v);
-      const neg = v < 0 ? '−' : sign;
-      if (opts.compact && abs >= 1e5) return `${neg}₹${(abs / 1e5).toFixed(2).replace(/\.?0+$/, '')} L Cr`;
+      if (opts.compact && abs >= 1e5) return `${sign}₹${(abs / 1e5).toFixed(2).replace(/\.?0+$/, '')} L Cr`;
       // Indian convention: no 'k'. Below 1 lakh crore show full grouped crores (₹80,000 Cr).
-      return `${neg}₹${fmtNum(abs)} Cr`;
+      return `${sign}₹${fmtNum(abs)} Cr`;
     }
     case 'percent':
-      return `${sign}${fmtNum(v, Math.abs(v) >= 100 ? 0 : 1)}%`;
+      return `${sign}${fmtNum(abs, abs >= 100 ? 0 : 1)}%`;
     case 'plain':
-      return `${sign}${fmtNum(v)}${unit.suffix ? ` ${unit.suffix}` : ''}`;
+      return `${sign}${fmtNum(abs)}${unit.suffix ? ` ${unit.suffix}` : ''}`;
     default: {
-      const s = `${sign}${opts.compact ? fmtCompact(v) : fmtNum(v)}`;
+      const s = `${sign}${opts.compact ? fmtCompact(abs) : fmtNum(abs)}`;
       return opts.withNoun && unit.noun ? `${s} ${unit.noun}` : s;
     }
   }

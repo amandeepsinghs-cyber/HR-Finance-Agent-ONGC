@@ -165,15 +165,15 @@ export const TopBar: React.FC<TopBarProps> = ({
       <div className="flex items-center justify-end gap-1.5 shrink-0 flex-1">
         {demo && (
           <div className="flex items-center gap-0.5 rounded-pill bg-[var(--surface)] border border-[var(--hairline)] p-0.5 text-caption" title="Demo script (← / →)">
-            <button onClick={demo.onPrev} className="icon-btn !w-7 !h-7" aria-label="Previous demo answer">
+            <IconButton onClick={demo.onPrev} className="!w-7 !h-7 [&>svg]:!w-3.5 [&>svg]:!h-3.5" label="Previous demo answer">
               <SkipBack className="w-3.5 h-3.5" />
-            </button>
+            </IconButton>
             <span className="px-1 tabular-nums text-[var(--ink-2)]">
               {demo.index + 1}/{demo.total}
             </span>
-            <button onClick={demo.onNext} className="icon-btn !w-7 !h-7" aria-label="Next demo answer">
+            <IconButton onClick={demo.onNext} className="!w-7 !h-7 [&>svg]:!w-3.5 [&>svg]:!h-3.5" label="Next demo answer">
               <SkipForward className="w-3.5 h-3.5" />
-            </button>
+            </IconButton>
           </div>
         )}
 

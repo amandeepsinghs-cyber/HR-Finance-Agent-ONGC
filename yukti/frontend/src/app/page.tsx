@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react';
-import { PersonaType, AnswerContract } from '@/contracts/answerContract';
+import { PersonaType, AnswerContract, SpecPatch } from '@/contracts/answerContract';
 import { TopBar } from '@/components/TopBar';
 import { PersonaBanner } from '@/components/PersonaBanner';
 import { CanvasView } from '@/components/CanvasView';
@@ -635,7 +635,7 @@ export default function YuktiApp() {
 
   // ---------- Typed / chip turns (with Urvi Layer-A 0ms client-side UI command parser) ----------
   const runTypedTurn = useCallback(
-    async (queryText: string) => {
+    async (queryText: string, specPatch?: SpecPatch) => {
       const text = queryText.trim();
       if (!text) return;
       engineRef.current?.unlock();
@@ -668,7 +668,7 @@ export default function YuktiApp() {
       abortRef.current?.abort();
       const epoch = sessionEpochRef.current;
       const tid = uid('t');
-      dispatchFeed({ type: 'ask', id: tid, question: text });
+      dispatchFeed({ type: 'ask', id: tid, question: text, specPatch });
       let myAc: AbortController | null = null;
       setBusy(true);
       setSlow(false);
@@ -700,6 +700,11 @@ export default function YuktiApp() {
                   sql: curSrc?.sql || '',
                 }
               : {};
+            // U5.4: drill-down chips refine the current question as a patch on its query_spec (also for text answers)
+            Object.assign(uiCtx, {
+              ...(contractRef.current?.query_spec ? { query_spec: contractRef.current.query_spec } : {}),
+              ...(specPatch ? { spec_patch: specPatch } : {}),
+            });
             c = await yuktiClient.executeTurnRest(
               text,
               personaRef.current,
@@ -924,12 +929,14 @@ export default function YuktiApp() {
             isDark={isDark}
             onNavigateToAlternative={(alt) => runTypedTurn(alt || 'What are the station tenure norms?')}
             onSelectStarter={runTypedTurn}
-            onAsk={runTypedTurn}
+            onAsk={(q, patch) => void runTypedTurn(q, patch)}
             onRetry={(q, turnId) => {
+              const patch = turnsRef.current.find((t) => t.id === turnId)?.specPatch;
               if (turnId) dispatchFeed({ type: 'drop', id: turnId }); // retry replaces the error card
-              void runTypedTurn(q);
+              void runTypedTurn(q, patch);
             }}
             onNewSession={handleNewSession}
+            onReplot={(turnId, visual) => dispatchFeed({ type: 'refine', id: turnId, update: (c) => ({ ...c, visual }) })}
             busy={busy}
             statusLine={statusLine}
             onTalk={toggleMic}

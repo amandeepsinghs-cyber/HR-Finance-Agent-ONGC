@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const REPLACE = ['series', 'xAxis', 'yAxis', 'grid', 'graphic', 'legend', 'title', 'dataZoom'];
 
 interface EChartProps {
   option: echarts.EChartsOption;
@@ -32,7 +31,9 @@ export const EChart: React.FC<EChartProps> = ({ option, className = '', style, t
 
   useEffect(() => {
     if (!inst.current) return;
-    inst.current.setOption(option, { replaceMerge: REPLACE } as any);
+    // notMerge: a new chart type must not inherit the previous one's series settings (same id 'main' used to merge
+    // ranked showBackground / barMaxWidth into columns and freeze morphs — U5.9). universalTransition still morphs.
+    inst.current.setOption(option, { notMerge: true });
     requestAnimationFrame(() => inst.current?.resize());
   }, [option]);
 

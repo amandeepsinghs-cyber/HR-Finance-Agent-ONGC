@@ -4,8 +4,8 @@
  */
 import * as echarts from 'echarts';
 import { ChartPlan, Row } from './plan';
-import { ChartTokens, px, hGradient, vGradient, tooltipBase, tooltipCard, ANIM, alpha, labelOn } from './theme';
-import { fmtValue, fmtNum, fmtPct, sharePct, humanizeKey, humanizeValue, toNumber, UnitInfo } from './format';
+import { ChartTokens, px, hGradient, vGradient, tooltipBase, tooltipCard, anim, alpha, labelOn } from './theme';
+import { fmtValue, fmtNum, fmtShare, sharePct, humanizeKey, humanizeValue, toNumber, UnitInfo } from './format';
 
 type Opt = echarts.EChartsOption;
 
@@ -13,7 +13,7 @@ function base(t: ChartTokens): Opt {
   return {
     backgroundColor: 'transparent',
     textStyle: { fontFamily: t.font, color: t.text },
-    ...ANIM,
+    ...anim(),
     title: [],
     legend: [],
     graphic: [],
@@ -23,6 +23,15 @@ function base(t: ChartTokens): Opt {
     series: [],
     dataZoom: [],
   } as Opt;
+}
+
+/** Rounded axis bounds on a 1/2/2.5/5 × 10ⁿ step (≈ `ticks` intervals) that contain [lo, hi]. */
+export function niceBounds(lo: number, hi: number, ticks = 4): { min: number; max: number; interval: number } {
+  const span = Math.max(1e-9, hi - lo);
+  const raw = span / ticks;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) || 10 * mag;
+  return { min: Math.floor(lo / step) * step, max: Math.ceil(hi / step) * step, interval: step };
 }
 
 /** Sequential ramp between two hex colours. */
@@ -73,9 +82,10 @@ function valueAxis(t: ChartTokens, unit: UnitInfo, horizontal: boolean, extra: P
   };
 }
 
-function categoryAxis(t: ChartTokens, labels: string[], horizontal: boolean, maxLabelPx = 200): any {
+function categoryAxis(t: ChartTokens, labels: string[], horizontal: boolean, maxLabelPx = 200, wrap = false): any {
   // Rubric C3: never hide or overlap category labels. Crowded vertical axes rotate (with truncation);
   // short sets wrap. (Long categorical labels are better as H-bar; the planner prefers that in U5.7.)
+  // `wrap` (horizontal only): long names break onto two lines instead of truncating (bullet KPIs).
   const totalChars = labels.reduce((n, l) => n + String(l).length, 0);
   const crowded = !horizontal && (totalChars > 56 || (labels.length > 4 && labels.some((l) => String(l).length > 12)));
   return {
@@ -92,7 +102,9 @@ function categoryAxis(t: ChartTokens, labels: string[], horizontal: boolean, max
       interval: 0,
       hideOverlap: false,
       ...(horizontal
-        ? { width: px(t, maxLabelPx), overflow: 'truncate', ellipsis: '…' }
+        ? wrap
+          ? { width: px(t, maxLabelPx), overflow: 'break', lineHeight: px(t, 17) }
+          : { width: px(t, maxLabelPx), overflow: 'truncate', ellipsis: '…' }
         : crowded
           ? { rotate: 30, width: px(t, 120), overflow: 'truncate', ellipsis: '…', fontSize: px(t, 12) }
           : { width: px(t, 110), overflow: 'break', lineHeight: px(t, 16) }),
@@ -112,7 +124,7 @@ function pill(t: ChartTokens, color: string) {
 }
 
 /** Horizontal ranked bars; diverging colours when values are negative. */
-export function rankedOption(plan: ChartPlan, t: ChartTokens, opts: { compact?: boolean; title?: string; labelPx?: number } = {}): Opt {
+export function rankedOption(plan: ChartPlan, t: ChartTokens, opts: { compact?: boolean; title?: string; labelPx?: number; domain?: { min: number; max: number } } = {}): Opt {
   const others = (r: Row) => /^(all\s+)?others?(\s*\(.*\))?$/i.test(r.label.trim());
   // Rubric C1: an aggregate "Others" bucket is never ranked; pin it last (bottom) and exclude it
   // from max/min/average so it can't be tagged "Highest" or skew the reference line.
@@ -178,8 +190,9 @@ export function rankedOption(plan: ChartPlan, t: ChartTokens, opts: { compact?: 
   const tagged = !opts.compact && n >= 3;
   // Asymmetric domain: room on each side for value labels (+ callout pills)
   const allNegOrZero = maxV <= 0;
-  const xMin = diverging ? (allNegOrZero ? minV * 1.48 : Math.min(minV * 1.25, -absMax * 0.12)) : 0;
-  const xMax = allNegOrZero ? absMax * 0.25 : Math.max(maxV, 0) * (tagged ? 1.12 : 1.15) || absMax * 0.3;
+  // opts.domain: a shared domain (small multiples) so bar lengths compare across panels.
+  const xMin = opts.domain ? opts.domain.min : diverging ? (allNegOrZero ? minV * 1.48 : Math.min(minV * (opts.compact ? 1.5 : 1.25), -absMax * 0.12)) : 0;
+  const xMax = opts.domain ? opts.domain.max : allNegOrZero ? absMax * 0.25 : Math.max(maxV, 0) * (tagged ? 1.12 : 1.15) || absMax * 0.3;
   return {
     ...base(t),
     title: opts.title
@@ -198,11 +211,18 @@ export function rankedOption(plan: ChartPlan, t: ChartTokens, opts: { compact?: 
     tooltip: {
       ...tooltipBase(t),
       trigger: 'item',
-      formatter: (p: any) =>
-        tooltipCard(t, p.name, [
+      formatter: (p: any) => {
+        // Rubric C6: value, share and rank (aggregates and ± data have no meaningful share / rank).
+        const isOthers = others({ label: String(p.name || ''), raw: {}, value: 0 });
+        const allTotal = values.reduce((s, v) => s + v, 0);
+        const rank = isOthers ? -1 : ranked.findIndex((r) => r.label === p.name);
+        return tooltipCard(t, p.name, [
           [humanizeKey(plan.valueKey), fmtValue(p.value, unit, { withNoun: true })],
+          ...(!diverging && allTotal > 0 ? ([['Share', fmtShare((p.value / allTotal) * 100)]] as [string, string][]) : []),
+          ...(rank >= 0 && ranked.length > 1 ? ([['Rank', `${rank + 1} of ${ranked.length}`]] as [string, string][]) : []),
           ...extraRows(p.data?.raw, [plan.dimKey, plan.valueKey], unitForKey(plan)),
-        ]),
+        ]);
+      },
     },
     series: [
       {
@@ -218,10 +238,12 @@ export function rankedOption(plan: ChartPlan, t: ChartTokens, opts: { compact?: 
           show: true,
           distance: px(t, 8),
           color: t.text,
-          fontSize: px(t, opts.compact ? 11 : 13),
+          fontSize: px(t, opts.compact ? 12 : 13),
           fontWeight: 600,
-          textBorderColor: t.labelHalo,
-          textBorderWidth: 3,
+          // Rubric C3: a canvas-coloured halo box so the Avg reference line never runs through a value label.
+          backgroundColor: t.labelHalo,
+          padding: [px(t, 1), px(t, 4)],
+          borderRadius: px(t, 4),
           formatter: (p: any) => {
             const v = fmtValue(p.value, unit, { sign: diverging });
             if (p.data?.tag === 'top') return p.value < 0 ? v : `${v}  {top|${diverging ? 'Top earner' : 'Highest'}}`;
@@ -230,7 +252,8 @@ export function rankedOption(plan: ChartPlan, t: ChartTokens, opts: { compact?: 
           },
           rich: { top: { ...pill(t, t.accentDeep), textBorderWidth: 0 }, loss: { ...pill(t, t.maroon), textBorderWidth: 0 } },
         },
-        markLine: markLines.length ? { symbol: 'none', silent: true, data: markLines, animation: true } : undefined,
+        // z 1: reference lines sit beneath bars and labels (subtle guide, never over a value).
+        markLine: markLines.length ? { symbol: 'none', silent: true, z: 1, data: markLines, animation: true } : undefined,
       } as any,
     ],
   };
@@ -320,7 +343,7 @@ export function donutOption(plan: ChartPlan, t: ChartTokens, colors: string[]): 
       formatter: (p: any) =>
         tooltipCard(t, p.name, [
           [humanizeKey(plan.valueKey), fmtValue(p.value, unit, { withNoun: true }), p.color],
-          ['Share', fmtPct(p.percent)],
+          ['Share', fmtShare(p.percent)],
           ...extraRows(p.data?.raw, [plan.dimKey, plan.valueKey], unitForKey(plan)),
         ]),
     },
@@ -387,7 +410,9 @@ export function waterfallOption(plan: ChartPlan, t: ChartTokens): Opt {
 
   const lo = Math.min(0, ...steps.map((s) => Math.min(s.start, s.end)));
   const hi = Math.max(0, ...steps.map((s) => Math.max(s.start, s.end)));
-  const pad = (hi - lo) * 0.16 || 1;
+  const pad = (hi - lo) * 0.08 || 1;
+  // Rubric C3: rounded axis ends (₹50,000 not ₹46,423) — nice step from the padded span.
+  const nice = niceBounds(lo < 0 ? lo - pad : 0, hi > 0 ? hi + pad : pad, 5);
 
   const colorOf = (k: Step['kind'], v: number) =>
     k === 'total' ? (v < 0 ? t.maroon : t.accentDeep) : k === 'pos' ? t.accent : t.maroonSoft;
@@ -396,7 +421,8 @@ export function waterfallOption(plan: ChartPlan, t: ChartTokens): Opt {
     ...base(t),
     grid: [{ left: px(t, 8), right: px(t, 24), top: px(t, 36), bottom: px(t, 8), containLabel: true }],
     xAxis: [categoryAxis(t, steps.map((s) => s.label), false)],
-    yAxis: [valueAxis(t, unit, false, { min: lo < 0 ? lo - pad : 0, max: hi > 0 ? hi + pad : pad } as any)],
+    // Tick labels already carry "₹ … Cr"; an axis name would be redundant (reviewer C3).
+    yAxis: [valueAxis(t, unit, false, { name: undefined, min: nice.min, max: nice.max, interval: nice.interval } as any)],
     tooltip: {
       ...tooltipBase(t),
       trigger: 'item',
@@ -413,6 +439,7 @@ export function waterfallOption(plan: ChartPlan, t: ChartTokens): Opt {
       {
         id: 'main',
         type: 'custom',
+        universalTransition: { enabled: true },
         data: steps.map((s, i) => [i, s.start, s.end]),
         encode: { x: 0, y: [1, 2] },
         renderItem: (params: any, api: any) => {
@@ -483,11 +510,22 @@ export function bulletOption(plan: ChartPlan, t: ChartTokens): Opt {
   const rows = plan.rows;
   const targets = rows.map((r) => toNumber(plan.targetKey ? r.raw?.[plan.targetKey] : undefined) ?? plan.target ?? 100);
   const maxV = Math.max(...rows.map((r) => r.value), ...targets) * 1.1;
+  // Rubric C1: the worst performer (lowest actual / target) gets an outline so the eye lands on it first.
+  const ratios = rows.map((r, i) => r.value / Math.max(1e-9, targets[i]));
+  const iWorst = rows.length >= 3 ? ratios.indexOf(Math.min(...ratios)) : -1;
   return {
     ...base(t),
-    grid: [{ left: px(t, 8), right: px(t, 70), top: px(t, 36), bottom: px(t, 24), containLabel: true }],
-    xAxis: [valueAxis(t, unit, true, { min: 0, max: Math.ceil(maxV / 10) * 10 } as any)],
-    yAxis: [categoryAxis(t, rows.map((r) => r.label), true, 240)],
+    grid: [{ left: px(t, 20), right: px(t, 70), top: px(t, 36), bottom: px(t, 40), containLabel: true }],
+    xAxis: [
+      valueAxis(t, unit, true, {
+        min: 0,
+        max: Math.ceil(maxV / 10) * 10,
+        nameLocation: 'middle',
+        nameGap: px(t, 34),
+        nameTextStyle: { color: t.sub, fontSize: px(t, 12) },
+      } as any),
+    ],
+    yAxis: [categoryAxis(t, rows.map((r) => r.label), true, 200, true)],
     tooltip: {
       ...tooltipBase(t),
       trigger: 'item',
@@ -505,6 +543,7 @@ export function bulletOption(plan: ChartPlan, t: ChartTokens): Opt {
       {
         id: 'main',
         type: 'custom',
+        universalTransition: { enabled: true },
         data: rows.map((r, i) => [r.value, i, targets[i]]),
         encode: { x: [0, 2], y: 1 },
         renderItem: (params: any, api: any) => {
@@ -526,6 +565,15 @@ export function bulletOption(plan: ChartPlan, t: ChartTokens): Opt {
               type: 'rect',
               shape: { x: xa, y: y - hB / 2, width: Math.max(0, xb - xa), height: hB, r: z === 0 ? [px(t, 6), 0, 0, px(t, 6)] : z === 2 ? [0, px(t, 6), px(t, 6), 0] : 0 },
               style: { fill: t.band[2 - z] },
+              silent: true,
+            });
+          }
+          if (i === iWorst) {
+            const xa0 = api.coord([0, i])[0];
+            children.push({
+              type: 'rect',
+              shape: { x: xa0 - px(t, 3), y: y - hB / 2 - px(t, 3), width: xEnd - xa0 + px(t, 6), height: hB + px(t, 6), r: px(t, 8) },
+              style: { fill: 'transparent', stroke: t.text, lineWidth: px(t, 1.5) },
               silent: true,
             });
           }
@@ -633,12 +681,18 @@ export function groupedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
   const horizontal = labels.reduce((s, l) => s + l.length, 0) / Math.max(1, labels.length) > 10;
   const colors = t.categorical;
   const ax = categoryAxis(t, labels, horizontal);
-  const vx = valueAxis(t, plan.unit, horizontal);
+  // Rubric C3: the unit name sits centred along the value axis, never in the legend row.
+  const vx = valueAxis(t, plan.unit, horizontal, {
+    nameLocation: 'middle',
+    nameRotate: horizontal ? 0 : 90,
+    nameGap: px(t, horizontal ? 32 : 48),
+    nameTextStyle: { color: t.sub, fontSize: px(t, 12) },
+  } as any);
   return {
     ...base(t),
     color: colors,
     legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: (n: string) => humanizeKey(n) }],
-    grid: [{ left: px(t, 8), right: px(t, 40), top: px(t, 44), bottom: px(t, 8), containLabel: true }],
+    grid: [{ left: px(t, horizontal ? 8 : 20), right: px(t, 40), top: px(t, 48), bottom: px(t, horizontal ? 36 : 8), containLabel: true }],
     xAxis: [horizontal ? vx : ax],
     yAxis: [horizontal ? ax : vx],
     tooltip: {
@@ -655,7 +709,7 @@ export function groupedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
       barMaxWidth: px(t, 28),
       universalTransition: { enabled: true },
       itemStyle: { borderRadius: horizontal ? [0, px(t, 6), px(t, 6), 0] : [px(t, 6), px(t, 6), 0, 0] },
-      label: { show: data.length * plan.seriesKeys.length <= 18, position: horizontal ? 'right' : 'top', color: t.sub, fontSize: px(t, 11), formatter: (p: any) => fmtValue(p.value, unitForKey(plan)(k), { compact: true }) },
+      label: { show: data.length * plan.seriesKeys.length <= 18, position: horizontal ? 'right' : 'top', color: t.text, fontSize: px(t, 12), fontWeight: 500, formatter: (p: any) => fmtValue(p.value, unitForKey(plan)(k), { compact: true }) },
       data: data.map((r) => toNumber(r[k])),
     })) as any,
   };
@@ -666,10 +720,19 @@ export function stackedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
   const keys = plan.seriesKeys;
   const sorted = [...data].sort((a, b) => keys.reduce((s, k) => s + (toNumber(b[k]) || 0), 0) - keys.reduce((s, k) => s + (toNumber(a[k]) || 0), 0)).slice(0, 12);
   const labels = sorted.map((r) => humanizeValue(r[plan.dimKey]));
-  const severe = (k: string) => /(>|over|above)\s*\d+|180|365|overdue/i.test(k);
-  const blues = ramp(t.sequential[t.dark ? 0 : 2], t.sequential[t.dark ? 4 : 5], Math.max(1, keys.filter((k) => !severe(k)).length));
+  // Severity = buckets beyond 90 days (lower bound ≥ 90: "91-180", ">180", "180+ days", "overdue"). Severity
+  // shades run maroonSoft → maroon so the oldest bucket is the darkest; current buckets use the blue ramp.
+  const lowerBound = (k: string) => {
+    const m = String(k).match(/\d+/);
+    return m ? parseInt(m[0], 10) : NaN;
+  };
+  const severe = (k: string) => /overdue/i.test(k) || lowerBound(k) >= 90;
+  const nSevere = keys.filter(severe).length;
+  const blues = ramp(t.sequential[t.dark ? 0 : 2], t.sequential[t.dark ? 4 : 5], Math.max(1, keys.length - nSevere));
+  const reds = nSevere === 1 ? [t.maroon] : ramp(t.maroonSoft, t.maroon, Math.max(1, nSevere));
   let bi = 0;
-  const colors = keys.map((k) => (severe(k) ? t.maroon : blues[bi++]));
+  let ri = 0;
+  const colors = keys.map((k) => (severe(k) ? reds[ri++] : blues[bi++]));
   const totals = sorted.map((r) => keys.reduce((s, k) => s + (toNumber(r[k]) || 0), 0));
   const unit = plan.unit.kind === 'count' && /cr|₹/i.test(String(plan.unit.label)) ? plan.unit : plan.unit;
   return {
@@ -677,7 +740,7 @@ export function stackedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
     color: colors,
     legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, data: keys }],
     grid: [{ left: px(t, 8), right: px(t, 90), top: px(t, 44), bottom: px(t, 8), containLabel: true }],
-    xAxis: [valueAxis(t, unit, true)],
+    xAxis: [valueAxis(t, unit, true, { name: undefined } as any)],
     yAxis: [categoryAxis(t, labels, true, 200)],
     tooltip: {
       ...tooltipBase(t),
@@ -727,7 +790,7 @@ export function pieOption(plan: ChartPlan, t: ChartTokens, colors: string[]): Op
       formatter: (p: any) =>
         tooltipCard(t, p.name, [
           [humanizeKey(plan.valueKey), fmtValue(p.value, unit, { withNoun: true }), p.color],
-          ['Share', fmtPct(p.percent)],
+          ['Share', fmtShare(p.percent)],
           ...extraRows(p.data?.raw, [plan.dimKey, plan.valueKey], unitForKey(plan)),
         ]),
     },
@@ -735,7 +798,7 @@ export function pieOption(plan: ChartPlan, t: ChartTokens, colors: string[]): Op
       {
         id: 'main',
         type: 'pie',
-        radius: ['0%', '76%'],
+        radius: ['0%', '62%'],
         center: ['50%', '50%'],
         minAngle: 4,
         universalTransition: { enabled: true },
@@ -745,7 +808,14 @@ export function pieOption(plan: ChartPlan, t: ChartTokens, colors: string[]): Op
           color: t.text,
           fontSize: px(t, 12),
           fontWeight: 600,
-          formatter: (p: any) => `${p.name}\n${fmtPct(p.percent)}`,
+          lineHeight: px(t, 16),
+          // Never truncated: long names wrap to a second line; the HTML legend carries every slice.
+          width: px(t, 110),
+          overflow: 'break',
+          // Labels hug the canvas edges so a long name wraps inside the card instead of clipping.
+          alignTo: 'edge',
+          edgeDistance: px(t, 8),
+          formatter: (p: any) => `${p.name}\n${fmtShare(p.percent)}`,
         },
         labelLine: {
           show: true,
@@ -753,8 +823,13 @@ export function pieOption(plan: ChartPlan, t: ChartTokens, colors: string[]): Op
           length2: px(t, 14),
           lineStyle: { color: t.sub, width: 1.2 },
         },
+        labelLayout: { hideOverlap: true },
         emphasis: { scale: true, scaleSize: Math.round(7 * s), itemStyle: { shadowBlur: 18, shadowColor: t.shadowAccent } },
-        data: plan.rows.map((r) => ({ name: r.label, value: r.value, raw: r.raw })),
+        // Rubric C3: outside callouts only for slices ≥ 6 % (the legend covers the rest) — no crowding.
+        data: plan.rows.map((r) => {
+          const big = r.value / Math.max(1e-9, plan.total) >= 0.06;
+          return { name: r.label, value: r.value, raw: r.raw, label: { show: big }, labelLine: { show: big } };
+        }),
         animationType: 'expansion',
       } as any,
     ],
@@ -782,7 +857,7 @@ export function histogramOption(plan: ChartPlan, t: ChartTokens): Opt {
 
   return {
     ...base(t),
-    grid: [{ left: px(t, 12), right: px(t, 28), top: px(t, 64), bottom: px(t, 24), containLabel: true }],
+    grid: [{ left: px(t, 36), right: px(t, 28), top: px(t, 64), bottom: px(t, 24), containLabel: true }],
     // Mean/median caption (top-left): solid line = mean, dotted = median; values stated once, no on-plot collisions.
     graphic: stats
       ? [
@@ -808,7 +883,8 @@ export function histogramOption(plan: ChartPlan, t: ChartTokens): Opt {
         itemWidth: px(t, 14),
         itemHeight: px(t, 8),
         textStyle: { color: t.sub, fontSize: px(t, 12) },
-        data: ['Bin Frequency', 'Density Curve'],
+        // Solid swatch for the bars (a gradient fill renders as a muddy legend chip).
+        data: [{ name: 'Bin Frequency', itemStyle: { color: t.accent } }, { name: 'Density Curve', itemStyle: { color: t.sub } }],
       },
     ],
     xAxis: [
@@ -822,7 +898,17 @@ export function histogramOption(plan: ChartPlan, t: ChartTokens): Opt {
         nameTextStyle: { color: t.sub, fontSize: px(t, 12), fontWeight: 500 },
       },
     ],
-    yAxis: [valueAxis(t, unit, false, { max: Math.ceil(maxV * 1.22), axisLabel: { color: t.sub, fontSize: px(t, 12), showMaxLabel: false, formatter: (v: number) => fmtValue(v, unit, { compact: true }) } } as any)],
+    yAxis: [
+      valueAxis(t, unit, false, {
+        max: Math.ceil(maxV * 1.22),
+        // Rubric C3: unit name centred along the axis (rotated), clear of the caption and legend rows.
+        nameLocation: 'middle',
+        nameRotate: 90,
+        nameGap: px(t, 44),
+        nameTextStyle: { color: t.sub, fontSize: px(t, 12) },
+        axisLabel: { color: t.sub, fontSize: px(t, 12), showMaxLabel: false, formatter: (v: number) => fmtValue(v, unit, { compact: true }) },
+      } as any),
+    ],
     tooltip: {
       ...tooltipBase(t),
       trigger: 'axis',
@@ -873,6 +959,10 @@ export function histogramOption(plan: ChartPlan, t: ChartTokens): Opt {
           },
           textBorderColor: t.labelHalo,
           textBorderWidth: 3,
+          // Halo box: the density curve / mean–median lines pass behind a label, never through it.
+          backgroundColor: t.labelHalo,
+          padding: [px(t, 1), px(t, 4)],
+          borderRadius: px(t, 4),
           rich: { top: { ...pill(t, t.accentDeep), lineHeight: px(t, 24), textBorderWidth: 0 } },
         },
       } as any,
@@ -952,20 +1042,35 @@ export function scatterOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
 
   const xAvg = pts.reduce((s, p) => s + p.value[0], 0) / Math.max(1, pts.length);
   const yAvg = pts.reduce((s, p) => s + p.value[1], 0) / Math.max(1, pts.length);
-  const maxY = Math.max(1, ...pts.map((p) => Math.abs(p.value[1])));
+  // Rubric C2: bubble size only when a third measure exists (with its own tooltip row); otherwise a fixed dot.
+  const sizeKey = plan.seriesKeys.find((k) => k !== plan.valueKey && k !== secondKey);
+  const sizeVals = sizeKey ? rows.map((r) => Math.abs(toNumber(r.raw?.[sizeKey]) ?? 0)) : [];
+  const maxS = Math.max(1, ...sizeVals);
+  const xs = pts.map((p) => p.value[0]);
+  const xLo = Math.min(...xs);
+  const xHi = Math.max(...xs);
+  const showNames = pts.length <= 18;
+  const placer = makeScatterPlacer(pts.length, px(t, 4), (i) => pts[i]?.value[0] >= xHi - (xHi - xLo) * 0.2);
+  const axisName = { nameLocation: 'middle', nameTextStyle: { color: t.sub, fontSize: px(t, 12), fontWeight: 500 } };
+  const avgLabel = { color: t.sub, fontSize: px(t, 11), backgroundColor: t.labelHalo, padding: [px(t, 2), px(t, 6)], borderRadius: px(t, 6) };
 
   return {
     ...base(t),
-    grid: [{ left: px(t, 16), right: px(t, 44), top: px(t, 36), bottom: px(t, 28), containLabel: true }],
+    grid: [{ left: px(t, 36), right: px(t, 96), top: px(t, 36), bottom: px(t, 40), containLabel: true }],
     xAxis: [
       valueAxis(t, xUnit, true, {
+        ...axisName,
         name: secondKey ? humanizeKey(secondKey) : 'Category Index',
+        nameGap: px(t, 32),
         scale: true,
       } as any),
     ],
     yAxis: [
       valueAxis(t, yUnit, false, {
+        ...axisName,
         name: humanizeKey(plan.valueKey),
+        nameRotate: 90,
+        nameGap: px(t, 48),
         scale: true,
       } as any),
     ],
@@ -986,52 +1091,138 @@ export function scatterOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
         id: 'main',
         type: 'scatter',
         universalTransition: { enabled: true },
-        symbolSize: (val: number[]) => {
-          const ratio = Math.abs(val[1]) / maxY;
-          return px(t, 14 + Math.round(ratio * 22));
-        },
+        symbolSize: sizeKey ? (_: number[], p: any) => px(t, 12 + Math.round((sizeVals[p.dataIndex] / maxS) * 22)) : px(t, 14),
         itemStyle: {
           color: (p: any) => (p.value[1] < 0 ? t.maroon : t.accent),
-          opacity: 0.86,
+          opacity: 0.9,
           borderColor: t.surface,
           borderWidth: 1.5,
-          shadowBlur: 10,
-          shadowColor: alpha(t.accent, 0.25),
         },
-        label: {
-          show: pts.length <= 18,
-          position: 'top',
-          distance: px(t, 5),
-          color: t.text,
-          fontSize: px(t, 11),
-          fontWeight: 600,
-          formatter: (p: any) => p.data?.name || '',
-        },
+        // Markers carry an invisible 1-char label only so the placer learns every marker's rect first (series
+        // order = layout order); the visible names live in the 'scatter-labels' series below.
+        label: { show: showNames, formatter: ' ', fontSize: 1, color: 'transparent' },
+        labelLayout: showNames ? placer.record : undefined,
         markLine:
           pts.length >= 4
             ? {
                 silent: true,
                 symbol: 'none',
+                z: 1,
                 lineStyle: { color: t.sub, type: [4, 4], width: 1.1 },
-                data: [{ xAxis: xAvg, label: { show: false } }, { yAxis: yAvg, label: { formatter: `Avg ${fmtValue(yAvg, yUnit)}`, color: t.sub, fontSize: px(t, 11) } }],
+                data: [
+                  { xAxis: xAvg, label: { ...avgLabel, position: 'end', formatter: `Avg ${fmtValue(xAvg, xUnit)}` } },
+                  { yAxis: yAvg, label: { ...avgLabel, position: 'end', formatter: `Avg ${fmtValue(yAvg, yUnit)}` } },
+                ],
               }
             : undefined,
         data: pts,
       } as any,
+      ...(showNames
+        ? [
+            {
+              id: 'scatter-labels',
+              type: 'scatter',
+              silent: true,
+              z: 1, // under the markers: a name never covers a point
+              symbolSize: 1,
+              itemStyle: { color: 'transparent' }, // (opacity 0 would also hide the label)
+              tooltip: { show: false },
+              label: {
+                show: true,
+                position: 'right',
+                color: t.text,
+                fontSize: px(t, 12),
+                fontWeight: 600,
+                textBorderColor: t.labelHalo,
+                textBorderWidth: 3,
+                formatter: (p: any) => p.data?.name || '',
+              },
+              // Rubric C3: each name avoids every marker and earlier name (right / left / above / below, then displaced
+              // with a leader line). ≤ 8 points: never hidden; more: residual collisions hide (tooltip keeps them).
+              labelLayout: placer.place,
+              labelLine: { show: true, length2: 0, lineStyle: { color: t.sub, width: 1 } },
+              data: pts.map((q) => ({ name: q.name, value: q.value })),
+            } as any,
+          ]
+        : []),
     ],
   };
+}
+
+type Box = { x: number; y: number; width: number; height: number };
+const overlapArea = (a: Box, b: Box) =>
+  Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
+
+/**
+ * Scatter label placer. `record` runs as the marker series' labelLayout (learns every marker rect); `place` runs
+ * as the label series' labelLayout afterwards (ECharts lays labels out in series order), so each name is placed
+ * knowing ALL markers. Candidates: right / left / above / below of the dot, then displaced diagonals and further
+ * rows (with a leader line). With ≤ 8 points nothing is hidden: the least-overlapping candidate wins.
+ */
+function makeScatterPlacer(n: number, gap: number, preferLeft: (i: number) => boolean) {
+  const markers: Box[] = [];
+  let placed: Box[] = [];
+  const record = (p: any) => {
+    markers[p.dataIndex] = p.rect;
+    return {};
+  };
+  const place = (p: any) => {
+    const i = p.dataIndex;
+    if (i === 0) placed = [];
+    const S: Box | undefined = markers[i];
+    const L: Box = p.labelRect;
+    if (!S) return { hideOverlap: n > 8 };
+    const w = L.width;
+    const h = L.height;
+    const cy = S.y + S.height / 2 - h / 2;
+    const xr = S.x + S.width + gap;
+    const xl = S.x - gap - w;
+    const xc = S.x + S.width / 2 - w / 2;
+    const near = [
+      { x: xr, y: cy },
+      { x: xl, y: cy },
+      { x: xc, y: S.y - h - 2 },
+      { x: xc, y: S.y + S.height + 2 },
+    ];
+    if (preferLeft(i)) near.unshift(near.splice(1, 1)[0]);
+    const far: { x: number; y: number }[] = [];
+    for (const k of [1, 2, 3]) {
+      const d = k * (h + 4);
+      far.push({ x: xr + gap, y: cy - d }, { x: xr + gap, y: cy + d }, { x: xl - gap, y: cy - d }, { x: xl - gap, y: cy + d }, { x: xc, y: S.y - h - 2 - d }, { x: xc, y: S.y + S.height + 2 + d });
+    }
+    const cands = [...near, ...far];
+    const box = (c: { x: number; y: number }): Box => ({ x: c.x - 2, y: c.y - 1, width: w + 4, height: h + 2 });
+    const others = [...placed, ...markers.filter(Boolean)];
+    const cost = (c: { x: number; y: number }) => others.reduce((s, b) => s + overlapArea(box(c), b), 0);
+    const pick = cands.find((c) => cost(c) === 0) || cands.reduce((best, c) => (cost(c) < cost(best) ? c : best), cands[0]);
+    placed.push(box(pick));
+    return { x: pick.x, y: pick.y, align: 'left', verticalAlign: 'top', hideOverlap: n > 8 };
+  };
+  return { record, place };
 }
 
 /** Proportional Treemap with formatted values and percentage share. */
 export function treemapOption(plan: ChartPlan, t: ChartTokens, colors: string[]): Opt {
   const unit = plan.unit;
-  const posRows = plan.rows.map((r) => ({ ...r, absVal: Math.max(0.01, Math.abs(r.value)) }));
-  const totalAbs = posRows.reduce((s, r) => s + r.absVal, 0);
+  const all = plan.rows.map((r) => ({ ...r, absVal: Math.max(0.01, Math.abs(r.value)) }));
+  const totalAbs = all.reduce((s, r) => s + r.absVal, 0);
+  // Rubric C5: tiles under ~6 % are unreadable; fold them into one muted "Others" tile (only when ≥ 2 fold).
+  const isSmall = (r: { absVal: number; value: number }) => r.value >= 0 && r.absVal / Math.max(1e-9, totalAbs) < 0.06;
+  const small = all.filter(isSmall);
+  const posRows =
+    small.length >= 2
+      ? [
+          ...all.filter((r) => !isSmall(r)).sort((x, y) => y.absVal - x.absVal),
+          { label: `Others (${small.length})`, raw: {}, value: small.reduce((s, r) => s + r.value, 0), absVal: small.reduce((s, r) => s + r.absVal, 0), others: true },
+        ]
+      : all;
+  const isOthers = (r: any) => !!r.others;
   // magnitude ramp: rank tiles by size → deepest blue for the largest (independent of `colors`)
-  const order = posRows.map((r, i) => [i, r.absVal] as [number, number]).sort((a, b) => b[1] - a[1]);
+  const order = posRows.map((r, i) => [i, isOthers(r) ? -1 : r.absVal] as [number, number]).sort((a, b) => b[1] - a[1]);
   const steps = t.dark ? ramp(t.sequential[0], t.sequential[3], Math.max(1, posRows.length)) : ramp(t.sequential[5], t.sequential[2], Math.max(1, posRows.length));
   const mag: string[] = [];
   order.forEach(([idx], rank) => (mag[idx] = steps[rank]));
+  const fillOf = (r: any, i: number) => (isOthers(r) ? t.faint : r.value < 0 ? t.maroon : mag[i]);
   return {
     ...base(t),
     color: colors,
@@ -1050,12 +1241,15 @@ export function treemapOption(plan: ChartPlan, t: ChartTokens, colors: string[])
     },
     series: [
       {
-        id: 'main',
+        // Own id: a bar/pie 'main' must not try to morph out of treemap tiles (they froze on screen, U5.9 g06/g07).
+        id: 'treemap',
         type: 'treemap',
         roam: false,
         nodeClick: false,
         breadcrumb: { show: false },
-        universalTransition: { enabled: true },
+        // Rubric C1: data order (largest first, "Others" pinned last) — the aggregate never leads the layout.
+        sort: false,
+        // No universalTransition: ECharts can't morph treemap tiles into bars (tiles froze mid-morph in U5.9 g06/g07).
         itemStyle: {
           borderColor: t.surface,
           borderWidth: 2,
@@ -1067,8 +1261,8 @@ export function treemapOption(plan: ChartPlan, t: ChartTokens, colors: string[])
           color: t.onAccent,
           fontSize: px(t, 13),
           fontWeight: 600,
-          overflow: 'truncate',
-          ellipsis: '…',
+          // Never truncated: names wrap inside the tile (full name + value always in the tooltip).
+          overflow: 'break',
           lineHeight: px(t, 17),
           formatter: (p: any) => {
             const orig = p.data?.origValue ?? p.value;
@@ -1081,12 +1275,12 @@ export function treemapOption(plan: ChartPlan, t: ChartTokens, colors: string[])
           value: r.absVal,
           origValue: r.value,
           raw: r.raw,
-          // Rubric C4: one hue family by magnitude (largest = deepest); maroon only for negatives.
-          itemStyle: { color: r.value < 0 ? t.maroon : mag[i] },
+          // Rubric C4: one hue family by magnitude (largest = deepest); maroon only for negatives; Others muted.
+          itemStyle: { color: fillOf(r, i) },
           // Rubric C3: tiles ≥10% show name + value; 6–10% show name only; smaller tiles rely on the tooltip.
           label: {
-            show: r.absVal / Math.max(1e-9, totalAbs) >= 0.06,
-            color: labelOn(r.value < 0 ? t.maroon : mag[i]),
+            show: r.absVal / Math.max(1e-9, totalAbs) >= 0.04,
+            color: labelOn(fillOf(r, i)),
             formatter: r.absVal / Math.max(1e-9, totalAbs) >= 0.1 ? undefined : '{b}',
           },
         })),
@@ -1107,7 +1301,7 @@ export function funnelOption(plan: ChartPlan, t: ChartTokens, colors: string[]):
       formatter: (p: any) =>
         tooltipCard(t, p.name, [
           [humanizeKey(plan.valueKey), fmtValue(p.value, unit, { withNoun: true }), p.color],
-          ['Share', fmtPct(p.percent)],
+          ['Share', fmtShare(p.percent)],
         ]),
     },
     series: [

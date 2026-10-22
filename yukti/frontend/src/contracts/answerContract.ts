@@ -52,6 +52,8 @@ export interface ChartSpec {
   top_n?: number;
   annotations?: ChartAnnotation[];
   target?: number;
+  /** rows are already buckets/bins: a histogram draws them as-is (U5.7) */
+  prebinned?: boolean;
 }
 
 export interface TableMasking {
@@ -141,6 +143,10 @@ export interface VisualContainer {
   map?: MapSpec;
   /** v2 (U2.1): side-by-side comparison when mode = 'compare' */
   compare?: CompareSpec;
+  /** UI-only (U5.7): the answer's original rows, kept so repeated re-plots never drift */
+  source?: { columns?: string[]; rows?: unknown[] };
+  /** UI-only (U5.7): one-line note explaining a re-plot transform or fallback */
+  replot_note?: string;
 }
 
 // ---------- Contract v2 (U2.1): frozen, versioned query description ----------

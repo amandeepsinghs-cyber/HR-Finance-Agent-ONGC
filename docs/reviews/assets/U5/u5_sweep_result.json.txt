@@ -1,0 +1,169 @@
+{
+ "rosterCount": "Showing 419 of 419",
+ "rosterActionLabel": "Draft transfer note (2)",
+ "rosterActionNewTurn": true,
+ "rosterActionQuestion": "Draft transfer note for 2 officers: Vivek Singh (104002), Rakesh Sharma (104003)",
+ "histToPieMs": 119,
+ "histToPie": {
+  "hist": {
+   "kind": "histogram",
+   "points": "419",
+   "sig": "4012528229"
+  },
+  "pie": {
+   "kind": "pie",
+   "points": "8",
+   "sig": "3776064090"
+  },
+  "note": "Slices are the histogram bins."
+ },
+ "compareLabels": [
+  "Delhi HQ",
+  "Mumbai (Western Offshore)"
+ ],
+ "insightKinds": [
+  "headline",
+  "outlier",
+  "trend",
+  "risk"
+ ],
+ "followUps": [
+  "Mumbai offshore vs onshore",
+  "Delhi HQ disciplines",
+  "North-East assets grade mix",
+  "Compare Delhi and Mumbai"
+ ],
+ "sweep": [
+  {
+   "k": "bar",
+   "ms": 319,
+   "applied": "bar",
+   "points": "14",
+   "note": ""
+  },
+  {
+   "k": "hbar",
+   "ms": 308,
+   "applied": "hbar",
+   "points": "14",
+   "note": ""
+  },
+  {
+   "k": "donut",
+   "ms": 314,
+   "applied": "donut",
+   "points": "14",
+   "note": "Top 9 shown; the remaining 5 are grouped as Others."
+  },
+  {
+   "k": "line",
+   "ms": 316,
+   "applied": "bar",
+   "points": "14",
+   "note": "A line suggests a trend over time; these are separate categories, so here is a bar chart."
+  },
+  {
+   "k": "histogram",
+   "ms": 316,
+   "applied": "histogram",
+   "points": "14",
+   "note": "Distribution of headcount across 14 work centre values."
+  },
+  {
+   "k": "table",
+   "ms": 303,
+   "applied": "table",
+   "points": "14",
+   "note": ""
+  },
+  {
+   "k": "pie",
+   "ms": 350,
+   "applied": "pie",
+   "points": "14",
+   "note": "Top 9 shown; the remaining 5 are grouped as Others."
+  },
+  {
+   "k": "area",
+   "ms": 359,
+   "applied": "bar",
+   "points": "14",
+   "note": "An area suggests a trend over time; these are separate categories, so here is a bar chart."
+  },
+  {
+   "k": "scatter",
+   "ms": 344,
+   "applied": "bar",
+   "points": "14",
+   "note": "A scatter plot needs two measures; there is one here."
+  },
+  {
+   "k": "treemap",
+   "ms": 349,
+   "applied": "treemap",
+   "points": "14",
+   "note": ""
+  },
+  {
+   "k": "waterfall",
+   "ms": 346,
+   "applied": "hbar",
+   "points": "14",
+   "note": "A waterfall shows gains and losses building a total; these are all positive, so a ranked b"
+  },
+  {
+   "k": "funnel",
+   "ms": 332,
+   "applied": "hbar",
+   "points": "14",
+   "note": "A funnel needs ordered stages; these are separate categories, so a ranked bar chart."
+  }
+ ],
+ "equivalence": [
+  {
+   "k": "pie",
+   "toolbar": {
+    "kind": "pie",
+    "points": "14",
+    "sig": "2044410762"
+   },
+   "typed": {
+    "kind": "pie",
+    "points": "14",
+    "sig": "2044410762"
+   },
+   "same": true
+  },
+  {
+   "k": "table",
+   "toolbar": {
+    "kind": "table",
+    "points": "14",
+    "sig": "0"
+   },
+   "typed": {
+    "kind": "table",
+    "points": "14",
+    "sig": "0"
+   },
+   "same": true
+  },
+  {
+   "k": "line",
+   "toolbar": {
+    "kind": "bar",
+    "points": "14",
+    "sig": "2044410762"
+   },
+   "typed": {
+    "kind": "bar",
+    "points": "14",
+    "sig": "2044410762"
+   },
+   "same": true
+  }
+ ],
+ "cards": 4,
+ "chipNewTurn": true,
+ "errors": []
+}
