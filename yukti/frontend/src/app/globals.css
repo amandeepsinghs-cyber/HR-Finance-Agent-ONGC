@@ -9,7 +9,7 @@
      (generated into src/design/tokens.generated.css, imported in app/layout.tsx).
      Only layout variables live here. */
   :root {
-    --topbar-h: 3.5rem;
+    --topbar-h: 5.75rem;
     --panel-w: clamp(22rem, 27vw, 32rem);
   }
 
@@ -46,26 +46,18 @@
 
   .kpi-tile {
     position: relative;
-    overflow: hidden;
-    padding: 1.1rem 1.25rem 1.05rem;
-    background: var(--card);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius-card);
-    box-shadow: var(--card-shadow);
-    transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+    padding: 0.25rem 1.25rem 0.25rem 0;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--hairline);
+    border-radius: 0;
+    box-shadow: none;
   }
-  .kpi-tile[data-primary='true']::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(120% 90% at 100% 0%, var(--accent-pale) 0%, transparent 60%);
-    pointer-events: none;
+  .kpi-tile:last-child {
+    border-right: none;
   }
   .kpi-tile > * {
     position: relative;
-  }
-  .kpi-tile:hover {
-    transform: translateY(-1px);
   }
 
   .delta-chip {
@@ -319,30 +311,28 @@
   }
 }
 
-/* Ring: a thin, clear Google-hue arc that sweeps around the element, with a soft halo OUTSIDE only
-   (masked so no colour bleeds into the content area). */
+/* Ring (small circular elements like TopBar dot): a 180-degree half-arc that sweeps around the circle. */
 .yk-aura-ring {
   position: relative;
   isolation: isolate;
-  --yk-aura-speed: 7s;
-  --yk-aura-sweep: conic-gradient(
-    from var(--yk-aura-angle),
-    var(--aura-ring-red) 0deg,
-    var(--aura-ring-yellow) 38deg,
-    var(--aura-ring-green) 76deg,
-    var(--aura-ring-blue) 114deg,
-    var(--aura-ring-violet) 146deg,
-    transparent 185deg,
-    transparent 330deg,
-    var(--aura-ring-red) 360deg
-  );
+  --yk-aura-speed: 4.5s;
 }
 .yk-aura-ring::before,
 .yk-aura-ring::after {
   content: '';
   position: absolute;
   border-radius: inherit;
-  background: var(--yk-aura-sweep);
+  background: conic-gradient(
+    from var(--yk-aura-angle),
+    transparent 0deg,
+    var(--aura-ring-blue) 22deg,
+    var(--aura-ring-violet) 58deg,
+    var(--aura-ring-red) 92deg,
+    var(--aura-ring-yellow) 128deg,
+    var(--aura-ring-green) 162deg,
+    transparent 185deg,
+    transparent 360deg
+  );
   animation: yk-aura-spin var(--yk-aura-speed) linear infinite;
   pointer-events: none;
   -webkit-mask: linear-gradient(black 0 0) content-box, linear-gradient(black 0 0);
@@ -352,17 +342,15 @@
 .yk-aura-ring::before {
   inset: -2px;
   padding: 2px;
-  opacity: var(--aura-ring-opacity);
+  opacity: 0.9;
   z-index: 1;
 }
 .yk-aura-ring::after {
-  /* Soft feathered halo: unmasked + blurred, painted BEHIND the content layer (.yk-aura-surface),
-     so light only escapes around the edges, never inside. */
-  inset: -3px;
+  inset: -4px;
   -webkit-mask: none;
   mask: none;
-  filter: blur(10px);
-  opacity: var(--aura-halo-opacity);
+  filter: blur(8px);
+  opacity: 0.55;
   z-index: -1;
 }
 /* The element's visible surface sits on top of the halo. */
@@ -371,9 +359,9 @@
   z-index: 0;
   border-radius: inherit;
 }
-.yk-aura-ring[data-aura='idle'] { --yk-aura-speed: 16s; }
-.yk-aura-ring[data-aura='listening'] { --yk-aura-speed: 6s; }
-.yk-aura-ring[data-aura='thinking'] { --yk-aura-speed: 2.8s; }
+.yk-aura-ring[data-aura='idle'] { --yk-aura-speed: 5s; }
+.yk-aura-ring[data-aura='listening'] { --yk-aura-speed: 2.5s; }
+.yk-aura-ring[data-aura='thinking'] { --yk-aura-speed: 1.3s; }
 /* fade: newest-answer glow dissolves gently instead of switching off */
 .yk-aura-ring::before,
 .yk-aura-ring::after { transition: opacity 1.4s ease; }
@@ -381,6 +369,85 @@
 .yk-aura-ring[data-aura='fade']::after { opacity: 0; }
 .yk-aura-ring[data-aura='off']::before,
 .yk-aura-ring[data-aura='off']::after { display: none; }
+
+/* Bottom Rectangular Ask Bar (.yk-aura-box):
+   Uses an aspect-ratio-stretched rotor inside a 2.5px masked border ring so at ANY given moment
+   the 5-colour Google aurora arc covers ONLY HALF (50%) of the rectangular box while the other half
+   is completely transparent, and glides around the perimeter at uniform speed. */
+@keyframes yk-aura-rotor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.yk-aura-box {
+  position: relative;
+  isolation: isolate;
+  --yk-aura-speed: 4.5s;
+}
+.yk-aura-box[data-aura='idle'] { --yk-aura-speed: 4.5s; }
+.yk-aura-box[data-aura='listening'] { --yk-aura-speed: 2.4s; }
+.yk-aura-box[data-aura='thinking'] { --yk-aura-speed: 1.25s; }
+.yk-aura-box-border,
+.yk-aura-box-halo {
+  position: absolute;
+  border-radius: inherit;
+  pointer-events: none;
+  overflow: hidden;
+}
+.yk-aura-box-border {
+  inset: -2.5px;
+  padding: 2.5px;
+  z-index: 1;
+  opacity: 0.95;
+  -webkit-mask: linear-gradient(black 0 0) content-box, linear-gradient(black 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(black 0 0) content-box exclude, linear-gradient(black 0 0);
+}
+.yk-aura-box-halo {
+  inset: -6px;
+  z-index: -1;
+  filter: blur(11px);
+  opacity: 0.65;
+}
+.yk-aura-box[data-aura='thinking'] .yk-aura-box-border {
+  inset: -3px;
+  padding: 3px;
+  opacity: 1;
+}
+.yk-aura-box[data-aura='thinking'] .yk-aura-box-halo {
+  opacity: 0.85;
+  filter: blur(14px);
+}
+.yk-aura-box-stretch {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(14);
+}
+.yk-aura-box[data-collapsed='true'] .yk-aura-box-stretch {
+  transform: scaleX(4.5);
+}
+.yk-aura-box-stretch::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 140px;
+  height: 140px;
+  margin-left: -70px;
+  margin-top: -70px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--aura-ring-blue) 18deg,
+    var(--aura-ring-violet) 54deg,
+    var(--aura-ring-red) 90deg,
+    var(--aura-ring-yellow) 126deg,
+    var(--aura-ring-green) 162deg,
+    transparent 182deg,
+    transparent 360deg
+  );
+  animation: yk-aura-rotor-spin var(--yk-aura-speed) linear infinite;
+}
 
 /* Bloom: large, very soft blended light behind hero content (greeting). */
 .yk-aura-bloom {

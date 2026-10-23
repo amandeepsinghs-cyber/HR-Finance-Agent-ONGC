@@ -115,7 +115,7 @@ export const ClauseRenderer: React.FC<ClauseRendererProps> = ({ clause, isDark =
           <ShieldCheck className="w-4 h-4 text-accent shrink-0 mt-0.5" />
           <div>
             <span className="font-semibold text-zinc-800 dark:text-zinc-200">Legal Authority: </span>
-            This clause has statutory force across all ONGC business units and executive cadres under JRTP governance.
+            This clause has statutory force across all ONGC business units and cadres under {clause.doc_id || 'ONGC Corporate Policy'} governance.
           </div>
         </div>
       </div>

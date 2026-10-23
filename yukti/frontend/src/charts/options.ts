@@ -395,7 +395,14 @@ export function waterfallOption(plan: ChartPlan, t: ChartTokens): Opt {
   const steps: Step[] = [];
   let running = 0;
   let hasTotal = false;
-  plan.rows.forEach((r) => {
+  let sourceRows = plan.rows;
+  if (sourceRows.length > 9 && !sourceRows.some((r) => /total|base|start|end/i.test(String(r.raw?.type || '')))) {
+    const top8 = sourceRows.slice(0, 8);
+    const rest = sourceRows.slice(8);
+    const restSum = Number(rest.reduce((s, r) => s + r.value, 0).toFixed(2));
+    sourceRows = [...top8, { label: `Others (${rest.length})`, value: restSum, raw: {} }];
+  }
+  sourceRows.forEach((r) => {
     const typ = String(r.raw?.type || '').toLowerCase();
     if (/total|base|start|end/.test(typ)) {
       hasTotal = true;
@@ -406,7 +413,7 @@ export function waterfallOption(plan: ChartPlan, t: ChartTokens): Opt {
       running += r.value;
     }
   });
-  if (!hasTotal && steps.length >= 2) steps.push({ label: 'Net impact', start: 0, end: running, kind: 'total', v: running, raw: {} });
+  if (!hasTotal && steps.length >= 2) steps.push({ label: 'Total', start: 0, end: running, kind: 'total', v: running, raw: {} });
 
   const lo = Math.min(0, ...steps.map((s) => Math.min(s.start, s.end)));
   const hi = Math.max(0, ...steps.map((s) => Math.max(s.start, s.end)));

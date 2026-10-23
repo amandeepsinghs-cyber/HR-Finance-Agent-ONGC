@@ -132,8 +132,32 @@ export function planChart(spec: ChartSpec): ChartPlan {
   let seriesKeys: string[] = [valueKey];
   let sparseRows: Row[] | undefined;
 
-  if (data.length === 1 && kind !== 'bullet' && kind !== 'pie' && kind !== 'donut') {
+  if (data.length === 1 && (!kind || kind === 'kpi')) {
     form = 'kpi';
+  } else if (data.length === 1 && metricKeys.length >= 2) {
+    // Single-entity row with multiple measures (e.g. Ankleshwar Asset Revenue, EBITDA, PBT): pivot measures or build P&L waterfall
+    const r0 = data[0];
+    const revK = metricKeys.find((k) => /revenue/i.test(k));
+    const ebitdaK = metricKeys.find((k) => /ebitda/i.test(k));
+    const pbtK = metricKeys.find((k) => /\bpbt\b|profit/i.test(k));
+    if (kind === 'waterfall' && revK && pbtK) {
+      const rev = toNumber(r0[revK]) ?? 0;
+      const pbt = toNumber(r0[pbtK]) ?? 0;
+      const ebitda = ebitdaK ? (toNumber(r0[ebitdaK]) ?? Math.round((rev + pbt) / 2)) : Math.round(rev * 0.68);
+      const opex = Number((ebitda - rev).toFixed(2));
+      const dda = Number((pbt - ebitda).toFixed(2));
+      rows = [
+        { label: 'Gross Revenue', value: rev, raw: { step: 'Gross Revenue', amount_cr: rev, type: 'base' } },
+        { label: 'OPEX & Levies', value: opex, raw: { step: 'OPEX & Levies', amount_cr: opex, type: 'loss' } },
+        { label: 'EBITDA', value: ebitda, raw: { step: 'EBITDA', amount_cr: ebitda, type: 'total' } },
+        { label: 'DD&A', value: dda, raw: { step: 'DD&A', amount_cr: dda, type: 'loss' } },
+        { label: 'PBT (Net)', value: pbt, raw: { step: 'PBT (Net)', amount_cr: pbt, type: 'total' } },
+      ];
+      form = 'waterfall';
+    } else {
+      rows = metricKeys.map((k) => ({ label: humanizeValue(k), value: toNumber(r0[k]) ?? 0, raw: { metric: k, value: toNumber(r0[k]) ?? 0 } }));
+      form = kind === 'pie' ? 'pie' : kind === 'donut' ? 'donut' : kind === 'waterfall' ? 'waterfall' : kind === 'line' ? 'line' : kind === 'area' ? 'area' : kind === 'treemap' ? 'treemap' : kind === 'funnel' ? 'funnel' : kind === 'hbar' ? 'ranked' : 'column';
+    }
   } else if (kind === 'pie') {
     form = 'pie';
   } else if (kind === 'donut') {

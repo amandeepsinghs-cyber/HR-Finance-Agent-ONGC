@@ -202,21 +202,120 @@ subjects:
   corporate:
     domain: finance
     table: hrfin_gold.ssot_corporate_annual_360
-    description: "Company-level annual financials and KPIs, one row per FY (FY17–FY26)."
+    description: "Company-level annual Schedule III 3-Statement financials (P&L, Balance Sheet, Cash Flow, Financial Ratios), Yahoo Finance (ONGC.NS) consolidated lines, realisations and KPIs, one row per FY (FY17–FY26)."
     period: fiscal_year
     default_fy: FY26
     fields:
       fy: {column: fiscal_year, kind: fy}
     metrics:
-      corporate_revenue_cr: {expr: "SUM(gross_revenue_inr_cr)", aggregation: sum, unit: inr_cr, label: "Gross revenue (₹ cr)"}
-      pat_cr: {expr: "SUM(pat_inr_cr)", aggregation: sum, unit: inr_cr, label: "Profit after tax (₹ cr)"}
-      pbt_corporate_cr: {expr: "SUM(pbt_inr_cr)", aggregation: sum, unit: inr_cr, label: "Profit before tax (₹ cr)"}
-      ebitda_corporate_cr: {expr: "SUM(ebitda_inr_cr)", aggregation: sum, unit: inr_cr, label: "EBITDA (₹ cr)"}
-      total_capex_cr: {expr: "SUM(total_capex_spent_inr_cr)", aggregation: sum, unit: inr_cr, label: "Capex spent (₹ cr)"}
-      employee_cost_cr: {expr: "SUM(employee_cost_total_inr_cr)", aggregation: sum, unit: inr_cr, label: "Employee cost (₹ cr)"}
-      dividend_payout_cr: {expr: "SUM(total_dividend_payout_inr_cr)", aggregation: sum, unit: inr_cr, label: "Dividend payout (₹ cr)"}
-      csr_spend_cr: {expr: "SUM(csr_disbursed_inr_cr)", aggregation: sum, unit: inr_cr, label: "CSR spend (₹ cr)"}
-      roce_pct: {expr: "ROUND(AVG(standalone_roce_pct), 1)", aggregation: avg, unit: pct, label: "ROCE (standalone)"}
+      corporate_revenue_cr: {expr: "ROUND(SUM(gross_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Revenue from operations (₹ cr)", polarity: higher}
+      crude_oil_revenue_cr: {expr: "ROUND(SUM(crude_oil_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Crude oil revenue (₹ cr)", polarity: higher}
+      natural_gas_revenue_cr: {expr: "ROUND(SUM(natural_gas_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Natural gas revenue (₹ cr)", polarity: higher}
+      vap_revenue_cr: {expr: "ROUND(SUM(vap_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Value-added products revenue (₹ cr)", polarity: higher}
+      offshore_revenue_cr: {expr: "ROUND(SUM(offshore_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Offshore revenue (₹ cr)", polarity: higher}
+      onshore_revenue_cr: {expr: "ROUND(SUM(onshore_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Onshore revenue (₹ cr)", polarity: higher}
+      other_income_cr: {expr: "ROUND(SUM(other_income_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Other income — dividends & interest (₹ cr)", polarity: higher}
+      total_income_cr: {expr: "ROUND(SUM(total_income_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total income (₹ cr)", polarity: higher}
+      statutory_levies_cr: {expr: "ROUND(SUM(statutory_levies_total_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Statutory levies — Royalty + Cess + SAED (₹ cr)", polarity: lower}
+      royalty_cr: {expr: "ROUND(SUM(royalty_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Royalty (₹ cr)", polarity: lower}
+      oidb_cess_cr: {expr: "ROUND(SUM(oidb_cess_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "OIDB cess (₹ cr)", polarity: lower}
+      saed_windfall_tax_cr: {expr: "ROUND(SUM(saed_windfall_tax_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "SAED windfall tax (₹ cr)", polarity: lower}
+      net_revenue_cr: {expr: "ROUND(SUM(net_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Net realised revenue after levies (₹ cr)", polarity: higher}
+      prod_transport_selling_exp_cr: {expr: "ROUND(SUM(prod_transport_selling_exp_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Production, transport & selling expense (₹ cr)", polarity: lower}
+      employee_cost_cr: {expr: "ROUND(SUM(employee_cost_total_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Gross employee cost (₹ cr)", polarity: lower}
+      employee_benefit_net_pnl_cr: {expr: "ROUND(SUM(employee_benefit_net_pnl_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Employee benefits expense in P&L (₹ cr)", polarity: lower}
+      operating_expenses_cr: {expr: "ROUND(SUM(operating_expenses_total_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total operating expenses (₹ cr)", polarity: lower}
+      exploration_costs_written_off_cr: {expr: "ROUND(SUM(exploration_costs_written_off_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Exploration costs written off — Survey + Dry Wells (₹ cr)", polarity: lower}
+      survey_costs_written_off_cr: {expr: "ROUND(SUM(survey_costs_written_off_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Survey costs written off (₹ cr)", polarity: lower}
+      exploratory_wells_written_off_cr: {expr: "ROUND(SUM(exploratory_wells_written_off_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Exploratory dry wells written off (₹ cr)", polarity: lower}
+      ebitda_corporate_cr: {expr: "ROUND(SUM(ebitda_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Standalone EBITDA (₹ cr)", polarity: higher}
+      ebitda_margin_corporate_pct: {expr: "ROUND(AVG(ebitda_margin_pct), 1)", aggregation: avg, unit: pct, label: "Standalone EBITDA margin (%)", polarity: higher}
+      dda_cr: {expr: "ROUND(SUM(dda_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Depreciation, depletion & impairment — DD&A (₹ cr)", polarity: lower}
+      finance_costs_cr: {expr: "ROUND(SUM(finance_costs_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Finance costs (₹ cr)", polarity: lower}
+      exceptional_items_cr: {expr: "ROUND(SUM(exceptional_items_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Exceptional items — impairment / reversal (₹ cr)"}
+      pbt_corporate_cr: {expr: "ROUND(SUM(pbt_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Profit before tax — PBT (₹ cr)", polarity: higher}
+      tax_expense_cr: {expr: "ROUND(SUM(tax_expense_total_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Tax expense — Current + Deferred (₹ cr)", polarity: lower}
+      current_tax_cr: {expr: "ROUND(SUM(current_tax_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Current tax (₹ cr)", polarity: lower}
+      deferred_tax_cr: {expr: "ROUND(SUM(deferred_tax_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Deferred tax (₹ cr)", polarity: lower}
+      pat_cr: {expr: "ROUND(SUM(pat_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Standalone profit after tax — PAT (₹ cr)", polarity: higher}
+      pat_margin_corporate_pct: {expr: "ROUND(AVG(pat_margin_pct), 1)", aggregation: avg, unit: pct, label: "Standalone net PAT margin (%)", polarity: higher}
+      consolidated_revenue_cr: {expr: "ROUND(SUM(consolidated_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group revenue ONGC.NS (₹ cr)", polarity: higher}
+      consolidated_ebitda_cr: {expr: "ROUND(SUM(consolidated_ebitda_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group EBITDA ONGC.NS (₹ cr)", polarity: higher}
+      consolidated_pbt_cr: {expr: "ROUND(SUM(consolidated_pbt_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group PBT ONGC.NS (₹ cr)", polarity: higher}
+      consolidated_pat_cr: {expr: "ROUND(SUM(consolidated_pat_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group PAT ONGC.NS (₹ cr)", polarity: higher}
+      # --- Balance Sheet Metrics (Schedule III Notes 5–23) ---
+      total_assets_cr: {expr: "ROUND(SUM(total_assets_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total assets (₹ cr)", polarity: higher}
+      non_current_assets_cr: {expr: "ROUND(SUM(non_current_assets_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total non-current assets (₹ cr)", polarity: higher}
+      oil_and_gas_assets_cr: {expr: "ROUND(SUM(oil_and_gas_assets_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Oil & gas producing properties net block (₹ cr)", polarity: higher}
+      other_ppe_and_rou_cr: {expr: "ROUND(SUM(other_ppe_and_rou_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Other PPE & ROU lease assets (₹ cr)", polarity: higher}
+      cwip_cr: {expr: "ROUND(SUM(cwip_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Capital work-in-progress — CWIP (₹ cr)"}
+      exploratory_wells_in_progress_cr: {expr: "ROUND(SUM(exploratory_wells_in_progress_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Exploratory wells-in-progress (₹ cr)"}
+      investments_subsidiaries_jv_cr: {expr: "ROUND(SUM(investments_subsidiaries_jv_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Investments in subsidiaries & JVs — HPCL, OVL, MRPL, OPaL (₹ cr)", polarity: higher}
+      site_restoration_fund_cr: {expr: "ROUND(SUM(site_restoration_fund_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Site restoration / abandonment escrow deposit (₹ cr)", polarity: higher}
+      current_assets_cr: {expr: "ROUND(SUM(current_assets_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total current assets (₹ cr)", polarity: higher}
+      inventories_cr: {expr: "ROUND(SUM(inventories_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Inventories (₹ cr)"}
+      trade_receivables_cr: {expr: "ROUND(SUM(receivables_outstanding_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Trade receivables (₹ cr)", polarity: lower}
+      disputed_receivables_cr: {expr: "ROUND(SUM(disputed_receivables_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Disputed trade receivables (₹ cr)", polarity: lower}
+      cash_and_bank_cr: {expr: "ROUND(SUM(cash_and_bank_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Cash, cash equivalents & bank deposits (₹ cr)", polarity: higher}
+      equity_share_capital_cr: {expr: "ROUND(SUM(equity_share_capital_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Equity share capital (₹ cr)"}
+      other_equity_reserves_cr: {expr: "ROUND(SUM(other_equity_reserves_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Other equity — reserves & retained earnings (₹ cr)", polarity: higher}
+      net_worth_cr: {expr: "ROUND(SUM(net_worth_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Standalone net worth / equity (₹ cr)", polarity: higher}
+      consolidated_net_worth_cr: {expr: "ROUND(SUM(consolidated_net_worth_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group net worth (₹ cr)", polarity: higher}
+      non_current_liabilities_cr: {expr: "ROUND(SUM(non_current_liabilities_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total non-current liabilities (₹ cr)", polarity: lower}
+      long_term_debt_cr: {expr: "ROUND(SUM(long_term_debt_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Long-term borrowings (₹ cr)", polarity: lower}
+      short_term_debt_cr: {expr: "ROUND(SUM(short_term_debt_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Short-term borrowings (₹ cr)", polarity: lower}
+      total_debt_cr: {expr: "ROUND(SUM(total_debt_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total borrowings — LT + ST debt (₹ cr)", polarity: lower}
+      net_debt_cr: {expr: "ROUND(SUM(net_debt_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Net debt — Total debt minus cash (₹ cr)", polarity: lower}
+      lease_liabilities_cr: {expr: "ROUND(SUM(total_lease_liabilities_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total Ind-AS 116 lease liabilities (₹ cr)", polarity: lower}
+      abandonment_provision_cr: {expr: "ROUND(SUM(abandonment_provision_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Site restoration / decommissioning provision ARO (₹ cr)", polarity: lower}
+      deferred_tax_liability_net_cr: {expr: "ROUND(SUM(deferred_tax_liability_net_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Deferred tax liabilities net (₹ cr)", polarity: lower}
+      current_liabilities_cr: {expr: "ROUND(SUM(current_liabilities_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total current liabilities (₹ cr)", polarity: lower}
+      trade_payables_cr: {expr: "ROUND(SUM(trade_payables_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Trade payables (₹ cr)"}
+      total_liabilities_cr: {expr: "ROUND(SUM(total_liabilities_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total liabilities (₹ cr)", polarity: lower}
+      net_working_capital_cr: {expr: "ROUND(SUM(net_working_capital_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Net working capital (₹ cr)", polarity: higher}
+      capital_employed_cr: {expr: "ROUND(SUM(capital_employed_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Capital employed (₹ cr)", polarity: higher}
+      # --- Cash Flow Metrics (Ind-AS 7) ---
+      total_capex_cr: {expr: "ROUND(SUM(total_capex_spent_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Capex spent (₹ cr)"}
+      operating_cash_flow_cr: {expr: "ROUND(SUM(operating_cash_flow_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Operating cash flow — OCF (₹ cr)", polarity: higher}
+      investing_cash_flow_cr: {expr: "ROUND(SUM(investing_cash_flow_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Net cash used in investing activities (₹ cr)"}
+      financing_cash_flow_cr: {expr: "ROUND(SUM(financing_cash_flow_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Net cash used in financing activities (₹ cr)"}
+      net_cash_change_cr: {expr: "ROUND(SUM(net_cash_change_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Net change in cash & cash equivalents (₹ cr)", polarity: higher}
+      free_cash_flow_cr: {expr: "ROUND(SUM(free_cash_flow_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Free cash flow — FCF (₹ cr)", polarity: higher}
+      dividend_payout_cr: {expr: "ROUND(SUM(total_dividend_payout_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Dividend payout (₹ cr)"}
+      csr_spend_cr: {expr: "ROUND(SUM(csr_disbursed_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "CSR spend (₹ cr)"}
+      # --- Financial Ratios & Per-Share Metrics ---
+      roce_pct: {expr: "ROUND(AVG(standalone_roce_pct), 1)", aggregation: avg, unit: pct, label: "ROCE standalone (%)", polarity: higher}
+      consolidated_roce_pct: {expr: "ROUND(AVG(consolidated_roce_pct), 1)", aggregation: avg, unit: pct, label: "ROCE consolidated (%)", polarity: higher}
+      roe_pct: {expr: "ROUND(AVG(roe_pct), 1)", aggregation: avg, unit: pct, label: "Return on equity — ROE (%)", polarity: higher}
+      roa_pct: {expr: "ROUND(AVG(roa_pct), 1)", aggregation: avg, unit: pct, label: "Return on assets — ROA (%)", polarity: higher}
+      debt_to_equity_ratio: {expr: "ROUND(AVG(debt_to_equity_ratio), 2)", aggregation: avg, unit: ratio, label: "Debt-to-equity ratio (x)", polarity: lower}
+      net_debt_to_ebitda_ratio: {expr: "ROUND(AVG(net_debt_to_ebitda_ratio), 2)", aggregation: avg, unit: ratio, label: "Net debt-to-EBITDA ratio (x)", polarity: lower}
+      interest_coverage_ratio: {expr: "ROUND(AVG(interest_coverage_ratio), 2)", aggregation: avg, unit: ratio, label: "Interest coverage ratio (x)", polarity: higher}
+      current_ratio: {expr: "ROUND(AVG(current_ratio), 2)", aggregation: avg, unit: ratio, label: "Current ratio (x)", polarity: higher}
+      quick_ratio: {expr: "ROUND(AVG(quick_ratio), 2)", aggregation: avg, unit: ratio, label: "Quick ratio (x)", polarity: higher}
+      receivable_days: {expr: "ROUND(AVG(receivable_days), 1)", aggregation: avg, unit: ratio, label: "Trade receivable days — DSO (days)", polarity: lower}
+      eps_basic_inr: {expr: "ROUND(AVG(eps_basic_inr), 2)", aggregation: avg, unit: ratio, label: "Basic EPS (₹/share)", polarity: higher}
+      book_value_per_share_inr: {expr: "ROUND(AVG(book_value_per_share_inr), 2)", aggregation: avg, unit: ratio, label: "Book value per share (₹/share)", polarity: higher}
+      dividend_per_share_inr: {expr: "ROUND(AVG(dividend_per_share_inr), 2)", aggregation: avg, unit: ratio, label: "Dividend per share (₹/share)", polarity: higher}
+      crude_realisation_usd_bbl: {expr: "ROUND(AVG(crude_realisation_usd_bbl), 2)", aggregation: avg, unit: usd_per_boe, label: "Crude oil realisation ($/bbl)", polarity: higher}
+      gas_realisation_usd_mmbtu: {expr: "ROUND(AVG(gas_realisation_usd_mmbtu), 2)", aggregation: avg, unit: usd_per_boe, label: "Natural gas realisation ($/MMBtu)", polarity: higher}
+
+  subsidiaries:
+    domain: finance
+    table: hrfin_silver.subsidiary_financials
+    description: "ONGC Group subsidiaries & joint ventures (HPCL, MRPL, OVL, OPAL, OTPC) annual revenue, EBITDA, PAT, ROCE and dividend contribution to Consolidated ONGC.NS (FY17–FY26)."
+    period: fiscal_year
+    default_fy: FY26
+    fields:
+      fy: {column: fiscal_year, kind: fy}
+      subsidiary: {column: entity_code, kind: categorical, label: subsidiary}
+    metrics:
+      subsidiary_pat_cr: {expr: "ROUND(SUM(pat_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Subsidiary PAT (₹ cr)", polarity: higher}
+      subsidiary_revenue_cr: {expr: "ROUND(SUM(revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Subsidiary revenue (₹ cr)", polarity: higher}
+      subsidiary_ebitda_cr: {expr: "ROUND(SUM(ebitda_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Subsidiary EBITDA (₹ cr)", polarity: higher}
+      subsidiary_dividend_cr: {expr: "ROUND(SUM(dividend_received_by_ongc_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Dividend received by ONGC (₹ cr)", polarity: higher}
+      subsidiary_roce_pct: {expr: "ROUND(AVG(roce_pct), 1)", aggregation: avg, unit: pct, label: "Subsidiary ROCE (%)", polarity: higher}
+    companions: [subsidiary_pat_cr, subsidiary_revenue_cr, subsidiary_ebitda_cr]
 
   mou:
     domain: finance
@@ -259,3 +358,31 @@ templates:
     default_from: FY22
     default_to: FY26
     certified_id: C7
+  pnl_statement:
+    domain: finance
+    label: "ONGC Schedule III Statement of Profit & Loss"
+    description: "Complete 23-line Ind-AS Schedule III + Yahoo Finance (ONGC.NS) Statement of Profit & Loss (Revenue from Operations, Crude/Gas/VAP, Other Income, Royalty, OIDB Cess, SAED Windfall Tax, Net Revenue, Operating Expenses, EBITDA, Exploration Write-Offs, DD&A, Finance Costs, Exceptional Items, PBT, Tax Expense, Standalone PAT & Consolidated PAT) for a single FY (with YoY comparison) or across a 10-year range (FY17–FY26)."
+    period: fiscal_year
+    default_from: FY17
+    default_to: FY26
+  balance_sheet:
+    domain: finance
+    label: "ONGC Schedule III Balance Sheet"
+    description: "Complete 24-line Ind-AS Schedule III + Yahoo Finance (ONGC.NS) Balance Sheet (Oil & Gas Producing Properties, Other PPE & ROU Lease Assets, CWIP, Exploratory Wells-in-Progress, Subsidiary/JV Investments in HPCL/OVL/MRPL/OPaL, Site Restoration Escrow Fund, Inventories, Trade Receivables, Cash & Bank, Total Assets, Equity Share Capital, Other Equity Reserves, Net Worth, Long-Term & Short-Term Debt, Ind-AS 116 Lease Liabilities, ARO Decommissioning Provision, Deferred Tax Liabilities & Current Liabilities) for a single FY or across FY17–FY26."
+    period: fiscal_year
+    default_from: FY17
+    default_to: FY26
+  cash_flow_statement:
+    domain: finance
+    label: "ONGC Ind-AS 7 Statement of Cash Flows"
+    description: "Complete 18-line Ind-AS 7 + Yahoo Finance (ONGC.NS) Statement of Cash Flows (PBT, Non-Cash DD&A/Exploration Adjustments, Working Capital Changes, Taxes Paid, Net Operating Cash Flow OCF, Capex Outflows, Subsidiary Acquisitions, Dividends/Interest Received, Investing Cash Flow, Net Borrowings, Lease Payments, Interest & Dividends Paid, Financing Cash Flow, Opening/Closing Cash & Free Cash Flow FCF) for a single FY or across FY17–FY26."
+    period: fiscal_year
+    default_from: FY17
+    default_to: FY26
+  financial_ratios:
+    domain: finance
+    label: "ONGC Financial Ratios & Credit Scorecard"
+    description: "Complete 18-line Corporate Financial Ratios Scorecard (EBITDA Margin, EBIT Margin, PBT Margin, Net PAT Margin, Standalone & Consolidated ROCE, ROE, ROA, Debt-to-Equity, Net Debt-to-EBITDA, Interest Coverage, Current Ratio, Receivable Days DSO, EPS, Book Value Per Share, Dividend Per Share, Crude Realisation & Lifting Cost) for a single FY or across FY17–FY26."
+    period: fiscal_year
+    default_from: FY17
+    default_to: FY26

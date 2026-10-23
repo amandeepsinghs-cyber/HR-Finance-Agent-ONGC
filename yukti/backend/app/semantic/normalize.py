@@ -64,6 +64,13 @@ def resolve_fy(text: str, available: Optional[Iterable[str]] = None,
     last = cur - 1
     avail = sorted({a.upper() for a in available}) if available else []
 
+    # Explicit FY range ("from FY17 to FY26", "FY17-FY26", "from 2017 to 2026")
+    m = re.search(r"\b(?:from\s+|between\s+)?(?:fy\s?'?)?(201[7-9]|202[0-7]|1[7-9]|2[0-7])\s*(?:to|and|through|[-–])\s*(?:fy\s?'?)?(201[7-9]|202[0-7]|1[7-9]|2[0-7])\b", t)
+    if m and ("fy" in m.group(0) or "to" in m.group(0) or "from" in m.group(0) or int(m.group(2)) % 100 > (int(m.group(1)) % 100) + 1):
+        lo_n, hi_n = int(m.group(1)) % 100, int(m.group(2)) % 100
+        if 17 <= lo_n <= hi_n <= 27:
+            return {"from": fy_label(lo_n), "to": fy_label(hi_n), "n_years": hi_n - lo_n + 1}
+
     # Explicit FY labels / year ranges ("FY 2024-25", "FY24-25" and "2024-25" name the FY by its end year)
     for m in re.finditer(r"\b(20\d{2})\s?[-–/]\s?(\d{2}|20\d{2})\b", t):
         if int(m.group(2)) % 100 == (int(m.group(1)) + 1) % 100:  # not a date like 2026-10-19
@@ -71,20 +78,29 @@ def resolve_fy(text: str, available: Optional[Iterable[str]] = None,
     for m in re.finditer(r"\bfy\s?'?(\d{2})\s?[-–/]\s?(\d{2})\b", t):
         if int(m.group(2)) % 100 == (int(m.group(1)) + 1) % 100:
             return {"fy": fy_label(int(m.group(2)))}
-    m = re.search(r"\bfy\s?'?(\d{2})(?!\d)", t)
-    if m:
-        return {"fy": fy_label(int(m.group(1)))}
-    m = re.search(r"\bfy\s?(20\d{2})\b", t)
-    if m:
-        return {"fy": fy_label(int(m.group(1)))}
+    fy_hits = [int(x) % 100 for x in re.findall(r"\bfy\s?'?(20\d{2}|\d{2})(?!\d)", t) if 17 <= int(x) % 100 <= 27]
+    if len(set(fy_hits)) >= 2:
+        lo_f, hi_f = min(fy_hits), max(fy_hits)
+        if hi_f - lo_f == 1 and re.search(r"\b(compared\s+to|vs\.?|versus|against|from\s+prior)\b", t):
+            return {"fy": fy_label(hi_f)}
+        return {"from": fy_label(lo_f), "to": fy_label(hi_f), "n_years": hi_f - lo_f + 1}
+    if fy_hits:
+        return {"fy": fy_label(fy_hits[0])}
 
-    # Ranges: "last 5 years", "past three years", "pichle 5 saal", "over 5 years"
+    # Ranges: "last 5 years", "past three years", "10-year", "10 year trend", "pichle 5 saal", "over 5 years"
     m = re.search(r"\b(?:(?:over|in|during) the (?:last|past)|last|past|previous|pichle|pichhle)\s+(\d+|[a-z]+)\s+(?:fiscal\s+)?(?:years?|yrs?|saal|varsh)\b", t)
+    if not m:
+        m = re.search(r"\b(\d+|ten|five|three)\s*[- ]\s*(?:fiscal\s+)?(?:year|yr)s?\b", t)
     if m:
         tok = m.group(1)
         n = int(tok) if tok.isdigit() else _WORD_NUM.get(tok)
-        if n and 1 <= n <= 15:
+        if n and 2 <= n <= 15:
             return {"from": fy_label(last - n + 1), "to": fy_label(last), "n_years": n}
+
+    # Bare 4-digit calendar/fiscal year ("Profit and loss statement of ONGC. 2026", "in 2025")
+    m = re.search(r"(?<![-\d])\b(201[7-9]|202[0-7])\b(?![-\d])", t)
+    if m:
+        return {"fy": fy_label(int(m.group(1)))}
 
     if re.search(r"\byear before last\b|\bpichle se pichle saal\b", t):
         return {"fy": fy_label(last - 1)}

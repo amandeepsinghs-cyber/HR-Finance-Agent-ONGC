@@ -165,8 +165,6 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = fal
       case 'column':
         return columnOption(plan, t);
       case 'histogram':
-        // U5.9: < 30 raw values → rank the values (same "Distribution of …" note); no histogram + density line.
-        if (plan.sparseRows) return rankedOption({ ...plan, form: 'ranked', rows: sparseTopN(plan.sparseRows) }, t);
         return histogramOption(plan, t);
       case 'waterfall':
         return waterfallOption(plan, t);
@@ -205,7 +203,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = fal
   }
 
   return (
-    <div className="w-full h-full" data-chart-form={plan.form === 'histogram' && plan.sparseRows ? 'ranked' : plan.form}>
+    <div className="w-full h-full" data-chart-form={plan.form}>
       {plan.form === 'donut' ? (
         <DonutWithLegend plan={plan} t={t} isPie={false} />
       ) : plan.form === 'pie' ? (

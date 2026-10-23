@@ -10,24 +10,25 @@ from typing import Any, Dict, List, Optional, Tuple
 
 
 CHART_KIND_PATTERNS: List[Tuple[str, str]] = [
-    (r"\b(histogram|frequency\s+distribution|bell\s+curve|distribution\s+plot|binned\s+plot)\b", "histogram"),
-    (r"\b(donut\s+chart|donut\s+plot|doughnut\s+chart|doughnut|donut|ring\s+chart)\b", "donut"),
-    (r"\b(pie\s+chart|pie\s+plot|pie\s+graph|as\s+a\s+pie|in\s+a\s+pie|draw\s+a\s+pie|plot\s+a\s+pie|\bpie\b)\b", "pie"),
-    (r"\b(horizontal\s+bar|h-bar|hbar|ranked\s+bar)\b", "hbar"),
-    (r"\b(stacked\s+bar|stacked\s+column|stacked\s+chart)\b", "stacked_bar"),
-    (r"\b(scatter\s+plot|scatter\s+chart|bubble\s+chart|bubble\s+plot|\bscatter\b)\b", "scatter"),
-    (r"\b(waterfall\s+chart|waterfall\s+plot|bridge\s+chart|\bwaterfall\b)\b", "waterfall"),
-    (r"\b(treemap|tree\s+map|hierarchy\s+map)\b", "treemap"),
-    (r"\b(heatmap|heat\s+map|matrix\s+plot)\b", "heatmap"),
-    (r"\b(area\s+chart|area\s+plot|area\s+graph|filled\s+line)\b", "area"),
-    (r"\b(combo\s+chart|dual\s+axis|bar\s+and\s+line)\b", "combo"),
-    (r"\b(bullet\s+chart|target\s+bar)\b", "bullet"),
-    (r"\b(gauge\s+chart|speedometer|meter\s+chart|\bgauge\b)\b", "gauge"),
-    (r"\b(funnel\s+chart|funnel\s+plot|\bfunnel\b)\b", "funnel"),
-    (r"\b(line\s+chart|line\s+plot|line\s+graph|trend\s+line)\b", "line"),
-    (r"\b(bar\s+chart|bar\s+plot|bar\s+graph|column\s+chart|vertical\s+bar)\b", "bar"),
-    (r"\b(india\s+map|geo\s+map|on\s+a\s+map|show\s+map)\b", "map"),
-    (r"\b(as\s+a\s+table|in\s+a\s+table|table\s+view|tabular\s+view|data\s+table)\b", "table"),
+    (r"(?:\b(?:histogram|frequency\s+distribution|bell\s+curve|distribution\s+plot|binned\s+plot)\b|हिस्टोग्राम)", "histogram"),
+    (r"(?:\b(?:donut\s+chart|donut\s+plot|doughnut\s+chart|doughnut|donut|ring\s+chart)\b|डोनट)", "donut"),
+    (r"(?:\b(?:pie\s+chart|pie\s+plot|pie\s+graph|as\s+a\s+pie|in\s+a\s+pie|draw\s+a\s+pie|plot\s+a\s+pie|pie)\b|पाई\s*चार्ट|पाई)", "pie"),
+    (r"(?:\b(?:horizontal\s+bar|h-bar|hbar|ranked\s+bar)\b|हॉरिजॉन्टल\s*बार)", "hbar"),
+    (r"(?:\b(?:stacked\s+bar|stacked\s+column|stacked\s+chart)\b|स्टैक्ड\s*बार)", "stacked_bar"),
+    (r"(?:\b(?:grouped\s+bar|grouped\s+column|side\s+by\s+side\s+bar)\b|ग्रुप्ड\s*बार)", "grouped_bar"),
+    (r"(?:\b(?:scatter\s+plot|scatter\s+chart|bubble\s+chart|bubble\s+plot|scatter)\b|स्कैटर)", "scatter"),
+    (r"(?:\b(?:waterfall\s+chart|waterfall\s+plot|bridge\s+chart|waterfall)\b|वॉटरफॉल|वाटरफॉल)", "waterfall"),
+    (r"(?:\b(?:treemap|tree\s+map|hierarchy\s+map)\b|ट्रीमैप)", "treemap"),
+    (r"(?:\b(?:heatmap|heat\s+map|matrix\s+plot)\b|हीटमैप)", "heatmap"),
+    (r"(?:\b(?:area\s+chart|area\s+plot|area\s+graph|filled\s+line)\b|एरिया\s*चार्ट)", "area"),
+    (r"(?:\b(?:combo\s+chart|dual\s+axis|bar\s+and\s+line)\b|कॉम्बो\s*चार्ट)", "combo"),
+    (r"(?:\b(?:bullet\s+chart|target\s+bar)\b|बुलेट\s*चार्ट)", "bullet"),
+    (r"(?:\b(?:gauge\s+chart|speedometer|meter\s+chart|gauge)\b|गेज\s*चार्ट)", "gauge"),
+    (r"(?:\b(?:funnel\s+chart|funnel\s+plot|funnel)\b|फ़नल|फनल)", "funnel"),
+    (r"(?:\b(?:line\s+chart|line\s+plot|line\s+graph|trend\s+line)\b|लाइन\s*चार्ट)", "line"),
+    (r"(?:\b(?:bar\s+chart|bar\s+plot|bar\s+graph|column\s+chart|vertical\s+bar)\b|बार\s*चार्ट)", "bar"),
+    (r"(?:\b(?:india\s+map|geo\s+map|on\s+a\s+map|show\s+map)\b|मैप)", "map"),
+    (r"(?:\b(?:as\s+a\s+table|in\s+a\s+table|table\s+view|tabular\s+view|data\s+table)\b|टेबल|तालिका)", "table"),
 ]
 
 
@@ -36,6 +37,14 @@ def extract_requested_chart_kind(query: str) -> Optional[str]:
     if not query:
         return None
     q_low = query.lower()
+    # Revenue and cost/expense/levies/profit bridge plot requests always map to a waterfall chart
+    if (
+        re.search(r"\b(revenue|income|sales|turnover)\b", q_low)
+        and re.search(r"\b(cost\w*|expense\w*|opex|levies|outflow\w*|deduction\w*|profit|pbt|pat|margin\w*)\b", q_low)
+        and re.search(r"\b(plot\w*|chart\w*|graph\w*|visual\w*|draw|show|display|bridge|waterfall)\b", q_low)
+        and not re.search(r"\b(table|tabular)\b", q_low)
+    ):
+        return "waterfall"
     for pattern, kind in CHART_KIND_PATTERNS:
         if re.search(pattern, q_low):
             return kind
@@ -206,15 +215,17 @@ def detect_unit(columns: List[str], val_col: str) -> str:
         return "₹ Cr"
     if "lakh" in v_low:
         return "₹ Lakh"
-    if "inr" in v_low:
+    if any(k in v_low for k in ["inr", "pay", "salary", "allowance", "hra", "dearness", "prp", "bonus", "overtime", "ctc", "rupee", "amount"]):
         return "₹"
-    if any(k in v_low for k in ["usd", "boe"]):
+    if any(k in v_low for k in ["usd", "per_boe", "cost_boe"]):
         return "$/BOE"
+    if "boe" in v_low:
+        return "BOE"
     if any(k in v_low for k in ["pct", "percent", "rate", "share"]):
         return "%"
     if any(k in v_low for k in ["hour", "hrs"]):
         return "hours"
-    if any(k in v_low for k in ["year", "yr", "age", "tenure", "stay"]):
+    if re.search(r"(?:^|_)(?:years?|yrs?|age|tenure|stay)(?:$|_)", v_low):
         return "years"
     return "count"
 
@@ -277,6 +288,50 @@ def build_chart_spec(
         remaining_num = [c for c in numeric_cols if c != val_key]
         if remaining_num:
             secondary_val_key = remaining_num[0]
+
+    # If single-row entity with multiple numeric columns (e.g. Ankleshwar Asset Revenue, EBITDA, PBT):
+    # build a 5-step P&L waterfall bridge when waterfall is requested, or pivot numeric columns into rows!
+    all_num_cols = [col for col in columns if isinstance(rows[0].get(col), (int, float)) and not isinstance(rows[0].get(col), bool)]
+    if len(rows) == 1 and len(all_num_cols) >= 2:
+        r0 = rows[0]
+        rev_c = next((c for c in all_num_cols if "revenue" in c.lower()), None)
+        ebitda_c = next((c for c in all_num_cols if "ebitda" in c.lower()), None)
+        pbt_c = next((c for c in all_num_cols if "pbt" in c.lower() or "profit" in c.lower()), None)
+        if kind == "waterfall" and rev_c and pbt_c:
+            rev_v = float(r0.get(rev_c) or 0)
+            pbt_v = float(r0.get(pbt_c) or 0)
+            ebitda_v = float(r0.get(ebitda_c) or round((rev_v + pbt_v) / 2.0, 2)) if ebitda_c else round(rev_v * 0.68, 2)
+            opex_v = round(ebitda_v - rev_v, 2)
+            dda_v = round(pbt_v - ebitda_v, 2)
+            wf_rows = [
+                {"step": "Gross Revenue", "amount_cr": rev_v, "type": "base"},
+                {"step": "OPEX & Levies", "amount_cr": opex_v, "type": "loss"},
+                {"step": "EBITDA", "amount_cr": ebitda_v, "type": "total"},
+                {"step": "DD&A", "amount_cr": dda_v, "type": "loss"},
+                {"step": "PBT (Net)", "amount_cr": pbt_v, "type": "total"},
+            ]
+            return {
+                "kind": "waterfall",
+                "data": wf_rows,
+                "x": "step",
+                "y": "amount_cr",
+                "category": "step",
+                "value": "amount_cr",
+                "unit": unit or "₹ Cr",
+            }
+        piv_rows = [
+            {"metric": col.replace("_cr", " (₹ Cr)").replace("_", " ").title(), "value": float(r0.get(col) or 0)}
+            for col in all_num_cols
+        ]
+        return {
+            "kind": kind,
+            "data": piv_rows,
+            "x": "metric",
+            "y": "value",
+            "category": "metric",
+            "value": "value",
+            "unit": unit or detect_unit(columns, val_key),
+        }
 
     # If kind == 'histogram' and rows are NOT already bucketed, auto-bin them!
     is_already_bucketed = any(k in dim_key.lower() for k in ["bucket", "bin", "band", "range", "bracket", "group", "grade"]) or (

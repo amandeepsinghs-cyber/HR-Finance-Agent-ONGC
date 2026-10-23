@@ -55,18 +55,21 @@ class Pcm16DownsamplerProcessor extends AudioWorkletProcessor {
     }
 
     // Level metering + peak detection for soft gain boost on quiet mics
-    let sumSq = 0;
     let peakAbs = 0;
     for (let i = 0; i < n; i++) {
-      const v = ch[i];
-      sumSq += v * v;
-      const av = Math.abs(v);
+      const av = Math.abs(ch[i]);
       if (av > peakAbs) peakAbs = av;
+    }
+
+    const gain = peakAbs > 0.00015 && peakAbs < 0.25 ? Math.min(24.0, 0.35 / peakAbs) : 1.0;
+
+    let sumSq = 0;
+    for (let i = 0; i < n; i++) {
+      const v = Math.max(-1, Math.min(1, ch[i] * gain));
+      sumSq += v * v;
     }
     this.levelAcc += sumSq;
     this.levelN += n;
-
-    const gain = peakAbs > 0.002 && peakAbs < 0.2 ? Math.min(3.5, 0.35 / peakAbs) : 1.0;
 
     // Resample to 16 kHz PCM16
     while (this.pos < n) {

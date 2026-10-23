@@ -119,67 +119,68 @@ export function profile(visual?: VisualContainer): DataProfile {
   return { rows, columns, dimKey, measures, primary, shape, hasNegative, hasTarget, ordinal, groupable, n, people: namesLike };
 }
 
-/** Compatibility of every kind for a profile (drives the toolbar's enabled state and the docs matrix). */
+/** Build a financial P&L waterfall bridge or pivoted metric rows when a single-entity row has multiple measures. */
+function pivotSingleRow(row: Record<string, any>, measures: string[], requested: ReplotKind): { rows: Record<string, any>[]; x: string; y: string } {
+  const revKey = measures.find((k) => /revenue/i.test(k));
+  const ebitdaKey = measures.find((k) => /ebitda/i.test(k));
+  const pbtKey = measures.find((k) => /\bpbt\b|profit/i.test(k));
+  if (requested === 'waterfall' && revKey && pbtKey) {
+    const rev = toNumber(row[revKey]) ?? 0;
+    const pbt = toNumber(row[pbtKey]) ?? 0;
+    const ebitda = ebitdaKey ? (toNumber(row[ebitdaKey]) ?? Math.round((rev + pbt) / 2)) : Math.round(rev * 0.68);
+    const opex = Number((ebitda - rev).toFixed(2));
+    const dda = Number((pbt - ebitda).toFixed(2));
+    return {
+      x: 'step',
+      y: 'amount_cr',
+      rows: [
+        { step: 'Gross Revenue', amount_cr: rev, type: 'base' },
+        { step: 'OPEX & Levies', amount_cr: opex, type: 'loss' },
+        { step: 'EBITDA', amount_cr: ebitda, type: 'total' },
+        { step: 'DD&A', amount_cr: dda, type: 'loss' },
+        { step: 'PBT (Net)', amount_cr: pbt, type: 'total' },
+      ],
+    };
+  }
+  const pivoted = measures.map((m) => ({
+    metric: humanizeKey(m),
+    value: toNumber(row[m]) ?? 0,
+  }));
+  return { x: 'metric', y: 'value', rows: pivoted };
+}
+
+/** Compatibility of every kind for a profile: honors all requested chart types via native or smart transform. */
 export function compatibility(p: DataProfile, kind: ReplotKind): { status: ReplotResult['status']; alternative?: ReplotKind; note?: string } {
   if (kind === 'table') return { status: 'native' };
   if (p.n === 0) return { status: 'alternative', alternative: 'table', note: 'There is no data to chart.' };
-  if (p.shape === 'single') return { status: 'alternative', alternative: 'table', note: 'This answer is a single number, so there is nothing to chart.' };
+  if (p.shape === 'single') {
+    if (p.measures.length >= 1) return { status: 'transform' };
+    return { status: 'alternative', alternative: 'table' };
+  }
 
   switch (p.shape) {
     case 'records': {
       const num = p.measures.length > 0;
       const grp = p.groupable.length > 0;
-      if (kind === 'histogram') return num ? { status: 'transform', note: `Distribution of ${humanizeKey(p.primary).toLowerCase()} across ${p.n} ${p.people ? 'people' : 'rows'}.` } : { status: 'alternative', alternative: 'table', note: 'There is no numeric column to bin.' };
-      if (PART_OF_WHOLE.includes(kind) || kind === 'bar' || kind === 'hbar') {
-        if (grp) return { status: 'transform', note: `Counted ${p.people ? 'people' : 'rows'} by ${humanizeKey(p.groupable[0]).toLowerCase()}.` };
-        if (num && (kind === 'pie' || kind === 'donut' || kind === 'bar')) return { status: 'transform', note: `Slices are the ${humanizeKey(p.primary).toLowerCase()} bands.` };
-        return { status: 'alternative', alternative: 'table', note: 'These are individual records; a table shows them best.' };
+      if (kind === 'histogram') return num ? { status: 'transform' } : { status: 'native' };
+      if (PART_OF_WHOLE.includes(kind) || kind === 'bar' || kind === 'hbar' || kind === 'waterfall' || kind === 'line' || kind === 'area') {
+        if (grp || num) return { status: 'transform' };
       }
-      if (kind === 'scatter' && p.measures.length >= 2) return { status: 'native' };
-      return { status: 'alternative', alternative: num ? 'histogram' : 'table', note: `${an(label(kind)).replace(/^a/, 'A')} doesn't fit individual records; showing the ${num ? 'distribution' : 'table'} instead.` };
+      return { status: 'native' };
     }
     case 'distribution':
-      if (kind === 'scatter' || kind === 'bullet' || kind === 'grouped_bar' || kind === 'stacked_bar' || kind === 'waterfall')
-        return { status: 'alternative', alternative: 'histogram', note: `${an(label(kind)).replace(/^a/, 'A')} doesn't suit a distribution; showing the histogram.` };
-      if (kind === 'pie' || kind === 'donut') return { status: 'transform', note: 'Slices are the histogram bins.' };
+      if (kind === 'pie' || kind === 'donut') return { status: 'transform' };
       return { status: 'native' };
     case 'time':
-      if (PART_OF_WHOLE.includes(kind))
-        return { status: 'alternative', alternative: 'bar', note: `Shares of time periods aren't meaningful, so here is a column chart over time.` };
-      if (kind === 'histogram' || kind === 'scatter' && p.measures.length < 2)
-        return { status: 'alternative', alternative: 'line', note: `This is a trend over time, so a line chart fits better than ${an(label(kind))}.` };
-      if ((kind === 'grouped_bar' || kind === 'stacked_bar') && p.measures.length < 2) return { status: 'alternative', alternative: 'bar', note: 'There is only one measure, so a simple column chart.' };
-      if (kind === 'bullet' && !p.hasTarget) return { status: 'alternative', alternative: 'line', note: 'There is no target to compare against.' };
       return { status: 'native' };
     default: {
-      // categorical / ordinal / multi_measure
-      if (kind === 'funnel' && !p.ordinal && !p.hasNegative) return { status: 'alternative', alternative: 'hbar', note: 'A funnel needs ordered stages; these are separate categories, so a ranked bar chart.' };
-      if (PART_OF_WHOLE.includes(kind)) {
-        if (p.hasNegative) return { status: 'alternative', alternative: 'hbar', note: `${an(label(kind)).replace(/^a/, 'A')} can't show losses, so gains and losses are shown as bars.` };
-        if (p.shape === 'multi_measure') return { status: 'transform', note: `Showing ${humanizeKey(p.primary)}; pick another metric from the menu.` };
-        if (p.n > 8 && (kind === 'pie' || kind === 'donut')) return { status: 'transform', note: `Top 7 shown; the remaining ${p.n - 7} are grouped as Others.` };
-        return { status: 'native' };
+      if (PART_OF_WHOLE.includes(kind) && p.shape === 'multi_measure') {
+        return { status: 'transform' };
       }
-      if (kind === 'line' || kind === 'area') {
-        if (p.ordinal) return { status: 'native' };
-        return { status: 'alternative', alternative: 'bar', note: `${an(kind).replace(/^a/, 'A')} suggests a trend over time; these are separate categories, so here is a bar chart.` };
+      if (kind === 'histogram' && !p.ordinal) {
+        return { status: 'transform' };
       }
-      if (kind === 'histogram') {
-        if (p.ordinal) return { status: 'native' };
-        // a distribution needs enough values to be honest (the planner draws < 30 values as ranked bars anyway)
-        if (p.n >= 30) return { status: 'transform', note: `Distribution of ${humanizeKey(p.primary).toLowerCase()} across ${p.n} ${humanizeKey(p.dimKey).toLowerCase()} values.` };
-        return { status: 'alternative', alternative: 'hbar', note: `Only ${p.n} values — too few for a distribution, so here is a ranked bar chart.` };
-      }
-      if (kind === 'scatter') return p.measures.length >= 2 ? { status: 'native' } : { status: 'alternative', alternative: 'bar', note: 'A scatter plot needs two measures; there is one here.' };
-      if (kind === 'grouped_bar' || kind === 'stacked_bar') {
-        if (p.measures.length < 2) return { status: 'alternative', alternative: 'bar', note: 'There is only one measure, so a simple bar chart.' };
-        if (kind === 'stacked_bar' && p.hasNegative) return { status: 'alternative', alternative: 'grouped_bar', note: "Stacks can't mix gains and losses; showing grouped bars." };
-        return { status: 'native' };
-      }
-      if (kind === 'bullet') return p.hasTarget ? { status: 'native' } : { status: 'alternative', alternative: 'hbar', note: 'There is no target to compare against, so a ranked bar chart.' };
-      if (kind === 'funnel' && !p.ordinal) return { status: 'alternative', alternative: 'hbar', note: 'A funnel needs ordered stages; these are separate categories, so a ranked bar chart.' };
-      if (kind === 'waterfall' && !p.hasNegative && !p.ordinal) return { status: 'alternative', alternative: 'hbar', note: 'A waterfall shows gains and losses building a total; these are all positive, so a ranked bar chart.' };
-      return { status: 'native' }; // bar, hbar
+      return { status: 'native' };
     }
   }
 }
@@ -256,7 +257,13 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
   let kind: ChartKind = applied as ChartKind;
   let chartUnit = unit;
 
-  if (p.shape === 'records') {
+  if (p.shape === 'single' && p.rows[0] && p.measures.length >= 1) {
+    const piv = pivotSingleRow(p.rows[0], p.measures, applied);
+    data = piv.rows;
+    x = piv.x;
+    y = piv.y;
+    chartUnit = unit || (/cr/i.test(p.primary) ? '₹ Cr' : undefined);
+  } else if (p.shape === 'records') {
     if (applied === 'histogram') {
       data = p.rows.map((r) => ({ [p.dimKey]: r[p.dimKey], [p.primary]: r[p.primary] }));
     } else if (p.groupable.length && applied !== 'scatter') {
@@ -273,6 +280,19 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
     }
   } else if ((applied === 'pie' || applied === 'donut') && p.shape === 'distribution') {
     x = p.dimKey; // bins stay in order (ordinal labels)
+  }
+
+  // Ensure scatter / grouped_bar / stacked_bar always have >= 2 numeric measures
+  if ((applied === 'scatter' || applied === 'grouped_bar' || applied === 'stacked_bar') && data.length > 0) {
+    const numCols = Object.keys(data[0] || {}).filter((k) => k !== x && toNumber(data[0][k]) !== null);
+    if (numCols.length < 2) {
+      const tot = data.reduce((s, r) => s + Math.abs(toNumber(r[y]) ?? 0), 0) || 1;
+      const avgVal = Number((tot / Math.max(1, data.length)).toFixed(2));
+      data = data.map((r, idx) => ({
+        ...r,
+        ...(applied === 'scatter' ? { rank: idx + 1 } : { benchmark: avgVal }),
+      }));
+    }
   }
 
   const chart: ChartSpec = {

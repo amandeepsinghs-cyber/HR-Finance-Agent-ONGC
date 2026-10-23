@@ -174,7 +174,15 @@ export const FloatingConversationPanel: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
-  const micLevel = useCallback(() => audioEngine?.getMicLevel() || 0, [audioEngine]);
+  const micLevel = useCallback(
+    () =>
+      Math.max(
+        audioEngine?.getRawMicLevel ? audioEngine.getRawMicLevel() : 0,
+        audioEngine?.getMicLevel ? audioEngine.getMicLevel() : 0,
+        audioEngine?.getOutputLevel ? audioEngine.getOutputLevel() : 0,
+      ),
+    [audioEngine],
+  );
 
   const collapsed =
     !isGreeting &&
@@ -300,21 +308,23 @@ export const FloatingConversationPanel: React.FC<Props> = ({
       {/* Status or Live Speech Banner */}
       {(statusLine || liveInterimText) && (
         <div
-          className="pointer-events-auto self-center px-4 py-1.5 rounded-pill bg-[var(--glass)] backdrop-blur-md border border-[var(--hairline)] shadow-[var(--card-shadow)] flex items-center gap-2 text-label text-[var(--ink-2)]"
+          className="pointer-events-auto self-center px-4 py-1.5 rounded-pill bg-[var(--glass)] backdrop-blur-md border border-[var(--hairline)] shadow-[var(--card-shadow)] flex items-center gap-2.5 text-label text-[var(--ink-2)]"
           data-testid="status-line"
         >
-          <span className="flex gap-1">
-            {[0, 1, 2].map((i) => (
-              <span key={i} className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-bounce" style={{ animationDelay: `${i * 0.12}s` }} />
-            ))}
+          <span
+            data-aura={liveInterimText ? 'listening' : 'thinking'}
+            className="yk-aura-ring inline-flex items-center justify-center w-6 h-6 rounded-full shrink-0"
+            aria-hidden
+          >
+            <LevelMeter level={micLevel} active />
           </span>
-          <span className="font-medium text-[var(--ink)]">
-            {liveInterimText ? `Listening: "${liveInterimText}"` : slow ? 'Still working, live data can take a few seconds…' : statusLine}
+          <span className="font-normal text-[var(--ink-2)]">
+            {liveInterimText ? `Listening: "${liveInterimText}"` : slow ? 'Still analysing, live data can take a few seconds…' : statusLine}
           </span>
         </div>
       )}
 
-      {/* Suggested follow-ups (U4.6): readable chips, wrap instead of truncating; hidden on the home screen or when collapsed */}
+      {/* Suggested follow-ups (U4.6): subtle light-gray chips at the bottom, never bolder than body text */}
       {suggestions.length > 0 && !isGreeting && (
         <div
           className={clsx(
@@ -324,7 +334,13 @@ export const FloatingConversationPanel: React.FC<Props> = ({
           data-testid="suggestions"
         >
           {suggestions.slice(0, 3).map((s) => (
-            <Chip key={s} size="sm" onClick={() => onSelectSuggestion(s)} title={s} className="bg-[var(--glass)] backdrop-blur-md max-w-full">
+            <Chip
+              key={s}
+              size="sm"
+              onClick={() => onSelectSuggestion(s)}
+              title={s}
+              className="!font-normal !text-[var(--ink-3)] !bg-[var(--surface)] !border-[var(--hairline)] hover:!text-[var(--ink-2)] max-w-full"
+            >
               <span className="whitespace-normal text-left">{s}</span>
             </Chip>
           ))}
@@ -346,10 +362,16 @@ export const FloatingConversationPanel: React.FC<Props> = ({
           }
         }}
         className={clsx(
-          'yk-aura-ring pointer-events-auto rounded-pill self-center transition-[width] duration motion-reduce:transition-none',
+          'yk-aura-box pointer-events-auto rounded-pill self-center transition-[width] duration motion-reduce:transition-none',
           collapsed ? 'w-[15rem] h-12' : 'w-full',
         )}
       >
+        <span aria-hidden className="yk-aura-box-halo">
+          <span className="yk-aura-box-stretch" />
+        </span>
+        <span aria-hidden className="yk-aura-box-border">
+          <span className="yk-aura-box-stretch" />
+        </span>
         <form
           onSubmit={send}
           onClick={collapsed ? expandBar : undefined}
@@ -386,59 +408,37 @@ export const FloatingConversationPanel: React.FC<Props> = ({
           {/* Expanded contents */}
           {!collapsed && (
             <>
-              {/* Docked Mini Particle Orb (when visual is on screen) */}
-              {!isGreeting && (
-                <div className="shrink-0 -my-1">
-                  <VoiceOrb
-                    state={orbState}
-                    isDark={isDark}
-                    size={48}
-                    onClick={onToggleMic}
-                    audioEngine={audioEngine}
-                    label={isMicActive ? 'Stop listening' : 'Start talking'}
-                    pressed={!!isMicActive}
-                  />
-                </div>
-              )}
-
-              {/* Mic Button */}
-              <button
-                type="button"
-                onClick={onToggleMic}
-                data-testid="mic-button"
-                aria-pressed={isMicActive}
-                className={`shrink-0 h-[2.65rem] rounded-full flex items-center justify-center gap-2 transition-all font-medium text-[0.84rem] ${
-                  isMicActive
-                    ? 'px-3.5 bg-ongc-maroon text-white shadow-[0_6px_18px_-4px_rgb(var(--maroonRgb)/0.85)]'
-                    : 'w-[2.65rem] bg-[var(--accent)] text-white hover:bg-[var(--accent-deep)] shadow-[0_4px_14px_-4px_rgb(var(--accentRgb)/0.75)]'
-                }`}
-                title={isMicActive ? 'Stop listening' : 'Talk to Yukti (or press Space)'}
-              >
-                {isMicActive ? (
-                  <>
-                    <LevelMeter level={micLevel} active />
-                    <Square className="w-3.5 h-3.5 fill-current" />
-                  </>
-                ) : (
-                  <Mic className="w-[1.15rem] h-[1.15rem]" />
-                )}
-              </button>
-
-              {/* Microphone Device Selector (shown when mic has enumerated devices) */}
-              {micDevices.length > 1 && (
-                <select
-                  aria-label="Select Microphone"
-                  value={micDevices.find((d) => d.label === activeMicLabel)?.deviceId || ''}
-                  onChange={(e) => onSelectMicDevice?.(e.target.value)}
-                  className="hidden sm:block text-[0.72rem] bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--hairline)] rounded-full px-2.5 py-1 max-w-[9.5rem] truncate focus:outline-none"
-                  title={`Active microphone: ${activeMicLabel || 'Default'}`}
+              {/* Replicate the TopBar Listening aura ring + animated 5-bar LevelMeter at the bottom panel (made bigger: 2.75rem / 44px) */}
+              {isMicActive || orbState !== 'idle' ? (
+                <button
+                  type="button"
+                  onClick={onToggleMic}
+                  data-testid="mic-button"
+                  aria-pressed={isMicActive}
+                  aria-label={isMicActive ? 'Stop listening' : 'Start talking'}
+                  title={isMicActive ? 'Listening — click to stop' : 'Talk to Yukti (or press Space)'}
+                  data-aura={orbState === 'thinking' ? 'thinking' : 'listening'}
+                  className="yk-aura-ring rounded-full w-11 h-11 shrink-0 cursor-pointer transition-transform hover:scale-105 active:scale-95"
                 >
-                  {micDevices.map((d) => (
-                    <option key={d.deviceId} value={d.deviceId}>
-                      {d.label}
-                    </option>
-                  ))}
-                </select>
+                  <span
+                    className={`yk-aura-surface rounded-full w-full h-full grid place-items-center bg-[var(--card)] border border-[var(--hairline)] shadow-sm ${
+                      orbState === 'thinking' ? 'text-ongc-amber' : 'text-[var(--accent)]'
+                    }`}
+                  >
+                    <LevelMeter level={micLevel} active size="lg" />
+                  </span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onToggleMic}
+                  data-testid="mic-button"
+                  aria-pressed={isMicActive}
+                  className="shrink-0 w-[2.65rem] h-[2.65rem] rounded-full flex items-center justify-center transition-all font-medium text-[0.84rem] bg-[#fdf2f2] text-[#a31d18] border border-[#f1d2d0] hover:bg-[#fae5e5] dark:bg-[#2a1515] dark:text-[#f87171] dark:border-[#4a2222] shadow-sm"
+                  title="Talk to Yukti (or press Space)"
+                >
+                  <Mic className="w-[1.12rem] h-[1.12rem]" />
+                </button>
               )}
             </>
           )}

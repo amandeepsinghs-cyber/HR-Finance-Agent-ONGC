@@ -186,14 +186,19 @@ export class VoiceAudioEngine {
           const combined = parts.join(' ').replace(/\s+/g, ' ').trim();
           if (combined) {
             latestUncommitted = combined;
+            // If WebAudio PCM is near-zero on a virtual/CRD mic while SpeechRecognition hears words,
+            // pulse the display-only micLevel (never rawMicLevel) so the orb visibly responds during speech.
+            if (this.rawMicLevel < 0.05) {
+              this.micLevel = Math.max(this.micLevel, 0.55);
+            }
             onInterim(combined);
             if (silenceDebounce) clearTimeout(silenceDebounce);
             silenceDebounce = setTimeout(commitUtterance, 1250);
           }
         };
         rec.onerror = (ev: any) => {
-          // Fatal errors (permission, unsupported, network on Cloudtop) must not relaunch in a loop.
-          if (['not-allowed', 'service-not-allowed', 'audio-capture', 'network', 'language-not-supported'].includes(ev?.error)) fatal = true;
+          // Permanent permission/support errors must not relaunch in a loop; transient audio-capture/network hiccups retry.
+          if (['not-allowed', 'service-not-allowed', 'language-not-supported'].includes(ev?.error)) fatal = true;
         };
         rec.onend = () => {
           if (silenceDebounce) {
@@ -459,7 +464,7 @@ export class VoiceAudioEngine {
           const lv = Math.min(1, Math.sqrt(rms) * 2.2);
           this.rawMicLevel = lv; // fallback path feeds barge-in too
           this.micLevel = this.micLevel * 0.45 + lv * 0.55;
-          const gain = peakAbs > 0.002 && peakAbs < 0.2 ? Math.min(3.5, 0.35 / peakAbs) : 1.0;
+          const gain = peakAbs > 0.00015 && peakAbs < 0.25 ? Math.min(24.0, 0.35 / peakAbs) : 1.0;
           while (pos < n) {
             const i0 = Math.floor(pos);
             const frac = pos - i0;

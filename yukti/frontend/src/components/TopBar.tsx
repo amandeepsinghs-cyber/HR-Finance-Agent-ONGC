@@ -39,35 +39,43 @@ const STATE_LABEL: Record<OrbState, string> = {
 };
 
 /** Five-bar live level meter driven by the mic RMS. */
-export const LevelMeter: React.FC<{ level: () => number; active: boolean; className?: string }> = ({ level, active, className = '' }) => {
+export const LevelMeter: React.FC<{ level: () => number; active: boolean; size?: 'sm' | 'lg'; className?: string }> = ({
+  level,
+  active,
+  size = 'sm',
+  className = '',
+}) => {
   const refs = useRef<(HTMLSpanElement | null)[]>([]);
   useEffect(() => {
     if (!active) return;
     let raf = 0;
-    const weights = [0.55, 0.85, 1, 0.8, 0.5];
-    const loop = () => {
+    const weights = [0.55, 0.88, 1, 0.82, 0.52];
+    const loop = (now: number) => {
       const lv = level();
       refs.current.forEach((el, i) => {
         if (!el) return;
         const jitter = 0.85 + Math.random() * 0.3;
-        const h = Math.max(0.18, Math.min(1, lv * weights[i] * 1.6 * jitter));
+        const gentleWave = 0.24 + 0.14 * Math.abs(Math.sin(now * 0.0065 + i * 0.95));
+        const h = Math.max(gentleWave, Math.min(1, (lv * 2.1 + 0.15) * weights[i] * jitter));
         el.style.transform = `scaleY(${h})`;
       });
       raf = requestAnimationFrame(loop);
     };
-    loop();
+    raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, [active, level]);
+  const boxCls = size === 'lg' ? 'gap-[3px] h-[1.35rem]' : 'gap-[2px] h-[0.95rem]';
+  const barCls = size === 'lg' ? 'w-[3.5px]' : 'w-[3px]';
   return (
-    <span className={`inline-flex items-center gap-[2px] h-[0.95rem] ${className}`} aria-hidden data-testid="level-meter">
+    <span className={`inline-flex items-center ${boxCls} ${className}`} aria-hidden data-testid="level-meter">
       {[0, 1, 2, 3, 4].map((i) => (
         <span
           key={i}
           ref={(el) => {
             refs.current[i] = el;
           }}
-          className="w-[3px] h-full rounded-full bg-current origin-center transition-transform duration-75"
-          style={{ transform: 'scaleY(0.2)' }}
+          className={`${barCls} h-full rounded-full bg-current origin-center transition-transform duration-75`}
+          style={{ transform: 'scaleY(0.25)' }}
         />
       ))}
     </span>
@@ -122,47 +130,62 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <header className="relative z-30 h-[var(--topbar-h)] px-6 flex items-center justify-between gap-4 border-b border-[var(--hairline)] bg-[var(--glass)] backdrop-blur-xl">
-      {/* Brand */}
-      <div className="flex items-center gap-3 min-w-0 flex-1">
+      {/* Brand — ONGC official website scale (80px emblem + Yukti AI Agent / HR and Finance in ONGC Red) */}
+      <div className="flex items-center gap-4 min-w-0 flex-1 py-1">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/ongc_logo.png" alt="ONGC" className="w-8 h-8 rounded-[var(--radius-sm)] object-contain bg-[var(--card)] ring-1 ring-[var(--hairline)] p-[2px]" />
-        <div className="leading-tight min-w-0">
-          <div className="font-display font-semibold text-title tracking-[-0.01em] text-[var(--ink)]">Yukti</div>
-          <div className="text-caption text-[var(--ink-3)] whitespace-nowrap">HR &amp; Finance · ONGC</div>
+        <img
+          src="/brand/ongc_logo.png"
+          alt="Oil and Natural Gas Corporation Limited"
+          className="w-[4.5rem] h-[4.5rem] xl:w-[5rem] xl:h-[5rem] shrink-0 rounded-[var(--radius-sm)] object-cover shadow-[var(--card-shadow)]"
+        />
+        <div className="min-w-0 flex flex-col justify-center leading-tight space-y-0.5">
+          <div className="flex items-baseline gap-1.5 flex-wrap leading-none">
+            <span className="font-display font-bold text-[1.35rem] xl:text-[1.5rem] tracking-[-0.02em] text-[#a31d18] dark:text-[#f87171] leading-none">
+              Yukti AI Agent ,
+            </span>
+            <span className="text-[0.88rem] xl:text-[0.95rem] font-semibold tracking-[0.01em] text-[#8b1812] dark:text-[#fca5a5] whitespace-nowrap leading-none">
+              HR and Finance
+            </span>
+          </div>
+          <div className="text-[0.76rem] font-medium text-[var(--ink-2)] truncate leading-tight pt-0.5">
+            Oil and Natural Gas Corporation Limited
+          </div>
+          <div className="text-[0.76rem] text-[var(--ink-3)] font-normal truncate leading-tight">
+            A Maharatna Company
+          </div>
         </div>
       </div>
 
-      {/* Centre: one state pill (state · connection). Clicking toggles live/demo. */}
-      <div
-        data-testid="voice-state"
-        data-state={state}
-        role="status"
-        aria-live="polite"
-        className="flex items-center gap-2.5 pl-2 pr-1.5 py-1 rounded-pill bg-[var(--surface)] border border-[var(--hairline)] text-label max-w-[38vw]"
-      >
-        <span data-aura={auraState} className="yk-aura-ring rounded-full w-6 h-6 shrink-0">
-          <span className={`yk-aura-surface rounded-full w-full h-full grid place-items-center bg-[var(--card)] ${stateTone}`}>
-            {state === 'listening' && micLevel ? <LevelMeter level={micLevel} active className={stateTone} /> : <span className={`w-2 h-2 rounded-full bg-current ${state !== 'idle' ? 'animate-pulse' : ''}`} />}
-          </span>
-        </span>
-        <span className="font-medium text-[var(--ink)]">{STATE_LABEL[state]}</span>
-        {statusLine && state === 'thinking' && <span className="text-[var(--ink-2)] truncate font-normal">· {statusLine}</span>}
-        <span aria-hidden className="hidden md:block w-px h-4 bg-[var(--hairline)]" />
-        <button
-          type="button"
-          onClick={onToggleLiveMode}
-          data-testid="connection-pill"
-          aria-label={isLiveMode ? `Connection: ${conn.label}. Switch to offline demo answers` : 'Connection: demo answers. Switch to live agent'}
-          title={isLiveMode ? 'Connected to the live agent. Click to use offline demo answers.' : 'Using offline demo answers. Click to go live.'}
-          className="flex items-center gap-1.5 px-2 py-0.5 rounded-pill text-[var(--ink-2)] font-normal hover:bg-[var(--surface-2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+      {/* Right: state pill (Ready · Live) · role · language · theme */}
+      <div className="flex items-center justify-end gap-2 shrink-0">
+        <div
+          data-testid="voice-state"
+          data-state={state}
+          role="status"
+          aria-live="polite"
+          className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-pill bg-[var(--surface)] border border-[var(--hairline)] text-label"
         >
-          <span className={`w-1.5 h-1.5 rounded-full ${connDot}`} />
-          {conn.label}
-        </button>
-      </div>
-
-      {/* Right: role · language · theme */}
-      <div className="flex items-center justify-end gap-1.5 shrink-0 flex-1">
+          <span data-aura={auraState} className="yk-aura-ring rounded-full w-6 h-6 shrink-0">
+            <span className={`yk-aura-surface rounded-full w-full h-full grid place-items-center bg-[var(--card)] ${stateTone}`}>
+              {state === 'listening' && micLevel ? <LevelMeter level={micLevel} active className={stateTone} /> : <span className={`w-2 h-2 rounded-full bg-current ${state !== 'idle' ? 'animate-pulse' : ''}`} />}
+            </span>
+          </span>
+          <span className="font-medium text-[var(--ink)]">{STATE_LABEL[state]}</span>
+          {statusLine && state === 'thinking' && <span className="text-[var(--ink-2)] truncate font-normal max-w-[14rem]">· {statusLine}</span>}
+          <span aria-hidden className="hidden md:block w-px h-4 bg-[var(--hairline)]" />
+          <button
+            type="button"
+            onClick={onToggleLiveMode}
+            data-testid="connection-pill"
+            aria-label={isLiveMode ? `Connection: ${conn.label}. Switch to offline demo answers` : 'Connection: demo answers. Switch to live agent'}
+            title={isLiveMode ? 'Connected to the live agent. Click to use offline demo answers.' : 'Using offline demo answers. Click to go live.'}
+            className="flex items-center gap-1.5 px-2 py-0.5 rounded-pill text-[var(--ink-2)] font-normal hover:bg-[var(--surface-2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${connDot}`} />
+            {conn.label}
+          </button>
+        </div>
+        <span aria-hidden className="w-px h-5 bg-[var(--hairline)] mx-0.5" />
         {demo && (
           <div className="flex items-center gap-0.5 rounded-pill bg-[var(--surface)] border border-[var(--hairline)] p-0.5 text-caption" title="Demo script (← / →)">
             <IconButton onClick={demo.onPrev} className="!w-7 !h-7 [&>svg]:!w-3.5 [&>svg]:!h-3.5" label="Previous demo answer">

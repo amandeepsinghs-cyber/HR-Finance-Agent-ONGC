@@ -7,6 +7,7 @@
  */
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnswerCard } from './AnswerCard';
+import { LevelMeter } from './TopBar';
 import type { Turn } from '@/state/feed';
 import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
 import { cleanText } from '@/charts/format';
@@ -30,11 +31,11 @@ const timeOf = (ms?: number) => (ms ? new Date(ms).toLocaleTimeString([], { hour
 
 const QuestionBubble: React.FC<{ turn: Turn }> = ({ turn }) => (
   <div className="flex justify-end" data-testid="turn-question">
-    <div className="max-w-[min(48rem,80%)] flex flex-col items-end gap-1">
-      <div className="rounded-[1.25rem] rounded-br-[0.4rem] bg-[var(--surface)] border border-[var(--hairline)] px-4 py-2.5 text-body text-[var(--ink)] leading-snug">
+    <div className="max-w-[min(48rem,80%)] flex flex-col items-end gap-0.5 text-right">
+      <div className="text-body font-medium text-[var(--ink)] leading-snug">
         {cleanText(turn.question) || '…'}
       </div>
-      <div className="flex items-center gap-1.5 text-label font-normal text-[var(--ink-3)] pr-1">
+      <div className="flex items-center gap-1.5 text-label font-normal text-[var(--ink-3)]">
         {turn.viaVoice && <Mic className="w-3 h-3" aria-label="asked by voice" />}
         <span>{timeOf(turn.askedAt)}</span>
       </div>
@@ -42,21 +43,24 @@ const QuestionBubble: React.FC<{ turn: Turn }> = ({ turn }) => (
   </div>
 );
 
-const PendingCard: React.FC<{ statusLine?: string | null }> = ({ statusLine }) => (
-  <Card className="px-[1.35rem] py-[1.2rem] max-w-[72rem]" data-testid="turn-pending" role="status" aria-live="polite">
+const PendingCard: React.FC<{ statusLine?: string | null; isDark?: boolean }> = ({ statusLine }) => (
+  <div className="py-[0.75rem] max-w-[72rem]" data-testid="turn-pending" role="status" aria-live="polite">
     <div className="flex items-center gap-3 text-label text-[var(--ink-2)]">
-      <span className="relative inline-flex w-2.5 h-2.5">
-        <span className="absolute inset-0 rounded-full bg-[var(--accent)] opacity-60 animate-ping" />
-        <span className="relative w-2.5 h-2.5 rounded-full bg-[var(--accent)]" />
+      <span
+        data-aura="thinking"
+        className="yk-aura-ring inline-flex items-center justify-center w-8 h-8 rounded-full shrink-0"
+        aria-hidden
+      >
+        <LevelMeter level={() => 0.35} active />
       </span>
-      {statusLine || 'Yukti is working on it…'}
+      <span>{statusLine || 'Analysing…'}</span>
     </div>
-    <div className="mt-4 space-y-2.5" aria-hidden>
+    <div className="mt-3 space-y-2.5" aria-hidden>
       <div className="h-3 rounded-full yk-shimmer w-[62%]" />
       <div className="h-3 rounded-full yk-shimmer w-[86%]" />
       <div className="h-3 rounded-full yk-shimmer w-[44%]" />
     </div>
-  </Card>
+  </div>
 );
 
 const ErrorCard: React.FC<{ turn: Turn; onRetry?: (q: string, turnId?: string) => void }> = ({ turn, onRetry }) => (
@@ -225,7 +229,7 @@ export const ConversationFeed: React.FC<ConversationFeedProps> = ({
               className="flex flex-col gap-3.5"
             >
               <QuestionBubble turn={t} />
-              {t.status === 'pending' && <PendingCard statusLine={isLast ? statusLine : null} />}
+              {t.status === 'pending' && <PendingCard statusLine={isLast ? statusLine : null} isDark={isDark} />}
               {t.status === 'error' && <ErrorCard turn={t} onRetry={onRetry} />}
               {t.status === 'done' && t.contract && (
                 <AnswerCard

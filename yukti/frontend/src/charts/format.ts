@@ -58,6 +58,11 @@ const KEY_LABELS: Record<string, string> = {
   customer: 'Customer',
   fiscal_year: 'Fiscal year',
   fy: 'Fiscal year',
+  component: 'Salary Component',
+  annual_lakh: 'Annual / Officer (₹ Lakh)',
+  monthly_inr: 'Monthly / Officer (₹)',
+  share_pct: 'Share of Gross (%)',
+  grade_pool_cr: 'Total Grade Pool (₹ Cr)',
 };
 
 /** "grade_id" -> "Grade", "pbt_cr" -> "PBT (₹ Cr)", "Stay >= 5y" -> "Stay ≥ 5y" */
@@ -116,6 +121,12 @@ export function cleanText(s: string): string {
 export function parseUnit(unit?: string, valueKey?: string): UnitInfo {
   const u = (unit || '').trim();
   const k = (valueKey || '').toLowerCase();
+  if (/lakh/i.test(u) || /_lakh$/.test(k)) {
+    return { kind: 'plain', noun: '', label: '₹ Lakh', suffix: 'Lakh' };
+  }
+  if (/monthly_inr|_inr$/i.test(k) && !/(_cr|crore)/i.test(k) && !/crore|\bcr\b/i.test(u)) {
+    return { kind: 'plain', noun: '', label: '₹ / month', suffix: '₹' };
+  }
   if (/₹|\binr\b|crore|\bcr\b/i.test(u) || /(_cr|crore|_inr)$/.test(k)) {
     return { kind: 'currency', noun: '', label: '₹ Crore' };
   }

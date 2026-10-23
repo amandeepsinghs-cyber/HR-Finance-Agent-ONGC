@@ -81,7 +81,7 @@ def _title(spec: QuerySpec, compiled) -> str:
     label = compiled.metric_label
     if compiled.grain == "row" and compiled.subject == "workforce":
         label = "Employee roster"
-    dims = [alias.replace("_", " ") for _, alias in compiled.dims]
+    dims = [alias.replace("_", " ") for _, alias in compiled.dims if alias != "line_item"]
     t = label + (f" by {', '.join(dims)}" if dims and not spec.is_compare() else "")
     return (t + (f" · {scope[0]}" if scope else ""))[:110]
 
@@ -186,18 +186,39 @@ async def run_planner_turn(
         mode = "compare" if spec.is_compare() else "refine"
     title = _title(spec, compiled)
     subtitle = " · ".join(scope_phrases(spec, compiled))
-    visual = build_visual(spec, compiled, columns, rows, plan.chart_kind, title, subtitle, mode, n_total)
+    breakdown = None
+    if compiled.grain == "aggregate" and (not compiled.dims or len(rows) == 1) and rows and not junior:
+        breakdown = await _companion_breakdown(spec, compiled, compiler)
+    visual = build_visual(spec, compiled, columns, rows, plan.chart_kind, title, subtitle, mode, n_total, breakdown=breakdown)
     headline = narrate(spec, compiled, columns, rows, n_total)
     # B4: deterministic insights (+ previous-FY comparison where the subject has fiscal years),
     # drill-down chips, and a narrator limited to computed facts with a numeric-grounding check.
     prev_rows = await _previous_period_rows(spec, compiled, compiler)
     insights = compute_insights(build_insight_context(spec, compiled, rows, n_total, prev_rows,
-                                                      scope_phrases(spec, compiled)))
-    allowed = allowed_numbers(rows, insights, spec, extra=derived_numbers(compiled, rows, n_total))
+                                                      scope_phrases(spec, compiled), query=query))
+    extra_nums = derived_numbers(compiled, rows, n_total)
+    if breakdown and breakdown[1]:
+        for br in breakdown[1]:
+            for bv in br.values():
+                if isinstance(bv, (int, float)) and not isinstance(bv, bool):
+                    extra_nums.append(float(bv))
+    allowed = allowed_numbers(rows, insights, spec, extra=extra_nums)
     told = compose_spoken(headline, insights, allowed)
     spoken = told["text"]
     if told["ungrounded"]:
         status.append(f"Narrator: ungrounded numbers removed {told['ungrounded']}")
+    is_generic_stmt_query = "ambiguous_financial_statement" in (plan.notes or [])
+    if is_generic_stmt_query and compiled.metric == "pnl_statement":
+        fy_disp = (compiled.effective_period or {}).get("fy", "FY26")
+        if plan.chart_kind != "waterfall":
+            visual["type"] = "table"
+        visual["title"] = f"ONGC Financial Statements ({fy_disp}) — Statement of Profit & Loss (Table View)"
+        visual["subtitle"] = f"{fy_disp} · Income Statement (P&L) shown by default · Switch to Balance Sheet or Cash Flow below"
+        clarify_prompt = (
+            f"Would you like to examine the Income Statement (P&L), the Balance Sheet, or the Cash Flow Statement for {fy_disp}? "
+            f"I have placed the complete {fy_disp} Schedule III Statement of Profit & Loss table on screen first, and you can switch to the Balance Sheet, Cash Flow Statement, or Revenue & Costs Waterfall below. "
+        )
+        spoken = clarify_prompt + spoken
     notes = list(compiled.notes) + [f"Not applied: {d}" for d in compiled.dropped]
 
     contract: Dict[str, Any] = {
@@ -205,12 +226,15 @@ async def run_planner_turn(
         "language": language,
         "persona": persona,
         "spoken_summary": spoken,
-        "display_text": spoken[:590],
+        "display_text": spoken[:600],
         "visual": visual,
         "insights": [i.text for i in insights][:4] or [s for s in headline.split(". ") if s and "on screen" not in s][:3],
         "insights_v2": [i.to_contract() for i in insights][:6],
-        "drilldowns": make_drilldowns(spec, persona, compiled.grain),
-        "sources": [{"kind": "data", "object": ", ".join(compiled.tables), "sql": compiled.sql}],
+        "drilldowns": make_drilldowns(spec, persona, compiled.grain, max_n=4 if compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios") else 3),
+        "sources": [{"kind": "data", "object": ", ".join(compiled.tables), "sql": compiled.sql}] + (
+            [{"kind": "policy", "object": "ONGC Annual Reports (Schedule III Notes 5–38) & Yahoo Finance (ONGC.NS)", "clause_ref": "hrfin_docs.financial_notes_chunks"}]
+            if compiled.subject == "corporate" or compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios") else []
+        ),
         "suggestions": [],
         "access": {"status": "allowed"},
         "export_options": ["sheets", "xlsx", "pdf"],
@@ -260,6 +284,37 @@ async def run_planner_turn(
     return {"contract": contract, "meta": meta}
 
 
+async def _companion_breakdown(spec: QuerySpec, compiled, compiler) -> Optional[Any]:
+    """For 0-dimension scalar counts/totals, fetch a natural 1-dimension breakdown so a plot is always shown."""
+    from app.brain.semantic_model import get_semantic_model
+    sm = get_semantic_model()
+    subj = sm.subjects.get(compiled.subject)
+    if not subj:
+        return None
+    filter_fields = {f.field for f in spec.filters}
+    candidates = ["discipline", "grade", "field", "asset", "wc", "customer", "category", "fy"]
+    bd_dim = next((d for d in candidates if d in subj.fields and d not in filter_fields), None)
+    if not bd_dim:
+        bd_dim = next((d for d in candidates if d in subj.fields), None)
+    if not bd_dim:
+        return None
+    try:
+        from app.brain.query_spec import Period
+        upd: Dict[str, Any] = {"dimensions": [bd_dim], "limit": 12}
+        if bd_dim == "fy":
+            upd["period"] = Period(**{"from": "FY17", "to": "FY26"})
+        bd_spec = spec.model_copy(update=upd)
+        bd_cq = compiler.compile(bd_spec)
+        bd_res = await compiler.execute(bd_cq)
+        if not bd_res.rows:
+            return None
+        bd_cols, bd_rows, _ = localise_rows(bd_cq, bd_res)
+        return (bd_cols, bd_rows)
+    except Exception as e:
+        logger.info(f"companion breakdown skipped: {e}")
+        return None
+
+
 async def _previous_period_rows(spec: QuerySpec, compiled, compiler) -> Optional[List[Dict[str, Any]]]:
     """Same question one FY earlier (delta vs last year insight); None when not applicable or on error."""
     prev_spec = previous_period_spec(spec, compiled)
@@ -304,10 +359,12 @@ def _replot(plan: Plan, prev: QuerySpec, session_state: Any, persona: str, turn_
     kind = plan.chart_kind or "table"
     if kind == "table":
         last["type"] = "table"
-        last["table"] = {"columns": cols, "rows": rows[:200]}
+        if not isinstance(last.get("table"), dict) or not last["table"].get("rows"):
+            last["table"] = {"columns": cols, "rows": rows[:200]}
     else:
         last["type"] = "chart"
-        last["chart"] = build_chart_spec(kind=kind, columns=cols, rows=rows, title=last.get("title"))
+        if not (isinstance(last.get("chart"), dict) and last["chart"].get("kind") == kind and last["chart"].get("data")):
+            last["chart"] = build_chart_spec(kind=kind, columns=cols, rows=rows, title=last.get("title"))
     last["mode"] = "refine"
     spoken = f"Here is the same data as a {kind.replace('_', ' ')}."
     from app.brain.insight_context import table_insights

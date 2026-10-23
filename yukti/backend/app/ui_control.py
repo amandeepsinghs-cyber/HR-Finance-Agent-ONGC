@@ -306,9 +306,9 @@ def detect_ui_control_intent(query: str) -> Optional[Dict[str, str]]:
         return {"action": "language", "value": "hi-en"}
 
     # 6. Open named screen directly by voice ("open field profitability", "open mou scorecard", "open delhi tenure")
-    if re.search(r"\b(open|show|go to|load)\b.*\b(field profitability|profitability|loss making fields|p&l)\b", q):
+    if re.search(r"\b(open|show|go to|load)\b.*\b(field profitability|loss making fields)\b", q):
         return {"action": "open_screen", "value": "field_profitability"}
-    if re.search(r"\b(open|show|go to|load)\b.*\b(mou|scorecard|dpe target)\b", q):
+    if re.search(r"\b(open|show|go to|load)\b.*\b(mou|mou scorecard|dpe target)\b", q):
         return {"action": "open_screen", "value": "mou_scorecard"}
     if re.search(r"\b(open|show|go to|load)\b.*\b(delhi tenure|delhi station|station tenure)\b", q):
         return {"action": "open_screen", "value": "delhi_tenure"}

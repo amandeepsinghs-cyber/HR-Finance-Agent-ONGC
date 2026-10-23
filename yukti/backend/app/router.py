@@ -233,6 +233,17 @@ class SemanticRouter:
                 best_id = remapped_id
                 best_entry = remapped_entry
 
+        # Topic-level guards so specific leave/policy queries never false-match unrelated certified entries (e.g. P5 study leave)
+        q_low_guard = query.lower()
+        if best_id == "P5" and "study" not in q_low_guard:
+            best_score = 0.0
+        elif best_id == "P4" and not any(w in q_low_guard for w in ["earned", "encash", "retire", "superannuat"]):
+            best_score = 0.0
+        elif best_id == "E1" and not any(w in q_low_guard for w in ["balance", "my leave"]):
+            best_score = 0.0
+        elif any(w in q_low_guard for w in ["casual leave", "maternity leave", "paternity leave", "child care leave", "special casual", "commuted leave", "quarantine leave", "sabbatical", "compensatory off"]):
+            best_score = 0.0
+
         # Evaluate threshold
         if best_score >= self.threshold and best_entry:
             extracted_params = self.extract_turn_parameters(query, best_entry)

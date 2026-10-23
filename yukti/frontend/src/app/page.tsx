@@ -95,6 +95,9 @@ export default function YuktiApp() {
   const toolTurnRef = useRef<string | null>(null);
   // Bumped by "New conversation": late answers from the old session must not land in the fresh feed (U2 G4 #4).
   const sessionEpochRef = useRef(0);
+  // Per-profile conversation store: switching profiles saves the outgoing profile's feed/messages/sessionId
+  // and starts a fresh or restored view for the selected profile.
+  const personaStoreRef = useRef<Partial<Record<PersonaType, { turns: Turn[]; messages: ChatMessage[]; sessionId: string }>>>({});
   const liveUserMsgRef = useRef<string | null>(null);
   const liveAgentMsgRef = useRef<string | null>(null);
   const lastUserQuestionRef = useRef<string>('');
@@ -102,6 +105,7 @@ export default function YuktiApp() {
   const abortRef = useRef<AbortController | null>(null);
   const pttRef = useRef<{ down: number; startedByPress: boolean } | null>(null);
   const wsAudioGotFirstChunkRef = useRef(false);
+  const srHandledTurnRef = useRef(false);
   const runTypedTurnRef = useRef<(q: string) => Promise<void>>(async () => {});
   const stopMicRef = useRef<(sendEnd?: boolean) => Promise<void>>(async () => {});
   const [, forceTick] = useState(0);
@@ -182,15 +186,47 @@ export default function YuktiApp() {
   // ---------- Conversation helpers ----------
   const pushMessage = useCallback((m: ChatMessage) => setMessages((prev) => [...prev, m]), []);
 
+  const handlePersonaChange = useCallback((p: PersonaType) => {
+    const prevPersona = personaRef.current;
+    if (p === prevPersona) return;
+    // Save current profile's conversation state
+    personaStoreRef.current[prevPersona] = {
+      turns: turnsRef.current,
+      messages: messagesRef.current,
+      sessionId: yuktiClient.getSessionId(),
+    };
+    sessionEpochRef.current += 1;
+    abortRef.current?.abort();
+    abortRef.current = null;
+    engineRef.current?.stopPlayback(true);
+    engineRef.current?.acceptIncoming();
+    voiceTurnRef.current = null;
+    liveUserMsgRef.current = null;
+    liveAgentMsgRef.current = null;
+    lastUserQuestionRef.current = '';
+    toolTurnRef.current = null;
+    setStatusLine(null);
+    setBusy(false);
+    setSlow(false);
+    setLiveInterimText('');
+
+    const saved = personaStoreRef.current[p];
+    const nextSessionId = saved?.sessionId || `sess-${p.toLowerCase()}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    dispatchFeed(saved ? { type: 'restore', turns: saved.turns } : { type: 'reset' });
+    setMessages(saved ? saved.messages : []);
+    setPersona(p);
+    personaRef.current = p;
+    yuktiClient.switchPersonaSession(nextSessionId, p);
+    setOrbState(micActiveRef.current ? 'listening' : 'idle');
+  }, []);
+
   // Register global UI-command event bus handlers (Urvi `useUiCommands` pattern)
   useUiCommands(
     {
       theme: (val) => setIsDark(val === 'dark'),
       persona: (val) => {
         if (val) {
-          setPersona(val as PersonaType);
-          personaRef.current = val as PersonaType;
-          void yuktiClient.reconfigure({ persona: val });
+          handlePersonaChange(val as PersonaType);
         }
       },
       language: (val) => {
@@ -373,7 +409,6 @@ export default function YuktiApp() {
     };
 
     const onAudio = (b64: string) => {
-      wsAudioGotFirstChunkRef.current = true;
       const tel = telemetryRef.current;
       if (tel.firstAudioAt === null) tel.firstAudioAt = performance.now();
       engineRef.current?.enqueue24kAudio(b64);
@@ -521,9 +556,13 @@ export default function YuktiApp() {
   const startMicBody = async (eng: VoiceAudioEngine, deviceId?: string): Promise<boolean> => {
     eng.unlock();
     eng.stopPlayback(false);
+    if (liveRef.current) {
+      yuktiClient.sendInterrupt();
+    }
     setMicError(null);
     setLiveInterimText('');
     wsAudioGotFirstChunkRef.current = false;
+    srHandledTurnRef.current = false;
 
     // Broadcast to any other open Yukti tabs so they release getUserMedia & SpeechRecognition immediately
     try {
@@ -550,9 +589,14 @@ export default function YuktiApp() {
       (interim) => setLiveInterimText(interim),
       (finalText) => {
         setLiveInterimText('');
-        // Browser SR is a FALLBACK only: when the Live socket is open, Gemini Live owns the turn (no duplicate REST turn).
-        if (liveRef.current && yuktiClient.isLiveVoiceReady()) return;
+        // When Gemini Live transcribes the user's PCM stream, onUserTranscript sets wsAudioGotFirstChunkRef=true
+        // during speech so browser SR is suppressed (zero duplicate turns). When Gemini Live has not transcribed
+        // the turn (e.g. quiet/virtual mic where getUserMedia delivers near-zero PCM, or degraded socket),
+        // browser SR commits the utterance and routes it through runTypedTurn + Leda 24 kHz voice playback.
         if (!wsAudioGotFirstChunkRef.current && finalText.trim()) {
+          wsAudioGotFirstChunkRef.current = true;
+          srHandledTurnRef.current = true;
+          if (liveRef.current) yuktiClient.sendInterrupt();
           void stopMicRef.current(false);
           void runTypedTurnRef.current(finalText.trim());
         }
@@ -569,11 +613,11 @@ export default function YuktiApp() {
 
   const stopMic = useCallback(async (sendEnd = true) => {
     const eng = engineRef.current;
-    // Flush the browser SR only when it is acting as the fallback (Live closed); otherwise cancel it silently.
-    eng?.stopSpeechRecognition(sendEnd && !(liveRef.current && yuktiClient.isLiveVoiceReady()));
+    // Flush uncommitted browser SR text only when Gemini Live hasn't transcribed this mic turn yet.
+    eng?.stopSpeechRecognition(sendEnd && !wsAudioGotFirstChunkRef.current);
     eng?.stopMic();
     setLiveInterimText('');
-    if (sendEnd && liveRef.current) {
+    if (sendEnd && liveRef.current && !srHandledTurnRef.current) {
       yuktiClient.sendAudioStreamEnd();
     }
     setIsMicActive(false);
@@ -640,6 +684,7 @@ export default function YuktiApp() {
       if (!text) return;
       engineRef.current?.unlock();
       engineRef.current?.stopPlayback(true);
+      if (liveRef.current) yuktiClient.sendInterrupt();
       lastUserQuestionRef.current = text;
       pushMessage({ id: uid('u'), role: 'user', text, timestamp: now() });
 
@@ -794,12 +839,6 @@ export default function YuktiApp() {
   );
 
   // ---------- Persona / language ----------
-  const handlePersonaChange = (p: PersonaType) => {
-    setPersona(p);
-    personaRef.current = p;
-    void yuktiClient.reconfigure({ persona: p });
-  };
-
   const handleLanguageToggle = () => {
     const next: Lang = language === 'en' ? 'hi' : language === 'hi' ? 'hi-en' : 'en';
     setLanguage(next);
@@ -859,7 +898,9 @@ export default function YuktiApp() {
     setBusy(false);
     setSlow(false);
     setLiveInterimText('');
-    yuktiClient.resetSession();
+    const newSid = yuktiClient.resetSession();
+    delete personaStoreRef.current[personaRef.current];
+    void newSid;
     setOrbState(micActiveRef.current ? 'listening' : 'idle');
   }, []);
 

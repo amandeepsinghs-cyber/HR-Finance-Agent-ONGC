@@ -30,7 +30,8 @@ export type FeedAction =
   | { type: 'settle'; id: string; text?: string; at?: number }
   | { type: 'refine'; update: (c: AnswerContract) => AnswerContract; id?: string }
   | { type: 'drop'; id: string }
-  | { type: 'reset' };
+  | { type: 'reset' }
+  | { type: 'restore'; turns: Turn[] };
 
 const textContract = (text: string, id: string): AnswerContract => ({
   turn_id: `${id}_text`,
@@ -109,6 +110,8 @@ export function feedReducer(state: Turn[], a: FeedAction): Turn[] {
       return state.filter((t) => t.id !== a.id);
     case 'reset':
       return [];
+    case 'restore':
+      return a.turns.map((t) => ({ ...t, fresh: false }));
     default:
       return state;
   }

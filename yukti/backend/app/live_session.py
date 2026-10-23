@@ -78,8 +78,10 @@ You speak directly to ONGC's Chairman & CEO (CMD), Directors, and officers with 
      - `action="export"`, `value="pdf" | "xlsx"` — e.g. "export to PDF", "download Excel"
      - `action="history"`, `value="back" | "forward"` — e.g. "go back", "previous chart"
    - Call `ui_control` immediately and confirm in one short sentence (e.g., "Switched the view to a table on screen.").
-3. **Bilingual Fluency:**
-   - Reply in the same language the user speaks (Indian English, Hindi, or Hinglish).
+3. **Bilingual Fluency & Authentic Indian Accent (`en-IN` / `hi-IN`):**
+   - Always speak with a warm, natural, educated **Indian English (`en-IN`) or Hindi (`hi-IN`) accent** and Indian boardroom cadence.
+   - Pronounce Indian names, ONGC work centres (Mehsana, Ankleshwar, Dehradun, Jorhat, Rajahmundry, Cauvery), and Indian units (Lakh, Crore) with authentic Indian pronunciation.
+   - Reply in the same language the user speaks (Indian English, Hindi, or Hinglish). If the user asks whether you know or speak Hindi (e.g., "Yukti, tumhe Hindi bolni aati hai kya?"), reply immediately and warmly in Hindi/Hinglish ("Jee haan, mujhe Hindi bilkul aati hai! Aap mujhse Hindi, Hinglish ya English mein baat kar sakte hain.") without calling any tool.
 """
 
 
@@ -271,9 +273,10 @@ class LiveSessionManager:
         return f"[UI context: {', '.join(parts)}]"
 
     def _build_live_config(self, handle: Optional[str]) -> types.LiveConnectConfig:
+        lang_code = "hi-IN" if self.language == "hi" else "en-IN"
         system_text = (
             f"{YUKTI_LIVE_SYSTEM_PROMPT}\n\n"
-            f"Current active persona: {self.persona}. Preferred language: {self.language}."
+            f"Current active persona: {self.persona}. Preferred language: {self.language} (speech locale: {lang_code})."
         )
         return types.LiveConnectConfig(
             response_modalities=[types.Modality.AUDIO],
@@ -282,9 +285,10 @@ class LiveSessionManager:
             system_instruction=types.Content(parts=[types.Part.from_text(text=system_text)]),
             tools=build_yukti_live_tools(),
             speech_config=types.SpeechConfig(
+                language_code=lang_code,
                 voice_config=types.VoiceConfig(
                     prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=self.voice)
-                )
+                ),
             ),
             session_resumption=types.SessionResumptionConfig(handle=handle),
             context_window_compression=types.ContextWindowCompressionConfig(
@@ -492,7 +496,10 @@ class LiveSessionManager:
                 vis["type"] = "table"
                 vis["mode"] = "refine"
                 vis["table"] = {"columns": cols, "rows": rows}
-            elif target_kind in ("bar", "hbar", "donut", "line", "waterfall", "bullet") and rows and cols:
+            elif target_kind in (
+                "bar", "hbar", "donut", "pie", "line", "area", "waterfall", "bullet",
+                "histogram", "scatter", "treemap", "funnel", "grouped_bar", "stacked_bar", "heatmap", "gauge",
+            ) and rows and cols:
                 vis["type"] = "chart"
                 vis["mode"] = "refine"
                 vis["chart"] = build_chart_spec(
@@ -656,13 +663,15 @@ class LiveSessionManager:
 
                 # 1. Binary PCM16 16kHz frame (Urvi style)
                 if message.get("bytes"):
+                    if self._is_speak_only:
+                        continue
                     raw_bytes = message["bytes"]
                     self._audio_rx_count += 1
                     import array
                     s16 = array.array("h", raw_bytes[: len(raw_bytes) - (len(raw_bytes) % 2)])
                     peak = max((abs(x) for x in s16), default=0) if s16 else 0
                     now_ts = time.perf_counter()
-                    if peak >= 150:
+                    if peak >= 8:
                         turn_state["voice_frames_in_turn"] += 1
                         turn_state["last_voice_ts"] = now_ts
                     elif now_ts - turn_state["last_voice_ts"] > 1.5:
@@ -713,8 +722,9 @@ class LiveSessionManager:
                         turn_state["t_first_audio_ms"] = None
                         turn_state["total_audio_bytes"] = 0
                         self._is_speak_only = True
+                        self._suppress_audio = False
                         prompt = (
-                            "Read the following executive summary aloud word-for-word with natural warmth. "
+                            "Read the following executive summary aloud word-for-word with a warm, natural Indian accent (en-IN / hi-IN) and crisp Indian cadence. "
                             "Do NOT call any tools and do NOT add or change any words:\n\n"
                             f"{speak_text}"
                         )
@@ -758,11 +768,11 @@ class LiveSessionManager:
                         logger.info(
                             f"[{self.session_id}] Rx audio chunk #{self._audio_rx_count} ({len(audio_bytes)}B, peak={peak})"
                         )
-                    # Do not let silent/low-level mic frames barge-in, wedge send_realtime_input, or cancel an active `speak` turn
-                    if self._is_speak_only and peak < 1500:
+                    # Do not let mic frames barge-in or cancel an active `speak` synthesis turn
+                    if self._is_speak_only:
                         continue
                     now_ts = time.perf_counter()
-                    if peak >= 150:
+                    if peak >= 8:
                         turn_state["voice_frames_in_turn"] += 1
                         turn_state["last_voice_ts"] = now_ts
                     elif now_ts - turn_state["last_voice_ts"] > 1.5:
@@ -788,9 +798,10 @@ class LiveSessionManager:
                 elif msg_type == "interrupt":
                     # Do not echo `interrupted` (that re-opened the browser's drop gate while old-reply
                     # chunks were still in flight); just stop forwarding this reply's audio.
-                    # Only suppress while Gemini is still generating; after turn_complete nothing more of the old
-                    # reply will arrive, and a stale flag would silence the answer to the interrupting question.
-                    self._suppress_audio = self._generating
+                    # Only suppress while Gemini is still generating or starting a speak turn; after turn_complete
+                    # nothing more of the old reply will arrive, and a stale flag would silence the next answer.
+                    self._suppress_audio = self._generating or self._is_speak_only
+                    self._is_speak_only = False
 
                 elif msg_type == "ping":
                     await self.send_json({"type": "pong", "time": time.time()})

@@ -93,6 +93,17 @@ export class YuktiApiClient {
     return this.sessionId;
   }
 
+  /** Switch to a profile-specific session ID and persona so each profile has an isolated conversation. */
+  public switchPersonaSession(sessionId: string, persona: string): string {
+    const wasWanted = this.wantOpen;
+    this.disconnect();
+    this.sessionId = sessionId;
+    this.opts = { ...this.opts, persona };
+    this.voiceDegraded = false;
+    if (wasWanted) void this.connect({ persona });
+    return this.sessionId;
+  }
+
   private wsUrl(): string {
     const loc = window.location;
     const proto = loc.protocol === 'https:' ? 'wss:' : 'ws:';

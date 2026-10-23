@@ -79,6 +79,23 @@ class PolicySearchEngine:
                         "maps_to_question_ids": row.get("maps_to_question_ids", ""),
                         "source_basis": row.get("source_basis", ""),
                     })
+        from pathlib import Path
+        import json
+        fin_corpus = Path(__file__).resolve().parents[3] / "financial_build" / "data" / "financial_notes_corpus.jsonl"
+        if fin_corpus.exists():
+            with open(fin_corpus, "r", encoding="utf-8") as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    c = json.loads(line)
+                    items.append({
+                        "doc_id": f"ONGC Annual Report ({c.get('fiscal_year', 'FY17–FY26')})",
+                        "clause_ref": c.get("note_ref", "Schedule III"),
+                        "clause_title": c.get("title", ""),
+                        "clause_text": c.get("content", ""),
+                        "maps_to_question_ids": ",".join(c.get("causal_tags", [])),
+                        "source_basis": c.get("yahoo_finance_equivalent", "Schedule III P&L"),
+                    })
         self._local_index = items
         return items
 
@@ -88,27 +105,63 @@ class PolicySearchEngine:
         if not items:
             return []
 
-        q_terms = [t.lower() for t in query.split() if len(t) > 2]
+        import re
+        q_lower = query.lower()
+        q_terms = [t for t in re.findall(r"[a-z0-9]+", q_lower) if len(t) > 2 and t not in ("how", "many", "are", "there", "what", "the", "about", "policy", "rules", "rule", "one", "year", "for", "and", "can", "you", "tell")]
         scored = []
 
+        # High-precision topic boost rules so specific leave/HR/finance inquiries hit their exact clause first
+        topic_boosts = [
+            (["casual leave", "cl ", "casual leaves"], "leave rules", "2a.0", 25),
+            (["special casual", "scl", "blood donation", "sports leave"], "leave rules", "2b.0", 25),
+            (["earned leave", "el ", "300 days", "encash"], "leave rules", "3.0", 20),
+            (["encash", "superannuation encashment", "leave encashment"], "leave rules", "4.0", 22),
+            (["half pay leave", "hpl"], "leave rules", "5.0", 25),
+            (["commuted leave", "medical leave", "sick leave"], "leave rules", "5a.0", 25),
+            (["study leave"], "leave rules", "6.0", 25),
+            (["maternity", "adoption leave", "miscarriage"], "leave rules", "6a.0", 25),
+            (["paternity"], "leave rules", "6b.0", 25),
+            (["child care", "ccl"], "leave rules", "6c.0", 25),
+            (["extraordinary leave", "eol", "leave without pay"], "leave rules", "8.0", 25),
+            (["quarantine", "disability leave", "sabbatical"], "leave rules", "8a.0", 25),
+            (["compensatory off", "comp off", "comp-off", "14-day", "14 days on", "offshore duty"], "leave rules", "10.0", 25),
+            (["cafeteria", "35%", "mining allowance", "offshore allowance", "hardship"], "hr manual", "7.0", 25),
+            (["hra", "house rent", "leased accommodation", "cla", "self lease"], "hr manual", "8.0", 25),
+            (["ta/da", "travel entitlement", "daily allowance", "hotel", "transfer grant", "air travel"], "hr manual", "9.0", 25),
+            (["furniture", "laptop", "mobile", "house building", "hba", "car advance", "conveyance advance"], "hr manual", "10.0", 25),
+            (["probation", "confirmation"], "hr manual", "3.0", 20),
+            (["resignation", "notice period"], "hr manual", "6.0", 22),
+            (["prbs", "pension", "annuity", "nps"], "prbs", "", 18),
+            (["opd", "medical reimbursement", "hospitalization", "asha kiran", "post-retirement medical"], "post-retirement medical", "", 18),
+            (["bdp", "delegated power", "financial power", "sanction limit", "procurement limit"], "bdp summary", "", 18),
+        ]
+
         for item in items:
-            haystack = f"{item['doc_id']} {item['clause_ref']} {item['clause_title']} {item['clause_text']}".lower()
+            doc_l = item["doc_id"].lower()
+            ref_l = item["clause_ref"].lower()
+            title_l = item.get("clause_title", "").lower()
+            text_l = item.get("clause_text", "").lower()
+            haystack = f"{doc_l} {ref_l} {title_l} {text_l}"
             score = 0
             for term in q_terms:
-                if term in haystack:
+                if term in title_l:
+                    score += 4
+                elif term in haystack:
                     score += 1
 
+            for phrases, target_doc, target_ref, boost in topic_boosts:
+                if any(p in q_lower for p in phrases):
+                    if target_doc in doc_l and (not target_ref or target_ref in ref_l):
+                        score += boost
+
             # Domain boosts
-            q_lower = query.lower()
-            if ("transfer" in q_lower or "stay" in q_lower or "tenure" in q_lower) and "JRTP" in item["doc_id"]:
-                score += 4
-            if "superannuation" in q_lower or "retirement" in q_lower:
-                if "clause 7" in item["clause_ref"].lower():
-                    score += 5
-            if "promotion" in q_lower or "dpc" in q_lower:
-                if "promotion" in item["doc_id"].lower():
-                    score += 4
-            if "leave" in q_lower and "leave" in item["doc_id"].lower():
+            if ("transfer" in q_lower or "stay" in q_lower or "tenure" in q_lower or "rotation" in q_lower) and "jrtp" in doc_l:
+                score += 6
+            if ("superannuation" in q_lower or "retirement" in q_lower) and "clause 7" in ref_l and "jrtp" in doc_l:
+                score += 6
+            if ("promotion" in q_lower or "dpc" in q_lower) and "promotion" in doc_l:
+                score += 6
+            if "leave" in q_lower and "leave" in doc_l:
                 score += 4
 
             if score > 0:
@@ -125,25 +178,25 @@ class PolicySearchEngine:
                 "doc_title": full_title,
                 "clause_ref": item["clause_ref"],
                 "text": item["clause_text"],
-                "highlight": item["clause_text"][:300] + ("..." if len(item["clause_text"]) > 300 else ""),
+                "highlight": item["clause_text"][:320] + ("..." if len(item["clause_text"]) > 320 else ""),
                 "score": score,
             })
         return results
 
     def search(self, query: str, top_k: int = 3, persona: str = "CMD") -> Dict[str, Any]:
-        """Queries Vertex AI Search engine, falling back to local rulebooks index."""
+        """Queries curated local ONGC rulebooks index first for exact statutory clauses, enriched by Vertex AI Search."""
         t0 = time.perf_counter()
-        from app.config import YUKTI_RESULT_CACHE
-        from app.tool_cache import get_tool_cache
-        tool_cache = get_tool_cache()
-
-        if YUKTI_RESULT_CACHE:
-            cached = tool_cache.get_policy(query, persona=persona)
-            if cached:
-                cached_copy = dict(cached)
-                cached_copy["from_cache"] = True
-                cached_copy["latency_ms"] = round((time.perf_counter() - t0) * 1000, 2)
-                return cached_copy
+        local_clauses = self.search_local(query, top_k=top_k)
+        if local_clauses and local_clauses[0].get("score", 0) >= 4:
+            elapsed_ms = round((time.perf_counter() - t0) * 1000, 2)
+            return {
+                "status": "success",
+                "source": "local_rulebooks_index",
+                "query": query,
+                "latency_ms": elapsed_ms,
+                "clauses": local_clauses,
+                "primary_clause": local_clauses[0],
+            }
 
         source = "vertex_ai_search"
         clauses: List[Dict[str, Any]] = []
@@ -198,8 +251,10 @@ class PolicySearchEngine:
             "clauses": clauses,
             "primary_clause": primary_clause,
         }
+        from app.config import YUKTI_RESULT_CACHE
+        from app.tool_cache import get_tool_cache
         if YUKTI_RESULT_CACHE:
-            tool_cache.set_policy(query, persona, out)
+            get_tool_cache().set_policy(query, persona, out)
         return out
 
     async def search_async(self, query: str, top_k: int = 3, persona: str = "CMD") -> Dict[str, Any]:

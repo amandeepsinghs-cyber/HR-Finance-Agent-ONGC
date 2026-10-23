@@ -405,13 +405,6 @@ def headline_values(ctx: InsightContext) -> Optional[List[Insight]]:
                                text=f"{label}: {fmt(float(v), unit)}{scope}.", facts=[float(v)], priority=9 + len(out)))
         if len(out) == 2:
             break
-    if len(out) == 1:
-        n_rec = int(ctx.n_total or 1)
-        v0 = out[0].value
-        u0 = out[0].unit
-        out.append(Insight(kind="note", type="scope_summary", value=float(n_rec), unit="records", ref=None,
-                           text=f"Computed across {n_rec} summary record{'s' if n_rec != 1 else ''} ({fmt(v0, u0)}).",
-                           facts=[float(n_rec), float(v0)], priority=25))
     return out or None
 
 

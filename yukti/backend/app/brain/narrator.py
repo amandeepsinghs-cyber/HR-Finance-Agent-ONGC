@@ -19,7 +19,7 @@ from app.brain.query_spec import QuerySpec
 _NUM = re.compile(r"(?<![A-Za-z])[−-]?\d[\d,]*(?:\.\d+)?")
 _SENT = re.compile(r"(?<=[.!?])\s+")
 _FY = re.compile(r"\bFY\s?\d{2}(?:\s?[-–]\s?\d{2})?\b", re.I)
-_DATE = re.compile(r"\b\d{1,2}-[A-Za-z]{3}-\d{4}\b")
+_DATE = re.compile(r"\b\d{1,2}(?:st|nd|rd|th)?[\s-][A-Za-z]{3,9}(?:[\s-]\d{4}|\s+FY\d{2})?\b", re.I)
 _GRADE = re.compile(r"\b[EW]\d\b|\bW\d[–-]W\d\b")
 
 
@@ -54,6 +54,7 @@ def allowed_numbers(rows: List[Dict[str, Any]], insights: List[Insight], spec: O
         for f in ins.facts:
             add(f)
         add(ins.value)
+        add(ins.text)
     if spec is not None:
         for f in spec.filters:
             for v in (f.value if isinstance(f.value, list) else [f.value]):

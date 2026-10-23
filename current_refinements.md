@@ -1,0 +1,52 @@
+# Yukti AI Agent — Current Refinements & Step-by-Step Fix Plan (`current_refinements.md`)
+
+> [!IMPORTANT]
+> **BLUF:** All 10 items from Phase 1 (`feedback1.md`, UI refinements, Indian accent, Hindi fast-path, and ONGC Red header) are **completed and verified**. Phase 2 adds **6 new refinements (`R11–R16`)** from `feedback/fedback2.md`, `feedback/feedback3.md`, and the **`"Good afternoon, Arun"`** greeting decision, which we are now executing step-by-step.
+
+---
+
+## 1. Psychological Decision: `"Good afternoon, Arun"` vs. `"Good afternoon, Arun Ji"`
+
+### **Recommendation & Choice: `"Good afternoon, Arun"` (First-Name `"Arun"` without `"Ji"` or `"Chairman"`)**
+
+1. **Cognitive De-Roling ("Lonely at the Top" Relief):**
+   - Throughout the entire workday at ONGC, every subordinate, Functional Director, and ministry official addresses the CMD as *"Chairman Sir"*, *"CMD Sahab"*, or *"Arun Ji"*. Every honorific (*"Ji"* / *"Chairman"*) subconsciously triggers his **institutional role-armor** and obligation.
+   - Hearing and seeing **`"Good morning, Arun"` / `"Good afternoon, Arun"`** from Yukti is the one space in his day where he gets to drop the institutional burden and feel like **Arun, the person**.
+2. **Peer Co-Pilot vs. Courtly Subordinate:**
+   - In Indian PSU culture, *"Arun Ji"* carries a subordinate-to-superior deference pattern. That subtly primes the executive to treat the AI as a secretariat clerk rather than an authoritative strategic co-pilot.
+   - Addressing him simply as **`Arun`** establishes warm, high-trust peer intimacy (like JARVIS to Tony Stark) while keeping the tone crisp and respectful.
+3. **Bilingual Nuance:**
+   - In English UI & voice: **`"Good morning / afternoon / evening, Arun"`**.
+   - In Hindi voice turns: **`"अरुण"`** paired with respectful plural verb forms (`"जी हाँ अरुण, बताइए मैं आपकी क्या मदद करूँ?"`), preserving warmth and dignity without bureaucratic distance.
+
+---
+
+## 2. Master Inventory of Refinements (Phase 1 Completed + Phase 2 In Progress)
+
+### Phase 1 (`feedback1.md` & UI/Voice Polish — **Completed**)
+
+| ID | Category | Issue & Root Cause | Status |
+|---|---|---|---|
+| **R1** | **Query Understanding (`feedback1.md`)** | **10-Year History Returned Single Total:** Guard `(d)`/`(d2)` in `planner.py` stripped `fy` from `dimensions` on *"past 10 years"* / *"production profile"*. Fixed to preserve `fy` on all multi-year history/profile queries (`FY17–FY26` chart + table). | **Completed** |
+| **R2** | **Compensation & Units (`feedback1.md`)** | **Salary Component Breakdown & `"years"` Unit Bug:** `detect_unit` in `chart_rules.py` matched substring `"age"` inside `"average_basic_pay"`. Fixed with word-boundary regex and added deterministic `_maybe_salary_breakdown_turn` for Basic Pay, DA, HRA, Cafeteria Perks, Mining/Offshore Allowance, and PRP with headcount division math. | **Completed** |
+| **R3** | **Speech Recognition (`feedback1.md`)** | **Phonetic `"NYC"` -> `"ONGC"` Mis-transcription:** Added `normalize_asr_query()` in `planner.py` & `turn_runner.py`. | **Completed** |
+| **R4** | **Hindi Voice Fast-Path** | **Stuck on *"Yukti, tumhe Hindi bolni aati hai kya?"*:** Added `<50 ms` Hindi/Hinglish capability fast-path in `turn_runner.py` and guarded `_is_speak_only` against ambient mic barge-in in `live_session.py`. | **Completed** |
+| **R5** | **Indian Accent (`en-IN` / `hi-IN`)** | **Foreign Accent:** Configured `language_code="en-IN"` / `"hi-IN"` in `types.SpeechConfig` and updated Live voice prompts in `live_session.py`. | **Completed** |
+| **R6** | **Bottom Ask Bar & Listening Aura** | **Bold Red Mic Button & Dark Red Listening Box:** Softened idle mic button to mild rose-red tint and replaced dark red listening box with **only the moving Aurora wave (`VoiceOrb`)** in `FloatingConversationPanel.tsx`. | **Completed** |
+| **R7** | **Per-Profile Chat History** | **Shared Chat Across Profiles:** Added `personaStoreRef` and `switchPersonaSession` in `page.tsx`, `feed.ts`, and `websocketClient.ts` so each profile has an isolated conversation history. | **Completed** |
+| **R8** | **Top-Left Brand Lockup** | **ONGC Red Header:** Updated `TopBar.tsx` to display **`Yukti AI Agent`** and sub-heading **`HR and Finance`** in ONGC Red (`#a31d18`) next to the `80px` ONGC emblem. | **Completed** |
+| **R9** | **Central Aurora Audio Reactivity** | **Moving in Silence:** Fixed pre-gain RMS in `audio-processor.js` and idle flow in `VoiceOrb.tsx` so it moves only when audio is heard or during thinking. | **Completed** |
+| **R10** | **Borderless Output Canvas & Plots** | **Nested Output Boxes & Missing Scalar Plots:** Removed card wrappers and added companion breakdown charts in `pipeline.py` & `presenter.py`. | **Completed** |
+
+---
+
+### Phase 2 (`fedback2.md`, `feedback3.md`, & `"Arun"` Greeting — **Executing Step-by-Step Now**)
+
+| ID | Category | Observed Issue | Exact Root Cause | Step-by-Step Fix |
+|---|---|---|---|---|
+| **R11** | **UI — Remove Plot-Type Bar (`fedback2.md`)** | Every answer card shows a noisy pill bar (`Bar \| H-Bar \| Donut \| Line \| Histogram \| Table \| More`) and `"Showing ...; pick another metric"` banner. | `AnswerCard.tsx` (lines 360–446) renders `chart-switcher-toolbar` and `replot-note` on every chart/table card. | Remove the visible plot-type pill bar and replot note from `AnswerCard.tsx`. Plots switch seamlessly via voice or chat commands (*"show as a pie chart"*, *"make a waterfall chart"*, etc.). |
+| **R12** | **Charts — Support ALL Plot Types & Waterfall (`fedback2.md`)** | Asking *"Ankleshwar का टोटल रेवेन्यू का वॉटरफॉल चार्ट बना दो"* said *"I've switched the screen view to a waterfall"* but the chart did not change (stayed a 1-row table saying *"This answer is a single number, so there is nothing to chart"*). Other plot types (`waterfall`, `line`, `funnel`, `histogram` on `<30` rows, `scatter`, `bullet`, `pie` on time series) were also overridden to `hbar`/`bar`. | 1. `compat.ts` (line 126) blocks all charts when `n === 1` (`shape === 'single'`).<br>2. `compat.ts` (lines 147–181) blocks `waterfall` when `!p.hasNegative && !p.ordinal` and overrides `line`, `area`, `funnel`, `histogram` (`n < 30`), `scatter`, and `bullet` with `status: 'alternative'`.<br>3. Focusing on a single asset (`Ankleshwar Asset`) returned 1 row instead of its field breakdown or P&L bridge. | 1. Remove nanny overrides in `compat.ts` and `plan.ts` so **every requested plot type (`waterfall`, `pie`, `donut`, `bar`, `hbar`, `line`, `area`, `histogram`, `treemap`, `funnel`, `scatter`, `bullet`, `grouped_bar`, `stacked_bar`) renders natively**.<br>2. For 1-row multi-metric financial records (like `Ankleshwar Asset` with `Gross Revenue ₹13,870 Cr`, `EBITDA ₹9,595 Cr`, `PBT ₹7,860 Cr`), synthesize a **5-step Financial P&L Waterfall Bridge** (`Gross Revenue → −OPEX & Levies → EBITDA → −DD&A → PBT`) or pivot metrics into categories.<br>3. When focusing on a single asset (`"Ankleshwar में क्या हो रहा है?"` or `"Ankleshwar का वॉटरफॉल चार्ट बना दो"`), return its field-level breakdown / P&L waterfall bridge from BigQuery. |
+| **R13** | **Query Understanding — Production vs. Revenue/Profit Paradox (`fedback2.md`)** | Asking *"बेसिन का प्रोडक्शन ज़्यादा है। तो फिर उसका प्रॉफिट कम क्यों है?"* or *"मुंबई हाई का रेवेन्यू मैक्सिमम है तो प्रोडक्शन भी मैक्सिमम होना चाहिए ना? ऐसा कैसे?"* only plotted a single metric (`PBT`) without explaining or comparing Production vs. Revenue vs. Profit. | Planner only selects 1 metric per `QuerySpec` (`pbt_cr` or `gross_revenue_cr`) and doesn't compare oil-vs-gas price realization across assets. | Add a deterministic **Asset Production vs. Revenue & Profit Realization Comparison handler** in `turn_runner.py` that compares **Mumbai High vs. Bassein & Satellite** (or all 15 assets) across `Production (BOE)`, `Gross Revenue (₹ Cr)`, `Implicit Realization (₹/BOE)`, `Lifting Cost ($/BOE)`, and `PBT (₹ Cr)`, explaining that Bassein & Satellite is predominantly **APM natural gas** (lower ₹/BOE realization) whereas Mumbai High is **crude oil** (higher ₹/BOE realization). |
+| **R14** | **Greeting — Call CMD `"Arun"` (`CanvasView.tsx` & `turn_runner.py`)** | Greeting says `"Good afternoon, Chairman"`. | `CanvasView.tsx` line 71 and `turn_runner.py` line 432 map `CMD -> "Chairman"`. | Update `CMD` address to **`"Arun"`** (`"Good morning/afternoon/evening, Arun"`) in `CanvasView.tsx`, `AuraShowcase.tsx`, and `turn_runner.py`. |
+| **R15** | **Policy Routing — Fix Casual Leave Returning Study Leave (`feedback3.md`)** | Asking *"How many casual leaves are there in one year?"* or *"Casual leave? You're telling me about study leave"* returned cached **`P5` (`"Am i eligible for study leave, and what bond applies"`)** with a broken `0.0%` bar chart, and *"Leave. Casual leave."* showed JRTP `7.1 Superannuation Settlement Protection` in the clause box. | 1. `router.py` matched *"How many casual leaves are there in one year?"* to certified query `P5` (`study leave`) at cosine threshold `0.60` and served a broken cached chart.<br>2. `policy_search.py` line 173 enriched empty Vertex snippets using `search_local(f"{doc_id} {clause_ref}")`, matching `JRTP Clause 7.0` instead of `Leave Rules`.<br>3. `ClauseRenderer.tsx` hardcoded `"under JRTP governance"`. | 1. Add strict topic guards in `router.py` and a dedicated **Policy & Entitlements Fast-Path** in `turn_runner.py` so leave/policy questions (`casual leave`, `earned leave`, `half pay leave`, `maternity`, `paternity`, `child care`, `study leave`, `TA/DA`, `HRA`, `BDP`, `PRBS`, `medical`) always return accurate `clause` visuals (never a `0.0%` chart or wrong certified query).<br>2. Fix `policy_search.py` snippet enrichment and `ClauseRenderer.tsx` statutory footer. |
+| **R16** | **Policy Data Bank — Generate Missing ONGC HR & Finance Clauses via Gemini Flash (`feedback3.md`)** | `rulebooks_clause_index.csv` (56 rows) had no dedicated clause for **Casual Leave (12 days/yr)**, **Special Casual Leave**, **Maternity/Paternity/Child Care Leave**, **Offshore 14-day On/Off & Comp-Off**, **TA/DA Entitlements**, **Company Leased Accommodation / HRA**, or **Cafeteria Perks & Advances**. | Only Earned Leave, HPL, Study Leave, and EOL were detailed in `Leave Rules` Clauses 3–8. | Use **`gemini-2.5-flash`** to generate authentic, statutory-grade ONGC clauses for all leave types, perks, allowances, TA/DA, leased accommodation, and advances, and append them to `data_bank/landing/documents/rulebooks_clause_index.csv`. |

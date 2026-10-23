@@ -43,8 +43,8 @@ type Starter = { icon: React.ComponentType<{ className?: string }>; tag: string;
 const STARTERS: Record<string, Starter[]> = {
   CMD: [
     { icon: Users, tag: 'People · Transfers', title: 'Delhi HQ: executives posted 5+ years', q: 'How many executives have been posted in Delhi for 5 years or more?' },
-    { icon: Activity, tag: 'People · Growth', title: 'Where did headcount grow the most?', q: 'Which areas saw the most headcount increase in the last 5 years, and which saw none?' },
     { icon: TrendingUp, tag: 'Finance · FY26', title: 'Most profitable and loss-making fields', q: 'Which fields or assets were the most profitable and which made losses in FY26?' },
+    { icon: Target, tag: 'Performance · DPE', title: 'MoU target scorecard', q: 'How are we tracking against our MoU targets with MoPNG/DPE for this year?' },
     { icon: Scale, tag: 'Policy', title: 'Station tenure and rotation rules', q: 'What is the minimum tenure at a station, and the maximum cumulative stay in one city?' },
   ],
   DIR_HR: [
@@ -68,7 +68,7 @@ const STARTERS: Record<string, Starter[]> = {
 };
 STARTERS.E3_FIN = STARTERS.E2_HR;
 
-const ADDRESS: Record<string, string> = { CMD: 'Chairman', DIR_HR: 'Director', DIR_FIN: 'Director', E2_HR: 'Pooja', E3_FIN: 'Rajesh' };
+const ADDRESS: Record<string, string> = { CMD: 'Arun', DIR_HR: 'Director', DIR_FIN: 'Director', E2_HR: 'Pooja', E3_FIN: 'Rajesh' };
 
 function greetingWord(): string {
   const h = new Date().getHours();
@@ -92,40 +92,23 @@ const Greeting: React.FC<{
   const [hello, setHello] = useState('Hello');
   useEffect(() => setHello(greetingWord()), []);
   // Orb scales with the fluid type scale (rem), so it keeps its proportion on 4K / big screens.
-  const [orbPx, setOrbPx] = useState(208);
+  const [orbPx, setOrbPx] = useState(236);
   useEffect(() => {
     const fit = () => {
       const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-      // the aurora wave is wide: give it room on the greeting (≈ 208 px at 1440p, scales on 4K)
-      setOrbPx(Math.round(Math.min(380, Math.max(170, rem * 13))));
+      // Siri-scale wide aurora wave on the greeting (≈ 236 px tall × 448 px wide at 1440p, scales on 4K)
+      setOrbPx(Math.round(Math.min(420, Math.max(200, rem * 14.75))));
     };
     fit();
     window.addEventListener('resize', fit);
     return () => window.removeEventListener('resize', fit);
   }, []);
-  const name = ADDRESS[persona] || 'Chairman';
+  const name = ADDRESS[persona] || 'Arun';
 
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-center text-center px-6 pt-6 pb-36 w-full" data-testid="greeting">
-      {/* AI aura bloom (D-16): feathery light behind Yukti's presence only */}
-      <div className="pointer-events-none absolute -inset-x-16 -top-10 h-[80%] [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_72%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_72%)]" aria-hidden>
-        <div className="yk-aura-bloom" />
-      </div>
-
-      <div className="relative flex flex-col items-center max-w-[60rem] w-full">
-        <div data-testid="greeting-talk" className="cursor-pointer">
-          <VoiceOrb
-            state={orbState}
-            isDark={isDark}
-            size={orbPx}
-            onClick={onTalk}
-            audioEngine={audioEngine}
-            label={isMicActive ? 'Stop listening' : 'Start talking to Yukti'}
-            pressed={!!isMicActive}
-          />
-        </div>
-
-        <h1 className="mt-6 text-display font-display text-[var(--ink)]">
+    <div className="relative flex-1 flex flex-col items-center justify-between text-center px-6 pt-4 pb-32 w-full min-h-[calc(100vh-14.5rem)]" data-testid="greeting">
+      <div className="relative my-auto flex flex-col items-center max-w-[60rem] w-full">
+        <h1 className="text-display font-display text-[var(--ink)]">
           {hello}, {name}
         </h1>
         <p className="mt-2 text-body text-[var(--ink-2)]">I&apos;m Yukti, your HR &amp; Finance agent. Ask by voice or type below.</p>
@@ -135,29 +118,19 @@ const Greeting: React.FC<{
         ) : lastTurn ? (
           <p className="mt-5 text-body text-[var(--ink-2)] max-w-[42rem]">{lastTurn.text}</p>
         ) : null}
+      </div>
 
-        <div className="mt-10 grid w-full gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" data-testid="starter-cards">
-          {starters.map((c) => {
-            const Icon = c.icon;
-            return (
-              <Card
-                key={c.title}
-                as={'button' as any}
-                variant="glass"
-                onClick={() => onSelect?.(c.q)}
-                className="group text-left px-5 py-4 transition duration-fast hover:-translate-y-0.5 hover:border-[var(--accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
-              >
-                <span className="flex items-center gap-2 text-caption uppercase tracking-[0.06em] text-[var(--ink-3)]">
-                  <Icon className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" />
-                  {c.tag}
-                </span>
-                <span className="mt-2 block text-label font-semibold text-[var(--ink)] leading-snug group-hover:text-[var(--accent-deep)] dark:group-hover:text-[var(--accent-soft)]">
-                  {c.title}
-                </span>
-              </Card>
-            );
-          })}
-        </div>
+      <div className="relative mt-auto pt-8 w-full max-w-[54rem] flex flex-col items-center gap-1.5" data-testid="starter-cards">
+        {starters.slice(0, 3).map((c) => (
+          <button
+            key={c.title}
+            type="button"
+            onClick={() => onSelect?.(c.q)}
+            className="text-center px-3 py-1 text-caption font-normal text-[var(--ink-3)] hover:text-[var(--ink-2)] transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+          >
+            {c.q}
+          </button>
+        ))}
       </div>
     </div>
   );

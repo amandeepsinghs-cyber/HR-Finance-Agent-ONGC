@@ -61,6 +61,10 @@ const ROLE_SHORT: Record<string, string> = { CMD: 'CMD', DIR_HR: 'Director HR', 
 function eyebrowFor(c: AnswerContract): string {
   const v = c.visual;
   if (c.access?.status === 'refused' || v?.type === 'refusal') return 'Access restricted';
+  const m = (c as any).query_spec?.metric;
+  if (m && ['pnl_statement', 'balance_sheet', 'cash_flow_statement', 'financial_ratios'].includes(m)) {
+    return 'Financial Statement';
+  }
   switch (v?.type) {
     case 'clause':
       return 'Policy';
@@ -103,17 +107,23 @@ const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: stri
   const text = cleanText(contract.display_text || contract.spoken_summary || '');
   return (
     <article className="flex flex-col gap-3" data-testid="answer-card" data-visual-type="none">
-      <Card className="px-[1.35rem] py-[1.1rem] max-w-[72rem] flex items-start gap-3">
+      <div className="py-[0.5rem] max-w-[72rem] flex items-start gap-3">
         <Sparkles className="w-4 h-4 mt-[0.3rem] shrink-0 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
         <p className="text-body text-[var(--ink)] leading-relaxed">{text || '…'}</p>
-      </Card>
+      </div>
       {onAsk && followUps.length > 0 && (
-        <nav aria-label="Follow-up questions" className="flex flex-wrap items-center gap-2" data-testid="follow-ups">
+        <nav aria-label="Follow-up questions" className="mt-auto pt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5" data-testid="follow-ups">
           {followUps.map((f) => (
-            <Chip key={f.label} onClick={() => onAsk(f.q, (f as { patch?: SpecPatch }).patch)} className="!py-1.5 !text-label" data-testid="follow-up-chip">
-              <CornerDownRight className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
+            <button
+              key={f.label}
+              type="button"
+              onClick={() => onAsk(f.q, (f as { patch?: SpecPatch }).patch)}
+              className="inline-flex items-center gap-1.5 py-0.5 text-caption font-normal text-[var(--ink-3)] hover:text-[var(--ink-2)] transition-colors"
+              data-testid="follow-up-chip"
+            >
+              <CornerDownRight className="w-3 h-3 text-[var(--ink-3)]" aria-hidden />
               {cleanText(f.label)}
-            </Chip>
+            </button>
           ))}
         </nav>
       )}
@@ -121,27 +131,13 @@ const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: stri
   );
 };
 
-export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false, persona, fresh = false, isLatest = false, onNavigateToAlternative, onAsk, onReplot }) => {
+export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false, persona, isLatest = false, onNavigateToAlternative, onAsk, onReplot }) => {
   const [selectedSource, setSelectedSource] = useState<SourceCitation | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const [glow, setGlow] = useState<'listening' | 'fade' | 'off'>('off');
-  const seenTurns = useRef<Set<string>>(new Set());
   useEffect(() => {
     setMoreOpen(false);
-    const tid = contract.turn_id;
-    if (!tid || !contract.visual || contract.visual.type === 'none') return;
-    if (!fresh) return; // historic cards in the feed never glow
-    if (seenTurns.current.has(tid)) return; // already glowed once (re-mounts / refines)
-    seenTurns.current.add(tid);
-    setGlow('listening');
-    const t1 = window.setTimeout(() => setGlow('fade'), 4000);
-    const t2 = window.setTimeout(() => setGlow('off'), 5600); // stop the animated layers entirely
-    return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-    };
-  }, [contract.turn_id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [contract.turn_id]);
 
   // More menu: outside click / Escape close; focus first item on open
   const moreRef = useRef<HTMLDivElement | null>(null);
@@ -272,7 +268,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     }
   };
 
-  const fixedHeight = (effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map';
+  const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map');
   const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
 
@@ -365,101 +361,10 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
           {/* KPI hero numerals */}
           {kpis.length > 0 && effectiveVisualType !== 'kpi' && !refused && <KpiRenderer kpis={kpis} isDark={isDark} spark={spark} />}
 
-          {/* Chart switcher (U4.3): compact segmented control, top 6 + "More" */}
-          {canSwitchVisual && (
-            <div className="flex flex-wrap items-center justify-between gap-3" data-testid="chart-switcher-toolbar">
-              <div className="flex items-center gap-2">
-                <div role="group" aria-label="Plot type" className="inline-flex items-center gap-0.5 p-0.5 rounded-pill bg-[var(--surface)] border border-[var(--hairline)]">
-                  {PRIMARY_KINDS.map((opt) => {
-                    const isActive = activeKindPill === opt.id;
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        aria-pressed={isActive}
-                        data-testid={`plot-switch-${opt.id}`}
-                        onClick={() => pickKind(opt.id)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-pill text-label font-medium transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
-                          isActive ? 'bg-[var(--card)] text-[var(--ink)] shadow-[var(--card-shadow)]' : 'text-[var(--ink-2)] hover:text-[var(--ink)]'
-                        }`}
-                      >
-                        <opt.icon className="w-3.5 h-3.5" />
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="relative" ref={moreRef}>
-                  <button
-                    type="button"
-                    onClick={() => setMoreOpen((o) => !o)}
-                    aria-haspopup="menu"
-                    aria-expanded={moreOpen}
-                    data-testid="plot-switch-more"
-                    className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-pill text-label font-medium border border-[var(--hairline)] transition-colors ${
-                      MORE_KINDS.some((k) => k.id === activeKindPill) ? 'bg-[var(--accent-pale)] text-[var(--accent-deep)] dark:text-[var(--accent-soft)]' : 'text-[var(--ink-2)] hover:bg-[var(--surface)]'
-                    }`}
-                  >
-                    {MORE_KINDS.find((k) => k.id === activeKindPill)?.label || 'More'}
-                    <ChevronRight className={`w-3.5 h-3.5 transition-transform ${moreOpen ? '-rotate-90' : 'rotate-90'}`} />
-                  </button>
-                  {moreOpen && (
-                    <div role="menu" className="absolute left-0 top-[calc(100%+0.4rem)] w-[11rem] rounded-[var(--radius-lg)] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-40">
-                      {MORE_KINDS.map((opt) => (
-                        <button
-                          key={opt.id}
-                          role="menuitem"
-                          data-testid={`plot-switch-${opt.id}`}
-                          onClick={() => {
-                            pickKind(opt.id);
-                            setMoreOpen(false);
-                          }}
-                          className={`w-full text-left px-3 py-2 rounded-[var(--radius-sm)] text-label hover:bg-[var(--surface)] ${activeKindPill === opt.id ? 'font-semibold text-[var(--ink)]' : 'text-[var(--ink-2)]'}`}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {measures.length > 1 && effectiveVisualType === 'chart' && (
-                <label className="flex items-center gap-2 text-label text-[var(--ink-2)]">
-                  <SlidersHorizontal className="w-3.5 h-3.5" aria-hidden />
-                  Metric
-                  <select
-                    aria-label="Select plot metric"
-                    data-testid="plot-metric-select"
-                    value={metric || (effectiveChartSpec?.value && measures.includes(effectiveChartSpec.value) ? effectiveChartSpec.value : prof.primary)}
-                    onChange={(e) => pickMetric(e.target.value)}
-                    className="px-2.5 py-1 rounded-[var(--radius-sm)] bg-[var(--card)] border border-[var(--hairline)] text-[var(--ink)] font-medium focus:outline-none focus:border-[var(--accent)]"
-                  >
-                    {measures.map((col) => (
-                      <option key={col} value={col}>
-                        {humanizeKey(col)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
-            </div>
-          )}
-
-          {replotNote && canSwitchVisual && (
-            <p className="-mt-1 flex items-center gap-1.5 text-label font-normal text-[var(--ink-2)]" role="status" data-testid="replot-note">
-              <Sparkles className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
-              {replotNote}
-            </p>
-          )}
-
-          {/* Full-screen Visual + Key Takeaways */}
-          <div className={`grid gap-[1.25rem] ${insights.length && !refused && !wideTable ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
-            {/* Newest-answer aura edge (U4.7): glows briefly when a fresh answer lands, then fades */}
-            <div data-aura={glow} className="yk-aura-ring rounded-card min-w-0 self-start w-full">
-            {/* U4.8: kept – visual-card container conditionally applies .card only when !selfFramed (tables/documents self-frame) */}
+          {/* Full-screen Visual + Key Takeaways (borderless canvas, no outer boxes, no plot-type bar) */}
+          <div className={`grid gap-[1.75rem] ${insights.length && !refused && !wideTable ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
             <section
-              className={`yk-aura-surface min-w-0 ${selfFramed ? '' : 'card p-[1.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
+              className={`min-w-0 self-start w-full ${selfFramed ? '' : 'py-[0.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
               data-testid="visual-card"
               data-visual-type={effectiveVisualType}
               data-chart-kind={effectiveVisualType === 'chart' ? effectiveChartSpec?.kind : effectiveVisualType}
@@ -505,10 +410,9 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} onViewAlternative={onNavigateToAlternative} />}
               {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
             </section>
-            </div>
 
             {insights.length > 0 && !refused && (
-              <Card as={'aside' as any} className="p-[1.25rem] self-start" data-testid="insights">
+              <aside className="pl-[1.25rem] border-l border-[var(--hairline)] self-start" data-testid="insights">
                 <div className="text-label text-[var(--ink-2)] mb-3">Key takeaways</div>
                 <ul className="space-y-[0.85rem]">
                   {insightItems.slice(0, 5).map((it, i) => (
@@ -520,14 +424,14 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
                       />
                       <span className={i === 0 ? 'font-medium' : 'text-[var(--ink)]/90'}>
                         {it.kind && it.kind !== 'headline' && it.kind !== 'note' && (
-                          <span className={`mr-1.5 text-label font-medium capitalize ${it.kind === 'risk' ? 'text-[var(--maroon)]' : 'text-[var(--accent-deep)] dark:text-[var(--accent-soft)]'}`}>{it.kind}</span>
+                          <span className={`mr-1.5 text-label font-medium capitalize ${it.kind === 'risk' ? 'text-[var(--maroon)]' : 'text-[var(--accent-deep)] dark:text-[var(--accent-soft)]'}`}>{it.kind} · </span>
                         )}
                         {it.text}
                       </span>
                     </li>
                   ))}
                 </ul>
-              </Card>
+              </aside>
             )}
           </div>
 
@@ -562,12 +466,18 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
       </AnimatePresence>
 
       {isLatest && onAsk && followUps.length > 0 && !refused && (
-        <nav aria-label="Follow-up questions" className="flex flex-wrap items-center gap-2" data-testid="follow-ups">
+        <nav aria-label="Follow-up questions" className="mt-auto pt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5" data-testid="follow-ups">
           {followUps.map((f) => (
-            <Chip key={f.label} onClick={() => onAsk(f.q, (f as { patch?: SpecPatch }).patch)} className="!py-1.5 !text-label" data-testid="follow-up-chip">
-              <CornerDownRight className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
+            <button
+              key={f.label}
+              type="button"
+              onClick={() => onAsk(f.q, (f as { patch?: SpecPatch }).patch)}
+              className="inline-flex items-center gap-1.5 py-0.5 text-caption font-normal text-[var(--ink-3)] hover:text-[var(--ink-2)] transition-colors"
+              data-testid="follow-up-chip"
+            >
+              <CornerDownRight className="w-3 h-3 text-[var(--ink-3)]" aria-hidden />
               {cleanText(f.label)}
-            </Chip>
+            </button>
           ))}
         </nav>
       )}

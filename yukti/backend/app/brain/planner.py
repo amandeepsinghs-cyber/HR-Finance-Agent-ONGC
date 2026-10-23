@@ -32,6 +32,18 @@ logger = logging.getLogger("yukti.brain.planner")
 
 DIM_ALIASES = {"work_centre": "wc", "location": "wc", "station": "wc", "asset_wc": "asset", "fiscal_year": "fy",
                "year": "fy", "field_name": "field", "grade_id": "grade", "discipline_id": "discipline"}
+
+
+def normalize_asr_query(question: str) -> str:
+    """Normalizes common speech-to-text phonetic mis-transcriptions for ONGC terms."""
+    if not question:
+        return ""
+    q = question
+    q = re.sub(r"\b(nyc|o\s*n\s*g\s*c|oen\s*gc|ong\s*see)\b", "ONGC", q, flags=re.IGNORECASE)
+    q = re.sub(r"\b([eE])\s*-\s*([0-9])\b", lambda m: f"E{m.group(2)}", q)
+    q = re.sub(r"\bmahesana\b", "Mehsana", q, flags=re.IGNORECASE)
+    return q
+
 PLANNER_MODEL = os.getenv("YUKTI_PLANNER_MODEL", DEFAULT_TEXT_MODEL)
 _OPS = ["=", "!=", ">", ">=", "<", "<=", "in", "not_in", "between", "like"]
 _CHARTS = ["pie", "donut", "bar", "hbar", "stacked_bar", "grouped_bar", "line", "area", "combo", "histogram",
@@ -144,15 +156,26 @@ Rules:
   attrition / exits / resignations => separations or voluntary_exits (dimension grade if "by grade");
   manpower or employee cost per BOE / barrel => manpower_cost_usd_per_boe (dimension asset);
   employee cost as % of revenue => manpower_cost_pct_of_revenue; lifting cost => lifting_cost_usd_per_boe;
-  company "profit" / "munafa" (no field named) => pat_cr (profit after tax); only "PBT"/"before tax" => pbt_corporate_cr.
+  company "profit and loss statement" / "P&L statement" / "income statement" / "complete P&L" (no field/asset named) => pnl_statement;
+  company "balance sheet" / "assets and liabilities" / "statement of financial position" => balance_sheet;
+  company "cash flow statement" / "statement of cash flows" / "cash flow bridge" => cash_flow_statement;
+  company "financial ratios" / "key ratios" / "ratio analysis" / "credit ratios" / "solvency ratios" => financial_ratios;
+  company "profit" / "munafa" (no field named) => pat_cr (profit after tax); only "PBT"/"before tax" => pbt_corporate_cr;
+  statutory levies / royalty / OIDB cess / SAED windfall tax => statutory_levies_cr, royalty_cr, oidb_cess_cr, or saed_windfall_tax_cr;
+  exploration costs written off / dry wells / survey costs => exploration_costs_written_off_cr, exploratory_wells_written_off_cr, or survey_costs_written_off_cr;
+  DD&A / depreciation / depletion => dda_cr; tax expense / current tax / deferred tax => tax_expense_cr, current_tax_cr, or deferred_tax_cr;
+  total assets / non-current assets / current assets / CWIP / oil & gas assets / investments in subsidiaries / site restoration fund / cash & bank / inventories / trade receivables => total_assets_cr, non_current_assets_cr, current_assets_cr, cwip_cr, oil_and_gas_assets_cr, investments_subsidiaries_jv_cr, site_restoration_fund_cr, cash_and_bank_cr, inventories_cr, or trade_receivables_cr;
+  net worth / equity / share capital / reserves / debt / borrowings / net debt / lease liabilities / abandonment provision (ARO) / deferred tax liability => net_worth_cr, equity_share_capital_cr, other_equity_reserves_cr, total_debt_cr, long_term_debt_cr, short_term_debt_cr, net_debt_cr, lease_liabilities_cr, abandonment_provision_cr, or deferred_tax_liability_net_cr;
+  ROE / ROA / ROCE / debt-to-equity / net debt-to-EBITDA / interest coverage / current ratio / receivable days / EPS / book value per share / dividend per share => roe_pct, roa_pct, roce_pct, debt_to_equity_ratio, net_debt_to_ebitda_ratio, interest_coverage_ratio, current_ratio, receivable_days, eps_basic_inr, book_value_per_share_inr, or dividend_per_share_inr;
+  consolidated PAT / consolidated revenue / ONGC.NS group => consolidated_pat_cr or consolidated_revenue_cr;
+  subsidiaries (HPCL, MRPL, OVL, OPAL, OTPC) => subsidiary_pat_cr or subsidiary_revenue_cr (dimension subsidiary).
 - Years "in/at an office, station, city or work centre" = station_tenure_years; total_tenure_years only for
   total service ("with ONGC", "service", "career").
 - "profit margin"/"margins" of fields or assets => ebitda_margin_pct (pbt_margin_pct only if PBT is named).
 - "retention rate"/"share who stayed 5+ years" => long_stay_share_pct with cadre filter, and REMOVE any
   station_tenure_years filter (remove_filters) because the share is computed over everyone.
 - Trends ("increased/decreased/changed over the last N years", "trend", "year by year") => add dimension fy.
-- If the question needs a measure that is not listed (e.g. DPC cases, grievances, receivables, projects,
-  CSR, forex, succession), answer intent "other" instead of substituting a different metric.
+- If the question needs a measure that is not listed (e.g. DPC cases, grievances, succession), answer intent "other" instead of substituting a different metric.
 - Never invent numbers; never write SQL.
 """
 
@@ -239,6 +262,14 @@ class Planner:
                 parsed.append(float(m.group(0)) if "." in m.group(0) else int(m.group(0)))
             elif fd is not None and fd.entity:
                 code = self._entity(fd.entity, v)
+                if not code and field == "field" and subject is not None and "asset" in subject.fields:
+                    wc_code = self._entity("wc", v)
+                    if wc_code and all(self._entity("wc", x) or self._entity("field", x) for x in vals):
+                        field = "asset"
+                        fd = subject.fields.get("asset")
+                        parsed = [self._entity("wc", x) or self._entity("field", x) for x in vals]
+                        parsed = [x for x in parsed if x]
+                        break
                 if not code:
                     notes.append(f"dropped unknown {fd.entity} '{v}'")
                     continue
@@ -318,13 +349,19 @@ class Planner:
     # ------------------------------------------------------------ main
     async def plan(self, question: str, prev: Optional[QuerySpec] = None, history: Optional[List[str]] = None) -> Plan:
         t0 = time.perf_counter()
+        question = normalize_asr_query(question)
         prev_subject = self._subject_for(prev.metric)[0] if prev else None
         avail = fiscal_years_for_sql(f"FROM {prev_subject.table}") if prev_subject else []
         fy_hint = resolve_fy(question, available=avail or None)
         try:
             raw = await asyncio.wait_for(self._call(self._prompt(question, prev, history or [], fy_hint)), timeout=12)
-        except Exception as e:  # planner failure => legacy path, never a crash
+        except Exception as e:  # planner failure => try deterministic guards in to_plan first before legacy fallback
             logger.warning(f"planner call failed: {e}")
+            det_plan = self.to_plan(question, {}, prev, fy_hint)
+            if det_plan.intent in ("data", "replot") and det_plan.spec is not None:
+                det_plan.notes.append(f"recovered from llm error via deterministic guard: {str(e)[:80]}")
+                det_plan.latency_ms = round((time.perf_counter() - t0) * 1000, 1)
+                return det_plan
             return Plan(intent="error", notes=[f"planner error: {str(e)[:120]}"],
                         latency_ms=round((time.perf_counter() - t0) * 1000, 1))
         plan = self.to_plan(question, raw, prev, fy_hint)
@@ -334,12 +371,147 @@ class Planner:
     def to_plan(self, question: str, raw: Dict[str, Any], prev: Optional[QuerySpec],
                 fy_hint: Optional[Dict[str, Any]] = None) -> Plan:
         """Deterministic conversion + guards (unit-testable without the LLM)."""
+        question = normalize_asr_query(question)
         intent = raw.get("intent") or "other"
         notes: List[str] = []
         chart = raw.get("chart_kind")
+        ql_early = question.lower()
+        wants_waterfall = bool(
+            re.search(r"\b(waterfall|bridge)\b", ql_early)
+            or (
+                re.search(r"\b(revenue|income|sales|turnover)\b", ql_early)
+                and re.search(r"\b(cost\w*|expense\w*|opex|levies|outflow\w*|deduction\w*|margin\w*|profit|pbt|pat)\b", ql_early)
+                and re.search(r"\b(plot\w*|chart\w*|graph\w*|visual\w*|draw|show|display|view|compare)\b", ql_early)
+                and not re.search(r"\b(table|tabular)\b", ql_early)
+            )
+            or (
+                re.search(r"\b(plot\w*|chart\w*|graph\w*|visual\w*|draw)\b", ql_early)
+                and re.search(r"\b(p\s*&\s*l|pnl|profit\s+and\s+loss|income\s+statement|revenue\s+and\s+cost\w*|revenue\s+vs\s+cost\w*)\b", ql_early)
+                and not re.search(r"\b(table|tabular)\b", ql_early)
+            )
+        )
         if intent == "replot" and prev is not None:
+            if prev.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios"):
+                ck = "waterfall" if wants_waterfall else (chart or "table")
+                spec = prev.model_copy(update={"chart_kind": ck})
+                return Plan(intent="data", is_followup=True, spec=spec, patch=SpecPatch(chart_kind=ck), chart_kind=ck, raw=raw)
             patch = SpecPatch(chart_kind=chart or "table")
             return Plan(intent="replot", is_followup=True, spec=prev, patch=patch, chart_kind=patch.chart_kind, raw=raw)
+        no_sub_entity = (
+            not self.ents.resolve_wcs(question)
+            and not self.ents.resolve_field(question)
+            and not re.search(r"\b(field|fields|basin|basins)\b", ql_early)
+        )
+        is_corp_bs_stmt = bool(
+            re.search(r"\b(balance\s+sheet\w*|statement\s+of\s+financial\s+position|assets\s+and\s+liabilities|equity\s+and\s+liabilities)\b", ql_early)
+            and no_sub_entity
+        )
+        is_corp_cf_stmt = bool(
+            re.search(r"\b(cash\s*flow\s+statement\w*|statement\s+of\s+cash\s*flows|ind[- ]?as\s*7|cash\s*flow\s+bridge|cash\s*flow\s+waterfall)\b", ql_early)
+            and no_sub_entity
+        )
+        is_corp_ratios_stmt = bool(
+            re.search(r"\b(financial\s+ratios|key\s+ratios|ratio\s+analysis|ratios\s+scorecard|credit\s+ratios|solvency\s+ratios|return\s+ratios)\b", ql_early)
+            and no_sub_entity
+        )
+        is_generic_fin_stmt = bool(
+            re.search(r"\b(financial\s+statement\w*|annual\s+statement\w*|annual\s+report\s+statement\w*)\b", ql_early)
+            and not re.search(r"\b(p\s*&\s*l|pnl|profit\s+and\s+loss|income\s+statement\w*|balance\s+sheet\w*|cash\s*flow\w*)\b", ql_early)
+            and no_sub_entity
+        )
+        is_rev_cost_bridge = bool(
+            re.search(r"\b(revenue|income|sales|turnover)\b", ql_early)
+            and re.search(r"\b(cost\w*|expense\w*|opex|levies|outflow\w*)\b", ql_early)
+            and no_sub_entity
+            and not re.search(r"\b(asset|assets)\b", ql_early)
+        )
+        is_corp_pnl_stmt = bool(
+            (
+                re.search(r"\b(p\s*&\s*l|pnl|profit\s+and\s+loss|income\s+statement\w*|financial\s+statement\w*|annual\s+statement\w*|schedule\s+iii)\b", ql_early)
+                or is_rev_cost_bridge
+            )
+            and no_sub_entity
+            and not is_corp_bs_stmt
+            and not is_corp_cf_stmt
+            and not is_corp_ratios_stmt
+            and not re.search(r"\b(asset|assets)\b", ql_early)
+        )
+        if is_corp_bs_stmt:
+            intent = "data"
+            raw = dict(raw, intent="data", metric="balance_sheet", is_followup=False, dimensions=[])
+            if not wants_waterfall and chart not in ("bar", "hbar", "line"):
+                chart = "table"
+        elif is_corp_cf_stmt:
+            intent = "data"
+            raw = dict(raw, intent="data", metric="cash_flow_statement", is_followup=False, dimensions=[])
+            chart = "waterfall" if wants_waterfall else "table"
+        elif is_corp_ratios_stmt:
+            intent = "data"
+            raw = dict(raw, intent="data", metric="financial_ratios", is_followup=False, dimensions=[])
+            chart = "table"
+        elif is_corp_pnl_stmt:
+            intent = "data"
+            raw = dict(raw, intent="data", metric="pnl_statement", is_followup=False, dimensions=[])
+            if is_generic_fin_stmt:
+                notes.append("ambiguous_financial_statement")
+                chart = "waterfall" if re.search(r"\b(waterfall|bridge)\b", ql_early) else "table"
+            elif wants_waterfall or is_rev_cost_bridge:
+                chart = "waterfall"
+            else:
+                chart = "table"
+        elif wants_waterfall and prev is not None and prev.metric in ("pnl_statement", "cash_flow_statement"):
+            spec = prev.model_copy(update={"chart_kind": "waterfall"})
+            return Plan(intent="data", is_followup=True, spec=spec, patch=SpecPatch(chart_kind="waterfall"), chart_kind="waterfall", raw=raw)
+
+        # Deterministic Financial Causal & Action Guard ("Why did X happen?", "What action should the Finance Director take?")
+        fin_kw = re.search(
+            r"\b(pat|profit|pbt|revenue|ebitda|levies|royalty|oidb|saed|windfall|exploration|dry\s+well|survey\s+cost|"
+            r"dd&a|dda|depreciation|depletion|impairment|115baa|deferred\s+tax|cwip|opal|hpcl|mrpl|ovl|otpc|subsidiar\w*|"
+            r"borrowing\w*|debt|net\s+debt|lease\s+liabilit\w*|ind[- ]?as|abandonment|aro|site\s+restoration|"
+            r"cash\s*flow|ocf|fcf|free\s+cash|capex|dividend\w*|buyback|roce|roe|roa|margin\w*|realisation|crude|gas|"
+            r"lifting\s+cost|pec|new\s+well\s+gas|nwng|note\s+\d+|finance\s+director|director\s+finance)\b",
+            ql_early,
+        )
+        prev_is_fin = bool(prev is not None and prev.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios"))
+        if not prev_is_fin and prev is not None:
+            psubj, _, ptdef = self._subject_for(prev.metric)
+            prev_is_fin = bool((psubj and psubj.domain == "finance") or (ptdef and ptdef.domain == "finance"))
+        if (intent != "data" or not raw.get("metric")) and (fin_kw or (prev_is_fin and re.search(r"\b(why|what\s+happened|action|recommend\w*|interven\w*|improv\w*|explain|driver\w*|reason\w*|cause\w*|how)\b", ql_early))):
+            inferred_m = raw.get("metric")
+            if not inferred_m or not any(self._subject_for(inferred_m)):
+                if re.search(r"\b(saed|windfall|statutory\s+levies|note\s+28|note\s+26)\b", ql_early):
+                    inferred_m = "statutory_levies_cr"
+                elif re.search(r"\b(exploration|dry\s+well\w*|note\s+32)\b", ql_early):
+                    inferred_m = "exploration_costs_written_off_cr"
+                elif re.search(r"\b(dd&a|dda|depletion|depreciation|note\s+33|note\s+30)\b", ql_early):
+                    inferred_m = "dda_cr"
+                elif re.search(r"\b(opal|hpcl|mrpl|ovl|otpc|subsidiar\w*)\b", ql_early) and re.search(r"\b(investment\w*|ccd|note\s+10|note\s+8|stake|buyout|acqui\w*)\b", ql_early):
+                    inferred_m = "investments_subsidiaries_jv_cr"
+                elif re.search(r"\b(opal|hpcl|mrpl|ovl|otpc|subsidiar\w*)\b", ql_early):
+                    inferred_m = "subsidiary_pat_cr"
+                elif re.search(r"\b(borrowing\w*|debt|net\s+debt|note\s+21|note\s+16)\b", ql_early):
+                    inferred_m = "total_debt_cr"
+                elif re.search(r"\b(lease\s+liabilit\w*|ind[- ]?as\s*116|note\s+21a|note\s+17)\b", ql_early):
+                    inferred_m = "lease_liabilities_cr"
+                elif re.search(r"\b(abandonment|aro|site\s+restoration|decommission\w*|note\s+22|note\s+11|note\s+18)\b", ql_early):
+                    inferred_m = "abandonment_provision_cr"
+                elif re.search(r"\b(cwip|work[- ]in[- ]progress|note\s+7|note\s+6)\b", ql_early):
+                    inferred_m = "cwip_cr"
+                elif re.search(r"\b(free\s+cash\s+flow|fcf|operating\s+cash\s+flow|ocf|cash\s*flow)\b", ql_early):
+                    inferred_m = "cash_flow_statement"
+                elif re.search(r"\b(roce|roe|roa|current\s+ratio|interest\s+coverage|debt[- ]to[- ]equity|eps|ratio\w*)\b", ql_early):
+                    inferred_m = "financial_ratios"
+                elif re.search(r"\b(lifting\s+cost)\b", ql_early):
+                    inferred_m = "lifting_cost_usd_per_boe"
+                elif re.search(r"\b(loss[- ]making\s+field\w*|pec|field\s+profit\w*)\b", ql_early):
+                    inferred_m = "pbt_cr"
+                elif prev_is_fin and prev is not None:
+                    inferred_m = prev.metric
+                else:
+                    inferred_m = "pnl_statement"
+            intent = "data"
+            raw = dict(raw, intent="data", metric=inferred_m, is_followup=bool(prev_is_fin and inferred_m == (prev.metric if prev else None)))
+
         if intent != "data":
             return Plan(intent=intent, raw=raw)
 
@@ -388,6 +560,8 @@ class Planner:
         limit = raw.get("limit") if isinstance(raw.get("limit"), int) and raw.get("limit") > 0 else None
 
         # Entity guard: a single work centre named in the question but missing from the plan.
+        if wants_waterfall:
+            chart = "waterfall"
         wc_field = None
         if subject is not None:
             wc_field = "wc" if "wc" in subject.fields else ("asset" if "asset" in subject.fields else None)
@@ -429,30 +603,45 @@ class Planner:
                         notes.append(f"shape guard: dimension {d2}")
                     break
 
-        # (d) trend wording over a period range => year-by-year breakdown.
-        if subject is not None and "fy" in subject.fields and re.search(
-                r"\b(trend|increas\w*|decreas\w*|declin\w*|grew|grown|growth|changed|year[- ]by[- ]year|over time)\b", ql) \
-                and (period is not None and (period.from_ or period.to)) and "fy" not in dims:
-            if is_fu:
-                if raw.get("set_dimensions"):
-                    dims = dims + ["fy"]
-                else:
+        # (d) trend/history/profile wording over a period range, or a multi-year period with no other dimension => year-by-year breakdown.
+        trend_q = re.search(
+            r"\b(trend|increas\w*|decreas\w*|declin\w*|grew|grown|growth|changed|year[- ]by[- ]year|"
+            r"over time|each year|every year|annual|yoy|year[- ]on[- ]year|by (?:fiscal |financial )?year|year[- ]?wise|"
+            r"per year|yearly|fy[- ]?wise|history|historical|profile|trajectory|evolution|series)\b",
+            ql,
+        )
+        multi_yr = bool(period is not None and period.from_ and period.to and period.from_ != period.to)
+        non_fy_dims = [d for d in dims if d != "fy"]
+        cumulative_only = bool(re.search(r"\b(cumulative|combined total|grand total)\b", ql) and not trend_q)
+        if subject is not None and "fy" in subject.fields and (period is not None and (period.from_ or period.to)):
+            if trend_q or (multi_yr and not non_fy_dims and not cumulative_only):
+                if "fy" not in dims:
+                    if is_fu:
+                        if raw.get("set_dimensions"):
+                            dims = dims + ["fy"]
+                        else:
+                            raw = dict(raw, set_dimensions=True)
+                            dims = [d for d in (prev.dimensions if prev else []) if d in subject.fields] + ["fy"]
+                    else:
+                        dims = dims + ["fy"]
+                    notes.append("shape guard: trend/multi-year -> dimension fy")
+                elif is_fu and not raw.get("set_dimensions"):
                     raw = dict(raw, set_dimensions=True)
-                    dims = [d for d in (prev.dimensions if prev else []) if d in subject.fields] + ["fy"]
-            else:
-                dims = dims + ["fy"]
-            notes.append("shape guard: trend -> dimension fy")
-        # (d2) a year-by-year breakdown only when the question asks for a trend.
-        trend_q = re.search(r"\b(trend|increas\w*|decreas\w*|declin\w*|grew|grown|growth|changed|year[- ]by[- ]year|"
-                            r"over time|each year|every year|annual|yoy|year[- ]on[- ]year|by (?:fiscal |financial )?year|year[- ]?wise|"
-                            r"per year|yearly|fy[- ]?wise)\b", ql)
-        if "fy" in dims and not trend_q and not (is_fu and prev and "fy" in prev.dimensions):
+                    base_dims = [d for d in (prev.dimensions if prev else []) if d in subject.fields and d != "fy"]
+                    dims = base_dims + [d for d in dims if d not in base_dims]
+        # (d2) a year-by-year breakdown only when the question asks for a trend/history/profile or is a multi-year series with no other grouping.
+        keep_fy = bool(trend_q or (multi_yr and not non_fy_dims and not cumulative_only) or (is_fu and prev and "fy" in prev.dimensions))
+        if "fy" in dims and not keep_fy:
             dims = [d for d in dims if d != "fy"]
             notes.append("shape guard: dropped fy dimension (no trend asked)")
         # (e) retention-rate style share metric is computed over everyone: drop a carried tenure filter.
         if metric == "long_stay_share_pct":
             raw = dict(raw, remove_filters=list(set((raw.get("remove_filters") or []) + ["station_tenure_years", "grade"])))
             filters = [f for f in filters if f.field not in ("station_tenure_years",)]
+        # (f) "top N fields" / "most profitable fields" / "all fields" without "loss" drops a carried pbt_cr < 0 filter.
+        if re.search(r"\b(top\s+\d+|most\s+profitable|all\s+fields)\b", ql) and not re.search(r"\bloss", ql):
+            raw = dict(raw, remove_filters=list(set((raw.get("remove_filters") or []) + ["pbt_cr"])))
+            filters = [f for f in filters if f.field != "pbt_cr"]
 
         compare = None
         if raw.get("compare_field") and raw.get("compare_values"):
@@ -460,31 +649,37 @@ class Planner:
             if subject is not None and cf not in subject.fields:
                 cf = subject.dimension_fallbacks.get(cf, cf)
             fd = subject.fields.get(cf) if subject is not None else None
-            new_vals = []
-            for v in raw["compare_values"]:
-                code = self._entity(fd.entity, str(v)) if fd is not None and fd.entity else str(v)
-                if code and code not in new_vals:
-                    new_vals.append(code)
-            base = []
-            src = prev if is_fu else None
-            cur = src.filter_on(cf) if src is not None else None
-            if cur is not None:
-                base = cur.value if isinstance(cur.value, list) else [cur.value]
-            for f in filters:
-                if f.field == cf:
-                    base += f.value if isinstance(f.value, list) else [f.value]
-            vals = list(dict.fromkeys(base + new_vals))
-            filters = [f for f in filters if f.field != cf]
-            if len(vals) >= 2:
-                compare = Compare(field=cf, values=vals[:4])
-            elif vals:
-                filters.append(Filter(field=cf, op="=", value=vals[0]))
+            if fd is not None:
+                new_vals = []
+                for v in raw["compare_values"]:
+                    code = self._entity(fd.entity, str(v)) if fd.entity else str(v)
+                    if code and code not in new_vals:
+                        new_vals.append(code)
+                if cf == "field" and len(new_vals) < len(raw["compare_values"]) and subject is not None and "asset" in subject.fields and len(named_wcs) >= 2:
+                    cf = "asset"
+                    fd = subject.fields.get("asset")
+                    new_vals = list(dict.fromkeys(named_wcs[:4]))
+                    dims = ["asset" if d == "field" else d for d in dims]
+                base = []
+                src = prev if is_fu else None
+                cur = src.filter_on(cf) if src is not None else None
+                if cur is not None:
+                    base = cur.value if isinstance(cur.value, list) else [cur.value]
+                for f in filters:
+                    if f.field == cf:
+                        base += f.value if isinstance(f.value, list) else [f.value]
+                vals = list(dict.fromkeys(base + new_vals))
+                filters = [f for f in filters if f.field != cf]
+                if len(vals) >= 2:
+                    compare = Compare(field=cf, values=vals[:4])
+                elif vals:
+                    filters.append(Filter(field=cf, op="=", value=vals[0]))
 
         if is_fu:
             patch = SpecPatch(
                 add_filters=filters,
                 remove_filters=[r for r in raw.get("remove_filters") or [] if isinstance(r, str)],
-                dimensions=dims if raw.get("set_dimensions") else None,
+                dimensions=dims if (raw.get("set_dimensions") or bool(dims)) else None,
                 period=period if (period and (fy_hint or raw.get("fy") or raw.get("fy_from") or raw.get("fy_to"))) else None,
                 grain=grain if grain and grain != prev.grain else None,
                 metric=metric if metric != prev.metric else None,

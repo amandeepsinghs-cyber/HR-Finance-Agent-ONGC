@@ -17,9 +17,10 @@ UNIT_WORDS = {"employees": "employees", "posts": "posts", "workers": "contract w
               "inr_lakh": "₹ lakh", "usd_per_boe": "$/BOE", "inr_per_boe": "₹/BOE", "pct": "%", "years": "years", "hours": "hours",
               "boe": "BOE", "mmtoe": "MMTOE", "incidents": "incidents", "ratio": "", "score": "", "parameters": "parameters"}
 CHART_UNIT = {"employees": "employees", "posts": "employees", "workers": "employees", "inr_cr": "₹ Cr",
-              "inr_lakh": "₹ Lakh", "usd_per_boe": "$/BOE", "pct": "%", "years": "years", "hours": "hours"}
+              "inr_lakh": "₹ Lakh", "usd_per_boe": "$/BOE", "inr_per_boe": "₹/BOE", "pct": "%", "years": "years",
+              "hours": "hours", "boe": "BOE", "mmtoe": "MMTOE"}
 DIM_PLURAL = {"discipline": "disciplines", "work_centre": "work centres", "grade": "grades", "field": "fields",
-              "asset": "assets", "fiscal_year": "years", "cadre": "cadres", "gender": "groups"}
+              "asset": "assets", "fiscal_year": "years", "fy": "years", "cadre": "cadres", "gender": "groups"}
 
 
 def _num(v: Any) -> float:
@@ -120,22 +121,273 @@ def scope_phrases(spec: QuerySpec, compiled: Optional[CompiledQuery] = None) -> 
 
 def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: List[Dict[str, Any]],
                  chart_kind: Optional[str], title: str, subtitle: str, mode: str,
-                 n_total: Optional[int] = None) -> Dict[str, Any]:
+                 n_total: Optional[int] = None,
+                 breakdown: Optional[Tuple[List[str], List[Dict[str, Any]]]] = None) -> Dict[str, Any]:
     unit = CHART_UNIT.get(compiled.unit)
+    unit_word = UNIT_WORDS.get(compiled.unit, "")
     cap = 2000 if compiled.grain == "row" else 200   # rosters ship whole (UI virtualises, U5.2)
     table = {"columns": columns, "rows": rows[:cap], "total_rows": n_total if n_total is not None else len(rows)}
     vis: Dict[str, Any] = {"type": "table", "mode": mode, "title": title, "subtitle": subtitle, "table": table}
-    if compiled.grain == "row" or not rows:
+    if not rows:
+        return vis
+    if compiled.grain == "row":
+        # MoU target scorecard is row-grain (10 parameters) but always renders a horizontal target chart + summary KPIs
+        if compiled.subject == "mou" and "parameter" in columns and "pct_of_excellent" in columns:
+            ck = chart_kind if chart_kind and chart_kind != "table" else "hbar"
+            chart = build_chart_spec(kind=ck, columns=["parameter", "pct_of_excellent"], rows=rows, title=title, unit="%")
+            chart["target"] = 100
+            vis["type"] = "chart"
+            vis["chart"] = chart
+            num_rows = [r for r in rows if isinstance(r.get("pct_of_excellent"), (int, float))]
+            if num_rows:
+                top_r = max(num_rows, key=lambda r: _num(r.get("pct_of_excellent")))
+                low_r = min(num_rows, key=lambda r: _num(r.get("pct_of_excellent")))
+                on_track = sum(1 for r in num_rows if _num(r.get("pct_of_excellent")) >= 95.0)
+                vis["kpis"] = [
+                    {"label": "MoU Parameters", "value": len(rows), "unit": "parameters", "delta": f"{on_track} of {len(rows)} ≥95% target"},
+                    {"label": "Highest vs Target", "value": round(_num(top_r.get("pct_of_excellent")), 1), "unit": "%", "delta": str(top_r.get("parameter") or "")},
+                    {"label": "Weakest vs Target", "value": round(_num(low_r.get("pct_of_excellent")), 1), "unit": "%", "delta": str(low_r.get("parameter") or "")},
+                ]
         return vis
     dims = [alias for _, alias in compiled.dims]
     val = compiled.value_columns[0] if compiled.value_columns else (columns[-1] if columns else None)
-    if not dims:
-        r0 = rows[0]
-        vis["type"] = "kpi"
-        vis["kpis"] = [{"label": compiled.metric_label if c == compiled.metric else c.replace("_", " ").title(),
-                        "value": r0.get(c), "unit": UNIT_WORDS.get(compiled.unit, "") if c == compiled.metric else ""}
-                       for c in compiled.value_columns if c in r0]
+    if compiled.metric == "pnl_statement" and dims and dims[0] == "line_item":
+        # Single-FY 23-line Schedule III + Yahoo Finance (ONGC.NS) Statement of Profit & Loss
+        fy = (compiled.effective_period or {}).get("fy", "FY26")
+        by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
+        rev_r = by_code.get("gross_revenue_inr_cr", {})
+        eb_r = by_code.get("ebitda_inr_cr", {})
+        pat_r = by_code.get("pat_inr_cr", {})
+        cpat_r = by_code.get("consolidated_pat_inr_cr", {})
+        vis["kpis"] = [
+            {
+                "label": f"Revenue from Ops ({fy})",
+                "value": rev_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{rev_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(rev_r.get("yoy_change_pct"), (int, float)) else "",
+            },
+            {
+                "label": f"Standalone EBITDA ({fy})",
+                "value": eb_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{eb_r.get('pct_of_revenue'):.1f}% EBITDA margin" if isinstance(eb_r.get("pct_of_revenue"), (int, float)) else "",
+            },
+            {
+                "label": f"Standalone PAT ({fy})",
+                "value": pat_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{pat_r.get('yoy_change_pct'):+.1f}% YoY · {pat_r.get('pct_of_revenue'):.1f}% margin" if isinstance(pat_r.get("yoy_change_pct"), (int, float)) else "",
+            },
+            {
+                "label": f"Consolidated PAT (ONGC.NS)",
+                "value": cpat_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{cpat_r.get('yoy_change_pct'):+.1f}% YoY (Group)" if isinstance(cpat_r.get("yoy_change_pct"), (int, float)) else "Group Net Income",
+            },
+        ]
+        # 7 clean display columns so Key Takeaways sit side-by-side on desktop
+        disp_cols = ["line_item", "note_ref", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_revenue"]
+        disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
+        vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
+        # Build step-by-step P&L Waterfall Bridge (Revenue -> Levies -> Opex -> EBITDA -> Other Inc -> Expl/DD&A/Fin -> PBT -> Tax -> PAT)
+        rev_v = _num(by_code.get("gross_revenue_inr_cr", {}).get("amount_cr"))
+        lev_v = -abs(_num(by_code.get("statutory_levies_total_inr_cr", {}).get("amount_cr")))
+        opex_v = round(
+            _num(by_code.get("ebitda_inr_cr", {}).get("amount_cr")) - (rev_v + lev_v), 2
+        )
+        eb_v = _num(by_code.get("ebitda_inr_cr", {}).get("amount_cr"))
+        oi_v = _num(by_code.get("other_income_inr_cr", {}).get("amount_cr"))
+        pbt_v = _num(by_code.get("pbt_inr_cr", {}).get("amount_cr"))
+        below_eb_v = round(pbt_v - (eb_v + oi_v), 2)
+        tax_v = round(_num(by_code.get("pat_inr_cr", {}).get("amount_cr")) - pbt_v, 2)
+        pat_v = _num(by_code.get("pat_inr_cr", {}).get("amount_cr"))
+        wf_rows = [
+            {"pnl_stage": "Revenue from Ops", "amount_cr": rev_v, "type": "total"},
+            {"pnl_stage": "Statutory Levies", "amount_cr": lev_v, "type": "delta"},
+            {"pnl_stage": "Operating Expenses", "amount_cr": opex_v, "type": "delta"},
+            {"pnl_stage": "Standalone EBITDA", "amount_cr": eb_v, "type": "total"},
+            {"pnl_stage": "Other Income", "amount_cr": oi_v, "type": "delta"},
+            {"pnl_stage": "Expl, DD&A & Fin", "amount_cr": below_eb_v, "type": "delta"},
+            {"pnl_stage": "Profit Before Tax", "amount_cr": pbt_v, "type": "total"},
+            {"pnl_stage": "Tax Expense", "amount_cr": tax_v, "type": "delta"},
+            {"pnl_stage": "Standalone PAT", "amount_cr": pat_v, "type": "total"},
+        ]
+        ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "waterfall"
+        vis["chart"] = build_chart_spec(kind=ck, columns=["pnl_stage", "amount_cr"], rows=wf_rows, title=title, unit="₹ Cr")
+        # Table-First rule: default to structured statement table unless a chart (e.g., waterfall) was explicitly requested
+        vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
         return vis
+
+    if compiled.metric == "balance_sheet" and dims and dims[0] == "line_item":
+        fy = (compiled.effective_period or {}).get("fy", "FY26")
+        by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
+        ta_r = by_code.get("total_assets_inr_cr", {})
+        nw_r = by_code.get("net_worth_inr_cr", {})
+        ltd_r = by_code.get("long_term_debt_inr_cr", {})
+        cash_r = by_code.get("cash_and_bank_inr_cr", {})
+        vis["kpis"] = [
+            {
+                "label": f"Total Assets ({fy})",
+                "value": ta_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{ta_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(ta_r.get("yoy_change_pct"), (int, float)) else "Assets = Equity + Liab",
+            },
+            {
+                "label": f"Standalone Net Worth ({fy})",
+                "value": nw_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{nw_r.get('pct_of_assets'):.1f}% of Total Assets" if isinstance(nw_r.get("pct_of_assets"), (int, float)) else "",
+            },
+            {
+                "label": f"Long-Term Borrowings ({fy})",
+                "value": ltd_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{ltd_r.get('yoy_change_pct'):+.1f}% YoY" if isinstance(ltd_r.get("yoy_change_pct"), (int, float)) else "Note 21 Bonds",
+            },
+            {
+                "label": f"Cash & Bank Balances ({fy})",
+                "value": cash_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{cash_r.get('yoy_change_pct'):+.1f}% YoY (Net Cash Positive)" if isinstance(cash_r.get("yoy_change_pct"), (int, float)) else "Note 15/16",
+            },
+        ]
+        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_change_pct", "pct_of_assets"]
+        disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
+        vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
+        bs_chart_codes = [
+            ("non_current_assets_inr_cr", "Non-Current Assets"),
+            ("current_assets_inr_cr", "Current Assets"),
+            ("total_assets_inr_cr", "Total Assets"),
+            ("net_worth_inr_cr", "Standalone Net Worth"),
+            ("non_current_liabilities_inr_cr", "Non-Current Liabilities"),
+            ("current_liabilities_inr_cr", "Current Liabilities"),
+        ]
+        bs_chart_rows = [
+            {"bs_head": lbl, "amount_cr": by_code[c].get("amount_cr"), "prior_fy_cr": by_code[c].get("prior_fy_cr")}
+            for c, lbl in bs_chart_codes if c in by_code
+        ]
+        ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "bar"
+        vis["chart"] = build_chart_spec(kind=ck, columns=["bs_head", "amount_cr", "prior_fy_cr"], rows=bs_chart_rows, title=title, unit="₹ Cr")
+        vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
+        return vis
+
+    if compiled.metric == "cash_flow_statement" and dims and dims[0] == "line_item":
+        fy = (compiled.effective_period or {}).get("fy", "FY26")
+        by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
+        ocf_r = by_code.get("operating_cash_flow_inr_cr", {})
+        icf_r = by_code.get("investing_cash_flow_inr_cr", {})
+        fcf_r = by_code.get("free_cash_flow_inr_cr", {})
+        cls_r = by_code.get("closing_cash_inr_cr", {})
+        vis["kpis"] = [
+            {
+                "label": f"Operating Cash Flow ({fy})",
+                "value": ocf_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{ocf_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(ocf_r.get("yoy_change_pct"), (int, float)) else "Ind-AS 7 OCF",
+            },
+            {
+                "label": f"Investing Cash Flow ({fy})",
+                "value": icf_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": "Capex + JVs net of Dividends",
+            },
+            {
+                "label": f"Free Cash Flow ({fy})",
+                "value": fcf_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{fcf_r.get('pct_of_ocf'):.1f}% of OCF" if isinstance(fcf_r.get("pct_of_ocf"), (int, float)) else "OCF − Total Capex",
+            },
+            {
+                "label": f"Closing Cash & Bank ({fy})",
+                "value": cls_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{cls_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(cls_r.get("yoy_change_pct"), (int, float)) else "Note 15/16",
+            },
+        ]
+        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "pct_of_ocf"]
+        disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
+        vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
+        pbt_v = _num(by_code.get("pbt_inr_cr", {}).get("amount_cr"))
+        nc_wc_v = round(
+            _num(by_code.get("non_cash_adjustments_cf_inr_cr", {}).get("amount_cr"))
+            + _num(by_code.get("working_capital_change_cf_inr_cr", {}).get("amount_cr")),
+            2,
+        )
+        tax_p_v = -abs(_num(by_code.get("income_tax_paid_cf_inr_cr", {}).get("amount_cr")))
+        ocf_v = _num(by_code.get("operating_cash_flow_inr_cr", {}).get("amount_cr"))
+        icf_v = _num(by_code.get("investing_cash_flow_inr_cr", {}).get("amount_cr"))
+        fcf_act_v = _num(by_code.get("financing_cash_flow_inr_cr", {}).get("amount_cr"))
+        net_chg_v = _num(by_code.get("net_cash_change_inr_cr", {}).get("amount_cr"))
+        cf_wf_rows = [
+            {"cf_stage": "Profit Before Tax", "amount_cr": pbt_v, "type": "total"},
+            {"cf_stage": "Non-Cash & WC Adj", "amount_cr": nc_wc_v, "type": "delta"},
+            {"cf_stage": "Cash Taxes Paid", "amount_cr": tax_p_v, "type": "delta"},
+            {"cf_stage": "Operating Cash Flow", "amount_cr": ocf_v, "type": "total"},
+            {"cf_stage": "Investing Cash Flow", "amount_cr": icf_v, "type": "delta"},
+            {"cf_stage": "Financing Cash Flow", "amount_cr": fcf_act_v, "type": "delta"},
+            {"cf_stage": "Net Cash Change", "amount_cr": net_chg_v, "type": "total"},
+        ]
+        ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "waterfall"
+        vis["chart"] = build_chart_spec(kind=ck, columns=["cf_stage", "amount_cr"], rows=cf_wf_rows, title=title, unit="₹ Cr")
+        vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
+        return vis
+
+    if compiled.metric == "financial_ratios" and dims and dims[0] == "line_item":
+        fy = (compiled.effective_period or {}).get("fy", "FY26")
+        by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
+        ebm_r = by_code.get("ebitda_margin_pct", {})
+        roce_r = by_code.get("standalone_roce_pct", {})
+        roe_r = by_code.get("roe_pct", {})
+        de_r = by_code.get("debt_to_equity_ratio", {})
+        vis["kpis"] = [
+            {"label": f"EBITDA Margin ({fy})", "value": ebm_r.get("value"), "unit": "%", "delta": "Operating Profitability"},
+            {"label": f"Standalone ROCE ({fy})", "value": roce_r.get("value"), "unit": "%", "delta": "Return on Capital Employed"},
+            {"label": f"Return on Equity ({fy})", "value": roe_r.get("value"), "unit": "%", "delta": "PAT / Net Worth"},
+            {"label": f"Debt-to-Equity ({fy})", "value": de_r.get("value"), "unit": "x", "delta": "Net Cash Positive Balance Sheet"},
+        ]
+        disp_cols = ["line_item", "category", "unit", "value", "prior_fy_value", "yoy_delta", "formula"]
+        disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
+        vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
+        pct_rows = [r for r in rows if r.get("unit") == "%"]
+        ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "bar"
+        vis["chart"] = build_chart_spec(kind=ck, columns=["line_item", "value", "prior_fy_value"], rows=pct_rows, title=title, unit="%")
+        vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
+        return vis
+    if not dims or (len(rows) == 1 and breakdown and breakdown[1] and len(breakdown[1]) >= 2 and chart_kind != "waterfall"):
+        r0 = rows[0]
+        vis["kpis"] = [{"label": compiled.metric_label if c == compiled.metric else c.replace("_", " ").title(),
+                        "value": r0.get(c), "unit": unit_word if c == compiled.metric else "₹ crore" if c.endswith("_cr") else ""}
+                       for c in compiled.value_columns[:3] if c in r0]
+        if chart_kind == "waterfall" and len(compiled.value_columns) >= 2:
+            vis["type"] = "chart"
+            vis["chart"] = build_chart_spec(kind="waterfall", columns=columns, rows=rows, title=title, unit=unit)
+            return vis
+        if breakdown and breakdown[1] and len(breakdown[0]) >= 2:
+            bd_cols, bd_rows = breakdown
+            bd_dim, bd_val = bd_cols[0], bd_cols[1]
+            ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else (
+                "line" if bd_dim in ("fiscal_year", "fy") else select_chart_kind(columns=[bd_dim, bd_val], rows=bd_rows)
+            )
+            if ck in ("kpi", "table"):
+                ck = "hbar"
+            vis["type"] = "chart"
+            vis["chart"] = build_chart_spec(kind=ck, columns=[bd_dim, bd_val] + [c for c in bd_cols[2:5]], rows=bd_rows, title=title, unit=unit)
+            num_bd = [r for r in bd_rows if isinstance(r.get(bd_val), (int, float)) and not isinstance(r.get(bd_val), bool)]
+            if num_bd:
+                top_b = max(num_bd, key=lambda r: _num(r.get(bd_val)))
+                low_b = min(num_bd, key=lambda r: _num(r.get(bd_val)))
+                if bd_dim in ("fiscal_year", "fy"):
+                    vis["kpis"].append({"label": f"10-Yr Peak · {top_b.get(bd_dim)}", "value": top_b.get(bd_val), "unit": unit_word, "delta": "FY17–FY26 High"})
+                    if len(num_bd) > 1:
+                        vis["kpis"].append({"label": f"10-Yr Trough · {low_b.get(bd_dim)}", "value": low_b.get(bd_val), "unit": unit_word, "delta": "FY17–FY26 Low"})
+                else:
+                    vis["kpis"].append({"label": f"Largest {bd_dim.replace('_', ' ').title()}", "value": top_b.get(bd_val), "unit": unit_word, "delta": str(top_b.get(bd_dim) or "")})
+                    if len(num_bd) > 1:
+                        vis["kpis"].append({"label": f"Smallest {bd_dim.replace('_', ' ').title()}", "value": low_b.get(bd_val), "unit": unit_word, "delta": str(low_b.get(bd_dim) or "")})
+            return vis
+        if not dims:
+            vis["type"] = "kpi"
+            return vis
     cmp = spec.is_compare()
     if cmp and len(dims) >= 1:
         lead = dims[0]
@@ -172,8 +424,24 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
         kind = "bar"
     if kind != "table":
         vis["type"] = "chart"
-        vis["chart"] = build_chart_spec(kind=kind, columns=[dims[0], val] + [c for c in compiled.value_columns[1:2]],
+        vis["chart"] = build_chart_spec(kind=kind, columns=[dims[0], val] + [c for c in compiled.value_columns[1:] if c != val],
                                         rows=rows, title=title, unit=unit)
+        # Consistent summary KPI strip on every dimensional chart
+        num_rows = [r for r in rows if isinstance(r.get(val), (int, float)) and not isinstance(r.get(val), bool)]
+        if num_rows and not vis.get("kpis"):
+            top_r = max(num_rows, key=lambda r: _num(r.get(val)))
+            low_r = min(num_rows, key=lambda r: _num(r.get(val)))
+            kpis: List[Dict[str, Any]] = []
+            if is_additive(compiled):
+                tot = round(sum(_num(r.get(val)) for r in num_rows), 2)
+                if abs(tot - round(tot)) < 1e-9:
+                    tot = int(round(tot))
+                plural = DIM_PLURAL.get(dims[0], "groups")
+                kpis.append({"label": f"Total {compiled.metric_label}", "value": tot, "unit": unit_word, "delta": f"Across {len(num_rows)} {plural}"})
+            kpis.append({"label": f"Highest · {top_r.get(dims[0])}", "value": top_r.get(val), "unit": unit_word})
+            if len(num_rows) > 1:
+                kpis.append({"label": f"Lowest · {low_r.get(dims[0])}", "value": low_r.get(val), "unit": unit_word})
+            vis["kpis"] = kpis[:3]
     return vis
 
 
@@ -202,6 +470,65 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
         return lead + " The full list is on screen."
     dims = [alias for _, alias in compiled.dims]
     val = compiled.value_columns[0] if compiled.value_columns else None
+    if compiled.metric == "pnl_statement" and dims and dims[0] == "line_item":
+        fy = (compiled.effective_period or {}).get("fy", "FY26")
+        by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
+        rev = by_code.get("gross_revenue_inr_cr", {}).get("amount_cr")
+        lev = by_code.get("statutory_levies_total_inr_cr", {}).get("amount_cr")
+        eb = by_code.get("ebitda_inr_cr", {}).get("amount_cr")
+        pbt = by_code.get("pbt_inr_cr", {}).get("amount_cr")
+        pat = by_code.get("pat_inr_cr", {}).get("amount_cr")
+        cpat = by_code.get("consolidated_pat_inr_cr", {}).get("amount_cr")
+        return (
+            f"For {fy}, ONGC's Schedule III Revenue from Operations is {fmt_num(rev, 'inr_cr')}, "
+            f"Statutory Levies are {fmt_num(lev, 'inr_cr')}, Standalone EBITDA is {fmt_num(eb, 'inr_cr')}, "
+            f"Profit Before Tax is {fmt_num(pbt, 'inr_cr')}, Standalone PAT is {fmt_num(pat, 'inr_cr')}, "
+            f"and Consolidated Group PAT (ONGC.NS) is {fmt_num(cpat, 'inr_cr')}. "
+            f"The complete 23-line Schedule III and Yahoo Finance P&L statement is on screen."
+        )
+    if compiled.metric == "balance_sheet" and dims and dims[0] == "line_item":
+        fy = (compiled.effective_period or {}).get("fy", "FY26")
+        by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
+        ta = by_code.get("total_assets_inr_cr", {}).get("amount_cr")
+        nca = by_code.get("non_current_assets_inr_cr", {}).get("amount_cr")
+        ca = by_code.get("current_assets_inr_cr", {}).get("amount_cr")
+        nw = by_code.get("net_worth_inr_cr", {}).get("amount_cr")
+        ncl = by_code.get("non_current_liabilities_inr_cr", {}).get("amount_cr")
+        cl = by_code.get("current_liabilities_inr_cr", {}).get("amount_cr")
+        return (
+            f"As of 31 March {fy}, ONGC's Schedule III Total Assets stand at {fmt_num(ta, 'inr_cr')} "
+            f"(Non-Current Assets {fmt_num(nca, 'inr_cr')} and Current Assets {fmt_num(ca, 'inr_cr')}), "
+            f"balanced by Standalone Net Worth of {fmt_num(nw, 'inr_cr')}, Non-Current Liabilities of {fmt_num(ncl, 'inr_cr')}, "
+            f"and Current Liabilities of {fmt_num(cl, 'inr_cr')}. The complete 24-line Schedule III Balance Sheet is on screen."
+        )
+    if compiled.metric == "cash_flow_statement" and dims and dims[0] == "line_item":
+        fy = (compiled.effective_period or {}).get("fy", "FY26")
+        by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
+        ocf = by_code.get("operating_cash_flow_inr_cr", {}).get("amount_cr")
+        icf = by_code.get("investing_cash_flow_inr_cr", {}).get("amount_cr")
+        fcf_act = by_code.get("financing_cash_flow_inr_cr", {}).get("amount_cr")
+        fcf = by_code.get("free_cash_flow_inr_cr", {}).get("amount_cr")
+        cls_c = by_code.get("closing_cash_inr_cr", {}).get("amount_cr")
+        return (
+            f"In {fy}, ONGC generated Net Cash from Operating Activities (OCF) of {fmt_num(ocf, 'inr_cr')}, "
+            f"used {fmt_num(icf, 'inr_cr')} in Investing Activities and {fmt_num(fcf_act, 'inr_cr')} in Financing Activities, "
+            f"delivering Free Cash Flow (FCF) of {fmt_num(fcf, 'inr_cr')} and Closing Cash & Bank Balances of {fmt_num(cls_c, 'inr_cr')}. "
+            f"The complete 18-line Ind-AS 7 Cash Flow Statement is on screen."
+        )
+    if compiled.metric == "financial_ratios" and dims and dims[0] == "line_item":
+        fy = (compiled.effective_period or {}).get("fy", "FY26")
+        by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
+        ebm = by_code.get("ebitda_margin_pct", {}).get("value")
+        pm = by_code.get("pat_margin_pct", {}).get("value")
+        roce = by_code.get("standalone_roce_pct", {}).get("value")
+        roe = by_code.get("roe_pct", {}).get("value")
+        de = by_code.get("debt_to_equity_ratio", {}).get("value")
+        eps = by_code.get("eps_basic_inr", {}).get("value")
+        return (
+            f"For {fy}, ONGC's EBITDA Margin is {fmt_num(ebm, 'pct')}, Standalone PAT Margin is {fmt_num(pm, 'pct')}, "
+            f"Standalone ROCE is {fmt_num(roce, 'pct')}, Return on Equity (ROE) is {fmt_num(roe, 'pct')}, "
+            f"Debt-to-Equity is {de}x, and Basic EPS is ₹{eps}/share. The complete 18-ratio scorecard is on screen."
+        )
     if not dims and val:
         v = rows[0].get(val)
         s = f"{compiled.metric_label}: {fmt_num(v, compiled.unit)}" + (f" {unit_word}" if unit_word and compiled.unit not in ("inr_cr", "inr_lakh", "pct", "usd_per_boe") else "")

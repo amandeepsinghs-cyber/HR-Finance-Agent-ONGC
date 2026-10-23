@@ -13,6 +13,7 @@ const PERSONA_DETAILS: Record<
   { name?: string; title: string; clearance: string }
 > = {
   CMD: {
+    name: 'Arun',
     title: 'Chairman & CEO (CMD)',
     clearance: 'Full Enterprise Clearance: All Board, Operational, Financial & Confidential HR Records.',
   },
