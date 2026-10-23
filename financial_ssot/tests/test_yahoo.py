@@ -274,6 +274,29 @@ def test_nse_fetcher_stops_on_bot_protection(tmp_path):
         f.fetch_fy_end("FY17")
 
 
+def test_nse_weekly_fetch_holiday_friday_and_cache(tmp_path):
+    # week ending Fri 2017-03-31: Fri 404 -> Thu 30-Mar 200; second run is fully cached (0 requests)
+    c = FakeClient([(404, b""), (200, _zip_bytes(OLD_BHAV)), (200, IND.encode())])
+    f = mp.NseArchiveFetcher(tmp_path, client=c, sleep=lambda s: None)
+    (r,) = f.fetch_weekly(date(2017, 3, 31), date(2017, 3, 31), log=lambda x: None)
+    assert r["trade_date"] == "2017-03-30" and not r["cached"] and len(c.urls) == 3
+    c2 = FakeClient([(404, b"")])
+    f2 = mp.NseArchiveFetcher(tmp_path, client=c2, sleep=lambda s: None)
+    r2 = f2.fetch_week(date(2017, 3, 31))  # Fri re-probed once (holiday), Thu served from disk
+    assert r2["cached"] is True and r2["trade_date"] == "2017-03-30" and len(c2.urls) == 1
+    assert mp.last_friday_on_or_before(date(2026, 10, 22)) == date(2026, 10, 16)
+    assert mp.last_friday_on_or_before(date(2026, 10, 16)) == date(2026, 10, 16)
+
+
+def test_nse_provider_weekly_closes(nse_dir):
+    wk = mp.NseArchiveProvider(nse_dir).weekly_closes("^NSEI", "2017-01-01", "2017-12-31")
+    assert wk.to_dict("records") == [{"ticker": "^NSEI", "week_ending": "2017-03-31", "date": "2017-03-31",
+                                      "adj_close": 1050.0}]
+    chain = mp.MarketChain([mp.NseArchiveProvider(nse_dir)])
+    wk2, prov = chain.weekly_closes("ONGC.NS", "2017-01-01", "2025-12-31")
+    assert prov == "nse_archive" and wk2.adj_close.tolist() == [105.0, 205.0]
+
+
 # ----------------------------------------------------------------- real files (skip when absent)
 REAL_TS = sorted(yahoo.YAHOO_DIR.glob("yahoo_fundamentals_*balance_annual*.json"))
 

@@ -192,6 +192,11 @@ class NseArchiveProvider:
     def get_prices(self, ticker, start, end):
         return _in_range(self.all_rows(), ticker, start, end)
 
+    def weekly_closes(self, ticker: str, start: str, end: str):
+        """W-FRI weekly closes (last trading day of each week; unadjusted close) for the 2-yr
+        weekly beta (SPEC-02 §3.1, computed in P1.9)."""
+        return yahoo.weekly_closes(self.get_prices(ticker, start, end))
+
 
 class ManualSeedProvider:
     name = "manual_seed"
@@ -228,6 +233,11 @@ class MarketChain:
             if rows:
                 return PriceResult(rows, p.name, tried)
         raise MarketDataUnavailable(f"no prices for {ticker} {start}..{end} (tried {', '.join(tried)})")
+
+    def weekly_closes(self, ticker: str, start: str, end: str):
+        """(weekly DataFrame, provider) from the first provider with prices."""
+        pr = self.get_prices(ticker, start, end)
+        return yahoo.weekly_closes(pr.rows), pr.provider
 
 
 # --------------------------------------------------------------------------- fetchers
@@ -386,6 +396,43 @@ class NseArchiveFetcher:
     def fetch_fy_ends(self, fys: list[str]) -> list[dict]:
         return [self.fetch_fy_end(fy) for fy in fys]
 
+    def fetch_week(self, friday: date) -> dict:
+        """Last NSE trading day of the Mon-Fri week ending ``friday``: try Fri, Thu, ... Mon
+        (404 = holiday).  Dates whose equity + index files are already stored cost no request."""
+        d = friday
+        week = f"W{friday.isoformat()}"
+        while d.weekday() <= 4 and d > friday - timedelta(days=5):
+            eq_url, ix_url = nse_urls(d)
+            eq_p, ix_p = self.out_dir / eq_url.rsplit("/", 1)[1], self.out_dir / ix_url.rsplit("/", 1)[1]
+            if eq_p.exists() and ix_p.exists():
+                return {"week_ending": friday.isoformat(), "trade_date": d.isoformat(), "equity_file": eq_p.name,
+                        "index_file": ix_p.name, "cached": True}
+            status, body = (200, eq_p.read_bytes()) if eq_p.exists() else self._get(eq_url)
+            if status == 200 and body[:2] == b"PK":
+                if not eq_p.exists():
+                    self._save(eq_url, body, week, d, "weekly close: equity bhavcopy (unadjusted)")
+                s2, b2 = self._get(ix_url)
+                ix = self._save(ix_url, b2, week, d, "weekly close: index close") if s2 == 200 else None
+                return {"week_ending": friday.isoformat(), "trade_date": d.isoformat(), "equity_file": eq_p.name,
+                        "index_file": ix.name if ix else None, "cached": False}
+            d -= timedelta(days=1)
+        return {"week_ending": friday.isoformat(), "trade_date": None, "equity_file": None, "index_file": None,
+                "cached": False}
+
+    def fetch_weekly(self, first_friday: date, last_friday: date, log=print) -> list[dict]:
+        out = []
+        d = last_friday
+        while d >= first_friday:
+            r = self.fetch_week(d)
+            log(r)
+            out.append(r)
+            d -= timedelta(days=7)
+        return out
+
+
+def last_friday_on_or_before(d: date) -> date:
+    return d - timedelta(days=(d.weekday() - 4) % 7)
+
 
 def fy_range(spec: str) -> list[str]:
     a, b = spec.upper().split("..")
@@ -395,10 +442,23 @@ def fy_range(spec: str) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--fetch-nse-fy-ends", metavar="FY17..FY26", help="polite NSE archive fetch (D-45)")
+    ap.add_argument("--fetch-nse-weekly", type=int, metavar="N_WEEKS",
+                    help="last trading day of each of the last N complete weeks (lead beta decision; 104 = 2 yr)")
     ap.add_argument("--out", default="financial_ssot/out/market_prices.parquet")
     ap.add_argument("--start", default="2012-04-01")
     ap.add_argument("--end", default=date.today().isoformat())
     args = ap.parse_args(argv)
+    if args.fetch_nse_weekly:
+        last = last_friday_on_or_before(date.today() - timedelta(days=1))
+        first = last - timedelta(days=7 * (args.fetch_nse_weekly - 1))
+        f = NseArchiveFetcher()
+        try:
+            res = f.fetch_weekly(first, last)
+        except NseBlocked as e:
+            print(e)
+            return 3
+        print(f"weekly: {len(res)} weeks {first}..{last}, {sum(1 for r in res if r['trade_date'])} with data, "
+              f"{f.requests} requests")
     if args.fetch_nse_fy_ends:
         try:
             res = NseArchiveFetcher().fetch_fy_ends(fy_range(args.fetch_nse_fy_ends))
