@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 10:08 UTC · branch `v3/P0-stabilise` @ `1f5ac85`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 10:13 UTC · branch `v3/P0-stabilise` @ `edab350`
 
 > [!IMPORTANT]
-> **Overall: 22% complete (weighted)** — 12/62 steps ✅ done, 5 in flight, 45 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 21% complete (weighted)** — 12/62 steps ✅ done, 5 in flight, 45 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `█████░░░░░░░░░░░░░░░` 23% | 1 | 1 | 0 | 4 | 6 | 0 | 12 |
+| **P1** | Real finance SSOT | `████░░░░░░░░░░░░░░░░` 19% | 1 | 0 | 0 | 5 | 6 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 8 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
@@ -25,7 +25,7 @@
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.3 | 🔄 In progress | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | Complete build + evidence |
-| P1.4 | 🔍 In review | NSE XBRL parser | F | Apply review findings / approve |
+| P1.4 | 🔄 In progress | NSE XBRL parser | F | Complete build + evidence |
 | P1.5 | 🔄 In progress | Yahoo loader + market provider chain (optional, retryable) | F | Complete build + evidence |
 | P1.8 | 🔄 In progress | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | Complete build + evidence |
 
