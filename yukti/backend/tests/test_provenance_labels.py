@@ -138,3 +138,10 @@ def test_no_audited_claim_in_user_facing_strings(rel):
 def test_cached_contracts_have_no_audited_claim():
     p = BRAIN.parent.parent / "certified" / "answer_cache_warmup.json"
     assert not re.search(r"\baudited\b|Yahoo|ONGC\.NS", p.read_text(encoding="utf-8"), re.I)
+
+
+def test_insight_context_does_not_claim_annual_report_source():
+    """P0.3 r2: generated financial_build context must not be labelled as Annual Report text (found in the P0.9 r2 run)."""
+    hits = [(ln, s[:60]) for ln, s in _string_literals_without_docstrings(BRAIN / "insight_context.py")
+            if re.search(r"Annual Report[^\n]{0,30}Context", s)]
+    assert hits == [], hits

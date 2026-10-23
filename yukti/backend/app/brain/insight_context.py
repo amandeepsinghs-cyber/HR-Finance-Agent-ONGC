@@ -228,7 +228,7 @@ def _pnl_statement_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""
         out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
                            text=rag_txt, facts=_extract_nums(rag_txt), priority=2))
     elif driver:
-        txt = f"Annual Report Context ({fy}): {driver}" + (f" | Director (Finance) Action: {action}" if action else "")
+        txt = f"Context ({fy}, unverified snapshot): {driver}" + (f" | Director (Finance) Action: {action}" if action else "")
         out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
                            text=txt, facts=_extract_nums(txt), priority=2))
     if lev:
@@ -391,7 +391,7 @@ def _balance_sheet_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""
         out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
                            text=rag_txt, facts=_extract_nums(rag_txt), priority=2))
     elif driver:
-        txt = f"Annual Report Balance Sheet Context ({fy}): {driver}" + (f" | Director (Finance) Action: {action}" if action else "")
+        txt = f"Balance sheet context ({fy}, unverified snapshot): {driver}" + (f" | Director (Finance) Action: {action}" if action else "")
         out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
                            text=txt, facts=_extract_nums(txt), priority=2))
     if oga and cwip and inv:
@@ -446,7 +446,7 @@ def _cash_flow_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
         out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
                            text=rag_txt, facts=_extract_nums(rag_txt), priority=2))
     elif driver:
-        txt = f"Annual Report Cash Flow Context ({fy}): {driver}" + (f" | Director (Finance) Action: {action}" if action else "")
+        txt = f"Cash flow context ({fy}, unverified snapshot): {driver}" + (f" | Director (Finance) Action: {action}" if action else "")
         out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
                            text=txt, facts=_extract_nums(txt), priority=2))
     if icf and fcf_act and div_p:
@@ -521,7 +521,7 @@ def _corporate_causal_insights(compiled: CompiledQuery, rows: List[Dict[str, Any
             summary = ctx_row.get("what_happened_summary", "")
             hist = ctx_row.get("historical_10yr_context", "")
             action = ctx_row.get("director_finance_action", "")
-            txt = f"Annual Report Context ({fy}): {summary} 10-Yr Context: {hist} Director (Finance) Action: {action}"
+            txt = f"Context ({fy}, unverified snapshot): {summary} 10-Yr Context: {hist} Director (Finance) Action: {action}"
             return [Insight(kind="note", type="causal_rag", value=None, unit="", ref=fy,
                             text=txt, facts=_extract_nums(txt), priority=2)]
     except Exception:
