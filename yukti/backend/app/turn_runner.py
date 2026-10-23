@@ -159,6 +159,53 @@ class AgentTurnRunner:
         """Validates and repairs a contract so schema drift never causes an unhandled HTTP 500 (H1.3b)."""
         return validate_and_repair_contract(contract)
 
+    def _role_switch_contract(self, query: str, session_state: Any, norm_persona: str, principal: Optional[Any],
+                              turn_id: str, det_lang: str, t0: float) -> Dict[str, Any]:
+        """P0.4 (BUG-06): answer to a role-switch utterance. Non-admin -> R-ROLE (SPEC-06 §4.6), persona
+        unchanged, audit `role_switch_denied`. Admin -> `ui_action: set_persona` for the target persona; the
+        API layer issues the new token and audits `admin_persona_switch`."""
+        from app.auth import PERSONA_DIRECTORY, Principal, audit, r_role_text, requested_persona
+
+        target = requested_persona(query)
+        if principal is not None and principal.is_admin and target:
+            spoken = f"Switched the presenter session to {PERSONA_DIRECTORY[target]['designation']}."
+            contract = {
+                "turn_id": turn_id, "language": det_lang, "persona": target,
+                "spoken_summary": spoken, "display_text": spoken,
+                "visual": {"type": "none", "mode": "replace"},
+                "insights": [], "sources": [{"kind": "policy", "title": "SPEC-06 §4.4 (demo presenter)"}],
+                "suggestions": ["What can I ask?"], "access": {"status": "allowed"},
+                "export_options": [], "status_events": [f"Admin persona switch requested: {target}"],
+                "ui_action": {"command": "set_persona", "value": target},
+                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+            }
+            self._validate_contract(contract)
+            return contract
+
+        who = principal
+        if who is None:  # internal callers without a token: describe the session persona
+            info = PERSONA_DIRECTORY.get(norm_persona, {"emp_id": "", "display_name": norm_persona,
+                                                        "designation": norm_persona, "function": "", "grade": ""})
+            who = Principal(emp_id=info["emp_id"], persona=norm_persona, function=info["function"], grade=info["grade"],
+                            display_name=info["display_name"], designation=info["designation"])
+        text = r_role_text(who, det_lang)
+        audit("role_switch_denied", who, turn_id=turn_id, decision="refused", rule_ref="SPEC-06 §4.4 R-ROLE",
+              query=query, requested=target)
+        contract = {
+            "turn_id": turn_id, "language": det_lang, "persona": norm_persona,
+            "spoken_summary": text, "display_text": text,
+            "visual": {"type": "none", "mode": "replace"},
+            "insights": [], "sources": [{"kind": "policy", "title": "SPEC-06 §4.4 (R-ROLE)"}],
+            "suggestions": ["What can I ask?"],
+            "access": {"status": "refused", "reason": "Access level cannot be changed from a conversation.",
+                       "rule_ref": "SPEC-06 §4.4 R-ROLE"},
+            "export_options": [], "status_events": ["Role change from conversation refused (R-ROLE)"],
+            "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+        }
+        self._validate_contract(contract)
+        session_state.record_turn(contract, user_query=query)
+        return contract
+
     def _prune_adk_sessions(self, user_id: str, session_id: str, max_sessions: int = 200, max_events: int = 40) -> None:
         """Bounds ADK InMemorySessionService sessions and event history, stripping bulky `all_rows` (H1.3b)."""
         app_map = getattr(self.session_service, "sessions", {}).get(self.runner.app_name, {})
@@ -205,22 +252,35 @@ class AgentTurnRunner:
         ui_context: Optional[Dict[str, Any]] = None,
         spec_patch: Optional[Dict[str, Any]] = None,
         base_spec: Optional[Dict[str, Any]] = None,
+        principal: Optional[Any] = None,
     ) -> Dict[str, Any]:
         """Runs a turn, then applies the post-query RBAC guard to the contract (B3.4).
 
         `enforce_contract` runs on EVERY path (planner, fast paths, legacy LLM): a junior persona
         never receives named / pay / APAR columns, small cells are suppressed, and access.status,
         text and visual agree (consistency rule, FEAT-010).
+
+        P0.4: when `principal` (app.auth.Principal, from the signed session token) is given, its persona
+        is the only persona used; nothing in the query or the contract can change it (admins excepted).
         """
+        if principal is not None:
+            persona = principal.persona
         contract = await self._execute_turn_inner(
             query=query, session_id=session_id, persona=persona, language=language,
             voice_override=voice_override, history=history, ui_context=ui_context,
-            spec_patch=spec_patch, base_spec=base_spec,
+            spec_patch=spec_patch, base_spec=base_spec, principal=principal,
         )
         from app.brain.rbac import enforce_contract, persona_class
-        # The more restrictive of the request persona and the contract persona (G4 B3 I-2).
         req_persona = normalize_persona(persona)
-        persona_eff = req_persona if persona_class(req_persona) == "junior" else (contract.get("persona") or req_persona)
+        # P0.4 (BUG-06): the persona is never taken from the contract (that let a free-text "switch role"
+        # widen access). Only an admin's explicit switch (ui_action set_persona, issued by the deterministic
+        # role-switch handler) may change it; everyone else is enforced and stamped with the session persona.
+        ui_act = contract.get("ui_action") or {}
+        if principal is not None and principal.is_admin and ui_act.get("command") == "set_persona" and contract.get("persona"):
+            persona_eff = contract["persona"]
+        else:
+            persona_eff = req_persona
+            contract["persona"] = req_persona
         contract = enforce_contract(contract, persona_eff)
         if persona_class(persona_eff) == "junior" or (contract.get("access") or {}).get("status") != "allowed":
             self._sync_session_after_enforce(session_id, contract)
@@ -251,6 +311,7 @@ class AgentTurnRunner:
         ui_context: Optional[Dict[str, Any]] = None,
         spec_patch: Optional[Dict[str, Any]] = None,
         base_spec: Optional[Dict[str, Any]] = None,
+        principal: Optional[Any] = None,
     ) -> Dict[str, Any]:
         """Runs a live agent turn through ADK with Gemini model.
 
@@ -270,9 +331,18 @@ class AgentTurnRunner:
             language=det_lang,
         )
         session_state.hydrate_from_client_history(history=history, ui_context=ui_context)
+        session_state.persona = norm_persona  # P0.4: the session persona always follows the signed principal
 
         turn_index = len(session_state.turns) + 1
         turn_id = f"turn-{session_id}-{turn_index:03d}"
+
+        # P0.4 (BUG-06, SPEC-06 §4.4 rule 4): role-switch utterances never change the persona. Non-admins get
+        # R-ROLE; an admin (DEMO_ADMIN presenter) gets an explicit switch the API layer turns into a new token.
+        from app.auth import is_role_switch_request
+        from app.live_session import detect_screen_control_intent as _sc_detect
+        _sc_probe = _sc_detect(query.strip().lower().rstrip("?!."))
+        if is_role_switch_request(query) or (_sc_probe and _sc_probe.get("command") == "set_persona"):
+            return self._role_switch_contract(query, session_state, norm_persona, principal, turn_id, det_lang, t0)
 
         requested_chart_kind = extract_requested_chart_kind(query) or voice_override
 

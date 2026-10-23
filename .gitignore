@@ -47,3 +47,6 @@ yukti/backend/exports/
 **/exports/*.xlsx
 *.log
 .DS_Store
+
+# P0.4: local access-audit fallback (SPEC-06 §4.8); never committed
+yukti/backend/logs/

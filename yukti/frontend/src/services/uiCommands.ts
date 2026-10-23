@@ -252,16 +252,8 @@ function matchClause(raw: string): UiCommand | null {
     return { action: 'export', value: 'xlsx' };
   }
 
-  // Persona
-  if (/\b(switch\s+(role\s+)?to\s+director\s+hr|act\s+as\s+director\s+hr|persona\s+director\s+hr)\b/.test(s)) {
-    return { action: 'persona', value: 'DIR_HR' };
-  }
-  if (/\b(switch\s+(role\s+)?to\s+director\s+finance|act\s+as\s+director\s+finance|persona\s+director\s+finance)\b/.test(s)) {
-    return { action: 'persona', value: 'DIR_FIN' };
-  }
-  if (/\b(switch\s+(role\s+)?to\s+(cmd|chairman)|act\s+as\s+(cmd|chairman)|persona\s+cmd)\b/.test(s)) {
-    return { action: 'persona', value: 'CMD' };
-  }
+  // Persona: P0.4 (BUG-06, SPEC-06 §4.4) — never switched from typed/spoken text. Such requests go to the
+  // backend, which answers R-ROLE (or, for the demo presenter, issues a new signed session).
 
   // Language
   if (/^(speak\s+in\s+hindi|switch\s+to\s+hindi|hindi\s+mode|हिंदी\s*में\s*बोलो|हिंदी)$/.test(s)) {

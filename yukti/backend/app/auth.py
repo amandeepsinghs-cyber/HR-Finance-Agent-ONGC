@@ -1,0 +1,360 @@
+"""Server-side identity for Yukti AI (P0.4, SPEC-06 §4.4, BUG-06).
+
+The persona is derived only from a backend-signed session token (demo mode) or, in production, from an
+IAP assertion. The request body, WebSocket query string and voice/text commands can never change it.
+
+- Token: HS256 JWT `{sub, persona, function, grade, is_admin, demo, iat, exp, jti}` signed with
+  `YUKTI_PERSONA_SIGNING_KEY`. Implemented with the standard library (hmac/hashlib), so no new dependency:
+  the header must be exactly `alg=HS256`; `alg:none`, other algorithms, bad signatures, expired tokens
+  and unknown personas are rejected (-> HTTP 401).
+- Transport: `HttpOnly; Secure; SameSite=Strict` cookie `yk_session` (browser) or
+  `Authorization: Bearer <token>` (tests, scripts). The WebSocket upgrade carries the cookie; a first
+  frame `{"type": "auth", "token": ...}` is also accepted.
+- Audit: JSONL at `logs/access_audit.jsonl` (SPEC-06 §4.8 schema; BigQuery sink comes with P2H.1).
+"""
+
+from __future__ import annotations
+
+import base64
+import hashlib
+import hmac
+import json
+import logging
+import os
+from pathlib import Path
+import secrets
+import tempfile
+import threading
+import time
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List, Optional
+import uuid
+
+from fastapi import HTTPException, Request
+
+logger = logging.getLogger("yukti.auth")
+
+COOKIE_NAME = "yk_session"
+TOKEN_TTL_S = 8 * 3600
+
+# P0 persona set = the 5 existing personas + DEMO_ADMIN (P2H.1 extends to 11 via dim_app_user).
+# emp_ids are demo placeholders until dim_app_user lands (P2H.1); display data mirrors the UI picker.
+PERSONA_DIRECTORY: Dict[str, Dict[str, str]] = {
+    "CMD": {"emp_id": "DEMO-CMD", "display_name": "Arun", "designation": "Chairman & CEO", "function": "BOARD", "grade": "BOARD"},
+    "DIR_HR": {"emp_id": "DEMO-DIR-HR", "display_name": "Director (HR)", "designation": "Director (HR)", "function": "HR", "grade": "BOARD"},
+    "DIR_FIN": {"emp_id": "DEMO-DIR-FIN", "display_name": "Director (Finance)", "designation": "Director (Finance)", "function": "FIN", "grade": "BOARD"},
+    "E2_HR": {"emp_id": "DEMO-E2-HR", "display_name": "Pooja Verma", "designation": "Assistant Manager, HR", "function": "HR", "grade": "E2"},
+    "E3_FIN": {"emp_id": "DEMO-E3-FIN", "display_name": "Rajesh Kulkarni", "designation": "Deputy Manager, Finance", "function": "FIN", "grade": "E3"},
+}
+ADMIN_PERSONA_ID = "DEMO_ADMIN"
+ADMIN_DEFAULT_ACTING_PERSONA = "CMD"
+
+
+class AuthError(Exception):
+    """Token missing/invalid. The message is for logs only, never for users."""
+
+
+@dataclass(frozen=True)
+class Principal:
+    emp_id: str
+    persona: str              # effective RBAC persona (for DEMO_ADMIN: the persona it is acting as)
+    function: str
+    grade: str
+    display_name: str
+    designation: str
+    is_admin: bool = False
+    demo: bool = True
+    jti: str = ""
+    exp: int = 0
+
+    def public(self) -> Dict[str, Any]:
+        d = asdict(self)
+        d.pop("jti", None)
+        return d
+
+
+# ------------------------------------------------------------------ signing key
+_KEY_LOCK = threading.Lock()
+_KEY: Optional[bytes] = None
+
+
+def _signing_key() -> bytes:
+    """`YUKTI_PERSONA_SIGNING_KEY` (Secret Manager in prod). Dev fallback: a random 32-byte key kept in a
+    0600 file in the OS temp dir, so all uvicorn workers on this machine share it (a per-process key would
+    make tokens fail across `--workers 2`). Never stored in the repo."""
+    global _KEY
+    if _KEY is not None:
+        return _KEY
+    with _KEY_LOCK:
+        if _KEY is not None:
+            return _KEY
+        env = os.getenv("YUKTI_PERSONA_SIGNING_KEY", "")
+        if env:
+            _KEY = env.encode("utf-8")
+            return _KEY
+        path = Path(tempfile.gettempdir()) / f"yukti_dev_persona_key_{os.getuid() if hasattr(os, 'getuid') else 'u'}"
+        try:
+            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(fd, "wb") as f:
+                f.write(secrets.token_bytes(32))
+        except FileExistsError:
+            pass
+        try:
+            _KEY = path.read_bytes()
+            if len(_KEY) < 32:
+                raise OSError("short key file")
+        except OSError:
+            _KEY = secrets.token_bytes(32)
+            logger.warning("Persona signing key: using a random per-process key (tokens will not survive restarts)")
+        logger.warning("YUKTI_PERSONA_SIGNING_KEY not set: using a local dev signing key (demo only; set the secret in prod)")
+        return _KEY
+
+
+def _reset_key_for_tests() -> None:
+    global _KEY
+    _KEY = None
+
+
+# ------------------------------------------------------------------ JWT (HS256, stdlib)
+def _b64e(b: bytes) -> str:
+    return base64.urlsafe_b64encode(b).rstrip(b"=").decode("ascii")
+
+
+def _b64d(s: str) -> bytes:
+    pad = "=" * (-len(s) % 4)
+    return base64.urlsafe_b64decode(s + pad)
+
+
+def _sign(signing_input: bytes) -> str:
+    return _b64e(hmac.new(_signing_key(), signing_input, hashlib.sha256).digest())
+
+
+def issue_token(persona_id: str, is_admin: bool = False, ttl_s: int = TOKEN_TTL_S, now: Optional[int] = None) -> str:
+    """Signs a session token for a known persona. Raises AuthError for unknown personas."""
+    pid = (persona_id or "").strip().upper()
+    if pid not in PERSONA_DIRECTORY:
+        raise AuthError(f"unknown persona {persona_id!r}")
+    info = PERSONA_DIRECTORY[pid]
+    iat = int(now if now is not None else time.time())
+    claims = {
+        "sub": "DEMO-ADMIN" if is_admin else info["emp_id"],
+        "persona": pid,
+        "function": info["function"],
+        "grade": info["grade"],
+        "is_admin": bool(is_admin),
+        "demo": True,
+        "iat": iat,
+        "exp": iat + int(ttl_s),
+        "jti": uuid.uuid4().hex,
+    }
+    header = {"alg": "HS256", "typ": "JWT"}
+    signing_input = f"{_b64e(json.dumps(header, separators=(',', ':')).encode())}.{_b64e(json.dumps(claims, separators=(',', ':')).encode())}"
+    return f"{signing_input}.{_sign(signing_input.encode('ascii'))}"
+
+
+def verify_token(token: str, now: Optional[int] = None) -> Principal:
+    """Verifies signature, algorithm, expiry and persona. Raises AuthError on any problem."""
+    if not token or token.count(".") != 2:
+        raise AuthError("malformed token")
+    h_b64, p_b64, s_b64 = token.split(".")
+    try:
+        header = json.loads(_b64d(h_b64))
+        claims = json.loads(_b64d(p_b64))
+    except Exception as exc:  # noqa: BLE001
+        raise AuthError("undecodable token") from exc
+    if not isinstance(header, dict) or header.get("alg") != "HS256":
+        raise AuthError(f"rejected alg {header.get('alg') if isinstance(header, dict) else None!r}")
+    expected = _sign(f"{h_b64}.{p_b64}".encode("ascii"))
+    if not s_b64 or not hmac.compare_digest(expected, s_b64):
+        raise AuthError("bad signature")
+    if not isinstance(claims, dict):
+        raise AuthError("bad claims")
+    t = int(now if now is not None else time.time())
+    try:
+        exp = int(claims["exp"])
+    except Exception as exc:  # noqa: BLE001
+        raise AuthError("missing exp") from exc
+    if exp <= t:
+        raise AuthError("expired")
+    pid = str(claims.get("persona") or "").upper()
+    if pid not in PERSONA_DIRECTORY:
+        raise AuthError(f"unknown persona {pid!r}")
+    info = PERSONA_DIRECTORY[pid]
+    return Principal(
+        emp_id=str(claims.get("sub") or info["emp_id"]),
+        persona=pid,
+        function=info["function"],
+        grade=info["grade"],
+        display_name=info["display_name"],
+        designation=info["designation"],
+        is_admin=bool(claims.get("is_admin")),
+        demo=bool(claims.get("demo", True)),
+        jti=str(claims.get("jti") or ""),
+        exp=exp,
+    )
+
+
+# ------------------------------------------------------------------ request helpers
+def auth_mode() -> str:
+    return os.getenv("YUKTI_AUTH_MODE", "demo").strip().lower() or "demo"
+
+
+def verify_iap_assertion(assertion: str) -> Principal:
+    """Prod (`YUKTI_AUTH_MODE=iap`) stub: IAP JWT verification + dim_app_user lookup land with P2H.1/P5.6.
+    Until then iap mode fails closed (401)."""
+    raise AuthError("IAP verification not implemented yet (fails closed)")
+
+
+def token_from_headers(headers: Any, cookies: Optional[Dict[str, str]] = None) -> Optional[str]:
+    authz = (headers.get("authorization") or headers.get("Authorization") or "") if headers is not None else ""
+    if authz.lower().startswith("bearer "):
+        return authz[7:].strip() or None
+    if cookies and cookies.get(COOKIE_NAME):
+        return cookies.get(COOKIE_NAME)
+    return None
+
+
+def principal_from_request(request: Request) -> Principal:
+    if auth_mode() == "iap":
+        return verify_iap_assertion(request.headers.get("x-goog-iap-jwt-assertion", ""))
+    token = token_from_headers(request.headers, request.cookies)
+    if not token:
+        raise AuthError("no session token")
+    return verify_token(token)
+
+
+_UNAUTH = {"type": "error", "message": "Please sign in again to continue.", "retryable": False}
+
+
+def require_principal(request: Request) -> Principal:
+    """FastAPI dependency for protected routes: 401 without a valid token (never coerced to a persona)."""
+    try:
+        return principal_from_request(request)
+    except AuthError as exc:
+        logger.info(f"401 on {request.url.path}: {exc}")
+        raise HTTPException(status_code=401, detail=_UNAUTH)
+
+
+def require_admin(request: Request) -> Principal:
+    """FastAPI dependency for /admin/*: a valid token that carries the admin claim, else 401."""
+    p = require_principal(request)
+    if not p.is_admin:
+        audit("admin_denied", p, decision="refused", rule_ref="SPEC-06 §4.7")
+        raise HTTPException(status_code=401, detail={"type": "error", "message": "Admin access required.", "retryable": False})
+    return p
+
+
+def cookie_secure() -> bool:
+    # Secure by default (browsers treat http://localhost as secure); YUKTI_COOKIE_SECURE=0 only for plain-http hosts.
+    return os.getenv("YUKTI_COOKIE_SECURE", "1") not in ("0", "false", "no")
+
+
+def set_session_cookie(response: Any, token: str) -> None:
+    response.set_cookie(COOKIE_NAME, token, max_age=TOKEN_TTL_S, httponly=True, secure=cookie_secure(),
+                        samesite="strict", path="/")
+
+
+def personas_public() -> List[Dict[str, Any]]:
+    out = [{"id": pid, "display_name": v["display_name"], "designation": v["designation"],
+            "function": v["function"], "grade": v["grade"]} for pid, v in PERSONA_DIRECTORY.items()]
+    out.append({"id": ADMIN_PERSONA_ID, "display_name": "Demo presenter", "designation": "Presenter (admin)",
+                "function": "ADMIN", "grade": "-", "requires_passphrase": True})
+    return out
+
+
+def admin_passphrase_ok(passphrase: Optional[str]) -> bool:
+    expected = os.getenv("YUKTI_DEMO_ADMIN_PASSPHRASE", "")
+    if not expected or not passphrase:
+        return False  # admin sessions are disabled unless the passphrase secret is configured
+    return hmac.compare_digest(expected.encode("utf-8"), str(passphrase).encode("utf-8"))
+
+
+# ------------------------------------------------------------------ role-switch detection (BEH-01, SPEC-06 §4.4 rule 4)
+import re  # noqa: E402
+
+_ROLE_WORDS = (r"(?:cmd|c\.m\.d|chairman|ceo|cfo|md|director|dir[\s_-]?(?:hr|fin(?:ance)?)|admin|administrator|"
+               r"e\d(?:[\s_-]?(?:hr|fin))?|सीएमडी|चेयरमैन|निदेशक|डायरेक्टर|एडमिन)")
+_ROLE_SWITCH_PATTERNS = [
+    re.compile(r"\b(?:switch|change|set|update|elevate|upgrade)\s+(?:my\s+|the\s+)?(?:role|persona|profile|access(?:\s+level)?|user)\b", re.I),
+    re.compile(r"\b(?:switch|change)\s+(?:me\s+)?to\s+(?:the\s+)?" + _ROLE_WORDS + r"\b", re.I),
+    re.compile(r"\b(?:act|log\s*in|login|sign\s*in|signin|speak|answer)\s+as\s+(?:the\s+|a\s+|an\s+)?" + _ROLE_WORDS, re.I),
+    re.compile(r"\bmake\s+me\s+(?:the\s+|a\s+|an\s+)?" + _ROLE_WORDS, re.I),
+    re.compile(r"\bpersona\s+" + _ROLE_WORDS + r"\b", re.I),
+    re.compile(r"(?:मुझे|mujhe|muje|mujhko)\s+.{0,25}?(?:बना\s*दो|बना\s*दीजिए|बनाओ|bana\s*do|bana\s*dijiye|banao|bana\s*de)", re.I),
+    re.compile(r"(?:रोल|भूमिका|role|persona)\s+.{0,20}?(?:बदलो|बदल\s*दो|बदलें|badlo|badal\s*do|change\s*karo)", re.I),
+]
+# "I am the CMD" alone is a role claim; "I am the director, show me everyone's salary" is a data request
+# (BEH-01.05 expects R-PAY with the persona unchanged), so only short claims are treated as switches.
+_ROLE_CLAIM = re.compile(r"^\s*(?:hi|hello|namaste)?[,\s]*(?:i\s*am|i'm|im|main|मैं)\s+(?:the\s+|a\s+|an\s+)?" + _ROLE_WORDS +
+                         r"(?:\s+(?:now|here|hoon|हूँ|हूं))?\s*[.!]?\s*$", re.I)
+
+
+def is_role_switch_request(query: str) -> bool:
+    q = (query or "").strip()
+    if not q:
+        return False
+    if _ROLE_CLAIM.search(q):
+        return True
+    return any(p.search(q) for p in _ROLE_SWITCH_PATTERNS)
+
+
+def requested_persona(query: str) -> Optional[str]:
+    """Best-effort target persona for an admin switch ("switch role to E3_FIN" -> E3_FIN)."""
+    q = (query or "").lower()
+    table = [
+        (r"\b(e3[\s_-]?fin|rajesh)\b", "E3_FIN"), (r"\b(e2[\s_-]?hr|pooja)\b", "E2_HR"),
+        (r"\b(dir(ector)?[\s_-]*(\()?(fin|finance)|cfo)\b", "DIR_FIN"), (r"\b(dir(ector)?[\s_-]*(\()?hr)\b", "DIR_HR"),
+        (r"\b(cmd|chairman|ceo)\b", "CMD"),
+    ]
+    for pat, pid in table:
+        if re.search(pat, q):
+            return pid
+    return None
+
+
+R_ROLE_COPY = {
+    "en": "I can't change your access level from a conversation. You're signed in as {display_name}, {designation}.",
+    "hi": "बातचीत से आपका एक्सेस स्तर नहीं बदला जा सकता। आप {display_name}, {designation} के रूप में साइन-इन हैं।",
+}
+
+
+def r_role_text(principal: Principal, lang: str = "en") -> str:
+    key = "hi" if lang == "hi" else "en"
+    return R_ROLE_COPY[key].format(display_name=principal.display_name, designation=principal.designation)
+
+
+# ------------------------------------------------------------------ audit (SPEC-06 §4.8)
+_AUDIT_LOCK = threading.Lock()
+
+
+def audit_path() -> Path:
+    env = os.getenv("YUKTI_AUDIT_LOG")
+    if env:
+        return Path(env)
+    return Path(__file__).resolve().parent.parent / "logs" / "access_audit.jsonl"
+
+
+def audit(event: str, principal: Optional[Principal], *, turn_id: str = "", data_classes: Optional[List[str]] = None,
+          decision: str = "", rule_ref: str = "", query: Optional[str] = None, **extra: Any) -> None:
+    """Appends one audit row. Question text is never stored; only a hash (SPEC-06 §4.8)."""
+    row = {
+        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "emp_id": principal.emp_id if principal else None,
+        "persona": principal.persona if principal else None,
+        "turn_id": turn_id,
+        "event": event,
+        "data_classes": list(data_classes or []),
+        "decision": decision,
+        "rule_ref": rule_ref,
+        "query_hash": hashlib.sha256(query.encode("utf-8")).hexdigest()[:16] if query else None,
+    }
+    for k, v in extra.items():
+        if k not in row:
+            row[k] = v
+    try:
+        p = audit_path()
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with _AUDIT_LOCK, open(p, "a", encoding="utf-8") as f:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    except OSError as exc:  # auditing must never take a turn down
+        logger.warning(f"audit write failed: {exc}")

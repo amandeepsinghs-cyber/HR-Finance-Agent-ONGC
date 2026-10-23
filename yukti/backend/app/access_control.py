@@ -234,13 +234,24 @@ class AccessDecision:
     refusal_id: Optional[str] = None
 
 
+class UnknownPersona(ValueError):
+    """P0.4 (SPEC-06 §4.4 rule 1): an unknown persona is an identity error (HTTP 401), never coerced."""
+
+
 def normalize_persona(persona: Optional[str]) -> str:
-    """Normalizes any persona string or alias into the 5 contract personas."""
-    if not persona:
-        return "CMD"
+    """Normalizes a known persona id or alias into the contract personas.
+
+    P0.4: unknown or empty values raise UnknownPersona instead of being coerced (was: unknown -> E2_HR,
+    None -> CMD). Identity comes from the signed session token (app/auth.py), not from free text.
+    """
+    if not persona or not str(persona).strip():
+        raise UnknownPersona("empty persona")
     p_clean = persona.strip().lower()
-    # Unknown persona strings get the most restrictive class (E1–E4), never CMD (G4 B3 I-1).
-    return PERSONA_ALIASES.get(p_clean, persona.upper() if persona.upper() in VALID_PERSONAS else "E2_HR")
+    if p_clean in PERSONA_ALIASES:
+        return PERSONA_ALIASES[p_clean]
+    if persona.strip().upper() in VALID_PERSONAS:
+        return persona.strip().upper()
+    raise UnknownPersona(f"unknown persona {persona!r}")
 
 
 def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[str] = None) -> AccessDecision:

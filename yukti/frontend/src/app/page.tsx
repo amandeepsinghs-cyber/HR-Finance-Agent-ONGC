@@ -48,6 +48,39 @@ interface Telemetry {
   turns: { speechEndToFirstAudioMs: number | null; speechEndToCanvasMs: number | null; audioBytes: number; chunks: number }[];
 }
 
+/**
+ * P0.4 (SPEC-06 §4.4): demo sign-in. The backend signs a persona token into the HttpOnly `yk_session` cookie;
+ * every /api/* call and the /ws/live upgrade then carry it automatically (same origin). The persona shown in the
+ * UI always comes from the server (`/api/auth/session` or `/api/auth/me`), never from an answer contract.
+ */
+async function startSession(p: PersonaType): Promise<PersonaType | null> {
+  try {
+    const res = await fetch('/api/auth/session', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ persona_id: p }),
+      credentials: 'same-origin',
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    const j = await res.json();
+    return (j?.principal?.persona as PersonaType) || null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchSessionPersona(): Promise<PersonaType | null> {
+  try {
+    const res = await fetch('/api/auth/me', { credentials: 'same-origin', cache: 'no-store' });
+    if (!res.ok) return null;
+    const j = await res.json();
+    return (j?.principal?.persona as PersonaType) || null;
+  } catch {
+    return null;
+  }
+}
+
 function isGreetingContract(c: AnswerContract): boolean {
   const noVisual = !c.visual || c.visual.type === 'none';
   return noVisual && (/-000$/.test(c.turn_id || '') || /^hello|^namaste|नमस्ते/i.test(c.spoken_summary || ''));
@@ -179,15 +212,29 @@ export default function YuktiApp() {
     void checkBackend();
     // Pre-connect /ws/live immediately on page mount (Urvi `VoiceAgentPanel` pattern)
     // so Gemini Live is already warm & connected before the user clicks the mic/orb.
-    void yuktiClient.connect({ persona: personaRef.current, language: langRef.current, voice: 'Leda' });
+    // P0.4: resume the signed session if there is one (server decides the persona), else sign in as the default.
+    void (async () => {
+      const existing = await fetchSessionPersona();
+      const p = existing || (await startSession(personaRef.current)) || personaRef.current;
+      if (p !== personaRef.current) {
+        personaRef.current = p;
+        setPersona(p);
+      }
+      void yuktiClient.connect({ persona: p, language: langRef.current, voice: 'Leda' });
+    })();
     const id = setInterval(checkBackend, 15000);
-    return () => clearInterval(id);
+    // P0.4: tokens live 8 h; re-sign the current persona every 2 h so a long demo never hits a 401
+    const renew = setInterval(() => void startSession(personaRef.current), 2 * 3600 * 1000);
+    return () => {
+      clearInterval(id);
+      clearInterval(renew);
+    };
   }, [isLiveMode, checkBackend]);
 
   // ---------- Conversation helpers ----------
   const pushMessage = useCallback((m: ChatMessage) => setMessages((prev) => [...prev, m]), []);
 
-  const handlePersonaChange = useCallback((p: PersonaType) => {
+  const handlePersonaChange = useCallback((p: PersonaType, opts?: { signIn?: boolean }) => {
     const prevPersona = personaRef.current;
     if (p === prevPersona) return;
     // Save current profile's conversation state
@@ -217,7 +264,10 @@ export default function YuktiApp() {
     setMessages(saved ? saved.messages : []);
     setPersona(p);
     personaRef.current = p;
-    yuktiClient.switchPersonaSession(nextSessionId, p);
+    // P0.4: the TopBar picker is the demo "Sign in as…": it starts a new signed session for that persona
+    // (the only way to change persona; typed/spoken requests are refused by the backend).
+    if (opts?.signIn === false) yuktiClient.switchPersonaSession(nextSessionId, p);
+    else void startSession(p).then(() => yuktiClient.switchPersonaSession(nextSessionId, p));
     setOrbState(micActiveRef.current ? 'listening' : 'idle');
   }, []);
 
@@ -225,10 +275,12 @@ export default function YuktiApp() {
   useUiCommands(
     {
       theme: (val) => setIsDark(val === 'dark'),
-      persona: (val) => {
-        if (val) {
-          handlePersonaChange(val as PersonaType);
-        }
+      persona: () => {
+        // P0.4: a backend `set_persona` (demo presenter only) has already re-signed the session cookie;
+        // adopt whatever the server now says. Never start a session from a ui command.
+        void fetchSessionPersona().then((p) => {
+          if (p && p !== personaRef.current) handlePersonaChange(p, { signIn: false });
+        });
       },
       language: (val) => {
         if (val) {
@@ -328,7 +380,7 @@ export default function YuktiApp() {
     }
     if ((c as any).ui_action) handleUiAction((c as any).ui_action);
     if (c.language && c.language !== langRef.current) setLanguage(c.language);
-    if (c.persona && c.persona !== personaRef.current) setPersona(c.persona);
+    // P0.4 (BUG-06): the persona is never adopted from a contract; it comes from the signed session.
     if (liveRef.current) {
       yuktiClient.sendContext({
         persona: c.persona || personaRef.current,

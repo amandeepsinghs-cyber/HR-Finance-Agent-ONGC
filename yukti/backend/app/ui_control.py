@@ -188,9 +188,10 @@ def validate(action: str, value: str = "") -> Tuple[Optional[Dict[str, str]], Op
         return None, f"Unknown ONGC location '{value}'."
 
     if a == "persona":
-        v_up = v.upper()
-        if v_up in UI_ACTIONS["persona"]:
-            return {"action": "persona", "value": v_up}, None
+        # P0.4 (BUG-06, SPEC-06 §4.4 rule 2): screen-control can never switch the persona. Identity comes from
+        # the signed session token; the demo presenter's switch is handled by the turn runner + /api/auth.
+        return None, ("R-ROLE: I can't change your access level from a conversation. "
+                      "Use 'Sign in as…' in the top bar to start a session as another persona.")
 
     if a == "grade_filter":
         v_up = v.upper()

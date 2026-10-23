@@ -188,8 +188,13 @@ def test_b3_suppression_only_sets_partial():
 
 
 def test_i1_unknown_persona_is_junior_not_cmd():
-    from app.access_control import normalize_persona
-    assert normalize_persona("intern") == "E2_HR" and normalize_persona(None) == "CMD"
+    # P0.4 (SPEC-06 §4.4 rule 1): unknown / empty personas are an identity error (401), never coerced.
+    import pytest
+    from app.access_control import UnknownPersona, normalize_persona
+    with pytest.raises(UnknownPersona):
+        normalize_persona("intern")
+    with pytest.raises(UnknownPersona):
+        normalize_persona(None)
     assert normalize_persona("Director (Finance)") == "DIR_FIN"
 
 

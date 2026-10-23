@@ -7,6 +7,12 @@ from fastapi.testclient import TestClient
 from app.tools.export_tool import DocumentExporter
 
 
+def _auth() -> dict:
+    """P0.4: export routes require a signed session token."""
+    from app.auth import issue_token
+    return {"Authorization": f"Bearer {issue_token('CMD')}"}
+
+
 @pytest.fixture()
 def exporter(tmp_path: Path) -> DocumentExporter:
     return DocumentExporter(exports_dir=tmp_path / "exports")
@@ -31,7 +37,7 @@ def test_word_export_with_traversal_title_stays_inside(exporter: DocumentExporte
 def test_download_rejects_non_minted_ids() -> None:
     from app.main import app
 
-    c = TestClient(app)
+    c = TestClient(app, headers=_auth())
     for bad in ["..", "%2e%2e", ".gitkeep", "exp_1_abc", "anything", "exp_1792656351753_b136f6", "exp_" + "a" * 32 + "/../x"]:
         r = c.get(f"/api/export/{bad}")
         assert r.status_code == 404, bad
@@ -40,7 +46,7 @@ def test_download_rejects_non_minted_ids() -> None:
 def test_create_then_download_roundtrip() -> None:
     from app.main import app
 
-    c = TestClient(app)
+    c = TestClient(app, headers=_auth())
     r = c.post("/api/export", json={"format": "pdf", "title": "../../Board Note", "content": "Hello"})
     assert r.status_code == 200
     j = r.json()
@@ -53,7 +59,7 @@ def test_create_then_download_roundtrip() -> None:
 def test_export_ids_are_128_bit_and_extension_is_forced(tmp_path: Path) -> None:
     from app.main import app
 
-    c = TestClient(app)
+    c = TestClient(app, headers=_auth())
     j = c.post("/api/export", json={"format": "xlsx", "title": "t", "columns": ["a"], "rows": [{"a": 1}]}).json()
     assert len(j["export_id"]) == 4 + 32
     ex = DocumentExporter(exports_dir=tmp_path / "e")
@@ -83,5 +89,5 @@ def test_errors_do_not_leak_internals(monkeypatch) -> None:
         raise ValueError("/secret/path/here")
 
     monkeypatch.setattr(m.exporter, "export_pdf", boom)
-    r = TestClient(m.app).post("/api/export", json={"format": "pdf", "title": "t", "content": "x"})
+    r = TestClient(m.app, headers=_auth()).post("/api/export", json={"format": "pdf", "title": "t", "content": "x"})
     assert r.status_code == 500 and "/secret" not in r.text

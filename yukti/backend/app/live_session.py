@@ -183,10 +183,13 @@ class LiveSessionManager:
         model_name: str = DEFAULT_LIVE_MODEL,
         voice: str = DEFAULT_VOICE,
         language: str = "en",
+        principal: Optional[Any] = None,
     ):
         self.ws = websocket
         self.session_id = session_id
-        self.persona = persona
+        # P0.4 (BUG-06): the signed principal fixes the persona for the whole socket
+        self.principal = principal
+        self.persona = principal.persona if principal is not None else persona
         self.model_name = model_name or DEFAULT_LIVE_MODEL
         self.voice = voice or DEFAULT_VOICE
         self.language = language or "en"
@@ -198,9 +201,10 @@ class LiveSessionManager:
         self._generating = False
         self.session_state = get_session_manager().get_or_create(
             session_id=session_id,
-            persona=persona,
+            persona=self.persona,  # P0.4: principal persona, not the caller-supplied one
             language=language,
         )
+        self.session_state.persona = self.persona
         self.inbound: asyncio.Queue = asyncio.Queue()
         self.state: Dict[str, Any] = {
             "handle": None,
@@ -366,6 +370,7 @@ class LiveSessionManager:
                         query=query_str,
                         session_id=self.session_id,
                         persona=self.persona,
+                        principal=self.principal,  # P0.4
                         language=self.language,
                     )
                     # Strip internal telemetry keys before sending contract
@@ -410,11 +415,28 @@ class LiveSessionManager:
         })
         return result
 
+    def _r_role_text(self) -> str:
+        """P0.4: R-ROLE copy (SPEC-06 §4.6) for the socket's principal, in the session language."""
+        from app.auth import PERSONA_DIRECTORY, Principal, r_role_text
+        p = self.principal
+        if p is None:
+            info = PERSONA_DIRECTORY.get(self.persona, {"emp_id": "", "display_name": self.persona,
+                                                        "designation": self.persona, "function": "", "grade": ""})
+            p = Principal(emp_id=info["emp_id"], persona=self.persona, function=info["function"], grade=info["grade"],
+                          display_name=info["display_name"], designation=info["designation"])
+        return r_role_text(p, self.language)
+
     async def _apply_screen_control(self, command: str, value: str) -> Dict[str, Any]:
         """Applies a voice screen-control action (`ui_control`), morphing the active contract or running canonical screen queries."""
         ui_res = run_ui_control(command, value)
         if ui_res.get("status") == "ERROR":
             err_msg = ui_res.get("error", f"Unrecognized screen control command: {command}")
+            if str(ui_res.get("summary", "")).startswith("R-ROLE"):
+                # P0.4 (BUG-06): a voice "switch role" never changes the persona
+                from app.auth import audit
+                audit("role_switch_denied", self.principal, decision="refused", rule_ref="SPEC-06 §4.4 R-ROLE",
+                      channel="live_voice", requested=str(value)[:20])
+                return {"status": "ERROR", "error": "R-ROLE", "spoken_summary": self._r_role_text()}
             logger.warning(f"[{self.session_id}] Screen control rejected: {err_msg}")
             return {
                 "status": "ERROR",
@@ -452,6 +474,7 @@ class LiveSessionManager:
                 query=canonical_query,
                 session_id=self.session_id,
                 persona=self.persona,
+                principal=self.principal,  # P0.4
                 language=self.language,
             )
             clean_contract = dict(contract)
@@ -470,11 +493,8 @@ class LiveSessionManager:
 
         # 2. Pure UI / View-morphing commands
         if act == "persona" and val:
-            from app.access_control import normalize_persona
-            self.persona = normalize_persona(val)
-            self.session_state.persona = self.persona
-            val = self.persona
-            legacy_obj["value"] = val
+            # P0.4: unreachable in practice (ui_control.validate rejects persona), kept as a hard stop
+            return {"status": "ERROR", "error": "R-ROLE", "spoken_summary": self._r_role_text()}
         elif act == "language" and val:
             self.language = val if val in ("en", "hi", "hi-en") else "en"
             self.session_state.language = self.language
@@ -695,9 +715,11 @@ class LiveSessionManager:
                     self.state["ui"] = {**self.state.get("ui", {}), **msg["ui_state"]}
 
                 if msg_type == "config":
-                    if "persona" in msg:
-                        self.persona = msg["persona"]
-                        self.session_state.persona = msg["persona"]
+                    if "persona" in msg and msg["persona"] != self.persona:
+                        # P0.4 (BUG-06): the socket's persona comes from the session token, never from the client
+                        from app.auth import audit
+                        audit("persona_assertion_ignored", self.principal, decision="ignored",
+                              rule_ref="SPEC-06 §4.4", asserted=str(msg["persona"])[:20], channel="ws_config")
                     if "language" in msg:
                         self.language = msg["language"]
                         self.session_state.language = msg["language"]
@@ -965,6 +987,7 @@ class LiveSessionManager:
                                                 query=heard,
                                                 session_id=self.session_id,
                                                 persona=self.persona,
+                                                principal=self.principal,  # P0.4
                                                 language=self.language,
                                             )
                                             clean_c = dict(c)
@@ -1065,6 +1088,7 @@ class LiveSessionManager:
                     query=text,
                     session_id=self.session_id,
                     persona=self.persona,
+                    principal=self.principal,  # P0.4
                     language=self.language,
                 )
             except Exception as exc:  # keep the socket alive; report the failure to the UI

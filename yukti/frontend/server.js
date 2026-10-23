@@ -3,7 +3,7 @@
  *
  * Wraps Next.js and proxies backend traffic through the UI origin so the browser
  * only ever talks to ONE port (forward only port 3200 from your laptop):
- *   /api/turn, /api/export, /api/export/{id}, /health  -> YUKTI_BACKEND_URL (HTTP or HTTPS, e.g. Cloud Run)
+ *   /api/turn, /api/export, /api/export/{id}, /api/auth/*, /health  -> YUKTI_BACKEND_URL (HTTP or HTTPS, e.g. Cloud Run)
  *   /ws/live                                          -> YUKTI_BACKEND_URL (WebSocket upgrade)
  * Everything else (pages, assets, HMR websocket) is served by Next.
  *
@@ -28,7 +28,8 @@ const secure = backend.protocol === 'https:' || backend.protocol === 'wss:';
 const backendPort = parseInt(backend.port || (secure ? '443' : '80'), 10);
 const httpLib = secure ? https : http;
 
-const PROXY_HTTP = [/^\/api\/turn(\/|$|\?)/, /^\/api\/voice-turn(\/|$|\?)/, /^\/api\/export(\/|$|\?)/, /^\/health(\/|$|\?)/];
+// P0.4: /api/auth/* (persona session: personas, session, me) is proxied too so the yk_session cookie stays same-origin
+const PROXY_HTTP = [/^\/api\/turn(\/|$|\?)/, /^\/api\/voice-turn(\/|$|\?)/, /^\/api\/export(\/|$|\?)/, /^\/api\/auth(\/|$|\?)/, /^\/health(\/|$|\?)/];
 const isProxiedHttp = (p) => PROXY_HTTP.some((re) => re.test(p));
 const isProxiedWs = (p) => /^\/ws\/live(\/|$|\?)/.test(p);
 

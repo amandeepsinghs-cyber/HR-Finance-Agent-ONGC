@@ -58,8 +58,11 @@ def validate_and_repair_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
     # Normalize persona
     persona = str(contract.get("persona") or "CMD").strip().upper()
     if persona not in _VALID_PERSONAS:
-        from app.access_control import normalize_persona
-        contract["persona"] = normalize_persona(persona)
+        from app.access_control import UnknownPersona, normalize_persona
+        try:
+            contract["persona"] = normalize_persona(persona)
+        except UnknownPersona:  # P0.4: repair only; the turn runner re-stamps the principal's persona
+            contract["persona"] = "E2_HR"
 
     # Ensure required string fields
     if not contract.get("turn_id") or not isinstance(contract.get("turn_id"), str):

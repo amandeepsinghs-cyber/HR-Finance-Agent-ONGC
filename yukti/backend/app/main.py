@@ -16,12 +16,14 @@ import time
 from typing import Any, Dict, List, Optional
 import uuid
 
-from fastapi import FastAPI, HTTPException, Query, WebSocket, status
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response, WebSocket, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 
-from app.access_control import normalize_persona
+from app.access_control import UnknownPersona, normalize_persona
+from app import auth as yauth
+from app.auth import Principal, require_principal
 from app.cache import get_demo_cache
 from app.config import (
     DEFAULT_LIVE_MODEL,
@@ -124,7 +126,9 @@ async def startup_event():
 class TurnRequest(BaseModel):
     query: str
     session_id: Optional[str] = None
-    persona: Optional[str] = "CMD"
+    # P0.4 (BUG-06): ignored for authorisation; the persona comes from the signed session token. A mismatch
+    # is audited as `persona_assertion_ignored`.
+    persona: Optional[str] = None
     language: Optional[str] = "en"
     voice_override: Optional[str] = None
     history: Optional[List[Dict[str, Any]]] = None
@@ -138,9 +142,28 @@ class VoiceTurnRequest(BaseModel):
     audio_base64: str
     mime_type: Optional[str] = "audio/webm"
     session_id: Optional[str] = None
-    persona: Optional[str] = "CMD"
+    persona: Optional[str] = None  # P0.4: ignored (see TurnRequest)
     language: Optional[str] = "en"
     transcript_hint: Optional[str] = None
+
+
+class SessionRequest(BaseModel):
+    persona_id: str
+    passphrase: Optional[str] = None
+    acting_persona: Optional[str] = None  # DEMO_ADMIN only: persona the presenter starts as (default CMD)
+
+
+def _note_persona_assertion(asserted: Optional[str], principal: Principal, channel: str) -> None:
+    """P0.4: a client-asserted persona that differs from the token is ignored and audited (SPEC-06 §4.4)."""
+    if not asserted:
+        return
+    try:
+        a = normalize_persona(asserted)
+    except UnknownPersona:
+        a = str(asserted)[:20]
+    if a != principal.persona:
+        yauth.audit("persona_assertion_ignored", principal, decision="ignored", rule_ref="SPEC-06 §4.4",
+                    asserted=a, channel=channel)
 
 
 class ExportRequest(BaseModel):
@@ -197,6 +220,62 @@ def health() -> Dict[str, Any]:
     }
 
 
+# ---------------------------------------------------------------- P0.4 identity (SPEC-06 §4.4)
+@app.get("/api/auth/personas")
+def auth_personas() -> Dict[str, Any]:
+    """Demo login picker: the personas a session can be started as (no secrets)."""
+    return {"auth_mode": yauth.auth_mode(), "personas": yauth.personas_public()}
+
+
+@app.post("/api/auth/session")
+def auth_session(req: SessionRequest, response: Response) -> Dict[str, Any]:
+    """Starts a demo session: signs a persona token and sets the HttpOnly `yk_session` cookie."""
+    if yauth.auth_mode() != "demo":
+        raise HTTPException(status_code=404, detail={"type": "error", "message": "Not available.", "retryable": False})
+    pid = (req.persona_id or "").strip().upper()
+    if pid == yauth.ADMIN_PERSONA_ID:
+        if not yauth.admin_passphrase_ok(req.passphrase):
+            yauth.audit("admin_session_denied", None, decision="refused", rule_ref="SPEC-06 §4.4")
+            raise HTTPException(status_code=401, detail={"type": "error", "message": "Presenter sign-in failed.", "retryable": False})
+        acting = (req.acting_persona or yauth.ADMIN_DEFAULT_ACTING_PERSONA).strip().upper()
+        try:
+            token = yauth.issue_token(acting, is_admin=True)
+        except yauth.AuthError:
+            raise HTTPException(status_code=401, detail={"type": "error", "message": "Unknown persona.", "retryable": False})
+    else:
+        try:
+            token = yauth.issue_token(pid)
+        except yauth.AuthError:
+            raise HTTPException(status_code=401, detail={"type": "error", "message": "Unknown persona.", "retryable": False})
+    principal = yauth.verify_token(token)
+    yauth.set_session_cookie(response, token)
+    yauth.audit("session_start", principal, decision="allowed", rule_ref="SPEC-06 §4.4")
+    return {"principal": principal.public(), "expires_at": principal.exp}
+
+
+@app.get("/api/auth/me")
+def auth_me(principal: Principal = Depends(require_principal)) -> Dict[str, Any]:
+    """Who the server thinks you are (the persona chip reads this, never the contract)."""
+    return {"principal": principal.public(), "auth_mode": yauth.auth_mode()}
+
+
+def _apply_admin_switch(contract: Dict[str, Any], principal: Principal, response: Response, query: str = "") -> None:
+    """DEMO_ADMIN only: a `set_persona` ui_action from the deterministic role-switch handler becomes a new
+    signed session for the target persona (audited). For everyone else any `set_persona` is stripped."""
+    ui_act = contract.get("ui_action") or {}
+    if (ui_act.get("command") or ui_act.get("action")) not in ("set_persona", "persona"):
+        return
+    target = str(ui_act.get("value") or "").upper()
+    if principal.is_admin and target in yauth.PERSONA_DIRECTORY:
+        token = yauth.issue_token(target, is_admin=True)
+        yauth.set_session_cookie(response, token)
+        yauth.audit("admin_persona_switch", principal, decision="allowed", rule_ref="SPEC-06 §4.4",
+                    query=query or None, to_persona=target)
+        return
+    contract.pop("ui_action", None)  # defence in depth: never let a non-admin contract switch the UI persona
+    contract["persona"] = principal.persona
+
+
 @app.get("/admin/cache")
 def admin_cache_stats() -> Dict[str, Any]:
     """Returns tool-result cache statistics."""
@@ -220,11 +299,12 @@ def admin_cache_clear() -> Dict[str, Any]:
 
 
 @app.post("/api/turn")
-async def execute_turn(req: TurnRequest) -> Dict[str, Any]:
+async def execute_turn(req: TurnRequest, response: Response, principal: Principal = Depends(require_principal)) -> Dict[str, Any]:
     """Executes an agent turn through Google ADK (or demo cache if enabled)."""
     t0 = time.perf_counter()
     session_id = req.session_id or f"sess-{int(time.time() * 1000)}"
-    persona = normalize_persona(req.persona)
+    _note_persona_assertion(req.persona, principal, "api_turn")
+    persona = principal.persona  # P0.4: the signed token is the only source of the persona
 
     # 1. Check optional demo cache (ONLY if YUKTI_DEMO_CACHE=1)
     if YUKTI_DEMO_CACHE:
@@ -269,7 +349,9 @@ async def execute_turn(req: TurnRequest) -> Dict[str, Any]:
             ui_context=req.ui_context,
             spec_patch=req.spec_patch,
             base_spec=req.query_spec,
+            principal=principal,
         )
+        _apply_admin_switch(contract, principal, response, query=req.query)
         return contract
     except Exception as exc:
         logger.exception(f"Error executing turn: {exc}")
@@ -280,14 +362,15 @@ async def execute_turn(req: TurnRequest) -> Dict[str, Any]:
 
 
 @app.post("/api/voice-turn")
-async def execute_voice_turn(req: VoiceTurnRequest) -> Dict[str, Any]:
+async def execute_voice_turn(req: VoiceTurnRequest, response: Response, principal: Principal = Depends(require_principal)) -> Dict[str, Any]:
     """Transcribes browser audio via Gemini 2.5 Flash multimodal audio understanding and runs the turn."""
     import base64
     from google import genai
     from google.genai import types as gtypes
 
     session_id = req.session_id or f"sess-{int(time.time() * 1000)}"
-    persona = normalize_persona(req.persona)
+    _note_persona_assertion(req.persona, principal, "api_voice_turn")
+    persona = principal.persona  # P0.4
     transcript = (req.transcript_hint or "").strip()
 
     if not transcript and req.audio_base64:
@@ -326,7 +409,9 @@ async def execute_voice_turn(req: VoiceTurnRequest) -> Dict[str, Any]:
         session_id=session_id,
         persona=persona,
         language=req.language or "en",
+        principal=principal,
     )
+    _apply_admin_switch(contract, principal, response, query=transcript)
     return {
         "status": "ok",
         "transcript": transcript,
@@ -352,7 +437,7 @@ def _sweep_old_exports() -> None:
 
 
 @app.post("/api/export")
-def create_export(req: ExportRequest) -> Dict[str, Any]:
+def create_export(req: ExportRequest, principal: Principal = Depends(require_principal)) -> Dict[str, Any]:
     """Generates an export file and returns {export_id, filename, format}."""
     fmt = req.format.lower().strip()
     # H1.3a: 128-bit random ids (unguessable — downloads are unauthenticated); old files are swept on each create
@@ -392,7 +477,7 @@ def create_export(req: ExportRequest) -> Dict[str, Any]:
 
 
 @app.get("/api/export/{export_id}")
-def download_export(export_id: str):
+def download_export(export_id: str, principal: Principal = Depends(require_principal)):
     """Downloads an exported file securely from the exports directory only."""
     # H1.3a: only ids we mint (exp_<32 hex>) are servable; anything else is a 404 (no globbing on user input)
     if not re.fullmatch(r"exp_[0-9a-f]{32}", export_id or ""):
@@ -427,19 +512,39 @@ def download_export(export_id: str):
 async def websocket_live_endpoint(
     websocket: WebSocket,
     session_id: Optional[str] = Query(None),
-    persona: Optional[str] = Query("CMD"),
+    persona: Optional[str] = Query(None),
     model: Optional[str] = Query(DEFAULT_LIVE_MODEL),
     voice: Optional[str] = Query(DEFAULT_VOICE),
     language: Optional[str] = Query("en"),
 ):
     await websocket.accept()
+    # P0.4 (SPEC-06 §4.4): the socket's principal comes from the session cookie / bearer on the upgrade, or
+    # from a first frame {"type": "auth", "token": ...}. No valid token -> close 4401. `persona` is ignored.
+    principal: Optional[Principal] = None
+    try:
+        if yauth.auth_mode() == "iap":
+            principal = yauth.verify_iap_assertion(websocket.headers.get("x-goog-iap-jwt-assertion", ""))
+        else:
+            tok = yauth.token_from_headers(websocket.headers, websocket.cookies)
+            if not tok:
+                first = await asyncio.wait_for(websocket.receive_text(), timeout=5.0)
+                msg = json.loads(first) if first else {}
+                tok = msg.get("token") if isinstance(msg, dict) and msg.get("type") == "auth" else None
+            principal = yauth.verify_token(tok or "")
+    except Exception as exc:  # noqa: BLE001 - any auth failure closes the socket
+        logger.info(f"/ws/live rejected: {type(exc).__name__}")
+        await websocket.send_json({"type": "error", "message": "Please sign in again to continue.", "retryable": False})
+        await websocket.close(code=4401)
+        return
+    _note_persona_assertion(persona, principal, "ws_query")
     sess_id = session_id or f"live-sess-{int(time.time() * 1000)}"
     manager = LiveSessionManager(
         websocket=websocket,
         session_id=sess_id,
-        persona=normalize_persona(persona),
+        persona=principal.persona,
         model_name=model or DEFAULT_LIVE_MODEL,
         voice=voice or DEFAULT_VOICE,
         language=language or "en",
+        principal=principal,
     )
     await manager.run()
