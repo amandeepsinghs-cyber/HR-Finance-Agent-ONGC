@@ -3,7 +3,7 @@
 **Opened:** 23-Oct-2026 (deep diagnosis) · **Owner:** Opus lead · **Process:** a bug closes only when its checklist step passes G4 with a regression test (BUILD §4.2) · **Sources:** feedback/feedback1–4.md, current_refinements.md, diagnosis reports A–E (`yukti_deep_diagnosis.md` §3)
 
 > [!IMPORTANT]
-> **BLUF:** 37 bugs logged (5 closed in P0): **14 Blockers, 22 Important, 1 Cosmetic group**. The three that hurt the CMD demo most are **BUG-02** (wrong balance-sheet and cash-flow numbers labelled "Audited"), **BUG-06** (an E-level user can escalate to CMD by voice) and **BUG-08** (the waterfall chart is mathematically wrong).
+> **BLUF:** 39 bugs logged (6 closed): **14 Blockers, 24 Important, 1 Cosmetic group**. The three that hurt the CMD demo most are **BUG-02** (wrong balance-sheet and cash-flow numbers labelled "Audited"), **BUG-06** (an E-level user can escalate to CMD by voice) and **BUG-08** (the waterfall chart is mathematically wrong).
 
 **Status legend:** 🔴 Open · 🟠 Fix in progress (uncommitted WIP in `wip/pre-v3-snapshot`, unverified) · ✅ Closed (G4 + test) · ↩ Regressed
 
@@ -52,6 +52,8 @@
 | BUG-33 | ✅ | Error text leaks internals ("Reauthentication is needed…") | `turn_runner.py:1448` `str(e)[:100]` | Generic message; log details | P0.1 | 032 |
 | BUG-36 | 🔴 | A validly signed token with `iat: Infinity` → uncaught OverflowError → HTTP 500 (only a key holder can trigger it); prod with no key says "Unknown persona." | `auth.py` verify_token ~L248 | Bound/validate numeric claims; clearer prod-misconfig copy | P2H.2 | 031 |
 | BUG-37 | 🔴 | Snapshot finance answers still show an unlabelled "Director (Finance) Action" line (generated text) | `insight_context.py` snapshot path | Label as unverified or drop until P2F.6 | P1.10a | 032 |
+| BUG-38 | 🔴 | Balance-sheet output: line-item text is cut off and unreadable (sponsor, 23-Oct live test) | Generic `TableRenderer` truncates the first column (fixed widths / ellipsis; no wrap; inline bar column steals width) | `StatementTable`: first column wraps (never truncated), min width ≥ 40% of the card, sticky, tooltip not required; test at 1366 px, 1920 px and big screen | P4.3 | 025 |
+| BUG-39 | 🔴 | Artificial numbering on balance-sheet items ("A1.", "A2.", "I.") not wanted (sponsor) | Invented `line_name` prefixes in `financial_build/scripts/build_10yr_financials.py` (e.g. "A1. Oil & Gas Producing Properties") | Show the AR line names as reported (`line_name_as_reported`), with hierarchy expressed by indentation only; strip legacy prefixes in the snapshot path now | P1.6, P4.3 | 025 |
 
 ## Cosmetic
 
