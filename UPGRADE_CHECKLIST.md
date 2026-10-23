@@ -3,7 +3,7 @@
 **Version:** v3 (23-Oct-2026) · **Charter:** [`BUILD.md`](BUILD.md) (five gates + truth rules §4.3) · **Features:** [`feature_list.md`](feature_list_and_verbatims/feature_list/feature_list.md) · **Bugs:** [`BUG_REGISTER.md`](BUG_REGISTER.md) · **Specs:** [`docs/specs/`](docs/specs/) · **Behaviours:** [`docs/behaviour/`](docs/behaviour/) · **Packets:** [`docs/delegation/packets/v3/`](docs/delegation/packets/v3/) · **v2 checklist (archived):** [`docs/archive/v2_2026-10-22/UPGRADE_CHECKLIST.md`](docs/archive/v2_2026-10-22/UPGRADE_CHECKLIST.md)
 
 > [!IMPORTANT]
-> **BLUF:** 61 v3 steps across P0–P5. **2 done, 1 in progress, 58 to do.** Step IDs match the packet files in `docs/delegation/packets/v3/` one-to-one (**51 packets**; indexes: `_INDEX_P0_P2H1-4_P4.md`, `_INDEX_P1_P2F_P3.md`, `_INDEX_P2H5-8.md`). Critical path: **P0 → P1 (real finance SSOT) → P2F → P3 (DCF)**. P2H (personas, V19, Employee-360) and P4 (visuals) run in parallel after P0. Every data step needs numeric acceptance (BUILD §4.3).
+> **BLUF:** 62 v3 steps across P0–P5 (incl. hotfix P0.10); live counts in [`PROGRESS.md`](PROGRESS.md). Step IDs match the packet files in `docs/delegation/packets/v3/` one-to-one (**51 packets**; indexes: `_INDEX_P0_P2H1-4_P4.md`, `_INDEX_P1_P2F_P3.md`, `_INDEX_P2H5-8.md`). Critical path: **P0 → P1 (real finance SSOT) → P2F → P3 (DCF)**. P2H (personas, V19, Employee-360) and P4 (visuals) run in parallel after P0. Every data step needs numeric acceptance (BUILD §4.3).
 
 **Legend (step lifecycle):** ⬜ To do → 🔄 In progress → 🔨 Built (committed, pre-G4) → 🔍 In review → ✅ Done (only with a `docs/reviews/<step>.md` APPROVE) · ⛔ Blocked · **Owner:** O = Opus lead · F = Flash (needs a packet) · FL = Flash-lite runner · S = Sponsor · `O→F` = Opus spec/skeleton, Flash completes
 
@@ -49,6 +49,7 @@
 | P0.7 | "Illustrative" labels on synthetic clauses (JRTP Rev 4, R16) | F | 032 | SPEC-07 §4.2, SPEC-11 | 31 | Every synthetic clause answer shows the Illustrative badge (D-35) | [P0.7](docs/delegation/packets/v3/P0.7.md) | ✅ |
 | P0.8 | v3 doc set (feature list, BUILD, checklist, bug register, SPEC-01…11, BEH-01…07, 51 packets) | O | — | all | — | G4 doc review approve + sponsor confirm | — | ✅ |
 | P0.9 | Packaging: data-in-image vs BigQuery-only; Dockerfile fix | F | 014 | SPEC-11 | 13 (part) | Container smoke: finance answer works or shows an honest degraded badge | [P0.9](docs/delegation/packets/v3/P0.9.md) | ✅ |
+| P0.10 | **Hotfix (sponsor-requested 23-Oct):** voice self-interruption. Half-duplex mic gate while Yukti speaks (browser + backend, +300 ms tail); deliberate interrupt (orb/Stop/Space; voice barge-in needs sustained louder speech ~0.4 s); lower Live start-of-speech sensitivity; `speak_id` gating so an interrupt never clears speak-only; no orphan/duplicate bubbles | O | 013 | SPEC-11 §6.3, BEH-07 | 17, 18 | Live test on the laptop with speakers: 5/5 answers play to the end without self-interrupt; tap-to-stop works 5/5; no duplicate/fragment bubbles in 5 voice + 5 typed turns; unit tests for the gate | (inline: this row) | 🔄 |
 
 ### Phase P1 — Real Finance SSOT & Public Data · *gate: 100% AR subtotals ±₹0.05 cr; finance golden set 100%*
 

@@ -33,8 +33,8 @@
 | BUG-14 | 🔴 | "Show income statement" silently shows FY26 | No period clarification (`pipeline.py`; `normalize.py:6` default) | Clarify chips | P2F.1 | 024 |
 | BUG-15 | 🔴 | WACC questions → error, or the P&L | No WACC data/metric; `planner.py:~466-480` fin_kw guard | `fact_wacc_annual` + metric | P1.9, P2F.3 | 024 |
 | BUG-16 | 🔴 | "Why" and actions are canned (1 action per statement-year) | Keyword retrieval over 129 generated chunks `insight_context.py:138-233`; `build_and_load_financial_rag.py` | Variance engine + AR chunks + action generator | P1.8, P2F.4–P2F.5 | 020, 024 |
-| BUG-17 | 🔴 | Duplicate/fragment bubbles in voice mode (feedback4) | Local barge-in hears Leda's echo; `live_session.py:803-804` clears `_is_speak_only`; stale `turn_complete` `:930-931` | `speak_id` gating; suppress barge-in during speak | P5.2 | 013 |
-| BUG-18 | 🔴 | Contract text + Live transcript concatenated in one bubble (feedback2/3) | `page.tsx:397-446` | One source of truth per turn | P5.2 | 013 |
+| BUG-17 | 🟠 | Duplicate/fragment bubbles in voice mode (feedback4) | Local barge-in hears Leda's echo; `live_session.py:803-804` clears `_is_speak_only`; stale `turn_complete` `:930-931` | `speak_id` gating; suppress barge-in during speak | P0.10, P5.2 | 013 |
+| BUG-18 | 🔴 | Contract text + Live transcript concatenated in one bubble (feedback2/3) | `page.tsx:397-446` | One source of truth per turn | P0.10, P5.2 | 013 |
 | BUG-19 | 🔴 | English narration for Hindi questions; Hindi re-voicing appended | Narrator English-only; Live model re-voices | Translate `spoken_summary`; speak verbatim | P5.2 | 030 |
 | BUG-20 | ✅ | `resolve_fy("FY 2024-25")` → FY24–FY25 range (2 tests red) | Uncommitted change `semantic/normalize.py` | Treat `YYYY-YY` as a single FY | P0.2 | 030 |
 | BUG-21 | 🔴 | "Why did revenue fall in FY23" hijacked into the Mumbai High vs Bassein FY26 comparison | Broad regex `turn_runner.py:2161-2165` before the planner | Remove | P5.1 | 030 |

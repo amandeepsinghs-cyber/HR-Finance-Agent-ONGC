@@ -235,7 +235,7 @@ def main():
             for b in sorted(s["bugs"]):
                 if b in bugs and bugs[b]["status"] != "closed" and bugs[b]["steps"] and all(steps.get(x, {}).get("status") == "done" for x in bugs[b]["steps"] if x in steps):
                     warnings.append(f"{b} is still {bugs[b]['status']} although all its steps ({', '.join(sorted(bugs[b]['steps']))}) are ✅ — close it in BUG_REGISTER.md.")
-        if s["phase"] != "P5" and s["id"] not in ("P0.0", "P0.8", "P1.1") and not packet_exists(s["id"]):
+        if s["phase"] != "P5" and s["id"] not in ("P0.0", "P0.8", "P0.10", "P1.1") and not packet_exists(s["id"]):
             warnings.append(f"{s['id']} has no packet file in docs/delegation/packets/v3/.")
     for b in bugs.values():
         if b["status"] == "closed":

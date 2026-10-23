@@ -1,15 +1,15 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 09:30 UTC · branch `v3/P0-stabilise` @ `3f5e4b3`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 09:37 UTC · branch `v3/P0-stabilise` @ `1935bf1`
 
 > [!IMPORTANT]
-> **Overall: 17% complete (weighted)** — 10/61 steps ✅ done, 1 in flight, 50 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 17% complete (weighted)** — 10/62 steps ✅ done, 2 in flight, 50 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
-| **P0** | Stabilise | `████████████████████` 100% | 10 | 0 | 0 | 0 | 0 | 0 | 10 |
+| **P0** | Stabilise | `███████████████████░` 93% | 10 | 0 | 0 | 1 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `░░░░░░░░░░░░░░░░░░░░` 2% | 0 | 0 | 0 | 1 | 11 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 8 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
@@ -23,17 +23,14 @@
 
 | Step | Status | Task | Owner | Next action |
 |---|---|---|---|---|
+| P0.10 | 🔄 In progress | **Hotfix (sponsor-requested 23-Oct):** voice self-interruption. Half-duplex mic gate while Yukti speaks (brows | O | Complete build + evidence |
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 
 **Ready to start:**
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
-| P1.2 | AR 10-yr table parser (FY13–FY26) | F | phase gates met |
-| P1.8 | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | phase gates met |
-| P2H.1 | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | phase gates met |
-| P4.1 | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | phase gates met |
-| P4.9 | Orb visible in docked mode + optional edge aura (low priority, V21) | F | phase gates met |
+| — | Nothing is unblocked: finish the in-flight steps above (G4 reviews) first. | | |
 
 ## 3. Sponsor action items
 
@@ -53,9 +50,9 @@
 |---|---|---|---|---|
 | V2 | FEAT-027 | 🟡 | P2H.4, P3.5, P4.6, P4.7 | 🟡 |
 | V3 | FEAT-010, FEAT-031 | 🔴 🔴 | P2H.1 | 🔴 |
-| V6 | FEAT-013 | 🔴 | P5.2 | 🔴 |
+| V6 | FEAT-013 | 🔴 | P0.10, P5.2 | 🔴 |
 | V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ 🟡 🔴 🟡 | P2H.4, P3.5, P4.1, P4.4, P4.5, P4.6, P4.7, P4.8 | 🟡 |
-| V8 | FEAT-001, FEAT-013 | ✅ 🔴 | P5.2 | 🟡 |
+| V8 | FEAT-001, FEAT-013 | ✅ 🔴 | P0.10, P5.2 | 🟡 |
 | V11 | FEAT-001, FEAT-002, FEAT-003, FEAT-009 | ✅ 🟡 ✅ 🔴 | P5.1 | 🟡 |
 | V12 | FEAT-004, FEAT-005 | 🟡 ✅ | P4.9 | 🟡 |
 | V13 | FEAT-006, FEAT-009, FEAT-010, FEAT-011, FEAT-021 | 🟡 🔴 🔴 🟡 🟡 | P1.7, P2H.3, P2H.5, P2H.6, P2H.8, P2F.5, P5.1 | 🟡 |
@@ -90,7 +87,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-010 Granular-data RBAC (row/column masking) | 🔴 | 0/0 |
 | FEAT-011 Insight engine & drill-down chips | 🟡 | 0/1 |
 | FEAT-012 Reliability, safety, performance | 🟡 | 0/0 |
-| FEAT-013 Voice pipeline quality (no duplicate turns) | 🔴 | 0/1 |
+| FEAT-013 Voice pipeline quality (no duplicate turns) | 🔴 | 0/2 |
 | FEAT-014 Eval-gated release & Cloud Run redeploy | 🔴 | 2/5 |
 | FEAT-015 Any-chart re-presentation & chart excellence | 🟡 | 0/0 |
 | FEAT-016 AI aura visual language | 🟡 | 0/1 |
@@ -114,7 +111,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 10 · 🟠 in progress 2 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 22 total — 🔴 open 17 · 🟠 in progress 1 · ↩ regressed 0 · ✅ closed 4
+- **Important:** 22 total — 🔴 open 16 · 🟠 in progress 2 · ↩ regressed 0 · ✅ closed 4
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
