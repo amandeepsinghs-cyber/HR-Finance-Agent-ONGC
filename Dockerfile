@@ -58,10 +58,15 @@ ENV NODE_ENV=production \
     YUKTI_PLANNER=1 \
     YUKTI_ENV=prod \
     YUKTI_AUTH_MODE=demo
+# YUKTI_AUTH_MODE=demo lets anyone who can reach the service start a CMD session: acceptable only while the Cloud Run
+# service stays IAM-protected. Switch to YUKTI_AUTH_MODE=iap at P5.6 (SPEC-06 §4.4).
 # P0.4/P0.5 runtime settings (never baked into the image):
-#   --set-secrets YUKTI_PERSONA_SIGNING_KEY=<secret>:latest   (required: signs persona session tokens)
+#   --set-secrets YUKTI_PERSONA_SIGNING_KEY=<secret>:latest   (required, >= 32 bytes: signs persona session tokens;
+#                                                              with YUKTI_ENV=prod a missing/short key fails closed:
+#                                                              startup logs an error and every protected route -> 401)
 #   --set-secrets YUKTI_DEMO_ADMIN_PASSPHRASE=<secret>:latest (optional: enables the DEMO_ADMIN presenter)
-#   YUKTI_ALLOWED_ORIGINS=https://<service-url>               (the UI is same-origin; list only real callers)
+#   YUKTI_ALLOWED_ORIGINS=https://<service-url>               (the UI is same-origin; list only real callers;
+#                                                              unset in prod -> no cross-origin callers allowed)
 #   YUKTI_ENABLE_ADMIN stays unset on Cloud Run (/admin/* -> 404)
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s CMD curl -sf http://127.0.0.1:${PORT:-8080}/health || exit 1
