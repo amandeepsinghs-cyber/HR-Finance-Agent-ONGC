@@ -12,7 +12,8 @@ single sources of truth:
 
 Usage (run from the project root or anywhere):
   python3 scripts/progress/build_progress.py           # regenerate PROGRESS.md
-  python3 scripts/progress/build_progress.py --check   # also exit 1 on integrity errors
+  python3 scripts/progress/build_progress.py --check   # read-only: validate, exit 1 on errors (no write)
+  python3 scripts/progress/build_progress.py --check --write   # validate AND regenerate (used by the git hook)
 
 Rule (BUILD.md §4.2): every status change in UPGRADE_CHECKLIST.md / BUG_REGISTER.md
 is followed by running this script and committing PROGRESS.md in the same commit.
@@ -204,7 +205,8 @@ def bar(frac, width=20):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--check", action="store_true", help="exit 1 if integrity errors are found")
+    ap.add_argument("--check", action="store_true", help="validate only (read-only); exit 1 if integrity errors are found")
+    ap.add_argument("--write", action="store_true", help="with --check: also regenerate PROGRESS.md")
     args = ap.parse_args()
 
     steps, sponsor = parse_steps()
@@ -365,10 +367,11 @@ def main():
         w(f"- ⚠️ {x}")
     w("\n---\n**How this stays current:** every step completion = (1) update the step's Status in `UPGRADE_CHECKLIST.md` "
       "(⬜ → 🔨 Built → 🔍 In review → ✅ Done only with a `docs/reviews/<step>.md` APPROVE), (2) close the linked bugs in `BUG_REGISTER.md`, "
-      "(3) run `python3 scripts/progress/build_progress.py --check`, (4) commit all three files together. "
+      "(3) run `python3 scripts/progress/build_progress.py` (regenerate) and `--check` (validate), (4) commit all three files together. "
       "The optional git hook (`scripts/progress/install_hook.sh`) blocks commits when `--check` fails.")
-    OUT.write_text("\n".join(L) + "\n", encoding="utf-8")
-    print(f"PROGRESS.md written: {weighted*100:.0f}% | {counts} | errors={len(errors)} warnings={len(warnings)}")
+    if not args.check or args.write:
+        OUT.write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"PROGRESS.md {'written' if (not args.check or args.write) else 'checked (not written)'}: {weighted*100:.0f}% | {counts} | errors={len(errors)} warnings={len(warnings)}")
     for e in errors:
         print("ERROR:", e)
     if args.check and errors:

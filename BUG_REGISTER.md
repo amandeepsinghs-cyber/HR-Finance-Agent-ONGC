@@ -3,7 +3,7 @@
 **Opened:** 23-Oct-2026 (deep diagnosis) · **Owner:** Opus lead · **Process:** a bug closes only when its checklist step passes G4 with a regression test (BUILD §4.2) · **Sources:** feedback/feedback1–4.md, current_refinements.md, diagnosis reports A–E (`yukti_deep_diagnosis.md` §3)
 
 > [!IMPORTANT]
-> **BLUF:** 34 open bugs: **13 Blockers, 20 Important, 1 Cosmetic group**. The three that hurt the CMD demo most are **BUG-02** (wrong balance-sheet and cash-flow numbers labelled "Audited"), **BUG-06** (an E-level user can escalate to CMD by voice) and **BUG-08** (the waterfall chart is mathematically wrong).
+> **BLUF:** 35 open bugs: **14 Blockers, 20 Important, 1 Cosmetic group**. The three that hurt the CMD demo most are **BUG-02** (wrong balance-sheet and cash-flow numbers labelled "Audited"), **BUG-06** (an E-level user can escalate to CMD by voice) and **BUG-08** (the waterfall chart is mathematically wrong).
 
 **Status legend:** 🔴 Open · 🟠 Fix in progress (uncommitted WIP in `wip/pre-v3-snapshot`, unverified) · ✅ Closed (G4 + test) · ↩ Regressed
 
@@ -24,6 +24,7 @@
 | BUG-11 | 🔴 | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 relocations") | No email type; `_DOC_RE` lacks email (`pipeline.py:36`); static numbers `tools/draft_document.py:105-131`; routing `turn_runner.py:1140-1245` | Email agent from the session cohort | P2H.4 | 023 |
 | BUG-12 | 🔴 | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 33108.97`, "42.6%/29.1%", FX 84.0) | `turn_runner.py:1541-1550, 1609-1613, 2192-2228`; `draft_document.py:54-63` | Delete; derive from query results | P2H.4 (`draft_document.py` literals), P5.1 | 030 |
 | BUG-13 | 🔴 | Cloud Run = baseline rev `00001`; `financial_build/` not in the image | `Dockerfile:29-36`; (was untracked; now in the snapshot) | Packaging decision; redeploy from green | P0.9, P5.6 | 014 |
+| BUG-35 | 🔴 | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | Pre-existing hard-coded rgba/hex in `FloatingConversationPanel.tsx`, `TopBar.tsx`, `VoiceOrb.tsx` (found in P0.9) | Move colours to design tokens; keep the gate | P4.9, P5.6 | 014 |
 
 ## Important
 
@@ -35,7 +36,7 @@
 | BUG-17 | 🔴 | Duplicate/fragment bubbles in voice mode (feedback4) | Local barge-in hears Leda's echo; `live_session.py:803-804` clears `_is_speak_only`; stale `turn_complete` `:930-931` | `speak_id` gating; suppress barge-in during speak | P5.2 | 013 |
 | BUG-18 | 🔴 | Contract text + Live transcript concatenated in one bubble (feedback2/3) | `page.tsx:397-446` | One source of truth per turn | P5.2 | 013 |
 | BUG-19 | 🔴 | English narration for Hindi questions; Hindi re-voicing appended | Narrator English-only; Live model re-voices | Translate `spoken_summary`; speak verbatim | P5.2 | 030 |
-| BUG-20 | ↩ | `resolve_fy("FY 2024-25")` → FY24–FY25 range (2 tests red) | Uncommitted change `semantic/normalize.py` | Treat `YYYY-YY` as a single FY | P0.2 | 030 |
+| BUG-20 | ✅ | `resolve_fy("FY 2024-25")` → FY24–FY25 range (2 tests red) | Uncommitted change `semantic/normalize.py` | Treat `YYYY-YY` as a single FY | P0.2 | 030 |
 | BUG-21 | 🔴 | "Why did revenue fall in FY23" hijacked into the Mumbai High vs Bassein FY26 comparison | Broad regex `turn_runner.py:2161-2165` before the planner | Remove | P5.1 | 030 |
 | BUG-22 | 🔴 | "… as a line chart" → waterfall; "tabular form" not recognised | `chart_rules.py:31, 42-50` | Explicit kind wins | P4.1 | 026 |
 | BUG-23 | 🔴 | `combo`/`heatmap`/`box`/`gauge` silently fall back to bar | No branch in `plan.ts:135-211` | Implement renderers | P4.4 | 026 |
@@ -46,8 +47,8 @@
 | BUG-28 | 🔴 | Juniors refused aggregate pay by grade (V14 allows aggregates) | `topic_keywords.pay` | Allow aggregate by grade | P2H.1 | 017 |
 | BUG-29 | 🔴 | SSOT leave balances likely always 0 | `yukti/backend/scripts/build_ssot_gold.py:76-78` filters "EL"; values are `Earned_Leave_EL` | Fix mapping in the Employee-360 build | P2H.5–6 | 021 |
 | BUG-30 | 🔴 | Age band "30-40" actually spans 30–50; "40-50" has 9 people | `data_bank/generators/hr/gen_21_hr_core.py:280-288` | BRSR bands | P2H.5 | 021 |
-| BUG-31 | 🔴 | Gemini-generated policy clauses presented as "authentic, statutory-grade ONGC" (R16) | `current_refinements.md:52`; `rulebooks_clause_index.csv` | **Label "Illustrative"** (D-35) | P0.7 | 032 |
-| BUG-32 | 🔴 | CORS `*` with credentials; unauthenticated `/admin/cache/clear` | `main.py:52-63` | Allow-list; auth | P0.5 | 031 |
+| BUG-31 | ✅ | Gemini-generated policy clauses presented as "authentic, statutory-grade ONGC" (R16) | `current_refinements.md:52`; `rulebooks_clause_index.csv` | **Label "Illustrative"** (D-35) | P0.7 | 032 |
+| BUG-32 | ✅ | CORS `*` with credentials; unauthenticated `/admin/cache/clear` | `main.py:52-63` | Allow-list; auth | P0.5 | 031 |
 | BUG-33 | 🔴 | Error text leaks internals ("Reauthentication is needed…") | `turn_runner.py:1448` `str(e)[:100]` | Generic message; log details | P0.1 | 032 |
 
 ## Cosmetic

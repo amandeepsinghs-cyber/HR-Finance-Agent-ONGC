@@ -8,7 +8,7 @@ HOOK="$ROOT/.git/hooks/pre-commit"
 cat > "$HOOK" <<'EOF'
 #!/usr/bin/env bash
 ROOT="$(git rev-parse --show-toplevel)"
-python3 "$ROOT/scripts/progress/build_progress.py" --check || {
+python3 "$ROOT/scripts/progress/build_progress.py" --check --write || {
   echo "pre-commit: progress tracker found integrity errors (see above). Update UPGRADE_CHECKLIST.md / BUG_REGISTER.md, then re-run." >&2
   exit 1
 }
