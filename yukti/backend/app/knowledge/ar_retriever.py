@@ -49,6 +49,22 @@ _TERM_RX = re.compile(r"[A-Za-z][A-Za-z0-9/&.-]{2,}")
 PROVENANCE_LABEL = "verified_ar"  # SPEC-11 §7.1: verbatim AR text with a page citation
 
 _FY_RX = re.compile(r"^FY(\d{2})$")
+# Prefixes of the codes that `doc_chunks_ar.line_codes` actually holds. Chunker v1/v2 only emits
+# keyword tags (KW.*) because `financial_ssot/dim_financial_line.csv` does not exist yet. Filtering
+# on any other code (e.g. PL.REV_OPS) would silently match nothing, so such filters are skipped and
+# logged. Add the dim prefixes here once the chunker tags `dim_financial_line.ar_labels`.
+TAGGED_LINE_CODE_PREFIXES = ("KW.",)
+
+
+def usable_line_code(line_code: Optional[str]) -> Optional[str]:
+    """The line_code to filter on, or None when the corpus carries no tags of that kind."""
+    if not line_code:
+        return None
+    if line_code.startswith(TAGGED_LINE_CODE_PREFIXES):
+        return line_code
+    logger.info("ar_retriever: line_code %r is not tagged in doc_chunks_ar (only %s); filter skipped",
+                line_code, ", ".join(TAGGED_LINE_CODE_PREFIXES))
+    return None
 
 
 def fy_window(fiscal_year: Optional[str]) -> Optional[list]:
@@ -155,6 +171,7 @@ class ARRetriever:
         from google.cloud import bigquery
 
         fys = fy_window(fiscal_year)
+        line_code = usable_line_code(line_code)
         qvec = self.embed(question.strip())
         if len(qvec) != EMBED_DIM:
             raise ValueError(f"query embedding has {len(qvec)} dims, expected {EMBED_DIM}")

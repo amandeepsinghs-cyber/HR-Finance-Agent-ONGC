@@ -5,8 +5,18 @@ question are the PDF pages of that AR on which ALL of its `gold` regexes match (
 collapsed, case-insensitive). A question is a hit when one of the top-5 retrieved chunks has the
 same fiscal year and a gold page.
 
+Two sets:
+- `main` (Q01-Q22): written by the builder with the gold regexes in view, so many questions reuse
+  the answer page's rare terms (Daman Upside, Mumbai High, KG-DWN-98/2, 51.11%...) and 7 of 22 are
+  about reserves/RRR. LEXICAL_WEIGHT (ar_retriever) was tuned on this set, so it is IN-SAMPLE.
+- `heldout` (H01-H18): H01-H08 are the G4 reviewer's paraphrases (docs/reviews/P1.8.md §4.4);
+  H09-H18 are paraphrases written to avoid the gold page's distinctive vocabulary. Each reuses the
+  gold regexes of the main question it paraphrases (`gold_of`). LEXICAL_WEIGHT was frozen at 0.05
+  before this set was scored.
+
 Run from the app root (ADC + the loaded table required):
-    python -m financial_ssot.knowledge.eval_ar_retrieval [--gold-only] [--out path.json]
+    python -m financial_ssot.knowledge.eval_ar_retrieval [--set main|heldout] [--lexical-weight W]
+                                                         [--gold-only] [--out path.json]
 """
 from __future__ import annotations
 
@@ -68,24 +78,58 @@ QUESTIONS = [
 ]
 
 
-def gold_pages() -> dict:
+# (id, gold_of, question). FY and gold regexes come from the main question `gold_of`.
+HELDOUT = [
+    # G4 reviewer paraphrases (P1.8.md §4.4)
+    ("H01", "Q01", "new oil and gas added to proven-plus-probable inventory"),
+    ("H02", "Q07", "government start taxing unexpected crude profits, per tonne"),
+    ("H03", "Q14", "western offshore legacy asset output uplift"),
+    ("H04", "Q17", "gas project off Gujarat coast near Daman"),
+    ("H05", "Q15", "buy government's stake in refiner HPCL"),
+    ("H06", "Q16", "spend on corporate social responsibility"),
+    ("H07", "Q21", "interim payout declared late 2021"),
+    ("H08", "Q12", "removal of special levy on domestic crude"),
+    # builder paraphrases avoiding the gold page's distinctive terms
+    ("H09", "Q02", "How much did the company add to its proved plus probable hydrocarbon base in 2023-24, and did additions exceed output?"),
+    ("H10", "Q04", "In 2018-19, how did additions to booked oil and gas volumes compare with what was produced, on both proved and proved-plus-probable bases?"),
+    ("H11", "Q06", "How many new oil and gas finds were made in 2016-17?"),
+    ("H12", "Q08", "What was the count of boreholes completed in the latest year, and how many were for finding new resources?"),
+    ("H13", "Q09", "How much did the group invest in capital projects across the parent and its subsidiaries last year?"),
+    ("H14", "Q11", "If a well finds nothing, how is the cost of plugging and abandoning it accounted for?"),
+    ("H15", "Q13", "What is the long-term plan for diversifying the business and bringing carbon emissions down to zero?"),
+    ("H16", "Q22", "Did any wells in the east coast deepwater block find hydrocarbons this year?"),
+    ("H17", "Q19", "Did management discuss taxes on unexpected oil price gains in 2018-19?"),
+    ("H18", "Q05", "How much did ONGC add to recoverable volumes in 2017-18, and for how many years in a row has it more than replaced production?"),
+]
+
+
+def question_set(name: str) -> list:
+    """[(id, fy, question, gold regexes)]"""
+    if name == "main":
+        return list(QUESTIONS)
+    by = {q[0]: q for q in QUESTIONS}
+    return [(hid, by[src][1], text, by[src][3]) for hid, src, text in HELDOUT]
+
+
+def gold_pages(qs: list = None) -> dict:
     cache = {}
     out = {}
-    for qid, fy, _q, pats in QUESTIONS:
+    for qid, fy, _q, pats in (qs or QUESTIONS):
         if fy not in cache:
             cache[fy] = [" ".join(p.split()) for p in split_pages((TEXT_DIR / AR_FILES[fy]).read_text(encoding="utf-8"))]
         out[qid] = [i + 1 for i, t in enumerate(cache[fy]) if all(re.search(p, t, re.I) for p in pats)]
     return out
 
 
-def evaluate(retriever=None, k: int = 5) -> dict:
-    gold = gold_pages()
+def evaluate(retriever=None, k: int = 5, qset: str = "main") -> dict:
+    qs = question_set(qset)
+    gold = gold_pages(qs)
     if retriever is None:
         sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "yukti" / "backend"))
         from app.knowledge.ar_retriever import ARRetriever
         retriever = ARRetriever()
     rows, hits = [], 0
-    for qid, fy, q, _p in QUESTIONS:
+    for qid, fy, q, _p in qs:
         res = retriever.retrieve(q, fiscal_year=fy)
         top = res[:k]
         hit_rank = next((i + 1 for i, r in enumerate(top) if r["fiscal_year"] == fy and r["source_page"] in gold[qid]), None)
@@ -95,22 +139,30 @@ def evaluate(retriever=None, k: int = 5) -> dict:
             "top5": [f"{r['fiscal_year']} p{r['source_page']} ({r['section']}, {r['distance']:.3f})" for r in top],
             "top1_citation": top[0]["citation"] if top else None,
         })
-    return {"k": k, "n": len(QUESTIONS), "hits": hits, "hit_at_k": hits / len(QUESTIONS), "rows": rows}
+    return {"set": qset, "k": k, "n": len(qs), "hits": hits, "hit_at_k": hits / len(qs), "rows": rows}
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--gold-only", action="store_true")
+    ap.add_argument("--set", default="main", choices=["main", "heldout"])
+    ap.add_argument("--lexical-weight", type=float, help="override ar_retriever.LEXICAL_WEIGHT (0 = vector + section only)")
     ap.add_argument("--out")
     a = ap.parse_args(argv)
     if a.gold_only:
-        for qid, pages in gold_pages().items():
+        for qid, pages in gold_pages(question_set(a.set)).items():
             print(qid, pages)
         return 0
-    res = evaluate()
+    retriever = None
+    if a.lexical_weight is not None:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "yukti" / "backend"))
+        from app.knowledge import ar_retriever as arm
+        arm.LEXICAL_WEIGHT = a.lexical_weight
+        retriever = arm.ARRetriever()
+    res = evaluate(retriever, qset=a.set)
     for r in res["rows"]:
         print(f"{r['id']} {r['fy']} hit@{res['k']}={'Y' if r['hit_rank'] else 'N'} rank={r['hit_rank']} gold={r['gold_pages']} top={r['top5']}")
-    print(f"hit@{res['k']} = {res['hits']}/{res['n']} = {res['hit_at_k']:.2f}")
+    print(f"[{res['set']}] hit@{res['k']} = {res['hits']}/{res['n']} = {res['hit_at_k']:.2f}")
     if a.out:
         Path(a.out).write_text(json.dumps(res, indent=2), encoding="utf-8")
     return 0

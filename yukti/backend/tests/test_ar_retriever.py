@@ -101,6 +101,22 @@ def test_lexical_bonus_and_top_k_cut():
     assert _params(bq.calls[0][1])["top_k"].value == ar.CANDIDATE_FACTOR
 
 
+def test_untagged_line_code_filter_is_skipped_and_logged(caplog):
+    # G4 C2: line_codes holds only KW.* tags today; a dim code such as PL.REV_OPS must not turn the
+    # pre-filter into "match nothing".
+    bq = FakeBQ(_rows())
+    r = ar.ARRetriever(bq_client=bq, embed_fn=lambda q: [0.1] * 768)
+    with caplog.at_level("INFO", logger=ar.logger.name):
+        out = r.retrieve("revenue from operations", fiscal_year="FY26", line_code="PL.REV_OPS")
+    sql, cfg = bq.calls[0]
+    assert "line_codes" not in sql and "line_code" not in _params(cfg)
+    assert "fiscal_year IN UNNEST(@fys)" in sql
+    assert out, "results must not be emptied by an untagged line_code"
+    assert any("PL.REV_OPS" in m and "skipped" in m for m in caplog.messages)
+    assert ar.usable_line_code("KW.ROYALTY") == "KW.ROYALTY"
+    assert ar.usable_line_code(None) is None
+
+
 def test_no_filters_when_not_given():
     bq = FakeBQ([])
     r = ar.ARRetriever(bq_client=bq, embed_fn=lambda q: [0.0] * 768)

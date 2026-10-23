@@ -26,8 +26,11 @@
 # Rule scopes: any (default) | running_title (too generic for a body heading) |
 # running_title_or_fs (bare "NOTES" header counts only on a running title or inside the FS block).
 # keywords -> line_codes as KW.<TAG> (packet req. 5); entities -> SPEC-01 §8.1 `entities`.
+# max_carry_pages: a short section stops carrying forward this many pages after its last heading
+# or running-title match (the 10-yr table is 2-10 pages; without a limit AR FY22 tagged p.18-57).
 {
   "toc_min_sections": 3,
+  "max_carry_pages": {"ten_year": 3, "cmd_letter": 4},
   "rules": [
     {
       "section": "mdna",

@@ -180,14 +180,61 @@ def load_bq(chunks: list, cache: dict, allow_existing_empty: bool) -> None:
     print(f"vector index {INDEX}: create requested")
 
 
+def update_tags(chunks: list, apply: bool) -> int:
+    """Re-tag rows after a chunker change that keeps chunk_id + text identical (e.g. v1 -> v2
+    section fix). Compares section/heading/note_no/chunker_version with BigQuery and, only with
+    `--apply`, runs ONE parameterised UPDATE on the changed chunk_ids. Text and embeddings are
+    never touched; rows whose text_sha256 differs abort the run (that needs a full reload)."""
+    from google.cloud import bigquery as bq
+
+    client = bq.Client(project=PROJECT, location=BQ_LOCATION)
+    table_id = f"{PROJECT}.{DATASET}.{TABLE}"
+    cur = {r["chunk_id"]: dict(r.items()) for r in client.query(
+        f"SELECT chunk_id, text_sha256, section, heading, note_no, chunker_version FROM `{table_id}`",
+        job_config=bq.QueryJobConfig(labels=JOB_LABELS)).result()}
+    local = {c["chunk_id"]: c for c in chunks}
+    if set(cur) != set(local):
+        raise SystemExit(f"chunk_id sets differ (bq {len(cur)} vs local {len(local)}): full reload needed")
+    bad = [k for k in local if local[k]["text_sha256"] != cur[k]["text_sha256"]]
+    if bad:
+        raise SystemExit(f"{len(bad)} chunks changed text (e.g. {bad[:3]}): full reload needed")
+    keys = ("section", "heading", "note_no", "chunker_version")
+    changed = [k for k in local if any(local[k][f] != cur[k][f] for f in keys)]
+    by = {}
+    for k in changed:
+        t = (cur[k]["section"], local[k]["section"])
+        by[t] = by.get(t, 0) + 1
+    print(f"rows to re-tag: {len(changed)}; section moves: {by}")
+    if not changed or not apply:
+        if changed:
+            print("dry run: pass --apply to run the UPDATE")
+        return len(changed)
+    S = bq.StructQueryParameter
+    rows = [S(None, bq.ScalarQueryParameter("chunk_id", "STRING", k),
+              *[bq.ScalarQueryParameter(f, "STRING", local[k][f]) for f in keys]) for k in changed]
+    sql = (f"UPDATE `{table_id}` t SET section = u.section, heading = u.heading, note_no = u.note_no, "
+           f"chunker_version = u.chunker_version FROM UNNEST(@rows) u WHERE t.chunk_id = u.chunk_id")
+    job = client.query(sql, job_config=bq.QueryJobConfig(
+        query_parameters=[bq.ArrayQueryParameter("rows", "STRUCT", rows)], labels=JOB_LABELS))
+    job.result()
+    print(f"updated {job.num_dml_affected_rows} rows")
+    return len(changed)
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--embed-only", action="store_true")
     ap.add_argument("--dry-run", action="store_true", help="read chunks and cache, print counts, no API calls")
     ap.add_argument("--allow-existing-empty", action="store_true")
+    ap.add_argument("--update-tags", action="store_true",
+                    help="compare section/heading/note_no with the loaded table (dry run unless --apply)")
+    ap.add_argument("--apply", action="store_true", help="with --update-tags: run the UPDATE")
     a = ap.parse_args(argv)
     chunks = load_chunks()
     print(f"chunks: {len(chunks)}")
+    if a.update_tags:
+        update_tags(chunks, a.apply)
+        return 0
     if a.dry_run:
         print(f"cached embeddings: {len(load_cache())}")
         return 0

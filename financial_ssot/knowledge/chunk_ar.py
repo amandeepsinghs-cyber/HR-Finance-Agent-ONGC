@@ -58,7 +58,7 @@ OVERLAP_TOKENS = 60
 MIN_CHUNK_TOKENS = 40
 MAX_NUMERIC_SHARE = 0.60
 EMITTED_SECTIONS = ("mdna", "directors_report", "notes", "brsr", "cmd_letter", "ten_year", "other")
-CHUNKER_VERSION = "P1.8-chunk_ar-1"
+CHUNKER_VERSION = "P1.8-chunk_ar-2"
 
 _APOS = str.maketrans({"\u2019": "'", "\u2018": "'", "\u00b4": "'", "`": "'"})
 _SEG_SPLIT = re.compile(r"\s{3,}")
@@ -93,6 +93,7 @@ class Config:
     keywords: dict
     entities: dict
     dim_labels: list = field(default_factory=list)  # [(line_code, compiled regex)]
+    max_carry: dict = field(default_factory=dict)   # section -> max pages carried after last match
 
 
 def load_sections(path: Path = SECTIONS_YAML) -> dict:
@@ -118,6 +119,7 @@ def load_config(sections_yaml: Path = SECTIONS_YAML, dim_csv: Path = DIM_CSV) ->
         note_regex=re.compile(raw["note_regex"]),
         keywords={k: re.compile(v, re.I) for k, v in (raw.get("keywords") or {}).items()},
         entities={k: re.compile(v, re.I) for k, v in (raw.get("entities") or {}).items()},
+        max_carry={k: int(v) for k, v in (raw.get("max_carry_pages") or {}).items()},
     )
     cfg.dim_labels = load_dim_labels(dim_csv)
     return cfg
@@ -271,6 +273,8 @@ class State:
     notes_seen: bool = False
     kind: Optional[str] = None        # standalone | consolidated, inside the FS block
     note_no: Optional[str] = None
+    page: int = 0                     # current PDF page (set by the caller)
+    last_page: int = 0                # page of the last heading/running-title match
 
     def emitted(self) -> str:
         if self.section is None:
@@ -282,7 +286,17 @@ class State:
     def in_fs(self) -> bool:
         return self.section in ("fs", "notes")
 
+    def expire(self, max_carry: dict) -> None:
+        """Short sections (e.g. the 10-yr table) stop carrying forward `max_carry[section]` pages
+        after their last match, so following pages without headings fall back to the default
+        instead of inheriting them (AR FY22 PDF p.25-57 were tagged ten_year in chunker v1)."""
+        lim = max_carry.get(self.section) if self.section else None
+        if lim is not None and self.page - self.last_page > lim:
+            self.section, self.heading = None, None
+            self.notes_seen, self.kind, self.note_no = False, None, None
+
     def apply(self, section: str, heading: str) -> None:
+        self.last_page = self.page
         if section == "fs":
             k = fs_kind(heading)
             if not self.in_fs() or (self.kind and k != self.kind):
@@ -472,6 +486,8 @@ def process_document(fy: str, text: str, cfg: Config, source_doc: str) -> tuple:
     seen_sha = set()
     for pidx, page in enumerate(split_pages(text)):
         pdf_page = pidx + 1
+        st.page = pdf_page
+        st.expire(cfg.max_carry)
         raw_lines = strip_side_tabs(page.split("\n"), tagger)
         label, prev_offset = page_label(raw_lines, pdf_page, prev_offset)
 
