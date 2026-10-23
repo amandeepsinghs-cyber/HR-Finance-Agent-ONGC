@@ -59,7 +59,12 @@ DEFAULT_ALLOWED_ORIGINS = "http://localhost:3300,http://127.0.0.1:3300,http://lo
 def allowed_origins() -> list:
     """Comma list from YUKTI_ALLOWED_ORIGINS. A wildcard is never allowed (credentials are on): it is logged and dropped."""
     import logging
-    raw = os.getenv("YUKTI_ALLOWED_ORIGINS", DEFAULT_ALLOWED_ORIGINS)
+    env_val = os.getenv("YUKTI_ALLOWED_ORIGINS")
+    if env_val is None and os.getenv("YUKTI_ENV", "dev").strip().lower() == "prod":
+        # P0.5 r2 (G4 minor): prod never trusts the localhost dev origins by default
+        logging.getLogger("yukti.config").warning("YUKTI_ENV=prod and YUKTI_ALLOWED_ORIGINS unset: no cross-origin callers allowed")
+        return []
+    raw = env_val if env_val is not None else DEFAULT_ALLOWED_ORIGINS
     items = [o.strip().rstrip("/") for o in raw.split(",") if o.strip()]
     if "*" in items:
         logging.getLogger("yukti.config").error("YUKTI_ALLOWED_ORIGINS contains '*'; dropped (never '*' with credentials)")

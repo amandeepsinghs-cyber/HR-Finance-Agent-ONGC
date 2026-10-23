@@ -99,3 +99,10 @@ def test_docs_off_in_prod(monkeypatch):
     assert c.get("/docs").status_code == 404 and c.get("/openapi.json").status_code == 404
     main = _fresh_app(monkeypatch)
     assert TestClient(main.app).get("/openapi.json").status_code == 200
+
+
+def test_prod_without_origins_env_allows_no_cross_origin(monkeypatch):
+    """P0.5 r2 (G4 minor): in prod the localhost dev defaults are not trusted."""
+    main = _fresh_app(monkeypatch, YUKTI_ENV="prod")
+    r = _preflight(TestClient(main.app), "http://localhost:3300")
+    assert "access-control-allow-origin" not in {k.lower() for k in r.headers}
