@@ -1,0 +1,147 @@
+# P1.8 section tagging rules for the ONGC Annual Report text chunker (SPEC-01 §8.1).
+#
+# Each rule maps a heading regex to a section. Regexes are matched (case-insensitive,
+# Python `re.fullmatch`) against a *column segment*: a line of the de-columned page text,
+# split on runs of 3+ spaces, stripped, with typographic apostrophes normalised to "'".
+# Full-match anchoring stops prose such as "...detailed in the Board's Report." from
+# switching the section.
+#
+# Two places are checked on every page:
+#   1. the running title (page header/footer: first 3 and last 3 non-empty lines);
+#      a running-title match labels that page directly;
+#   2. headings in the body; the last one seen is carried forward across pages.
+# A running-title line with >= 2 title matches (or "Overview" + a title) is a chapter
+# navigation bar (FY25/FY26 layout) and is ignored.
+# A page whose segments match >= `toc_min_sections` different sections is a table of
+# contents page: it is tagged `other` and does not change the carried section.
+#
+# `fs` is an internal section for the financial statements block. It is emitted as
+# `notes` once a notes heading has been seen inside the same block, otherwise `other`
+# (statement pages are mostly digits and are dropped by the digit filter anyway).
+# Emitted sections: mdna · directors_report · notes · brsr · cmd_letter · ten_year · other.
+
+#
+# Format: JSON-compatible YAML (flow style, full-line comments only), so the chunker can read it
+# with PyYAML when installed or with the standard-library json module otherwise.
+# Rule scopes: any (default) | running_title (too generic for a body heading) |
+# running_title_or_fs (bare "NOTES" header counts only on a running title or inside the FS block).
+# keywords -> line_codes as KW.<TAG> (packet req. 5); entities -> SPEC-01 §8.1 `entities`.
+{
+  "toc_min_sections": 3,
+  "rules": [
+    {
+      "section": "mdna",
+      "patterns": [
+        "(\\d{1,2}\\.\\s*)?management'?s? discussion (and|&) analysis( report)?( \\(md&?a\\))?"
+      ]
+    },
+    {
+      "section": "brsr",
+      "patterns": [
+        "(\\d{1,2}\\.\\s*)?business responsibility( (and|&) sustainability)? report(ing)?( \\(brsr\\))?"
+      ]
+    },
+    {
+      "section": "directors_report",
+      "patterns": [
+        "(annexures? to (the )?)?boards?'? report",
+        "(annexures? to (the )?)?board'?s'? report",
+        "(annexures? to (the )?)?directors'? report"
+      ]
+    },
+    {
+      "section": "cmd_letter",
+      "patterns": [
+        "chairman'?s'? (message|letter)",
+        "(chairman( and|&| &) managing director|cmd)'?s (message|letter)",
+        "message from the chairman.*"
+      ]
+    },
+    {
+      "section": "ten_year",
+      "patterns": [
+        "((standalone|group|ongc group|\\d{1,2} years'?( group)?) )?performance at a glance",
+        "a decade of operational and financial excellence.*"
+      ]
+    },
+    {
+      "section": "fs",
+      "patterns": [
+        "(standalone|standlone|consolidated) financial statements?",
+        "consolidated financal statements?"
+      ]
+    },
+    {
+      "section": "notes",
+      "patterns": [
+        "(accompanying )?notes to (the )?(standalone|consolidated) financial statements?.*"
+      ]
+    },
+    {
+      "section": "notes",
+      "scope": "running_title_or_fs",
+      "patterns": [
+        "notes"
+      ]
+    },
+    {
+      "section": "other",
+      "patterns": [
+        "corporate governance( report)?",
+        "report on corporate governance",
+        "independent auditors?'? report.*",
+        "comments of (the )?c&ag.*",
+        "secretarial audit report",
+        "glossary of energy & financial terms",
+        "auditors'? certificate on corporate governance",
+        "statement pursuant to section \\d+.*\\(aoc-1\\)"
+      ]
+    },
+    {
+      "section": "other",
+      "scope": "running_title",
+      "patterns": [
+        "integrated report",
+        "board of directors"
+      ]
+    }
+  ],
+  "note_regex": "^\\s*(\\d{1,2})\\.\\s+[A-Z]",
+  "keywords": {
+    "ROYALTY": "\\broyalt(y|ies)\\b",
+    "CESS": "\\bcess\\b",
+    "SAED": "\\bSAED\\b|special additional excise duty",
+    "WINDFALL": "\\bwindfall\\b",
+    "EXPLORATORY_WELL": "\\bexploratory wells?\\b",
+    "DRY_WELL": "\\bdry wells?\\b",
+    "DEPLETION": "\\bdepletion\\b",
+    "IMPAIRMENT": "\\bimpairment\\b",
+    "DECOMMISSIONING": "\\bdecommissioning\\b",
+    "LEASE": "\\bleases?\\b",
+    "RECEIVABLE": "\\breceivables?\\b",
+    "INVENTORY": "\\binventor(y|ies)\\b",
+    "EXCHANGE_LOSS": "\\b(foreign )?exchange (loss|losses|fluctuation|difference)"
+  },
+  "entities": {
+    "OVL": "\\bOVL\\b|ONGC Videsh",
+    "HPCL": "\\bHPCL\\b|Hindustan Petroleum",
+    "MRPL": "\\bMRPL\\b|Mangalore Refinery",
+    "OPAL": "\\bOPaL\\b|ONGC Petro additions",
+    "OMPL": "\\bOMPL\\b|ONGC Mangalore Petrochemicals",
+    "PMHBL": "\\bPMHBL\\b|Petronet MHB",
+    "OTPC": "\\bOTPC\\b|ONGC Tripura Power",
+    "OGL": "\\bOGL\\b|ONGC Green",
+    "MUMBAI_HIGH": "\\bMumbai High\\b",
+    "BASSEIN": "\\bBassein\\b",
+    "KG_98_2": "KG-DWN-98/2|KG DWN 98/2|\\b98/2\\b",
+    "KG_BASIN": "\\bKG Basin\\b|Krishna[- ]Godavari",
+    "ASSAM": "\\bAssam\\b",
+    "RAJASTHAN": "\\bRajasthan\\b",
+    "CAMBAY": "\\bCambay\\b",
+    "CAUVERY": "\\bCauvery\\b",
+    "TRIPURA": "\\bTripura\\b",
+    "ANKLESHWAR": "\\bAnkleshwar\\b",
+    "MEHSANA": "\\bMehsana\\b",
+    "AHMEDABAD": "\\bAhmedabad\\b"
+  }
+}
