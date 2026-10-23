@@ -87,8 +87,10 @@ def test_scanned_files_exist_and_non_empty(doc_id: str):
 
 def test_clause_index_file_exists_and_schema(clause_index_rows):
     assert len(clause_index_rows) >= 50, f"Expected at least 50 clauses in index, found {len(clause_index_rows)}"
-    expected_cols = {"doc_id", "clause_ref", "clause_title", "clause_text", "maps_to_question_ids", "source_basis"}
+    expected_cols = {"doc_id", "clause_ref", "clause_title", "clause_text", "maps_to_question_ids", "source_basis",
+                     "provenance"}  # v3 P0.7 (D-35, BUG-31): real | illustrative
     assert set(clause_index_rows[0].keys()) == expected_cols
+    assert all(r["provenance"] in ("real", "illustrative") for r in clause_index_rows)
 
 
 # ---------------------------------------------------------------------------
