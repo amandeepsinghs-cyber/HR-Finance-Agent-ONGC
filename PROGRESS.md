@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 09:53 UTC · branch `v3/P0-stabilise` @ `103fde4`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 09:53 UTC · branch `v3/P0-stabilise` @ `2270364`
 
 > [!IMPORTANT]
-> **Overall: 18% complete (weighted)** — 10/62 steps ✅ done, 2 in flight, 50 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 19% complete (weighted)** — 10/62 steps ✅ done, 4 in flight, 48 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 98% | 10 | 1 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `░░░░░░░░░░░░░░░░░░░░` 2% | 0 | 0 | 0 | 1 | 11 | 0 | 12 |
+| **P1** | Real finance SSOT | `█░░░░░░░░░░░░░░░░░░░` 6% | 0 | 0 | 0 | 3 | 9 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 8 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
@@ -25,6 +25,8 @@
 |---|---|---|---|---|
 | P0.10 | 🔍 In review | **Hotfix (sponsor-requested 23-Oct):** voice self-interruption. Half-duplex mic gate while Yukti speaks (brows | O | Apply review findings / approve |
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
+| P1.2 | 🔄 In progress | AR 10-yr table parser (FY13–FY26) | F | Complete build + evidence |
+| P1.8 | 🔄 In progress | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | Complete build + evidence |
 
 **Ready to start:**
 
@@ -118,7 +120,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Bug | Status | Symptom | Closing step(s) | Step status |
 |---|---|---|---|---|
-| BUG-02 | open | BS/CF/ratios wrong (FY24 total assets 4,22,820 vs AR 4,46,021; FY25 CFO 63,180 vs 73,010;  | P0.3, P1.10b, P1.2 | P0.3:✅ P1.10b:⬜ P1.2:⬜ |
+| BUG-02 | open | BS/CF/ratios wrong (FY24 total assets 4,22,820 vs AR 4,46,021; FY25 CFO 63,180 vs 73,010;  | P0.3, P1.10b, P1.2 | P0.3:✅ P1.10b:⬜ P1.2:🔄 |
 | BUG-03 | open | Same metric, three values (FY17 royalty 7,635 / 8,548 / AR 11,575) | P1.10b, P1.6 | P1.10b:⬜ P1.6:⬜ |
 | BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:⬜ P1.11:⬜ P5.1:⬜ P5.3:⬜ |
 | BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:⬜ |
