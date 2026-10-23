@@ -1,0 +1,14 @@
+{
+  "snapshot_date": "2026-10-22",
+  "label": "financial_build snapshot (unverified; real AR data pending)",
+  "note": "P0.9: runtime snapshot used only when BigQuery is unavailable (source=local_snapshot). Replaced by AR-verified lines in P1 (SPEC-01).",
+  "files": {
+    "ongc_10yr_schedule_iii_lines.json": "cc8664bf68b83a4cef0a3c96ab28a976f7d2bb16a03f22f03b233e7257aa0945",
+    "ongc_10yr_balance_sheet_lines.json": "d7a005c74545d5a033a87d069760458a8f042a7410702d5dcbe40ff430f4eefc",
+    "ongc_10yr_cash_flow_lines.json": "a15b52176798898ce3491c9e50d8d608a9b76aabc8b524788320dc66e73d88e3",
+    "ongc_10yr_ratios_lines.json": "87bd611f64494c577b8f639ec023833136b01eddb760eec1da6ab7bebb5119d9",
+    "ongc_10yr_corporate_wide.json": "683c96942e965bdda452970be80ad516e57a55acd30f48d90ae4ceee8cccbbe3",
+    "ssot_financial_line_context.json": "80e47cff16687bb137d1821bba51f25a8ba80d119ca4d87e962c402f92120bbd",
+    "financial_notes_corpus.jsonl": "c7e663ab815b2e3914cc15196040a86ad9499035aa20dddc489e017966fab84a"
+  }
+}

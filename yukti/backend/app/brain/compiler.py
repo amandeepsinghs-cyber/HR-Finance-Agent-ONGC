@@ -1020,9 +1020,22 @@ ORDER BY line_order ASC"""
 
 
 def _local_snapshot_date() -> Optional[str]:
-    """Date (ISO) of the financial_build JSON snapshot used by the local fallback (newest file mtime)."""
+    """Date (ISO) of the financial_build JSON snapshot used by the local fallback.
+
+    P0.9: read from `snapshot_manifest.json` (deterministic; file mtimes change on git clone / image build),
+    falling back to the newest `ongc_10yr_*.json` mtime when the manifest is absent.
+    """
+    import json
     from pathlib import Path
     data_dir = Path(__file__).resolve().parents[4] / "financial_build" / "data"
+    try:
+        manifest = data_dir / "snapshot_manifest.json"
+        if manifest.exists():
+            d = json.loads(manifest.read_text(encoding="utf-8")).get("snapshot_date")
+            if d:
+                return str(d)
+    except (OSError, ValueError):
+        pass
     try:
         mtimes = [f.stat().st_mtime for f in data_dir.glob("ongc_10yr_*.json")]
         return datetime.date.fromtimestamp(max(mtimes)).isoformat() if mtimes else None

@@ -32,3 +32,9 @@ yukti/backend/eval/runs/
 yukti/backend/tests/
 yukti/frontend/scripts/test_*
 **/tsconfig.tsbuildinfo
+
+# P0.9: runtime-only hygiene (financial_build/data/*.json(l) runtime files ARE copied by the Dockerfile)
+**/logs/
+**/.env
+**/.env.*
+financial_build/data/stress_test_*
