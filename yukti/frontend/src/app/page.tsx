@@ -23,6 +23,7 @@ type Backend = 'checking' | 'online' | 'offline';
 // P0.10: adaptive voice barge-in during playback (sustained speech clearly louder than the echo; see voiceGate.ts).
 // Tap / Space / Stop always interrupt regardless.
 const VOICE_BARGE_IN = true;
+const GATED_RING_FRAMES = 17; // P0.10 r2 S-1: 17 × 30 ms worklet frames ≈ 0.5 s
 type Lang = 'en' | 'hi' | 'hi-en';
 
 const STARTERS = [
@@ -153,7 +154,9 @@ export default function YuktiApp() {
   const bargeOpenRef = useRef(false); // a deliberate interrupt re-opened the gate for this reply
   const bargeDetectorRef = useRef(new BargeInDetector());
   const speakTrackerRef = useRef(new SpeakTracker()); // P0.10: speak_id gating for Live transcripts (BUG-17/18)
-  const gatedRingRef = useRef<ArrayBuffer[]>([]); // P0.10: last ~0.6 s of gated mic frames (flushed on a voice barge-in)
+  // P0.10: gated mic frames held for a voice barge-in. Worklet frames are 30 ms, so 17 frames ≈ 0.5 s = the detector's
+  // sustain window (r2 S-1: was 6 frames = 180 ms); larger would start to include pre-speech echo.
+  const gatedRingRef = useRef<ArrayBuffer[]>([]);
 
   useEffect(() => {
     micActiveRef.current = isMicActive;
@@ -422,6 +425,12 @@ export default function YuktiApp() {
     };
     const onState = (s: WsState) => {
       setWsState(s);
+      if (s === 'closed' || s === 'error') {
+        // P0.10 r2 MF-2: a dropped socket must not leave a speak "active" (all transcripts dropped) or the gate open
+        speakTrackerRef.current.reset();
+        bargeOpenRef.current = false;
+        gatedRingRef.current = [];
+      }
       if ((s === 'closed' || s === 'error') && voiceTurnRef.current) settleVoiceTurn('fail', 'The voice connection dropped before Yukti answered. Please ask again.');
     };
 
@@ -670,7 +679,7 @@ export default function YuktiApp() {
       else if (!open) {
         const ring = gatedRingRef.current;
         ring.push(chunk);
-        if (ring.length > 6) ring.shift();
+        if (ring.length > GATED_RING_FRAMES) ring.shift();
       }
     }, deviceId);
     if (!res.ok) {
