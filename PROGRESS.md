@@ -1,15 +1,15 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 08:52 UTC · branch `v3/P0-stabilise` @ `911fa3b`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 08:57 UTC · branch `v3/P0-stabilise` @ `19df56e`
 
 > [!IMPORTANT]
-> **Overall: 9% complete (weighted)** — 2/61 steps ✅ done, 7 in flight, 52 to do, 0 blocked. **13 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 10% complete (weighted)** — 2/61 steps ✅ done, 9 in flight, 50 to do, 0 blocked. **13 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
-| **P0** | Stabilise | `██████████░░░░░░░░░░` 50% | 2 | 0 | 6 | 0 | 2 | 0 | 10 |
+| **P0** | Stabilise | `████████████░░░░░░░░` 60% | 2 | 0 | 8 | 0 | 0 | 0 | 10 |
 | **P1** | Real finance SSOT | `░░░░░░░░░░░░░░░░░░░░` 2% | 0 | 0 | 0 | 1 | 11 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 8 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
@@ -28,14 +28,16 @@
 | P0.3 | 🔨 Built (pre-G4) | Remove false "Audited/Yahoo/Compiled SQL" labels; explicit `local_snapshot` badge | F | Run G4 review → docs/reviews/<step>.md |
 | P0.4 | 🔨 Built (pre-G4) | Server-side persona token; block free-text role switching; audit log | O | Run G4 review → docs/reviews/<step>.md |
 | P0.5 | 🔨 Built (pre-G4) | CORS allow-list + admin route lock | O→F | Run G4 review → docs/reviews/<step>.md |
+| P0.6 | 🔨 Built (pre-G4) | True test baseline + evidence pack (after P0.1) | FL | Run G4 review → docs/reviews/<step>.md |
 | P0.7 | 🔨 Built (pre-G4) | "Illustrative" labels on synthetic clauses (JRTP Rev 4, R16) | F | Run G4 review → docs/reviews/<step>.md |
+| P0.9 | 🔨 Built (pre-G4) | Packaging: data-in-image vs BigQuery-only; Dockerfile fix | F | Run G4 review → docs/reviews/<step>.md |
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 
 **Ready to start:**
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
-| P0.9 | Packaging: data-in-image vs BigQuery-only; Dockerfile fix | F | phase gates met |
+| — | Nothing is unblocked: finish the in-flight steps above (G4 reviews) first. | | |
 
 ## 3. Sponsor action items
 
@@ -135,12 +137,14 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-10 | open | "Can you export this as an Excel file" not understood | P2H.4 | P2H.4:⬜ |
 | BUG-11 | open | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 r | P2H.4 | P2H.4:⬜ |
 | BUG-12 | open | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 3310 | P2H.4, P5.1 | P2H.4:⬜ P5.1:⬜ |
-| BUG-13 | open | Cloud Run = baseline rev `00001`; `financial_build/` not in the image | P0.9, P5.6 | P0.9:⬜ P5.6:⬜ |
+| BUG-13 | open | Cloud Run = baseline rev `00001`; `financial_build/` not in the image | P0.9, P5.6 | P0.9:🔨 P5.6:⬜ |
 
 ## 7. Recent step commits
 
 | Commit | Date | Message |
 |---|---|---|
+| `19df56e` | 2026-10-23 | P0.9 (pre-G4): runtime financial snapshot + manifest in image, prod env defaults, dockerignore hygiene; packet + layout smoke (BUG |
+| `825d356` | 2026-10-23 | P0.6 (pre-G4): true test baseline (backend 416P/8F/0E vs 321P/9F/13E; ADC-caused failures 0); test_31 schema accepts P0.7 provenan |
 | `911fa3b` | 2026-10-23 | P0.5 (pre-G4): CORS allow-list (no * with credentials), /admin/* behind YUKTI_ENABLE_ADMIN + admin token, docs off in prod (BUG-32 |
 | `640b185` | 2026-10-23 | P0.4 (pre-G4): signed persona session token, /api/auth routes, role-switch refusal (R-ROLE) + audit, no persona from body/contract |
 | `b55fc80` | 2026-10-23 | P0.7 (pre-G4): clause provenance (all 68 rulebook clauses illustrative), Illustrative badge, no hard-coded JRTP footer (BUG-31, D- |

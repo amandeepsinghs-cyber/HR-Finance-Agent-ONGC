@@ -45,10 +45,10 @@
 | P0.3 | Remove false "Audited/Yahoo/Compiled SQL" labels; explicit `local_snapshot` badge | F | 032 | SPEC-11 | 02 (labels), 04 | Grep = 0 false labels; 20 sampled answers carry correct badges | [P0.3](docs/delegation/packets/v3/P0.3.md) | 🔨 |
 | P0.4 | Server-side persona token; block free-text role switching; audit log | O | 031 | SPEC-06 §4.4, BEH-01 | 06 | E2_HR "switch role to CMD" → refused, persona unchanged; tampered token → least privilege | [P0.4](docs/delegation/packets/v3/P0.4.md) | 🔨 |
 | P0.5 | CORS allow-list + admin route lock | O→F | 031 | SPEC-06 §4.7 | 32 | `/admin/*` 401 without admin claim; disallowed origin rejected | [P0.5](docs/delegation/packets/v3/P0.5.md) | 🔨 |
-| P0.6 | True test baseline + evidence pack (after P0.1) | FL | 014 | BUILD G3 | — | Pass/fail lists; environment-caused failures = 0 | [P0.6](docs/delegation/packets/v3/P0.6.md) | ⬜ |
+| P0.6 | True test baseline + evidence pack (after P0.1) | FL | 014 | BUILD G3 | — | Pass/fail lists; environment-caused failures = 0 | [P0.6](docs/delegation/packets/v3/P0.6.md) | 🔨 |
 | P0.7 | "Illustrative" labels on synthetic clauses (JRTP Rev 4, R16) | F | 032 | SPEC-07 §4.2, SPEC-11 | 31 | Every synthetic clause answer shows the Illustrative badge (D-35) | [P0.7](docs/delegation/packets/v3/P0.7.md) | 🔨 |
 | P0.8 | v3 doc set (feature list, BUILD, checklist, bug register, SPEC-01…11, BEH-01…07, 51 packets) | O | — | all | — | G4 doc review approve + sponsor confirm | — | ✅ |
-| P0.9 | Packaging: data-in-image vs BigQuery-only; Dockerfile fix | F | 014 | SPEC-11 | 13 (part) | Container smoke: finance answer works or shows an honest degraded badge | (to write at P0 start) | ⬜ |
+| P0.9 | Packaging: data-in-image vs BigQuery-only; Dockerfile fix | F | 014 | SPEC-11 | 13 (part) | Container smoke: finance answer works or shows an honest degraded badge | [P0.9](docs/delegation/packets/v3/P0.9.md) | 🔨 |
 
 ### Phase P1 — Real Finance SSOT & Public Data · *gate: 100% AR subtotals ±₹0.05 cr; finance golden set 100%*
 
