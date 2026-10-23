@@ -3,7 +3,7 @@
 **Opened:** 23-Oct-2026 (deep diagnosis) · **Owner:** Opus lead · **Process:** a bug closes only when its checklist step passes G4 with a regression test (BUILD §4.2) · **Sources:** feedback/feedback1–4.md, current_refinements.md, diagnosis reports A–E (`yukti_deep_diagnosis.md` §3)
 
 > [!IMPORTANT]
-> **BLUF:** 35 open bugs: **14 Blockers, 20 Important, 1 Cosmetic group**. The three that hurt the CMD demo most are **BUG-02** (wrong balance-sheet and cash-flow numbers labelled "Audited"), **BUG-06** (an E-level user can escalate to CMD by voice) and **BUG-08** (the waterfall chart is mathematically wrong).
+> **BLUF:** 37 bugs logged (5 closed in P0): **14 Blockers, 22 Important, 1 Cosmetic group**. The three that hurt the CMD demo most are **BUG-02** (wrong balance-sheet and cash-flow numbers labelled "Audited"), **BUG-06** (an E-level user can escalate to CMD by voice) and **BUG-08** (the waterfall chart is mathematically wrong).
 
 **Status legend:** 🔴 Open · 🟠 Fix in progress (uncommitted WIP in `wip/pre-v3-snapshot`, unverified) · ✅ Closed (G4 + test) · ↩ Regressed
 
@@ -11,12 +11,12 @@
 
 | ID | Status | Symptom | Root cause (file:line) | Fix | Step | FEAT |
 |---|---|---|---|---|---|---|
-| BUG-01 | 🔴 | Every answer: "Data is currently not available" | ADC expired (`RefreshError`, 157× in backend log since 06:29 UTC 23-Oct) | Sponsor re-auth; `/health` auth status + UI banner | P0.1 | 032 |
+| BUG-01 | ✅ | Every answer: "Data is currently not available" | ADC expired (`RefreshError`, 157× in backend log since 06:29 UTC 23-Oct) | Sponsor re-auth; `/health` auth status + UI banner | P0.1 | 032 |
 | BUG-02 | 🔴 | BS/CF/ratios wrong (FY24 total assets 4,22,820 vs AR 4,46,021; FY25 CFO 63,180 vs 73,010; ROCE ~2×) yet labelled "Audited + Yahoo" | Hard-coded literals `financial_build/scripts/build_10yr_financials.py:29-1120`; plugs `:1193-1199`, `:1223`; labels `compiler.py:552,587,632,667,708,743`, `presenter.py:155,487` | Labels removed now (P0.3); rebuild from AR (P1) | P0.3, P1.2–P1.10b | 018, 032 |
 | BUG-03 | 🔴 | Same metric, three values (FY17 royalty 7,635 / 8,548 / AR 11,575) | `data_bank/landing/governance/corporate_financial_summary.csv` vs JSON vs AR | Single `fact_financial_statement_line` | P1.6, P1.10b | 018 |
-| BUG-04 | 🔴 | Answers say "Compiled SQL / BigQuery" but come from local JSON | Silent fallback `compiler.py:867-1007` | `source=local_snapshot` + badge | P0.3 | 032 |
+| BUG-04 | ✅ | Answers say "Compiled SQL / BigQuery" but come from local JSON | Silent fallback `compiler.py:867-1007` | `source=local_snapshot` + badge | P0.3 | 032 |
 | BUG-05 | 🟠 | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loop | Legacy ADK prompt lacks statement tables, says FY18–FY27 (`semantic_layer.py:60`); no coverage source of truth; statement route absent in HEAD | Planner regex fix in WIP (keyword phrasings only); coverage manifest; one brain | P1.10a, P1.11, P5.1, P5.3 | 030 |
-| BUG-06 | 🔴 | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | `turn_runner.py:265-268`; `page.tsx:330`; persona in request body (`main.py`) | Server-side persona; no free-text role switching | P0.4, P2H.2 | 031 |
+| BUG-06 | 🟠 | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | `turn_runner.py:265-268`; `page.tsx:330`; persona in request body (`main.py`) | Server-side persona; no free-text role switching | P0.4, P2H.2 | 031 |
 | BUG-07 | 🔴 | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | `yukti/backend/certified/library.yaml:1617,1649,1673,1743` hard-coded emp_id | `dim_app_user` + `@self_emp_id` | P2H.1 | 017, 031 |
 | BUG-08 | 🔴 | "Express this as a waterfall" → Total ≈ 3× revenue | `turn_runner.py:275-296` and `compat.ts:71-73` discard the correct `presenter.py:192-216` bridge; `options.ts:392-420` sums untyped rows | Keep `chart.data`; signed bridge helper; test ends at PAT | P4.1 | 026 |
 | BUG-09 | 🔴 | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | `plan.ts:146`, `compat.ts:130`, `chart_rules.py` single-row branch | Delete synthesis; re-query or refuse | P4.1 | 026 |
@@ -49,7 +49,9 @@
 | BUG-30 | 🔴 | Age band "30-40" actually spans 30–50; "40-50" has 9 people | `data_bank/generators/hr/gen_21_hr_core.py:280-288` | BRSR bands | P2H.5 | 021 |
 | BUG-31 | ✅ | Gemini-generated policy clauses presented as "authentic, statutory-grade ONGC" (R16) | `current_refinements.md:52`; `rulebooks_clause_index.csv` | **Label "Illustrative"** (D-35) | P0.7 | 032 |
 | BUG-32 | ✅ | CORS `*` with credentials; unauthenticated `/admin/cache/clear` | `main.py:52-63` | Allow-list; auth | P0.5 | 031 |
-| BUG-33 | 🔴 | Error text leaks internals ("Reauthentication is needed…") | `turn_runner.py:1448` `str(e)[:100]` | Generic message; log details | P0.1 | 032 |
+| BUG-33 | ✅ | Error text leaks internals ("Reauthentication is needed…") | `turn_runner.py:1448` `str(e)[:100]` | Generic message; log details | P0.1 | 032 |
+| BUG-36 | 🔴 | A validly signed token with `iat: Infinity` → uncaught OverflowError → HTTP 500 (only a key holder can trigger it); prod with no key says "Unknown persona." | `auth.py` verify_token ~L248 | Bound/validate numeric claims; clearer prod-misconfig copy | P2H.2 | 031 |
+| BUG-37 | 🔴 | Snapshot finance answers still show an unlabelled "Director (Finance) Action" line (generated text) | `insight_context.py` snapshot path | Label as unverified or drop until P2F.6 | P1.10a | 032 |
 
 ## Cosmetic
 

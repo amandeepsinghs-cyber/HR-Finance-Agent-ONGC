@@ -40,15 +40,15 @@
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance (checkable) | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
 | P0.0 | Snapshot all WIP to `wip/pre-v3-snapshot` (local, no push) | O + S | — | — | — | Commit `e7de82f`; tree clean | — | ✅ |
-| P0.1 | ADC restore, `/health.auth_ok`, auth banner, safe error copy | O + S → F | 032 | SPEC-11, BEH-07 | 01, 33 | Forced RefreshError → banner + generic copy; `/health.auth_ok=true` after re-auth | [P0.1](docs/delegation/packets/v3/P0.1.md) | 🔄 |
+| P0.1 | ADC restore, `/health.auth_ok`, auth banner, safe error copy | O + S → F | 032 | SPEC-11, BEH-07 | 01, 33 | Forced RefreshError → banner + generic copy; `/health.auth_ok=true` after re-auth | [P0.1](docs/delegation/packets/v3/P0.1.md) | ✅ |
 | P0.2 | Fix `resolve_fy("FY 2024-25")` regression | F | 030 | SPEC-11 | 20 | 2 red tests green + new EN/HI FY-format cases | [P0.2](docs/delegation/packets/v3/P0.2.md) | ✅ |
-| P0.3 | Remove false "Audited/Yahoo/Compiled SQL" labels; explicit `local_snapshot` badge | F | 032 | SPEC-11 | 02 (labels), 04 | Grep = 0 false labels; 20 sampled answers carry correct badges | [P0.3](docs/delegation/packets/v3/P0.3.md) | 🔄 |
-| P0.4 | Server-side persona token; block free-text role switching; audit log | O | 031 | SPEC-06 §4.4, BEH-01 | 06 | E2_HR "switch role to CMD" → refused, persona unchanged; tampered token → least privilege | [P0.4](docs/delegation/packets/v3/P0.4.md) | 🔄 |
+| P0.3 | Remove false "Audited/Yahoo/Compiled SQL" labels; explicit `local_snapshot` badge | F | 032 | SPEC-11 | 02 (labels), 04 | Grep = 0 false labels; 20 sampled answers carry correct badges | [P0.3](docs/delegation/packets/v3/P0.3.md) | ✅ |
+| P0.4 | Server-side persona token; block free-text role switching; audit log | O | 031 | SPEC-06 §4.4, BEH-01 | 06 | E2_HR "switch role to CMD" → refused, persona unchanged; tampered token → least privilege | [P0.4](docs/delegation/packets/v3/P0.4.md) | ✅ |
 | P0.5 | CORS allow-list + admin route lock | O→F | 031 | SPEC-06 §4.7 | 32 | `/admin/*` 401 without admin claim; disallowed origin rejected | [P0.5](docs/delegation/packets/v3/P0.5.md) | ✅ |
 | P0.6 | True test baseline + evidence pack (after P0.1) | FL | 014 | BUILD G3 | — | Pass/fail lists; environment-caused failures = 0 | [P0.6](docs/delegation/packets/v3/P0.6.md) | ✅ |
 | P0.7 | "Illustrative" labels on synthetic clauses (JRTP Rev 4, R16) | F | 032 | SPEC-07 §4.2, SPEC-11 | 31 | Every synthetic clause answer shows the Illustrative badge (D-35) | [P0.7](docs/delegation/packets/v3/P0.7.md) | ✅ |
 | P0.8 | v3 doc set (feature list, BUILD, checklist, bug register, SPEC-01…11, BEH-01…07, 51 packets) | O | — | all | — | G4 doc review approve + sponsor confirm | — | ✅ |
-| P0.9 | Packaging: data-in-image vs BigQuery-only; Dockerfile fix | F | 014 | SPEC-11 | 13 (part) | Container smoke: finance answer works or shows an honest degraded badge | [P0.9](docs/delegation/packets/v3/P0.9.md) | 🔄 |
+| P0.9 | Packaging: data-in-image vs BigQuery-only; Dockerfile fix | F | 014 | SPEC-11 | 13 (part) | Container smoke: finance answer works or shows an honest degraded badge | [P0.9](docs/delegation/packets/v3/P0.9.md) | ✅ |
 
 ### Phase P1 — Real Finance SSOT & Public Data · *gate: 100% AR subtotals ±₹0.05 cr; finance golden set 100%*
 
@@ -146,7 +146,7 @@ See `docs/DECISIONS.md` → Open decisions.
 | SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ⬜ Pending |
 | SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |
 | SA-5 | Review the 10 finance action levers + assumption % (SPEC-08 §7, D-50) | P2F.6 | ⬜ Pending |
-| SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ⬜ P0 next |
+| SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ⬜ **P0 ready for sign-off** |
 | SA-7 | Go-ahead for the Cloud Run redeploy | P5.6 | ⬜ Pending |
 
 ## Part D — Sign-off log
