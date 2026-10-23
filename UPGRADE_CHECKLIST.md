@@ -147,11 +147,12 @@ See `docs/DECISIONS.md` → Open decisions.
 | SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ⬜ Pending |
 | SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |
 | SA-5 | Review the 10 finance action levers + assumption % (SPEC-08 §7, D-50) | P2F.6 | ⬜ Pending |
-| SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ⬜ **P0 ready for sign-off** |
+| SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ✅ P0 signed off 23-Oct 09:52 · ⬜ P1 next |
 | SA-7 | Go-ahead for the Cloud Run redeploy | P5.6 | ⬜ Pending |
 
 ## Part D — Sign-off log
 
 | Phase | G5 date | Sponsor | Notes |
 |---|---|---|---|
+| **P0 Stabilise (incl. hotfix P0.10)** | 2026-10-23 09:52 UTC | Amandeep Saini ("I am signing off") | Live-tested by sponsor: voice no longer self-interrupts; residuals logged (BUG-38/39 → P4.3, BUG-40 → P5.2). Merge to `main` + tag `v3-P0` after the P0.10 G4 verdict |
 | v3 docs (P0.8) | 2026-10-23 | Amandeep Saini ("I approve") | G4 approved (2 rounds); OD-7…OD-18 accepted as D-43…D-54 |

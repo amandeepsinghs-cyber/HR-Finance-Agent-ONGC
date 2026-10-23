@@ -1,6 +1,6 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 09:51 UTC · branch `v3/P0-stabilise` @ `b9acaab`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 09:53 UTC · branch `v3/P0-stabilise` @ `103fde4`
 
 > [!IMPORTANT]
 > **Overall: 18% complete (weighted)** — 10/62 steps ✅ done, 2 in flight, 50 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
@@ -41,7 +41,7 @@
 | SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ⬜ Pending |
 | SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |
 | SA-5 | Review the 10 finance action levers + assumption % (SPEC-08 §7, D-50) | P2F.6 | ⬜ Pending |
-| SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ⬜ **P0 ready for sign-off** |
+| SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ✅ P0 signed off 23-Oct 09:52 · ⬜ P1 next |
 | SA-7 | Go-ahead for the Cloud Run redeploy | P5.6 | ⬜ Pending |
 
 ## 4. Requirement coverage by verbatim (V1–V23)
