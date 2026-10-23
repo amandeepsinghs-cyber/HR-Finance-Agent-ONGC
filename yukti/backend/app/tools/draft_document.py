@@ -255,7 +255,7 @@ class DocumentDraftingEngine:
             table_section = f"\n### 3. Grounded Analytical Data Table ({len(ctx_rows)} Records)\n{md_table}\n" if md_table else ""
 
             summary_para = ctx.get("summary_text") or (
-                f"This executive briefing note synthesizes audited enterprise records from the ONGC Single Source of Truth (SSOT) "
+                f"This executive briefing note synthesizes enterprise records (demo data) from the ONGC Single Source of Truth (SSOT) "
                 f"for {wc_name} as of 19th October 2026."
             )
 

@@ -86,7 +86,7 @@ def make_clean_title_and_subtitle(
     if "lifting cost" in q_low or entry_id in ("C12", "F1"):
         return "Lifting Cost per BOE: Western Offshore vs Onshore", "FY26 lifting costs (unverified snapshot): Western Offshore $8.60, Gujarat $9.09, Assam $16.80"
     if "brent" in q_low or "w1" in q_low:
-        return "What-If: Brent $60/bbl Oil Price Shock Sensitivity", "EBITDA sensitivity simulation against FY26 audited baseline"
+        return "What-If: Brent $60/bbl Oil Price Shock Sensitivity", "EBITDA sensitivity simulation against the FY26 baseline (unverified snapshot)"
     if "freeze" in q_low:
         return "What-If: 2-Year Executive Recruitment Freeze", "Headcount attrition and retirement projection by discipline"
     if "board note" in q_low:
@@ -1371,9 +1371,9 @@ class AgentTurnRunner:
                     if kind == "data":
                         obj = s.get("object", "")
                         if any(k in obj for k in ["continuous_stay", "headcount", "postings", "workforce"]):
-                            plain_sources.append("the audited HR posting records as of today")
+                            plain_sources.append("the HR posting records (demo data) as of today")
                         elif any(k in obj for k in ["pnl", "financials", "economics"]):
-                            plain_sources.append("the audited field financial statements")
+                            plain_sources.append("the field financial statements (unverified snapshot)")
                         elif "lifting_cost" in obj:
                             plain_sources.append("the asset lifting cost records")
                         elif any(k in obj for k in ["vacanc", "sanctioned"]):
@@ -1765,7 +1765,7 @@ class AgentTurnRunner:
                     insights.append(det_sum["top_ranked_text"])
             elif tr["name"] == "what_if":
                 scen = tr["response"].get("scenario", "what_if")
-                insights.append(f"Scenario modeled: {scen.upper()} sensitivity against FY26 audited baseline")
+                insights.append(f"Scenario modeled: {scen.upper()} sensitivity against the FY26 baseline (unverified snapshot)")
 
         # Extract 1 key sentence from spoken_summary, strictly filtering out meta/boilerplate words
         for sentence in re.split(r"(?<=[.!?])\s+", spoken_summary):
@@ -2132,7 +2132,7 @@ class AgentTurnRunner:
             ],
             "access": {"status": "allowed"},
             "export_options": ["pdf", "xlsx", "sheets"],
-            "status_events": ["Computed per-officer annual & monthly compensation breakdown from audited payroll"],
+            "status_events": ["Computed per-officer annual & monthly compensation breakdown from payroll records (demo data)"],
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
         }
         self._validate_contract(contract)

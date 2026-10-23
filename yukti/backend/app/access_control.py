@@ -85,7 +85,7 @@ ORDER BY level_order;"""
     "D4": {
         "reason": "Field-level profitability statements and draft forward capital budget allocations are commercially sensitive operational data restricted to senior management.",
         "rule_ref": "Book of Delegated Powers (BDP 2015) Clause 8.0 & Corporate Commercial Information Protection Guidelines.",
-        "alternative": "Audited company-wide gross revenues, standalone capital expenditure, and net profit from published annual accounts.",
+        "alternative": "Company-wide gross revenues, standalone capital expenditure, and net profit from published annual accounts.",
         "restricted_personas": {"E2_HR", "E3_FIN"},
         "alternative_sql": f"""SELECT
     fiscal_year,
@@ -191,7 +191,7 @@ ORDER BY level_order;"""
     "M4": {
         "reason": "Field-level profitability reports and individual field margin economics are restricted commercially sensitive operational data.",
         "rule_ref": "Book of Delegated Powers (BDP 2015) Clause 8.0 & Corporate Commercial Policy.",
-        "alternative": "Audited standalone corporate revenue, gross operating profit (EBITDA), and total production figures from published annual accounts.",
+        "alternative": "Standalone corporate revenue, gross operating profit (EBITDA), and total production figures from published annual accounts.",
         "restricted_personas": {"E2_HR", "E3_FIN"},
         "alternative_sql": f"""SELECT
     fiscal_year,

@@ -104,3 +104,37 @@ def test_no_false_label_strings_in_compiler_and_presenter():
                          capture_output=True, text=True).stdout
     code_hits = [ln for ln in out.splitlines() if not ln.split(":", 2)[2].lstrip().startswith("#")]
     assert code_hits == [], code_hits
+
+
+GUARDED_FILES = ["turn_runner.py", "agent.py", "tools/draft_document.py", "access_control.py",
+                 "tools/certified_query.py", "brain/pipeline.py", "brain/insight_context.py",
+                 "brain/compiler.py", "brain/presenter.py"]
+
+
+def _string_literals_without_docstrings(path: Path):
+    """All string constants in a module except docstrings (comments are not in the AST at all)."""
+    import ast
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    doc_ids = set()
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.body:
+            first = node.body[0]
+            if isinstance(first, ast.Expr) and isinstance(getattr(first, "value", None), ast.Constant):
+                doc_ids.add(id(first.value))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str) and id(node) not in doc_ids:
+            yield node.lineno, node.value
+
+
+@pytest.mark.parametrize("rel", GUARDED_FILES)
+def test_no_audited_claim_in_user_facing_strings(rel):
+    """P0.3 r2 (G4 must-fix 1g): no string literal may claim 'audited' data (synthetic / unverified sources)."""
+    path = BRAIN.parent / rel
+    hits = [(ln, s[:80]) for ln, s in _string_literals_without_docstrings(path)
+            if re.search(r"\baudited\b", s, re.I) and "persona_assertion_ignored" not in s]
+    assert hits == [], f"{rel}: {hits}"
+
+
+def test_cached_contracts_have_no_audited_claim():
+    p = BRAIN.parent.parent / "certified" / "answer_cache_warmup.json"
+    assert not re.search(r"\baudited\b|Yahoo|ONGC\.NS", p.read_text(encoding="utf-8"), re.I)
