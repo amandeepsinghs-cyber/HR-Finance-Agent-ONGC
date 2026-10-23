@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 10:13 UTC · branch `v3/P0-stabilise` @ `edab350`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 10:15 UTC · branch `v3/P0-stabilise` @ `8fc6582`
 
 > [!IMPORTANT]
-> **Overall: 21% complete (weighted)** — 12/62 steps ✅ done, 5 in flight, 45 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 23% complete (weighted)** — 13/62 steps ✅ done, 4 in flight, 45 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `████░░░░░░░░░░░░░░░░` 19% | 1 | 0 | 0 | 5 | 6 | 0 | 12 |
+| **P1** | Real finance SSOT | `█████░░░░░░░░░░░░░░░` 25% | 2 | 0 | 0 | 4 | 6 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 8 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
@@ -25,7 +25,6 @@
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.3 | 🔄 In progress | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | Complete build + evidence |
-| P1.4 | 🔄 In progress | NSE XBRL parser | F | Complete build + evidence |
 | P1.5 | 🔄 In progress | Yahoo loader + market provider chain (optional, retryable) | F | Complete build + evidence |
 | P1.8 | 🔄 In progress | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | Complete build + evidence |
 
@@ -33,6 +32,7 @@
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
+| P1.6 | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; | O (+F gates, FL evidence) | P1.2, P1.4 |
 | P2H.1 | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | phase gates met |
 | P4.1 | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | phase gates met |
 | P4.9 | Orb visible in docked mode + optional edge aura (low priority, V21) | F | phase gates met |
@@ -65,7 +65,7 @@
 | V15 | FEAT-015, FEAT-026 | 🟡 🔴 | P4.1, P4.4, P4.5, P4.8 | 🟡 |
 | V16 | FEAT-016 | 🟡 | P4.9 | 🟡 |
 | V17 | FEAT-017, FEAT-031 | 🔴 🔴 | P2H.1, P2H.2 | 🔴 |
-| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.10a … | 🔴 |
+| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.3, P1.5, P1.6, P1.7, P1.8, P1.10a, P1.10b … | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P1.7, P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
 | V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.5, P1.8, P1.9, P2F.1, P2F.2, P2F.3, P2F.4 … | 🔴 |
 | V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.1, P4.2, P4.3, P4.4, P4.5 … | 🟡 |
@@ -97,7 +97,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-015 Any-chart re-presentation & chart excellence | 🟡 | 0/0 |
 | FEAT-016 AI aura visual language | 🟡 | 0/1 |
 | FEAT-017 Eleven-persona matrix + function split + `self` scope | 🔴 | 0/2 |
-| FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 1/8 |
+| FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 2/8 |
 | FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 0/2 |
 | FEAT-020 Knowledge RAG over real AR text | 🔴 | 0/1 |
 | FEAT-021 Employee-360 enterprise table (realistic, reconciled) | 🟡 | 0/4 |
@@ -140,6 +140,8 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `02d41b2` | 2026-10-23 | P1.5 (pre-G4): Yahoo loader (offline JSON parse, polite fetcher, exit 3 on 429) + D-45 provider chain Yahoo->NSE archive->manual s |
+| `fa3abb4` | 2026-10-23 | P1.4 (G4 r2 fixes): flag FY23 S C&CE filing defect (cf_cce_filing_defect, no line code) + test; PaidUp -> OTH.PAID_UP_CAPITAL; Seg |
 | `6a7985b` | 2026-10-23 | P1.4 (pre-G4): NSE XBRL parser (12 files, FY18-FY21/FY23-FY24 S+C; lxml, FourD/OneD/OneI by context name), tag->line-code map prop |
 | `9911844` | 2026-10-23 | P0.10 (G4 r2): voice barge-in off by default (BUG-41) |
 | `acea15a` | 2026-10-23 | P1.2 (pre-G4): deterministic AR 10-yr table parser (AR FY26/FY24/FY22 standalone, FY13-FY26), page/folio index, token parser, V09  |
@@ -153,8 +155,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `927f434` | 2026-10-23 | P0.3 (G4 r2 fixes): remove remaining 'audited' claims (turn_runner, agent prompt, draft_document, access_control, fixture) + AST g |
 | `8ee9991` | 2026-10-23 | P0.1 (G4 r2 fixes): Live voice-tool errors use safe copy + error code (no str(e)); /health auth_mode via auth.auth_mode() |
 | `19df56e` | 2026-10-23 | P0.9 (pre-G4): runtime financial snapshot + manifest in image, prod env defaults, dockerignore hygiene; packet + layout smoke (BUG |
-| `825d356` | 2026-10-23 | P0.6 (pre-G4): true test baseline (backend 416P/8F/0E vs 321P/9F/13E; ADC-caused failures 0); test_31 schema accepts P0.7 provenan |
-| `911fa3b` | 2026-10-23 | P0.5 (pre-G4): CORS allow-list (no * with credentials), /admin/* behind YUKTI_ENABLE_ADMIN + admin token, docs off in prod (BUG-32 |
 
 ## 8. Integrity checks
 
