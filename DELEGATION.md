@@ -1,6 +1,8 @@
 # Yukti AI: Work Delegation Plan (`DELEGATION.md`)
 
 **Purpose:** cut token cost without lowering quality. **Opus** (the lead model, `Model: inherit`) handles design, risky logic, integration and reviews. **Flash** models handle well-specified grunt work. **Every Flash output is reviewed separately** before it counts as done.
+> **v3 update (23-Oct-2026):** roles, decision rule and the review loop below are unchanged. The **authoritative owner per step is now the Owner column of the v3 [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md)** (phases P0–P5), and the v3 task packets live in [`docs/delegation/packets/v3/`](docs/delegation/packets/v3/). §4 below lists v2 phase ownership and is kept for history. New for v3: financial-extraction rules, reconciliation logic, contract v3 and the DCF engine design are **O-only** (high risk). Parsers, loaders, generators and renderers that follow a packet are **F**. Downloads, test runs, `recon_checks` runs and golden-eval runs are **FL**. The v2 version is archived in [`docs/archive/v2_2026-10-22/DELEGATION.md`](docs/archive/v2_2026-10-22/DELEGATION.md).
+
 **Linked:** [`BUILD.md`](BUILD.md) §4 (five gates) · [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md) (Owner column) · [Task packet template](docs/delegation/TASK_PACKET_TEMPLATE.md) · [Review template](docs/reviews/REVIEW_TEMPLATE.md)
 
 ---
@@ -47,7 +49,7 @@ sequenceDiagram
   participant S as Sponsor
   O->>O: Write task packet (docs/delegation/packets/<step>.md)
   O->>F: Delegate packet
-  F->>F: Implement on upgrade/<phase> branch
+  F->>F: Implement on v3/<phase-id> branch (BUILD.md §8)
   F-->>O: Report: files changed, self-check output, open questions
   O->>FL: Run verification commands from the packet
   FL-->>O: Evidence (build/test/screenshots)
@@ -68,7 +70,7 @@ sequenceDiagram
 4. **Consistency checks in every Flash review:** naming and design tokens follow U1; no hard-coded hex, numbers or entity codes; contract fields used exactly as typed; patterns match neighbouring code; no unrelated edits; comments and docs preserved.
 5. **Two strikes:** a second "Changes requested" on the same packet moves the step to Opus. The reason is logged in the review file. This tunes future delegation.
 6. **FL output is evidence, not judgement:** Opus or the reviewer interprets results; FL only reports.
-7. **Commits** follow `BUILD.md` §4 (currently only after G5, pending OD-4). **Flash and Flash-lite never commit, push, reset, check out branches, deploy, or write to BigQuery.**
+7. **Commits** follow `BUILD.md` §4 (local commits after each G4-approved step, never push; D-12 resolved OD-4). **Flash and Flash-lite never commit, push, reset, check out branches, deploy, or write to BigQuery.**
 8. **Evidence spot-check:** once per phase, R-O re-runs one FL command to catch misread or fabricated output.
 9. **Scope check:** each packet states a base SHA and a max file count; G4 verifies with `git diff --stat <base>..`.
 

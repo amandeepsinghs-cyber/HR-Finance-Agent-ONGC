@@ -239,3 +239,9 @@
 >
 > So this is a kind os capability I am trying to build and we seem to be very far away."
 
+
+---
+
+## 23. v3 Decisions & Realistic Employee-360 / Cost Analytics (typed in chat, 23-Oct-2026 07:07)
+
+> "I agree with 1 to 5. on 6th keep it illustrative. 7. on the data side on employee it should be realistic and we need to generate one big query table with all the possible type of details one can ask. eg the salary breakdown, benefits, hrs, da, health insurance and all the other that will be important to employees and management in terms of cost optimisation, the employee count is another factors, revenue per employee basically all the kind of analysis one may think of running and ask for insights, operating cost per field when one goes on a field level detail and they should match to the total company level aggregate"

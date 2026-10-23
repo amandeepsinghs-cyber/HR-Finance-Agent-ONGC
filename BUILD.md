@@ -1,58 +1,81 @@
-# Yukti AI: Build Charter & Process (`BUILD.md`)
+# Yukti AI: Build Charter & Process v3 (`BUILD.md`)
 
-**Status:** Active · **Baseline:** `baseline-v0.2` (commit `fbe3594`, 2026-10-22) · **Owner:** Amandeep Saini (Product Sponsor)
-**Companion docs:** [Feature List](feature_list_and_verbatims/feature_list/feature_list.md) · [Upgrade Checklist](UPGRADE_CHECKLIST.md) · [Delegation Plan](DELEGATION.md) · [Decision Log](docs/DECISIONS.md) · [Review Template](docs/reviews/REVIEW_TEMPLATE.md) · [Verbatims](feature_list_and_verbatims/verbatims/)
-**Previous plan (archived):** [`docs/archive/BUILD_overnight_2026-10-20.md`](docs/archive/BUILD_overnight_2026-10-20.md). Its "all items done/PASSED" claims were not reproducible on 2026-10-22; see §7.
+**Status:** Active · **Version:** v3 (re-baselined 23-Oct-2026) · **Baseline for v3:** branch `wip/pre-v3-snapshot` @ `e7de82f` (on top of tag `upgrade-H1` @ `5f64d8c`) · **Owner:** Amandeep Saini (Product Sponsor)
+**Companion docs:** [Feature List v3](feature_list_and_verbatims/feature_list/feature_list.md) · [Upgrade Checklist v3](UPGRADE_CHECKLIST.md) · [Bug Register](BUG_REGISTER.md) · [Specs](docs/specs/) · [Behaviours](docs/behaviour/) · [Delegation Plan](DELEGATION.md) · [v3 packets](docs/delegation/packets/v3/) · [Decision Log](docs/DECISIONS.md) · [Verbatims V1–V23](feature_list_and_verbatims/verbatims/)
+**Previous charter (archived):** [`docs/archive/v2_2026-10-22/BUILD.md`](docs/archive/v2_2026-10-22/BUILD.md). Its "U1–U5, B1–B4, H1 completed" claims were partly contradicted by the 23-Oct diagnosis; see §7.
 
 > [!IMPORTANT]
-> **Rule of this build: no step counts as done until it has passed all five gates in §4: Spec → Build → Verify → Review → Confirm.** Nothing is merged to `main` or deployed without your explicit confirmation.
+> **Rule of this build (unchanged): no step counts as done until it has passed all five gates in §4: Spec → Build → Verify → Review → Confirm.**
+> **New in v3, the truth rule:** a step that touches data or answers is not Done without **numeric** evidence: exact values checked against the real SSOT or the AR page. "Renders / HTTP 200 / has rows" is never acceptance.
 
 ---
 
 ## 1. Purpose & Outcome
 
-Upgrade Yukti AI, the voice-first HR & Finance agent for the ONGC CMD, from a working demo (`baseline-v0.2`) to an executive-grade product:
-1. **Feels premium:** a calm infinity-ribbon voice orb, a running conversation feed, executive visual polish (Verbatims 11, 12).
-2. **Thinks granularly:** every answer goes from a count to who / where / compared with what / so what / next action (Verbatim 13, plus the sponsor's "granular insights" ask).
-3. **Is governed:** CMD and Directors see everything (D-10); E1–E4 get aggregated summaries or refusals (D-11), and the text and the visuals always agree (Verbatims 3, 13, 14, 15).
-4. **Presents data beautifully, any way you ask:** sensible default visuals, re-plot on request into any compatible chart type, and charts of the highest professional standard (Verbatim 15, FEAT-015).
+v2 made Yukti look executive-grade. v3 makes it **true and agentic**: every number traceable to a public document, every HR fact realistic and reconciled, and specialist agents doing real analysis. Outcomes:
 
-**Order (Verbatim 14, D-4):** UI first, then the brain, then hardening and deploy.
+1. **Real numbers, zero error (V18):** income statement, balance sheet and cash flow by year come from ONGC Annual Reports (with page lineage), backfilled by NSE XBRL. A labelled Yahoo consolidated view is used as a cross-check.
+2. **Realistic, reconciled people and field data (V19, V23):** one comprehensive Employee-360 BigQuery table covering pay, benefits and cost. Field economics sum exactly to company AR totals.
+3. **Every persona served (V17):** CMD, DIR_HR, DIR_FIN, and E1–E4 in both HR and Finance (11 personas). Each gets answers plus insights, or a polite, policy-correct refusal.
+4. **End-to-end executive workflows:** V19 (Delhi cohort → names → Excel → email to Director HR) and V20 (statement → year → WACC → why → top-5 actions).
+5. **Agentic platform (V22):** one interface, a coordinator and specialist agents. The DCF agent asks permission, runs in the background, and returns a full model with sensitivity and downloadable assumptions.
+6. **9/10 presentation (V21):** statements as statements, a correct waterfall, an Excel-class chart portfolio, and exports in every common format.
+
+**Order (sponsor decision 5, V23):** P0 Stabilise → P1 Real finance SSOT → P2H/P2F in parallel → P3 Agents + DCF (after P1) → P4 Visual (can start after P0, in parallel) → P5 One brain, eval, redeploy.
 
 ---
 
 ## 2. Scope
 
-| In scope | Out of scope (for this upgrade) |
+| In scope (v3) | Out of scope |
 |---|---|
-| Frontend shell: feed, orb, design system, visuals, roster table | New data domains beyond the current `hrfin_gold` / `hrfin_silver` SSOT |
-| Answer-contract v2 (forward-compatible with the brain) | Real SSO / identity integration (persona stays a selector) |
-| Brain: semantic layer, QuerySpec planner, insight engine, RBAC masking | Production multi-tenant hardening |
-| Eval harness gates, Cloud Run redeploy | Changes to the synthetic data generators, unless a gap is proven (logged as a decision) |
+| Public-data acquisition (ARs, NSE XBRL, Yahoo, RBI, Damodaran) into `knowledge/public_sources/` | Scraping sites whose ToU forbid it (Screener, Moneycontrol); any workaround of blocked endpoints (BSE API, MCA) |
+| Real financial SSOT + anchor tables (segment, production, reserves, BRSR HR aggregates) | Real employee-level data (never public; stays synthetic, labelled) |
+| Regenerated, realistic synthetic HR (Employee-360) and field economics, reconciled to real totals | Production SSO / multi-tenant IAM (demo uses a signed persona token; IAP noted for prod) |
+| 11-persona RBAC, identity hardening | Investment advice (the DCF is labelled illustrative) |
+| Coordinator + agents (analyst, fin_diagnostics, dcf, hr_transfer, doc_export), jobs API | Live Google Drive write-back (an honest download for now; Drive OAuth is a later option) |
+| Statement visual, chart portfolio, export suite, voice dedupe, one-brain consolidation, numeric eval, Cloud Run redeploy | — |
 
 ---
 
-## 3. Target Architecture
+## 3. Target Architecture (v3)
 
 ```mermaid
-flowchart LR
-  U["Voice / text"] --> P["Planner: question + prior QuerySpec → QuerySpec"]
-  P --> G["Governance: RBAC row/column policy"]
-  G --> C["Compiler: semantic layer → certified template or generated SQL (dry-run)"]
-  C --> BQ[("BigQuery SSOT")]
-  BQ --> I["Insight engine (deterministic)"]
-  I --> V["Visual planner"]
-  V --> N["Narrator: brief answer from computed facts only"]
-  N --> F["Feed card + drill-down/action chips"]
+flowchart TD
+  U["Voice / text (EN + HI)"] --> ID["Identity: signed persona token (server-side)"]
+  ID --> CO["Coordinator (ADK root agent)"]
+  CO -->|"Q&A"| AN["Analyst agent = QuerySpec planner + compiler"]
+  CO -->|"why / actions"| FD["Fin-diagnostics agent"]
+  CO -->|"proposed_action, then a job"| DCF["DCF valuation agent"]
+  CO -->|"V19 chain"| HT["HR-transfer agent"]
+  CO -->|"files"| DX["Doc/export agent"]
+  AN --> G["Governance: RBAC v3 (11 personas, function, self)"]
+  FD --> G
+  DCF --> G
+  HT --> G
+  G --> BQ[("BigQuery SSOT")]
+  subgraph SSOT["BigQuery SSOT"]
+    F1["fact_financial_statement_line (verified, page lineage)"]
+    F2["fact_segment / fact_production_annual / fact_reserves / fact_hr_aggregates"]
+    F3["fact_wacc_annual + market data (Yahoo, RBI, Damodaran)"]
+    E1["ssot_employee_360 (realistic, reconciled)"]
+    E2["ssot_field_economics_360 (sums to AR)"]
+    R1["recon_checks"]
+    D1["doc_chunks_ar (vector)"]
+  end
+  BQ --> PR["Presenter: typed visuals (statement, chart, roster, dcf_model, sensitivity_grid, tornado)"]
+  PR --> N["Narrator: facts-only, provenance badge, EN/HI"]
+  N --> FEED["Feed card + chips + exports; voice speaks spoken_summary verbatim"]
 ```
 
-Design principles:
-1. **Numbers come only from BigQuery and the insight engine.** The LLM plans and narrates; it never does arithmetic.
-2. **The semantic layer is generated from the data** (INFORMATION_SCHEMA plus profiled values), so the catalog can't drift from it.
-3. **A follow-up is a small change to the previous spec**, not a keyword hack.
-4. **RBAC is enforced on the spec and the result**, never only on the question text.
-5. **The UI renders contract v2.** UI work defines the fields the brain will later fill (forward-compatible, D-4).
-6. **Restraint in UI:** improve polish (type, depth, motion), not the number of controls (design recommendations doc).
+Design principles (v3):
+1. **Numbers come only from verified SSOT rows and deterministic engines** (insights, variance, WACC, DCF). The LLM plans, routes and narrates; it never does arithmetic and never asserts data coverage on its own.
+2. **Every number shows its provenance:** Verified AR p.N / Yahoo (consolidated) / Modelled / Illustrative / Local snapshot. A wrong label is a Blocker bug.
+3. **Real anchors, synthetic detail:** synthetic employee and field records must reconcile to real aggregates through automated `recon_checks`. Mismatches block publication.
+4. **One brain:** one route for all data questions. Fast-paths survive only as deterministic, tested intents (screen control, export, greeting).
+5. **Agents are explicit:** long or complex analyses are *proposed* (`proposed_action`), confirmed by the user, and run as tracked jobs (`job`).
+6. **Typed visuals, not free-form UI:** the agent chooses from a whitelisted visual catalogue, so layouts stay deterministic and testable.
+7. **RBAC on the spec and the result**, with server-side identity. The persona never comes from free text.
 
 ---
 
@@ -62,8 +85,8 @@ Every step in [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md) goes through these 
 
 ```mermaid
 flowchart LR
-  S["G1 Spec<br/>(written + linked to FEAT)"] --> B["G2 Build<br/>(feature branch)"]
-  B --> V["G3 Verify<br/>(automated checks + evidence)"]
+  S["G1 Spec<br/>(written + linked to FEAT/SPEC)"] --> B["G2 Build<br/>(feature branch)"]
+  B --> V["G3 Verify<br/>(automated checks + numeric evidence)"]
   V --> R["G4 Review<br/>(independent reviewer report)"]
   R -->|changes requested| B
   R -->|approved| C["G5 Confirm<br/>(sponsor sign-off)"]
@@ -72,91 +95,93 @@ flowchart LR
 
 | Gate | What happens | Artifact / evidence | Who |
 |---|---|---|---|
-| **G1 Spec** | The step's goal, acceptance criteria and verification method are written in the checklist **before** code. Phase-level specs are confirmed by the sponsor before the phase starts. | Checklist entry with acceptance criteria | Agent writes, **sponsor confirms per phase** |
-| **G2 Build** | Implement on branch `upgrade/<phase-id>` (never on `main`). Small, reviewable diffs. Keep existing comments and docs. | Diff on the branch | Agent |
-| **G3 Verify** | Run the step's listed checks: `tsc`, `next build`, `pytest`, eval subset, Playwright screenshots, BigQuery spot checks. Attach outputs. | Evidence block in the review file (commands + results + screenshots) | Agent |
-| **G4 Review** | An **independent reviewer agent** (fresh context, read-only) checks the diff against the spec and the review checklist (§4.1). Verdict: **Approve** / **Changes requested**. "Changes requested" loops back to G2. | `docs/reviews/<step-id>.md` from the [template](docs/reviews/REVIEW_TEMPLATE.md) | Reviewer agent |
-| **G5 Confirm** | Phase-end demo: screenshots or a live walk-through, eval scorecard compared with the baseline. Sponsor signs off. | Sign-off line in the checklist + `docs/reviews/<phase>_gate.md` (scorecard, delegation metrics, escalations) + decision log entry if anything changed | **Sponsor** |
+| **G1 Spec** | Goal, acceptance criteria and verification method are written **before** code, in the checklist row and the linked `docs/specs/SPEC-xx` + `docs/behaviour/BEH-xx`. Phase-level specs are confirmed by the sponsor before the phase starts. | Checklist entry + spec section + behaviour scenarios | Agent writes, **sponsor confirms per phase** |
+| **G2 Build** | Implement on branch `v3/<phase-id>` (never on `main`). Small, reviewable diffs. Keep existing comments and docs. | Diff on the branch | Agent (owner per checklist) |
+| **G3 Verify** | Run the step's checks: `pytest`, `tsc`, `next build`, golden numeric eval subset, `recon_checks`, Playwright screenshots, BigQuery spot checks. Attach outputs. | Evidence block in the review file | Agent / FL runner |
+| **G4 Review** | An **independent reviewer agent** (fresh context, read-only) checks the diff against the spec, the behaviours and §4.1. Verdict: **Approve** / **Changes requested** / **BLOCKED (needs decision)**. | `docs/reviews/<step-id>.md` from the [template](docs/reviews/REVIEW_TEMPLATE.md) | Reviewer agent |
+| **G5 Confirm** | Phase-end demo with the BEH scenarios live (voice + text), golden-eval scorecard against the last gate. Sponsor signs off. | Sign-off line in the checklist + `docs/reviews/<phase>_gate.md` | **Sponsor** |
 
-**Commit policy (pending OD-4):** until OD-4 is decided, commits happen **only after G5 sign-off**, or when the sponsor explicitly asks. If OD-4 = (b), local commits on `upgrade/*` after each G4-approved step are also allowed. Each confirmed phase is merged to `main` and tagged `upgrade-<phase-id>`. **Nothing is pushed or deployed without an explicit instruction.**
+**Commit policy (D-12):** local commits on `v3/*` after each G4-approved step are allowed. Never push. Merge to `main` and tag `v3-<phase>` only after G5. **Nothing is pushed or deployed without an explicit sponsor instruction.**
 
-**G4 loop cap & escalation (all owners, Opus and Flash):** at most **3** review rounds per step (Flash steps move to Opus after 2, per `DELEGATION.md`). After that, or immediately when a reviewer returns **BLOCKED (needs decision)**, the step is marked ⛔ and escalated to the sponsor with a new OD-x entry in `DECISIONS.md`.
+**G4 loop cap & escalation:** at most **3** review rounds per step (Flash steps move to Opus after 2, per `DELEGATION.md`). After that, or on **BLOCKED**, the step is marked ⛔ and escalated with an OD-x entry in `docs/DECISIONS.md`.
 
-**Change control for new verbatims (mid-phase):** new verbatim → saved in `feature_list_and_verbatims/verbatims/` → feature list updated (new/changed FEAT) → D-x/OD-x logged → checklist steps added or changed (G1) → sponsor confirms whether it enters the current phase or a later one. Work in progress is never silently re-scoped.
+**Change control for new verbatims (mid-phase):** new verbatim → saved in `feature_list_and_verbatims/verbatims/` → feature list updated → D-x/OD-x logged → checklist steps added (G1) → sponsor confirms the phase. Work in progress is never silently re-scoped.
 
 ### 4.0 Delegation (cost-optimised execution)
-Work is split per [`DELEGATION.md`](DELEGATION.md):
-- **Opus (lead):** specs, high-risk code (contracts, RBAC, SQL safety, planner, audio, app state), integration and reviews.
-- **Flash:** well-specified implementation from a written **task packet**.
-- **Flash-lite:** runs commands and collects evidence.
-
-The checklist's **Owner** column says who executes each step. **Every Flash or Flash-lite output gets a separate G4 review by an Opus reviewer in a fresh, read-only context.** Flash never reviews Flash. Two failed reviews on the same packet move the step to Opus.
+Per [`DELEGATION.md`](DELEGATION.md): **Opus (O)** handles specs, contracts, RBAC, SQL safety, planner/coordinator, financial extraction rules, the DCF engine design, integration and reviews. **Flash (F)** handles well-specified implementation from a packet in [`docs/delegation/packets/v3/`](docs/delegation/packets/v3/). **Flash-lite (FL)** runs commands and collects evidence. Every F/FL output gets a separate Opus G4 review. Flash never reviews Flash.
 
 ### 4.1 Review checklist (used by the G4 reviewer)
-- [ ] Meets every acceptance criterion in the spec (each one cited with evidence)
-- [ ] No regressions: tests green, eval not worse than the last gate, `tsc` + `next build` clean
-- [ ] RBAC: no persona sees data beyond its policy (FEAT-010); text and visual agree
-- [ ] No hardcoded numbers or entity codes that should come from data or config
+- [ ] Meets every acceptance criterion in the spec and the linked BEH scenarios (each cited with evidence)
+- [ ] **Numeric truth:** values checked against the SSOT/AR (golden subset, `recon_checks` PASS); no plug lines; no fabricated fallbacks
+- [ ] **Provenance:** source badges match the actual source used; synthetic/illustrative labelled
+- [ ] No regressions: tests green, golden eval not worse than the last gate, `tsc` + `next build` clean
+- [ ] RBAC: no persona sees data beyond its policy (11-persona matrix); text, visual and export agree; persona not changeable from free text
+- [ ] No hard-coded numbers or entity codes that should come from data or config
 - [ ] No secrets, no generated artefacts committed, no unrelated changes
 - [ ] Accessibility and theme: light (default) and dark both render; contrast is acceptable
 - [ ] Performance: no new blocking calls on the event loop; orb/feed hold ~60 fps
-- [ ] Docs updated: feature status, checklist ticks, decision log if behaviour or policy changed
+- [ ] Docs updated: feature status, checklist ticks, bug register, decision log
 
 ### 4.2 Definition of Done (per step)
-A step is **Done** only when: acceptance criteria are met, G3 evidence is attached, the G4 review says Approve, and the checklist box is ticked with a link to the review file. A **phase** is Done when every step is Done **and** the sponsor has signed off at G5.
+A step is **Done** only when: acceptance criteria are met **with numeric evidence where applicable**, G3 evidence is attached, G4 says Approve, the checklist box is ticked with a link to the review file, and the related `BUG-xx` rows are closed in [`BUG_REGISTER.md`](BUG_REGISTER.md). A **phase** is Done when every step is Done **and** the sponsor has signed off at G5.
+
+### 4.3 Truth rules (new in v3)
+1. **No "PASS" from shape-only tests.** Every eval or stress test must assert values (the golden set), not just HTTP 200 + rows.
+2. **No self-certifying identities.** Checks such as A = E + L must compare to the AR-reported totals, not to totals the builder computed.
+3. **Degraded mode is visible.** If BigQuery or the LLM is unavailable, the UI says so. Local snapshots carry a "Local snapshot" badge.
+4. **Status words are reserved:** ✅ only with G4 evidence. Docs that overstate status are bugs (tracked in the register).
 
 ---
 
 ## 5. Phase Overview (details in [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md))
 
-| Phase | Name | Main features | Gate metric |
+| Phase | Name | Main features | Gate metric (numeric) |
 |---|---|---|---|
-| **U0** | Governance & baseline | Docs, decision log, delegation, FEAT-014 eval baseline re-run | Docs confirmed (U1 may start once U0.2 + OD-1 confirmed; U0.4/U0.5 run in parallel) |
-| **U1** | Design system foundation | FEAT-005 + FEAT-015 chart theme: tokens, typography, surfaces, theme, chart design system | Visual review sign-off; token grep = 0 hard-coded hex |
-| **U2** | Conversation feed + contract v2 | FEAT-001, FEAT-007 | Verbatim 11 acceptance criteria in a browser test |
-| **U3** | Infinity-ribbon voice orb + voice fixes | FEAT-004, FEAT-013 | 4 states distinct, ≥ 55 fps (target 60) on the demo laptop, mic/barge-in tests |
-| **U4** | Executive polish | FEAT-005 | Visual review sign-off (light + dark) |
-| **U5** | Visual system, any-chart re-plot, roster & comparison components | FEAT-003, FEAT-015, FEAT-006 (UI), FEAT-010 (UI), FEAT-011 (UI) | Every question-bank visual type renders from fixtures |
-| **B1** | Semantic layer truth | FEAT-008 | Zero catalog/data mismatches; tests green |
-| **B2** | QuerySpec planner | FEAT-009, FEAT-002 | Eval: root ≥ 80%, follow-ups ≥ 60% |
-| **B3** | Granular data + RBAC policy | FEAT-006 (data), FEAT-010 | Roster correct vs BigQuery; RBAC matrix 100% |
-| **B4** | Insight engine | FEAT-011 | ≥ 2 grounded insights per data answer; 0 invented numbers |
-| **H1** | Harden, full eval & deploy | FEAT-012, FEAT-014 | Eval targets met; Cloud Run URL verified |
+| **P0** | Stabilise | FEAT-031, FEAT-032 (quick part), test baseline | ADC valid; pytest failures due to the environment = 0; escalation test fails closed; no false provenance label in 20 sampled answers |
+| **P1** | Real finance SSOT + public data | FEAT-018, 019, 020 (+ anchors for 021/022, WACC inputs) | 100% AR subtotals within ₹0.05 cr; Yahoo FY23–26 within ₹1 cr; finance golden set (≥ 30 Q) 100% exact |
+| **P2H** | HR: personas, V19, Employee-360, field economics | FEAT-017, 021, 022, 023 | 11-persona matrix 100%; `recon_checks` 100% PASS; BEH-02 + BEH-06 pass |
+| **P2F** | Finance diagnostics (V20) | FEAT-024, 011 (finance) | BEH-03 passes; every action quantified + cited; 0 canned text |
+| **P3** | Coordinator + agents + DCF (V22) | FEAT-028, 029, 007 (v3 contract) | BEH-05 passes by voice + text; DCF fixture exact to ₹0.01/share |
+| **P4** | Visual 9/10 + exports (V21) | FEAT-025, 026, 027, 015, 004, 016 | Finance rubric ≥ 9/10 (light + dark); waterfall ends at reported PAT; ₹/Devanagari export check passes |
+| **P5** | One brain, eval, redeploy | FEAT-030, 002, 009, 013, 014 | Golden eval ≥ 95% numeric exact; feedback1–4 regressions 100%; Cloud Run serves the green build |
 
 ---
 
-## 6. Quality Gates & Metrics
+## 6. Quality Gates & Metrics (v3)
 
-| Metric | Baseline (2026-10-20 eval) | Target at H1 |
+| Metric | Current (23-Oct diagnosis) | Target at P5 |
 |---|---|---|
-| Root questions correct | 55.1% | ≥ 90% |
-| In-session follow-ups correct | 21.7% | ≥ 85% |
-| Multilingual paraphrases | 37.5% | ≥ 85% |
-| Held-out stress prompts | 44.0% | ≥ 80% |
-| Refusal governance | 95.9–100% | 100% (zero leaks) |
-| Median latency (p50) | 5.4 s | ≤ 5.0 s |
-| Backend tests | 28/28 | 100% green (+ new tests per step) |
-
-The U0 step re-runs the eval on `baseline-v0.2` because the P1 fixes changed behaviour since 2026-10-20.
+| Finance values matching AR (spot check) | ~31/60 (BS/CF 1/17) | 100% (all verified lines) |
+| `recon_checks` (HR + field vs AR) | none exist | 100% PASS |
+| Personas implemented / tested | 5 of 11 / 5 | 11 / 11 |
+| V19 chain (5 turns) | 3/5 in code, 0/5 live | 5/5 (CMD, DIR_HR); E-levels aggregate/refuse correctly |
+| V20 chain (6 turns) | 1/6 | 6/6 |
+| V22 DCF flow | 0 | end-to-end voice + text |
+| Golden numeric eval (user phrasings, multi-turn) | not measured (stress test is shape-only) | ≥ 95% exact |
+| Refusal governance / escalation | escalation possible | 100%, zero leaks |
+| Backend tests | 260 P / 70 F / 13 E | 100% green (+ new tests per step) |
+| Median latency p50 (data Q) | ~5 s | ≤ 5 s; DCF job ≤ 60 s with progress |
+| Chart/statement rubric | ~5/10 finance | ≥ 9/10 |
 
 ---
 
-## 7. Baseline Record (`baseline-v0.2`, 2026-10-22)
+## 7. Baseline Record (v3 start, 23-Oct-2026)
 
-- **Verified working locally:** `/api/turn`, `/ws/live` voice turn (model `gemini-3.8-live`, voice Leda), export create and download, RBAC refusal for E2_HR, 28/28 backend tests, `tsc` and `next build`.
-- **Known open defects:** the P2/P3 list in the bug audit. Most are absorbed by phases B1–B4 and H1 (mapping in `UPGRADE_CHECKLIST.md` Appendix A).
-- **Environment notes:** ADC must be valid (`gcloud auth application-default login`), and servers must be **restarted** after re-auth. Local URLs: UI `:3200`, backend `:8095`. Cloud Run (`yukti-ai`, asia-south1) runs **pre-baseline** code and is IAM-protected.
+- **Snapshot:** branch `wip/pre-v3-snapshot` @ `e7de82f` holds all previously uncommitted work (R11–R16, `financial_build/`, feedback, verbatims 17–22).
+- **Verified working:** conversation feed, floating panel, light/dark, Leda voice (when ADC is valid), the RBAC masking engine for 5 personas (77 offline tests), HR synthetic headcount/diversity calibrated to AR, real ARs FY21–FY26 + 50+ real policies on disk, `tsc` + lint clean.
+- **Known broken:** see [`BUG_REGISTER.md`](BUG_REGISTER.md) (34 items; 13 Blockers). Key items: invented finance components with plug lines; no Yahoo ingestion; no V22; V19 steps 4–5; V20 mostly missing; persona escalation; Cloud Run on baseline rev `00001`.
+- **Environment notes:** ADC must be valid (`gcloud auth application-default login`), then restart the servers. Local URLs: UI `:3200`/`:3300`, backend `:8095`. Cloud Run `yukti-ai` (asia-south1, project `ongc-hr-finance-agent`) is IAM-protected.
 
 ---
 
 ## 8. Branching, Tagging & Rollback
 
-- `main` holds only sponsor-confirmed states. Tags: `v0.1` → `baseline-v0.2` → `upgrade-U0` → `upgrade-U1` … `upgrade-H1`.
-- Work branches: `upgrade/U1-design-system`, `upgrade/U2-feed`, and so on.
-- Rollback: `git checkout baseline-v0.2` (or the last `upgrade-*` tag), then rebuild the frontend and restart both servers.
-- Feature flags for demo safety: `YUKTI_PLANNER=1` for the brain (default off until B2 passes its gate) and `NEXT_PUBLIC_FEED_V2=1` for the new UI feed (default off until U2 passes G5).
+- `main` holds only sponsor-confirmed states. v3 tags: `v3-P0` … `v3-P5`.
+- Work branches: `v3/P0-stabilise`, `v3/P1-fin-ssot`, `v3/P2H-hr`, `v3/P2F-fin-diag`, `v3/P3-agents`, `v3/P4-visual`, `v3/P5-ship`, all branched from `wip/pre-v3-snapshot`.
+- Rollback: `git checkout upgrade-H1` (last v2 tag) or the last `v3-*` tag, then rebuild the frontend and restart both servers.
+- Feature flags: `YUKTI_PLANNER=1` (brain), `YUKTI_FIN_SSOT_V3=1` (read `fact_financial_statement_line`; off = legacy tables with a "Local/legacy" badge), `YUKTI_COORDINATOR=1` (agents), `NEXT_PUBLIC_STATEMENT_VISUAL=1`.
+- **BigQuery:** new objects are created alongside the old ones (`fact_*`, `ssot_employee_360`, `ssot_field_economics_360`, `recon_checks`) and never replace in place until P5. DDL is versioned in `yukti/backend/sql/` or Dataform.
 - **Cloud Run rollback:** `gcloud run services update-traffic yukti-ai --project ongc-hr-finance-agent --region asia-south1 --to-revisions=<previous-revision>=100`.
-- **BigQuery rollback (B-phases):** new views and tables are created as `*_v2` alongside the existing ones (never replaced in place). Rollback means re-pointing config to the previous object. DDL for every new object is versioned in `yukti/backend/sql/`.
 
 ---
 
@@ -164,11 +189,7 @@ The U0 step re-runs the eval on `baseline-v0.2` because the P1 fixes changed beh
 
 | Date | Change | By |
 |---|---|---|
-| 2026-10-22 | Baseline `baseline-v0.2` committed and tagged; this charter created; overnight plan archived | Agent (sponsor-approved, Verbatim 14) |
-| 2026-10-22 | **D-24:** per-phase G5 waived; single final acceptance; phases merge into `upgrade/integration` |
-| 2026-10-22 | **U0 signed off** ("go ahead", V15). Decisions D-10…D-14 recorded; FEAT-015 (any-chart re-plot + chart excellence) added with steps U1.5, U5.7–U5.9 |
-| 2026-10-22 | `DELEGATION.md` added (Opus/Flash/Flash-lite split, separate Opus review of all Flash work); doc set passed G4 review in 3 rounds ([U0.2 review](docs/reviews/U0.2.md)) | Agent (sponsor request 05:26) |
-| 2026-10-22 | **U1–U5 UI & Visual Phases completed and G4-approved:** design tokens & contrast (`U1`), scrollable conversation feed & contract v2 (`U2`), borderless Aurora wave voice orb (`D-29`) & voice pipeline fixes (`U3`), executive polish & primitives migration (`U4`, `U4.8`), virtualised `RosterTable`, `CompareRenderer`, any-chart compatibility/transform engine, and `20/20` chart rubric excellence pass (`U5`, `U5.9`) | Agent + G4 Reviewers |
-| 2026-10-22 | **B1–B4 Brain Phases completed and G4-approved:** 86-table `semantic_catalog.json` + unified entity dictionary (`B1`), structured-output `QuerySpec` planner + deterministic SQL compiler (`B2`), roster grain + 25-cell `rbac_policy.yaml` + `< 5` small-cell suppression (`B3`), deterministic insight engine + drill-down chips + grounded narrator (`0` ungrounded numbers) + V4 Finance chain (`B4`) | Agent + G4 Reviewers |
-| 2026-10-22 | **H1 Hardening, Gate Eval & Docs completed (`H1.1`–`H1.4`, `H1.5a`, `H1.6`):** async BigQuery/ADK/Live tool offload, SQL safety hardening, path-traversal-safe exports, bounded session/ADK/cache memory, HTTPS/WSS `server.js` proxy with upstream abort, Cloud Run container supervision, and final demo script (`docs/demo_script.md`) | Agent + G4 Reviewers |
-
+| 2026-10-22 | v2 charter, baseline `baseline-v0.2`, phases U0–U5, B1–B4, H1 (see archived charter for detail) | Agent + G4 reviewers |
+| 2026-10-23 | **Deep diagnosis vs V1–V22** (5 parallel audits): finance data invented beyond headline lines; V22 missing; V19 steps 4–5 and most of V20 missing; persona escalation; five v2 "Done" claims downgraded | Agent |
+| 2026-10-23 | **Sponsor decisions 1–7 (V23):** AR as zero-error primary + XBRL + labelled Yahoo view; downloads approved; WIP snapshot `wip/pre-v3-snapshot`; v3 docs in place (v2 archived to `docs/archive/v2_2026-10-22/`); DCF after P1; Gemini clauses labelled Illustrative; realistic Employee-360 + field economics reconciled to AR | Sponsor |
+| 2026-10-23 | **v3 charter**, feature list v3 (FEAT-017…032), checklist v3 (P0–P5), `BUG_REGISTER.md`, specs SPEC-01…11, behaviours BEH-01…07, v3 delegation packets | Agent |

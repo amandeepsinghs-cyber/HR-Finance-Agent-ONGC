@@ -37,3 +37,6 @@ Collected 19 Oct 2026 (system date) by curl from official public sources. Every 
 - **DPE Public Enterprises Survey, MoU ratings, CAG audit reports, PPAC/DGH asset-wise production:** not downloaded in this time box. MoU rating is marked as unverified in FACTS.
 - **Sansad Q&A index:** the API at `https://sansad.in/api_ls/question/qetFilteredQuestionsAns` works, but its filters are ignored, so the full index has to be paged. The full 18th LS was scanned (34,720 questions); the 17th LS and Rajya Sabha were not.
 - **Grade-wise (E0-E9) headcount and pay scales:** ONGC does not publish these on its website. The "Pay" page is an online payment gateway, not pay scales.
+
+## v3 acquisition (23 Oct 2026)
+ARs FY2015-16 (image + NSE text copy), FY2016-17, FY2017-18 (EN via NSE + Hindi), FY2018-19, FY2019-20 (image-only); NSE XBRL ×12 in `xbrl/`; market data in `../market_data/`. Full table with URLs, sha256, text/image status and the FY17–19 validation: see `../MANIFEST_v3_acquisition.md`.

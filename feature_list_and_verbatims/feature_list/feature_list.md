@@ -1,37 +1,129 @@
-# Yukti AI — Feature List & Requirements Specification
+# Yukti AI — Feature List v3 & Requirements Specification
 
-**Location**: `feature_list_and_verbatims/feature_list/`  
-**Linked Verbatims**: [`feature_list_and_verbatims/verbatims/`](../verbatims/)  
-**Status**: Active / Refinement · **Process**: every feature is delivered through the five-gate process in [`BUILD.md`](../../BUILD.md) §4; steps live in [`UPGRADE_CHECKLIST.md`](../../UPGRADE_CHECKLIST.md)
+**Location**: `feature_list_and_verbatims/feature_list/` · **Version**: v3 (re-baselined 23-Oct-2026 after the deep diagnosis) · **Prior version**: [`docs/archive/v2_2026-10-22/feature_list_v2.md`](../../docs/archive/v2_2026-10-22/feature_list_v2.md)
+**Linked Verbatims**: [`../verbatims/`](../verbatims/) (V1–V23) · **Process**: five gates in [`BUILD.md`](../../BUILD.md) §4 · **Steps**: [`UPGRADE_CHECKLIST.md`](../../UPGRADE_CHECKLIST.md) (v3) · **Specs**: [`docs/specs/`](../../docs/specs/) · **Behaviours**: [`docs/behaviour/`](../../docs/behaviour/) · **Bugs**: [`BUG_REGISTER.md`](../../BUG_REGISTER.md)
 
----
+> [!IMPORTANT]
+> **BLUF:** of 32 features, **3 are verified working**, **12 partial**, **12 broken** and **5 missing**. The v2 list marked all 16 features "Done"; five of those claims (FEAT-002, 009, 010, 013, 014) are contradicted by code or sponsor feedback and are downgraded here. The critical path is **FEAT-018 (real finance SSOT) → FEAT-024 (V20) → FEAT-029 (DCF)** and **FEAT-017/021/023 (personas, Employee-360, V19)**.
 
-## Feature Index
-
-| Feature ID | Feature Name | Source Verbatim | Priority | Category | Phase | Status |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **FEAT-001** | **Scrollable Conversational Feed (History Preservation)** | V8 §3, V11 | **P0** | Frontend / UX | U2 | ✅ Done (U2, G4 approved) |
-| **FEAT-002** | **Multi-Turn Context & Entity Carryover** | V11 | **P0** | Backend / Agent | B2 (via FEAT-009) | ✅ Done (B2, G4 approved) |
-| **FEAT-003** | **Visual Presentation & Charting Audit** | V7, V11 | **P1** | Visualization / UX | U5 | ✅ Done (U5.1/U5.6/U5.9, G4 approved) |
-| **FEAT-004** | **Luminous Siri / Infinity Loop Voice Orb (Aurora Wave D-29)** | V12 | **P1** | UI / Animation | U3 | ✅ Done (U3 + Aurora redo, G4 approved) |
-| **FEAT-005** | **Executive UI Modernization & Material Polish** | V12 | **P1** | UI / Design System | U1 + U4 | ✅ Done (U1 + U4/U4.8, G4 approved) |
-| **FEAT-006** | **CMD Actionable Employee-Level Roster (Drilldown)** | V13 | **P0** | Data / HR Actions | U5 (UI) + B3 (data) | ✅ Done (U5.2 + B3.1/B3.5, G4 approved) |
-| **FEAT-007** | **Answer Contract v2 (forward-compatible UI ↔ brain)** | V14 (D-4) | **P0** | Contract / Frontend | U2 | ✅ Done (U2.1/U2.1b, G4 approved) |
-| **FEAT-008** | **Generated Semantic Layer (catalog = data truth)** | Audit 2026-10-22 | **P0** | Backend / Data | B1 | ✅ Done (B1, G4 approved) |
-| **FEAT-009** | **QuerySpec Planner & Compiler (replaces keyword fast-paths)** | V11, V13, V14 (D-1) | **P0** | Backend / Agent | B2 | ✅ Done (B2, G4 approved) |
-| **FEAT-010** | **Granular-Data RBAC Policy (row/column masking)** | V3, V13, V14 (D-5) | **P0** | Governance | B3 (+ U5 UI states) | ✅ Done (B3 + U5.2, G4 approved) |
-| **FEAT-011** | **Insight Engine & Drill-down Chips ("granular insights")** | V13, V14 | **P0** | Backend / UX | B4 (+ U5 UI) | ✅ Done (B4 + U5.4, G4 approved) |
-| **FEAT-012** | **Reliability, Safety & Performance Hardening** | Audit 2026-10-22 (P2/P3) | **P1** | Backend / Ops | H1 | ✅ Done (H1.1–H1.3b, G4 approved) |
-| **FEAT-013** | **Voice Pipeline Quality (barge-in, mic lifecycle, no duplicate turns)** | V6, V8, audit | **P1** | Frontend / Voice | U3 | ✅ Done (U3.3–U3.6, G4 approved) |
-| **FEAT-014** | **Eval-Gated Release & Cloud Run Redeploy** | V14 (D-3) | **P1** | Quality / Ops | U0 + H1 | ✅ Done (U0.4 + B1–B4 + H1.4/H1.5a; H1.5b ready on sign-off) |
-| **FEAT-015** | **Any-Chart Re-presentation & Chart Excellence** | V7, V15 | **P0** | Visualization / UX | U1.5 + U5.7–U5.9 | ✅ Done (U1.5 + U5.7–U5.9, G4 approved) |
-| **FEAT-016** | **AI Aura visual language** (feathery Google-hue light for AI presence) | V16 | **P1** | UI / Brand | U1.6 (done), U4, U3 | ✅ Done (U1.6 + U3 + U4, G4 approved) |
-
-> **Design Specifications Reference**: See [`design_recommendations_ui_and_orb.md`](./design_recommendations_ui_and_orb.md) for detailed UI glassmorphism and voice orb wave formulas.
+**Status legend** (evidence-based, from the 23-Oct diagnosis):
+✅ **Implemented-verified** · 🟡 **Partial** (works for some paths/cases) · 🔴 **Broken** (claimed or built, but wrong/failing) · ⛔ **Missing** (no code)
 
 ---
 
-## FEAT-001: Scrollable Conversational Feed (History Preservation)
+## Feature Index (v3)
+
+| ID | Feature | Verbatims | Pri | Phase (v3) | Spec | v2 claim | **v3 status** | Evidence / gap (diagnosis ref) |
+|---|---|---|---|---|---|---|---|---|
+| FEAT-001 | Scrollable conversation feed (history) | V8, V11 | P0 | — | — | Done | ✅ | `ConversationFeed.tsx`, `state/feed.ts`; panel thread duplicates in voice mode → BUG-17 |
+| FEAT-002 | Multi-turn context & entity carry-over | V11 | P0 | P5 | SPEC-11 | Done | 🟡 | Planner path only; legacy/fast-paths push `{}` (turn_runner.py:577); no year clarification; `resolve_fy` regression BUG-20 |
+| FEAT-003 | Visual presentation audit | V7, V11 | P1 | — | — | Done | ✅ | `docs/visual_audit.md` (superseded by FEAT-025/026 for finance) |
+| FEAT-004 | Voice orb (Aurora wave) | V12 | P2 | P4 | SPEC-09 | Done | 🟡 | Built, but only shown when panel minimised (FloatingConversationPanel.tsx:236-247) |
+| FEAT-005 | Executive UI modernisation | V12 | P1 | — | — | Done | ✅ | U1/U4 design system; tsc + lint clean |
+| FEAT-006 | CMD named employee roster | V13 | P0 | P2H | SPEC-07 | Done | 🟡 | Roster SQL works; data realism defects (E1 median 19.6 yrs service, 1,393 names) → FEAT-021 |
+| FEAT-007 | Answer contract v2 | V14 | P0 | P3 | SPEC-03 | Done | 🟡 | Works; lacks `proposed_action`, `job`, `statement` visual → v3 contract |
+| FEAT-008 | Generated semantic layer | audit | P0 | P1 | SPEC-01 | Done | 🟡 | Exists; no pay components, WACC, statement-coverage manifest |
+| FEAT-009 | QuerySpec planner & compiler (replaces fast-paths) | V11, V13 | P0 | P5 | SPEC-11 | Done | 🔴 | ~25 keyword branches + hard-coded answers still run before the planner (turn_runner.py:1541-1550, 2161-2228) |
+| FEAT-010 | Granular-data RBAC (row/column masking) | V3, V13, V14 | P0 | P0/P2H | SPEC-06 | Done | 🔴 | Masking engine ✅ (77 tests), but persona escalation by voice (BUG-06) and hard-coded self emp_id (BUG-07) |
+| FEAT-011 | Insight engine & drill-down chips | V13, V14 | P0 | P2F | SPEC-08 | Done | 🟡 | Works for HR; finance "why/action" is canned text with circular grounding (BUG-16) |
+| FEAT-012 | Reliability, safety, performance | audit | P1 | P0 | SPEC-11 | Done | 🟡 | H1 work done; CORS `*`, open admin route (BUG-32), error leakage (BUG-33) |
+| FEAT-013 | Voice pipeline quality (no duplicate turns) | V6, V8 | P1 | P5 | SPEC-11 | Done | 🔴 | Duplicate/fragment bubbles from barge-in echo (live_session.py:804; BUG-17, BUG-18) |
+| FEAT-014 | Eval-gated release & Cloud Run redeploy | V14 | P1 | P5 | SPEC-11 | Done | 🔴 | Cloud Run = baseline rev 00001; 70 failing tests; stress test is shape-only |
+| FEAT-015 | Any-chart re-presentation & chart excellence | V7, V15 | P0 | P4 | SPEC-09 | Done | 🟡 | ~15/29 types; waterfall re-plot wrong (BUG-08); explicit kind overridden (BUG-22) |
+| FEAT-016 | AI aura visual language | V16 | P2 | P4 | SPEC-09 | Done | 🟡 | Only a 2.5 px ask-bar arc; V21 marks low priority |
+| **FEAT-017** | **Eleven-persona matrix + function split + `self` scope** | V17 | **P0** | P2H | SPEC-06 | — | 🔴 | 5 of 11 personas; unknown → E2_HR; no HR/Finance split; juniors see EMP-102451 data |
+| **FEAT-018** | **Real financial SSOT with page lineage + verification gates** | V18 | **P0** | P1 | SPEC-01 | — | 🔴 | Current data LLM-authored with plugs (build_10yr_financials.py:29-1120, :1193, :1223); BS/CF 1/17 match |
+| **FEAT-019** | **Yahoo Finance ingestion (consolidated view) + market data** | V18, V20, V22 | **P0** | P1 | SPEC-01/02 | — | ⛔ | Never ingested; only labels. Endpoints reachable; FY23–FY26 consolidated |
+| **FEAT-020** | **Knowledge RAG over real AR text** | V18, V20 | P1 | P1 | SPEC-01 | — | 🔴 | Corpus = f-strings over invented numbers; keyword retrieval; BQ vectors never queried |
+| **FEAT-021** | **Employee-360 enterprise table (realistic, reconciled)** | V13, V19, V23 | **P0** | P2H | SPEC-04 | — | 🟡 | Granular data exists (22,798 active, 198,880 postings, 1.68M payslips); realism defects; no benefits/insurance/CTC; no AR reconciliation |
+| **FEAT-022** | **Field economics-360 reconciled to company AR totals** | V18, V23 | **P0** | P2H | SPEC-05 | — | 🔴 | Field P&L "scaled" top-down to invented totals (load_and_reconcile_bq.py:204-258); production off vs AR |
+| **FEAT-023** | **V19 transfer workflow: Excel intent + Email agent** | V19 | **P0** | P2H | SPEC-07 | — | 🔴 | Steps 1–3 OK in code; step 4 intent missing (ui_control.py:291); step 5 missing (canned proposal, draft_document.py:105-131) |
+| **FEAT-024** | **V20 finance diagnostics (year-clarify, multi-year statement, WACC, why, top-5 actions)** | V20 | **P0** | P2F | SPEC-08, SPEC-02 | — | ⛔ | No year question; no WACC; 1 canned action per statement-year |
+| **FEAT-025** | **Financial statement table visual** | V21 | **P0** | P4 | SPEC-09 | — | 🟡 | Defaults to table ✅, but generic sortable grid (no indent/subtotals/(neg)/FY columns) |
+| **FEAT-026** | **Chart portfolio completion + correct waterfall** | V7, V15, V21 | **P0** | P4 | SPEC-09 | — | 🔴 | Waterfall total ≈ 3× revenue; EBITDA fabricated (`rev*0.68`); combo/heatmap/box/gauge no renderer |
+| **FEAT-027** | **Export suite** | V2, V7, V21 | P1 | P4 | SPEC-10 | — | 🟡 | xlsx (unformatted), docx ✅; PDF ₹/Hindi broken; fake Docs URL; no CSV/PNG/SVG |
+| **FEAT-028** | **Coordinator + agent registry + jobs + permission UX** | V22 | **P0** | P3 | SPEC-03 | — | ⛔ | No orchestrator/sub-agents/jobs/permission field |
+| **FEAT-029** | **DCF valuation agent** | V22 | **P0** | P3 | SPEC-02 | — | ⛔ | No DCF/WACC code; no market inputs |
+| **FEAT-030** | **One-brain consolidation + numeric golden eval** | bugs | **P0** | P5 | SPEC-11 | — | ⛔ | 3 divergent brains; shape-only stress test |
+| **FEAT-031** | **Identity & security hardening** | V3, V17 | **P0** | P0 | SPEC-06 | — | 🔴 | Client-asserted persona; CORS `*`; unauthenticated admin route |
+| **FEAT-032** | **Provenance honesty & degraded-mode transparency** | V18, V23 | **P0** | P0 | SPEC-11 | — | 🔴 | False "Audited + Yahoo / BigQuery" labels while serving local JSON; Gemini clauses unlabeled |
+
+**Counts:** ✅ 3 · 🟡 12 · 🔴 12 · ⛔ 5 = 32 (per-verbatim scorecard: diagnosis §2).
+
+---
+
+## v3 Feature Definitions (FEAT-017 → FEAT-032)
+
+### FEAT-017 — Eleven-Persona Matrix, Function Split & `self` Scope (V17)
+- **Problem:** only CMD, DIR_HR, DIR_FIN, E2_HR, E3_FIN exist; HR and Finance juniors share one policy; juniors' "my" questions resolve to one hard-coded employee.
+- **Required:** personas CMD, DIR_HR, DIR_FIN, E1_HR, E2_HR, E3_HR, E4_HR, E1_FIN, E2_FIN, E3_FIN, E4_FIN, each seeded from a real synthetic employee row (`dim_app_user`). Juniors: aggregate (k≥5) within their function, HR policy for all, `self` scope (own payslip, leave, posting, entitlements), aggregate pay by grade allowed, named/pay/sensitive refused. Directors: full within function and cross-function aggregates per SPEC-06; CMD: everything.
+- **Acceptance:** 11 personas × data classes test matrix 100% pass; zero cross-employee leakage on `self`; any persona can ask any question and gets either an answer + insight or a polite refusal with an allowed alternative (V17 "should get responses and insights").
+
+### FEAT-018 — Real Financial SSOT (V18)
+- **Required:** `hrfin_gold.fact_financial_statement_line` built from ONGC ARs (standalone FY17–FY26; consolidated FY22–FY26), NSE XBRL backfill, every row with `source_doc`, `source_page`, `extraction_method`, `verified`. No plug lines. Companion `dim_financial_line`, `fact_segment`, `fact_production_annual` (with `basis`), `fact_reserves`, `fact_hr_aggregates`.
+- **Acceptance:** 100% of AR-reported subtotals reproduced within ₹0.05 cr; A = E + L; closing cash ties; cross-AR comparatives agree or are flagged restated; app reads only `verified=TRUE`; UI shows doc + page. Old `build_10yr_financials.py` and `corporate_financial_summary.csv` retired.
+
+### FEAT-019 — Yahoo Finance & Market Data (V18, V20, V22)
+- **Required:** raw Yahoo fundamentals (annual + quarterly) and prices (ONGC.NS, ^NSEI) stored as `source='yahoo', basis='consolidated'`; a "Yahoo view" statement layout; cross-check vs AR consolidated within ₹1 cr; market inputs for WACC/DCF.
+- **Acceptance:** "show the Yahoo Finance income statement" renders FY23–FY26 consolidated with a basis label; FY26 values equal AR consolidated.
+
+### FEAT-020 — Knowledge RAG over Real AR Text (V18, V20)
+- **Required:** `doc_chunks_ar` from AR MD&A, Directors' Report, Notes (page-referenced), embedded; BQ `VECTOR_SEARCH` + structured line lookup; every "why" sentence cites doc + page.
+- **Acceptance:** 0 generated-narrative chunks in the corpus; retrieval eval ≥ 80% hit@5 on a 30-question set.
+
+### FEAT-021 — Employee-360 Enterprise Table (V13, V19, V23)
+- **Required:** one analysis-ready BigQuery table `hrfin_gold.ssot_employee_360` (grain per SPEC-04) with identity, org, tenure/postings, full monthly pay (basic, IDA/DA, HRA, cafeteria/perks, field/offshore/hard-duty allowances, overtime hours & amount, PRP), employer benefits (CPF, PRBS, gratuity, PRMB, health/group insurance, medical scheme, leave encashment, LTC, housing), deductions, CTC, capitalised vs expensed cost, leave, training, APAR (sensitive), attrition flags, cost-centre/field link. Realistic career pyramid and names.
+- **Acceptance:** Σ annual employee cost per FY = AR employee-benefit expense (tolerance per SPEC-04); FY-end headcount = AR "Number of Employees"; gender/category/PwD/age-band shares = AR/BRSR; `recon_checks` all PASS; derived KPIs (revenue/employee, cost/employee, overtime %, etc.) exposed in the semantic model.
+
+### FEAT-022 — Field Economics-360 Reconciled to Company (V18, V23)
+- **Required:** `hrfin_gold.ssot_field_economics_360` (field × month / FY): production (basis), price, revenue, levies, opex by nature (incl. employee cost from FEAT-021), DD&A, exploration write-off, EBITDA, PBT, opex/boe, capex, headcount. Field splits modelled and labelled; totals real.
+- **Acceptance:** Σ fields + explicit HQ/unallocated = AR standalone P&L lines per FY exactly; Σ offshore/onshore = AR segment note; Σ production = AR/PPAC totals per basis.
+
+### FEAT-023 — V19 Transfer Workflow Completion
+- **Required:** Delhi-by-level (ordered E1→E9) → >5 yrs (one canonical definition) → names roster → "export as Excel" (any phrasing, EN + Hindi, requested columns) → "draft an email to Director HR" (editable draft, cohort counts, Illustrative JRTP clause + real J-03 anchor, xlsx attached, .eml/.docx/mailto).
+- **Acceptance:** BEH-02 5-turn chain passes for CMD and DIR_HR; E-level personas get aggregate/refusal at step 3; no hard-coded numbers.
+
+### FEAT-024 — V20 Finance Diagnostics & Prescriptive Actions
+- **Required:** year clarification chips; Yahoo-style multi-year statement (4–10 FY columns); WACC 5/10-yr chart from `fact_wacc_annual`; variance attribution per line item; "why" grounded in data + AR chunks; top-5 actions (lever, ₹ impact, owner, evidence).
+- **Acceptance:** BEH-03 chain passes with exact SSOT values; every action has a quantified impact and cited evidence; zero canned text.
+
+### FEAT-025 — Financial Statement Table Visual (V21)
+- **Required:** `visual.type="statement"`: indented hierarchy, bold subtotals with rules, `(negatives)`, lakh-crore grouping, FY columns, sticky first column, no sorting/inline bars, footnote with source + page.
+- **Acceptance:** finance rubric (SPEC-09) ≥ 9/10 on IS/BS/CF in light + dark.
+
+### FEAT-026 — Chart Portfolio & Correct Waterfall (V7, V15, V21)
+- **Required:** signed P&L bridge shared backend/frontend (ends at reported PAT); never fabricate values; explicit chart kind wins; add combo dual-axis, 100% stacked, heatmap, sensitivity grid, tornado, box, gauge, sunburst, sankey, bubble, state choropleth; data-shape compatibility matrix (no histogram for statements).
+- **Acceptance:** unit test FY24 waterfall ends at PAT ₹40,526 cr (AR); every contract kind has a renderer; rubric scorecards ≥ 9/10.
+
+### FEAT-027 — Export Suite (V2, V7, V21)
+- **Required:** formatted xlsx (incl. DCF assumptions sheet), CSV, PDF with embedded Noto fonts + tables + chart image, PNG/SVG, docx, .eml; honest Google Sheets/Docs behaviour until Drive OAuth; voice/text intents per format; RBAC-masked exports + audit log.
+- **Acceptance:** ₹ and Devanagari render (pdftotext check); every rendered card exports in ≥ 4 formats.
+
+### FEAT-028 — Coordinator, Agents, Jobs & Permission UX (V22)
+- **Required:** one interface; coordinator routes to analyst, fin_diagnostics, dcf, hr_transfer, doc_export agents; contract `proposed_action` + `job`; Run / Edit assumptions / Cancel (voice "yes, run it"); jobs API with progress stream; RBAC gating.
+- **Acceptance:** BEH-05 flow passes by voice and text; job progress visible; result persisted in session.
+
+### FEAT-029 — DCF Valuation Agent (V22)
+- **Required:** deterministic DCF on verified FCFF; WACC build-up from sourced inputs; terminal value (Gordon + exit-multiple check); EV→equity bridge; per-share value vs market price; WACC×g grid; tornado; xlsx with live formulas; "illustrative valuation" disclaimer.
+- **Acceptance:** fixture test matches hand computation to ₹0.01/share; sensitivity grid symmetric checks; conclusion sentence states % under/over-valuation with assumptions.
+
+### FEAT-030 — One Brain & Numeric Golden Eval
+- **Required:** every data question through one route; fast-paths and hard-coded answers deleted or turned into deterministic intents; coverage manifest; voice speaks `spoken_summary` verbatim; numeric golden set (~60 user-phrased + V19/V20/V22 chains + voice smoke).
+- **Acceptance:** golden eval ≥ 95% exact on numbers; feedback1–4 regressions all pass; Cloud Run redeployed from a green tree.
+
+### FEAT-031 — Identity & Security Hardening
+- **Required:** server-side persona (signed token for demo; IAP for prod); no voice/text role switching for non-admins; `@self_emp_id`; CORS allow-list; authenticated admin routes.
+- **Acceptance:** escalation tests fail closed; SPEC-06 §7 acceptance criteria 3, 4, 8 and 9 pass.
+
+### FEAT-032 — Provenance Honesty & Degraded Modes
+- **Required:** source badges (Verified AR p.N / Yahoo consolidated / Modelled / Illustrative / Local snapshot); Gemini-generated policy clauses labelled **Illustrative** (D-35); synthetic employee records labelled; auth/health banner; generic error text.
+- **Acceptance:** no answer claims a source it did not use (automated check in eval).
+
+---
+
+## Legacy Feature Detail (FEAT-001 → FEAT-016, from v2; statuses above supersede any "Done" text below)
+
+### FEAT-001: Scrollable Conversational Feed (History Preservation)
 
 ### 1. User Problem Statement
 Currently, asking a new question clears or completely replaces the screen. The user cannot see previous questions, tables, or charts, making comparison across queries impossible and feeling disconnected from standard conversational AI experiences (Gemini, Claude, ChatGPT).
@@ -51,7 +143,7 @@ Currently, asking a new question clears or completely replaces the screen. The u
 
 ---
 
-## FEAT-002: Multi-Turn Context & Entity Carryover
+### FEAT-002: Multi-Turn Context & Entity Carryover
 
 ### 1. User Problem Statement
 Every question is currently evaluated in isolation. If a user asks *"How many employees are in New Delhi?"* and follows up with *"Break them down by discipline"*, the system does not remember that "them" refers to Delhi employees, causing failures or irrelevant answers.
@@ -67,7 +159,7 @@ Every question is currently evaluated in isolation. If a user asks *"How many em
 
 ---
 
-## FEAT-003: Visual Presentation & Charting Audit
+### FEAT-003: Visual Presentation & Charting Audit
 
 ### 1. Objective
 Conduct an exhaustive audit of all visual representations (charts, KPI metrics, geospatial maps, data tables, and document drafts) across the entire question bank to identify presentation gaps and elevate visual polish.
@@ -84,7 +176,7 @@ Conduct an exhaustive audit of all visual representations (charts, KPI metrics, 
 
 ---
 
-## FEAT-004: Luminous Siri / Infinity Loop Voice Orb
+### FEAT-004: Luminous Siri / Infinity Loop Voice Orb
 
 ### 1. User Problem Statement
 The existing 3D Fibonacci particle orb feels chaotic, jittery, and overly technical. Leadership expects a serene, organic, and executive voice presence—analogous to Apple's Siri multi-ribbon wave / infinity loop or DeepMind AlphaFold's continuous harmonic ribbons.
@@ -105,7 +197,7 @@ The existing 3D Fibonacci particle orb feels chaotic, jittery, and overly techni
 
 ---
 
-## FEAT-005: Executive UI Modernization & Enterprise Material Polish
+### FEAT-005: Executive UI Modernization & Enterprise Material Polish
 
 ### 1. User Problem Statement
 The current interface is functional but feels somewhat "basic" and flat. It needs an executive-grade aesthetic tailored for ONGC leadership (CMD, Directors) that conveys authority and polish without becoming complex, cluttered, or difficult to use.
@@ -128,7 +220,7 @@ The current interface is functional but feels somewhat "basic" and flat. It need
 
 ---
 
-## FEAT-006: CMD Actionable Employee-Level Roster (Drilldown from Aggregates)
+### FEAT-006: CMD Actionable Employee-Level Roster (Drilldown from Aggregates)
 
 ### 1. User Problem Statement
 Currently, HR tenure questions (e.g. *Delhi office for 5+ years*) only render an aggregated donut or bar chart showing high-level counts (e.g. 419 executives). A CMD cannot take decisions or initiate transfer actions without seeing the actual names and service histories of the individuals.
@@ -164,7 +256,7 @@ Currently, HR tenure questions (e.g. *Delhi office for 5+ years*) only render an
 
 ---
 
-## FEAT-007: Answer Contract v2 (Forward-Compatible UI ↔ Brain)
+### FEAT-007: Answer Contract v2 (Forward-Compatible UI ↔ Brain)
 
 ### 1. Problem
 The UI is built first (D-4), but it must render what the brain will produce later. Contract v1 has a single `visual` and free-text `insights`, with no slot for drill-downs, comparisons, roster masking or the turn's query context.
@@ -186,7 +278,7 @@ The UI is built first (D-4), but it must render what the brain will produce late
 
 ---
 
-## FEAT-008: Generated Semantic Layer (Catalog = Data Truth)
+### FEAT-008: Generated Semantic Layer (Catalog = Data Truth)
 
 ### 1. Problem
 The hand-written catalog disagrees with BigQuery (`'active'` vs `'Active'`, `cadre` case, WC codes that differ across modules), so generated SQL silently returns 0 rows and the app falls back to canned answers.
@@ -204,7 +296,7 @@ The hand-written catalog disagrees with BigQuery (`'active'` vs `'Active'`, `cad
 
 ---
 
-## FEAT-009: QuerySpec Planner & Compiler (Replaces Keyword Fast-Paths)
+### FEAT-009: QuerySpec Planner & Compiler (Replaces Keyword Fast-Paths)
 
 ### 1. Problem
 About 1,000 lines of keyword fast-paths in `turn_runner.py` answer before the question is understood. They return canned aggregates, hijack unrelated questions, and can't express follow-ups ("compare this with Mumbai").
@@ -223,7 +315,7 @@ About 1,000 lines of keyword fast-paths in `turn_runner.py` answer before the qu
 
 ---
 
-## FEAT-010: Granular-Data RBAC Policy (Row/Column Masking)
+### FEAT-010: Granular-Data RBAC Policy (Row/Column Masking)
 
 ### 1. Policy (Verbatim 14 D-5; Verbatim 15 D-10, D-11)
 | Persona class | Personas | Granular / named data | Statutory-confidential (individual pay, APAR, vigilance, POSH, medical) |
@@ -244,7 +336,7 @@ About 1,000 lines of keyword fast-paths in `turn_runner.py` answer before the qu
 
 ---
 
-## FEAT-011: Insight Engine & Drill-Down Chips ("Granular Insights")
+### FEAT-011: Insight Engine & Drill-Down Chips ("Granular Insights")
 
 ### 1. Problem
 Answers narrate rows. Nothing computes the "so what": share, rank, change, gaps vs target, outliers, named exceptions, or the next decision.
@@ -263,7 +355,7 @@ Answers narrate rows. Nothing computes the "so what": share, rank, change, gaps 
 
 ---
 
-## FEAT-012: Reliability, Safety & Performance Hardening
+### FEAT-012: Reliability, Safety & Performance Hardening
 
 Covers the remaining items from the 2026-10-22 bug audit (P2 2.11–2.16, 2.22; P3):
 * Async BigQuery and embeddings (`asyncio.to_thread`), and voice tool calls moved off the Gemini receive loop.
@@ -276,7 +368,7 @@ Covers the remaining items from the 2026-10-22 bug audit (P2 2.11–2.16, 2.22; 
 
 ---
 
-## FEAT-013: Voice Pipeline Quality
+### FEAT-013: Voice Pipeline Quality
 
 * Barge-in uses raw mic RMS (no synthetic floor). Local stop also drops incoming audio and sends `interrupt` to the server.
 * An in-flight guard on mic start (no leaked `getUserMedia` streams). Final frame flushed on stop; playback context closed on unmount.
@@ -287,7 +379,7 @@ Covers the remaining items from the 2026-10-22 bug audit (P2 2.11–2.16, 2.22; 
 
 ---
 
-## FEAT-014: Eval-Gated Release & Cloud Run Redeploy
+### FEAT-014: Eval-Gated Release & Cloud Run Redeploy
 
 * Re-run the 773-turn cache-OFF eval on `baseline-v0.2` (U0) to set the real baseline after the P1 fixes.
 * A fast **gate subset** (≈ 120 turns: flagship chains, RBAC suite, a paraphrase sample) runs at every B-phase gate; the full eval runs at H1.
@@ -296,7 +388,7 @@ Covers the remaining items from the 2026-10-22 bug audit (P2 2.11–2.16, 2.22; 
 
 ---
 
-## FEAT-015: Any-Chart Re-presentation & Chart Excellence
+### FEAT-015: Any-Chart Re-presentation & Chart Excellence
 
 ### 1. User Problem Statement (Verbatim 15)
 The same data should be presentable in many ways. The system picks a sensible default, but the CMD can say *"show this as a pie chart"* (even when the default was a histogram) and the interface re-plots the **same data** in that form. Charts are the platform's **first impression**, so they must be elegant and of the highest professional standard.
@@ -325,7 +417,7 @@ The same data should be presentable in many ways. The system picks a sensible de
 
 ---
 
-## FEAT-016: AI Aura Visual Language
+### FEAT-016: AI Aura Visual Language
 
 **Source:** Verbatim 16 · **Decision:** D-16 · **Prototype:** `/design-system` → "AI Aura" (U1.6)
 

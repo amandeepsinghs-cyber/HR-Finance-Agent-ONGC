@@ -1,7 +1,7 @@
 # Task Packet: `<STEP-ID>` <title>
 
 **Executor:** F (`flash`) | FL (`flash_lite`) · **Author:** O (Opus) · **Date:** YYYY-MM-DD
-**Branch:** `upgrade/<phase>` · **Base SHA:** `<sha>` · **Max files changed:** N · **Budget:** ~N tool calls / stop after 2 failed self-checks · **Features:** FEAT-0xx · **Checklist:** [`UPGRADE_CHECKLIST.md`](../../../UPGRADE_CHECKLIST.md), row `<step-id>`
+**Branch:** `v3/<phase-id>` (BUILD.md §8 names) · **Base SHA:** `<sha>` · **Max files changed:** N · **Budget:** ~N tool calls / stop after 2 failed self-checks · **Features:** FEAT-0xx · **Checklist:** [`UPGRADE_CHECKLIST.md`](../../UPGRADE_CHECKLIST.md) (from a packet in `packets/v3/`, use `../../../../UPGRADE_CHECKLIST.md`), row `<step-id>`
 **App root (quote it, the path has spaces and `&`):** `/usr/local/google/home/amandeepsinghs/o&g agentic transformation/Oil & Gas Agent Portfolio/cloud_run_apps/HR and Finance_ONGC`
 
 ## 1. Goal (one sentence)

@@ -1,185 +1,141 @@
-# Yukti AI: Step-by-Step Upgrade Checklist (`UPGRADE_CHECKLIST.md`)
+# Yukti AI: Step-by-Step Upgrade Checklist v3 (`UPGRADE_CHECKLIST.md`)
 
-**Process:** every step goes through the five gates in [`BUILD.md`](BUILD.md) §4. **Features:** [`feature_list.md`](feature_list_and_verbatims/feature_list/feature_list.md) · **Decisions:** [`docs/DECISIONS.md`](docs/DECISIONS.md) · **Reviews:** `docs/reviews/<step-id>.md`
-**Baseline:** `baseline-v0.2` (`fbe3594`) · **Order:** U0 → U1 → **U4 → U3 → U2 → U5** (visual-first, D-17) → B1 → B2 → B3 → B4 → H1
+**Version:** v3 (23-Oct-2026) · **Charter:** [`BUILD.md`](BUILD.md) (five gates + truth rules §4.3) · **Features:** [`feature_list.md`](feature_list_and_verbatims/feature_list/feature_list.md) · **Bugs:** [`BUG_REGISTER.md`](BUG_REGISTER.md) · **Specs:** [`docs/specs/`](docs/specs/) · **Behaviours:** [`docs/behaviour/`](docs/behaviour/) · **Packets:** [`docs/delegation/packets/v3/`](docs/delegation/packets/v3/) · **v2 checklist (archived):** [`docs/archive/v2_2026-10-22/UPGRADE_CHECKLIST.md`](docs/archive/v2_2026-10-22/UPGRADE_CHECKLIST.md)
 
-**Owner legend:** `O` Opus lead · `F` Flash · `FL` Flash-lite · `O→F` Opus skeleton, Flash completes · `F→O` Flash drafts, Opus finalises · `FL→O` Flash-lite runs, Opus interprets · `O→F + FL` Opus specifies, Flash builds, Flash-lite runs · `O + S` Opus executes with sponsor go-ahead · `S` Sponsor. Rules in [`DELEGATION.md`](DELEGATION.md); **every step gets a G4 review by a fresh Opus reviewer (R-O); F/FL steps also get the delegation consistency checks**.
-**Gate legend per step:** `G1` spec confirmed · `G3` verified (evidence) · `G4` independent review approved (link) · `G5` sponsor sign-off (phase end). **Packet** files are written by Opus at G1, before delegation; links show `n/a` for Opus-owned steps.
-**Status legend:** ⬜ not started · 🟦 in progress · 🟨 in review · ✅ done · ⛔ blocked (decision)
+> [!IMPORTANT]
+> **BLUF:** 61 v3 steps across P0–P5. **2 done, 1 in progress, 58 to do.** Step IDs match the packet files in `docs/delegation/packets/v3/` one-to-one (**51 packets**; indexes: `_INDEX_P0_P2H1-4_P4.md`, `_INDEX_P1_P2F_P3.md`, `_INDEX_P2H5-8.md`). Critical path: **P0 → P1 (real finance SSOT) → P2F → P3 (DCF)**. P2H (personas, V19, Employee-360) and P4 (visuals) run in parallel after P0. Every data step needs numeric acceptance (BUILD §4.3).
 
----
-
-## Phase U0: Governance & Baseline · *gate: docs confirmed (U1 may start after U0.2 + OD-1; U0.4/U0.5 run in parallel)*
-
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **U0.1** | `O` | Commit and tag the baseline | `baseline-v0.2` tag exists; tree clean | `git log`, `git tag` | ✅ | n/a | ✅ | waived (V14) | ✅ (V14) |
-| **U0.2** | `O` | `BUILD.md`, feature list v2, this checklist, decision log, review template, `DELEGATION.md` | Docs exist, cross-linked, and every feature maps to ≥ 1 step | Doc review by reviewer agent | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U0.2.md) | ✅ (V15) |
-| **U0.3** | `S` | Resolve open decisions OD-1 … OD-5 | Each recorded as D-x in `DECISIONS.md` | Sponsor answers | ✅ (OD-5 deferred to B3) | n/a | ✅ | n/a (sponsor decision) | ✅ (V15) |
-| **U0.4** | `O→F + FL` | Re-run the cache-OFF eval on `baseline-v0.2`; build the fast **gate subset** (~120 turns) | Scorecard at `yukti/backend/eval/gates/U0.md`; subset script runs in < 15 min | Eval run log | ✅ (executed by O: subset, script and runs; no F/FL packet) | n/a | ✅ | ✅ [review](docs/reviews/B1.md) | |
-| **U0.5** | `FL` | Visual baseline: Playwright screenshots of the current UI (light/dark, key states) | `docs/reviews/assets/U0_*.png` | Screenshot script | ✅ | [packet](docs/delegation/packets/U0.5.md) | ✅ |✅ [evidence](docs/reviews/U0.5.md) (O spot-check) | |
+**Legend:** ✅ Done (G4-approved, or sponsor-executed) · 🔄 In progress · ⬜ To do · ⛔ Blocked · **Owner:** O = Opus lead · F = Flash (needs a packet) · FL = Flash-lite runner · S = Sponsor · `O→F` = Opus spec/skeleton, Flash completes
 
 ---
 
-## Phase U1: Design System Foundation (FEAT-005, FEAT-015 chart theme) · *gate: visual review sign-off (incl. D-13 palette confirmation)*
+## Part A — What is already implemented (carried forward from v2; verified 23-Oct)
 
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **U1.1** | `O→F` | Design tokens (colour per OD-1, surfaces, borders, radii, shadows, motion durations) as CSS variables + Tailwind theme | One token source; no hard-coded hex in components (lint/grep check) | `grep` check + build | ✅ | [packet](docs/delegation/packets/U1.1.md) | ✅ |✅ [review](docs/reviews/U1.1.md) | |
-| **U1.2** | `F` | Typography scale and tabular numerals for KPIs; number formatting (₹ Cr / Lakh, %) centralised | KPI numerals use `font-variant-numeric: tabular-nums`; all ₹/%/count formatting goes through one util (grep: 0 ad-hoc `toLocaleString` in components) | Screenshot diff | ✅ | [packet](docs/delegation/packets/U1.2.md) | ✅ |✅ [review](docs/reviews/U1.2_U1.4.md) | |
-| **U1.3** | `O→F` | Surface primitives: `Card`, `CardHeader`, `Chip`, `Badge`, `Toolbar` (frosted glass, hairline borders, ambient shadow) | Primitives (`Card`, `CardHeader`, `Chip`, `Badge`, `ContextChips`, `Toolbar`, `IconButton`) exported from `src/components/ui/primitives.tsx`; rendered on the `/design-system` showcase page in light + dark; tokens only (lint OK). Adoption: new components from U2 on (TurnCard U2.3); legacy Canvas/Panel/TopBar migrated in U4 (D-15) | `/design-system` showcase page (screenshots light + dark) | ✅ | [packet](docs/delegation/packets/U1.3.md) | ✅ |✅ [review](docs/reviews/U1.3_U1.5.md) | |
-| **U1.4** | `F` | Light theme as default; dark theme parity | No contrast failures on primary text (≥ 4.5:1) | Automated contrast check | ✅ | [packet](docs/delegation/packets/U1.4.md) | ✅ |✅ [review](docs/reviews/U1.2_U1.4.md) | |
-| **U1.5** | `O` (Flash part not needed; reference charts built in U1.3 page) | **Chart design system** (FEAT-015): ECharts theme from tokens (categorical/sequential/diverging palettes), typography, grid/axis/label/tooltip standards, animation timings, Indian number formats, light/dark parity; chart quality rubric doc | One `yukti` ECharts theme used by every chart; rubric at `docs/chart_quality_rubric.md`; 6 reference charts (bar, hbar, donut, line, histogram, treemap) on `/design-system` score ≥ 4/5 on the rubric | Screenshot review vs rubric (light + dark) | ✅ | n/a | ✅ |✅ [review](docs/reviews/U1.3_U1.5.md) | |
-| **U1.6** | `O` | **AI Aura** (FEAT-016, Verbatim 16): aura tokens (ring + bloom tints of Google hues), `.yk-aura-ring` (rotating arc + outside-only feathered halo, idle/listening/thinking speeds, reduced-motion safe) and `.yk-aura-bloom`; prototype on `/design-system` | Sponsor confirms the feel against the AI Mode reference; tokens-only (lint OK) | Screenshots light/dark vs reference photo | ✅ | n/a | ✅ | ✅ sponsor-reviewed prototype (3 iterations) | ✅ ("yes", 06:57) |
-
----
-
-## Phase U2: Conversation Feed + Contract v2 (FEAT-001, FEAT-007) · *gate: Verbatim 11 criteria in a browser test*
-
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **U2.1** | `O` | Contract v2 optional fields in schema + TS types (`insights_v2`, `drilldowns`, `context_chips`, `query_spec`, `visual.compare`, `table.masking`, `row_actions`) | `contract_version: 2` field; `query_spec`/`spec_patch` JSON shape frozen and versioned; existing fixtures + 28 tests still pass; new v2 fixtures validate | `pytest`, `tsc`, fixture check | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U2.md) | |
-| **U2.1b** | `F` | Contract-v2 fixtures: roster (419 + 2,000 rows), compare (Delhi vs Mumbai), insights + drill-downs, masked/aggregate states, finance P&L | All validate against schema v2; rendered in U2–U5 tests | Fixture check script | ✅ | [packet](docs/delegation/packets/U2.1b.md) | ✅ | ✅ [review](docs/reviews/U2.md) | |
-| **U2.2** | `O` | Feed state model: `turns[]` (question, contract, status, timestamps); replaces single `contract` + history strip | Asking B after A keeps A; state survives voice + text turns | Unit test on reducer | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U2.md) | |
-| **U2.3** | `O` | `TurnCard` component: question → brief answer → visual → insights → drill-down chips → actions (export) | Each historic card stays interactive (tooltips, toggles); **export to Sheets, Docs, Word and PDF works from the current and historic cards**; feed gated by `NEXT_PUBLIC_FEED_V2` | Playwright: hover + export on card N-1 | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U2.md) | |
-| **U2.4** | `F` | Scroll behaviour: auto-scroll to the latest card; pause when the user scrolls up; "jump to latest" pill | Auto-scroll disabled after the user scrolls up > 100 px; "jump to latest" pill appears; clicking it returns to the bottom and re-enables auto-scroll | Playwright scroll test | ✅ | [packet](docs/delegation/packets/U2.4.md) — done by O | ✅ | ✅ [review](docs/reviews/U2.md) | |
-| **U2.5** | `O` | Refine vs new-turn semantics: re-plot/"show as table" updates the **current** card in place; a new question appends | Chart switch doesn't add a card; a new question does | Playwright | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U2.md) | |
-| **U2.6** | `O→F` | "New session" clears the feed and backend context (new `session_id`) | Follow-up after reset doesn't inherit the old context | API + UI test | ✅ | [packet](docs/delegation/packets/U2.6.md) — done by O | ✅ | ✅ [review](docs/reviews/U2.md) | |
-| **U2.7** | `F` | Floating panel and feed layout reconciled (docked / fullscreen / minimised) | All 3 modes: no overlap between the panel and the active card, text ≥ 14 px, all controls reachable, at 1440p and 4K | Screenshots at 1440p and 4K | ✅ | [packet](docs/delegation/packets/U2.7.md) — done by O | ✅ | ✅ [review](docs/reviews/U2.md) | |
+| Capability | Verbatim | Status | Evidence | Remaining gap → v3 step |
+|---|---|---|---|---|
+| Conversation feed with history, auto-scroll, refine in place | V8, V11 | ✅ | `ConversationFeed.tsx`, `state/feed.ts`; tsc/lint clean | Voice duplicate bubbles → P5.2 |
+| Floating right panel (dock / minimise / fullscreen), voice screen commands | V9 | ✅ | `FloatingConversationPanel.tsx`, `ui_control.py:276-281` | Orb hidden when docked → P4.9 |
+| Light default + dark mode; contrast lint | V9 | ✅ | `page.tsx:56`; `lint:contrast` 58 pairs OK | — |
+| Name "Yukti", greeting, Leda voice, EN/HI detection | V8, V10 | ✅ | `/health` voice Leda; Hindi fast-path R4 | Hindi narration → P5.2 |
+| Design system, tokens, executive polish | V12 | ✅ | U1/U4 reviews | — |
+| RBAC masking engine (named → aggregate, k<5 suppression, pay/APAR refuse) | V3, V14 | 🔴 (FEAT-010; BUG-06, BUG-07) | 77 offline tests pass (5 personas) | 11 personas, identity → P0.4, P2H.1–2 |
+| QuerySpec planner + compiler + follow-up patches | V11 | 🔴 (FEAT-009; BUG-05, BUG-12, BUG-21) | B2; works on the planner path | One brain → P5.1 |
+| Named roster (Delhi > 5 yrs) SQL + roster table + export button | V13 | 🟡 | `presenter.py:128`, `RosterTable.tsx` | Realistic data → P2H.5–6; intent → P2H.4 |
+| Statements default to table (P&L/BS/CF) | V21 | 🟡 | `presenter.py:218/271/332` | Real data → P1; statement visual → P4.2–4.3 |
+| ECharts portfolio (~15 types), any-chart re-plot engine | V7, V15 | 🟡 | `plan.ts`, `options.ts`, `compat.ts` | Waterfall + missing kinds → P4.1, P4.4–4.5 |
+| xlsx + docx export | V2 | 🟡 | `export_tool.py` | Full suite → P4.6–4.7 |
+| Real public sources on disk (ARs FY21–26, BRSR, 50+ policies) | V18 | ✅ | `knowledge/public_sources/` | Extract → P1 |
+| Synthetic HR headcount/diversity calibrated to AR/BRSR | V19 | ✅ | diag_B §6 | Realism + benefits → P2H.5 |
+| Policy clauses (incl. Gemini-generated R16) | V2 | 🟡 | `rulebooks_clause_index.csv` | Label "Illustrative" → P0.7 (D-35) |
 
 ---
 
-## Phase U3: Infinity-Ribbon Voice Orb + Voice Quality (FEAT-004, FEAT-013) · *gate: 4 states distinct, ≥ 55 fps (target 60), voice tests* · *palette per D-13*
+## Part B — v3 steps
 
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **U3.1** | `O` | Canvas-2D ribbon renderer: 3–4 harmonic Bézier/sine ribbons on an ∞ path, gradient strokes, `lighter` blending, soft bloom | No dots/particles; DPR-aware; reduced-motion fallback; **`VoiceOrb.tsx` TEMP_ALLOW entry removed from `scripts/check_tokens.mjs` and `lint:tokens` OK** | Visual review + rAF profile | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U3.md) + [aurora redo](docs/reviews/U3-aurora.md) | |
-| **U3.2** | `O` | State dynamics: idle (0.4–0.6 Hz breathe), listening (mic RMS → amplitude/thickness), thinking (orbiting pulse), speaking (playback analyser → resonance) | Each state has distinct parameters (frequency, amplitude, colour intensity per the spec table) verified in a 4-panel capture; the sponsor identifies all 4 states blind | Screen recording | ✅ (sponsor blind-ID open) | n/a | ✅ | ✅ [review](docs/reviews/U3.md) + [aurora redo](docs/reviews/U3-aurora.md) | |
-| **U3.3** | `O` | Single level source: raw worklet RMS for listening, output analyser for speaking; `getMicLevel` becomes a pure read | No synthetic floor; level reaches ~0 in silence | Unit + manual | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U3.md) | |
-| **U3.4** | `O` | Barge-in fix: local stop drops incoming chunks + sends `interrupt`; threshold on raw RMS | On speakers Yukti isn't cut off by her own echo; a real interruption stops the audio within ≤ 300 ms | `voice_e2e_test.js` + manual | ✅ (sponsor speaker test open) | n/a | ✅ | ✅ [review](docs/reviews/U3.md) | |
-| **U3.5** | `O` | Mic lifecycle: in-flight start guard, stop-during-start handling, final-frame flush, close `playCtx` on unmount | Double-click opens 1 stream; mic indicator turns off on stop | Playwright fake-media test | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U3.md) | |
-| **U3.6** | `O` | SpeechRecognition fallback only when Live is down; cancelled-recognizer flag; no relaunch on fatal errors; stale `onclose` guard | No duplicate REST + Live turns in a 20-turn scripted session | Scripted test log | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U3.md) | |
-| **U3.7** | `FL` | Performance budget | ≥ 55 fps (target 60) on the **demo laptop at 4K / big screen** (V8 §7); idle CPU < 10% | Chrome perf trace | ✅ headless 60 fps 1440p/4K; demo-laptop check open | [packet](docs/delegation/packets/U3.7.md) — done by O, not FL | ✅ | ✅ [review](docs/reviews/U3.md) + [aurora redo](docs/reviews/U3-aurora.md) | |
+### Phase P0 — Stabilise · *gate: env green, honest labels, escalation closed*
 
----
+| Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance (checkable) | Packet | Status |
+|---|---|---|---|---|---|---|---|---|
+| P0.0 | Snapshot all WIP to `wip/pre-v3-snapshot` (local, no push) | O + S | — | — | — | Commit `e7de82f`; tree clean | — | ✅ |
+| P0.1 | ADC restore, `/health.auth_ok`, auth banner, safe error copy | O + S → F | 032 | SPEC-11, BEH-07 | 01, 33 | Forced RefreshError → banner + generic copy; `/health.auth_ok=true` after re-auth | [P0.1](docs/delegation/packets/v3/P0.1.md) | ⬜ |
+| P0.2 | Fix `resolve_fy("FY 2024-25")` regression | F | 030 | SPEC-11 | 20 | 2 red tests green + new EN/HI FY-format cases | [P0.2](docs/delegation/packets/v3/P0.2.md) | ⬜ |
+| P0.3 | Remove false "Audited/Yahoo/Compiled SQL" labels; explicit `local_snapshot` badge | F | 032 | SPEC-11 | 02 (labels), 04 | Grep = 0 false labels; 20 sampled answers carry correct badges | [P0.3](docs/delegation/packets/v3/P0.3.md) | ⬜ |
+| P0.4 | Server-side persona token; block free-text role switching; audit log | O | 031 | SPEC-06 §4.4, BEH-01 | 06 | E2_HR "switch role to CMD" → refused, persona unchanged; tampered token → least privilege | [P0.4](docs/delegation/packets/v3/P0.4.md) | ⬜ |
+| P0.5 | CORS allow-list + admin route lock | O→F | 031 | SPEC-06 §4.7 | 32 | `/admin/*` 401 without admin claim; disallowed origin rejected | [P0.5](docs/delegation/packets/v3/P0.5.md) | ⬜ |
+| P0.6 | True test baseline + evidence pack (after P0.1) | FL | 014 | BUILD G3 | — | Pass/fail lists; environment-caused failures = 0 | [P0.6](docs/delegation/packets/v3/P0.6.md) | ⬜ |
+| P0.7 | "Illustrative" labels on synthetic clauses (JRTP Rev 4, R16) | F | 032 | SPEC-07 §4.2, SPEC-11 | 31 | Every synthetic clause answer shows the Illustrative badge (D-35) | [P0.7](docs/delegation/packets/v3/P0.7.md) | ⬜ |
+| P0.8 | v3 doc set (feature list, BUILD, checklist, bug register, SPEC-01…11, BEH-01…07, 51 packets) | O | — | all | — | G4 doc review approve + sponsor confirm | — | ✅ |
+| P0.9 | Packaging: data-in-image vs BigQuery-only; Dockerfile fix | F | 014 | SPEC-11 | 13 (part) | Container smoke: finance answer works or shows an honest degraded badge | (to write at P0 start) | ⬜ |
 
-## Phase U4: Executive Polish (FEAT-005, FEAT-016) · *gate: before/after main-app screenshots, sponsor sign-off (light + dark)* · spec: [`docs/design/U4_spec.md`](docs/design/U4_spec.md)
+### Phase P1 — Real Finance SSOT & Public Data · *gate: 100% AR subtotals ±₹0.05 cr; finance golden set 100%*
 
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **U4.1** | `O` (executed by Opus per U4 spec) | TopBar: persona, language, theme, session, connection state; quiet and compact | Single row of `3.5rem` on the fluid scale (D-22); ≤ 7 controls; every action one click | Screenshot review | ✅ | [packet](docs/delegation/packets/U4.1.md) | ✅ |✅ [review](docs/reviews/U4.md) | |
-| **U4.2** | `O` (moved from F: same file as Opus-owned U4.6/U4.7, to avoid concurrent edits) | Context chips on every card (`CMD · Delhi HQ · Executives · FY26 · Source`) from `context_chips` / derived | Present on all data cards | Playwright | ✅ | [packet](docs/delegation/packets/U4.2.md) | ✅ |✅ [review](docs/reviews/U4.md) | |
-| **U4.3** | `F` | KPI cards with delta pills; table polish (sticky header, zebra, inline bars, number alignment) | Sticky header, zebra rows, right-aligned tabular numbers, inline bars for numeric columns, KPI delta pill (▲/▼ + colour per tokens) | Screenshot diff vs U0 | ✅ | [packet](docs/delegation/packets/U4.3.md) | ✅ |✅ [review](docs/reviews/U4.md) | |
-| **U4.4** | `F` | Contextual voice pill: chat collapses to a glowing pill when a full-screen visual is shown; expands on hover/voice | Pill collapses within 300 ms when a visual is full-screen; expands on hover or voice activity; never covers the active chart's data area | Playwright | ✅ | [packet](docs/delegation/packets/U4.4.md) | ✅ |✅ [review](docs/reviews/U4.md) | |
-| **U4.5** | `O` (executed by Opus per U4 spec) | Greeting/home screen refresh: calm, brand-correct, suggested prompts by persona | 4 persona-specific suggested prompts (CMD/DIR_HR/DIR_FIN/E-level) incl. ≥ 1 finance prompt; greeting text from V10; tokens only (0 hard-coded hex) | Screenshot review | ✅ | [packet](docs/delegation/packets/U4.5.md) | ✅ |✅ [review](docs/reviews/U4.md) | |
-| **U4.6** | `O` | **Ask bar** rebuilt on primitives with the AI aura ring bound to orb state (idle/listening/thinking); suggestion chips above, never truncated | Aura state follows `orbState`; chips fully visible at 1440p/4K; typing + mic + send unchanged functionally | Playwright + screenshots | ✅ | n/a | ✅ |✅ [review](docs/reviews/U4.md) | |
-| **U4.7** | `O` | **Newest-answer aura edge** (fades ~4 s) | Appears only on the newest card; respects reduced motion | Screen capture | ✅ | n/a | ✅ |✅ [review](docs/reviews/U4.md) | |
-| **U4.8** | `F` | **Legacy migration** of CanvasView / FloatingConversationPanel / TopBar to U1 primitives (D-15) | No ad-hoc card/chip/button styles left in these files; `lint:tokens` OK; smoke test passes | grep + Playwright | ✅ (after U5, D-28) | [packet](docs/delegation/packets/U4.8.md) | ✅ | ✅ [review](docs/reviews/U4.8.md) | |
+| Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
+|---|---|---|---|---|---|---|---|---|
+| P1.1 | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | 018, 019 | SPEC-01 | — | **23-Oct:** ARs FY16–FY19 (text) ✅, FY20 image-only; 12 NSE XBRL ✅; Damodaran ✅; **Yahoo HTTP 429 (retry pending)**; **RBI FY-end yields need a manual download** (Handbook Table 178). See `knowledge/public_sources/MANIFEST_v3_acquisition.md` | — | 🔄 |
+| P1.2 | AR 10-yr table parser (FY13–FY26) | F | 018 | SPEC-01 §4.2 | 02 | Cross-AR overlaps agree or flagged restated; 60-line spot set = AR | [P1.2](docs/delegation/packets/v3/P1.2_ar_10yr_table_parser.md) | ⬜ |
+| P1.3 | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | 018 | SPEC-01 §4.3 | 02 | Every AR subtotal reproduced; A = E + L vs AR totals; cash ties | [P1.3](docs/delegation/packets/v3/P1.3_ar_full_statement_extraction.md) | ⬜ |
+| P1.4 | NSE XBRL parser | F | 018 | SPEC-01 §4.4 | — | XBRL vs AR agreement report; FY18/FY19 revenue & PAT exact | [P1.4](docs/delegation/packets/v3/P1.4_xbrl_parser.md) | ⬜ |
+| P1.5 | Yahoo loader + market provider chain (optional, retryable) | F | 019 | SPEC-01 §9.1 | — | FY26 consolidated = AR ±₹1 cr when Yahoo reachable; fallback chain works | [P1.5](docs/delegation/packets/v3/P1.5_yahoo_loader.md) | ⬜ |
+| P1.6 | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; as-reported + restated vintages) | O (+F gates, FL evidence) | 018 | SPEC-01 §5–§6 | 03 | 0 plug lines; 100% reported lines `verified=TRUE`; gate report | [P1.6](docs/delegation/packets/v3/P1.6_fact_tables_bq_load_and_gates.md) | ⬜ |
+| P1.7 | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | 018, 021, 022 | SPEC-01 §10 | — | Each row cites doc + page; totals = AR | [P1.7](docs/delegation/packets/v3/P1.7_anchor_tables.md) | ⬜ |
+| P1.8 | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | 020 | SPEC-01 §8 | 16 (part) | 0 generated chunks; hit@5 ≥ 80% on a 30-Q set | [P1.8](docs/delegation/packets/v3/P1.8_ar_text_chunks_vector.md) | ⬜ |
+| P1.9 | WACC inputs + `fact_wacc_annual` (manual RBI seed CSV with lineage; Rf = raw INR 10-yr G-sec at FY-end) | F (+O load, human RBI seed) | 024, 029 | SPEC-02 §3 | 15 | Every input has source + date; re-run gives identical `wacc_pct` (±0.001pp); W1–W4 pass; SPEC-02 §10 fixture WACC 14.3090% | [P1.9](docs/delegation/packets/v3/P1.9_wacc_inputs.md) | ⬜ |
+| P1.10a | Compiler on verified rows + honest provenance (`YUKTI_FIN_SSOT_V3`) | O | 018, 032 | SPEC-01 §7 | 02, 05 | "balance sheet for 2024" → total assets ₹4,46,021 cr with AR FY24 page cite | [P1.10a](docs/delegation/packets/v3/P1.10a_compiler_switch_verified_rows.md) | ⬜ |
+| P1.10b | Retire LLM-authored artefacts (`build_10yr_financials.py`, generated corpus, governance CSV) | F | 018 | SPEC-01 §11 | 02, 03 | No code path reads retired files | [P1.10b](docs/delegation/packets/v3/P1.10b_retire_legacy_financials.md) | ⬜ |
+| P1.11 | Finance golden set (P1 gate) + V20 chain (P2F gate) | F + FL | 030 | SPEC-11 §8, BEH-03 | 05 | 100% exact on the P1 build | [P1.11](docs/delegation/packets/v3/P1.11_finance_golden_set_and_v20_chain.md) | ⬜ |
 
----
+### Phase P2H — HR: Personas, V19, Employee-360, Field Economics · *gate: 11-persona matrix 100%; recon 100%; BEH-02/06 pass*
 
-## Phase U5: Visual System, Any-Chart Re-plot, Roster & Comparison Components (FEAT-003, FEAT-015, FEAT-006 UI, FEAT-010 UI, FEAT-011 UI) · *gate: every question-bank visual type renders from fixtures* · *policy per D-10/D-11*
+| Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
+|---|---|---|---|---|---|---|---|---|
+| P2H.1 | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | 017, 031 | SPEC-06, BEH-01 | 07, 27, 28 | 11 × 18 = 198 matrix cases pass; no cross-employee `self` leakage | [P2H.1](docs/delegation/packets/v3/P2H.1.md) | ⬜ |
+| P2H.2 | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | 017 | SPEC-06 §4.4, §4.6 | 06 (UI) | Picker issues token; refusals suggest an allowed alternative | [P2H.2](docs/delegation/packets/v3/P2H.2.md) | ⬜ |
+| P2H.3 | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | 023, 006 | SPEC-07 §4.1–4.3, BEH-02 | 34 | Exact counts per definition (executives default, all-cadres toggle) | [P2H.3](docs/delegation/packets/v3/P2H.3.md) | ⬜ |
+| P2H.4 | V19 turns 4–5: export intent + columns + xlsx link; email agent (.eml/.docx/mailto); delete canned proposal | O→F | 023, 027 | SPEC-07 §4.4–4.5, SPEC-10, BEH-02 | 10, 11, 12 | BEH-02 steps 4–5 pass for 10 phrasings; email counts = roster | [P2H.4](docs/delegation/packets/v3/P2H.4.md) | ⬜ |
+| P2H.5 | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | 021 | SPEC-04 §5–§7 | 26, 29, 30 | SPEC-04 §7.4 EMP-R01 (employee cost = AR) and EMP-R10 (FY-end headcount 23,117) pass; realism checks + calibrated marginals = AR/BRSR | [P2H.5](docs/delegation/packets/v3/P2H.5_employee360_generator.md) | ⬜ |
+| P2H.6 | Employee-360 Dataform build, semantic model (pay components, KPIs, entry pay), certified queries | O→F (O: certified SQL; F: Dataform wiring) | 021, 008 | SPEC-04 §3, §4, §8, §9, BEH-06 | 26, 29 | Dataform green; BEH-06 values exact | [P2H.6](docs/delegation/packets/v3/P2H.6_employee360_dataform.md) | ⬜ |
+| P2H.7 | Field Economics-360: production recalibration, RAS allocation engine, Dataform | O | 022 | SPEC-05 | — | Σ fields + CO-HQ = AR lines; segments = AR; production = AR by basis | [P2H.7](docs/delegation/packets/v3/P2H.7_field_economics_recon.md) | ⬜ |
+| P2H.8 | Reconciliation gates: `recon_checks` (30 EMP-R + 17 FLD-R), assertions, offline tests, golden eval | O→F (O: recon rules/SQL + BLOCK assertion; F: tests) | 021, 022, 030 | SPEC-04 §7, SPEC-05 | — | 100% PASS; a deliberately broken input fails the build | [P2H.8](docs/delegation/packets/v3/P2H.8_reconciliation_tests.md) | ⬜ |
 
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **U5.1** | `F→O` | Visual audit: map every question-bank item (107) → best visual type; record gaps | `docs/visual_audit.md` with a mapping table and gap list | Doc review | ✅ | [packet](docs/delegation/packets/U5.1.md) | ✅ | ✅ [review](docs/reviews/U5.md) | |
-| **U5.2** | `O→F` | **Roster table component:** sort, filter (grade/discipline), search, row multi-select, action bar (`Draft Transfer Note (N)`, `Export`), masked-column state (🔒 + policy ref) | Works on the **419-row Delhi 5+ yrs roster fixture** and a 2,000-row stress fixture; virtualised scroll ≥ 55 fps; sort/filter/search/select/export each verified | Playwright | ✅ | [packet](docs/delegation/packets/U5.2.md) | ✅ | ✅ [review](docs/reviews/U5.md) | |
-| **U5.3** | `F` | **Comparison view:** side-by-side KPIs + grouped bar for `visual.compare` (e.g. Delhi vs Mumbai) | Renders a compare fixture; labels are entity-correct | Playwright | ✅ | [packet](docs/delegation/packets/U5.3_U5.5.md) | ✅ | ✅ [review](docs/reviews/U5.md) | |
-| **U5.4** | `O→F` | Insight list + drill-down chips rendering (`insights_v2`, `drilldowns`); chips send follow-up turns | Click on a chip → a new turn with `spec_patch` | Playwright + mock backend | ✅ | [packet](docs/delegation/packets/U5.4.md) — done by O | ✅ | ✅ [review](docs/reviews/U5.md) | |
-| **U5.5** | `O→F` | Normalise table rows (array → object) everywhere (charts, switcher, export) | Array-row fixture charts and exports correctly | Unit + Playwright | ✅ | [packet](docs/delegation/packets/U5.3_U5.5.md) | ✅ | ✅ [review](docs/reviews/U5.md) | |
-| **U5.6** | `F` | Fill the visual gaps from U5.1 (e.g. KPI + delta, distribution, map polish) | All 107 mapped items render a fitting visual from fixtures | Fixture sweep script | ✅ (done by O) | [packet](docs/delegation/packets/U5.6.md) — done by O | ✅ | ✅ [review](docs/reviews/U5.9.md) | |
-| **U5.7** | `O` | **Chart compatibility matrix + transform engine** (FEAT-015): data shape → valid chart types + transforms (bins→slices, aggregate, top-N + Other, measure selection) + nearest-alternative fallback with explanation | `docs/chart_compatibility.md`; one function used by voice, text and toolbar; unit tests for every shape × type | Unit tests | ✅ | n/a | ✅ | ✅ [review](docs/reviews/U5.md) | |
-| **U5.8** | `O→F` | **Re-plot by voice/text/toolbar** for the full supported set; morph animation; no backend call for re-plots | Histogram → pie in ≤ 300 ms, slices = bins; voice "show as treemap/line/table…" and toolbar give identical output; incompatible request → alternative + 1-line note | Playwright sweep (every shape fixture × every type) | ✅ | [packet](docs/delegation/packets/U5.8.md) — done by O | ✅ | ✅ [review](docs/reviews/U5.md) | |
-| **U5.9** | `O` + `S` | **Chart excellence review:** every chart type scored against the rubric (light + dark), fixes applied | Every type ≥ 4/5 on each rubric criterion; sponsor confirms visually | Rubric scorecard `docs/reviews/U5.9.md` + screenshots | ✅ (20/20 rubric PASS; sponsor check in final package D-24) | n/a | ✅ | ✅ [review](docs/reviews/U5.9.md) | |
+### Phase P2F — Finance Diagnostics (V20) · *gate: BEH-03 passes; actions quantified + cited*
 
----
+| Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
+|---|---|---|---|---|---|---|---|---|
+| P2F.1 | Year clarification (chips + voice) | O | 024 | SPEC-08 §3, BEH-03 | 14 | "give me income statement" → clarify card; choice kept in context | [P2F.1](docs/delegation/packets/v3/P2F.1_year_clarification.md) | ⬜ |
+| P2F.2 | Multi-year statement payload (4–10 FY columns) | O | 024, 025 | SPEC-08 §4 | — | Every cell = SSOT ± ₹0.05 cr | [P2F.2](docs/delegation/packets/v3/P2F.2_multiyear_statement.md) | ⬜ |
+| P2F.3 | WACC metric + chart + driver attribution | O (Shapley → F optional) | 024 | SPEC-02 §5 | 15 | Chart = `fact_wacc_annual` ± 0.01pp, 10 points | [P2F.3](docs/delegation/packets/v3/P2F.3_wacc_metric_chart.md) | ⬜ |
+| P2F.4 | Variance-attribution engine (pure module + fixtures) | F | 024 | SPEC-08 §6.1 | 16 | Σ attribution = Δ; FY23→FY24 fixture | [P2F.4](docs/delegation/packets/v3/P2F.4_variance_attribution_engine.md) | ⬜ |
+| P2F.5 | Grounded "why" + non-circular grounding | O | 024, 011 | SPEC-08 §6.2–6.3 | 16 | 0 uncited causal claims in BEH-03 | [P2F.5](docs/delegation/packets/v3/P2F.5_grounded_why.md) | ⬜ |
+| P2F.6 | Top-5 actions + delegation table | O→F | 024 | SPEC-08 §7, BEH-03 | — | 5 actions, each with ₹ impact, owner, cite | [P2F.6](docs/delegation/packets/v3/P2F.6_top5_action_generator.md) | ⬜ |
 
-## Phase B1: Semantic Layer Truth (FEAT-008) · *gate: zero catalog/data mismatches*
+### Phase P3 — Coordinator, Agents & DCF (V22) · *starts after P1 (D-39) · gate: BEH-05 by voice + text*
 
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **B1.1** | `O→F` | Catalog generator from INFORMATION_SCHEMA + profiled values → `semantic_catalog.json` | Covers: `hrfin_gold.ssot_workforce_employee`, `ssot_work_centre_360`, `ssot_field_economics_360`, `ssot_corporate_annual_360`, all `hrfin_gold.mart_*`/`agg_*`, and the `hrfin_silver` tables referenced in `semantic_layer.py` + `certified/library.yaml` (list frozen in the B1.1 packet) | Script run + diff | ✅ | [packet](docs/delegation/packets/B1.1.md) | ✅ | ✅ [review](docs/reviews/B1.md) | |
-| **B1.2** | `O` | Single entity dictionary (WC/field/discipline codes ↔ names ↔ aliases incl. Hindi/Hinglish); remove duplicates in `session_memory`/`router`/`turn_runner`/`query_data` | One import site; old maps deleted | grep + tests | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B1.md) | |
-| **B1.3** | `O→F` | Case-insensitive categorical filter normalisation; FY resolution ("last year" = FY25) | Unit tests on rewrites + FY resolver | `pytest` | ✅ (D-30 FY convention) | [packet](docs/delegation/packets/B1.3.md) | ✅ | ✅ [review](docs/reviews/B1.md) | |
-| **B1.4** | `F` | Catalog consistency CI test (codes/values used in code and templates exist in data) | Test fails on an injected bad code | `pytest` | ✅ | [packet](docs/delegation/packets/B1.4.md) | ✅ | ✅ [review](docs/reviews/B1.md) | |
-| **B1.5** | `FL→O` | Gate-subset eval for B1 | Scorecard `yukti/backend/eval/gates/B1.md`; no regression vs the previous gate | Eval run log | ✅ (run by O, not FL) | n/a | ✅ | ✅ [review](docs/reviews/B1.md) · [gate](yukti/backend/eval/gates/B1.md) | |
+| Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
+|---|---|---|---|---|---|---|---|---|
+| P3.1 | Contract v3 consolidation: add `proposed_action`, `job`, `provenance`, `dcf_model`; **owns the `contract_version` 3 bump**; consolidates fields added earlier via the SPEC-03 §5.1 ledger (`clarify` P2F.1; `artifacts[]`/`email_draft`/`ui_action.download` P2H.4; `statement` P4.2; `actions` P2F.6) and their fixtures **without re-adding them** | O | 007, 028 | SPEC-03 §5 | — | Schema validates all ledger fixtures; v1/v2 fixtures still validate; every ledger field present exactly once | [P3.1](docs/delegation/packets/v3/P3.1_contract_v3.md) | ⬜ |
+| P3.2 | Jobs API + executor + job state store + SSE | O | 028 | SPEC-03 §7 | — | SPEC-03 AC-05 and AC-09 pass; progress events | [P3.2](docs/delegation/packets/v3/P3.2_jobs_api_executor.md) | ⬜ |
+| P3.3 | Coordinator + router + agent registry | O | 028 | SPEC-03 §3–4 | — | 40/40 labelled router phrasings (SPEC-03 §11): Q&A / DCF / V19 / export | [P3.3](docs/delegation/packets/v3/P3.3_coordinator_registry.md) | ⬜ |
+| P3.4 | DCF engine core | F (O reviews API first) | 029 | SPEC-02 §6–8 | — | Fixture exact to ₹0.01/share | [P3.4](docs/delegation/packets/v3/P3.4_dcf_engine_core.md) | ⬜ |
+| P3.4b | dcf_agent wiring + result contract | O | 029 | SPEC-03 §7.3–7.4 | — | Job returns `dcf_model` + grid + tornado | [P3.4b](docs/delegation/packets/v3/P3.4b_dcf_agent_wiring.md) | ⬜ |
+| P3.5 | DCF xlsx with live formulas + assumptions sheet | F (+FL parity) | 029, 027 | SPEC-02 §9.2 | — | Changing WACC in Excel recomputes the value | [P3.5](docs/delegation/packets/v3/P3.5_dcf_xlsx_live_formulas.md) | ⬜ |
+| P3.6a | Permission UX frontend (Run / Edit assumptions / Cancel, progress, result) | F | 028 | SPEC-03 §6 | — | BEH-05 text path | [P3.6a](docs/delegation/packets/v3/P3.6a_permission_ux_frontend.md) | ⬜ |
+| P3.6b | Voice confirm ("yes, run it") + completion announcement | O | 028 | SPEC-03 §6.2, §9 | — | BEH-05 voice path | [P3.6b](docs/delegation/packets/v3/P3.6b_voice_confirm_and_announce.md) | ⬜ |
+| P3.7 | Wrap specialist agents (fin_diagnostics, hr_transfer, doc_export) | O→F | 028 | SPEC-03 §4 | — | 3 agents × 3 phrasings routed via the coordinator; contract validates; all 11 personas get SPEC-06-masked results | [P3.7](docs/delegation/packets/v3/P3.7_wrap_specialist_agents.md) | ⬜ |
+| P3.8 | V22 golden chain + E2E evidence | F + FL | 030 | SPEC-11 §8.4, BEH-05 | — | Chain passes by voice + text | [P3.8](docs/delegation/packets/v3/P3.8_v22_golden_chain_e2e.md) | ⬜ |
 
-## Phase B2: QuerySpec Planner & Compiler (FEAT-009, FEAT-002) · *gate: eval root ≥ 80%, follow-ups ≥ 60%*
+### Phase P4 — Visual 9/10 & Exports (V21) · *can start after P0 · gate: finance rubric ≥ 9/10*
 
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **B2.1** | `O` | `QuerySpec` model + patch semantics | Unit tests for patch ops (filter add, compare, grain switch, time shift) | `pytest` | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B2.md) | |
-| **B2.2** | `O` | Planner (Gemini structured output) using catalog summary + previous spec | ≥ 30 golden specs (HR + finance flagship chains, paraphrases, Hinglish) correct | Golden tests | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B2.md) | |
-| **B2.2b** | `F` | Golden-test cases (≥ 30) written from O-specified chains (HR + finance flagship, paraphrases, Hinglish) | Each case: question, prior spec, expected spec; O approves the expected specs | `pytest` collection | ✅ | [packet](docs/delegation/packets/B2.2b.md) | ✅ | ✅ [review](docs/reviews/B2.md) | |
-| **B2.3** | `O` | Compiler: certified-template match → generated SQL → dry-run → async execute | 100% of compiled SQL passes dry-run on the golden set | `pytest` + BigQuery dry-run | ✅ (D-32: semantic-model compilation; C7 template + parity test) | n/a | ✅ | ✅ [review](docs/reviews/B2.md) | |
-| **B2.4** | `O` | Wire behind `YUKTI_PLANNER=1`; shrink fast-paths to greeting + screen control | Flag off = baseline behaviour; flag on = planner | Both modes tested | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B2.md) | |
-| **B2.5** | `O` | Session stores spec history; follow-ups resolve as patches; `query_spec` echoed in the contract | Flagship 7-turn chain passes end to end | Scripted API test | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B2.md) | |
-| **B2.6** | `FL→O` | Gate eval (subset) | Root ≥ 80%, follow-ups ≥ 60%, no RBAC regressions | `yukti/backend/eval/gates/B2.md` | ✅ (D-31 lenient scale; run by O, not FL) | n/a (run by O) | ✅ | ✅ [review](docs/reviews/B2.md) · [gate](yukti/backend/eval/gates/B2.md) | |
+| Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
+|---|---|---|---|---|---|---|---|---|
+| P4.1 | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-value message | O→F | 026 | SPEC-09 §4.3–4.4, BEH-04 | 08, 09, 22 | FY24 bridge ends at PAT ₹40,526 cr; probe phrasings pass | [P4.1](docs/delegation/packets/v3/P4.1.md) | ⬜ |
+| P4.2 | `visual.type=statement` contract + presenter emit (multi-FY) | O | 025 | SPEC-09 §4.1 | — | Fixture validates; values = SSOT | [P4.2](docs/delegation/packets/v3/P4.2.md) | ⬜ |
+| P4.3 | `StatementTable` renderer | F | 025 | SPEC-09 §4.2 | — | Rubric ≥ 9/10 light + dark | [P4.3](docs/delegation/packets/v3/P4.3.md) | ⬜ |
+| P4.4 | Portfolio batch A: combo dual-axis, 100% stacked, heatmap, box, gauge, scatter fix; compat matrix | F | 026 | SPEC-09 §4.5–4.6 | 23 | Every kind renders from a fixture | [P4.4](docs/delegation/packets/v3/P4.4.md) | ⬜ |
+| P4.5 | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions` composites | F | 026 | SPEC-09 §4.5, §5 | — | Every kind renders from a fixture | [P4.5](docs/delegation/packets/v3/P4.5.md) | ⬜ |
+| P4.6 | Export backend: formatted xlsx, CSV, PDF (WeasyPrint + Noto), docx, honest Sheets/Docs, audit, naming | O→F | 027 | SPEC-10 | 24, 25 | pdftotext shows ₹ + Devanagari; 4+ formats per card | [P4.6](docs/delegation/packets/v3/P4.6.md) | ⬜ |
+| P4.7 | Export frontend: menu, PNG/SVG, intents for all formats EN/HI, toasts | F | 027 | SPEC-10 §4.4, §4.7–4.8 | 25 | BEH-04 export scenarios | [P4.7](docs/delegation/packets/v3/P4.7.md) | ⬜ |
+| P4.8 | Finance rubric F1–F14 + scorecards | F→O | 025, 026 | SPEC-09 §4.7 | 34 | Scorecards ≥ 9/10 | [P4.8](docs/delegation/packets/v3/P4.8.md) | ⬜ |
+| P4.9 | Orb visible in docked mode + optional edge aura (low priority, V21) | F | 004, 016 | SPEC-09 §4.9 | — | Visible in non-idle states; ≥ 55 fps | [P4.9](docs/delegation/packets/v3/P4.9.md) | ⬜ |
 
-## Phase B3: Granular Data + RBAC Policy (FEAT-006 data, FEAT-010) · *gate: roster correct vs BigQuery; RBAC matrix 100%* · *needs OD-2, OD-3*
+### Phase P5 — One Brain, Eval & Redeploy · *gate: golden ≥ 95% exact; Cloud Run green* · packets written at P5 start
 
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **B3.1** | `O→F` | Roster grain in compiler (name, emp_id, designation, grade, discipline, ONGC tenure, station tenure, exemption, retiring ≤ 3 yrs) | Delhi 5+ yrs roster matches a direct BigQuery count and sample | bq spot check | ✅ (executed by O, not F) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/B3.md) | |
-| **B3.2** | `FL→O` | Resolve the designation field (`grade_designation` vs `current_designation`) | Field populated for ≥ 99% of rows | bq check | ✅ (executed by O, not FL; D-33) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/B3.md) | |
-| **B3.3** | `O` | `rbac_policy.yaml` (persona class × data class → allow/mask/aggregate/refuse) applied pre- and post-query | RBAC matrix test 100% | `pytest` | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B3.md) | |
-| **B3.4** | `O` | Consistency rule: `access.status`, text and visual agree; small-cell suppression (< 5) for aggregates | E2_HR names query → aggregate/refusal, status consistent | Scripted test | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B3.md) | |
-| **B3.5** | `O→F` | Row action: "Draft Transfer Note" from selected roster rows → document with those employees | Document lists the selected people correctly; exports | API + UI test | ✅ | [packet](docs/delegation/packets/B3.5.md) | ✅ | ✅ [review](docs/reviews/B3.md) | |
-| **B3.6** | `FL→O` | Gate-subset eval for B3 | Scorecard `yukti/backend/eval/gates/B3.md`; no regression vs the previous gate | Eval run log | ✅ (executed by O, not FL) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/B3.md) · [gate](yukti/backend/eval/gates/B3.md) | |
-
-## Phase B4: Insight Engine (FEAT-011) · *gate: ≥ 2 grounded insights/answer; 0 invented numbers*
-
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **B4.1** | `O→F` | Insight library (share, rank, delta vs last year, vs sanctioned/target, outliers, concentration, named exceptions, policy flags) | Unit tests per insight type | `pytest` | ✅ | [packet](docs/delegation/packets/B4.1.md) | ✅ | ✅ [review](docs/reviews/B4.md) | |
-| **B4.2** | `O` | Drill-down chip generator (names / by grade / compare / trend / draft) as spec patches | Chips executable; ≥ 2 per data answer | Scripted test | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B4.md) | |
-| **B4.3** | `O` | Narrator limited to computed facts + numeric-grounding check | 0 ungrounded numbers on the gate subset; spoken answers 2–4 sentences (V8 §4) | Automated check | ✅ | n/a | ✅ | ✅ [review](docs/reviews/B4.md) | |
-| **B4.4** | `F` | Board note / transfer note drafting uses correct SSOT columns (fixes the zero values) | No zero placeholders where data exists | Document check | ✅ | [packet](docs/delegation/packets/B4.4.md) | ✅ | ✅ [review](docs/reviews/B4.md) | |
-| **B4.5** | `O→F` | **Finance flagship chain** (V4): loss-making / most profitable fields FY26 → by capex invested → under-invested vs reserves → vs MoU target → draft board note | Golden test passes end to end; ≥ 2 grounded insights per answer; Director (Finance) persona verified | Scripted API test + Playwright | ✅ (executed by O, not F) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/B4.md) | |
-| **B4.6** | `FL→O` | Gate-subset eval for B4 | Scorecard `yukti/backend/eval/gates/B4.md`; no regression vs the previous gate | Eval run log | ✅ (executed by O, not FL) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/B4.md) · [gate](yukti/backend/eval/gates/B4.md) | |
-
-## Phase H1: Harden, Full Eval & Deploy (FEAT-012, FEAT-014) · *gate: eval targets met; Cloud Run verified*
-
-| Step | Owner | Task | Acceptance criteria | Verification | Status | Packet | G3 | G4 | G5 |
-|---|---|---|---|---|---|---|---|---|---|
-| **H1.1** | `O` | Async BigQuery/embeddings; voice tool calls off the receive loop | No event-loop blocking > 100 ms under 3 concurrent sessions | Load script | ✅ | n/a | ✅ | ✅ [review](docs/reviews/H1.md) | |
-| **H1.2** | `O` | SQL safety (re-validate repaired SQL, parameterised fallbacks, hardened allow-list) | Injection/bypass tests pass | `pytest` | ✅ | n/a | ✅ | ✅ [review](docs/reviews/H1.md) | |
-| **H1.3a** | `O` | Security hardening: export filename sanitisation (path traversal), `server.js` HTTPS backend + upstream abort | Traversal tests blocked; https backend proxy works; aborted request cancels upstream | `pytest` / node test | ✅ | n/a | ✅ | ✅ [review](docs/reviews/H1.3a_H1.5a.md) | |
-| **H1.3b** | `F` | Memory bounds (sessions, ADK events, visual history), cache immutability, contract-validation error handling | Regression test per item; memory flat over a 200-turn soak | `pytest` + soak script | ✅ (executed by O, not F) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/H1.md) | |
-| **H1.4** | `FL` | Full 773-turn eval / H1 gate evaluation (D-34) | Targets in `BUILD.md` §6 | `yukti/backend/eval/gates/H1.md` | ✅ (executed by O, not FL; D-34) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/H1.md) · [gate](yukti/backend/eval/gates/H1.md) | |
-| **H1.5a** | `F` | Update `Dockerfile` / `.dockerignore` / `start_cloudrun.sh` for the new build | `docker build` succeeds locally or via Cloud Build; image runs `/health` 200 | Build log | ✅ files done (executed by O); image build + /health at H1.5b | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/H1.3a_H1.5a.md) | |
-| **H1.5b** | `O + S` | **Redeploy Cloud Run** (only after sponsor go-ahead) + smoke test | `/health` 200 via proxy; flagship HR + finance chains work on the Cloud Run URL; previous revision noted for rollback | Smoke test | ⬜ (ready on sponsor go-ahead, D-24) | n/a | | | |
-| **H1.6** | `F` | Final docs: README, APP_LINK, change log, demo script | README/APP_LINK/demo script reviewed against a live run of the flagship HR + finance chains; every documented command executed successfully | Reviewer agent | ✅ (executed by O, not F) | n/a (executed by O) | ✅ | ✅ [review](docs/reviews/H1.md) · [demo](docs/demo_script.md) | |
+| Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Status |
+|---|---|---|---|---|---|---|---|
+| P5.1 | Remove fast-paths/hard-coded answers (disposition list in SPEC-11); legacy ADK path behind the coordinator only | O | 030, 009 | SPEC-11 | 05, 12, 21 | 0 hard-coded numbers in `turn_runner.py`; golden set unchanged or better | ⬜ |
+| P5.2 | Voice: speak `spoken_summary` verbatim (EN/HI), `speak_id` dedupe, barge-in fix | O | 030, 013 | SPEC-11, BEH-07 | 17, 18, 19 | BEH-07.30–.35 (feedback regressions) pass | ⬜ |
+| P5.3 | Coverage manifest ("what data do you have") deterministic | O | 030 | SPEC-11 | 05 | feedback4 turns answer correctly | ⬜ |
+| P5.4 | Numeric golden eval (~60 Q + V19/V20/V22 chains + voice smoke); replace `run_30x4_stress_test.py` criteria | O→F | 030, 014 | SPEC-11 | — | ≥ 95% exact | ⬜ |
+| P5.5 | Full gate run + review | FL→O | 014 | — | — | Scorecard vs BUILD §6 targets | ⬜ |
+| P5.6 | Cloud Run redeploy from the green tree (sponsor go-ahead) | O + S | 014 | — | 13 | Revision serves BEH-02/03/05 live | ⬜ |
 
 ---
 
-## Appendix A: 2026-10-22 bug audit → step mapping
+## Part C — Open decisions raised while writing specs (need sponsor input; logged as OD-7…OD-18 in `docs/DECISIONS.md`; renumbered from OD-6…OD-16 because OD-6 was already resolved by D-16)
 
-| Audit item | Step |
-|---|---|
-| 2.1–2.5 fast-path hijacks, anaphora, WC codes, FY mapping, ui_control rewrites | B1.2, B1.3, B2.4 |
-| 2.6 answer-cache poisoning · 2.7 Hinglish fallback · 2.9 C1 columns · 2.10 refusal alternative SQL | B2.3, B2.4, B3.3 |
-| 2.8 draft column names (zeros) | B4.4 |
-| 2.11–2.16 async, safety-net, SQL safety, validation, hardcoded project, memory | H1.1, H1.2, H1.3b |
-| 2.17–2.20 barge-in, level meter, mic leak, SpeechRecognition duplicates | U3.3–U3.6 |
-| 2.21 array rows | U5.5 |
-| 2.22 server.js HTTPS | H1.3a |
-| P3 items | U3.6 (voice), U4/U5 (UI), H1.3a/H1.3b (backend) |
-| Verbatim 4 finance questions (profit/loss, investment, under-investment) | B4.5, FEAT-009/011 ACs |
+See `docs/DECISIONS.md` → Open decisions.
 
-## Appendix B: Sign-off log
+## Part D — Sign-off log
 
-| Phase | Date | Sponsor confirmation | Review links | Scorecard | Tag |
-|---|---|---|---|---|---|
-| Baseline | 2026-10-22 | ✅ "commit the current version… baseline build" (V14) | waived (V14) | 2026-10-20 eval (pre-fix) | `baseline-v0.2` |
-| U0 | 2026-10-22 | ✅ "go ahead" (V15) | [`U0.2.md`](docs/reviews/U0.2.md), [`B1.md`](docs/reviews/B1.md) (U0.4) | `gates/U0.md` | `upgrade-U0` |
-| U1 | 2026-10-22 | ✅ order + aura approved (D-18) | [`U1.1`](docs/reviews/U1.1.md), [`U1.2/U1.4`](docs/reviews/U1.2_U1.4.md), [`U1.3/U1.5`](docs/reviews/U1.3_U1.5.md) | n/a (visual) | `upgrade-U1` |
-| U2 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`U2.md`](docs/reviews/U2.md) | n/a (UI tests) | `upgrade-U2` |
-| U3 | 2026-10-22 | ✅ Aurora wave C approved (D-29); final acceptance per D-24 | [`U3.md`](docs/reviews/U3.md), [`U3-aurora.md`](docs/reviews/U3-aurora.md) | n/a (voice tests, 60 fps 4K) | `upgrade-U3` |
-| U4 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`U4.md`](docs/reviews/U4.md), [`U4.8.md`](docs/reviews/U4.8.md) | n/a (visual) | `upgrade-U4` |
-| U5 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`U5.md`](docs/reviews/U5.md), [`U5.9.md`](docs/reviews/U5.9.md) | 20/20 rubric PASS | `upgrade-U5` |
-| B1 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B1.md`](docs/reviews/B1.md) | [`gates/B1.md`](yukti/backend/eval/gates/B1.md) | `upgrade-B1` |
-| B2 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B2.md`](docs/reviews/B2.md) | [`gates/B2.md`](yukti/backend/eval/gates/B2.md) | `upgrade-B2` |
-| B3 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B3.md`](docs/reviews/B3.md) | [`gates/B3.md`](yukti/backend/eval/gates/B3.md) | `upgrade-B3` |
-| B4 | 2026-10-22 | ⬜ (D-24: final acceptance) | [`B4.md`](docs/reviews/B4.md) | [`gates/B4.md`](yukti/backend/eval/gates/B4.md) | `upgrade-B4` |
-| H1 | 2026-10-22 | ⬜ (D-24: final acceptance; H1.5b on go-ahead) | [`H1.3a_H1.5a.md`](docs/reviews/H1.3a_H1.5a.md), [`H1.md`](docs/reviews/H1.md) | [`gates/H1.md`](yukti/backend/eval/gates/H1.md) | `upgrade-H1` |
+| Phase | G5 date | Sponsor | Notes |
+|---|---|---|---|
+| v3 docs (P0.8) | 2026-10-23 | Amandeep Saini ("I approve") | G4 approved (2 rounds); OD-7…OD-18 accepted as D-43…D-54 |
