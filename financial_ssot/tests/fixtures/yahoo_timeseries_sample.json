@@ -1,0 +1,104 @@
+{
+ "timeseries": {
+  "result": [
+   {
+    "meta": {
+     "symbol": [
+      "ONGC.NS"
+     ],
+     "type": [
+      "annualTotalAssets"
+     ]
+    },
+    "timestamp": [
+     1711843200,
+     1743379200
+    ],
+    "annualTotalAssets": [
+     {
+      "dataId": 20976,
+      "asOfDate": "2025-03-31",
+      "periodType": "12M",
+      "currencyCode": "INR",
+      "reportedValue": {
+       "raw": 1000000000000.0,
+       "fmt": "1T"
+      }
+     },
+     {
+      "dataId": 20976,
+      "asOfDate": "2026-03-31",
+      "periodType": "12M",
+      "currencyCode": "INR",
+      "reportedValue": {
+       "raw": 7919051800000.0,
+       "fmt": "7.92T"
+      }
+     }
+    ]
+   },
+   {
+    "meta": {
+     "symbol": [
+      "ONGC.NS"
+     ],
+     "type": [
+      "quarterlyTotalRevenue"
+     ]
+    },
+    "timestamp": [
+     1751241600
+    ],
+    "quarterlyTotalRevenue": [
+     null,
+     {
+      "dataId": 20100,
+      "asOfDate": "2025-06-30",
+      "periodType": "3M",
+      "currencyCode": "INR",
+      "reportedValue": {
+       "raw": 1000.0,
+       "fmt": "1k"
+      }
+     }
+    ]
+   },
+   {
+    "meta": {
+     "symbol": [
+      "ONGC.NS"
+     ],
+     "type": [
+      "trailingEBITDA"
+     ]
+    },
+    "timestamp": [
+     1758240000
+    ],
+    "trailingEBITDA": [
+     {
+      "dataId": 20200,
+      "asOfDate": "2025-09-30",
+      "periodType": "TTM",
+      "currencyCode": "USD",
+      "reportedValue": {
+       "raw": 1000.0,
+       "fmt": "1k"
+      }
+     }
+    ]
+   },
+   {
+    "meta": {
+     "symbol": [
+      "ONGC.NS"
+     ],
+     "type": [
+      "annualOperatingCashFlow"
+     ]
+    }
+   }
+  ],
+  "error": null
+ }
+}
