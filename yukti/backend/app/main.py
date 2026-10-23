@@ -104,6 +104,9 @@ async def general_exception_handler(request, exc: Exception):
 @app.on_event("startup")
 async def startup_event():
     logger.info(f"Starting Yukti AI Backend. Project: {GCP_PROJECT} | Text Model: {DEFAULT_TEXT_MODEL} | Live Model: {DEFAULT_LIVE_MODEL}")
+    # P0.4 r2: surface a missing/short signing key at startup (prod fails closed: every protected route -> 401)
+    if not yauth.signing_key_ok():
+        logger.error("Persona signing key unavailable: sessions cannot be issued or verified (set YUKTI_PERSONA_SIGNING_KEY)")
 
     # Hydrate Verified Answer Cache from snapshot
     from app.answer_cache import get_answer_cache

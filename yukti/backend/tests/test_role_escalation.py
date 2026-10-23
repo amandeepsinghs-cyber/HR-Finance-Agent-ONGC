@@ -125,3 +125,13 @@ def test_ui_control_tool_rejects_persona():
     from app.ui_control import run
     res = run("persona", "CMD")
     assert res["status"] == "ERROR" and res["summary"].startswith("R-ROLE")
+
+
+def test_live_prompt_no_longer_advertises_persona_switching():
+    """P0.4 r2 (G4 must-fix 3): Gemini Live prompt/tool text must not invite a role switch."""
+    src = (Path(__file__).resolve().parent.parent / "app" / "live_session.py").read_text(encoding="utf-8")
+    assert "switch persona" not in src.lower()
+    assert "set_persona," not in src and "'persona' |" not in src
+    assert 'action="persona"' not in src
+    assert "Now viewing and speaking as" not in src
+    assert "access level cannot be changed in conversation" in src

@@ -368,9 +368,8 @@ class AgentTurnRunner:
             elif cmd == "set_theme":
                 spoken_sc = f"Switched the display to {val} mode."
             elif cmd == "set_persona":
-                norm_persona = normalize_persona(val)
-                session_state.persona = norm_persona
-                spoken_sc = f"Switched active role to {norm_persona}."
+                # P0.4 r2: unreachable (role switches are answered by _role_switch_contract above); never switch here
+                return self._role_switch_contract(query, session_state, norm_persona, principal, turn_id, det_lang, t0)
             elif cmd == "set_language":
                 det_lang = val if val in ("en", "hi", "hi-en") else "en"
                 session_state.language = det_lang

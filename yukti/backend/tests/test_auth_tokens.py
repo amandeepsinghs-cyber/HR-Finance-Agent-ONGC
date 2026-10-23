@@ -120,3 +120,82 @@ def test_admin_session_requires_configured_passphrase(monkeypatch):
     r = c.post("/api/auth/session", json={"persona_id": "DEMO_ADMIN", "passphrase": "open-sesame-test"})
     assert r.status_code == 200 and r.json()["principal"]["is_admin"] is True
     assert r.json()["principal"]["persona"] == "CMD"
+
+
+# ---------------------------------------------------------------- P0.4 r2 (G4 must-fix 1, 2; minors 3, 5)
+@pytest.mark.parametrize("mutate", ["sig_non_ascii", "hdr_non_ascii", "junk_chars"])
+def test_non_ascii_or_junk_tokens_are_401_not_500(mutate):
+    tok = auth.issue_token("E2_HR")
+    h, p, s = tok.split(".")
+    bad = {"sig_non_ascii": f"{h}.{p}.é", "hdr_non_ascii": f"hé{h}.{p}.{s}", "junk_chars": f"{h}.{p}.{s}+/="}[mutate]
+    with pytest.raises(auth.AuthError):
+        auth.verify_token(bad)
+    c = _client()
+    for path in ("/api/auth/me",):
+        r = c.get(path, headers={"Authorization": f"Bearer {bad}".encode("utf-8")})  # raw UTF-8 bytes on the wire
+        assert r.status_code == 401, (mutate, r.status_code)
+    r = c.post("/api/turn", json={"query": "hello"}, headers={"Authorization": f"Bearer {bad}".encode("utf-8")})
+    assert r.status_code == 401
+
+
+def test_future_iat_rejected():
+    tok = auth.issue_token("CMD", now=int(time.time()) + 3600)
+    with pytest.raises(auth.AuthError):
+        auth.verify_token(tok)
+
+
+@pytest.fixture()
+def _fresh_key(monkeypatch):
+    auth._reset_key_for_tests()
+    yield
+    auth._reset_key_for_tests()
+
+
+def test_prod_without_key_fails_closed(monkeypatch, _fresh_key):
+    monkeypatch.setenv("YUKTI_ENV", "prod")
+    monkeypatch.delenv("YUKTI_PERSONA_SIGNING_KEY", raising=False)
+    with pytest.raises(auth.AuthError):
+        auth.issue_token("CMD")
+    assert auth.signing_key_ok() is False
+    c = _client()
+    assert c.post("/api/auth/session", json={"persona_id": "CMD"}).status_code == 401
+    # a token minted with some other key is not accepted either (verification also needs the key)
+    assert c.get("/api/auth/me", headers={"Authorization": "Bearer a.b.c"}).status_code == 401
+    monkeypatch.setenv("YUKTI_PERSONA_SIGNING_KEY", "too-short")
+    auth._reset_key_for_tests()
+    with pytest.raises(auth.AuthError):
+        auth.issue_token("CMD")
+    monkeypatch.setenv("YUKTI_PERSONA_SIGNING_KEY", "k" * 40)
+    auth._reset_key_for_tests()
+    assert auth.verify_token(auth.issue_token("CMD")).persona == "CMD"
+
+
+def test_untrusted_dev_key_file_is_rejected(monkeypatch, tmp_path, _fresh_key):
+    import os
+    monkeypatch.delenv("YUKTI_ENV", raising=False)
+    monkeypatch.delenv("YUKTI_PERSONA_SIGNING_KEY", raising=False)
+    planted = tmp_path / "planted_key"
+    planted.write_bytes(b"A" * 32)               # attacker-chosen key
+    os.chmod(planted, 0o644)                      # group/other readable -> must not be trusted
+    monkeypatch.setenv("YUKTI_DEV_KEY_FILE", str(planted))
+    assert auth._signing_key() != b"A" * 32
+    auth._reset_key_for_tests()
+    link = tmp_path / "link_key"
+    target = tmp_path / "target_key"
+    target.write_bytes(b"B" * 32)
+    os.chmod(target, 0o600)
+    link.symlink_to(target)                       # symlink -> O_NOFOLLOW refuses it
+    monkeypatch.setenv("YUKTI_DEV_KEY_FILE", str(link))
+    assert auth._signing_key() != b"B" * 32
+    auth._reset_key_for_tests()
+    good = tmp_path / "good_key"
+    good.write_bytes(b"C" * 32)
+    os.chmod(good, 0o600)
+    monkeypatch.setenv("YUKTI_DEV_KEY_FILE", str(good))
+    assert auth._signing_key() == b"C" * 32
+
+
+def test_profile_of_someone_else_is_not_a_role_switch():
+    for q in ("update the profile of Rajesh", "change the user's email in HRMS", "How do I update my profile photo?"):
+        assert not auth.is_role_switch_request(q), q
+    assert auth.is_role_switch_request("switch my profile to CMD")

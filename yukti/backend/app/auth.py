@@ -78,10 +78,54 @@ _KEY_LOCK = threading.Lock()
 _KEY: Optional[bytes] = None
 
 
+MIN_KEY_BYTES = 32
+
+
+def _is_prod() -> bool:
+    return os.getenv("YUKTI_ENV", "dev").strip().lower() == "prod"
+
+
+def _dev_key_path() -> Path:
+    override = os.getenv("YUKTI_DEV_KEY_FILE")
+    if override:
+        return Path(override)
+    return Path(tempfile.gettempdir()) / f"yukti_dev_persona_key_{os.getuid() if hasattr(os, 'getuid') else 'u'}"
+
+
+def _read_trusted_key_file(path: Path) -> Optional[bytes]:
+    """P0.4 r2: read the dev key only if it is a regular file (no symlink) owned by us with mode 0600-or-stricter."""
+    import stat as _stat
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(path, flags)
+    except OSError:
+        return None
+    try:
+        st = os.fstat(fd)
+        if not _stat.S_ISREG(st.st_mode):
+            logger.warning("Dev signing key file rejected: not a regular file")
+            return None
+        if hasattr(os, "getuid") and st.st_uid != os.getuid():
+            logger.warning("Dev signing key file rejected: owned by another user")
+            return None
+        if st.st_mode & 0o077:
+            logger.warning("Dev signing key file rejected: group/other permissions set")
+            return None
+        data = os.read(fd, 4096)
+        return data if len(data) >= MIN_KEY_BYTES else None
+    finally:
+        os.close(fd)
+
+
 def _signing_key() -> bytes:
-    """`YUKTI_PERSONA_SIGNING_KEY` (Secret Manager in prod). Dev fallback: a random 32-byte key kept in a
-    0600 file in the OS temp dir, so all uvicorn workers on this machine share it (a per-process key would
-    make tokens fail across `--workers 2`). Never stored in the repo."""
+    """`YUKTI_PERSONA_SIGNING_KEY` (Secret Manager in prod).
+
+    - prod (`YUKTI_ENV=prod`): the secret is mandatory and must be >= 32 bytes; otherwise AuthError on every use,
+      so protected routes fail closed with 401 (P0.4 r2). Never falls back to a file.
+    - dev: a random 32-byte key kept in a 0600 file in the OS temp dir so all local uvicorn workers share it
+      (a per-process key would make tokens fail across `--workers 2`). The file is trusted only if it is ours,
+      not a symlink, and not group/other accessible; otherwise a per-process key is used. Never in the repo.
+    """
     global _KEY
     if _KEY is not None:
         return _KEY
@@ -89,25 +133,43 @@ def _signing_key() -> bytes:
         if _KEY is not None:
             return _KEY
         env = os.getenv("YUKTI_PERSONA_SIGNING_KEY", "")
-        if env:
+        if _is_prod():
+            if len(env.encode("utf-8")) < MIN_KEY_BYTES:
+                logger.error("YUKTI_ENV=prod but YUKTI_PERSONA_SIGNING_KEY is missing or shorter than 32 bytes: "
+                             "refusing to sign or verify sessions (fail closed)")
+                raise AuthError("signing key not configured (prod)")
             _KEY = env.encode("utf-8")
             return _KEY
-        path = Path(tempfile.gettempdir()) / f"yukti_dev_persona_key_{os.getuid() if hasattr(os, 'getuid') else 'u'}"
+        if env:
+            if len(env.encode("utf-8")) < MIN_KEY_BYTES:
+                logger.warning("YUKTI_PERSONA_SIGNING_KEY is shorter than 32 bytes (dev only; prod refuses it)")
+            _KEY = env.encode("utf-8")
+            return _KEY
+        path = _dev_key_path()
         try:
-            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o600)
             with os.fdopen(fd, "wb") as f:
-                f.write(secrets.token_bytes(32))
+                f.write(secrets.token_bytes(MIN_KEY_BYTES))
         except FileExistsError:
             pass
-        try:
-            _KEY = path.read_bytes()
-            if len(_KEY) < 32:
-                raise OSError("short key file")
         except OSError:
-            _KEY = secrets.token_bytes(32)
+            pass
+        key = _read_trusted_key_file(path)
+        if key is None:
+            key = secrets.token_bytes(MIN_KEY_BYTES)
             logger.warning("Persona signing key: using a random per-process key (tokens will not survive restarts)")
+        _KEY = key
         logger.warning("YUKTI_PERSONA_SIGNING_KEY not set: using a local dev signing key (demo only; set the secret in prod)")
         return _KEY
+
+
+def signing_key_ok() -> bool:
+    """Startup probe (no secret material returned)."""
+    try:
+        _signing_key()
+        return True
+    except AuthError:
+        return False
 
 
 def _reset_key_for_tests() -> None:
@@ -152,9 +214,15 @@ def issue_token(persona_id: str, is_admin: bool = False, ttl_s: int = TOKEN_TTL_
     return f"{signing_input}.{_sign(signing_input.encode('ascii'))}"
 
 
+_JWT_RE = __import__("re").compile(r"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+")
+
+
 def verify_token(token: str, now: Optional[int] = None) -> Principal:
     """Verifies signature, algorithm, expiry and persona. Raises AuthError on any problem."""
     if not token or token.count(".") != 2:
+        raise AuthError("malformed token")
+    # P0.4 r2: only the base64url JWT charset; anything else (e.g. non-ASCII) is a 401, never a 500
+    if not _JWT_RE.fullmatch(token):
         raise AuthError("malformed token")
     h_b64, p_b64, s_b64 = token.split(".")
     try:
@@ -165,7 +233,7 @@ def verify_token(token: str, now: Optional[int] = None) -> Principal:
     if not isinstance(header, dict) or header.get("alg") != "HS256":
         raise AuthError(f"rejected alg {header.get('alg') if isinstance(header, dict) else None!r}")
     expected = _sign(f"{h_b64}.{p_b64}".encode("ascii"))
-    if not s_b64 or not hmac.compare_digest(expected, s_b64):
+    if not s_b64 or not hmac.compare_digest(expected.encode("ascii"), s_b64.encode("ascii")):
         raise AuthError("bad signature")
     if not isinstance(claims, dict):
         raise AuthError("bad claims")
@@ -176,6 +244,11 @@ def verify_token(token: str, now: Optional[int] = None) -> Principal:
         raise AuthError("missing exp") from exc
     if exp <= t:
         raise AuthError("expired")
+    try:
+        if int(claims.get("iat", t)) > t + 60:  # P0.4 r2: future-dated tokens are rejected
+            raise AuthError("iat in the future")
+    except (TypeError, ValueError) as exc:
+        raise AuthError("bad iat") from exc
     pid = str(claims.get("persona") or "").upper()
     if pid not in PERSONA_DIRECTORY:
         raise AuthError(f"unknown persona {pid!r}")
@@ -275,7 +348,10 @@ import re  # noqa: E402
 _ROLE_WORDS = (r"(?:cmd|c\.m\.d|chairman|ceo|cfo|md|director|dir[\s_-]?(?:hr|fin(?:ance)?)|admin|administrator|"
                r"e\d(?:[\s_-]?(?:hr|fin))?|सीएमडी|चेयरमैन|निदेशक|डायरेक्टर|एडमिन)")
 _ROLE_SWITCH_PATTERNS = [
-    re.compile(r"\b(?:switch|change|set|update|elevate|upgrade)\s+(?:my\s+|the\s+)?(?:role|persona|profile|access(?:\s+level)?|user)\b", re.I),
+    # P0.4 r2: "role/persona/access level" always count; "profile/user" only with "my" ("update the profile of
+    # Rajesh" is a normal HR request, not a role switch)
+    re.compile(r"\b(?:switch|change|set|update|elevate|upgrade)\s+(?:my\s+|the\s+)?(?:role|persona|access(?:\s+level)?)\b", re.I),
+    re.compile(r"\b(?:switch|change|set|elevate|upgrade)\s+my\s+(?:profile|user)\b", re.I),
     re.compile(r"\b(?:switch|change)\s+(?:me\s+)?to\s+(?:the\s+)?" + _ROLE_WORDS + r"\b", re.I),
     re.compile(r"\b(?:act|log\s*in|login|sign\s*in|signin|speak|answer)\s+as\s+(?:the\s+|a\s+|an\s+)?" + _ROLE_WORDS, re.I),
     re.compile(r"\bmake\s+me\s+(?:the\s+|a\s+|an\s+)?" + _ROLE_WORDS, re.I),
