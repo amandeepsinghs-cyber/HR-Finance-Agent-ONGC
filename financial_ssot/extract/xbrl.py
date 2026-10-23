@@ -50,7 +50,11 @@ NS_XBRLI = "http://www.xbrl.org/2003/instance"
 NS_XBRLDI = "http://xbrl.org/2006/xbrldi"
 FIN_PREFIX = "in-bse-fin"
 TOLERANCE_INR_CR = 0.5  # V10: XBRL is rounded to ₹1 cr
-CF_CCE_TAG = "CashAndCashEquivalentsCashFlowStatement"
+CF_CCE_TAG = "CashAndCashEquivalentsCashFlowStatement"  # tag map: CF.CCE_* (split OPEN/CLOSE in code)
+CF_CCE_CHANGE_TAG = "IncreaseDecreaseInCashAndCashEquivalents"
+# Point-in-time balances that the filings put on duration (One...D) contexts.
+INSTANT_TAGS = {"SegmentAssets"}
+RESTATED_REVIEW_PCT = 1.0  # restated Δ above this % of the 10-yr value -> P1.6 review list
 
 # Documented reasons for V10 differences (fiscal_year, xbrl_tag or "*") -> text.
 # Sources: MANIFEST_v3_acquisition.md §3, SPEC-01 §6 regression fixtures.
@@ -211,6 +215,9 @@ def parse(path: str | Path, extracted_at: str | None = None, tag_map: dict | Non
             # (FY21 standalone CFO 27,665.11 ₹ cr), FY23/FY24 under FourD.
             period_type = "annual"
             notes.append("cf_annual_filed_under_OneD")
+        if tag in INSTANT_TAGS and period_type != "instant":
+            period_type = "instant"  # e.g. SegmentAssets filed on OneD / OneReportableSegmentAssetsNND
+            notes.append("point_in_time_tag_on_duration_context")
         key = (tag, ctx_ref)
         if key in seen:
             notes.append("duplicate_fact" + ("" if seen[key] == value else f"_conflict:{seen[key]}"))
@@ -231,6 +238,8 @@ def parse(path: str | Path, extracted_at: str | None = None, tag_map: dict | Non
             line_code = "CF.CCE_OPEN" if nth == 0 else "CF.CCE_CLOSE"
             notes = [n for n in notes if not n.startswith("duplicate_fact")]
             notes.append("cf_cce_opening" if nth == 0 else "cf_cce_closing")
+        if line_code == "PL.PAT" and meta["scope"] == "consolidated":
+            notes.append("includes_nci")  # total PAT; owners' share = ProfitOrLossAttributableToOwnersOfParent
         rows.append({
             # bronze schema (SPEC-01 §5.3, P1.2 column order)
             "extract_id": eid,
@@ -270,7 +279,24 @@ def parse(path: str | Path, extracted_at: str | None = None, tag_map: dict | Non
             "extraction_method": "xbrl",
             "proposed_line_code": line_code,
         })
+    _flag_cce_defects(rows)
     return rows
+
+
+def _flag_cce_defects(rows: list[dict]) -> None:
+    """M1 (G4 r1): opening C&CE = 0 and closing = the period's net change => filing defect.
+
+    FY23 standalone files opening 0.00 / closing 27.08 ₹ cr (= IncreaseDecrease), whereas AR FY23
+    shows 50.11 -> 77.19 ₹ cr.  Both facts are kept for audit but lose their line code so they can
+    never backfill gold as clean CF.CCE_OPEN / CF.CCE_CLOSE.
+    """
+    for ctx in {r["context_ref"] for r in rows if r["xbrl_tag"] == CF_CCE_TAG}:
+        cce = [r for r in rows if r["xbrl_tag"] == CF_CCE_TAG and r["context_ref"] == ctx]
+        chg = [r for r in rows if r["xbrl_tag"] == CF_CCE_CHANGE_TAG and r["context_ref"] == ctx]
+        if len(cce) == 2 and chg and cce[0]["parsed_value"] == 0 and cce[1]["parsed_value"] == chg[0]["parsed_value"]:
+            for r in cce:
+                r["proposed_line_code"] = None
+                r["notes"] = ";".join(filter(None, [r["notes"], "cf_cce_filing_defect"]))
 
 
 def parse_text_facts(path: str | Path, source_name: str | None = None) -> list[dict]:
@@ -323,6 +349,7 @@ def cross_check(xbrl_rows: list[dict], ten_year_rows: list[dict], tag_map: dict 
             ty_cr = float(ty["parsed_value"]) / 10
             d = x["value_inr_cr"] - ty_cr
             ok = abs(d) <= TOLERANCE_INR_CR
+            pct = abs(d) / abs(ty_cr) * 100 if ty_cr else (0.0 if d == 0 else float("inf"))
             out.append({
                 "fiscal_year": x["fiscal_year"], "xbrl_tag": x["xbrl_tag"],
                 "proposed_line_code": m["proposed_line_code"],
@@ -332,6 +359,10 @@ def cross_check(xbrl_rows: list[dict], ten_year_rows: list[dict], tag_map: dict 
                 "ten_year_marked_restated": bool(ty["is_restated"]),
                 "status": (status := "pass" if ok else ("restated" if ty["is_restated"] else "mismatch")),
                 "explanation": explain(x["fiscal_year"], x["xbrl_tag"], status),
+                "delta_pct": round(pct, 3),
+                # '*' explains that a restatement happened, not its size: large ones go to P1.6
+                "review_flag": "P1.6_review_restated_gt_1pct" if status == "restated" and pct > RESTATED_REVIEW_PCT
+                else ("P1.6_conflict_candidate" if status == "mismatch" else None),
                 "xbrl_doc": x["source_doc"], "xbrl_line": x["source_text_line"],
                 "ten_year_doc": ty["source_doc"], "ten_year_line": ty["source_text_line"],
             })

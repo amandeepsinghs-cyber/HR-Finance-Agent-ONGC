@@ -161,3 +161,53 @@ def test_crosscheck_core_lines(all_rows):
     # only unmarked difference: FY24 total income vs AR FY26 (documented reclassification)
     mism = [(c["fiscal_year"], c["xbrl_tag"], c["ten_year_vintage"]) for c in checks if c["status"] == "mismatch"]
     assert mism == [("FY24", "Income", "AR_FY2025-26")]
+
+
+# ---------------------------------------------------------------- G4 r2 fixes
+@needs_files
+def test_fy23_s_cce_filing_defect_flagged(all_rows):
+    """M1: FY23 S files C&CE opening 0.00 / closing 27.08 ₹ cr (= net change); AR FY23 is 50.11 -> 77.19."""
+    rows = next(rs for n, rs in all_rows.items() if "FY2022-23_Standalone" in n)
+    cce = [r for r in rows if r["xbrl_tag"] == xbrl.CF_CCE_TAG]
+    assert [r["value_inr_cr"] for r in cce] == pytest.approx([0.0, 27.08])
+    assert all(r["proposed_line_code"] is None and "cf_cce_filing_defect" in r["notes"] for r in cce)
+    # no other file trips the rule; FY24 S keeps clean codes (77.19 -> 34.55 = AR FY24)
+    flagged = {n for n, rs in all_rows.items() for r in rs if "cf_cce_filing_defect" in (r["notes"] or "")}
+    assert flagged == {n for n in all_rows if "FY2022-23_Standalone" in n}
+    fy24 = next(rs for n, rs in all_rows.items() if "FY2023-24_Standalone" in n)
+    op = next(r for r in fy24 if r["proposed_line_code"] == "CF.CCE_OPEN")
+    assert op["value_inr_cr"] == pytest.approx(77.19)
+
+
+@needs_files
+def test_segment_assets_instant_and_paid_up_code(all_rows):
+    rows = [r for rs in all_rows.values() for r in rs]
+    seg_assets = [r for r in rows if r["xbrl_tag"] == "SegmentAssets"]
+    assert seg_assets and all(r["period_type"] == "instant" for r in seg_assets)
+    paid = [r for r in rows if r["xbrl_tag"] == "PaidUpValueOfEquityShareCapital"]
+    assert paid and all(r["proposed_line_code"] == "OTH.PAID_UP_CAPITAL" for r in paid)
+
+
+@needs_files
+def test_consolidated_pat_includes_nci_note(all_rows):
+    rows = [r for rs in all_rows.values() for r in rs if r["proposed_line_code"] == "PL.PAT"]
+    for r in rows:
+        assert ("includes_nci" in (r["notes"] or "")) == (r["scope"] == "consolidated")
+    c24 = next(r for r in rows if r["scope"] == "consolidated" and r["fiscal_year"] == "FY24" and r["context_ref"] == "FourD")
+    assert c24["value_inr_cr"] == pytest.approx(57100.84)
+
+
+@needs_files
+def test_restated_delta_size_flag(all_rows):
+    pd = pytest.importorskip("pandas")
+    if not xbrl.TEN_YEAR.exists():
+        pytest.skip("P1.2 ten_year_raw.parquet not built")
+    checks = xbrl.cross_check([r for rs in all_rows.values() for r in rs],
+                              pd.read_parquet(xbrl.TEN_YEAR).to_dict("records"))
+    get = {(c["fiscal_year"], c["xbrl_tag"], c["ten_year_vintage"]): c for c in checks}
+    fin20 = get[("FY20", "FinanceCosts", "AR_FY2025-26")]
+    assert fin20["delta_pct"] == pytest.approx(14.685, abs=0.01) and fin20["review_flag"] == "P1.6_review_restated_gt_1pct"
+    pat19 = get[("FY19", "ProfitLossForPeriod", "AR_FY2025-26")]
+    assert pat19["delta_pct"] < 1 and pat19["review_flag"] is None
+    assert get[("FY24", "Income", "AR_FY2025-26")]["review_flag"] == "P1.6_conflict_candidate"
+    assert all(c["review_flag"] is None for c in checks if c["status"] == "pass")

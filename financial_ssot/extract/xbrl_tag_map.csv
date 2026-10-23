@@ -25,7 +25,7 @@ OtherComprehensiveIncomeNetOfTaxes,PL.OCI,Other comprehensive income (OCI)
 ComprehensiveIncomeForThePeriod,PL.TCI,Total Comprehensive Income for the year
 BasicEarningsLossPerShareFromContinuingAndDiscontinuedOperations,PL.EPS_BASIC,
 DilutedEarningsLossPerShareFromContinuingAndDiscontinuedOperations,PL.EPS_DILUTED,
-PaidUpValueOfEquityShareCapital,BS.SHARE_CAPITAL,Share Capital
+PaidUpValueOfEquityShareCapital,OTH.PAID_UP_CAPITAL,Share Capital
 SegmentRevenueFromOperations,SEG.REV,
 SegmentProfitLossBeforeTaxAndFinanceCosts,SEG.RES,
 OtherUnallocableExpenditureNetOffUnAllocableIncome,SEG.UNALLOC,
@@ -43,4 +43,4 @@ CashAndCashEquivalents,BS.CCE,
 CashFlowsFromUsedInOperatingActivities,CF.CFO,
 CashFlowsFromUsedInInvestingActivities,CF.CFI,
 CashFlowsFromUsedInFinancingActivities,CF.CFF,
-CashAndCashEquivalentsCashFlowStatement,CF.CCE_CLOSE,
+CashAndCashEquivalentsCashFlowStatement,CF.CCE_*,
