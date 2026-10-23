@@ -1,0 +1,46 @@
+xbrl_tag,proposed_line_code,ten_year_label
+RevenueFromOperations,PL.REV_OPS,Revenue from Operations
+OtherIncome,PL.OTHER_INCOME,
+Income,PL.TOTAL_INCOME,Total Income|Total Revenues
+CostOfMaterialsConsumed,PL.COST_MATERIALS,
+PurchasesOfStockInTrade,PL.PURCHASES_TRADED,
+ChangesInInventoriesOfFinishedGoodsWorkInProgressAndStockInTrade,PL.INVENTORY_CHANGE,
+EmployeeBenefitExpense,PL.EMP_BENEFIT,
+FinanceCosts,PL.FIN_COST,Finance Costs|Finance Cost
+DepreciationDepletionAndAmortisationExpense,PL.DDA,"Depreciation, Depletion, Amortisation and Impairment"
+OtherExpenses,PL.OTHER_EXP,
+Expenses,PL.TOTAL_EXP,
+ProfitBeforeExceptionalItemsAndTax,PL.PBT_PRE_EXC,Profit before Tax and Exceptional Items
+ExceptionalItemsBeforeTax,PL.EXCEPTIONAL,Exceptional items- Income (Expenses)|Exceptional items
+ProfitBeforeTax,PL.PBT,Profit before Tax (PBT)|Profit before Tax
+CurrentTax,PL.TAX_CURRENT,
+DeferredTax,PL.TAX_DEFERRED,
+TaxExpense,PL.TAX,Corporate Tax|Corporate Tax ( Net)
+ProfitLossForPeriodFromContinuingOperations,PL.PAT_CONT,
+ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod,PL.SHARE_ASSOC_JV,
+ProfitLossForPeriod,PL.PAT,Profit after Tax (PAT)|Net Profit (PAT)|Profit after Tax
+ProfitOrLossAttributableToOwnersOfParent,PL.PAT_OWNERS,
+ProfitOrLossAttributableToNonControllingInterests,PL.PAT_NCI,
+OtherComprehensiveIncomeNetOfTaxes,PL.OCI,Other comprehensive income (OCI)
+ComprehensiveIncomeForThePeriod,PL.TCI,Total Comprehensive Income for the year
+BasicEarningsLossPerShareFromContinuingAndDiscontinuedOperations,PL.EPS_BASIC,
+DilutedEarningsLossPerShareFromContinuingAndDiscontinuedOperations,PL.EPS_DILUTED,
+PaidUpValueOfEquityShareCapital,BS.SHARE_CAPITAL,Share Capital
+SegmentRevenueFromOperations,SEG.REV,
+SegmentProfitLossBeforeTaxAndFinanceCosts,SEG.RES,
+OtherUnallocableExpenditureNetOffUnAllocableIncome,SEG.UNALLOC,
+SegmentFinanceCosts,SEG.FIN_COST,
+SegmentProfitBeforeTax,SEG.PBT,
+Assets,BS.TOTAL_ASSETS,
+EquityShareCapital,BS.SHARE_CAPITAL,
+OtherEquity,BS.OTHER_EQUITY,
+Equity,BS.EQUITY.TOTAL,Total Equity (Net Worth)|Net Worth (Equity)
+NoncurrentLiabilities,BS.LIAB.NON_CURRENT.TOTAL,
+CurrentLiabilities,BS.LIAB.CURRENT.TOTAL,
+BorrowingsNoncurrent,BS.BORROW_NC,
+BorrowingsCurrent,BS.BORROW_CUR,
+CashAndCashEquivalents,BS.CCE,
+CashFlowsFromUsedInOperatingActivities,CF.CFO,
+CashFlowsFromUsedInInvestingActivities,CF.CFI,
+CashFlowsFromUsedInFinancingActivities,CF.CFF,
+CashAndCashEquivalentsCashFlowStatement,CF.CCE_CLOSE,
