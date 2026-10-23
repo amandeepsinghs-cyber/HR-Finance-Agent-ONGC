@@ -50,3 +50,19 @@ JOB_LABELS = {"datacloud": "ai-agent"}
 MAX_BYTES_BILLED = 524_288_000  # 500 MB
 FX_INR_PER_USD = float(os.getenv("YUKTI_FX_INR_PER_USD", "88.33"))
 
+# P0.5 (BUG-32, SPEC-06 §4.7): deployment environment, admin routes and CORS allow-list
+YUKTI_ENV = os.getenv("YUKTI_ENV", "dev").strip().lower()
+YUKTI_ENABLE_ADMIN = os.getenv("YUKTI_ENABLE_ADMIN", "0").strip() == "1"
+DEFAULT_ALLOWED_ORIGINS = "http://localhost:3300,http://127.0.0.1:3300,http://localhost:3200,http://127.0.0.1:3200"
+
+
+def allowed_origins() -> list:
+    """Comma list from YUKTI_ALLOWED_ORIGINS. A wildcard is never allowed (credentials are on): it is logged and dropped."""
+    import logging
+    raw = os.getenv("YUKTI_ALLOWED_ORIGINS", DEFAULT_ALLOWED_ORIGINS)
+    items = [o.strip().rstrip("/") for o in raw.split(",") if o.strip()]
+    if "*" in items:
+        logging.getLogger("yukti.config").error("YUKTI_ALLOWED_ORIGINS contains '*'; dropped (never '*' with credentials)")
+        items = [o for o in items if o != "*"]
+    return items
+

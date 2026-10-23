@@ -32,6 +32,9 @@ from app.config import (
     EXPORTS_DIR,
     GCP_PROJECT,
     YUKTI_DEMO_CACHE,
+    YUKTI_ENABLE_ADMIN,
+    YUKTI_ENV,
+    allowed_origins,
 )
 from app.live_session import LiveSessionManager
 from app.tools.export_tool import DocumentExporter
@@ -43,25 +46,25 @@ logger = logging.getLogger("yukti.server")
 os.environ.setdefault("GOOGLE_CLOUD_PROJECT", GCP_PROJECT)
 os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "TRUE")
 
+_IS_PROD = YUKTI_ENV == "prod"
 app = FastAPI(
     title="Yukti AI Backend",
     version="1.0.0",
     description="Voice-First HR & Finance AI Agent for ONGC CMD & Leadership",
+    # P0.5 (SPEC-06 §4.7): no interactive docs / schema on Cloud Run
+    docs_url=None if _IS_PROD else "/docs",
+    redoc_url=None if _IS_PROD else "/redoc",
+    openapi_url=None if _IS_PROD else "/openapi.json",
 )
 
-# CORS: explicitly allow localhost:3000 for Next.js frontend integration
+# CORS (P0.5, BUG-32): only configured origins (YUKTI_ALLOWED_ORIGINS), never "*" with credentials.
+# The UI normally talks to the backend through its single-origin proxy (server.js), so browsers never preflight.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:8080",
-        "http://127.0.0.1:8080",
-        "*",
-    ],
+    allow_origins=allowed_origins(),
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 # Singletons
@@ -276,8 +279,7 @@ def _apply_admin_switch(contract: Dict[str, Any], principal: Principal, response
     contract["persona"] = principal.persona
 
 
-@app.get("/admin/cache")
-def admin_cache_stats() -> Dict[str, Any]:
+def admin_cache_stats(principal: Principal = Depends(yauth.require_admin)) -> Dict[str, Any]:
     """Returns tool-result cache statistics."""
     from app.config import YUKTI_RESULT_CACHE
     from app.tool_cache import get_tool_cache
@@ -289,13 +291,19 @@ def admin_cache_stats() -> Dict[str, Any]:
     }
 
 
-@app.post("/admin/cache/clear")
-def admin_cache_clear() -> Dict[str, Any]:
+def admin_cache_clear(principal: Principal = Depends(yauth.require_admin)) -> Dict[str, Any]:
     """Clears the in-memory tool-result cache."""
     from app.tool_cache import get_tool_cache
     tc = get_tool_cache()
     tc.clear()
+    yauth.audit("admin_cache_clear", principal, decision="allowed", rule_ref="SPEC-06 §4.7")
     return {"status": "cleared", "stats": tc.stats()}
+
+
+# P0.5 (BUG-32): /admin/* exist only when YUKTI_ENABLE_ADMIN=1 (default off; 404 otherwise) and need an admin token.
+if YUKTI_ENABLE_ADMIN:
+    app.get("/admin/cache")(admin_cache_stats)
+    app.post("/admin/cache/clear")(admin_cache_clear)
 
 
 @app.post("/api/turn")
