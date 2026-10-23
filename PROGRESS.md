@@ -1,15 +1,15 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 09:41 UTC · branch `v3/P0-stabilise` @ `75c7eea`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 09:48 UTC · branch `v3/P0-stabilise` @ `2ac6cb5`
 
 > [!IMPORTANT]
-> **Overall: 17% complete (weighted)** — 10/62 steps ✅ done, 2 in flight, 50 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 18% complete (weighted)** — 10/62 steps ✅ done, 2 in flight, 50 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
-| **P0** | Stabilise | `███████████████████░` 93% | 10 | 0 | 0 | 1 | 0 | 0 | 11 |
+| **P0** | Stabilise | `████████████████████` 98% | 10 | 1 | 0 | 0 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `░░░░░░░░░░░░░░░░░░░░` 2% | 0 | 0 | 0 | 1 | 11 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 8 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
@@ -23,7 +23,7 @@
 
 | Step | Status | Task | Owner | Next action |
 |---|---|---|---|---|
-| P0.10 | 🔄 In progress | **Hotfix (sponsor-requested 23-Oct):** voice self-interruption. Half-duplex mic gate while Yukti speaks (brows | O | Complete build + evidence |
+| P0.10 | 🔍 In review | **Hotfix (sponsor-requested 23-Oct):** voice self-interruption. Half-duplex mic gate while Yukti speaks (brows | O | Apply review findings / approve |
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 
 **Ready to start:**
@@ -135,6 +135,8 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `2ac6cb5` | 2026-10-23 | P0.10 (pre-G4): adaptive voice barge-in (sustained, echo-relative), speak_id gating end-to-end (no orphan/fragment bubbles), Stop  |
+| `8a95da5` | 2026-10-23 | P0.10a (pre-G4): stopgap half-duplex mic gate (browser: no PCM while playing +300 ms; backend: drop while generating/speak/estimat |
 | `3f5e4b3` | 2026-10-23 | P0.9 (G4 r2 fixes): end-to-end degraded-run evidence (with/without snapshot, broken ADC), Dockerfile fail-closed + demo-mode notes |
 | `4945902` | 2026-10-23 | P0.5 (G4 r2 fixes): prod with no YUKTI_ALLOWED_ORIGINS allows no cross-origin callers (minor) |
 | `6467e8f` | 2026-10-23 | P0.3 (G4 r2 fixes): insight context no longer labelled 'Annual Report' (unverified snapshot) + guard test |
@@ -148,7 +150,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `b55fc80` | 2026-10-23 | P0.7 (pre-G4): clause provenance (all 68 rulebook clauses illustrative), Illustrative badge, no hard-coded JRTP footer (BUG-31, D- |
 | `68a5e46` | 2026-10-23 | P0.3 (pre-G4): remove false Audited/Yahoo/Compiled labels; explicit local_snapshot status, provenance, caveat and badge (BUG-02 la |
 | `5872529` | 2026-10-23 | P0.2 (pre-G4): resolve_fy treats YYYY-YY / FY YYYY-YY as one FY; tenure 'over N years' not a range (BUG-20) |
-| `85f476b` | 2026-10-23 | P0.1 (pre-G4): /health auth_ok + auth_mode, AuthBanner, safe E-AUTH/generic error copy (BUG-01, BUG-33) |
 
 ## 8. Integrity checks
 
