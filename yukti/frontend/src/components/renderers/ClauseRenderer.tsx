@@ -2,7 +2,10 @@
 
 import React, { useState } from 'react';
 import { ClauseSpec } from '@/contracts/answerContract';
-import { Copy, Check, ShieldCheck, Scale, ChevronDown, ChevronRight, FileText } from 'lucide-react';
+import { Copy, Check, ShieldCheck, Scale, ChevronDown, ChevronRight, FileText, Info } from 'lucide-react';
+
+// P0.7 (BUG-31, D-35): clauses are "Illustrative" unless the backend explicitly marks them "real".
+const ILLUSTRATIVE_TOOLTIP = "Synthetic clause for demo; ONGC's text is not public.";
 
 interface ClauseRendererProps {
   clause: ClauseSpec;
@@ -21,6 +24,7 @@ export const ClauseRenderer: React.FC<ClauseRendererProps> = ({ clause, isDark =
     }
   };
 
+  const isIllustrative = clause.provenance !== 'real';
   const fullText = clause.text || '';
   const highlight = clause.highlight || '';
 
@@ -46,12 +50,23 @@ export const ClauseRenderer: React.FC<ClauseRendererProps> = ({ clause, isDark =
               {clause.doc_id || 'ONGC Policy Manual'}
             </div>
             <h3 className="text-lg md:text-xl font-bold text-zinc-900 dark:text-zinc-100">
-              {clause.doc_title || 'Job Rotation & Transfer Policy (JRTP)'}
+              {clause.doc_title || clause.doc_id || 'ONGC policy clause'}
             </h3>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          {isIllustrative && (
+            <span
+              data-testid="clause-illustrative-badge"
+              title={ILLUSTRATIVE_TOOLTIP}
+              aria-label={`Illustrative: ${ILLUSTRATIVE_TOOLTIP}`}
+              className="px-3 py-1 rounded-full text-xs font-semibold bg-warning-pale text-warning inline-flex items-center gap-1 cursor-help"
+            >
+              <Info className="w-3.5 h-3.5" />
+              Illustrative
+            </span>
+          )}
           {clause.clause_ref && (
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-accent border border-accent/20">
               {clause.clause_ref}
@@ -110,14 +125,24 @@ export const ClauseRenderer: React.FC<ClauseRendererProps> = ({ clause, isDark =
           </div>
         )}
 
-        {/* Statutory Guidance Note */}
-        <div className="flex items-start gap-3 p-3.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-xs text-zinc-600 dark:text-zinc-400">
-          <ShieldCheck className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-          <div>
-            <span className="font-semibold text-zinc-800 dark:text-zinc-200">Legal Authority: </span>
-            This clause has statutory force across all ONGC business units and cadres under {clause.doc_id || 'ONGC Corporate Policy'} governance.
+        {/* Statutory Guidance Note (real clauses only; P0.7: illustrative clauses carry no authority claim) */}
+        {isIllustrative ? (
+          <div data-testid="clause-illustrative-note" className="flex items-start gap-3 p-3.5 rounded-xl bg-warning-pale text-warning text-xs">
+            <Info className="w-4 h-4 shrink-0 mt-0.5" />
+            <div>
+              <span className="font-semibold">Illustrative: </span>
+              {ILLUSTRATIVE_TOOLTIP}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-start gap-3 p-3.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-xs text-zinc-600 dark:text-zinc-400">
+            <ShieldCheck className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+            <div>
+              <span className="font-semibold text-zinc-800 dark:text-zinc-200">Legal Authority: </span>
+              This clause has statutory force across all ONGC business units and cadres under {clause.doc_id || 'ONGC Corporate Policy'} governance.
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

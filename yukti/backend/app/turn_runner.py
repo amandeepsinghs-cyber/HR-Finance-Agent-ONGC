@@ -761,6 +761,7 @@ class AgentTurnRunner:
                         "clause_ref": "Clauses 3.1, 4.2 & 6.4",
                         "effective_date": "2024-04-01",
                         "source_type": "reconstruction",
+                        "provenance": "illustrative",  # P0.7 (D-35): ONGC's JRTP text is not public
                         "text": "Clause 3.1 (Minimum Station Tenure): Every executive posted to an onshore or corporate work centre shall complete a minimum stay of three (3) years before routine rotation, and two (2) years at Category-C hard stations or North-East sector assets.\n\nClause 4.2 (Maximum Continuous & Cluster Stay): Normal station tenure at corporate offices (including Delhi HQ and Mumbai) is four to five (4–5) years, subject to an aggregate cap of ten (10) years within the same station cluster.\n\nClause 6.4 (Superannuation Exemption): Executives with thirty-six (36) months or less remaining prior to superannuation are exempt from routine rotational transfer unless moved on administrative or vigilance grounds.",
                         "highlight_spans": [
                             "minimum stay of three (3) years",
@@ -2140,13 +2141,14 @@ class AgentTurnRunner:
                 "type": "clause",
                 "mode": "replace",
                 "title": doc_title,
-                "subtitle": f"{doc_id} · {clause_ref} · Statutory Corporate Policy",
+                "subtitle": f"{doc_id} · {clause_ref} · " + ("Corporate Policy" if c0.get("provenance") == "real" else "Illustrative policy text"),
                 "clause": {
                     "doc_id": doc_id,
                     "doc_title": doc_title,
                     "clause_ref": clause_ref,
                     "effective_date": "2026-01-01",
-                    "source_type": "official",
+                    "source_type": "official" if c0.get("provenance") == "real" else "reconstruction",
+                    "provenance": c0.get("provenance", "illustrative"),  # P0.7 (BUG-31)
                     "text": text,
                     "highlight": raw_sents[0] if raw_sents else text[:260],
                 },
@@ -2514,6 +2516,7 @@ class AgentTurnRunner:
                 "clause_ref": clause_ref,
                 "text": text,
                 "highlight": text[:250],
+                "provenance": c0.get("provenance", "illustrative"),  # P0.7 (BUG-31)
             }
 
         # 2. Process Data Result

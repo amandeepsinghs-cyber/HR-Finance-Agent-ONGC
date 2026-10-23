@@ -78,6 +78,8 @@ class PolicySearchEngine:
                         "clause_text": row.get("clause_text", ""),
                         "maps_to_question_ids": row.get("maps_to_question_ids", ""),
                         "source_basis": row.get("source_basis", ""),
+                        # P0.7 (BUG-31, D-35): "illustrative" unless the CSV marks the row "real"
+                        "provenance": "real" if (row.get("provenance") or "").strip() == "real" else "illustrative",
                     })
         from pathlib import Path
         import json
@@ -95,6 +97,7 @@ class PolicySearchEngine:
                         "clause_text": c.get("content", ""),
                         "maps_to_question_ids": ",".join(c.get("causal_tags", [])),
                         "source_basis": c.get("yahoo_finance_equivalent", "Schedule III P&L"),
+                        "provenance": "illustrative",  # P0.7: generated financial_build notes, not AR text
                     })
         self._local_index = items
         return items
@@ -180,6 +183,7 @@ class PolicySearchEngine:
                 "text": item["clause_text"],
                 "highlight": item["clause_text"][:320] + ("..." if len(item["clause_text"]) > 320 else ""),
                 "score": score,
+                "provenance": item.get("provenance", "illustrative"),  # P0.7
             })
         return results
 
@@ -228,12 +232,15 @@ class PolicySearchEngine:
 
                 h_doc = get_human_doc_title(doc_id)
                 full_title = f"{h_doc} — {clause_ref}: {doc_title}" if doc_title else f"{h_doc} — {clause_ref}"
+                prov_match = self.search_local(f"{doc_id} {clause_ref}", top_k=1)
                 clauses.append({
                     "doc_id": h_doc,
                     "doc_title": full_title,
                     "clause_ref": clause_ref,
                     "text": text,
                     "highlight": text[:300] + ("..." if len(text) > 300 else ""),
+                    # P0.7: same provenance as the matching index row; unknown -> illustrative
+                    "provenance": prov_match[0].get("provenance", "illustrative") if prov_match else "illustrative",
                 })
         except Exception as e:
             logger.warning(f"Vertex AI Search failed ({e}); falling back to local rulebooks index.")

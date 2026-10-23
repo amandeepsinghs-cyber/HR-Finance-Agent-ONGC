@@ -94,6 +94,8 @@ export interface ClauseSpec {
   clause_ref?: string;
   text?: string;
   highlight?: string;
+  /** P0.7 (D-35): "real" = text from a public document on disk; anything else renders as Illustrative. */
+  provenance?: 'real' | 'illustrative';
 }
 
 export interface DocumentSpec {
