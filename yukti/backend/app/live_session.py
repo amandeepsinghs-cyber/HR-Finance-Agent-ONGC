@@ -399,10 +399,12 @@ class LiveSessionManager:
                     }
         except Exception as e:
             logger.warning(f"[{self.session_id}] Voice tool {name} failed: {e}")
+            from app.turn_runner import _is_auth_or_outage_error, safe_error_copy  # P0.1 r2 (BUG-33)
             result = {
                 "status": "ERROR",
-                "error": str(e),
-                "spoken_summary": "I encountered an issue retrieving that view. Please try again.",
+                # a code, not the exception class/text (SPEC-06 AC-9 scans for "RefreshError" too)
+                "error": "E-AUTH" if _is_auth_or_outage_error(e) else "E-GENERIC",
+                "spoken_summary": safe_error_copy(e, self.language),
             }
 
         duration_ms = round((time.perf_counter() - t0) * 1000, 1)

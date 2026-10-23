@@ -99,3 +99,30 @@ def test_health_reports_auth_fields_without_error_text(monkeypatch):
     main._auth_cache.update({"ok": True, "ts": __import__("time").monotonic()})
     body = client.get("/health").json()
     assert body["auth_ok"] is True
+
+
+@pytest.mark.asyncio
+async def test_voice_tool_failure_never_leaks_exception_text(monkeypatch):
+    """P0.1 r2 (G4 must-fix 1): a failing Gemini Live tool sends safe copy to the UI socket and the model."""
+    import json as _json
+
+    import app.turn_runner as tr
+    from app.live_session import LiveSessionManager
+
+    class _Boom:
+        async def execute_turn_async(self, **_kw):
+            raise RefreshError("Reauthentication is needed. Please run gcloud auth application-default login")
+
+    monkeypatch.setattr(tr, "get_agent_turn_runner", lambda *a, **k: _Boom())
+    sent = []
+
+    class DummyWS:
+        async def send_text(self, text: str) -> None:
+            sent.append(_json.loads(text))
+
+    mgr = LiveSessionManager(DummyWS(), session_id="p01-voice-tool-err")
+    res = await mgr._execute_voice_tool("ask_yukti", {"query": "How many executives are posted in Delhi?"})
+    assert res["status"] == "ERROR" and res["error"] == "E-AUTH"
+    assert res["spoken_summary"] == E_AUTH_COPY["en"]
+    _assert_no_leak(_json.dumps(res))
+    _assert_no_leak(_json.dumps(sent))

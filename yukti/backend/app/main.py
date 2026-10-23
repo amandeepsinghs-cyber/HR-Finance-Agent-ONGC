@@ -210,7 +210,7 @@ def health() -> Dict[str, Any]:
     ac = get_answer_cache()
     return {
         "auth_ok": _check_auth_ok(),
-        "auth_mode": os.getenv("YUKTI_AUTH_MODE", "demo"),
+        "auth_mode": yauth.auth_mode(),  # P0.1 r2: same normalisation as app.auth
         "status": "healthy",
         "agent": "Yukti AI",
         "version": "1.0.0",
