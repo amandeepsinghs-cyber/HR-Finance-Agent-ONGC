@@ -237,7 +237,7 @@ export const FloatingConversationPanel: React.FC<Props> = ({
     return (
       <div className="fixed bottom-[1.5rem] right-[1.5rem] z-40 flex flex-col items-center gap-2" data-testid="minimised-orb">
         <div className="relative rounded-full bg-[var(--card)] shadow-[var(--panel-shadow)] border border-[var(--hairline)]">
-          <VoiceOrb state={orbState} isDark={isDark} size={96} onClick={onToggleMic} audioEngine={audioEngine} label={isMicActive ? 'Stop listening' : 'Start talking'} pressed={!!isMicActive} />
+          <VoiceOrb state={orbState} isDark={isDark} size={96} onClick={onToggleMic} audioEngine={audioEngine} label={orbState === 'speaking' ? 'Stop Yukti speaking' : isMicActive ? 'Stop listening' : 'Start talking'} pressed={!!isMicActive} />
           <button onClick={() => onModeChange('docked')} className="absolute -top-1 -left-1 w-8 h-8 grid place-items-center rounded-full bg-[var(--card)] border border-[var(--hairline)] shadow-md text-[var(--ink-2)] hover:text-[var(--ink)]" aria-label="Open command bar">
             <Maximize2 className="w-3.5 h-3.5" />
           </button>
@@ -415,8 +415,8 @@ export const FloatingConversationPanel: React.FC<Props> = ({
                   onClick={onToggleMic}
                   data-testid="mic-button"
                   aria-pressed={isMicActive}
-                  aria-label={isMicActive ? 'Stop listening' : 'Start talking'}
-                  title={isMicActive ? 'Listening — click to stop' : 'Talk to Yukti (or press Space)'}
+                  aria-label={orbState === 'speaking' ? 'Stop Yukti speaking' : isMicActive ? 'Stop listening' : 'Start talking'}
+                  title={orbState === 'speaking' ? 'Stop Yukti and talk (or press Space)' : isMicActive ? 'Listening — click to stop' : 'Talk to Yukti (or press Space)'}
                   data-aura={orbState === 'thinking' ? 'thinking' : 'listening'}
                   className="yk-aura-ring rounded-full w-11 h-11 shrink-0 cursor-pointer transition-transform hover:scale-105 active:scale-95"
                 >
@@ -425,7 +425,8 @@ export const FloatingConversationPanel: React.FC<Props> = ({
                       orbState === 'thinking' ? 'text-ongc-amber' : 'text-[var(--accent)]'
                     }`}
                   >
-                    <LevelMeter level={micLevel} active size="lg" />
+                    {/* P0.10: while Yukti speaks this button is the Stop control */}
+                    {orbState === 'speaking' ? <Square className="w-4 h-4 fill-current" data-testid="stop-speaking" /> : <LevelMeter level={micLevel} active size="lg" />}
                   </span>
                 </button>
               ) : (

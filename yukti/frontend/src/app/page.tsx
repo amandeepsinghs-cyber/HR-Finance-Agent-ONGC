@@ -15,13 +15,14 @@ import { routeQueryToFixture } from '@/services/mockRouter';
 import { yuktiClient, WsState } from '@/services/websocketClient';
 import { dispatchUi, labelOf, parseUiCommands, UiCommand, useUiCommands } from '@/services/uiCommands';
 import { cleanText } from '@/charts/format';
-import { BargeInDetector, micGateOpen, PLAYBACK_TAIL_MS } from '@/services/voiceGate';
+import { BargeInDetector, micGateOpen, PLAYBACK_TAIL_MS, SpeakTracker } from '@/services/voiceGate';
 import { AlertTriangle, MicOff, RefreshCw, X } from 'lucide-react';
 
 type Backend = 'checking' | 'online' | 'offline';
 
-// P0.10: adaptive voice barge-in during playback. Off in the P0.10a stopgap (tap / Space / Stop still interrupt).
-const VOICE_BARGE_IN = false;
+// P0.10: adaptive voice barge-in during playback (sustained speech clearly louder than the echo; see voiceGate.ts).
+// Tap / Space / Stop always interrupt regardless.
+const VOICE_BARGE_IN = true;
 type Lang = 'en' | 'hi' | 'hi-en';
 
 const STARTERS = [
@@ -151,6 +152,8 @@ export default function YuktiApp() {
   const tailUntilRef = useRef(0); // performance.now() until which mic frames stay gated after playback ends
   const bargeOpenRef = useRef(false); // a deliberate interrupt re-opened the gate for this reply
   const bargeDetectorRef = useRef(new BargeInDetector());
+  const speakTrackerRef = useRef(new SpeakTracker()); // P0.10: speak_id gating for Live transcripts (BUG-17/18)
+  const gatedRingRef = useRef<ArrayBuffer[]>([]); // P0.10: last ~0.6 s of gated mic frames (flushed on a voice barge-in)
 
   useEffect(() => {
     micActiveRef.current = isMicActive;
@@ -424,6 +427,7 @@ export default function YuktiApp() {
 
     const onUserTranscript = ({ text, is_final }: { text: string; is_final: boolean }) => {
       if (!text) return;
+      speakTrackerRef.current.userTurn(); // P0.10: a new user turn re-opens agent transcripts
       wsAudioGotFirstChunkRef.current = true;
       engineRef.current?.acceptIncoming(); // a new user turn: its reply audio must play (U3.4)
       setLiveInterimText('');
@@ -457,6 +461,9 @@ export default function YuktiApp() {
 
     const onAgentTranscript = ({ text }: { text: string; is_final: boolean }) => {
       if (!text) return;
+      // P0.10 (BUG-17/18): ignore Live transcripts of a speak turn (its REST bubble already shows the answer) and
+      // late chunks after turn_complete, so no orphan/fragment bubbles and no contract+transcript concatenation.
+      if (!speakTrackerRef.current.acceptAgentTranscript()) return;
       liveUserMsgRef.current = null;
       if (voiceTurnRef.current) voiceAgentTextRef.current += text;
       setMessages((prev) => {
@@ -511,14 +518,16 @@ export default function YuktiApp() {
       });
     };
 
-    const onInterrupted = () => {
+    const onInterrupted = (d?: { speak_id?: string | null }) => {
+      speakTrackerRef.current.interrupted(d?.speak_id);
       settleVoiceTurn('settle', undefined, true); // keep what Yukti had said so far (or note the interruption)
       engineRef.current?.stopPlayback(false);
       engineRef.current?.acceptIncoming();
       setOrbState(micActiveRef.current ? 'listening' : 'idle');
     };
 
-    const onTurnComplete = () => {
+    const onTurnComplete = (metrics?: { speak_id?: string | null }) => {
+      speakTrackerRef.current.complete(metrics?.speak_id); // P0.10
       const tel = telemetryRef.current;
       const st = engineRef.current?.getTurnStats();
       if (tel.lastVoiceAt) {
@@ -582,6 +591,7 @@ export default function YuktiApp() {
     bargeOpenRef.current = true;
     tailUntilRef.current = 0;
     bargeDetectorRef.current.reset();
+    gatedRingRef.current = [];
     setOrbState(micActiveRef.current ? 'listening' : 'idle');
   }, []);
   const interruptNowRef = useRef(interruptNow);
@@ -604,8 +614,11 @@ export default function YuktiApp() {
       }
       // P0.10 (BUG-17): the old raw-level trigger (> 0.5 for 200 ms) fired on Yukti's own echo. Voice barge-in now
       // needs ~0.4 s of speech clearly louder than the adaptive echo floor (BargeInDetector); tap/Space/Stop always work.
-      if (VOICE_BARGE_IN && bargeDetectorRef.current.update(lv, eng.isAudioPlaying(), 50)) {
+      if (VOICE_BARGE_IN && bargeDetectorRef.current.update(lv, eng.getOutputLevel(), eng.isAudioPlaying(), 50)) {
+        const held = gatedRingRef.current;
         interruptNowRef.current();
+        // the start of the user's sentence was gated: send the last ~0.6 s so Live hears the whole utterance
+        if (liveRef.current) held.forEach((c) => yuktiClient.sendAudioChunk(c));
       }
     }, 50);
     return () => clearInterval(id);
@@ -654,6 +667,11 @@ export default function YuktiApp() {
         bargeOpen: bargeOpenRef.current,
       });
       if (liveRef.current && open) yuktiClient.sendAudioChunk(chunk);
+      else if (!open) {
+        const ring = gatedRingRef.current;
+        ring.push(chunk);
+        if (ring.length > 6) ring.shift();
+      }
     }, deviceId);
     if (!res.ok) {
       eng.stopSpeechRecognition(false);
@@ -871,7 +889,7 @@ export default function YuktiApp() {
             void yuktiClient
               .connect({ persona: personaRef.current, language: langRef.current, voice: 'Leda' })
               .then((ok) => {
-                if (ok) yuktiClient.sendSpeak(spokenText);
+                if (ok) yuktiClient.sendSpeak(spokenText, speakTrackerRef.current.begin()); // P0.10 speak_id
               });
           } else {
             engineRef.current?.speakBrowserTts(spokenText, c.language || langRef.current);

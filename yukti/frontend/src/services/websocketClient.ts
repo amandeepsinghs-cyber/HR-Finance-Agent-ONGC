@@ -22,7 +22,7 @@ export interface YuktiStreamingEvents {
   contract: (contract: AnswerContract) => void;
   ui_action: (action: { action?: string; command: string; value: string }) => void;
   audio_chunk: (base64Pcm24k: string) => void;
-  interrupted: () => void;
+  interrupted: (data?: { speak_id?: string | null }) => void;
   turn_complete: (metrics: any) => void;
   error: (err: { message: string; retryable?: boolean }) => void;
 }
@@ -276,10 +276,10 @@ export class YuktiApiClient {
         this.emit('tool_call_done', { name: msg.tool, latency_ms: msg.latency_ms, response: msg.response });
         break;
       case 'interrupted':
-        this.emit('interrupted');
+        this.emit('interrupted', { speak_id: msg.speak_id ?? null }); // P0.10
         break;
       case 'turn_complete':
-        this.emit('turn_complete', msg.metrics || {});
+        this.emit('turn_complete', { ...(msg.metrics || {}), speak_id: msg.speak_id ?? msg.metrics?.speak_id ?? null }); // P0.10
         break;
       case 'error':
         this.emit('error', { message: msg.message || msg.error || 'Live session error', retryable: msg.retryable });
@@ -307,9 +307,11 @@ export class YuktiApiClient {
     return this.send({ type: 'text', text });
   }
 
-  public sendSpeak(text: string): boolean {
+  /** Voice a REST answer through Gemini Live. P0.10: `speakId` lets the server and UI tie the speak's
+   *  turn_complete / interruption to this request (an interrupt never ends a different, still-running speak). */
+  public sendSpeak(text: string, speakId?: string): boolean {
     if (!text.trim()) return false;
-    return this.send({ type: 'speak', text: text.trim() });
+    return this.send({ type: 'speak', text: text.trim(), ...(speakId ? { speak_id: speakId } : {}) });
   }
 
   public sendContext(uiState: Record<string, any>): boolean {

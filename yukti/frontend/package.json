@@ -19,7 +19,8 @@
     "test:live": "node scripts/live_e2e_test.js",
     "test:voice": "node scripts/voice_e2e_test.js",
     "test:visual": "node scripts/visual_capture.js",
-    "test:unit": "npx --yes tsx scripts/test_feed.ts"
+    "test:unit": "npx --yes tsx scripts/test_feed.ts",
+    "test:voice-gate": "node scripts/test_voice_gate.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

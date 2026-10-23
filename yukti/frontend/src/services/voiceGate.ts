@@ -26,36 +26,43 @@ export function micGateOpen(g: GateInput): boolean {
 }
 
 /**
- * Voice barge-in detector (stage 2): fires only for ~0.4 s of speech clearly louder than the playback echo.
- * `echoFloor` adapts (slow EMA) to the mic level heard during playback when nobody is talking, so the trigger
- * threshold rises with loud speakers / a quiet room.
+ * Voice barge-in detector: fires only for ~0.4 s (cumulative, leaky) of speech clearly louder than the echo of
+ * Yukti's own playback. Levels are the engine's raw mic level (sqrt-compressed RMS, 0..1) and the playback
+ * analyser level (0..1). The threshold is the highest of:
+ *  - an absolute floor (`absMin`, above the old 0.5 trigger that fired on echo),
+ *  - the learned echo floor + `margin` (EMA of mic level heard during playback while below the threshold, so the
+ *    user's speech never inflates it),
+ *  - a playback-correlated term (`playBase + playGain * outputLevel`): louder playback, higher bar.
  */
 export class BargeInDetector {
-  private echoFloor = 0.05;
+  private echoFloor: number;
   private loudMs = 0;
   constructor(
     private readonly sustainMs = 400,
-    private readonly absMin = 0.3, // never trigger below this raw RMS
-    private readonly echoFactor = 2.5, // speech must be this many times the echo floor…
-    private readonly margin = 0.08, // …plus this margin
-  ) {}
+    private readonly absMin = 0.6,
+    private readonly margin = 0.25,
+    private readonly playBase = 0.45,
+    private readonly playGain = 0.4,
+    initialEchoFloor = 0.3,
+  ) {
+    this.echoFloor = initialEchoFloor;
+  }
 
-  threshold(): number {
-    return Math.max(this.absMin, this.echoFloor * this.echoFactor + this.margin);
+  threshold(outputLevel = 0): number {
+    return Math.min(0.98, Math.max(this.absMin, this.echoFloor + this.margin, this.playBase + this.playGain * outputLevel));
   }
 
   /** Feed one tick. Returns true exactly when a barge-in should fire. */
-  update(micLevel: number, playing: boolean, dtMs: number): boolean {
+  update(micLevel: number, outputLevel: number, playing: boolean, dtMs: number): boolean {
     if (!playing) {
       this.loudMs = 0;
       return false;
     }
-    const thr = this.threshold();
+    const thr = this.threshold(outputLevel);
     if (micLevel > thr) {
       this.loudMs += dtMs;
     } else {
-      // learn the echo floor only from sub-threshold frames (speech never inflates it)
-      this.echoFloor = this.echoFloor * 0.95 + micLevel * 0.05;
+      this.echoFloor = this.echoFloor * 0.9 + micLevel * 0.1;
       this.loudMs = Math.max(0, this.loudMs - dtMs / 2); // leaky: short dips between syllables don't reset
     }
     if (this.loudMs >= this.sustainMs) {
@@ -71,5 +78,47 @@ export class BargeInDetector {
 
   getEchoFloor(): number {
     return this.echoFloor;
+  }
+}
+
+/**
+ * P0.10 (BUG-17/18): per-speak bookkeeping for the Live `speak` turns that voice a REST answer.
+ * While a speak is active its Live transcripts are dropped (the REST bubble already shows the text), and after a
+ * turn_complete late transcript chunks are dropped until the next user turn starts.
+ */
+export class SpeakTracker {
+  private active: string | null = null;
+  private closed = false;
+  private seq = 0;
+
+  begin(): string {
+    this.seq += 1;
+    this.active = `spk-${Date.now().toString(36)}-${this.seq}`;
+    return this.active;
+  }
+
+  activeId(): string | null {
+    return this.active;
+  }
+
+  /** A turn_complete (speak or normal). Only the active speak's own completion ends it. */
+  complete(speakId?: string | null): void {
+    if (speakId && speakId === this.active) this.active = null;
+    this.closed = true; // late chunks of the finished turn are dropped until the next user turn
+  }
+
+  /** Server-side `interrupted`: the speak (if any) is over. */
+  interrupted(speakId?: string | null): void {
+    if (!speakId || speakId === this.active) this.active = null;
+    this.closed = true;
+  }
+
+  /** A new user turn (voice transcript) re-opens agent transcripts. */
+  userTurn(): void {
+    this.closed = false;
+  }
+
+  acceptAgentTranscript(): boolean {
+    return this.active === null && !this.closed;
   }
 }
