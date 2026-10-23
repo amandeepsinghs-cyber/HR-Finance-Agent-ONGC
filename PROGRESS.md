@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 10:19 UTC · branch `v3/P0-stabilise` @ `531769f`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 10:21 UTC · branch `v3/P0-stabilise` @ `002e28a`
 
 > [!IMPORTANT]
-> **Overall: 23% complete (weighted)** — 13/62 steps ✅ done, 4 in flight, 45 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 24% complete (weighted)** — 13/62 steps ✅ done, 4 in flight, 45 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `██████░░░░░░░░░░░░░░` 29% | 2 | 1 | 0 | 3 | 6 | 0 | 12 |
+| **P1** | Real finance SSOT | `███████░░░░░░░░░░░░░` 33% | 2 | 2 | 0 | 2 | 6 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 8 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
@@ -24,7 +24,7 @@
 | Step | Status | Task | Owner | Next action |
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
-| P1.3 | 🔄 In progress | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | Complete build + evidence |
+| P1.3 | 🔍 In review | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | Apply review findings / approve |
 | P1.5 | 🔄 In progress | Yahoo loader + market provider chain (optional, retryable) | F | Complete build + evidence |
 | P1.8 | 🔍 In review | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | Apply review findings / approve |
 
@@ -140,6 +140,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `7b3047e` | 2026-10-23 | P1.3 (pre-G4): deterministic AR statement parser (BS/P&L/CF, standalone+consolidated, FY17-19 + FY22-26 own ARs; 5,062 rows, 957/9 |
 | `7c0f7f3` | 2026-10-23 | P1.8 (pre-G4): real AR text chunker (8 ARs, 8,712 page-bounded chunks, section/note/keyword tags), text-embedding-005 load to new  |
 | `02d41b2` | 2026-10-23 | P1.5 (pre-G4): Yahoo loader (offline JSON parse, polite fetcher, exit 3 on 429) + D-45 provider chain Yahoo->NSE archive->manual s |
 | `fa3abb4` | 2026-10-23 | P1.4 (G4 r2 fixes): flag FY23 S C&CE filing defect (cf_cce_filing_defect, no line code) + test; PaidUp -> OTH.PAID_UP_CAPITAL; Seg |
@@ -154,7 +155,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `6467e8f` | 2026-10-23 | P0.3 (G4 r2 fixes): insight context no longer labelled 'Annual Report' (unverified snapshot) + guard test |
 | `b0f2b44` | 2026-10-23 | P0.4 (G4 r2 fixes): JWT charset + bytes compare (no 500), prod fail-closed signing key, trusted dev key file (O_NOFOLLOW+fstat), L |
 | `927f434` | 2026-10-23 | P0.3 (G4 r2 fixes): remove remaining 'audited' claims (turn_runner, agent prompt, draft_document, access_control, fixture) + AST g |
-| `8ee9991` | 2026-10-23 | P0.1 (G4 r2 fixes): Live voice-tool errors use safe copy + error code (no str(e)); /health auth_mode via auth.auth_mode() |
 
 ## 8. Integrity checks
 
