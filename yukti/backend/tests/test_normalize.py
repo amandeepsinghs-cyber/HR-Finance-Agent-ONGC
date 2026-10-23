@@ -44,6 +44,28 @@ def test_resolve_fy(text, available, expected):
     assert resolve_fy(text, available=available) == expected
 
 
+# P0.2 (BUG-20): `YYYY-YY` / `FY YYYY-YY` name ONE Indian FY; ranges need FY on both sides or a range word.
+CASES_RESOLVE_FY_P02 = [
+    ("Show the balance sheet for FY 2024-25", {"fy": "FY25"}),
+    ("revenue 2024-25", {"fy": "FY25"}),
+    ("FY2024–25 cash flow", {"fy": "FY25"}),
+    ("FY2024-25 profit", {"fy": "FY25"}),
+    ("FY 2023-24 ka balance sheet dikhao", {"fy": "FY24"}),
+    ("वित्त वर्ष 2024-25 का लाभ", {"fy": "FY25"}),
+    ("FY22 to FY25 revenue", {"from": "FY22", "to": "FY25", "n_years": 4}),
+    ("FY2022–FY2025 trend", {"from": "FY22", "to": "FY25", "n_years": 4}),
+    ("FY24-FY25 comparison", {"from": "FY24", "to": "FY25", "n_years": 2}),
+    ("capex over the last 5 years", {"from": "FY22", "to": "FY26", "n_years": 5}),
+    ("pichle 3 saal ka revenue", {"from": "FY24", "to": "FY26", "n_years": 3}),
+    ("profit in 2024", {"fy": "FY24"}),
+]
+
+
+@pytest.mark.parametrize("text,expected", CASES_RESOLVE_FY_P02)
+def test_resolve_fy_single_fy_forms(text, expected):
+    assert resolve_fy(text) == expected
+
+
 def test_fy_helpers():
     assert current_fy() == "FY27"
     assert last_complete_fy() == "FY26"

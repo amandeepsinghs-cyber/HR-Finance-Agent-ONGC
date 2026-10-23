@@ -66,13 +66,19 @@ def resolve_fy(text: str, available: Optional[Iterable[str]] = None,
 
     # Explicit FY range ("from FY17 to FY26", "FY17-FY26", "from 2017 to 2026")
     m = re.search(r"\b(?:from\s+|between\s+)?(?:fy\s?'?)?(201[7-9]|202[0-7]|1[7-9]|2[0-7])\s*(?:to|and|through|[-–])\s*(?:fy\s?'?)?(201[7-9]|202[0-7]|1[7-9]|2[0-7])\b", t)
+    # P0.2 (BUG-20): "FY 2024-25" / "FY2024–25" / "FY24-25" name ONE Indian FY (by its end year): adjacent years
+    # joined only by a dash, with no "FY" on the right-hand side and no range word, are not a range.
+    if m and not re.search(r"\b(?:to|and|through|from|between)\b", m.group(0)) \
+            and not re.search(r"[-–]\s*fy", m.group(0)) \
+            and int(m.group(2)) % 100 == (int(m.group(1)) + 1) % 100:
+        m = None
     if m and ("fy" in m.group(0) or "to" in m.group(0) or "from" in m.group(0) or int(m.group(2)) % 100 > (int(m.group(1)) % 100) + 1):
         lo_n, hi_n = int(m.group(1)) % 100, int(m.group(2)) % 100
         if 17 <= lo_n <= hi_n <= 27:
             return {"from": fy_label(lo_n), "to": fy_label(hi_n), "n_years": hi_n - lo_n + 1}
 
     # Explicit FY labels / year ranges ("FY 2024-25", "FY24-25" and "2024-25" name the FY by its end year)
-    for m in re.finditer(r"\b(20\d{2})\s?[-–/]\s?(\d{2}|20\d{2})\b", t):
+    for m in re.finditer(r"(?:(?<=fy)|\b)(20\d{2})\s?[-–/]\s?(\d{2}|20\d{2})\b", t):  # P0.2: also "fy2024-25"
         if int(m.group(2)) % 100 == (int(m.group(1)) + 1) % 100:  # not a date like 2026-10-19
             return {"fy": fy_label(int(m.group(2)))}
     for m in re.finditer(r"\bfy\s?'?(\d{2})\s?[-–/]\s?(\d{2})\b", t):
@@ -91,6 +97,9 @@ def resolve_fy(text: str, available: Optional[Iterable[str]] = None,
     m = re.search(r"\b(?:(?:over|in|during) the (?:last|past)|last|past|previous|pichle|pichhle)\s+(\d+|[a-z]+)\s+(?:fiscal\s+)?(?:years?|yrs?|saal|varsh)\b", t)
     if not m:
         m = re.search(r"\b(\d+|ten|five|three)\s*[- ]\s*(?:fiscal\s+)?(?:year|yr)s?\b", t)
+        # P0.2: "posted over 5 years", "more than 5 years", "for 5 years" describe tenure, not a reporting window
+        if m and re.search(r"\b(?:over|more\s+than|for|at\s+least|upto|up\s+to)\s*$|>\s*$", t[:m.start()]):
+            m = None
     if m:
         tok = m.group(1)
         n = int(tok) if tok.isdigit() else _WORD_NUM.get(tok)
