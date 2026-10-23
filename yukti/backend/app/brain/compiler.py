@@ -12,6 +12,7 @@ import datetime
 from dataclasses import dataclass, field
 from decimal import Decimal
 import logging
+import os
 import re
 import time
 from typing import Any, Dict, List, Optional, Tuple
@@ -73,6 +74,10 @@ class QueryResult:
     total_bytes: int = 0
     latency_ms: float = 0.0
     dry_run_bytes: int = 0
+    # P0.3 (BUG-04): where the rows really came from. "bigquery" = executed SQL; "local_snapshot" = the
+    # financial_build JSON fallback used when BigQuery is unavailable (no SQL ran, so no SQL is reported).
+    source: str = "bigquery"
+    snapshot_date: Optional[str] = None
 
 
 def _q(table: str) -> str:
@@ -549,7 +554,7 @@ ORDER BY fiscal_year ASC"""
                     "revenue_from_ops_cr", "ebitda_cr", "pbt_cr", "standalone_pat_cr",
                     "consolidated_pat_cr", "statutory_levies_cr", "exploration_writeoff_cr", "dda_cr",
                 ],
-                notes=[f"Published ONGC Schedule III Annual Reports + Yahoo Finance (ONGC.NS) ({lo}–{hi})"],
+                notes=[f"Source: financial_build snapshot (unverified; real AR data pending) ({lo}–{hi})"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
                 effective_period={"from": lo, "to": hi},
                 grain="aggregate",
                 data_classes=["general"],
@@ -584,7 +589,7 @@ ORDER BY line_order ASC"""
             tables=["hrfin_gold.ssot_corporate_pnl_lines", "hrfin_gold.ssot_corporate_annual_360"],
             dims=[("line_item", "line_item")],
             value_columns=["amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_revenue"],
-            notes=[f"Audited Ind-AS Schedule III Statement of Profit & Loss + Yahoo Finance (ONGC.NS) · {fy}"],
+            notes=[f"Source: financial_build snapshot (unverified; real AR data pending) · {fy}"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
             effective_period={"fy": fy},
             grain="aggregate",
             data_classes=["general"],
@@ -629,7 +634,7 @@ ORDER BY fiscal_year ASC"""
                     "total_assets_cr", "net_worth_cr", "non_current_assets_cr", "current_assets_cr",
                     "total_liabilities_cr", "total_debt_cr", "cash_and_bank_cr", "cwip_cr",
                 ],
-                notes=[f"Audited Ind-AS Schedule III Balance Sheet + Yahoo Finance (ONGC.NS) ({lo}–{hi})"],
+                notes=[f"Source: financial_build snapshot (unverified; real AR data pending) ({lo}–{hi})"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
                 effective_period={"from": lo, "to": hi},
                 grain="aggregate",
                 data_classes=["general"],
@@ -664,7 +669,7 @@ ORDER BY line_order ASC"""
             tables=["hrfin_gold.ssot_corporate_balance_sheet_lines", "hrfin_gold.ssot_corporate_annual_360"],
             dims=[("line_item", "line_item")],
             value_columns=["amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_assets"],
-            notes=[f"Audited Ind-AS Schedule III Balance Sheet + Yahoo Finance (ONGC.NS) · {fy}"],
+            notes=[f"Source: financial_build snapshot (unverified; real AR data pending) · {fy}"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
             effective_period={"fy": fy},
             grain="aggregate",
             data_classes=["general"],
@@ -705,7 +710,7 @@ ORDER BY fiscal_year ASC"""
                     "operating_cash_flow_cr", "free_cash_flow_cr", "total_capex_cr",
                     "investing_cash_flow_cr", "financing_cash_flow_cr", "closing_cash_cr",
                 ],
-                notes=[f"Audited Ind-AS 7 Statement of Cash Flows + Yahoo Finance (ONGC.NS) ({lo}–{hi})"],
+                notes=[f"Source: financial_build snapshot (unverified; real AR data pending) ({lo}–{hi})"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
                 effective_period={"from": lo, "to": hi},
                 grain="aggregate",
                 data_classes=["general"],
@@ -740,7 +745,7 @@ ORDER BY line_order ASC"""
             tables=["hrfin_gold.ssot_corporate_cash_flow_lines", "hrfin_gold.ssot_corporate_annual_360"],
             dims=[("line_item", "line_item")],
             value_columns=["amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_ocf"],
-            notes=[f"Audited Ind-AS 7 Statement of Cash Flows + Yahoo Finance (ONGC.NS) · {fy}"],
+            notes=[f"Source: financial_build snapshot (unverified; real AR data pending) · {fy}"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
             effective_period={"fy": fy},
             grain="aggregate",
             data_classes=["general"],
@@ -814,7 +819,7 @@ ORDER BY line_order ASC"""
             tables=["hrfin_gold.ssot_corporate_ratios_lines", "hrfin_gold.ssot_corporate_annual_360"],
             dims=[("line_item", "line_item")],
             value_columns=["value", "prior_fy_value", "yoy_delta"],
-            notes=[f"Audited Ind-AS Financial Ratios & Credit Scorecard · {fy}"],
+            notes=[f"Source: financial_build snapshot (unverified; real AR data pending) · {fy}"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
             effective_period={"fy": fy},
             grain="aggregate",
             data_classes=["general"],
@@ -1000,12 +1005,29 @@ ORDER BY line_order ASC"""
     async def execute(self, compiled: CompiledQuery) -> QueryResult:
         """Dry-run + execute off the event loop (asyncio.to_thread), with local SSOT fallback on auth/network error."""
         try:
+            if os.getenv("YUKTI_FORCE_BQ_FAIL", "0") in ("1", "true", "yes"):  # BEH-07.22 forced-failure test flag
+                raise ConnectionError("forced BigQuery failure (YUKTI_FORCE_BQ_FAIL=1)")
             return await asyncio.to_thread(self._run_sync, compiled.sql)
         except Exception as e:
             fb = self._execute_local_financial_fallback(compiled)
             if fb is not None:
+                # P0.3 (BUG-04): the fallback is no longer silent; callers label it "local_snapshot".
+                logger.warning(f"BigQuery unavailable ({type(e).__name__}); serving {compiled.metric} from local snapshot")
+                fb.source = "local_snapshot"
+                fb.snapshot_date = _local_snapshot_date()
                 return fb
             raise e
+
+
+def _local_snapshot_date() -> Optional[str]:
+    """Date (ISO) of the financial_build JSON snapshot used by the local fallback (newest file mtime)."""
+    from pathlib import Path
+    data_dir = Path(__file__).resolve().parents[4] / "financial_build" / "data"
+    try:
+        mtimes = [f.stat().st_mtime for f in data_dir.glob("ongc_10yr_*.json")]
+        return datetime.date.fromtimestamp(max(mtimes)).isoformat() if mtimes else None
+    except OSError:
+        return None
 
 
 _COMPILER: Optional[Compiler] = None

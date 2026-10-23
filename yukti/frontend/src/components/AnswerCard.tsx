@@ -298,7 +298,11 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     : [ROLE_SHORT[persona || contract.persona || 'CMD'] || 'CMD', subject, population, fyMatch ? fyMatch[0].toUpperCase().replace(/\s/, '') : '']
   ).filter((x, i, arr) => x && arr.indexOf(x) === i);
   const firstSource = sources[0];
-  const sourceTag = firstSource ? (firstSource.kind === 'policy' ? 'Policy' : firstSource.kind === 'document' ? 'Document' : 'SSOT') : undefined;
+  // P0.3 (BUG-04, SPEC-11 §7.2): answers served from the local JSON snapshot carry an explicit badge.
+  const localSnapshot = contract.provenance?.label === 'local_snapshot' || contract.status?.source === 'local_snapshot';
+  const sourceTag = localSnapshot
+    ? `Local snapshot${contract.provenance?.snapshot_date ? ` ${contract.provenance.snapshot_date}` : ''}`
+    : firstSource ? (firstSource.kind === 'policy' ? 'Policy' : firstSource.kind === 'document' ? 'Document' : 'SSOT') : undefined;
 
   // Follow-up chips (U2.3 / U5.4): drill-downs first, else the agent's suggestions; latest card only.
   const followUps: { label: string; q: string; patch?: SpecPatch }[] = (contract.drilldowns?.length

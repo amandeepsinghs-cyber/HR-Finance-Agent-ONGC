@@ -245,7 +245,7 @@ def run_certified_query(
         gold_objs = prov.get("gold_objects", "hrfin_gold")
         sources = [s.strip() for s in gold_objs.split(",") if s.strip()]
         if not sources:
-            sources = ["Audited Enterprise Records"]
+            sources = ["Enterprise records (demo data)"]
 
         elapsed_ms = round((time.perf_counter() - t0) * 1000, 1)
 
@@ -316,7 +316,7 @@ def run_certified_query(
                     "total_rows": len(rows),
                     "columns": schema_fields,
                 },
-                "sources": ["Audited Enterprise Records"],
+                "sources": ["Enterprise records (demo data)"],
                 "latency_ms": elapsed_ms,
                 "executed_sql": raw_sql,
                 "params_applied": merged_params,

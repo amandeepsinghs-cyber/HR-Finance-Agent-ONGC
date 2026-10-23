@@ -84,7 +84,7 @@ def make_clean_title_and_subtitle(
     if "loss" in q_low or "lost money" in q_low or "negative" in q_low or entry_id in ("C6", "C8"):
         return "FY26 Field Profitability & Standalone P&L", "Only loss-making field in FY26 is Champang (PBT -₹4.93 Crore)"
     if "lifting cost" in q_low or entry_id in ("C12", "F1"):
-        return "Lifting Cost per BOE: Western Offshore vs Onshore", "Audited FY26 lifting costs: Western Offshore $8.60, Gujarat $9.09, Assam $16.80"
+        return "Lifting Cost per BOE: Western Offshore vs Onshore", "FY26 lifting costs (unverified snapshot): Western Offshore $8.60, Gujarat $9.09, Assam $16.80"
     if "brent" in q_low or "w1" in q_low:
         return "What-If: Brent $60/bbl Oil Price Shock Sensitivity", "EBITDA sensitivity simulation against FY26 audited baseline"
     if "freeze" in q_low:
@@ -115,7 +115,7 @@ def make_clean_title_and_subtitle(
             return f"{label}: Executives with ≥5 Years' Continuous Stay", f"{sub} | As of 19-Oct-2026"
 
     clean = re.sub(r"^(How many|What is the|What are the|Which|Please show|Tell me about)\s+", "", query, flags=re.IGNORECASE).strip().rstrip("?")
-    return clean[:65].capitalize(), "Audited ONGC Enterprise Records | As of 19-Oct-2026"
+    return clean[:65].capitalize(), "ONGC enterprise records (demo data) | As of 19-Oct-2026"
 
 
 def make_clean_title(query: str) -> str:
@@ -1712,7 +1712,7 @@ class AgentTurnRunner:
         # Never allow meta tokens into insights
         insights = [i for i in insights if "hrfin" not in i and "Grounding" not in i and "Query:" not in i and "Executed SQL" not in i][:3]
         if not insights:
-            insights = ["Audited enterprise operational review completed."]
+            insights = ["Enterprise operational review completed."]
 
         suggestions = [
             "Show breakdown by discipline",
@@ -2275,7 +2275,7 @@ class AgentTurnRunner:
                 "type": "chart",
                 "mode": "replace",
                 "title": title,
-                "subtitle": "FY26 Audited Asset Economics · Volume (M BOE) vs Revenue (₹ Cr) & Realization (₹/BOE)",
+                "subtitle": "FY26 Asset Economics · Volume (M BOE) vs Revenue (₹ Cr) & Realization (₹/BOE)",
                 "kpis": kpis,
                 "chart": {
                     "kind": ck,

@@ -179,7 +179,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                 "delta": f"{pat_r.get('yoy_change_pct'):+.1f}% YoY · {pat_r.get('pct_of_revenue'):.1f}% margin" if isinstance(pat_r.get("yoy_change_pct"), (int, float)) else "",
             },
             {
-                "label": f"Consolidated PAT (ONGC.NS)",
+                "label": "Consolidated PAT (Group)",  # P0.3: no market-data label
                 "value": cpat_r.get("amount_cr"),
                 "unit": "₹ crore",
                 "delta": f"{cpat_r.get('yoy_change_pct'):+.1f}% YoY (Group)" if isinstance(cpat_r.get("yoy_change_pct"), (int, float)) else "Group Net Income",
@@ -483,8 +483,8 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
             f"For {fy}, ONGC's Schedule III Revenue from Operations is {fmt_num(rev, 'inr_cr')}, "
             f"Statutory Levies are {fmt_num(lev, 'inr_cr')}, Standalone EBITDA is {fmt_num(eb, 'inr_cr')}, "
             f"Profit Before Tax is {fmt_num(pbt, 'inr_cr')}, Standalone PAT is {fmt_num(pat, 'inr_cr')}, "
-            f"and Consolidated Group PAT (ONGC.NS) is {fmt_num(cpat, 'inr_cr')}. "
-            f"The complete 23-line Schedule III and Yahoo Finance P&L statement is on screen."
+            f"and Consolidated Group PAT is {fmt_num(cpat, 'inr_cr')}. "
+            f"The complete 23-line Schedule III P&L statement is on screen."
         )
     if compiled.metric == "balance_sheet" and dims and dims[0] == "line_item":
         fy = (compiled.effective_period or {}).get("fy", "FY26")

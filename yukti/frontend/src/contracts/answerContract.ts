@@ -251,6 +251,10 @@ export interface AnswerContract {
   access: AccessControl;
   export_options?: ExportOption[];
   status_events?: string[];
+  /** P0.3 (SPEC-11 §7.1, additive): where the answer's data really came from. */
+  provenance?: { label: string; detail?: string; snapshot_date?: string | null };
+  /** P0.3: data path of a planner answer; `sql` is null when no SQL ran (local snapshot). */
+  status?: { source: 'bigquery' | 'local_snapshot' | string; sql?: string | null };
   /** v2 (U2.1); absent = 1. All v2 fields are optional. */
   contract_version?: 1 | 2;
   insights_v2?: InsightV2[];

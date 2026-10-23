@@ -160,7 +160,15 @@ async def run_planner_turn(
     except Exception as e:
         logger.warning(f"planner execution failed, legacy fallback: {e}")
         return None
-    status.append(f"Compiled {compiled.source} SQL; dry-run {result.dry_run_bytes:,} bytes; {len(result.rows)} rows in {result.latency_ms} ms")
+    is_local_snapshot = getattr(result, "source", "bigquery") == "local_snapshot"
+    snapshot_caveat = None
+    if is_local_snapshot:
+        # P0.3 (BUG-04): no "Compiled … SQL / dry-run" claim when no SQL ran
+        snapshot_caveat = (f"Shown from a local snapshot ({result.snapshot_date or 'date unknown'}); "
+                           "live data service unavailable.")
+        status.append(f"Served from local snapshot; {len(result.rows)} rows in {result.latency_ms} ms")
+    else:
+        status.append(f"Compiled {compiled.source} SQL; dry-run {result.dry_run_bytes:,} bytes; {len(result.rows)} rows in {result.latency_ms} ms")
 
     if not result.rows:
         # An empty planner result usually means an over-constrained plan; let the legacy path try.
@@ -231,8 +239,9 @@ async def run_planner_turn(
         "insights": [i.text for i in insights][:4] or [s for s in headline.split(". ") if s and "on screen" not in s][:3],
         "insights_v2": [i.to_contract() for i in insights][:6],
         "drilldowns": make_drilldowns(spec, persona, compiled.grain, max_n=4 if compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios") else 3),
-        "sources": [{"kind": "data", "object": ", ".join(compiled.tables), "sql": compiled.sql}] + (
-            [{"kind": "policy", "object": "ONGC Annual Reports (Schedule III Notes 5–38) & Yahoo Finance (ONGC.NS)", "clause_ref": "hrfin_docs.financial_notes_chunks"}]
+        "sources": [({"kind": "data", "object": "local snapshot (financial_build/data)"} if is_local_snapshot
+                     else {"kind": "data", "object": ", ".join(compiled.tables), "sql": compiled.sql})] + (
+            [{"kind": "policy", "object": "financial_build snapshot (unverified; real AR data pending)", "clause_ref": "hrfin_docs.financial_notes_chunks"}]
             if compiled.subject == "corporate" or compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios") else []
         ),
         "suggestions": [],
@@ -240,12 +249,19 @@ async def run_planner_turn(
         "export_options": ["sheets", "xlsx", "pdf"],
         "status_events": status,
         "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
-        "generated_sql": compiled.sql,
+        "generated_sql": None if is_local_snapshot else compiled.sql,
         "tool_called": "query_data",
         "contract_version": 2,
         "query_spec": spec.to_contract(),
         "context_chips": context_chips(spec, compiled, persona),
+        # P0.3 (BUG-04): the real data path for this answer (SPEC-11 §7: local_snapshot label)
+        "status": {"source": "local_snapshot" if is_local_snapshot else "bigquery",
+                   "sql": None if is_local_snapshot else compiled.sql},
     }
+    if is_local_snapshot:
+        contract["provenance"] = {"label": "local_snapshot", "snapshot_date": result.snapshot_date,
+                                  "detail": "financial_build snapshot (unverified; real AR data pending)"}
+        notes = [snapshot_caveat] + notes
     if notes:
         contract["caveat"] = "; ".join(notes)[:300]
     # B3.4 consistency: access status, text and visual agree.

@@ -216,7 +216,7 @@ def _pnl_statement_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""
         txt = (
             f"Schedule III {fy} Summary: Revenue from Operations {fmt(rv, 'inr_cr')}, "
             f"Standalone EBITDA {fmt(ebv, 'inr_cr')} ({eb_pct:.1f}% margin), "
-            f"Standalone PAT {fmt(pv, 'inr_cr')} ({pyoy:+.1f}% YoY), and Consolidated Group PAT (ONGC.NS) {fmt(cpv, 'inr_cr')}."
+            f"Standalone PAT {fmt(pv, 'inr_cr')} ({pyoy:+.1f}% YoY), and Consolidated Group PAT {fmt(cpv, 'inr_cr')}."
         )
         out.append(Insight(kind="headline", type="headline", value=pv, unit="inr_cr", ref="IX. Standalone Profit After Tax (PAT)",
                            text=txt, facts=[rv, ebv, eb_pct, pv, abs(pyoy), pyoy, cpv] + _extract_nums(txt), priority=1))
