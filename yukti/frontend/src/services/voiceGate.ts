@@ -31,9 +31,9 @@ export function micGateOpen(g: GateInput): boolean {
  *  - a sliding window of the last `windowMs` (0.5 s) of ticks must be full,
  *  - >= `minLoudFrac` (85 %) of the ticks in it are above the threshold,
  *  - no quiet dip inside the window is longer than `maxDipMs` (100 ms),
- *  - duty-cycle guard: over the longer history (`dutyMs`, 2 s) the signal must not look like syllabic echo, i.e.
- *    the loud stretch that ends now must itself be >= `windowMs` long (an on/off pattern whose loud runs are
- *    shorter than the window can never fire, whatever its duty cycle),
+ *  - duty-cycle guard: the loud stretch that ends now (dips <= `maxDipMs` tolerated) must itself be
+ *    >= `minLoudFrac` x `windowMs` long, so an on/off (syllabic echo) pattern whose loud runs are shorter than
+ *    that can never fire, whatever its duty cycle,
  *  - echo-correlation guard: if the mic level tracks the playback level (Pearson r >= `maxEchoCorr` over the
  *    window, with real variation in both), it is echo, not a person talking over Yukti.
  * Threshold = max(absMin, learned echo floor + margin, playBase + playGain * playbackLevel). Levels are the

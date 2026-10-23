@@ -22,7 +22,9 @@ type Backend = 'checking' | 'online' | 'offline';
 
 // P0.10: adaptive voice barge-in during playback (sustained speech clearly louder than the echo; see voiceGate.ts).
 // Tap / Space / Stop always interrupt regardless.
-const VOICE_BARGE_IN = true;
+// G4 r2 (BUG-41): OFF by default — a continuous loud echo >= ~0.45 s at constant playback level is indistinguishable
+// from speech for a level-based detector. Re-enable only after a sponsor live test (see BUG-41).
+const VOICE_BARGE_IN = false;
 const GATED_RING_FRAMES = 17; // P0.10 r2 S-1: 17 × 30 ms worklet frames ≈ 0.5 s
 type Lang = 'en' | 'hi' | 'hi-en';
 
@@ -622,11 +624,11 @@ export default function YuktiApp() {
         telemetryRef.current.lastVoiceAt = performance.now();
       }
       // P0.10 (BUG-17): the old raw-level trigger (> 0.5 for 200 ms) fired on Yukti's own echo. Voice barge-in now
-      // needs ~0.4 s of speech clearly louder than the adaptive echo floor (BargeInDetector); tap/Space/Stop always work.
+      // needs ~0.5 s of near-continuous speech clearly louder than the echo (BargeInDetector); tap/Space/Stop always work.
       if (VOICE_BARGE_IN && bargeDetectorRef.current.update(lv, eng.getOutputLevel(), eng.isAudioPlaying(), 50)) {
         const held = gatedRingRef.current;
         interruptNowRef.current();
-        // the start of the user's sentence was gated: send the last ~0.6 s so Live hears the whole utterance
+        // the start of the user's sentence was gated: send the held-back ~0.5 s (GATED_RING_FRAMES) so Live hears the whole utterance
         if (liveRef.current) held.forEach((c) => yuktiClient.sendAudioChunk(c));
       }
     }, 50);
