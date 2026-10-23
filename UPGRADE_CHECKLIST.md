@@ -49,14 +49,14 @@
 | P0.7 | "Illustrative" labels on synthetic clauses (JRTP Rev 4, R16) | F | 032 | SPEC-07 §4.2, SPEC-11 | 31 | Every synthetic clause answer shows the Illustrative badge (D-35) | [P0.7](docs/delegation/packets/v3/P0.7.md) | ✅ |
 | P0.8 | v3 doc set (feature list, BUILD, checklist, bug register, SPEC-01…11, BEH-01…07, 51 packets) | O | — | all | — | G4 doc review approve + sponsor confirm | — | ✅ |
 | P0.9 | Packaging: data-in-image vs BigQuery-only; Dockerfile fix | F | 014 | SPEC-11 | 13 (part) | Container smoke: finance answer works or shows an honest degraded badge | [P0.9](docs/delegation/packets/v3/P0.9.md) | ✅ |
-| P0.10 | **Hotfix (sponsor-requested 23-Oct):** voice self-interruption. Half-duplex mic gate while Yukti speaks (browser + backend, +300 ms tail); deliberate interrupt (orb/Stop/Space; voice barge-in needs sustained louder speech ~0.4 s); lower Live start-of-speech sensitivity; `speak_id` gating so an interrupt never clears speak-only; no orphan/duplicate bubbles | O | 013 | SPEC-11 §6.3, BEH-07 | 17, 18 | Live test on the laptop with speakers: 5/5 answers play to the end without self-interrupt; tap-to-stop works 5/5; no duplicate/fragment bubbles in 5 voice + 5 typed turns; unit tests for the gate | (inline: this row) | 🔍 |
+| P0.10 | **Hotfix (sponsor-requested 23-Oct):** voice self-interruption. Half-duplex mic gate while Yukti speaks (browser + backend, +300 ms tail); deliberate interrupt (orb/Stop/Space; voice barge-in needs sustained louder speech ~0.4 s); lower Live start-of-speech sensitivity; `speak_id` gating so an interrupt never clears speak-only; no orphan/duplicate bubbles | O | 013 | SPEC-11 §6.3, BEH-07 | 17, 18 | Live test on the laptop with speakers: 5/5 answers play to the end without self-interrupt; tap-to-stop works 5/5; no duplicate/fragment bubbles in 5 voice + 5 typed turns; unit tests for the gate | (inline: this row) | ✅ |
 
 ### Phase P1 — Real Finance SSOT & Public Data · *gate: 100% AR subtotals ±₹0.05 cr; finance golden set 100%*
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
 | P1.1 | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | 018, 019 | SPEC-01 | — | **23-Oct:** ARs FY16–FY19 (text) ✅, FY20 image-only; 12 NSE XBRL ✅; Damodaran ✅; **Yahoo HTTP 429 (retry pending)**; **RBI FY-end yields need a manual download** (Handbook Table 178). See `knowledge/public_sources/MANIFEST_v3_acquisition.md` | — | 🔄 |
-| P1.2 | AR 10-yr table parser (FY13–FY26) | F | 018 | SPEC-01 §4.2 | 02 | Cross-AR overlaps agree or flagged restated; 60-line spot set = AR | [P1.2](docs/delegation/packets/v3/P1.2_ar_10yr_table_parser.md) | 🔍 |
+| P1.2 | AR 10-yr table parser (FY13–FY26) | F | 018 | SPEC-01 §4.2 | 02 | Cross-AR overlaps agree or flagged restated; 60-line spot set = AR | [P1.2](docs/delegation/packets/v3/P1.2_ar_10yr_table_parser.md) | ✅ |
 | P1.3 | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | 018 | SPEC-01 §4.3 | 02 | Every AR subtotal reproduced; A = E + L vs AR totals; cash ties | [P1.3](docs/delegation/packets/v3/P1.3_ar_full_statement_extraction.md) | 🔄 |
 | P1.4 | NSE XBRL parser | F | 018 | SPEC-01 §4.4 | — | XBRL vs AR agreement report; FY18/FY19 revenue & PAT exact | [P1.4](docs/delegation/packets/v3/P1.4_xbrl_parser.md) | 🔄 |
 | P1.5 | Yahoo loader + market provider chain (optional, retryable) | F | 019 | SPEC-01 §9.1 | — | FY26 consolidated = AR ±₹1 cr when Yahoo reachable; fallback chain works | [P1.5](docs/delegation/packets/v3/P1.5_yahoo_loader.md) | ⬜ |
@@ -154,5 +154,5 @@ See `docs/DECISIONS.md` → Open decisions.
 
 | Phase | G5 date | Sponsor | Notes |
 |---|---|---|---|
-| **P0 Stabilise (incl. hotfix P0.10)** | 2026-10-23 09:52 UTC | Amandeep Saini ("I am signing off") | Live-tested by sponsor: voice no longer self-interrupts; residuals logged (BUG-38/39 → P4.3, BUG-40 → P5.2). Merge to `main` + tag `v3-P0` after the P0.10 G4 verdict |
+| **P0 Stabilise (incl. hotfix P0.10)** | 2026-10-23 09:52 UTC | Amandeep Saini ("I am signing off") | Live-tested by sponsor: voice no longer self-interrupts; residuals logged (BUG-38/39 → P4.3, BUG-40 → P5.2). P0.10 G4 approved (r2, voice barge-in off → BUG-41); merged to `main` + tagged `v3-P0` |
 | v3 docs (P0.8) | 2026-10-23 | Amandeep Saini ("I approve") | G4 approved (2 rounds); OD-7…OD-18 accepted as D-43…D-54 |
