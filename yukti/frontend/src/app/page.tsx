@@ -15,9 +15,13 @@ import { routeQueryToFixture } from '@/services/mockRouter';
 import { yuktiClient, WsState } from '@/services/websocketClient';
 import { dispatchUi, labelOf, parseUiCommands, UiCommand, useUiCommands } from '@/services/uiCommands';
 import { cleanText } from '@/charts/format';
+import { BargeInDetector, micGateOpen, PLAYBACK_TAIL_MS } from '@/services/voiceGate';
 import { AlertTriangle, MicOff, RefreshCw, X } from 'lucide-react';
 
 type Backend = 'checking' | 'online' | 'offline';
+
+// P0.10: adaptive voice barge-in during playback. Off in the P0.10a stopgap (tap / Space / Stop still interrupt).
+const VOICE_BARGE_IN = false;
 type Lang = 'en' | 'hi' | 'hi-en';
 
 const STARTERS = [
@@ -143,6 +147,10 @@ export default function YuktiApp() {
   const runTypedTurnRef = useRef<(q: string) => Promise<void>>(async () => {});
   const stopMicRef = useRef<(sendEnd?: boolean) => Promise<void>>(async () => {});
   const [, forceTick] = useState(0);
+  // P0.10 (BUG-17): half-duplex mic gate state (see services/voiceGate.ts)
+  const tailUntilRef = useRef(0); // performance.now() until which mic frames stay gated after playback ends
+  const bargeOpenRef = useRef(false); // a deliberate interrupt re-opened the gate for this reply
+  const bargeDetectorRef = useRef(new BargeInDetector());
 
   useEffect(() => {
     micActiveRef.current = isMicActive;
@@ -181,8 +189,12 @@ export default function YuktiApp() {
   useEffect(() => {
     const engine = new VoiceAudioEngine();
     engineRef.current = engine;
-    engine.setPlaybackStartHandler(() => setOrbState('speaking'));
+    engine.setPlaybackStartHandler(() => {
+      bargeOpenRef.current = false; // P0.10: a new reply starts playing: close the mic gate again
+      setOrbState('speaking');
+    });
     engine.setPlaybackEndHandler(() => {
+      tailUntilRef.current = performance.now() + PLAYBACK_TAIL_MS; // P0.10: echo tail
       setOrbState((s) => (s === 'speaking' ? (micActiveRef.current ? 'listening' : 'idle') : s));
     });
     (window as any).__yukti = {
@@ -562,13 +574,27 @@ export default function YuktiApp() {
     };
   }, [applyContract, pushMessage, handleUiAction]);
 
+  // P0.10: deliberate interrupt (orb tap, mic/Stop button, Space, Esc, or a qualified voice barge-in):
+  // stop playback now, tell the server, and re-open the mic gate so the user's speech goes through.
+  const interruptNow = useCallback(() => {
+    engineRef.current?.stopPlayback(true);
+    if (liveRef.current) yuktiClient.sendInterrupt();
+    bargeOpenRef.current = true;
+    tailUntilRef.current = 0;
+    bargeDetectorRef.current.reset();
+    setOrbState(micActiveRef.current ? 'listening' : 'idle');
+  }, []);
+  const interruptNowRef = useRef(interruptNow);
+  useEffect(() => {
+    interruptNowRef.current = interruptNow;
+  }, [interruptNow]);
+
   // Voice activity tracking (speech-end timestamp) + local barge-in (Urvi pattern: server-side VAD handles turn end)
   useEffect(() => {
-    let loud = 0;
     const id = setInterval(() => {
       const eng = engineRef.current;
       if (!eng || !micActiveRef.current) {
-        loud = 0;
+        bargeDetectorRef.current.reset();
         return;
       }
       // U3.3/U3.4: decisions use the RAW mic level (no floor/cadence), so room noise or echo can't trigger barge-in.
@@ -576,17 +602,10 @@ export default function YuktiApp() {
       if (lv > 0.12) {
         telemetryRef.current.lastVoiceAt = performance.now();
       }
-      // Leaky counter: brief dips between syllables don't reset it; ~4 loud ticks (200 ms) trigger (U3.4).
-      if (eng.isAudioPlaying() && lv > 0.5) {
-        loud += 1;
-        if (loud >= 4) {
-          eng.stopPlayback(true); // drops the rest of this reply locally
-          yuktiClient.sendInterrupt(); // and tells the server to stop generating
-          setOrbState('listening');
-          loud = 0;
-        }
-      } else {
-        loud = Math.max(0, loud - 1);
+      // P0.10 (BUG-17): the old raw-level trigger (> 0.5 for 200 ms) fired on Yukti's own echo. Voice barge-in now
+      // needs ~0.4 s of speech clearly louder than the adaptive echo floor (BargeInDetector); tap/Space/Stop always work.
+      if (VOICE_BARGE_IN && bargeDetectorRef.current.update(lv, eng.isAudioPlaying(), 50)) {
+        interruptNowRef.current();
       }
     }, 50);
     return () => clearInterval(id);
@@ -627,7 +646,14 @@ export default function YuktiApp() {
     // CRITICAL URVI PATTERN: Call getUserMedia(startMic) inside the user gesture FIRST,
     // and start Chrome's built-in SpeechRecognition AFTER getUserMedia settles so getUserMedia never aborts SpeechRecognition.
     const res = await eng.startMic((chunk) => {
-      if (liveRef.current) yuktiClient.sendAudioChunk(chunk);
+      // P0.10 (BUG-17): half-duplex: never stream Yukti's own voice (echo) back to Gemini Live
+      const open = micGateOpen({
+        playing: eng.isAudioPlaying(),
+        nowMs: performance.now(),
+        tailUntilMs: tailUntilRef.current,
+        bargeOpen: bargeOpenRef.current,
+      });
+      if (liveRef.current && open) yuktiClient.sendAudioChunk(chunk);
     }, deviceId);
     if (!res.ok) {
       eng.stopSpeechRecognition(false);
@@ -708,9 +734,15 @@ export default function YuktiApp() {
   }, []);
 
   const toggleMic = useCallback(async () => {
+    // P0.10: while Yukti is speaking, a tap means "stop talking and listen to me", never "turn the mic off"
+    if (engineRef.current?.isAudioPlaying()) {
+      interruptNow();
+      if (!micActiveRef.current) await startMic();
+      return;
+    }
     if (micActiveRef.current) await stopMic(true);
     else await startMic();
-  }, [startMic, stopMic]);
+  }, [startMic, stopMic, interruptNow]);
 
   const handleToggleMute = useCallback(() => {
     setIsMuted((prev) => {
@@ -914,7 +946,11 @@ export default function YuktiApp() {
         const nowTs = performance.now();
         if (nowTs - lastSpaceAt < 450) return;
         lastSpaceAt = nowTs;
-        if (micActiveRef.current) void stopMic(true);
+        // P0.10: Space while Yukti speaks = interrupt (and listen), otherwise toggle the mic
+        if (engineRef.current?.isAudioPlaying()) {
+          interruptNowRef.current();
+          if (!micActiveRef.current) void startMic();
+        } else if (micActiveRef.current) void stopMic(true);
         else void startMic();
         return;
       }
@@ -922,7 +958,7 @@ export default function YuktiApp() {
       if (e.key === 't' || e.key === 'T') setIsDark((d) => !d);
       else if (e.key === 'f' || e.key === 'F') setPanelMode((m) => (m === 'fullscreen' ? 'docked' : 'fullscreen'));
       else if (e.key === 'Escape') {
-        if (engineRef.current?.isAudioPlaying()) engineRef.current.stopPlayback(true);
+        if (engineRef.current?.isAudioPlaying()) interruptNowRef.current(); // P0.10: also tells the server
         setPanelMode((m) => (m === 'fullscreen' ? 'docked' : m));
       } else if (!liveRef.current && e.key === 'ArrowRight') loadFixture(fixtureIndex + 1);
       else if (!liveRef.current && e.key === 'ArrowLeft') loadFixture(Math.max(0, fixtureIndex - 1));

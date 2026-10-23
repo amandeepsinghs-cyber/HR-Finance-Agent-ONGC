@@ -172,6 +172,10 @@ def detect_screen_control_intent(query: str) -> Optional[Dict[str, str]]:
     return to_legacy_ui_action(cmd)
 
 
+# P0.10: keep the mic gate closed this long after the estimated end of playback (room echo tail).
+PLAYBACK_TAIL_S = 0.3
+
+
 class LiveSessionManager:
     """Manages an active WebSocket bidi-streaming session for Yukti AI using direct genai.Client.aio.live.connect."""
 
@@ -215,6 +219,14 @@ class LiveSessionManager:
         self.t_turn_start: Optional[float] = None
         self.t_tool_start: Optional[float] = None
         self._is_speak_only = False
+        # P0.10 (BUG-17/18): id of the `speak` turn currently being synthesised (None when no speak is running).
+        # Only that speak's own turn_complete (or a server `interrupted`) ends it; a browser `interrupt` never does.
+        self._speak_id: Optional[str] = None
+        # P0.10: half-duplex mic gate. Mic frames are dropped while Yukti is generating/speaking, unless the user
+        # deliberately barged in (`interrupt`), which re-opens the gate until the reply ends.
+        self._barge_in_open = False
+        self._mic_frames_dropped = 0
+        self._playback_until = 0.0  # perf_counter() when the browser's playback of sent audio is expected to end
         self._audio_rx_count = 0
 
     async def send_json(self, payload: Dict[str, Any]) -> bool:
@@ -226,6 +238,10 @@ class LiveSessionManager:
             return False
 
     async def send_audio_chunk(self, pcm_bytes: bytes) -> None:
+        # P0.10: estimate when the browser finishes playing what we have sent (24 kHz PCM16 mono = 48 000 B/s),
+        # so the mic gate stays closed until playback ends plus a tail (Live streams faster than real time).
+        now = time.perf_counter()
+        self._playback_until = max(self._playback_until, now) + len(pcm_bytes) / 48000.0
         payload = {
             "type": "audio",
             "data": base64.b64encode(pcm_bytes).decode("ascii"),
@@ -295,6 +311,13 @@ class LiveSessionManager:
                 ),
             ),
             session_resumption=types.SessionResumptionConfig(handle=handle),
+            # P0.10 (BUG-17): less eager server VAD, so residual echo or room noise does not start a "user turn"
+            # (and interrupt Yukti); deliberate barge-in still works via the browser `interrupt` + gated mic.
+            realtime_input_config=types.RealtimeInputConfig(
+                automatic_activity_detection=types.AutomaticActivityDetection(
+                    start_of_speech_sensitivity=types.StartSensitivity.START_SENSITIVITY_LOW,
+                ),
+            ),
             context_window_compression=types.ContextWindowCompressionConfig(
                 sliding_window=types.SlidingWindow()
             ),
@@ -416,6 +439,15 @@ class LiveSessionManager:
             "response": result,
         })
         return result
+
+    def _mic_gate_open(self) -> bool:
+        """P0.10 half-duplex gate: forward mic frames only when Yukti is not generating/speaking, or after a
+        deliberate barge-in (`interrupt`). Echo of Yukti's own voice therefore never reaches Live's VAD."""
+        if self._barge_in_open:
+            return True
+        if self._generating or self._is_speak_only:
+            return False
+        return time.perf_counter() >= self._playback_until + PLAYBACK_TAIL_S
 
     def _r_role_text(self) -> str:
         """P0.4: R-ROLE copy (SPEC-06 §4.6) for the socket's principal, in the session language."""
@@ -685,7 +717,8 @@ class LiveSessionManager:
 
                 # 1. Binary PCM16 16kHz frame (Urvi style)
                 if message.get("bytes"):
-                    if self._is_speak_only:
+                    if not self._mic_gate_open():  # P0.10 half-duplex gate
+                        self._mic_frames_dropped += 1
                         continue
                     raw_bytes = message["bytes"]
                     self._audio_rx_count += 1
@@ -741,7 +774,9 @@ class LiveSessionManager:
                 elif msg_type == "speak":
                     speak_text = (msg.get("text") or "").strip()
                     if speak_text:
-                        logger.info(f"[{self.session_id}] Rx speak request (len={len(speak_text)}): {speak_text[:80]}")
+                        self._speak_id = str(msg.get("speak_id") or f"spk-{int(time.time() * 1000)}")  # P0.10
+                        self._barge_in_open = False
+                        logger.info(f"[{self.session_id}] Rx speak request {self._speak_id} (len={len(speak_text)}): {speak_text[:80]}")
                         self.t_turn_start = time.perf_counter()
                         turn_state["t_first_audio_ms"] = None
                         turn_state["total_audio_bytes"] = 0
@@ -762,6 +797,7 @@ class LiveSessionManager:
                     if not query_text:
                         continue
                     self._is_speak_only = False
+                    self._speak_id = None  # a new typed Live turn supersedes any speak
                     self.t_turn_start = time.perf_counter()
                     turn_state["tool_called_in_turn"] = False
                     turn_state["t_first_audio_ms"] = None
@@ -793,7 +829,9 @@ class LiveSessionManager:
                             f"[{self.session_id}] Rx audio chunk #{self._audio_rx_count} ({len(audio_bytes)}B, peak={peak})"
                         )
                     # Do not let mic frames barge-in or cancel an active `speak` synthesis turn
-                    if self._is_speak_only:
+                    # P0.10: half-duplex gate (also closed while Yukti is generating), unless a deliberate barge-in
+                    if not self._mic_gate_open():
+                        self._mic_frames_dropped += 1
                         continue
                     now_ts = time.perf_counter()
                     if peak >= 8:
@@ -825,7 +863,10 @@ class LiveSessionManager:
                     # Only suppress while Gemini is still generating or starting a speak turn; after turn_complete
                     # nothing more of the old reply will arrive, and a stale flag would silence the next answer.
                     self._suppress_audio = self._generating or self._is_speak_only
-                    self._is_speak_only = False
+                    # P0.10 (BUG-17): never clear speak-only here; the running speak's transcripts stay dropped until
+                    # its own turn_complete (or a server `interrupted`). Re-open the mic so the user's speech goes through.
+                    self._barge_in_open = True
+                    self._playback_until = 0.0  # the browser has stopped playback locally
 
                 elif msg_type == "ping":
                     await self.send_json({"type": "pong", "time": time.time()})
@@ -894,7 +935,13 @@ class LiveSessionManager:
                         if getattr(sc, "interrupted", False):
                             self._suppress_audio = False
                             self._generating = False
-                            await self.send_json({"type": "interrupted"})
+                            self._barge_in_open = False  # gate is open anyway now (not generating)
+                            self._playback_until = 0.0  # the browser stops playback on `interrupted`
+                            ended_speak = self._speak_id
+                            if self._is_speak_only:  # the server cut the speak turn: it is over
+                                self._is_speak_only = False
+                                self._speak_id = None
+                            await self.send_json({"type": "interrupted", "speak_id": ended_speak})
 
                         it = getattr(sc, "input_transcription", None)
                         if it is not None and getattr(it, "text", None):
@@ -941,6 +988,7 @@ class LiveSessionManager:
                         if getattr(sc, "turn_complete", False):
                             self._suppress_audio = False
                             self._generating = False
+                            self._barge_in_open = False
                             # CRITICAL URVI FIX: Swallow the empty turn_complete Gemini emits right after a tool call
                             if not turn_output and (tool_since_output or bg_tool_tasks):
                                 continue
@@ -952,15 +1000,19 @@ class LiveSessionManager:
                             heard = "".join(self.state.pop("heard", [])).strip()
 
                             if self._is_speak_only:
+                                done_speak = self._speak_id
                                 self._is_speak_only = False
+                                self._speak_id = None
                                 logger.info(
-                                    f"[{self.session_id}] Speak completed (audio_bytes={turn_state['total_audio_bytes']}, first_audio_ms={turn_state['t_first_audio_ms']})"
+                                    f"[{self.session_id}] Speak {done_speak} completed (audio_bytes={turn_state['total_audio_bytes']}, first_audio_ms={turn_state['t_first_audio_ms']})"
                                 )
                                 await self.send_json({
                                     "type": "turn_complete",
+                                    "speak_id": done_speak,
                                     "metrics": {
                                         "audio_bytes_total": turn_state["total_audio_bytes"],
                                         "speak_only": True,
+                                        "speak_id": done_speak,
                                     },
                                 })
                                 self.t_turn_start = None
