@@ -1,6 +1,6 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 10:02 UTC · branch `v3/P0-stabilise` @ `a92101d`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 10:02 UTC · branch `v3/P0-stabilise` @ `d9bd69c`
 
 > [!IMPORTANT]
 > **Overall: 20% complete (weighted)** — 10/62 steps ✅ done, 6 in flight, 46 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
@@ -115,7 +115,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 10 · 🟠 in progress 2 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 25 total — 🔴 open 19 · 🟠 in progress 2 · ↩ regressed 0 · ✅ closed 4
+- **Important:** 26 total — 🔴 open 20 · 🟠 in progress 2 · ↩ regressed 0 · ✅ closed 4
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
