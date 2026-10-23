@@ -92,7 +92,7 @@ async def general_exception_handler(request, exc: Exception):
     logger.exception(f"Unhandled server exception: {exc}")
     return JSONResponse(
         status_code=500,
-        content={"type": "error", "message": str(exc), "retryable": True},
+        content={"type": "error", "message": "Something went wrong answering that. Please try again.", "retryable": True},  # P0.1: no internals
     )
 
 
@@ -151,11 +151,40 @@ class ExportRequest(BaseModel):
     rows: Optional[List[Dict[str, Any]]] = None
 
 
+# P0.1 (BUG-01): ADC health, cached for 60 s so /health polling never hammers the token endpoint.
+_AUTH_CACHE_TTL_S = 60.0
+_auth_cache: Dict[str, Any] = {"ok": None, "ts": 0.0}
+
+
+def _check_auth_ok() -> bool:
+    """True when Application Default Credentials can mint a token. Never raises, never exposes error text."""
+    if os.getenv("YUKTI_FORCE_ADC_FAIL", "0") in ("1", "true", "yes"):  # BEH-07 forced-failure test flag
+        return False
+    now = time.monotonic()
+    if _auth_cache["ok"] is not None and now - _auth_cache["ts"] < _AUTH_CACHE_TTL_S:
+        return bool(_auth_cache["ok"])
+    ok = False
+    try:
+        import google.auth
+        from google.auth.transport.requests import Request
+
+        creds, _ = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+        creds.refresh(Request())
+        ok = True
+    except Exception as exc:  # any failure -> not authorised; details only in the server log
+        logger.warning(f"ADC health check failed ({type(exc).__name__})")
+        ok = False
+    _auth_cache["ok"], _auth_cache["ts"] = ok, now
+    return ok
+
+
 @app.get("/health")
 def health() -> Dict[str, Any]:
     from app.answer_cache import get_answer_cache
     ac = get_answer_cache()
     return {
+        "auth_ok": _check_auth_ok(),
+        "auth_mode": os.getenv("YUKTI_AUTH_MODE", "demo"),
         "status": "healthy",
         "agent": "Yukti AI",
         "version": "1.0.0",
@@ -246,7 +275,7 @@ async def execute_turn(req: TurnRequest) -> Dict[str, Any]:
         logger.exception(f"Error executing turn: {exc}")
         raise HTTPException(
             status_code=500,
-            detail={"type": "error", "message": f"Turn execution failed: {str(exc)}", "retryable": True},
+            detail={"type": "error", "message": "Something went wrong answering that. Please try again.", "retryable": True},  # P0.1: no internals
         )
 
 

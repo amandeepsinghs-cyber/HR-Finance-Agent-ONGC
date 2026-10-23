@@ -1069,7 +1069,8 @@ class LiveSessionManager:
                 )
             except Exception as exc:  # keep the socket alive; report the failure to the UI
                 logger.exception(f"[{self.session_id}] Fallback turn failed: {exc}")
-                await self.send_json({"type": "error", "message": f"Turn failed: {exc}", "retryable": True})
+                from app.turn_runner import safe_error_copy  # P0.1 (BUG-33): no exception text to the UI
+                await self.send_json({"type": "error", "message": safe_error_copy(exc, self.language), "retryable": True})
                 await self.send_json({"type": "turn_complete", "full_text": "", "metrics": {"audio_bytes_total": 0}})
                 continue
             clean_c = dict(contract)

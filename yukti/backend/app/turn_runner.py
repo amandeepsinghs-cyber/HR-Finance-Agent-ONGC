@@ -34,6 +34,41 @@ from app.tools.chart_rules import (
 
 logger = logging.getLogger("yukti.turn_runner")
 
+# P0.1 (BUG-33): user-facing error copy. E-AUTH from SPEC-06 §4.6; generic copy for everything else.
+E_AUTH_COPY = {
+    "en": "I can't reach the data service right now. Nothing is wrong with your question; please try again in a minute.",
+    "hi": "अभी डेटा सेवा से संपर्क नहीं हो पा रहा। कृपया एक मिनट बाद फिर पूछें।",
+}
+GENERIC_ERROR_COPY = {
+    "en": "Something went wrong answering that. Please try again.",
+    "hi": "इसका उत्तर देने में कुछ गड़बड़ हो गई। कृपया फिर से कोशिश करें।",
+}
+
+
+def _is_auth_or_outage_error(exc: BaseException) -> bool:
+    """RefreshError / DefaultCredentialsError / BigQuery Forbidden, Unauthorized, ServiceUnavailable (incl. chained)."""
+    try:
+        from google.api_core import exceptions as gexc
+        from google.auth import exceptions as aexc
+        types_ = (aexc.RefreshError, aexc.DefaultCredentialsError, gexc.Forbidden, gexc.Unauthorized,
+                  gexc.ServiceUnavailable)
+    except Exception:  # pragma: no cover - libraries always present in the backend venv
+        return False
+    seen = 0
+    cur: Optional[BaseException] = exc
+    while cur is not None and seen < 5:
+        if isinstance(cur, types_):
+            return True
+        cur = cur.__cause__ or cur.__context__
+        seen += 1
+    return False
+
+
+def safe_error_copy(exc: BaseException, lang: str = "en") -> str:
+    """Maps any exception to user-safe text (EN, or HI for Hindi turns). Never includes str(exc)."""
+    key = "hi" if lang == "hi" else "en"
+    return (E_AUTH_COPY if _is_auth_or_outage_error(exc) else GENERIC_ERROR_COPY)[key]
+
 
 def make_clean_title_and_subtitle(
     query: str,
@@ -1439,13 +1474,14 @@ class AgentTurnRunner:
 
         except Exception as e:
             logger.exception(f"Error during ADK agent execution: {e}")
-            spoken_err = "I encountered an error querying the operational systems. Data is currently not available."
+            # P0.1 (BUG-33): never show exception text; auth/data outages get the E-AUTH copy (SPEC-06 §4.6).
+            spoken_err = safe_error_copy(e, det_lang)
             contract_err = {
                 "turn_id": turn_id,
                 "language": det_lang,
                 "persona": norm_persona,
                 "spoken_summary": spoken_err,
-                "display_text": f"Data not available: query execution error ({str(e)[:100]}) [1].",
+                "display_text": spoken_err,
                 "visual": {"type": "none", "mode": "replace"},
                 "insights": ["Operational query error"],
                 "sources": [{"kind": "data", "object": "hrfin_gold"}],

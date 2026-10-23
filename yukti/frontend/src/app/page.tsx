@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useReducer, useRef, useState } from 'rea
 import { PersonaType, AnswerContract, SpecPatch } from '@/contracts/answerContract';
 import { TopBar } from '@/components/TopBar';
 import { PersonaBanner } from '@/components/PersonaBanner';
+import { AuthBanner } from '@/components/AuthBanner';
 import { CanvasView } from '@/components/CanvasView';
 import { feedReducer, applyChartKind, latestAnswered, isReplotOf, Turn } from '@/state/feed';
 import { FloatingConversationPanel, ChatMessage, PanelMode } from '@/components/FloatingConversationPanel';
@@ -928,6 +929,8 @@ export default function YuktiApp() {
 
       {/* Banners live in normal flow so nothing ever overlaps them */}
       <div className="relative z-20">
+        {/* P0.1: ADC/auth banner (polls /health.auth_ok every 60 s) */}
+        <AuthBanner enabled={isLiveMode && !offline} />
         {offline && (
           <div role="alert" className="flex flex-wrap items-center justify-between gap-3 px-6 py-2.5 text-[0.85rem] bg-[var(--maroon-pale)] text-[var(--maroon)] border-b border-[var(--hairline)]">
             <div className="flex items-center gap-2 font-medium">
