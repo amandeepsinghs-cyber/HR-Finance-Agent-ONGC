@@ -1,0 +1,52 @@
+Standalone Balance Sheet as at March 31, 2024
+                                                                                                              (` in Million)
+                                                                                As at            As at               As at
+       Particulars                                        Note No.
+                                                                      March 31, 2024 March 31, 2023^     April 01, 2022^
+  I.   ASSETS
+ (1)   Non-current assets
+       (a) Property, Plant and Equipment
+           (i) Oil and Gas Assets                            5
+                (a) Tangible                                            1,373,663.00      1,223,494.68      1,168,778.18
+                (b) Intangible                                              3,628.96          2,808.54                 -
+           (ii) Other Property, Plant and Equipment          6            127,193.44        104,813.86         97,604.70
+           (iii) Right-of-use assets                         7            284,280.21         86,161.95        101,149.14
+       (b) Capital work in progress                          8
+           (i) Oil and Gas Assets
+               1) Development wells in progress                            87,739.26         93,983.08         66,132.60
+               2) Oil and gas facilities in progress                      214,453.53        203,360.48        193,523.00
+           (ii) Others                                                     31,115.22         31,580.26         27,881.24
+       (c) Intangible assets                                 9              2,458.23          1,677.46          1,823.95
+       (d) Intangible assets under development              10
+           1) Exploratory wells in progress                               155,634.67        134,758.57        132,170.25
+           2) Intangible oil and gas assets in progress                    42,192.38         25,592.66         11,476.89
+       (e) Financial assets
+           (i) Investments                                  11          1,053,713.68        849,855.79        851,732.15
+           (ii) Loans                                       13             19,275.96         16,965.35         14,470.58
+           (iii) Deposits under site restoration fund       14            282,055.43        264,105.99        246,305.67
+           (iv) Others                                      15              2,176.85          3,795.90          1,671.57
+       (f) Non-current tax assets (net)                     29            113,969.49        114,966.16         84,269.50
+       (g) Other non-current assets                         16              9,242.52         10,074.60         25,865.09
+                                                                        3,802,792.83      3,167,995.33      3,024,854.51
+ (2)   Current assets
+       (a) Inventories                                      17            107,118.11         83,206.70         78,614.15
+       (b) Financial assets
+           (i) Investments                                  11              1,975.08                 -                 -
+           (ii) Trade receivables                           12            114,097.42        102,503.05        117,884.84
+           (iii) Cash and cash equivalents                  18                345.48            771.94            501.05
+           (iv) Other bank balances                         19            299,967.52        215,568.52          1,861.25
+           (v) Loans                                        13              2,822.83          2,591.37          2,442.24
+           (vi) Others                                      15             84,553.38         69,239.64         26,770.44
+       (c) Other current assets                             16             46,536.25         56,907.15        131,190.79
+                                                                          657,416.07        530,788.37        359,264.76
+       Total assets                                                     4,460,208.90      3,698,783.70      3,384,119.27
+
+ II.   EQUITY AND LIABILITIES
+       EQUITY
+       (a) Equity share capital                             20             62,901.39         62,901.39         62,901.39
+       (b) Other equity                                     21          2,996,863.73      2,536,821.77      2,317,167.86
+       Total equity                                                     3,059,765.12      2,599,723.16      2,380,069.25
+
+
+
+                                                                     Standalone Financial Statements                  243

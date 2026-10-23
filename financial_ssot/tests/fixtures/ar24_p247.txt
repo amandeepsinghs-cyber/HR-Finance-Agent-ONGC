@@ -1,0 +1,47 @@
+Standalone Statement of Profit and Loss for the year ended March 31, 2024
+                                                                                                               (` in Million)
+                                                                                             Year ended         Year ended
+        Particulars                                                           Note No.
+                                                                                         March 31, 2024   March 31, 2023^
+ I      Revenue from operations                                                 30         1,384,021.31       1,555,173.15
+ II     Other income                                                            31           107,781.88          76,265.52
+ III    Total income (I+II)                                                                1,491,803.19       1,631,438.67
+ IV     EXPENSES
+        Changes in inventories of finished/ semi-finished goods and work in   32 & 33        (7,720.02)          (4,828.24)
+        progress
+        Production, transportation, selling and distribution expenditure        34           638,289.71         712,108.10
+        Exploration costs written off
+           a. Survey Costs                                                                    18,790.76          22,228.30
+           b. Exploratory well Costs                                                          36,896.53          60,547.90
+        Finance costs                                                           35            40,813.12          26,996.01
+        Depreciation, depletion, amortisation and impairment                    36           204,957.10         168,195.52
+        Other impairment and write offs                                         37            29,613.87          32,950.83
+        Total expenses (IV)                                                                  961,641.07       1,018,198.42
+ V      Profit before exceptional items and tax (III-IV)                                     530,162.12         613,240.25
+ VI     Exceptional items- Income/(expenses)                                   24.4                   -         (92,351.14)
+ VII    Profit before tax (V+VI)                                                             530,162.12         520,889.11
+ VIII   Tax expense:                                                          38 & 39
+        (a) Current tax relating to:
+        - current year                                                                       120,626.57         126,200.00
+        - earlier years                                                                        (948.24)         (28,448.24)
+        (b) Deferred tax                                                                       5,224.09          22,172.32
+        Total tax expense (VIII)                                                             124,902.42         119,924.08
+ IX     Profit for the year (VII-VIII)                                                       405,259.70         400,965.03
+ X      Other comprehensive income (OCI)
+        (a) Items that will not be reclassified to profit or loss
+        (i) Re-measurement of the defined benefit obligations                                (4,186.13)           (463.84)
+        - Deferred tax                                                                         1,053.57             116.74
+        (ii) Equity instruments through other comprehensive income                           205,020.96          (2,356.19)
+        - Deferred tax                                                                      (18,157.99)          (2,483.16)
+         Total other comprehensive income (net of tax) (X)                                   183,730.41          (5,186.45)
+ XI     Total comprehensive income for the year (IX+X)                                       588,990.11         395,778.58
+ XII    Earnings per equity share:                                              40
+        Basic and diluted (in `)                                                                  32.21              31.87
+ Accompanying notes to the Standalone Financial Statements                     1-59
+
+^ Restated, refer note no. 54
+
+
+
+
+                                                                               Standalone Financial Statements         245

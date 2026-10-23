@@ -1,0 +1,90 @@
+# P1.3 page map: statement title regex -> verified physical PDF page (pdftotext \f count + 1)
+# of the FIRST title line of each primary statement, per own-year AR (SPEC-01 §4.3).
+# The parser asserts that the regex hits on exactly this page (no guessing at run time).
+# Verified 23-Oct-2026 against knowledge/public_sources/grounding_data/text/*.txt.
+# "{scope}" is replaced by Standalone / Consolidated.
+statement_regex:
+  balance_sheet: '^{scope} Balance Sheet as at March 31, 20\d\d\b'
+  pnl: '^{scope} Statement of Profit and Loss for the year ended March 31, 20\d\d\b'
+  cash_flow: '^{scope} Statement of Cash Flows for the year ended March 31, 20\d\d\b'
+editions:
+  AR_FY2016-17:
+    file: ONGC_AR_FY2016-17.txt
+    standalone:
+      balance_sheet: 274
+      pnl: 276
+      cash_flow: 280
+    consolidated:
+      balance_sheet: 414
+      pnl: 416
+      cash_flow: 420
+  AR_FY2017-18:
+    file: ONGC_AR_FY2017-18.txt  # English edition (the _HI file is Hindi)
+    standalone:
+      balance_sheet: 165
+      pnl: 167
+      cash_flow: 169
+    consolidated:
+      balance_sheet: 273
+      pnl: 275
+      cash_flow: 279
+  AR_FY2018-19:
+    file: ONGC_AR_FY2018-19.txt
+    standalone:
+      balance_sheet: 246
+      pnl: 248
+      cash_flow: 250
+    consolidated:
+      balance_sheet: 392
+      pnl: 394
+      cash_flow: 398
+  AR_FY2021-22:
+    file: ONGC_AR_FY2021-22.txt
+    standalone:
+      balance_sheet: 180
+      pnl: 182
+      cash_flow: 185
+    consolidated:
+      balance_sheet: 318
+      pnl: 320
+      cash_flow: 325
+  AR_FY2022-23:
+    file: ONGC_AR_FY2022-23.txt
+    standalone:
+      balance_sheet: 236
+      pnl: 238
+      cash_flow: 241
+    consolidated:
+      balance_sheet: 403
+      pnl: 406
+      cash_flow: 411
+  AR_FY2023-24:
+    file: ONGC_AR_FY2023-24.txt
+    standalone:
+      balance_sheet: 245
+      pnl: 247
+      cash_flow: 250
+    consolidated:
+      balance_sheet: 421
+      pnl: 424
+      cash_flow: 429
+  AR_FY2024-25:
+    file: ONGC_AR_FY2024-25.txt
+    standalone:
+      balance_sheet: 271
+      pnl: 273
+      cash_flow: 276
+    consolidated:
+      balance_sheet: 419
+      pnl: 422
+      cash_flow: 427
+  AR_FY2025-26:
+    file: ONGC_AR_FY2025-26.txt
+    standalone:
+      balance_sheet: 295
+      pnl: 297
+      cash_flow: 300
+    consolidated:
+      balance_sheet: 432
+      pnl: 434
+      cash_flow: 439

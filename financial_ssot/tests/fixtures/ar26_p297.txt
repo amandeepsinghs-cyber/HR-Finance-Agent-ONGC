@@ -1,0 +1,73 @@
+                                                                                            Uniﬁed. Digital. Sustainable.
+Standalone Statement of Profit and Loss for the year ended March 31, 2026                                          (` in Million)
+
+
+
+
+                                                                                                                                    Consolidated Financial Statements
+        Particulars                                                                Note         Year Ended        Year Ended
+                                                                                   No.       March 31, 2026    March 31, 2025
+  I     Revenue from operations                                                     30         1,325,081.36      1,378,462.90
+
+  II    Other income                                                                31           103,557.62        104,794.36
+
+ III    Total income (I+II)                                                                    1,428,638.98      1,483,257.26
+
+
+ IV     EXPENSES
+        Purchase of stock-in-trade                                                  32                     -         1,481.33
+        Changes in inventories of finished/ semi-finished goods and work in       33 & 34            544.57          6,168.15
+        progress
+
+
+
+
+                                                                                                                                    Standalone Financial Statements
+        Production, transportation, selling, distribution and other expenditure     35           570,550.50        592,136.06
+        Exploration costs written off
+          a. Survey Costs                                                                         14,927.97         23,457.59
+          b. Exploratory well Costs                                                               82,359.81         74,799.57
+        Finance costs                                                               36            45,292.61         46,039.70
+        Depletion, depreciation, amortisation and impairment                        37           251,338.23        243,524.39
+        Provision, other impairment and write offs                                  38            39,476.40         28,052.27
+        Total expenses (IV)                                                                    1,004,490.09      1,015,659.06
+
+
+  V     Profit before exceptional items and tax (III-IV)                                         424,148.89        467,598.20
+ VI     Exceptional items- Income/(expenses)                                                               -                  -
+
+
+
+
+                                                                                                                                    Annexures to the Board’s Report
+ VII    Profit before tax (V+VI)                                                                424,148.89        467,598.20
+
+
+ VIII   Tax expense:                                                              39 & 40
+        (a) Current tax relating to:
+        - current year                                                                           119,106.80        122,358.29
+        - earlier years                                                                             (894.31)          (135.19)
+        (b) Deferred tax                                                                         (23,003.82)       (10,728.14)
+        Total tax expense (VIII)                                                                  95,208.67       111,494.96
+ IX     Profit for the year (VII-VIII)                                                          328,940.22        356,103.24
+
+
+  X     Other comprehensive income (OCI)
+        (a) Items that will not be reclassified to profit or loss
+        (i) Re-measurement of the defined benefit obligations                                     (6,665.21)        (7,261.93)
+        - Deferred tax                                                                             1,677.50          1,827.68
+                                                                                                                                    Overview
+
+
+        (ii) Equity instruments through other comprehensive income                                   880.93        (79,683.04)
+        - Deferred tax                                                                              (131.04)         1,918.90
+        Total other comprehensive income (net of tax) (X)                                        (4,237.82)       (83,198.39)
+ XI     Total comprehensive income for the year (IX+X)                                          324,702.40        272,904.85
+XII     Earnings per equity share:                                                  41
+        Basic and diluted (in `)                                                                      26.15              28.31
+        Accompanying notes to the Standalone Financial Statements                  1-58
+
+
+
+
+                                                                                      Integrated Annual Report 2025-26 295
