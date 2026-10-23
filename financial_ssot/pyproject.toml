@@ -1,0 +1,21 @@
+[project]
+name = "financial-ssot"
+version = "0.1.0"
+description = "Yukti v3 real financial SSOT pipeline (SPEC-01): deterministic AR extractors, gates, loaders"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas",
+    "pyarrow",
+    "lxml",
+    "openpyxl",
+    "numpy",
+    "requests",
+    "pytest",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".."]

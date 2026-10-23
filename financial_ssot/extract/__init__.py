@@ -1,0 +1,1 @@
+"""Deterministic extractors (bronze rows)."""
