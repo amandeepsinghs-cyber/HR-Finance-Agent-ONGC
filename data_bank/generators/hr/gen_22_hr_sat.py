@@ -475,8 +475,26 @@ def generate_payroll_monthly_old(
         "cost_centre_id", "LGART_1001", "LGART_1002", "cafeteria_allowances_inr", "hra_inr",
         "mining_offshore_allowance_inr", "overtime_hours", "overtime_amount_inr", "prp_inr",
         "employer_cpf_inr", "employer_prbs_inr", "employer_prmb_inr", "LGART_9001",
-        "income_tax_tds_inr", "LGART_9002", "superannuation_benefit_pct"
+        "income_tax_tds_inr", "LGART_9002", "superannuation_benefit_pct",
+        "cost_expensed_production_inr", "fixed_note35a", "adjustable_note35a_base",
+        "u_fy", "k_fy", "ot_fy", "arrears_inr", "cost_note35_a_inr", "cost_note35_b_inr",
+        "cost_note35_c_inr", "cost_note35_d_inr", "cost_note35_e_inr", "cost_note35_f_inr",
+        "gratuity_accrual_inr", "leave_provision_accrual_inr", "medical_scheme_cost_inr",
+        "group_insurance_premium_inr", "accident_insurance_premium_inr", "housing_cost_inr",
+        "canteen_subsidy_inr", "transport_subsidy_inr", "staff_welfare_alloc_inr",
+        "training_cost_inr", "csss_contribution_inr", "cost_expensed_gae_inr",
+        "field_duty_allowance_inr", "location_comp_allowance_inr", "hard_station_allowance_inr",
+        "shift_allowance_inr", "night_duty_allowance_inr", "npa_inr", "special_allowance_inr",
+        "prp_paid_inr", "leave_encashment_paid_inr", "ltc_inr", "medical_reimbursement_inr",
+        "ex_gratia_other_inr", "gross_earnings_inr", "employee_pf_inr", "vpf_inr",
+        "professional_tax_inr", "hrr_recovery_inr", "loan_recoveries_inr", "other_recoveries_inr",
+        "total_deductions_inr", "net_pay_inr", "ctc_monthly_inr", "ctc_annualised_inr",
+        "cost_expensed_pnl_inr", "cost_allocated_ew_dd_survey_inr"
     ]
+    # Ensure all columns exist before filtering
+    for col in ordered_cols:
+        if col not in df_payroll.columns:
+            df_payroll[col] = 0.0
     df_payroll = df_payroll[ordered_cols]
     print(f"H8 generated: {len(df_payroll)} rows.")
     return df_payroll
@@ -1923,8 +1941,10 @@ def save_all_landing_files(tables: Dict[str, Any]):
     tables["H7"].to_csv(LANDING_SAP / "headcount_monthly_snapshot.csv", index=False)
     print("Wrote headcount_monthly_snapshot.csv")
 
-    # H8: payroll_monthly -> landing/sap/PY_CLUSTER_EXP.csv
-    tables["H8"].to_csv(LANDING_SAP / "PY_CLUSTER_EXP.csv", index=False)
+    # H8: payroll_monthly -> landing/sap/PY_CLUSTER_EXP.csv (atomic write via temp file)
+    tmp_h8 = LANDING_SAP / f"PY_CLUSTER_EXP.csv.tmp.{os.getpid()}"
+    tables["H8"].to_csv(tmp_h8, index=False)
+    os.replace(tmp_h8, LANDING_SAP / "PY_CLUSTER_EXP.csv")
     print("Wrote PY_CLUSTER_EXP.csv")
 
     # H9: apar_ratings -> landing/sap/eAPAR_ratings.csv

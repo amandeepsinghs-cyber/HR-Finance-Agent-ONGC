@@ -251,7 +251,7 @@ def test_plant_ebitda_margins_within_bounds(duck_con):
     for p in plant_margins:
         wc, g_rev, opex, ebitda, margin = p[0], p[1], p[2], p[3], p[4]
         assert ebitda > 0, f"Plant {wc} has negative EBITDA: {ebitda}"
-        assert -1000.0 <= margin <= 1000.0, f"Plant {wc} EBITDA margin {margin:.2f}% outside [10%, 45%]"
+        assert 10.0 <= margin <= 45.0, f"Plant {wc} EBITDA margin {margin:.2f}% outside [10%, 45%]"
 
 
 # ------------------------------------------------------------------------------
@@ -297,7 +297,7 @@ def test_payroll_manpower_reconciliation(duck_con):
         SELECT SUM(LGART_9001 + (LGART_1001 + LGART_1002) * (superannuation_benefit_pct / 100.0)) / 1e7
         FROM payroll_monthly WHERE fiscal_year = 'FY26'
     """).fetchone()[0]
-    assert abs(pnl_mp - 775.29) <= 0.05, f"P&L manpower {pnl_mp} cr != expected"
+    assert abs(pnl_mp - payroll_total) <= 0.05, f"P&L manpower {pnl_mp} cr != payroll total {payroll_total} cr"
 
 
 def test_fy26_revenue_and_segment_calibration(duck_con):
@@ -331,7 +331,7 @@ def test_fy26_segment_profit_and_dda_calibration(duck_con):
             OR (line_type = 'plant_vap' AND asset_wc_id = 'WC-URN')
         )
     """).fetchone()[0]
-    assert abs(off_pbt - 40176.79) / 40176.79 <= 0.02, f"Offshore PBT {off_pbt} cr deviates from 40176.79 cr"
+    assert abs(off_pbt - 34385.0) / 34385.0 <= 0.02, f"Offshore PBT {off_pbt} cr deviates from 34,385 cr"
 
     on_pbt = duck_con.execute("""
         SELECT SUM(pbt_inr_cr) FROM field_pnl_annual
@@ -340,7 +340,7 @@ def test_fy26_segment_profit_and_dda_calibration(duck_con):
             OR (line_type IN ('plant_vap', 'reconciliation', 'exploration_writeoff') AND asset_wc_id != 'WC-URN')
         )
     """).fetchone()[0]
-    assert abs(on_pbt - 11829.31) / 11829.31 <= 0.02, f"Onshore PBT {on_pbt} cr deviates from 11829.31 cr"
+    assert abs(on_pbt - 6246.0) / 6246.0 <= 0.02, f"Onshore PBT {on_pbt} cr deviates from 6,246 cr"
 
     off_dda = duck_con.execute("""
         SELECT SUM(dda_depreciation_inr_cr) FROM field_pnl_annual
@@ -349,7 +349,7 @@ def test_fy26_segment_profit_and_dda_calibration(duck_con):
             OR (line_type = 'plant_vap' AND asset_wc_id = 'WC-URN')
         )
     """).fetchone()[0]
-    assert abs(off_dda - 18145.0) / 18145.0 <= 0.05, f"Offshore DD&A {off_dda} cr deviates from 18,830 cr"
+    assert abs(off_dda - 18830.0) / 18830.0 <= 0.02, f"Offshore DD&A {off_dda} cr deviates from 18,830 cr"
 
     on_dda = duck_con.execute("""
         SELECT SUM(dda_depreciation_inr_cr) FROM field_pnl_annual
@@ -358,15 +358,15 @@ def test_fy26_segment_profit_and_dda_calibration(duck_con):
             OR (line_type IN ('plant_vap', 'reconciliation', 'exploration_writeoff') AND asset_wc_id != 'WC-URN')
         )
     """).fetchone()[0]
-    assert on_dda > 0, f"Onshore DD&A {on_dda} cr deviates from 6,367 cr"
+    assert abs(on_dda - 6367.0) / 6367.0 <= 0.02, f"Onshore DD&A {on_dda} cr deviates from 6,367 cr"
 
 
 def test_statutory_levies_calibration(duck_con):
     royalty = duck_con.execute("SELECT SUM(statutory_royalty_inr_cr) FROM field_pnl_annual WHERE fiscal_year = 'FY26'").fetchone()[0]
-    assert abs(royalty - 12412.18) / 12412.18 <= 0.02, f"Royalty {royalty} cr deviates from 12412.18 cr"
+    assert abs(royalty - 12965.0) / 12965.0 <= 0.02, f"Royalty {royalty} cr deviates from 12,965 cr"
 
     cess = duck_con.execute("SELECT SUM(statutory_cess_inr_cr) FROM field_pnl_annual WHERE fiscal_year = 'FY26'").fetchone()[0]
-    assert abs(cess - 12177.72) / 12177.72 <= 0.02, f"Cess {cess} cr deviates from 12177.72 cr"
+    assert abs(cess - 13034.0) / 13034.0 <= 0.02, f"Cess {cess} cr deviates from 13,034 cr"
 
     saed = duck_con.execute("SELECT SUM(statutory_windfall_tax_saed_inr_cr) FROM field_pnl_annual WHERE fiscal_year = 'FY26'").fetchone()[0]
     assert saed == 0.0, f"FY26 SAED should be 0.0, got {saed}"
@@ -484,13 +484,13 @@ def test_story_s6_mature_field_losses(duck_con):
         SELECT pbt_inr_cr FROM field_pnl_annual
         WHERE field_id = 'FLD-BOR' AND fiscal_year = 'FY26'
     """).fetchone()[0]
-    assert bor_pbt < 250.0, f"Borholla PBT {bor_pbt} cr should be constrained/negative"
+    assert bor_pbt < 50.0, f"Borholla PBT {bor_pbt} cr should be constrained/negative"
 
     adi_ebitda = duck_con.execute("""
         SELECT ebitda_margin_pct FROM field_pnl_annual
         WHERE field_id = 'FLD-ADI' AND fiscal_year = 'FY26'
     """).fetchone()[0]
-    assert adi_ebitda < 150.0, f"Adiyakkamangalam EBITDA margin {adi_ebitda}% should be constrained"
+    assert adi_ebitda < 50.0, f"Adiyakkamangalam EBITDA margin {adi_ebitda}% should be constrained"
 
 
 def test_story_s8_manpower_cost_per_boe_disparity(duck_con):
@@ -505,7 +505,7 @@ def test_story_s8_manpower_cost_per_boe_disparity(duck_con):
         FROM field_pnl_annual
         WHERE asset_wc_id = 'WC-CAM' AND fiscal_year = 'FY26' AND total_production_boe > 0
     """).fetchone()[0]
-    assert cam_mp >= 0.0, f"Cambay manpower cost/boe {cam_mp:.2f} should exceed Mumbai High {mh_mp:.2f}"
+    assert cam_mp > mh_mp, f"Cambay manpower cost/boe {cam_mp:.2f} should exceed Mumbai High {mh_mp:.2f}"
 
 
 def test_story_s9_capex_slippages(duck_con):

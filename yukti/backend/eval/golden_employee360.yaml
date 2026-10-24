@@ -1,4 +1,290 @@
 - id: BEH-06.01
   persona: CMD
-  utterance: "employee cost"
-  expect: {values: [1], tolerance: 0.1, label: "Modelled", visual_type: "line", rbac: "allow"}
+  utterance: What will be the salary breakdown of an E1 officer joining now in Delhi?
+  expect:
+    label: Rule-based (Real scale), IDA Illustrative
+    visual_type: waterfall
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.02
+  persona: E2_HR.
+  utterance: the same utterance as .01. **Then** an identical answer (a public scale
+    is `pay_aggregate`, not refused; fixes BUG-28).
+  expect:
+    label: Synthetic
+    visual_type: as
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.03
+  persona: CMD
+  utterance: Show average CTC by grade.
+  expect:
+    label: Synthetic
+    visual_type: column
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.04
+  persona: E3_FIN
+  utterance: as .03. **Then** the same chart, but bars with n < 5 (CMD = 1, DIR =
+    2) show "<5" and no value. Narration says "small groups hidden for privacy".
+  expect:
+    label: Synthetic
+    visual_type: column
+    rbac: aggregate
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.05
+  persona: DIR_HR
+  utterance: Divide E1 to E4 pay into basic, DA, HRA, perks and allowances.
+  expect:
+    label: Synthetic
+    visual_type: stacked_column
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.06
+  persona: .05 answered.
+  utterance: Now show the annual figure per person.
+  expect:
+    label: Synthetic
+    visual_type: table
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.07
+  persona: CMD
+  utterance: Show revenue per employee trend for the last 10 years.
+  expect:
+    label: Derived from AR (formula over real AR lines)
+    visual_type: line
+    rbac: aggregate
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.08
+  persona: DIR_FIN
+  utterance: Employee cost as a percentage of revenue over 10 years.
+  expect:
+    label: Derived from AR
+    visual_type: combo
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.09
+  persona: CMD
+  utterance: What is our cost per employee and how has it moved?
+  expect:
+    label: Derived from AR
+    visual_type: kpi_card
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.10
+  persona: DIR_HR
+  utterance: Break up FY26 employee cost.
+  expect:
+    label: Real
+    visual_type: waterfall
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.11
+  persona: DIR_FIN
+  utterance: Does the employee table add up to the annual report?
+  expect:
+    label: Real vs Synthetic
+    visual_type: recon_table
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.12
+  persona: CMD
+  utterance: FY19 employee cost by component.
+  expect:
+    label: Real total / Modelled split
+    visual_type: donut
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.13
+  persona: CMD
+  utterance: How much of employee cost is capitalised?
+  expect:
+    label: Real + Modelled
+    visual_type: donut
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.14
+  persona: CMD
+  utterance: Headcount trend and how many retire in the next 5 years?
+  expect:
+    label: Real / Synthetic
+    visual_type: column
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.15
+  persona: CMD
+  utterance: What's the median pay for executives, men vs women?
+  expect:
+    label: Real (BRSR p.181) vs Synthetic
+    visual_type: table
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.25
+  persona: a scenario parameter cap = 30 h/month.
+  utterance: How much would capping overtime at 30 hours a month save?
+  expect:
+    label: Scenario (on Synthetic)
+    visual_type: kpi_card
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.26
+  persona: DIR_HR
+  utterance: Overtime as a percentage of pay by work centre.
+  expect:
+    label: Synthetic
+    visual_type: bar
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.27
+  persona: CMD
+  utterance: Medical cost per employee trend.
+  expect:
+    label: Synthetic
+    visual_type: line
+    rbac: aggregate
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.28
+  persona: CMD
+  utterance: What does the Delhi cohort with more than 5 years cost us?
+  expect:
+    label: Synthetic + Illustrative policy
+    visual_type: kpi_card
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.29
+  persona: DIR_HR
+  utterance: If we rotate them to Y or Z class stations, what changes?
+  expect:
+    label: Scenario
+    visual_type: waterfall
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.30
+  persona: CMD
+  utterance: Allowance mix for offshore versus onshore staff.
+  expect:
+    label: Synthetic
+    visual_type: stacked_100
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.31
+  persona: CMD
+  utterance: Is there pay compression between E1 and E9?
+  expect:
+    label: Synthetic
+    visual_type: box
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.32
+  persona: DIR_HR
+  utterance: Attrition by grade for the last 3 years, and how it compares with BRSR.
+  expect:
+    label: Synthetic (calibrated) / Real BRSR
+    visual_type: column
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.33
+  persona: E2_HR
+  utterance: Show my pay slip.
+  expect:
+    label: Synthetic (illustrative identity)
+    visual_type: payslip
+    rbac: aggregate
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.34
+  persona: E3_FIN
+  utterance: What is my salary?
+  expect:
+    label: Synthetic
+    visual_type: kpi_card
+    rbac: aggregate
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.35
+  persona: E3_FIN
+  utterance: What is the salary of Rajesh Kumar?
+  expect:
+    label: Synthetic
+    visual_type: none
+    rbac: refuse
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.36
+  persona: E1_HR
+  utterance: "List employees in Delhi earning more than \u20B93 lakh a month."
+  expect:
+    label: Synthetic
+    visual_type: column
+    rbac: aggregate
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.37
+  persona: DIR_FIN
+  utterance: Show salary and APAR of HR officers in Delhi.
+  expect:
+    label: Synthetic
+    visual_type: refusal
+    rbac: refuse
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.38
+  persona: DIR_HR
+  utterance: Give me names, grade, Delhi tenure and CTC of the overdue cohort, and
+    export it.
+  expect:
+    label: Synthetic
+    visual_type: roster
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.39
+  persona: E4_FIN
+  utterance: Headcount by grade in Delhi.
+  expect:
+    label: Synthetic
+    visual_type: column
+    rbac: aggregate
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.40
+  persona: E3_HR
+  utterance: Show medical claims of employees in Mumbai.
+  expect:
+    label: Synthetic
+    visual_type: refusal
+    rbac: refuse
+    tolerance: 0.005
+    recompute_sql: SELECT 1

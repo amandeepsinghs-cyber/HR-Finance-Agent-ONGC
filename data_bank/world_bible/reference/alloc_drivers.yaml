@@ -1,16 +1,84 @@
-alloc_drivers:
-- water_produced_m3
-- water_injected_m3
-- water_cut_pct
-- active_producers
-- active_injectors
-- installations_count
-- wells_drilled_dev
-- oil_prod_mt
-- gas_prod_mmscm
-- prod_boe
-- oil_sales_mt
-- gas_sales_mmscm
-- vap_sales_kt
-- headcount_direct
-- employee_cost_total
+# Driver configuration for field economics allocation
+drivers:
+  "PL.REV_OPS":
+    driver: "production_boe"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "N35.STAFF_EXPENDITURE":
+    driver: "py_cluster_exp_staff"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "N35.CONTRACTOR_COST":
+    driver: "production_boe"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "N35.WORKOVER_REPAIRS":
+    driver: "active_producing_wells"
+    onshore_prior: 1.5
+    offshore_prior: 2.0
+  "N35.ROYALTY":
+    driver: "production_boe"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "N35.POWER_FUEL":
+    driver: "production_boe"
+    onshore_prior: 1.0
+    offshore_prior: 0.8
+  "N35.WATER_HANDLING":
+    driver: "production_boe"
+    onshore_prior: 1.0
+    offshore_prior: 1.2
+  "N35.LOGISTICS_OSV_CHOPPER":
+    driver: "production_boe"
+    onshore_prior: 0.1
+    offshore_prior: 2.0
+  "N35.CHEMICALS":
+    driver: "production_boe"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "N35.OTHER_OPEX":
+    driver: "production_boe"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "N35.EXCISE_SAED":
+    driver: "production_boe"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "PL.EXPL_SURVEY":
+    driver: "exploration_wells"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "PL.EXPL_WELLS":
+    driver: "exploration_wells"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "PL.DDA":
+    driver: "production_boe"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "PL.FIN_COST":
+    driver: "fixed"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "SEG.INT_DIV":
+    driver: "fixed"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "SEG.UNALLOC":
+    driver: "fixed"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "REV.VAP":
+    driver: "fixed"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+  "QTY.VAP_SOLD":
+    driver: "fixed"
+    onshore_prior: 1.0
+    offshore_prior: 1.0
+
+price_factors:
+  "convention": "verify"
+conversions:
+  bbl_per_t: 7.33
+  scm_per_toe: 1000

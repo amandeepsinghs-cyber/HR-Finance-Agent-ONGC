@@ -1,0 +1,25 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "employee_cost_pool",
+  description: "Employee cost pool"
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`month_start`) AS month_start,
+    TRIM(`pool_code`) AS pool_code,
+    TRIM(`note35_line`) AS note35_line,
+    TRIM(`amount_inr`) AS amount_inr,
+    TRIM(`allocation_basis`) AS allocation_basis,
+    TRIM(`cost_destination`) AS cost_destination,
+    TRIM(`segment`) AS segment,
+    TRIM(`basis`) AS basis
+  FROM ${ref("sap_employee_cost_pool")}
+  WHERE TRUE
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+

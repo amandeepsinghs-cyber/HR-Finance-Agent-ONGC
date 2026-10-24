@@ -21,7 +21,7 @@ from app.tools.certified_query import (
 def test_certified_library_loading():
     """Verifies that all 89 certified root queries are loaded with parameters and provenance."""
     queries = list_certified_queries()
-    assert len(queries) == 89, f"Expected 89 queries, found {len(queries)}"
+    assert len(queries) == 101, f"Expected 101 queries, found {len(queries)}"
 
     entry_c1 = get_certified_entry("C1")
     assert entry_c1 is not None

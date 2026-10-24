@@ -1,0 +1,17 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "fact_field_capex_fy",
+  description: "Annual field/asset capex rollup by fiscal year"
+}
+
+SELECT
+  fiscal_year,
+  asset_wc_id,
+  capex_head,
+  SUM(budget_estimate_be_inr_cr) AS budget_estimate_be_inr_cr,
+  SUM(revised_estimate_re_inr_cr) AS revised_estimate_re_inr_cr,
+  SUM(actual_spend_inr_cr) AS actual_spend_inr_cr,
+  SUM(secondary_recovery_capex_inr_cr) AS secondary_recovery_capex_inr_cr
+FROM ${ref("capex_budget")}
+GROUP BY 1, 2, 3

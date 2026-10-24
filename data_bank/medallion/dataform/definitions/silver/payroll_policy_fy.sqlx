@@ -1,0 +1,20 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "payroll_policy_fy",
+  description: "Payroll policy FY"
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    TRIM(`k_fy`) AS k_fy,
+    TRIM(`u_fy`) AS u_fy,
+    TRIM(`ot_fy`) AS ot_fy
+  FROM ${ref("sap_payroll_policy_fy")}
+  WHERE TRUE
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+

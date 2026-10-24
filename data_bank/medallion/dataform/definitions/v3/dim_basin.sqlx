@@ -1,0 +1,14 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "dim_basin",
+  description: "Sedimentary basin dimension for Field Economics-360"
+}
+
+SELECT DISTINCT
+  UPPER(REGEXP_REPLACE(basin_name, r'[^A-Za-z0-9]+', '_')) AS basin_id,
+  basin_name,
+  onshore_offshore,
+  COUNT(DISTINCT field_id) AS field_count
+FROM ${ref("hrfin_silver", "dim_field")}
+GROUP BY 1, 2, 3

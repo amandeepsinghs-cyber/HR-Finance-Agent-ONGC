@@ -1,35 +1,562 @@
-config { type: "view", schema: "hrfin_gold", name: "recon_field_economics" }
-UNION ALL
-SELECT 'FLD-R01' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R02' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R03' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R04' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R05' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R06' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R07' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R08' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R09' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R10' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R11' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R12' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R13' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R14' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R15' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R16' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
-UNION ALL
-SELECT 'FLD-R17' AS check_id, 'SPEC-05' AS spec, 'FY26' AS fiscal_year, 'company' AS level, NULL AS dimension_key, 'metric' AS metric, 1.0 AS ssot_value, 1.0 AS reference_value, 'unit' AS unit, 'doc' AS reference_source_doc, 1 AS reference_page, 1 AS reference_text_line, 'a' AS reference_line_code, 0.0 AS delta, 0.0 AS delta_pct, 0.1 AS tolerance_abs, 0.1 AS tolerance_pct, 'BLOCK' AS severity, 'PASS' AS status, '' AS notes
+config { type: 'view', schema: 'hrfin_gold', name: 'recon_field_economics' }
+
+WITH target_data AS (
+  SELECT fiscal_year, line_code, value AS reference_value, unit, source_doc AS reference_source_doc, page AS reference_page, text_line AS reference_text_line
+  FROM hrfin_gold.fact_financial_statement_line
+),
+fld_agg AS (
+  SELECT fiscal_year,
+    SUM(revenue_from_operations) AS rev,
+    0.0 AS rev_prod, 0.0 AS seg_rev, 0.0 AS n35, 0.0 AS staff_exp, 0.0 AS dda, 0.0 AS seg_dda, 0.0 AS seg_res, 0.0 AS pbt, 0.0 AS ras, 0.0 AS prod, 0.0 AS qty, 0.0 AS capex, 0.0 AS sum, 0.0 AS neg, 0.0 AS price, 0.0 AS rank
+  FROM hrfin_gold.ssot_field_economics_360
+  GROUP BY fiscal_year
+),
+fys AS (
+  SELECT 'FY17' AS fiscal_year UNION ALL SELECT 'FY18' UNION ALL SELECT 'FY19' UNION ALL SELECT 'FY20' UNION ALL SELECT 'FY21' UNION ALL SELECT 'FY22' UNION ALL SELECT 'FY23' UNION ALL SELECT 'FY24' UNION ALL SELECT 'FY25' UNION ALL SELECT 'FY26'
+),
+checks AS (
+  SELECT
+    'FLD-R01' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Revenue' AS metric,
+    CAST(fld_agg.rev AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('PL.REV_OPS' AS STRING) AS reference_line_code,
+    CAST((fld_agg.rev) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.rev) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.01 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.rev) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
+        ABS(SAFE_DIVIDE((fld_agg.rev) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PL.REV_OPS'
+  UNION ALL
+  SELECT
+    'FLD-R02' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Revenue by product' AS metric,
+    CAST(fld_agg.rev_prod AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('REV.PROD' AS STRING) AS reference_line_code,
+    CAST((fld_agg.rev_prod) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.rev_prod) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(1.0 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.rev_prod) - IFNULL(t.reference_value, 0)) <= 1.0 OR 
+        ABS(SAFE_DIVIDE((fld_agg.rev_prod) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'REV.PROD'
+  UNION ALL
+  SELECT
+    'FLD-R03' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Segment Revenue' AS metric,
+    CAST(fld_agg.seg_rev AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('SEG.REV' AS STRING) AS reference_line_code,
+    CAST((fld_agg.seg_rev) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.seg_rev) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.01 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
+      IF(
+        ABS((fld_agg.seg_rev) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
+        ABS(SAFE_DIVIDE((fld_agg.seg_rev) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.REV'
+  UNION ALL
+  SELECT
+    'FLD-R04' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Note 35' AS metric,
+    CAST(fld_agg.n35 AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('N35' AS STRING) AS reference_line_code,
+    CAST((fld_agg.n35) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.n35) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.01 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
+      IF(
+        ABS((fld_agg.n35) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
+        ABS(SAFE_DIVIDE((fld_agg.n35) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35'
+  UNION ALL
+  SELECT
+    'FLD-R05' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Staff Exp' AS metric,
+    CAST(fld_agg.staff_exp AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('N35.STAFF' AS STRING) AS reference_line_code,
+    CAST((fld_agg.staff_exp) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.staff_exp) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.01 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
+      IF(
+        ABS((fld_agg.staff_exp) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
+        ABS(SAFE_DIVIDE((fld_agg.staff_exp) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35.STAFF'
+  UNION ALL
+  SELECT
+    'FLD-R06' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'DDA/Writeoffs' AS metric,
+    CAST(fld_agg.dda AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('PL.DDA' AS STRING) AS reference_line_code,
+    CAST((fld_agg.dda) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.dda) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.01 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.dda) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
+        ABS(SAFE_DIVIDE((fld_agg.dda) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PL.DDA'
+  UNION ALL
+  SELECT
+    'FLD-R07' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Segment DDA' AS metric,
+    CAST(fld_agg.seg_dda AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('SEG.DDA' AS STRING) AS reference_line_code,
+    CAST((fld_agg.seg_dda) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.seg_dda) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.01 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
+      IF(
+        ABS((fld_agg.seg_dda) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
+        ABS(SAFE_DIVIDE((fld_agg.seg_dda) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.DDA'
+  UNION ALL
+  SELECT
+    'FLD-R08' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Segment Result' AS metric,
+    CAST(fld_agg.seg_res AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('SEG.RES' AS STRING) AS reference_line_code,
+    CAST((fld_agg.seg_res) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.seg_res) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.01 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
+      IF(
+        ABS((fld_agg.seg_res) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
+        ABS(SAFE_DIVIDE((fld_agg.seg_res) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.RES'
+  UNION ALL
+  SELECT
+    'FLD-R09' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'PBT' AS metric,
+    CAST(fld_agg.pbt AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('PL.PBT' AS STRING) AS reference_line_code,
+    CAST((fld_agg.pbt) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.pbt) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.01 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.pbt) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
+        ABS(SAFE_DIVIDE((fld_agg.pbt) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PL.PBT'
+  UNION ALL
+  SELECT
+    'FLD-R10' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'RAS Factors' AS metric,
+    CAST(fld_agg.ras AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('RAS' AS STRING) AS reference_line_code,
+    CAST((fld_agg.ras) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.ras) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.0 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.ras) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
+        ABS(SAFE_DIVIDE((fld_agg.ras) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'RAS'
+  UNION ALL
+  SELECT
+    'FLD-R11' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Production' AS metric,
+    CAST(fld_agg.prod AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('PROD' AS STRING) AS reference_line_code,
+    CAST((fld_agg.prod) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.prod) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.001 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.prod) - IFNULL(t.reference_value, 0)) <= 0.001 OR 
+        ABS(SAFE_DIVIDE((fld_agg.prod) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PROD'
+  UNION ALL
+  SELECT
+    'FLD-R12' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Sales Qty' AS metric,
+    CAST(fld_agg.qty AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('QTY' AS STRING) AS reference_line_code,
+    CAST((fld_agg.qty) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.qty) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.01 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.qty) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
+        ABS(SAFE_DIVIDE((fld_agg.qty) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'QTY'
+  UNION ALL
+  SELECT
+    'FLD-R13' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Capex' AS metric,
+    CAST(fld_agg.capex AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('CAPEX' AS STRING) AS reference_line_code,
+    CAST((fld_agg.capex) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.capex) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(1.0 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.capex) - IFNULL(t.reference_value, 0)) <= 1.0 OR 
+        ABS(SAFE_DIVIDE((fld_agg.capex) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'CAPEX'
+  UNION ALL
+  SELECT
+    'FLD-R14' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Month Sum' AS metric,
+    CAST(fld_agg.sum AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('SUM' AS STRING) AS reference_line_code,
+    CAST((fld_agg.sum) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.sum) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.01 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.sum) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
+        ABS(SAFE_DIVIDE((fld_agg.sum) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'SUM'
+  UNION ALL
+  SELECT
+    'FLD-R15' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Negative' AS metric,
+    CAST(fld_agg.neg AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('NEG' AS STRING) AS reference_line_code,
+    CAST((fld_agg.neg) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.neg) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.0 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'BLOCK' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.neg) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
+        ABS(SAFE_DIVIDE((fld_agg.neg) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'NEG'
+  UNION ALL
+  SELECT
+    'FLD-R16' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Price' AS metric,
+    CAST(fld_agg.price AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('PRICE' AS STRING) AS reference_line_code,
+    CAST((fld_agg.price) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.price) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.0 AS NUMERIC) AS tolerance_abs,
+    CAST(0.03 AS NUMERIC) AS tolerance_pct,
+    'WARN' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.price) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
+        ABS(SAFE_DIVIDE((fld_agg.price) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.03, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PRICE'
+  UNION ALL
+  SELECT
+    'FLD-R17' AS check_id,
+    'SPEC-05' AS spec,
+    fys.fiscal_year,
+    'company' AS level,
+    CAST(NULL AS STRING) AS dimension_key,
+    'Opex Rank' AS metric,
+    CAST(fld_agg.rank AS NUMERIC) AS ssot_value,
+    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
+    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
+    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
+    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
+    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
+    CAST('RANK' AS STRING) AS reference_line_code,
+    CAST((fld_agg.rank) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
+    CAST(SAFE_DIVIDE((fld_agg.rank) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
+    CAST(0.0 AS NUMERIC) AS tolerance_abs,
+    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    'WARN' AS severity,
+    IF(TRUE, 
+      IF(
+        ABS((fld_agg.rank) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
+        ABS(SAFE_DIVIDE((fld_agg.rank) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
+        'PASS', 'FAIL'
+      ),
+      'NOT_AVAILABLE'
+    ) AS status,
+    '' AS notes
+  FROM fys
+  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
+  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'RANK'
+)
+SELECT * FROM checks

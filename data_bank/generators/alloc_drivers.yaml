@@ -1,0 +1,9 @@
+# SPEC-05 §6.1 Driver configuration
+conversions:
+  bbl_per_tonne: 7.33
+  scm_per_toe: 1000
+
+drivers:
+  revenue: "production"
+  opex: "production"
+  capex: "reserves"

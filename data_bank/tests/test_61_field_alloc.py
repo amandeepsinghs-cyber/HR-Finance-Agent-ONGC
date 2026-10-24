@@ -4,6 +4,7 @@ Tests RAS maths, largest-remainder exactness, and FLD-R01...R17 recon gates.
 """
 
 from pathlib import Path
+import sys
 import duckdb
 import numpy as np
 import pandas as pd
@@ -11,6 +12,8 @@ import pytest
 import yaml
 
 DATA_BANK_DIR = Path(__file__).resolve().parent.parent
+if str(DATA_BANK_DIR) not in sys.path:
+    sys.path.insert(0, str(DATA_BANK_DIR))
 LANDING_SAP = DATA_BANK_DIR / "landing" / "sap"
 WORLD_BIBLE = DATA_BANK_DIR / "world_bible"
 

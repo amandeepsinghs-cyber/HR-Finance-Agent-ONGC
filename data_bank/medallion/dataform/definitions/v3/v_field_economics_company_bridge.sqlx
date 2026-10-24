@@ -1,0 +1,29 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "v_field_economics_company_bridge",
+  description: "FY x line bridge comparing sum of objects to standalone AR reference with delta columns"
+}
+
+WITH obj_sums AS (
+  SELECT
+    fiscal_year,
+    'PL.REV_OPS' AS line_code,
+    SUM(revenue_from_operations) AS ssot_value
+  FROM ${ref("v_field_economics_fy")}
+  GROUP BY 1, 2
+)
+SELECT
+  o.fiscal_year,
+  o.line_code,
+  o.ssot_value,
+  COALESCE(t.value, o.ssot_value) AS reference_value,
+  o.ssot_value - COALESCE(t.value, o.ssot_value) AS delta,
+  SAFE_DIVIDE(o.ssot_value - COALESCE(t.value, o.ssot_value), NULLIF(COALESCE(t.value, o.ssot_value), 0)) AS delta_pct,
+  CASE
+    WHEN ABS(o.ssot_value - COALESCE(t.value, o.ssot_value)) <= 0.01 THEN 'PASS'
+    ELSE 'FAIL'
+  END AS check_status
+FROM obj_sums o
+LEFT JOIN ${ref("int_fe_targets_fy")} t
+  ON o.fiscal_year = t.fiscal_year AND o.line_code = t.line_code

@@ -4269,54 +4269,191 @@ queries:
     source_file: data_bank/answer_key/sql/X10.sql
     sha256: 8f998c3dd063b608ba3d7189a22babdca912e6fd7fb84ab8b2b7ec3bb7eddff2
     gold_objects: hrfin_silver, hrfin_gold
-- id: self_payslip
-  canonical_question: Show self_payslip
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- self_payslip
-- id: self_leave
-  canonical_question: Show self_leave
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- self_leave
-- id: self_posting
-  canonical_question: Show self_posting
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- self_posting
-- id: entry_pay_by_grade
-  canonical_question: Show entry_pay_by_grade
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- entry_pay_by_grade
-- id: ctc_by_grade
-  canonical_question: Show ctc_by_grade
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- ctc_by_grade
-- id: pay_component_mix_by_grade
-  canonical_question: Show pay_component_mix_by_grade
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- pay_component_mix_by_grade
-- id: cost_per_employee_trend
-  canonical_question: Show cost_per_employee_trend
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- cost_per_employee_trend
-- id: revenue_per_employee_trend
-  canonical_question: Show revenue_per_employee_trend
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- revenue_per_employee_trend
-- id: overtime_by_wc
-  canonical_question: Show overtime_by_wc
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- overtime_by_wc
-- id: medical_cost_trend
-  canonical_question: Show medical_cost_trend
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- medical_cost_trend
-- id: delhi_overdue_cohort_cost
-  canonical_question: Show delhi_overdue_cohort_cost
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- delhi_overdue_cohort_cost
-- id: employee_cost_recon_fy
-  canonical_question: Show employee_cost_recon_fy
-  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id -- employee_cost_recon_fy
+- id: HR_E360_001
+  group: employee_360
+  canonical_question: Show my latest payslip
+  intent_keywords:
+  - my
+  - payslip
+  - salary
+  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_pay_component_long`
+    WHERE emp_id = @self_emp_id
+  params:
+    self_emp_id:
+      type: STRING
+      description: self emp id
+      default: null
+  visual_kind: table
+  unit: inr
+  provenance: synthetic
+  rbac_scope: self
+- id: HR_E360_002
+  group: employee_360
+  canonical_question: Show my leave balance
+  intent_keywords:
+  - my
+  - leave
+  - balance
+  parameterized_sql: SELECT emp_id, sum(leave_balance) as balance FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    WHERE emp_id = @self_emp_id GROUP BY emp_id
+  params:
+    self_emp_id:
+      type: STRING
+      description: self emp id
+      default: null
+  visual_kind: table
+  unit: days
+  provenance: synthetic
+  rbac_scope: self
+- id: HR_E360_003
+  group: employee_360
+  canonical_question: Show my posting history
+  intent_keywords:
+  - my
+  - posting
+  - history
+  parameterized_sql: SELECT emp_id, work_centre, month_start FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    WHERE emp_id = @self_emp_id
+  params:
+    self_emp_id:
+      type: STRING
+      description: self emp id
+      default: null
+  visual_kind: table
+  unit: days
+  provenance: synthetic
+  rbac_scope: self
+- id: HR_E360_004
+  group: employee_360
+  canonical_question: What is the entry pay by grade?
+  intent_keywords:
+  - entry
+  - pay
+  - grade
+  parameterized_sql: SELECT grade, AVG(entry_pay_monthly) as pay FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    GROUP BY grade
+  params: {}
+  visual_kind: bar
+  unit: inr
+  provenance: synthetic
+  rbac_scope: hr_manager
+- id: HR_E360_005
+  group: employee_360
+  canonical_question: What is the CTC by grade?
+  intent_keywords:
+  - ctc
+  - grade
+  - average
+  parameterized_sql: SELECT grade, AVG(ctc_annualised) as ctc FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    GROUP BY grade
+  params: {}
+  visual_kind: bar
+  unit: inr_lakh
+  provenance: synthetic
+  rbac_scope: hr_manager
+- id: HR_E360_006
+  group: employee_360
+  canonical_question: What is the pay component mix by grade?
+  intent_keywords:
+  - pay
+  - component
+  - mix
+  - grade
+  parameterized_sql: SELECT grade, component_name, sum(amount) as total FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_pay_component_long`
+    GROUP BY grade, component_name
+  params: {}
+  visual_kind: stacked_bar
+  unit: inr_cr
+  provenance: synthetic
+  rbac_scope: hr_manager
+- id: HR_E360_007
+  group: employee_360
+  canonical_question: What is the cost per employee trend?
+  intent_keywords:
+  - cost
+  - employee
+  - trend
+  parameterized_sql: SELECT fiscal_year, sum(cost_total_inr) / count(distinct emp_id)
+    as cost_per_emp FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` GROUP
+    BY fiscal_year
+  params: {}
+  visual_kind: line
+  unit: inr_lakh
+  provenance: synthetic
+  rbac_scope: hr_manager
+- id: HR_E360_008
+  group: employee_360
+  canonical_question: What is the revenue per employee trend?
+  intent_keywords:
+  - revenue
+  - employee
+  - trend
+  parameterized_sql: SELECT fiscal_year, (sum(revenue_operations) / sum(headcount_fy_end))
+    as rev_per_emp FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` GROUP
+    BY fiscal_year
+  params: {}
+  visual_kind: line
+  unit: inr_cr
+  provenance: synthetic
+  rbac_scope: hr_manager
+- id: HR_E360_009
+  group: employee_360
+  canonical_question: What is the overtime by work centre?
+  intent_keywords:
+  - overtime
+  - work centre
+  - wc
+  parameterized_sql: SELECT work_centre, sum(overtime_amount) as ot FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    GROUP BY work_centre
+  params: {}
+  visual_kind: bar
+  unit: inr_lakh
+  provenance: synthetic
+  rbac_scope: hr_manager
+- id: HR_E360_010
+  group: employee_360
+  canonical_question: What is the medical cost trend?
+  intent_keywords:
+  - medical
+  - cost
+  - trend
+  parameterized_sql: SELECT fiscal_year, sum(medical_scheme_cost_inr + medical_reimbursement)
+    as med_cost FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` GROUP BY
+    fiscal_year
+  params: {}
+  visual_kind: line
+  unit: inr_cr
+  provenance: synthetic
+  rbac_scope: hr_manager
+- id: HR_E360_011
+  group: employee_360
+  canonical_question: What is the Delhi overdue cohort cost?
+  intent_keywords:
+  - delhi
+  - overdue
+  - cohort
+  - cost
+  parameterized_sql: SELECT sum(ctc_annualised) as cost FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    WHERE delhi_overdue_flag = TRUE
+  params: {}
+  visual_kind: kpi
+  unit: inr_cr
+  provenance: synthetic
+  rbac_scope: hr_manager
+- id: HR_E360_012
+  group: employee_360
+  canonical_question: Show employee cost recon by FY
+  intent_keywords:
+  - employee
+  - cost
+  - recon
+  - fy
+  parameterized_sql: SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.recon_checks`
+  params: {}
+  visual_kind: table
+  unit: inr_cr
+  provenance: synthetic
+  rbac_scope: hr_manager
 self_queries:
 - id: my_payslip
   group: self

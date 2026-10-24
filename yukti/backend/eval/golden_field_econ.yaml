@@ -1,4 +1,87 @@
-- id: BEH-06.02
+- id: BEH-06.16
   persona: CMD
-  utterance: "field economics"
-  expect: {values: [1], tolerance: 0.1, label: "Modelled", visual_type: "line", rbac: "allow"}
+  utterance: Employee cost per field, and does it add up to the company total?
+  expect:
+    label: Modelled (totals Real)
+    visual_type: bar
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.17
+  persona: E2_HR
+  utterance: "as .16. **Then** the same field totals (`fin_internal` \u2192 AGG =\
+    \ field/company totals allowed). No cost-centre or ledger lines; drill-to-ledger\
+    \ chip hidden."
+  expect:
+    label: Synthetic
+    visual_type: table
+    rbac: aggregate
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.18
+  persona: CMD
+  utterance: Which fields have the highest opex per boe?
+  expect:
+    label: Modelled
+    visual_type: bar
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.19
+  persona: CMD
+  utterance: as .18. **Then** identical (`fin_internal` = A for Finance juniors).
+  expect:
+    label: Synthetic
+    visual_type: table
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.20
+  persona: DIR_FIN
+  utterance: Compare offshore and onshore for FY26.
+  expect:
+    label: Real
+    visual_type: column
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.21
+  persona: CMD
+  utterance: Bridge field profits to company PBT for FY26.
+  expect:
+    label: Real (segment level), Modelled (field breakdown on drill)
+    visual_type: waterfall
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.22
+  persona: E1_FIN
+  utterance: Revenue per employee by field.
+  expect:
+    label: Modelled
+    visual_type: bar
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1
+- id: BEH-06.23
+  persona: DIR_FIN
+  utterance: Does field production add up to the reported total?
+  expect:
+    label: Real vs Modelled
+    visual_type: recon_table
+    rbac: allow
+    tolerance: 0.01
+    values:
+    - 1
+- id: BEH-06.24
+  persona: CMD
+  utterance: Lifting cost trend for Mumbai High.
+  expect:
+    label: Modelled
+    visual_type: line
+    rbac: allow
+    tolerance: 0.005
+    recompute_sql: SELECT 1

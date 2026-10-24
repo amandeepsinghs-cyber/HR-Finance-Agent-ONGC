@@ -133,42 +133,42 @@ subjects:
         label: Average APAR score (FY26)
         data_class: apar
     row_columns:
-    - expr: emp_id
-      as: emp_id
-    - expr: emp_name
-      as: name
-      data_class: named
-    - expr: CASE WHEN current_designation IS NOT NULL AND current_designation != ''
-        THEN current_designation ELSE grade_designation END
-      as: functional_designation
-    - expr: grade_designation
-      as: designation
-    - expr: current_designation
-      as: current_designation
-    - expr: current_grade_id
-      as: grade
-    - expr: grade_level_order
-      as: grade_level_order
-    - expr: discipline_id
-      as: discipline_id
-    - expr: discipline_name
-      as: discipline
-    - expr: wc_name
-      as: work_centre
-    - expr: ROUND(total_tenure_years, 1)
-      as: ongc_tenure_years
-    - expr: ROUND(continuous_stay_years, 1)
-      as: delhi_tenure_years
-    - expr: ROUND(continuous_stay_years, 1)
-      as: station_tenure_years
-    - expr: ROUND(years_to_retirement, 1)
-      as: years_to_retirement
-    - expr: is_retiring_within_3yr
-      as: retiring_within_3yr
-    - expr: is_superannuation_exempt
-      as: is_superannuation_exempt
-    - expr: exemption_tag
-      as: exemption
+      - expr: emp_id
+        as: emp_id
+      - expr: emp_name
+        as: name
+        data_class: named
+      - expr: CASE WHEN current_designation IS NOT NULL AND current_designation !=
+          '' THEN current_designation ELSE grade_designation END
+        as: functional_designation
+      - expr: grade_designation
+        as: designation
+      - expr: current_designation
+        as: current_designation
+      - expr: current_grade_id
+        as: grade
+      - expr: grade_level_order
+        as: grade_level_order
+      - expr: discipline_id
+        as: discipline_id
+      - expr: discipline_name
+        as: discipline
+      - expr: wc_name
+        as: work_centre
+      - expr: ROUND(total_tenure_years, 1)
+        as: ongc_tenure_years
+      - expr: ROUND(continuous_stay_years, 1)
+        as: delhi_tenure_years
+      - expr: ROUND(continuous_stay_years, 1)
+        as: station_tenure_years
+      - expr: ROUND(years_to_retirement, 1)
+        as: years_to_retirement
+      - expr: is_retiring_within_3yr
+        as: retiring_within_3yr
+      - expr: is_superannuation_exempt
+        as: is_superannuation_exempt
+      - expr: exemption_tag
+        as: exemption
     row_sort:
       by: station_tenure_years
       dir: desc
@@ -233,9 +233,9 @@ subjects:
         unit: posts
         label: Backlog vacancies
     companions:
-    - sanctioned_posts
-    - in_position
-    - vacancies
+      - sanctioned_posts
+      - in_position
+      - vacancies
   separations:
     domain: hr
     table: hrfin_silver.separations
@@ -275,8 +275,8 @@ subjects:
         unit: employees
         label: Superannuations
     companions:
-    - separations
-    - voluntary_exits
+      - separations
+      - voluntary_exits
   work_centre:
     domain: hr
     table: hrfin_gold.ssot_work_centre_360
@@ -482,9 +482,9 @@ subjects:
         label: Employee cost as % of revenue
         polarity: lower
     companions:
-    - pbt_cr
-    - revenue_cr
-    - ebitda_cr
+      - pbt_cr
+      - revenue_cr
+      - ebitda_cr
   capex:
     domain: finance
     table: hrfin_silver.capex_budget
@@ -1152,9 +1152,9 @@ subjects:
         label: Subsidiary ROCE (%)
         polarity: higher
     companions:
-    - subsidiary_pat_cr
-    - subsidiary_revenue_cr
-    - subsidiary_ebitda_cr
+      - subsidiary_pat_cr
+      - subsidiary_revenue_cr
+      - subsidiary_ebitda_cr
   mou:
     domain: finance
     table: hrfin_silver.mou_targets
@@ -1177,26 +1177,26 @@ subjects:
         unit: parameters
         label: MoU scorecard
     row_columns:
-    - expr: parameter_name
-      as: parameter
-    - expr: unit_of_measure
-      as: unit
-    - expr: weightage
-      as: weightage
-    - expr: very_good_target
-      as: very_good_target
-    - expr: excellent_target
-      as: excellent_target
-    - expr: actual_achievement
-      as: achievement
-    - expr: ROUND(CASE WHEN parameter_id = 'MOU-HSE-SAFETY' THEN excellent_target
-        * 100.0 / NULLIF(actual_achievement, 0) ELSE actual_achievement * 100.0 /
-        NULLIF(excellent_target, 0) END, 1)
-      as: pct_of_excellent
-    - expr: achieved_rating
-      as: rating
-    - expr: projected_composite_score
-      as: projected_composite_score
+      - expr: parameter_name
+        as: parameter
+      - expr: unit_of_measure
+        as: unit
+      - expr: weightage
+        as: weightage
+      - expr: very_good_target
+        as: very_good_target
+      - expr: excellent_target
+        as: excellent_target
+      - expr: actual_achievement
+        as: achievement
+      - expr: ROUND(CASE WHEN parameter_id = 'MOU-HSE-SAFETY' THEN excellent_target
+          * 100.0 / NULLIF(actual_achievement, 0) ELSE actual_achievement * 100.0
+          / NULLIF(excellent_target, 0) END, 1)
+        as: pct_of_excellent
+      - expr: achieved_rating
+        as: rating
+      - expr: projected_composite_score
+        as: projected_composite_score
     row_sort:
       by: weightage
       dir: desc
@@ -1211,6 +1211,66 @@ subjects:
         column: grade_level_order
         kind: number
         label: Grade Order
+      emp_id: &id001
+        column: emp_id
+        kind: string
+        label: Employee ID
+      name: &id002
+        column: full_name
+        kind: string
+        label: Employee Name
+      cadre: &id003
+        column: cadre
+        kind: string
+        label: Cadre
+      grade: &id004
+        column: grade_id
+        kind: string
+        label: Grade
+      discipline: &id005
+        column: discipline_name
+        kind: string
+        label: Discipline
+      gender: &id006
+        column: gender
+        kind: string
+        label: Gender
+      age_band: &id007
+        column: age_band_brsr
+        kind: string
+        label: Age Band
+      work_centre: &id008
+        column: wc_name
+        kind: string
+        label: Work Centre
+      region: &id009
+        column: city_name
+        kind: string
+        label: Region
+      field: &id010
+        column: field_id
+        kind: string
+        label: Field
+      sector_type: &id011
+        column: location_type
+        kind: string
+        label: Sector Type
+      entry_channel: &id012
+        column: entry_mode
+        kind: string
+        label: Entry Channel
+      is_key_managerial_person: &id013
+        column: succession_pool_flag
+        kind: boolean
+        label: Is Key Managerial Person
+      fiscal_year: &id014
+        column: fiscal_year
+        kind: string
+        label: Fiscal Year
+      month_start: &id015
+        column: month_start
+        kind: string
+        label: Month Start
     metrics:
       headcount_fy_end:
         expr: COUNT(*)
@@ -1224,23 +1284,230 @@ subjects:
         unit: employees
         label: Real
         data_class: general_hr
-  employee_month:
-    domain: hr
-    table: hrfin_stage.int_employee_month
-    description: Month
-    fields: {}
-    metrics:
-      employee_cost_cr:
+      hr_headcount_fy_end:
+        expr: COUNT(DISTINCT CASE WHEN is_month_end_active THEN emp_id END)
+        aggregation: count
+        unit: employees
+        label: Real (company)
+        data_class: general_hr
+      hr_avg_headcount:
+        expr: COUNT(DISTINCT emp_id)
+        aggregation: count
+        unit: employees
+        label: Real
+        data_class: general_hr
+      hr_fte:
+        expr: SUM(days_on_roll) / 30
+        aggregation: sum
+        unit: employees
+        label: Synthetic
+        data_class: general_hr
+      hr_employee_cost_cr:
         expr: SUM(cost_total_inr)/1e7
         aggregation: sum
         unit: inr_cr
         label: Real (company)
         data_class: pay_aggregate
+      hr_cost_per_employee_lakh:
+        expr: SUM(cost_total_inr)/1e5 / NULLIF(COUNT(DISTINCT emp_id), 0)
+        aggregation: ratio
+        unit: inr_lakh
+        label: Derived from AR
+        data_class: general_hr
+      hr_ctc_per_grade_avg_lakh:
+        expr: AVG(ctc_annualised_inr)/1e5
+        aggregation: average
+        unit: inr_lakh
+        label: Synthetic
+        data_class: pay_aggregate
+      hr_revenue_per_employee_cr:
+        expr: SUM(cost_total_inr)/1e7 / NULLIF(COUNT(DISTINCT emp_id), 0)
+        aggregation: ratio
+        unit: inr_cr
+        label: Derived from AR
+        data_class: general_hr
+      hr_pat_per_employee_cr:
+        expr: SUM(cost_total_inr)/1e7 / NULLIF(COUNT(DISTINCT emp_id), 0)
+        aggregation: ratio
+        unit: inr_cr
+        label: Derived from AR
+        data_class: general_hr
+      hr_employee_cost_pct_revenue:
+        expr: SUM(cost_total_inr) / NULLIF(SUM(cost_total_inr), 0)
+        aggregation: ratio
+        unit: pct
+        label: Derived from AR
+        data_class: general_hr
+      hr_overtime_pct_of_pay:
+        expr: SUM(overtime_amount_inr) / NULLIF(SUM(gross_earnings_inr), 0)
+        aggregation: ratio
+        unit: pct
+        label: Synthetic
+        data_class: pay_aggregate
+      hr_overtime_hours_per_workman:
+        expr: SUM(overtime_hours) / NULLIF(COUNT(DISTINCT emp_id), 0)
+        aggregation: ratio
+        unit: hours
+        label: Synthetic
+        data_class: general_hr
+      hr_allowance_mix_pct:
+        expr: SUM(cafeteria_allowances_inr) / NULLIF(SUM(gross_earnings_inr), 0)
+        aggregation: ratio
+        unit: pct
+        label: Synthetic
+        data_class: pay_aggregate
+      hr_benefits_cost_per_employee_lakh:
+        expr: SUM(employer_cost_noncash_inr)/1e5 / NULLIF(COUNT(DISTINCT emp_id),
+          0)
+        aggregation: ratio
+        unit: inr_lakh
+        label: Synthetic
+        data_class: general_hr
+      hr_medical_cost_per_employee:
+        expr: (SUM(medical_scheme_cost_inr) + SUM(medical_reimbursement_inr)) / NULLIF(COUNT(DISTINCT
+          emp_id), 0)
+        aggregation: ratio
+        unit: inr_lakh
+        label: Synthetic
+        data_class: general_hr
+      hr_pay_compression_ratio:
+        expr: MAX(ctc_annualised_inr) / NULLIF(MIN(ctc_annualised_inr), 0)
+        aggregation: ratio
+        unit: ratio
+        label: Synthetic
+        data_class: pay_aggregate
+      hr_span_of_control:
+        expr: AVG(direct_reports_count)
+        aggregation: average
+        unit: employees
+        label: Synthetic
+        data_class: general_hr
+      hr_attrition_pct:
+        expr: SUM(CAST(is_attrition AS INT64)) / NULLIF(COUNT(DISTINCT emp_id), 0)
+        aggregation: ratio
+        unit: pct
+        label: Synthetic
+        data_class: general_hr
+      hr_turnover_pct_brsr:
+        expr: SUM(CAST(separated_in_month_flag AS INT64)) / NULLIF(COUNT(DISTINCT
+          emp_id), 0)
+        aggregation: ratio
+        unit: pct
+        label: Calibrated to BRSR
+        data_class: general_hr
+      hr_retirements_next_n:
+        expr: SUM(CAST(retiring_within_1y AS INT64))
+        aggregation: sum
+        unit: employees
+        label: Synthetic
+        data_class: general_hr
+      hr_transfer_overdue_cohort:
+        expr: SUM(CAST(transfer_due_flag AS INT64))
+        aggregation: sum
+        unit: employees
+        label: Synthetic
+        data_class: general_hr
+      hr_delhi_overdue_cohort_cost_cr:
+        expr: SUM(CASE WHEN delhi_overdue_flag THEN ctc_annualised_inr ELSE 0 END)/1e7
+        aggregation: sum
+        unit: inr_cr
+        label: Synthetic
+        data_class: pay_aggregate
+      hr_capitalised_share_pct:
+        expr: SUM(cost_capitalised_inr) / NULLIF(SUM(cost_total_inr), 0)
+        aggregation: ratio
+        unit: pct
+        label: Modelled
+        data_class: general_hr
+      hr_entry_pay_monthly:
+        expr: SUM(entry_pay_basic_inr)
+        aggregation: sum
+        unit: inr_lakh
+        label: Rule-based
+        data_class: pay_aggregate
+      hr_employee_cost_per_boe:
+        expr: SUM(cost_expensed_production_inr) / 1000
+        aggregation: ratio
+        unit: inr_lakh
+        label: Modelled
+        data_class: general_hr
+      hr_what_if_ot_cap:
+        expr: SUM(overtime_amount_inr)
+        aggregation: sum
+        unit: inr_lakh
+        label: Scenario
+        data_class: pay_aggregate
+      hr_what_if_cafeteria_cap:
+        expr: SUM(cafeteria_allowances_inr)
+        aggregation: sum
+        unit: inr_lakh
+        label: Scenario
+        data_class: pay_aggregate
+      hr_what_if_offshore_rotation:
+        expr: SUM(mining_offshore_allowance_inr)
+        aggregation: sum
+        unit: inr_lakh
+        label: Scenario
+        data_class: pay_aggregate
+      hr_what_if_delhi_rotation:
+        expr: SUM(hra_inr)
+        aggregation: sum
+        unit: inr_lakh
+        label: Scenario
+        data_class: pay_aggregate
+      hr_what_if_hiring_freeze:
+        expr: SUM(cost_total_inr)
+        aggregation: sum
+        unit: inr_lakh
+        label: Scenario
+        data_class: pay_aggregate
+      hr_what_if_prp_kitty:
+        expr: SUM(prp_inr)
+        aggregation: sum
+        unit: inr_lakh
+        label: Scenario
+        data_class: pay_aggregate
+  employee_month:
+    domain: hr
+    table: hrfin_gold.ssot_employee_360
+    description: Month
+    fields:
+      emp_id: *id001
+      name: *id002
+      cadre: *id003
+      grade: *id004
+      discipline: *id005
+      gender: *id006
+      age_band: *id007
+      work_centre: *id008
+      region: *id009
+      field: *id010
+      sector_type: *id011
+      entry_channel: *id012
+      is_key_managerial_person: *id013
+      fiscal_year: *id014
+      month_start: *id015
+    metrics: {}
   employee_fy:
     domain: hr
     table: hrfin_gold.v_employee_360_fy
     description: FY
-    fields: {}
+    fields:
+      emp_id: *id001
+      name: *id002
+      cadre: *id003
+      grade: *id004
+      discipline: *id005
+      gender: *id006
+      age_band: *id007
+      work_centre: *id008
+      region: *id009
+      field: *id010
+      sector_type: *id011
+      entry_channel: *id012
+      is_key_managerial_person: *id013
+      fiscal_year: *id014
+      month_start: *id015
     metrics:
       cost_per_employee_lakh:
         expr: SUM(cost_total_fy)/1e5 / NULLIF(@avg_headcount,0)
@@ -1257,7 +1524,7 @@ subjects:
       employee_cost_per_boe:
         expr: SUM(cost_expensed_production_inr)/1
         aggregation: ratio
-        unit: inr
+        unit: inr_lakh
         label: Modelled
         data_class: general_hr
 templates:

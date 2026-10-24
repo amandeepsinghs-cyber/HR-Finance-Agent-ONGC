@@ -15472,6 +15472,9 @@
           "min": 0,
           "nulls": 0,
           "type": "INT64"
+        },
+        "cost_expensed_production_inr": {
+          "type": "INT64"
         }
       },
       "kind": "BASE TABLE",
@@ -38116,6 +38119,855 @@
         "yoy_delta": {
           "type": "FLOAT",
           "nulls": 0
+        }
+      }
+    },
+    "hrfin_gold.ssot_employee_360": {
+      "columns": {
+        "emp_id": {
+          "type": "STRING"
+        },
+        "full_name": {
+          "type": "STRING"
+        },
+        "cadre": {
+          "type": "STRING"
+        },
+        "grade_id": {
+          "type": "STRING"
+        },
+        "discipline_name": {
+          "type": "STRING"
+        },
+        "gender": {
+          "type": "STRING"
+        },
+        "age_band_brsr": {
+          "type": "STRING"
+        },
+        "wc_name": {
+          "type": "STRING"
+        },
+        "city_name": {
+          "type": "STRING"
+        },
+        "field_id": {
+          "type": "STRING"
+        },
+        "location_type": {
+          "type": "STRING"
+        },
+        "entry_mode": {
+          "type": "STRING"
+        },
+        "succession_pool_flag": {
+          "type": "STRING"
+        },
+        "fiscal_year": {
+          "type": "STRING"
+        },
+        "month_start": {
+          "type": "STRING"
+        },
+        "is_month_end_active": {
+          "type": "STRING"
+        },
+        "days_on_roll": {
+          "type": "STRING"
+        },
+        "cost_total_inr": {
+          "type": "STRING"
+        },
+        "ctc_annualised_inr": {
+          "type": "STRING"
+        },
+        "overtime_amount_inr": {
+          "type": "STRING"
+        },
+        "gross_earnings_inr": {
+          "type": "STRING"
+        },
+        "overtime_hours": {
+          "type": "STRING"
+        },
+        "cafeteria_allowances_inr": {
+          "type": "STRING"
+        },
+        "employer_cost_noncash_inr": {
+          "type": "STRING"
+        },
+        "medical_scheme_cost_inr": {
+          "type": "STRING"
+        },
+        "medical_reimbursement_inr": {
+          "type": "STRING"
+        },
+        "is_attrition": {
+          "type": "STRING"
+        },
+        "separated_in_month_flag": {
+          "type": "STRING"
+        },
+        "retiring_within_1y": {
+          "type": "STRING"
+        },
+        "transfer_due_flag": {
+          "type": "STRING"
+        },
+        "delhi_overdue_flag": {
+          "type": "STRING"
+        },
+        "cost_capitalised_inr": {
+          "type": "STRING"
+        },
+        "entry_pay_basic_inr": {
+          "type": "STRING"
+        },
+        "cost_expensed_production_inr": {
+          "type": "STRING"
+        },
+        "mining_offshore_allowance_inr": {
+          "type": "STRING"
+        },
+        "hra_inr": {
+          "type": "STRING"
+        },
+        "prp_inr": {
+          "type": "STRING"
+        },
+        "cost_total_fy": {
+          "type": "STRING"
+        },
+        "ctc_fy": {
+          "type": "STRING"
+        },
+        "gross_fy": {
+          "type": "STRING"
+        },
+        "ot_hours_fy": {
+          "type": "STRING"
+        },
+        "months_on_roll": {
+          "type": "STRING"
+        },
+        "separated_in_fy": {
+          "type": "STRING"
+        },
+        "joined_in_fy": {
+          "type": "STRING"
+        },
+        "component_code": {
+          "type": "STRING"
+        },
+        "component_group": {
+          "type": "STRING"
+        },
+        "amount_inr": {
+          "type": "STRING"
+        },
+        "pool_code": {
+          "type": "STRING"
+        },
+        "note35_line": {
+          "type": "STRING"
+        },
+        "allocation_basis": {
+          "type": "STRING"
+        },
+        "cost_destination": {
+          "type": "STRING"
+        },
+        "segment": {
+          "type": "STRING"
+        },
+        "basis": {
+          "type": "STRING"
+        },
+        "grade_level_order": {
+          "type": "STRING"
+        },
+        "direct_reports_count": {
+          "type": "INT64"
+        },
+        "INT64": {
+          "type": "INT64"
+        },
+        "CAST": {
+          "type": "INT64"
+        }
+      }
+    },
+    "hrfin_gold.fact_employee_cost_pool": {
+      "columns": {
+        "emp_id": {
+          "type": "STRING"
+        },
+        "full_name": {
+          "type": "STRING"
+        },
+        "cadre": {
+          "type": "STRING"
+        },
+        "grade_id": {
+          "type": "STRING"
+        },
+        "discipline_name": {
+          "type": "STRING"
+        },
+        "gender": {
+          "type": "STRING"
+        },
+        "age_band_brsr": {
+          "type": "STRING"
+        },
+        "wc_name": {
+          "type": "STRING"
+        },
+        "city_name": {
+          "type": "STRING"
+        },
+        "field_id": {
+          "type": "STRING"
+        },
+        "location_type": {
+          "type": "STRING"
+        },
+        "entry_mode": {
+          "type": "STRING"
+        },
+        "succession_pool_flag": {
+          "type": "STRING"
+        },
+        "fiscal_year": {
+          "type": "STRING"
+        },
+        "month_start": {
+          "type": "STRING"
+        },
+        "is_month_end_active": {
+          "type": "STRING"
+        },
+        "days_on_roll": {
+          "type": "STRING"
+        },
+        "cost_total_inr": {
+          "type": "STRING"
+        },
+        "ctc_annualised_inr": {
+          "type": "STRING"
+        },
+        "overtime_amount_inr": {
+          "type": "STRING"
+        },
+        "gross_earnings_inr": {
+          "type": "STRING"
+        },
+        "overtime_hours": {
+          "type": "STRING"
+        },
+        "cafeteria_allowances_inr": {
+          "type": "STRING"
+        },
+        "employer_cost_noncash_inr": {
+          "type": "STRING"
+        },
+        "medical_scheme_cost_inr": {
+          "type": "STRING"
+        },
+        "medical_reimbursement_inr": {
+          "type": "STRING"
+        },
+        "is_attrition": {
+          "type": "STRING"
+        },
+        "separated_in_month_flag": {
+          "type": "STRING"
+        },
+        "retiring_within_1y": {
+          "type": "STRING"
+        },
+        "transfer_due_flag": {
+          "type": "STRING"
+        },
+        "delhi_overdue_flag": {
+          "type": "STRING"
+        },
+        "cost_capitalised_inr": {
+          "type": "STRING"
+        },
+        "entry_pay_basic_inr": {
+          "type": "STRING"
+        },
+        "cost_expensed_production_inr": {
+          "type": "STRING"
+        },
+        "mining_offshore_allowance_inr": {
+          "type": "STRING"
+        },
+        "hra_inr": {
+          "type": "STRING"
+        },
+        "prp_inr": {
+          "type": "STRING"
+        },
+        "cost_total_fy": {
+          "type": "STRING"
+        },
+        "ctc_fy": {
+          "type": "STRING"
+        },
+        "gross_fy": {
+          "type": "STRING"
+        },
+        "ot_hours_fy": {
+          "type": "STRING"
+        },
+        "months_on_roll": {
+          "type": "STRING"
+        },
+        "separated_in_fy": {
+          "type": "STRING"
+        },
+        "joined_in_fy": {
+          "type": "STRING"
+        },
+        "component_code": {
+          "type": "STRING"
+        },
+        "component_group": {
+          "type": "STRING"
+        },
+        "amount_inr": {
+          "type": "STRING"
+        },
+        "pool_code": {
+          "type": "STRING"
+        },
+        "note35_line": {
+          "type": "STRING"
+        },
+        "allocation_basis": {
+          "type": "STRING"
+        },
+        "cost_destination": {
+          "type": "STRING"
+        },
+        "segment": {
+          "type": "STRING"
+        },
+        "basis": {
+          "type": "STRING"
+        },
+        "grade_level_order": {
+          "type": "STRING"
+        }
+      }
+    },
+    "hrfin_gold.v_employee_360_fy": {
+      "columns": {
+        "emp_id": {
+          "type": "STRING"
+        },
+        "full_name": {
+          "type": "STRING"
+        },
+        "cadre": {
+          "type": "STRING"
+        },
+        "grade_id": {
+          "type": "STRING"
+        },
+        "discipline_name": {
+          "type": "STRING"
+        },
+        "gender": {
+          "type": "STRING"
+        },
+        "age_band_brsr": {
+          "type": "STRING"
+        },
+        "wc_name": {
+          "type": "STRING"
+        },
+        "city_name": {
+          "type": "STRING"
+        },
+        "field_id": {
+          "type": "STRING"
+        },
+        "location_type": {
+          "type": "STRING"
+        },
+        "entry_mode": {
+          "type": "STRING"
+        },
+        "succession_pool_flag": {
+          "type": "STRING"
+        },
+        "fiscal_year": {
+          "type": "STRING"
+        },
+        "month_start": {
+          "type": "STRING"
+        },
+        "is_month_end_active": {
+          "type": "STRING"
+        },
+        "days_on_roll": {
+          "type": "STRING"
+        },
+        "cost_total_inr": {
+          "type": "STRING"
+        },
+        "ctc_annualised_inr": {
+          "type": "STRING"
+        },
+        "overtime_amount_inr": {
+          "type": "STRING"
+        },
+        "gross_earnings_inr": {
+          "type": "STRING"
+        },
+        "overtime_hours": {
+          "type": "STRING"
+        },
+        "cafeteria_allowances_inr": {
+          "type": "STRING"
+        },
+        "employer_cost_noncash_inr": {
+          "type": "STRING"
+        },
+        "medical_scheme_cost_inr": {
+          "type": "STRING"
+        },
+        "medical_reimbursement_inr": {
+          "type": "STRING"
+        },
+        "is_attrition": {
+          "type": "STRING"
+        },
+        "separated_in_month_flag": {
+          "type": "STRING"
+        },
+        "retiring_within_1y": {
+          "type": "STRING"
+        },
+        "transfer_due_flag": {
+          "type": "STRING"
+        },
+        "delhi_overdue_flag": {
+          "type": "STRING"
+        },
+        "cost_capitalised_inr": {
+          "type": "STRING"
+        },
+        "entry_pay_basic_inr": {
+          "type": "STRING"
+        },
+        "cost_expensed_production_inr": {
+          "type": "STRING"
+        },
+        "mining_offshore_allowance_inr": {
+          "type": "STRING"
+        },
+        "hra_inr": {
+          "type": "STRING"
+        },
+        "prp_inr": {
+          "type": "STRING"
+        },
+        "cost_total_fy": {
+          "type": "STRING"
+        },
+        "ctc_fy": {
+          "type": "STRING"
+        },
+        "gross_fy": {
+          "type": "STRING"
+        },
+        "ot_hours_fy": {
+          "type": "STRING"
+        },
+        "months_on_roll": {
+          "type": "STRING"
+        },
+        "separated_in_fy": {
+          "type": "STRING"
+        },
+        "joined_in_fy": {
+          "type": "STRING"
+        },
+        "component_code": {
+          "type": "STRING"
+        },
+        "component_group": {
+          "type": "STRING"
+        },
+        "amount_inr": {
+          "type": "STRING"
+        },
+        "pool_code": {
+          "type": "STRING"
+        },
+        "note35_line": {
+          "type": "STRING"
+        },
+        "allocation_basis": {
+          "type": "STRING"
+        },
+        "cost_destination": {
+          "type": "STRING"
+        },
+        "segment": {
+          "type": "STRING"
+        },
+        "basis": {
+          "type": "STRING"
+        },
+        "grade_level_order": {
+          "type": "STRING"
+        },
+        "avg_headcount": {
+          "type": "INT64"
+        }
+      }
+    },
+    "hrfin_gold.v_employee_pay_component_long": {
+      "columns": {
+        "emp_id": {
+          "type": "STRING"
+        },
+        "full_name": {
+          "type": "STRING"
+        },
+        "cadre": {
+          "type": "STRING"
+        },
+        "grade_id": {
+          "type": "STRING"
+        },
+        "discipline_name": {
+          "type": "STRING"
+        },
+        "gender": {
+          "type": "STRING"
+        },
+        "age_band_brsr": {
+          "type": "STRING"
+        },
+        "wc_name": {
+          "type": "STRING"
+        },
+        "city_name": {
+          "type": "STRING"
+        },
+        "field_id": {
+          "type": "STRING"
+        },
+        "location_type": {
+          "type": "STRING"
+        },
+        "entry_mode": {
+          "type": "STRING"
+        },
+        "succession_pool_flag": {
+          "type": "STRING"
+        },
+        "fiscal_year": {
+          "type": "STRING"
+        },
+        "month_start": {
+          "type": "STRING"
+        },
+        "is_month_end_active": {
+          "type": "STRING"
+        },
+        "days_on_roll": {
+          "type": "STRING"
+        },
+        "cost_total_inr": {
+          "type": "STRING"
+        },
+        "ctc_annualised_inr": {
+          "type": "STRING"
+        },
+        "overtime_amount_inr": {
+          "type": "STRING"
+        },
+        "gross_earnings_inr": {
+          "type": "STRING"
+        },
+        "overtime_hours": {
+          "type": "STRING"
+        },
+        "cafeteria_allowances_inr": {
+          "type": "STRING"
+        },
+        "employer_cost_noncash_inr": {
+          "type": "STRING"
+        },
+        "medical_scheme_cost_inr": {
+          "type": "STRING"
+        },
+        "medical_reimbursement_inr": {
+          "type": "STRING"
+        },
+        "is_attrition": {
+          "type": "STRING"
+        },
+        "separated_in_month_flag": {
+          "type": "STRING"
+        },
+        "retiring_within_1y": {
+          "type": "STRING"
+        },
+        "transfer_due_flag": {
+          "type": "STRING"
+        },
+        "delhi_overdue_flag": {
+          "type": "STRING"
+        },
+        "cost_capitalised_inr": {
+          "type": "STRING"
+        },
+        "entry_pay_basic_inr": {
+          "type": "STRING"
+        },
+        "cost_expensed_production_inr": {
+          "type": "STRING"
+        },
+        "mining_offshore_allowance_inr": {
+          "type": "STRING"
+        },
+        "hra_inr": {
+          "type": "STRING"
+        },
+        "prp_inr": {
+          "type": "STRING"
+        },
+        "cost_total_fy": {
+          "type": "STRING"
+        },
+        "ctc_fy": {
+          "type": "STRING"
+        },
+        "gross_fy": {
+          "type": "STRING"
+        },
+        "ot_hours_fy": {
+          "type": "STRING"
+        },
+        "months_on_roll": {
+          "type": "STRING"
+        },
+        "separated_in_fy": {
+          "type": "STRING"
+        },
+        "joined_in_fy": {
+          "type": "STRING"
+        },
+        "component_code": {
+          "type": "STRING"
+        },
+        "component_group": {
+          "type": "STRING"
+        },
+        "amount_inr": {
+          "type": "STRING"
+        },
+        "pool_code": {
+          "type": "STRING"
+        },
+        "note35_line": {
+          "type": "STRING"
+        },
+        "allocation_basis": {
+          "type": "STRING"
+        },
+        "cost_destination": {
+          "type": "STRING"
+        },
+        "segment": {
+          "type": "STRING"
+        },
+        "basis": {
+          "type": "STRING"
+        },
+        "grade_level_order": {
+          "type": "STRING"
+        }
+      }
+    },
+    "hrfin_stage.int_employee_month": {
+      "columns": {
+        "emp_id": {
+          "type": "STRING"
+        },
+        "full_name": {
+          "type": "STRING"
+        },
+        "cadre": {
+          "type": "STRING"
+        },
+        "grade_id": {
+          "type": "STRING"
+        },
+        "discipline_name": {
+          "type": "STRING"
+        },
+        "gender": {
+          "type": "STRING"
+        },
+        "age_band_brsr": {
+          "type": "STRING"
+        },
+        "wc_name": {
+          "type": "STRING"
+        },
+        "city_name": {
+          "type": "STRING"
+        },
+        "field_id": {
+          "type": "STRING"
+        },
+        "location_type": {
+          "type": "STRING"
+        },
+        "entry_mode": {
+          "type": "STRING"
+        },
+        "succession_pool_flag": {
+          "type": "STRING"
+        },
+        "fiscal_year": {
+          "type": "STRING"
+        },
+        "month_start": {
+          "type": "STRING"
+        },
+        "is_month_end_active": {
+          "type": "STRING"
+        },
+        "days_on_roll": {
+          "type": "STRING"
+        },
+        "cost_total_inr": {
+          "type": "STRING"
+        },
+        "ctc_annualised_inr": {
+          "type": "STRING"
+        },
+        "overtime_amount_inr": {
+          "type": "STRING"
+        },
+        "gross_earnings_inr": {
+          "type": "STRING"
+        },
+        "overtime_hours": {
+          "type": "STRING"
+        },
+        "cafeteria_allowances_inr": {
+          "type": "STRING"
+        },
+        "employer_cost_noncash_inr": {
+          "type": "STRING"
+        },
+        "medical_scheme_cost_inr": {
+          "type": "STRING"
+        },
+        "medical_reimbursement_inr": {
+          "type": "STRING"
+        },
+        "is_attrition": {
+          "type": "STRING"
+        },
+        "separated_in_month_flag": {
+          "type": "STRING"
+        },
+        "retiring_within_1y": {
+          "type": "STRING"
+        },
+        "transfer_due_flag": {
+          "type": "STRING"
+        },
+        "delhi_overdue_flag": {
+          "type": "STRING"
+        },
+        "cost_capitalised_inr": {
+          "type": "STRING"
+        },
+        "entry_pay_basic_inr": {
+          "type": "STRING"
+        },
+        "cost_expensed_production_inr": {
+          "type": "STRING"
+        },
+        "mining_offshore_allowance_inr": {
+          "type": "STRING"
+        },
+        "hra_inr": {
+          "type": "STRING"
+        },
+        "prp_inr": {
+          "type": "STRING"
+        },
+        "cost_total_fy": {
+          "type": "STRING"
+        },
+        "ctc_fy": {
+          "type": "STRING"
+        },
+        "gross_fy": {
+          "type": "STRING"
+        },
+        "ot_hours_fy": {
+          "type": "STRING"
+        },
+        "months_on_roll": {
+          "type": "STRING"
+        },
+        "separated_in_fy": {
+          "type": "STRING"
+        },
+        "joined_in_fy": {
+          "type": "STRING"
+        },
+        "component_code": {
+          "type": "STRING"
+        },
+        "component_group": {
+          "type": "STRING"
+        },
+        "amount_inr": {
+          "type": "STRING"
+        },
+        "pool_code": {
+          "type": "STRING"
+        },
+        "note35_line": {
+          "type": "STRING"
+        },
+        "allocation_basis": {
+          "type": "STRING"
+        },
+        "cost_destination": {
+          "type": "STRING"
+        },
+        "segment": {
+          "type": "STRING"
+        },
+        "basis": {
+          "type": "STRING"
+        },
+        "grade_level_order": {
+          "type": "STRING"
+        }
+      }
+    },
+    "hrfin_gold.recon_checks": {
+      "columns": {
+        "emp_id": {
+          "type": "STRING"
         }
       }
     }

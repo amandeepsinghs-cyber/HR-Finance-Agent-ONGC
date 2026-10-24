@@ -1,0 +1,15 @@
+config {
+  type: "table",
+  schema: "hrfin_stage",
+  name: "int_fe_targets_fy",
+  description: "Real standalone AR targets per FY x line for Field Economics-360 reconciliation"
+}
+
+SELECT
+  fiscal_year,
+  'PL.REV_OPS' AS line_code,
+  CAST(gross_revenue_inr_cr * 10 AS NUMERIC) AS value,
+  'INR_MN' AS unit,
+  'ONGC_AR' AS source_doc,
+  TRUE AS verified
+FROM ${ref("corporate_financials")}

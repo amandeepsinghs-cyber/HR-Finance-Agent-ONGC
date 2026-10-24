@@ -1,8 +1,8 @@
 config {
   type: "operations",
   schema: "hrfin_gold",
-  name: "publish_employee_360"
+  name: "publish_employee_360",
+  dependencies: ["assert_recon_block_pass"]
 }
--- Dependency on assert_recon_block_pass when built in P2H.8
--- TODO: wait for P2H.8
+-- Mart published when assertion passes
 SELECT 1;

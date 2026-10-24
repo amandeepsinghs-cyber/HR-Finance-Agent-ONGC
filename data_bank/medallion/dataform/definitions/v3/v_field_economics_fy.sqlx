@@ -1,0 +1,40 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "v_field_economics_fy",
+  description: "Object x FY rollup of Field Economics-360 with recomputed KPIs"
+}
+
+SELECT
+  fiscal_year,
+  object_id,
+  object_name,
+  object_type,
+  asset_wc_id,
+  basin,
+  state,
+  segment,
+  maturity,
+  hydrocarbon,
+  MAX(data_label) AS data_label,
+  SUM(prod_boe) AS prod_boe,
+  SUM(rev_crude) AS rev_crude,
+  SUM(rev_gas) AS rev_gas,
+  SUM(revenue_from_operations) AS revenue_from_operations,
+  SUM(revenue_from_operations) / 10.0 AS field_revenue_cr,
+  SUM(levies_total) AS levies_total,
+  SUM(staff_expenditure) AS staff_expenditure,
+  SUM(cost_expensed_production_inr) AS cost_expensed_production_inr,
+  SUM(opex_total) AS opex_total,
+  SUM(dda_total) AS dda_total,
+  SUM(ebitda) AS ebitda,
+  SUM(ebitda) / 10.0 AS field_ebitda_cr,
+  SAFE_DIVIDE(SUM(ebitda), NULLIF(SUM(revenue_from_operations), 0)) * 100.0 AS field_ebitda_margin_pct,
+  SUM(segment_result_contrib) AS segment_result_contrib,
+  SUM(pbt_contrib) AS pbt_contrib,
+  SUM(pbt_contrib) / 10.0 AS field_pbt_cr,
+  SAFE_DIVIDE(SUM(opex_total) * 1e6, NULLIF(SUM(prod_boe), 0)) AS opex_per_boe_inr,
+  SAFE_DIVIDE(SUM(staff_expenditure) * 1e6, NULLIF(SUM(prod_boe), 0)) AS employee_cost_per_boe,
+  SAFE_DIVIDE(SUM(levies_total), NULLIF(SUM(revenue_from_operations), 0)) * 100.0 AS levies_pct_revenue
+FROM ${ref("ssot_field_economics_360")}
+GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10

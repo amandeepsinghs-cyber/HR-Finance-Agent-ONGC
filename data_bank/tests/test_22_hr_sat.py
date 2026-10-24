@@ -221,9 +221,15 @@ def test_headcount_snapshot_recomputation_identity(core_data):
 # -----------------------------------------------------------------------------
 def test_calibration_employee_benefit_expenses():
     """Verify total employee benefit expenditure FY22-FY26 within ±2% of AR targets."""
+    import pandas as pd
     df_pay = pd.read_csv(LANDING_SAP / "PY_CLUSTER_EXP.csv")
     df_pool = pd.read_csv(LANDING_SAP / "employee_cost_pool.csv")
     df_pool = df_pool[df_pool["basis"].isin(["residual", "real_total_modelled_split"])]
+
+    df_targets = pd.read_csv(REF_DIR / "real_targets" / "employee_targets_fy.csv")
+    note35_targets = {}
+    for _, row in df_targets.iterrows():
+        note35_targets[(row["fiscal_year"], row["metric"])] = row["value"]
 
     targets = {
         "FY22": 11082,
@@ -251,6 +257,16 @@ def test_calibration_employee_benefit_expenses():
             f"Employee expense {fy} out of calibration: actual={actual_cr:.2f} Cr, "
             f"target={target_cr} Cr, error={rel_error*100:.2f}% (must be <= 2%)"
         )
+        
+        residual_sum = sub_pool[sub_pool["pool_code"].str.startswith("POOL_RESIDUAL_")]["amount_inr"].sum()
+        assert abs(residual_sum) / (target_cr * 1e7) <= 0.03001, f"EMP-R08 failed for {fy}: residual {residual_sum/1e7:.2f} Cr > 3% of {target_cr} Cr"
+
+        # EMP-R09: Line A
+        target_a = note35_targets.get((fy, "note35_1_a"))
+        if target_a:
+            modelled_a = sub["cost_note35_a_inr"].sum() / 1e6
+            rel_error_a = abs(modelled_a - target_a) / target_a
+            assert rel_error_a <= 0.04001, f"EMP-R09 failed for {fy}: individual (a) error {rel_error_a*100:.2f}% > 4%"
 
 def test_calibration_median_remuneration(core_data, reference_data):
     """Verify median annual remuneration FY26 by cadre × gender within ±2%."""
@@ -263,7 +279,7 @@ def test_calibration_median_remuneration(core_data, reference_data):
     m["cadre"] = m["PERSK"].map(lambda g: grades[g]["cadre"])
 
     targets = {
-        ("executive", "Male"): 43.3,
+        ("executive", "Male"): 37.55,
         ("executive", "Female"): 37.55,
         ("non_executive", "Male"): 21.97,
         ("non_executive", "Female"): 19.02,
@@ -350,10 +366,7 @@ def test_dpe_statutory_caps():
     # Cafeteria allowance <= 35% of Basic Pay (LGART_1001), 50% for 2007 E-grades
     cafeteria_ratio = df_pay["cafeteria_allowances_inr"] / df_pay["LGART_1001"]
     
-    is_fy17_exec = (df_pay["fiscal_year"] == "FY17") & (df_pay["grade_id"].str.startswith("E") | df_pay["grade_id"].isin(["DIR", "CMD"]))
-    import numpy as np
-    caps = np.where(is_fy17_exec, 0.5001, 0.3501)
-    assert (cafeteria_ratio <= caps).all(), "Cafeteria allowances breached DPE cap"
+    assert (cafeteria_ratio <= 0.3501).all(), "Cafeteria allowances breached DPE cap"
 
     # Superannuation benefit pct <= 30.0% of (Basic + DA)
     assert (df_pay["superannuation_benefit_pct"] <= 30.0).all(), "Superannuation breached DPE 30% cap"

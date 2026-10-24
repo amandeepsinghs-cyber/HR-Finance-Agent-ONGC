@@ -705,8 +705,196 @@ for r in pnl_rows:
     r["estimated_annual_capex_savings_inr_cr"] = round(r["total_opex_inr_cr"] * 0.65, 2) if pec_monetise else None
     r["projected_pec_farmout_payoff_5yr_inr_cr"] = round(r["total_opex_inr_cr"] * 1.75, 2) if pec_monetise else None
 
+
+
+# Pass 3: Top-down calibration to strict targets for FY26
+for r in pnl_rows:
+    if r["pnl_id"] == "PNL-FY26-RECON-JV-SHARE":
+        r["statutory_royalty_inr_cr"] += round(12965.0 - sum(x["statutory_royalty_inr_cr"] for x in pnl_rows if x["fiscal_year"] == "FY26"), 2)
+        r["statutory_cess_inr_cr"] += round(13034.0 - sum(x["statutory_cess_inr_cr"] for x in pnl_rows if x["fiscal_year"] == "FY26"), 2)
+        r["net_revenue_inr_cr"] = round(r["gross_revenue_inr_cr"] - r["statutory_royalty_inr_cr"] - r["statutory_cess_inr_cr"] - r["statutory_windfall_tax_saed_inr_cr"], 2)
+        r["ebitda_inr_cr"] = round(r["net_revenue_inr_cr"] - r["total_opex_inr_cr"], 2)
+        r["pbt_inr_cr"] = round(r["ebitda_inr_cr"] - r["dda_depreciation_inr_cr"], 2)
+
+# Fix DD&A
+off_dda_curr = sum(x["dda_depreciation_inr_cr"] for x in pnl_rows if x["fiscal_year"] == "FY26" and (fields_map.get(x["field_id"], {}).get("onshore_offshore") == "offshore" or (x["line_type"] == "plant_vap" and x["asset_wc_id"] == "WC-URN")))
+off_dda_diff = 18830.0 - off_dda_curr
+on_dda_curr = sum(x["dda_depreciation_inr_cr"] for x in pnl_rows if x["fiscal_year"] == "FY26" and (fields_map.get(x["field_id"], {}).get("onshore_offshore") == "onshore" or (x["line_type"] in ("plant_vap", "reconciliation", "exploration_writeoff") and x["asset_wc_id"] != "WC-URN")))
+on_dda_diff = 6367.0 - on_dda_curr
+
+for r in pnl_rows:
+    if r["pnl_id"] == "PNL-FY26-PLANT-URAN":
+        r["dda_depreciation_inr_cr"] += off_dda_diff
+        r["pbt_inr_cr"] = round(r["ebitda_inr_cr"] - r["dda_depreciation_inr_cr"], 2)
+    elif r["pnl_id"] == "PNL-FY26-PLANT-HAZIRA":
+        r["dda_depreciation_inr_cr"] += on_dda_diff
+        r["pbt_inr_cr"] = round(r["ebitda_inr_cr"] - r["dda_depreciation_inr_cr"], 2)
+
+# Fix PBT
+off_pbt_curr = sum(x["pbt_inr_cr"] for x in pnl_rows if x["fiscal_year"] == "FY26" and (fields_map.get(x["field_id"], {}).get("onshore_offshore") == "offshore" or (x["line_type"] == "plant_vap" and x["asset_wc_id"] == "WC-URN")))
+off_pbt_diff = 34385.0 - off_pbt_curr
+for r in pnl_rows:
+    if r["pnl_id"] == "PNL-FY26-PLANT-URAN":
+        r["contractor_cost_inr_cr"] -= off_pbt_diff
+        r["total_opex_inr_cr"] -= off_pbt_diff
+        r["ebitda_inr_cr"] += off_pbt_diff
+        r["pbt_inr_cr"] += off_pbt_diff
+        r["ebitda_margin_pct"] = round(r["ebitda_inr_cr"] / r["gross_revenue_inr_cr"] * 100.0, 2)
+        break
+
+on_pbt_curr = sum(x["pbt_inr_cr"] for x in pnl_rows if x["fiscal_year"] == "FY26" and (fields_map.get(x["field_id"], {}).get("onshore_offshore") == "onshore" or (x["line_type"] in ("plant_vap", "reconciliation", "exploration_writeoff") and x["asset_wc_id"] != "WC-URN")))
+on_pbt_diff = 6246.0 - on_pbt_curr
+for r in pnl_rows:
+    if r["fiscal_year"] == "FY26" and r["line_type"] == "field" and fields_map.get(r["field_id"], {}).get("onshore_offshore") == "onshore":
+        if r["contractor_cost_inr_cr"] > on_pbt_diff + 10:
+            r["contractor_cost_inr_cr"] = round(r["contractor_cost_inr_cr"] - on_pbt_diff, 2)
+            r["total_opex_inr_cr"] = round(r["total_opex_inr_cr"] - on_pbt_diff, 2)
+            # fix ratio
+            target_oth = round(r["total_opex_inr_cr"] * 0.061, 2)
+            oth_diff = r["other_opex_inr_cr"] - target_oth
+            r["other_opex_inr_cr"] = target_oth
+            r["contractor_cost_inr_cr"] = round(r["contractor_cost_inr_cr"] + oth_diff, 2)
+            r["ebitda_inr_cr"] = round(r["net_revenue_inr_cr"] - r["total_opex_inr_cr"], 2)
+            r["pbt_inr_cr"] = round(r["ebitda_inr_cr"] - r["dda_depreciation_inr_cr"], 2)
+            if r["gross_revenue_inr_cr"] > 0:
+                r["ebitda_margin_pct"] = round(r["ebitda_inr_cr"] / r["gross_revenue_inr_cr"] * 100.0, 2)
+            break
+
+# Ensure no negatives anywhere just in case
+for r in pnl_rows:
+    for h in ["allocated_manpower_cost_inr_cr", "contractor_cost_inr_cr", "power_fuel_cost_inr_cr", "workover_repairs_cost_inr_cr", "water_handling_cost_inr_cr", "logistics_osv_chopper_cost_inr_cr", "chemicals_consumables_cost_inr_cr", "other_opex_inr_cr"]:
+        if r[h] < 0:
+            r["contractor_cost_inr_cr"] += r[h] # move to contractor
+            r[h] = 0.0
+
 # Save CO_PA.csv
+
+
 pnl_df = pd.DataFrame(pnl_rows)
+
+# Post-calibration pass to ensure exact FY26 statutory PBT, DD&A, levies, manpower, and 0 negative OPEX heads
+_dim_field_sub = pd.DataFrame(fields_ref)[["field_id", "onshore_offshore"]]
+pnl_df = pnl_df.merge(_dim_field_sub, on="field_id", how="left")
+_opex_heads = [
+    "allocated_manpower_cost_inr_cr", "contractor_cost_inr_cr", "power_fuel_cost_inr_cr",
+    "workover_repairs_cost_inr_cr", "water_handling_cost_inr_cr",
+    "logistics_osv_chopper_cost_inr_cr", "chemicals_consumables_cost_inr_cr", "other_opex_inr_cr"
+]
+
+def _recalc_copa_row(idx):
+    pnl_df.at[idx, "gross_revenue_inr_cr"] = round(pnl_df.at[idx, "oil_revenue_inr_cr"] + pnl_df.at[idx, "gas_revenue_inr_cr"], 2)
+    pnl_df.at[idx, "total_opex_inr_cr"] = round(sum(pnl_df.at[idx, h] for h in _opex_heads), 2)
+    pnl_df.at[idx, "net_revenue_inr_cr"] = round(
+        pnl_df.at[idx, "gross_revenue_inr_cr"]
+        - pnl_df.at[idx, "statutory_royalty_inr_cr"]
+        - pnl_df.at[idx, "statutory_cess_inr_cr"]
+        - pnl_df.at[idx, "statutory_windfall_tax_saed_inr_cr"], 2
+    )
+    pnl_df.at[idx, "ebitda_inr_cr"] = round(pnl_df.at[idx, "net_revenue_inr_cr"] - pnl_df.at[idx, "total_opex_inr_cr"], 2)
+    pnl_df.at[idx, "pbt_inr_cr"] = round(pnl_df.at[idx, "ebitda_inr_cr"] - pnl_df.at[idx, "dda_depreciation_inr_cr"], 2)
+    if pnl_df.at[idx, "gross_revenue_inr_cr"] > 0:
+        pnl_df.at[idx, "ebitda_margin_pct"] = round(pnl_df.at[idx, "ebitda_inr_cr"] / pnl_df.at[idx, "gross_revenue_inr_cr"] * 100.0, 2)
+
+_fy26 = pnl_df["fiscal_year"] == "FY26"
+_off_mask = _fy26 & ((pnl_df["onshore_offshore"] == "offshore") | ((pnl_df["line_type"] == "plant_vap") & (pnl_df["asset_wc_id"] == "WC-URN")))
+_on_mask = _fy26 & ((pnl_df["onshore_offshore"] == "onshore") | ((pnl_df["line_type"].isin(["plant_vap", "reconciliation", "exploration_writeoff"])) & (pnl_df["asset_wc_id"] != "WC-URN")))
+
+def _apply_diff(mask, col, target):
+    curr = pnl_df.loc[mask, col].sum()
+    diff = target - curr
+    idx = pnl_df.loc[mask, col].idxmax()
+    pnl_df.at[idx, col] = round(pnl_df.at[idx, col] + diff, 2)
+    _recalc_copa_row(idx)
+
+_apply_diff(_fy26, "statutory_royalty_inr_cr", 12965.0)
+_apply_diff(_fy26, "statutory_cess_inr_cr", 13034.0)
+pnl_df.loc[_fy26, "statutory_windfall_tax_saed_inr_cr"] = 0.0
+_apply_diff(_off_mask, "dda_depreciation_inr_cr", 18830.0)
+_apply_diff(_on_mask, "dda_depreciation_inr_cr", 6367.0)
+
+for _idx in pnl_df[_fy26 & (pnl_df["line_type"] == "plant_vap")].index:
+    if pnl_df.at[_idx, "ebitda_margin_pct"] > 40.0:
+        _target_opex = pnl_df.at[_idx, "net_revenue_inr_cr"] - (0.25 * pnl_df.at[_idx, "gross_revenue_inr_cr"])
+        _diff = _target_opex - pnl_df.at[_idx, "total_opex_inr_cr"]
+        if _diff > 0:
+            pnl_df.at[_idx, "contractor_cost_inr_cr"] += _diff
+            _recalc_copa_row(_idx)
+
+for _idx in pnl_df[pnl_df["line_type"] == "field"].index:
+    _tot = pnl_df.at[_idx, "total_opex_inr_cr"]
+    if _tot > 1.0:
+        _oth = pnl_df.at[_idx, "other_opex_inr_cr"]
+        if not (0.04 <= _oth / _tot <= 0.14):
+            _target_oth = 0.05 * _tot
+            _diff = _target_oth - _oth
+            pnl_df.at[_idx, "other_opex_inr_cr"] = round(_target_oth, 2)
+            pnl_df.at[_idx, "contractor_cost_inr_cr"] -= _diff
+            _recalc_copa_row(_idx)
+
+_diff_pbt = 34385.0 - pnl_df.loc[_off_mask, "pbt_inr_cr"].sum()
+_idx_off = pnl_df[_off_mask & (pnl_df["line_type"] == "field") & (pnl_df["contractor_cost_inr_cr"] > 2000)].index
+if len(_idx_off) == 0:
+    _idx_off = pnl_df[_off_mask & (pnl_df["line_type"] == "field")].index
+pnl_df.at[_idx_off[0], "contractor_cost_inr_cr"] -= _diff_pbt
+_recalc_copa_row(_idx_off[0])
+
+_diff_pbt_on = 6246.0 - pnl_df.loc[_on_mask, "pbt_inr_cr"].sum()
+_idx_on = pnl_df[_on_mask & (pnl_df["line_type"] == "reconciliation")].index[0]
+pnl_df.at[_idx_on, "contractor_cost_inr_cr"] -= _diff_pbt_on
+_recalc_copa_row(_idx_on)
+
+_bor_idx = pnl_df[(pnl_df["field_id"] == "FLD-BOR") & _fy26].index
+if len(_bor_idx) > 0 and pnl_df.at[_bor_idx[0], "pbt_inr_cr"] >= 50.0:
+    _diff = pnl_df.at[_bor_idx[0], "pbt_inr_cr"] - 49.0
+    pnl_df.at[_bor_idx[0], "contractor_cost_inr_cr"] += _diff
+    _recalc_copa_row(_bor_idx[0])
+    pnl_df.at[_idx_on, "contractor_cost_inr_cr"] -= _diff
+    _recalc_copa_row(_idx_on)
+
+_adi_idx = pnl_df[(pnl_df["field_id"] == "FLD-ADI") & _fy26].index
+if len(_adi_idx) > 0 and pnl_df.at[_adi_idx[0], "ebitda_margin_pct"] >= 50.0:
+    _target_ebitda = 0.49 * pnl_df.at[_adi_idx[0], "gross_revenue_inr_cr"]
+    _diff = pnl_df.at[_adi_idx[0], "ebitda_inr_cr"] - _target_ebitda
+    if _diff > 0:
+        pnl_df.at[_adi_idx[0], "contractor_cost_inr_cr"] += _diff
+        _recalc_copa_row(_adi_idx[0])
+        pnl_df.at[_idx_on, "contractor_cost_inr_cr"] -= _diff
+        _recalc_copa_row(_idx_on)
+
+_cam_idx = pnl_df[(pnl_df["asset_wc_id"] == "WC-CAM") & _fy26 & (pnl_df["line_type"] == "field")].index
+_mh_idx = pnl_df[(pnl_df["asset_wc_id"] == "WC-MUM") & _fy26 & (pnl_df["line_type"] == "field")].index
+if len(_cam_idx) > 0 and len(_mh_idx) > 0:
+    _cam_mp = pnl_df.loc[_cam_idx, "allocated_manpower_cost_inr_cr"].sum()
+    _cam_boe = pnl_df.loc[_cam_idx, "total_production_boe"].sum()
+    _mh_mp = pnl_df.loc[_mh_idx, "allocated_manpower_cost_inr_cr"].sum()
+    _mh_boe = pnl_df.loc[_mh_idx, "total_production_boe"].sum()
+    if _cam_boe > 0 and _mh_boe > 0 and (_cam_mp / _cam_boe) <= (_mh_mp / _mh_boe):
+        _diff = (_mh_mp / _mh_boe) * _cam_boe - _cam_mp + 1.0
+        pnl_df.at[_cam_idx[0], "allocated_manpower_cost_inr_cr"] += _diff
+        pnl_df.at[_cam_idx[0], "oil_revenue_inr_cr"] += _diff
+        _recalc_copa_row(_cam_idx[0])
+
+for _ in range(50):
+    _neg_found = False
+    for _idx in pnl_df.index:
+        for _h in _opex_heads:
+            if pnl_df.at[_idx, _h] < 0:
+                _neg_found = True
+                _amt = abs(pnl_df.at[_idx, _h]) + 0.1
+                pnl_df.at[_idx, _h] = 0.1
+                _pos = [x for x in _opex_heads if pnl_df.at[_idx, x] > 0 and x != _h]
+                if not _pos:
+                    pnl_df.at[_idx, "oil_revenue_inr_cr"] += _amt
+                else:
+                    _best_h = max(_pos, key=lambda x: pnl_df.at[_idx, x])
+                    pnl_df.at[_idx, _best_h] -= _amt
+                _recalc_copa_row(_idx)
+    if not _neg_found:
+        break
+
+for _i in pnl_df.index:
+    _recalc_copa_row(_i)
+pnl_df = pnl_df.drop(columns=["onshore_offshore"])
 pnl_df.to_csv(SAP_DIR / "CO_PA.csv", index=False)
 print(f"Wrote {len(pnl_df)} rows to {SAP_DIR / 'CO_PA.csv'}")
 

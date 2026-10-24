@@ -1,0 +1,26 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "v_basin_economics_fy",
+  description: "Basin x FY rollup of Field Economics-360"
+}
+
+SELECT
+  fiscal_year,
+  basin,
+  segment,
+  COUNT(DISTINCT object_id) AS field_count,
+  SUM(prod_boe) AS prod_boe,
+  SUM(revenue_from_operations) AS revenue_from_operations,
+  SUM(field_revenue_cr) AS basin_revenue_cr,
+  SUM(levies_total) AS levies_total,
+  SUM(staff_expenditure) AS staff_expenditure,
+  SUM(opex_total) AS opex_total,
+  SUM(dda_total) AS dda_total,
+  SUM(ebitda) AS ebitda,
+  SUM(field_ebitda_cr) AS basin_ebitda_cr,
+  SAFE_DIVIDE(SUM(ebitda), NULLIF(SUM(revenue_from_operations), 0)) * 100.0 AS basin_ebitda_margin_pct,
+  SUM(pbt_contrib) AS pbt_contrib,
+  SUM(field_pbt_cr) AS basin_pbt_cr
+FROM ${ref("v_field_economics_fy")}
+GROUP BY 1, 2, 3

@@ -1,0 +1,8 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "mart_field_economics_v3",
+  description: "Compatibility view over v_field_economics_fy"
+}
+
+SELECT * FROM ${ref("v_field_economics_fy")}

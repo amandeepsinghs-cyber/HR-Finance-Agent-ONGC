@@ -45,7 +45,9 @@ const bronzeTables = [
   "db_exports_env_incident_log",
   "excel_posh_register",
   "sap_apprentice_ledger",
-  "sap_ekko_channel"
+  "sap_ekko_channel",
+  "sap_employee_cost_pool",
+  "sap_payroll_policy_fy"
 ];
 
 bronzeTables.forEach(tableName => {
@@ -75,6 +77,19 @@ refDims.forEach(tableName => {
   declare({
     database: "ongc-hr-finance-agent",
     schema: "hrfin_silver",
+    name: tableName,
+  });
+});
+
+// hrfin_ref dims
+const hrfinRefDims = [
+  "dim_grade_pay_scale", "dim_ida_rate", "dim_hra_rate", "dim_allowance_rule", "dim_payroll_policy_fy", "dim_benefit_scheme", "dim_insurance_plan"
+];
+
+hrfinRefDims.forEach(tableName => {
+  declare({
+    database: "ongc-hr-finance-agent",
+    schema: "hrfin_ref",
     name: tableName,
   });
 });

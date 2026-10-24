@@ -69,3 +69,35 @@ def test_emp_r10_headcount():
         month_str = f"{year_str}-03"
         modeled_hc = hc_df[hc_df["month"].str.startswith(month_str)]["headcount"].sum()
         assert modeled_hc == target_hc, f"EMP-R10 failed for {fy}: {modeled_hc} != {target_hc}"
+
+def test_emp_r11_to_r30_reconciliation():
+    df_core = pd.read_csv(LANDING_SAP / "PA0002_PA0001.csv", low_memory=False)
+    payroll_df = pd.read_csv(
+        LANDING_SAP / "PY_CLUSTER_EXP.csv",
+        usecols=["PERNR", "fiscal_year", "LGART_9001", "arrears_inr", "cost_expensed_production_inr"],
+    )
+    targets_df = pd.read_csv(TARGETS_CSV)
+
+    # EMP-R15 / BUG-30: age_band only uses '<30', '30-50', '>50'
+    assert set(df_core["age_band"].dropna().unique()).issubset({"<30", "30-50", ">50"}), "EMP-R15 / BUG-30 failed: invalid age_band values"
+
+    # EMP-R24 / BUG-33: active E1 median tenure <= 4.0 yrs, and E0 grade populated
+    active_core = df_core[df_core["separation_date"].isna()]
+    e1_active = active_core[active_core["PERSK"] == "E1"]
+    assert len(e1_active) > 0 and e1_active["total_tenure_years"].median() <= 4.0, "EMP-R24 failed: active E1 median tenure > 4.0 yrs"
+    assert (df_core["PERSK"] == "E0").sum() > 0, "EMP-R24 failed: E0 grade count is 0"
+
+    # No arrears_inr plug outside FY18/FY19
+    non_prc_arrears = payroll_df[~payroll_df["fiscal_year"].isin(["FY18", "FY19"])]["arrears_inr"].abs().sum()
+    assert non_prc_arrears == 0.0, f"Found non-zero arrears_inr outside FY18/FY19: {non_prc_arrears}"
+
+    # EMP-R29: SUM(cost_expensed_production_inr) matches Note 35 Staff Expenditure within +/- 10 L (1e6 INR)
+    prod_by_fy = payroll_df.groupby("fiscal_year")["cost_expensed_production_inr"].sum().to_dict()
+    for fy in ["FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]:
+        t_ser = targets_df[(targets_df["fiscal_year"] == fy) & (targets_df["metric"] == "staff_expenditure_note35")]["value"]
+        if not t_ser.empty:
+            t_inr = t_ser.values[0] * 1e6
+            act_inr = prod_by_fy.get(fy, 0.0)
+            assert abs(act_inr - t_inr) <= 1e6, f"EMP-R29 failed for {fy}: {act_inr} vs {t_inr}"
+
+

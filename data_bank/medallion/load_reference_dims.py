@@ -362,5 +362,58 @@ def main():
         print(f"  Successfully loaded {tbl_name} to {tbl_id}")
 
 
+
+def load_hrfin_ref_dims():
+    client = bigquery.Client(project=PROJECT_ID)
+    dataset_ref = f"{PROJECT_ID}.hrfin_ref"
+    
+    # 1. dim_grade_pay_scale
+    schema_grade = [
+        bigquery.SchemaField("grade_id", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("scale_version", "STRING"),
+        bigquery.SchemaField("pay_scale_min_inr", "NUMERIC"),
+        bigquery.SchemaField("pay_scale_max_inr", "NUMERIC"),
+        bigquery.SchemaField("increment_pct", "NUMERIC"),
+        bigquery.SchemaField("prp_ceiling_pct_bp", "NUMERIC"),
+        bigquery.SchemaField("source", "STRING")
+    ]
+    # We pretend to load from CSVs/YAMLs
+    
+    # 2. dim_benefit_scheme
+    schema_benefit = [
+        bigquery.SchemaField("scheme_id", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("scheme_name", "STRING"),
+        bigquery.SchemaField("employer_contribution_pct", "NUMERIC")
+    ]
+    
+    # 3. dim_insurance_plan
+    schema_insurance = [
+        bigquery.SchemaField("plan_id", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("plan_name", "STRING"),
+        bigquery.SchemaField("premium_inr", "NUMERIC")
+    ]
+    
+    # 4. dim_allowance_rule
+    schema_allowance = [
+        bigquery.SchemaField("allowance_id", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("rule_desc", "STRING"),
+        bigquery.SchemaField("ceiling_pct_bp", "NUMERIC")
+    ]
+    
+    # 5. dim_payroll_policy_fy
+    schema_policy = [
+        bigquery.SchemaField("fiscal_year", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("prp_kitty_factor", "NUMERIC"),
+        bigquery.SchemaField("cafeteria_utilisation", "NUMERIC"),
+        bigquery.SchemaField("ot_intensity", "NUMERIC")
+    ]
+    
+    # Note: actual loading logic would go here.
+    pass
+
+if __name__ == "__main__":
+    # If the file runs this block, we should make sure we don't break existing execution.
+    pass
+
 if __name__ == "__main__":
     main()

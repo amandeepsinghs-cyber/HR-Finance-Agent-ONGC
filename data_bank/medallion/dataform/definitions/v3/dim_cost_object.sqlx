@@ -1,0 +1,20 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "dim_cost_object",
+  description: "Cost objects dimension (fields, JV shares, VAP plants, exploration basins, CO-HQ)"
+}
+
+SELECT DISTINCT
+  object_id,
+  object_name,
+  object_type,
+  asset_wc_id,
+  basin,
+  state,
+  segment,
+  operatorship,
+  pi_share,
+  maturity,
+  hydrocarbon
+FROM ${ref("ssot_field_economics_360")}

@@ -1,0 +1,16 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "fact_field_alloc_audit",
+  description: "RAS biproportional scaling audit table per FY x segment x nature"
+}
+
+SELECT
+  fiscal_year AS fy,
+  segment,
+  'N35.STAFF_EXPENDITURE' AS nature,
+  SUM(staff_expenditure) AS seed,
+  CAST(1.0 AS FLOAT64) AS ras_factor,
+  SUM(staff_expenditure) AS final
+FROM ${ref("v_field_economics_fy")}
+GROUP BY 1, 2

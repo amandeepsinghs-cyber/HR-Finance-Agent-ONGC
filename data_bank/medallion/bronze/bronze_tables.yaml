@@ -1305,23 +1305,65 @@ tables:
     source_type: sap
     source_file: gs://ongc-hr-finance-agent-landing/sap/20261020/CO_PA_v3.csv
     local_path: landing/sap/CO_PA_v3.csv
-    row_count: 1000
-    column_count: 5
+    row_count: 112680
+    column_count: 6
     columns:
-    - field_id
-    - period
-    - cost_element
-    - amount
-    - currency
+    - fy
+    - month
+    - object_id
+    - line_code
+    - amount_inr_mn
+    - basis
   sap_field_alloc_audit:
     source_type: sap
     source_file: gs://ongc-hr-finance-agent-landing/sap/20261020/field_alloc_audit.csv
     local_path: landing/sap/field_alloc_audit.csv
-    row_count: 1000
-    column_count: 5
+    row_count: 450
+    column_count: 6
+    columns:
+    - fy
+    - segment
+    - nature
+    - seed
+    - ras_factor
+    - final
+  dim_basin:
+    source_type: excel
+    source_file: gs://ongc-hr-finance-agent-landing/excel/20261020/basins.xlsx
+    local_path: landing/excel/basins.xlsx
+    row_count: 100
+    column_count: 4
+    columns:
+    - basin_id
+    - basin_name
+    - onshore_offshore
+    - field_count
+  dim_field:
+    source_type: yaml
+    source_file: gs://ongc-hr-finance-agent-landing/yaml/fields.yaml
+    local_path: world_bible/reference/fields.yaml
+    row_count: 53
+    column_count: 8
     columns:
     - field_id
-    - period
-    - alloc_rule
-    - amount
-    - status
+    - name
+    - basin_name
+    - asset_wc_id
+    - state_code
+    - onshore_offshore
+    - field_category
+    - hydrocarbon_type
+  field_econ_targets_fy:
+    source_type: csv
+    source_file: gs://ongc-hr-finance-agent-landing/csv/field_econ_targets_fy.csv
+    local_path: world_bible/reference/real_targets/field_econ_targets_fy.csv
+    row_count: 150
+    column_count: 7
+    columns:
+    - fiscal_year
+    - line_code
+    - value
+    - source_doc
+    - source_page
+    - source_text_line
+    - verified

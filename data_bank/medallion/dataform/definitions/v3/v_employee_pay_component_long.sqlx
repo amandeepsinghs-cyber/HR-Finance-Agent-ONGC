@@ -4,5 +4,29 @@ config {
   name: "v_employee_pay_component_long",
   description: "Unpivoted components."
 }
-SELECT emp_id, month_start, 'basic_pay_inr' AS component_code, 'basic' AS component_group, basic_pay_inr AS amount_inr
-FROM ${ref("ssot_employee_360")}
+WITH unpivoted AS (
+  SELECT emp_id, month_start, fiscal_year, grade_id, wc_id, component_code, amount_inr
+  FROM ${ref("ssot_employee_360")}
+  UNPIVOT(amount_inr FOR component_code IN (
+    basic_pay_inr, da_inr, hra_inr, cafeteria_allowances_inr,
+    mining_offshore_allowance_inr, shift_allowance_inr, other_allowances_inr,
+    overtime_amount_inr, prp_inr, leave_encashment_paid_inr, transfer_grant_inr,
+    employer_cpf_inr, employer_prbs_inr, employer_prmb_inr, csss_employer_inr,
+    gratuity_accrual_inr, leave_provision_accrual_inr, medical_scheme_cost_inr,
+    medical_reimbursement_inr, canteen_subsidy_inr, transport_subsidy_inr,
+    insurance_premium_inr, welfare_allocation_inr, employer_cost_noncash_inr
+  ))
+)
+SELECT u.*, 
+       CASE 
+         WHEN component_code = 'basic_pay_inr' THEN 'basic'
+         WHEN component_code = 'da_inr' THEN 'da'
+         WHEN component_code = 'hra_inr' THEN 'hra'
+         WHEN component_code LIKE '%allowance%' THEN 'allowances'
+         WHEN component_code IN ('employer_cpf_inr', 'employer_prbs_inr', 'employer_prmb_inr') THEN 'employer_benefits'
+         ELSE 'other'
+       END AS component_group,
+       COALESCE(dim_all.allowance_name, dim_ben.scheme_name, u.component_code) AS component_name
+FROM unpivoted u
+LEFT JOIN ${ref("dim_allowance_rule")} dim_all ON u.component_code = dim_all.allowance_code AND u.wc_id = dim_all.wc_id
+LEFT JOIN ${ref("dim_benefit_scheme")} dim_ben ON u.component_code = dim_ben.scheme_code AND u.grade_id = dim_ben.grade_id

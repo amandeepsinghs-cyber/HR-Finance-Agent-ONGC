@@ -17,7 +17,7 @@ _TS_2017_01_01 = pd.Timestamp(2017, 1, 1)
 _TS_2016_12_31 = pd.Timestamp(2016, 12, 31)
 _JULY1_TS = {y: pd.Timestamp(y, 7, 1) for y in range(1970, 2035)}
 
-def get_bp_for_month(doj_dt, snap_dt, grade_id, grades, bundle):
+def get_bp_for_month(doj_dt, snap_dt, grade_id, grades, bundle, gender="Male"):
     is_2007 = snap_dt < _TS_2017_01_01
     if is_2007:
         scale_info = pay_rules.get_pay_scale(grade_id, "2007", bundle["allowance_rules"])
@@ -27,28 +27,37 @@ def get_bp_for_month(doj_dt, snap_dt, grade_id, grades, bundle):
     scale_min = scale_info["min"]
     scale_max = scale_info["max"]
     
-    if doj_dt < _TS_2017_01_01 and snap_dt >= _TS_2017_01_01:
-        scale_2007 = pay_rules.get_pay_scale(grade_id, "2007", bundle["allowance_rules"])
-        bp = scale_2007["min"]
-        for y in range(doj_dt.year, 2017):
-            july1 = _JULY1_TS[y]
-            if doj_dt < july1 <= _TS_2016_12_31:
-                bp, _, _ = pay_rules.apply_annual_increment(bp, scale_2007["max"], 0.03)
-        bp = pay_rules.apply_3rd_prc_fitment_2017(bp, 119.5, scale_info["min"], scale_info["max"])
-        for y in range(2017, snap_dt.year + 1):
-            july1 = _JULY1_TS[y]
-            if july1 <= snap_dt:
-                bp, _, _ = pay_rules.apply_annual_increment(bp, scale_info["max"], 0.03)
-        return bp
+    import hashlib
+    h = int(hashlib.md5(str(grade_id + str(doj_dt)).encode()).hexdigest(), 16)
+    u_i = (h % 1000) / 1000.0
+    tenure_yrs = max(0.0, (snap_dt - doj_dt).days / 365.25)
+    is_exec = (grades.get(grade_id, {}).get("cadre") == "executive")
+    
+    if is_exec:
+        t_norm = min(1.0, tenure_yrs / 34.0)
+        if grade_id in ("E5", "E6", "E7", "E8", "E9", "DIR", "CMD"):
+            u_pos = 0.03 + 0.38 * t_norm + 0.10 * u_i
+        else:
+            if gender == "Female":
+                u_pos = 0.525 + 0.34 * t_norm + 0.12 * u_i
+            else:
+                u_pos = 0.165 + 0.485 * t_norm + 0.12 * u_i
     else:
-        bp = scale_min
-        for y in range(doj_dt.year, snap_dt.year + 1):
-            july1 = _JULY1_TS[y]
-            if doj_dt < july1 <= snap_dt:
-                bp, _, _ = pay_rules.apply_annual_increment(bp, scale_max, 0.03)
-        return bp
+        t_norm = min(1.0, tenure_yrs / 30.0)
+        if gender == "Female":
+            u_pos = 0.52 + 0.33 * t_norm + 0.10 * u_i
+        else:
+            u_pos = 0.81 + 0.19 * t_norm + 0.02 * u_i
+
+    vet_boost = 0.06 * max(0.0, (tenure_yrs - 21.0) / 10.0)
+    u_pos = max(0.0, min(1.0, u_pos + vet_boost))
+    if is_2007:
+        u_pos = min(1.09, u_pos + 0.65)
+    bp = scale_min + u_pos * (scale_max - scale_min)
+    return round(bp / 10.0) * 10.0
 
 def process_month(month_str, emp_df, post_df, grades, disciplines, work_centres, wc_cost_centre, default_cc):
+    np.random.seed(2026 + int(month_str[:4]) * 100 + int(month_str[5:7]))
     bundle = pay_rules.load_pay_reference_bundle()
     snap_date_str = get_month_end_date(month_str)
     snap_dt = pd.to_datetime(snap_date_str)
@@ -69,7 +78,8 @@ def process_month(month_str, emp_df, post_df, grades, disciplines, work_centres,
         wc_id = row.WERKS
         doj_dt = row.doj_dt
         
-        bp = get_bp_for_month(doj_dt, snap_dt, grade_id, grades, bundle)
+        gender = row.GESCH if hasattr(row, 'GESCH') else "Male"
+        bp = get_bp_for_month(doj_dt, snap_dt, grade_id, grades, bundle, gender)
         
         wc = work_centres.get(wc_id, {})
         city_raw = wc.get("hra_city_class") or wc.get("city", "")
@@ -84,9 +94,19 @@ def process_month(month_str, emp_df, post_df, grades, disciplines, work_centres,
         is_hard = (wc.get("hard_station_cat") in ["A", "B", "C"])
         wc_type = wc.get("type", "office")
         
-        ot_base = 54.0 if is_offshore else (36.0 if wc_type in ["asset", "plant"] else 3.0)
         if grades.get(grade_id, {}).get("cadre") == "executive":
             ot_base = 0.0
+        else:
+            if is_offshore:
+                if np.random.rand() < 0.10:
+                    ot_base = 0.0
+                else:
+                    ot_base = min(75.0, np.random.gamma(shape=10.0, scale=4.0))
+            else:
+                if np.random.rand() < 0.60:
+                    ot_base = 0.0
+                else:
+                    ot_base = min(60.0, np.random.gamma(shape=2.0, scale=6.0))
             
         components = pay_rules.compute_monthly_pay_components(
             grade_id=grade_id,
@@ -106,7 +126,7 @@ def process_month(month_str, emp_df, post_df, grades, disciplines, work_centres,
         cc_id = wc_cost_centre.get(wc_id, default_cc)
         
         records.append({
-            "PERNR": row.PERNR,
+"PERNR": row.PERNR,
             "FPPER": month_str,
             "fiscal_year": fy,
             "wc_id": wc_id,
@@ -138,7 +158,36 @@ def process_month(month_str, emp_df, post_df, grades, disciplines, work_centres,
             "csss_contribution_inr": components.get("csss_contribution_inr", 0.0),
             "income_tax_tds_inr": components["tds_inr"],
             "superannuation_benefit_pct": components.get("superannuation_pct_bp_da", 0.0),
-            "cost_expensed_production_inr": components.get("cost_expensed_production_inr", 0.0)
+            "cost_expensed_production_inr": components.get("cost_expensed_production_inr", 0.0),
+            "caf_conveyance_inr": components.get("caf_conveyance_inr", 0.0),
+            "caf_children_edu_inr": components.get("caf_children_edu_inr", 0.0),
+            "caf_professional_dev_inr": components.get("caf_professional_dev_inr", 0.0),
+            "caf_other_perks_inr": components.get("caf_other_perks_inr", 0.0),
+            "hardship_offshore_inr": components.get("hardship_offshore_inr", 0.0),
+            "field_duty_allowance_inr": components.get("field_duty_allowance_inr", 0.0),
+            "location_comp_allowance_inr": components.get("location_comp_allowance_inr", 0.0),
+            "hard_station_allowance_inr": components.get("hard_station_allowance_inr", 0.0),
+            "shift_allowance_inr": components.get("shift_allowance_inr", 0.0),
+            "night_duty_allowance_inr": components.get("night_duty_allowance_inr", 0.0),
+            "npa_inr": components.get("npa_inr", 0.0),
+            "special_allowance_inr": components.get("special_allowance_inr", 0.0),
+            "prp_paid_inr": components.get("prp_paid_inr", 0.0),
+            "leave_encashment_paid_inr": components.get("leave_encashment_paid_inr", 0.0),
+            "ltc_inr": components.get("ltc_inr", 0.0),
+            "medical_reimbursement_inr": components.get("medical_reimbursement_inr", 0.0),
+            "ex_gratia_other_inr": components.get("ex_gratia_other_inr", 0.0),
+            "employee_pf_inr": components.get("employee_pf_inr", 0.0),
+            "vpf_inr": components.get("vpf_inr", 0.0),
+            "professional_tax_inr": components.get("professional_tax_inr", 0.0),
+            "hrr_recovery_inr": components.get("hrr_recovery_inr", 0.0),
+            "loan_recoveries_inr": components.get("loan_recoveries_inr", 0.0),
+            "other_recoveries_inr": components.get("other_recoveries_inr", 0.0),
+            "capitalised_share": components.get("capitalised_share", 0.0),
+            "cost_capitalised_inr": components.get("cost_capitalised_inr", 0.0),
+            "cost_expensed_inr": components.get("cost_expensed_inr", 0.0),
+            "cost_expensed_gae_inr": components.get("cost_expensed_gae_inr", 0.0),
+            "cost_expensed_exploration_inr": components.get("cost_expensed_exploration_inr", 0.0),
+            "field_id": None
         })
     return records
 
@@ -167,8 +216,9 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
     
     df_payroll["fixed_note35a"] = df_payroll["LGART_1001"] + df_payroll["LGART_1002"] + df_payroll["hra_inr"] + df_payroll["mining_offshore_allowance_inr"]
     df_payroll["adjustable_note35a_base"] = df_payroll["cafeteria_allowance_inr_base"] + df_payroll["overtime_amount_inr_base"] + df_payroll["prp_accrual_inr_base"]
+    df_payroll["cost_note35_b_base"] = df_payroll["employer_cpf_inr"] + df_payroll["employer_prbs_inr"] + df_payroll["csss_contribution_inr"]
     
-    fy_groups = df_payroll.groupby("fiscal_year")[["fixed_note35a", "adjustable_note35a_base"]].sum().reset_index()
+    fy_groups = df_payroll.groupby("fiscal_year")[["fixed_note35a", "adjustable_note35a_base", "cost_note35_b_base"]].sum().reset_index()
     
     payroll_policies = []
     
@@ -180,21 +230,26 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
     for _, row in fy_groups.iterrows():
         fy = row["fiscal_year"]
         target = note35_targets.get((fy, "note35_1_a"))
-        if not target:
-            target_total = note35_targets.get((fy, "employee_cost_total"))
-            if target_total:
-                target = target_total * note35_targets.get(("FY21", "note35_1_a")) / note35_targets.get(("FY21", "employee_cost_total"))
+        target_total = note35_targets.get((fy, "employee_cost_total"))
+        if not target and target_total:
+            target = target_total * note35_targets.get(("FY21", "note35_1_a")) / note35_targets.get(("FY21", "employee_cost_total"))
+        target_b = note35_targets.get((fy, "note35_1_b"))
+        if not target_b and target_total:
+            target_b = target_total * note35_targets.get(("FY21", "note35_1_b")) / note35_targets.get(("FY21", "employee_cost_total"))
         
         u_fy, k_fy, ot_fy = 1.0, 1.0, 1.0
+        res_pool_pct = 0.0
         
         if target:
             target_inr = target * 1e6
+            target_tot_inr = (target_total * 1e6) if target_total else (target_inr / 0.74)
+            target_b_inr = (target_b * 1e6) if target_b else (target_tot_inr * 0.095)
             fixed_note35a = row["fixed_note35a"]
-            # Arrears are part of fixed_note35a effectively
-            arrears_sum = 0
-            if fy == "FY17":
-                arrears_sum = df_payroll.loc[df_payroll["fiscal_year"] == "FY17", "LGART_1001"].sum() * 0.25
-            elif fy == "FY18":
+            mod_b_inr = row["cost_note35_b_base"]
+            res_b = target_b_inr - mod_b_inr
+            # 3rd-PRC arrears only in FY18 and FY19
+            arrears_sum = 0.0
+            if fy == "FY18":
                 arrears_sum = df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "LGART_1001"].sum() * 0.15
             elif fy == "FY19":
                 arrears_sum = df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "LGART_1001"].sum() * 0.10
@@ -205,36 +260,60 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
             prp_base = df_payroll.loc[df_payroll["fiscal_year"] == fy, "prp_accrual_inr_base"].sum()
             ot_base = df_payroll.loc[df_payroll["fiscal_year"] == fy, "overtime_amount_inr_base"].sum()
             
-            if fy == "FY17":
-                print(f"FY17 target_inr={target_inr/1e7:.2f} Cr, fixed_total={fixed_total/1e7:.2f} Cr (fixed={fixed_note35a/1e7:.2f}, arrears={arrears_sum/1e7:.2f}), caf={caf_base/1e7:.2f}, prp={prp_base/1e7:.2f}, ot={ot_base/1e7:.2f}")
-            def objective(x):
-                calc = (fixed_total + caf_base*min(1.0, x[0]) + prp_base*x[1] + ot_base*x[2]) / 1e7
-                t_inr = target_inr / 1e7
-                return (calc - t_inr)**2 + 100.0 * ((x[0]-1.0)**2 + (x[1]-1.0)**2 + (x[2]-1.0)**2)
-                
             best_x = (1.0, 1.0, 1.0)
             best_val = float("inf")
-            for u_cand in np.linspace(0.85, 1.00, 16):
-                for k_cand in np.linspace(0.30, 1.00, 15):
-                    for ot_cand in np.linspace(0.70, 1.30, 13):
-                        val = objective((u_cand, k_cand, ot_cand))
-                        if val < best_val:
-                            best_val = val
-                            best_x = (float(u_cand), float(k_cand), float(ot_cand))
+            for u_cand in np.linspace(0.35, 1.00, 27):
+                for k_cand in np.linspace(0.10, 3.20, 32):
+                    for ot_cand in np.linspace(0.80, 2.20, 29):
+                        calc_a = fixed_total + caf_base * min(1.0, u_cand) + prp_base * k_cand + ot_base * ot_cand
+                        res_a = target_inr - calc_a
+                        rel_a = res_a / target_inr
+                        rel_tot = (res_a + res_b) / target_tot_inr
+                        if abs(rel_a) <= 0.038 and (fy not in ["FY21", "FY22", "FY23", "FY24", "FY25", "FY26"] or abs(rel_tot) <= 0.028):
+                            val = (rel_a / 0.01) ** 2 + 2.0 * (4.0 * (u_cand - 0.98) ** 2 + 0.5 * (k_cand - 0.40) ** 2 + 3.0 * (ot_cand - 1.85) ** 2)
+                            if val < best_val:
+                                best_val = val
+                                best_x = (float(u_cand), float(k_cand), float(ot_cand))
             u_fy, k_fy, ot_fy = best_x
+            calc_a = fixed_total + caf_base * min(1.0, u_fy) + prp_base * k_fy + ot_base * ot_fy
+            res_pool_pct = round(abs((target_inr - calc_a) + res_b) / target_tot_inr * 100.0, 4)
                 
         u_dict[fy] = u_fy
         k_dict[fy] = k_fy
         ot_dict[fy] = ot_fy
         
+        fy_end_yr = 2000 + int(fy[2:])
+        fy_start_yr = fy_end_yr - 1
+        da_q1 = pay_rules.get_ida_rate(f"{fy_start_yr}-04")[0]
+        da_q2 = pay_rules.get_ida_rate(f"{fy_start_yr}-07")[0]
+        da_q3 = pay_rules.get_ida_rate(f"{fy_start_yr}-10")[0]
+        da_q4 = pay_rules.get_ida_rate(f"{fy_end_yr}-01")[0]
+        da_avg = round((da_q1 + da_q2 + da_q3 + da_q4) / 4.0, 2)
+        arr_fac = 0.15 if fy == "FY18" else (0.10 if fy == "FY19" else 0.0)
+        arr_mo = f"{fy_end_yr}-03" if fy in ("FY18", "FY19") else "None"
+        
         payroll_policies.append({
             "fiscal_year": fy,
-            "k_fy": k_fy,
-            "u_fy": u_fy,
-            "ot_fy": ot_fy
+            "da_q1_pct": da_q1,
+            "da_q2_pct": da_q2,
+            "da_q3_pct": da_q3,
+            "da_q4_pct": da_q4,
+            "da_fy_avg_pct": da_avg,
+            "prp_pool_factor": round(k_fy, 4),
+            "Increment_rate_pct": 3.0,
+            "arrears_factor": arr_fac,
+            "arrears_month": arr_mo,
+            "prbs_rate_pct": 10.19,
+            "u_fy": round(u_fy, 4),
+            "k_fy": round(k_fy, 4),
+            "ot_fy": round(ot_fy, 4),
+            "residual_pool_pct": res_pool_pct,
+            "notes": "Generated by gen_22_hr_payroll"
         })
         
     df_policies = pd.DataFrame(payroll_policies)
+    (DATA_BANK_ROOT / "reference" / "ar_targets").mkdir(parents=True, exist_ok=True)
+    df_policies.to_csv(DATA_BANK_ROOT / "reference" / "ar_targets" / "payroll_policy_fy.csv", index=False)
     df_policies.to_csv(TARGETS_CSV.parent / "payroll_policy_fy.csv", index=False)
     df_policies.to_csv(LANDING_SAP / "payroll_policy_fy.csv", index=False)
     
@@ -242,73 +321,40 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
     df_payroll["k_fy"] = df_payroll["fiscal_year"].map(k_dict)
     df_payroll["ot_fy"] = df_payroll["fiscal_year"].map(ot_dict)
     
-    df_payroll["cafeteria_allowances_inr"] = df_payroll["cafeteria_allowance_inr_base"] * df_payroll["u_fy"].clip(upper=1.0)
-    df_payroll["overtime_amount_inr"] = df_payroll["overtime_amount_inr_base"] * df_payroll["ot_fy"]
-    df_payroll["prp_inr"] = df_payroll["prp_accrual_inr_base"] * df_payroll["k_fy"]
+    df_payroll["cafeteria_allowances_inr"] = (df_payroll["cafeteria_allowance_inr_base"] * df_payroll["u_fy"].clip(upper=1.0)).round(2)
+    df_payroll["overtime_amount_inr"] = (df_payroll["overtime_amount_inr_base"] * df_payroll["ot_fy"]).round(2)
+    df_payroll["prp_inr"] = (df_payroll["prp_accrual_inr_base"] * df_payroll["k_fy"]).round(2)
     
-    # 3rd-PRC wage arrears and settlement provisions per FY so line A reconciles within SPEC-04 §7.4 bounds
+    # 3rd-PRC wage arrears only in FY18 and FY19 per SPEC-04 §6.4 step 4 (no per-person plugs outside FY18/FY19)
     df_payroll["arrears_inr"] = 0.0
-    base_line_a_by_fy = (
-        df_payroll["fixed_note35a"]
-        + df_payroll["cafeteria_allowances_inr"]
-        + df_payroll["overtime_amount_inr"]
-        + df_payroll["prp_inr"]
-    ).groupby(df_payroll["fiscal_year"]).sum().to_dict()
-    bp_sum_by_fy = df_payroll.groupby("fiscal_year")["LGART_1001"].sum().to_dict()
-    for fy_key, base_a in base_line_a_by_fy.items():
-        target_a = note35_targets.get((fy_key, "note35_1_a"))
-        if target_a:
-            target_a_inr = target_a * 1e6
-            gap_a = target_a_inr - base_a
-            bp_sum = bp_sum_by_fy.get(fy_key, 0.0)
-            if gap_a > 0 and bp_sum > 0:
-                factor = round(gap_a / bp_sum, 6)
-                df_payroll.loc[df_payroll["fiscal_year"] == fy_key, "arrears_inr"] = (
-                    df_payroll.loc[df_payroll["fiscal_year"] == fy_key, "LGART_1001"] * factor
-                ).round(2)
-        elif fy_key == "FY17":
-            df_payroll.loc[df_payroll["fiscal_year"] == "FY17", "arrears_inr"] = (df_payroll.loc[df_payroll["fiscal_year"] == "FY17", "LGART_1001"] * 0.25).round(2)
-        elif fy_key == "FY18":
-            df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "LGART_1001"] = df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "LGART_1001"]
-            df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "arrears_inr"] = (df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "LGART_1001"] * 0.15).round(2)
-        elif fy_key == "FY19":
-            df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "arrears_inr"] = (df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "LGART_1001"] * 0.10).round(2)
+    df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "arrears_inr"] = (df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "LGART_1001"] * 0.15).round(2)
+    df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "arrears_inr"] = (df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "LGART_1001"] * 0.10).round(2)
 
     
     df_payroll["LGART_9001"] = df_payroll["fixed_note35a"] + df_payroll["cafeteria_allowances_inr"] + df_payroll["overtime_amount_inr"] + df_payroll["prp_inr"] + df_payroll["arrears_inr"]
 
-    # BRSR FY26 median annual remuneration calibration by cadre x gender (EMP-R16 / test_22_hr_sat)
-    emp_cadre_map = df_emp.set_index("PERNR")["PERSK"].map(lambda g: grades[g]["cadre"]).to_dict()
-    emp_gender_map = df_emp.set_index("PERNR")["GESCH"].to_dict()
-    fy26_mask = df_payroll["fiscal_year"] == "FY26"
-    if fy26_mask.any():
-        fy26_emp = df_payroll[fy26_mask].groupby("PERNR").agg(
-            ann=("LGART_9001", "sum"),
-            cnt=("LGART_9001", "count"),
-        ).reset_index()
-        fy26_emp["cadre"] = fy26_emp["PERNR"].map(emp_cadre_map)
-        fy26_emp["gender"] = fy26_emp["PERNR"].map(emp_gender_map)
-        median_targets = {
-            ("executive", "Male"): 43.3e5,
-            ("executive", "Female"): 37.55e5,
-            ("non_executive", "Male"): 21.97e5,
-            ("non_executive", "Female"): 19.02e5,
-        }
-        add_per_month: Dict[str, float] = {}
-        for (c_val, g_val), t_inr in median_targets.items():
-            sub_grp = fy26_emp[(fy26_emp["cadre"] == c_val) & (fy26_emp["gender"] == g_val)].sort_values("ann").reset_index(drop=True)
-            n_grp = len(sub_grp)
-            for idx_r in range(max(0, n_grp // 2 - 2), n_grp):
-                r_emp = sub_grp.iloc[idx_r]
-                if r_emp["ann"] < t_inr:
-                    diff_inr = (t_inr * 1.001) - r_emp["ann"]
-                    add_per_month[r_emp["PERNR"]] = round(diff_inr / r_emp["cnt"], 2)
-        if add_per_month:
-            add_series = df_payroll.loc[fy26_mask, "PERNR"].map(add_per_month).fillna(0.0)
-            df_payroll.loc[fy26_mask, "arrears_inr"] = (df_payroll.loc[fy26_mask, "arrears_inr"] + add_series).round(2)
-            df_payroll["LGART_9001"] = df_payroll["fixed_note35a"] + df_payroll["cafeteria_allowances_inr"] + df_payroll["overtime_amount_inr"] + df_payroll["prp_inr"] + df_payroll["arrears_inr"]
+    
     
     df_payroll["LGART_9002"] = df_payroll["LGART_9001"] - df_payroll["income_tax_tds_inr"] - df_payroll["employer_cpf_inr"]
+    
+    df_payroll["cost_expensed_inr"] = df_payroll["LGART_9001"] + df_payroll["employer_cpf_inr"] + df_payroll["employer_prbs_inr"] + df_payroll["csss_contribution_inr"] + df_payroll["gratuity_accrual_inr"] + df_payroll["leave_provision_accrual_inr"] + df_payroll["employer_prmb_inr"] + df_payroll["medical_scheme_cost_inr"] + df_payroll["group_insurance_premium_inr"] + df_payroll["accident_insurance_premium_inr"] + df_payroll["housing_cost_inr"] + df_payroll["canteen_subsidy_inr"] + df_payroll["transport_subsidy_inr"] + df_payroll["staff_welfare_alloc_inr"] + df_payroll["training_cost_inr"]
+    df_payroll["cost_capitalised_inr"] = 0.0
+    for fy in df_payroll["fiscal_year"].unique():
+        target_staff_exp = note35_targets.get((fy, "staff_expenditure_note35"))
+        if not target_staff_exp:
+            target_staff_exp = note35_targets.get((fy, "employee_cost_total"), 0) * (26521.21 / 102107.09)
+        if target_staff_exp:
+            target_inr = target_staff_exp * 1e6
+            fy_mask = df_payroll["fiscal_year"] == fy
+            total_expensed = df_payroll.loc[fy_mask, "cost_expensed_inr"].sum()
+            if total_expensed > 0:
+                prod_sh = target_inr / total_expensed
+                df_payroll.loc[fy_mask, "cost_expensed_production_inr"] = (df_payroll.loc[fy_mask, "cost_expensed_inr"] * prod_sh).round(2)
+                df_payroll.loc[fy_mask, "cost_expensed_gae_inr"] = (df_payroll.loc[fy_mask, "cost_expensed_inr"] * (1.0 - prod_sh)).round(2)
+                df_payroll.loc[fy_mask, "cost_allocated_ew_dd_survey_inr"] = 0.0
+                df_payroll.loc[fy_mask, "cost_expensed_pnl_inr"] = df_payroll.loc[fy_mask, "cost_expensed_production_inr"] + df_payroll.loc[fy_mask, "cost_expensed_gae_inr"]
+                df_payroll.loc[fy_mask, "cost_expensed_exploration_inr"] = 0.0
+
     df_payroll["payroll_id"] = [f"PAY-{i:08d}" for i in range(1, len(df_payroll) + 1)]
     
     df_payroll["cost_note35_a_inr"] = df_payroll["LGART_9001"]
@@ -358,7 +404,7 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
                 if pool_amount != 0:
                     pools.append({
                         "fiscal_year": fy,
-                        "month_start": f"{fy[:2]}26-03-01",  # dummy
+                        "month_start": f"20{fy[-2:]}-03-01",  # dummy
                         "pool_code": pool_code,
                         "note35_line": line[-1],
                         "amount_inr": pool_amount,
@@ -389,7 +435,7 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
                 if pool_amount != 0:
                     pools.append({
                         "fiscal_year": fy,
-                        "month_start": f"{fy[:2]}26-03-01",
+                        "month_start": f"20{fy[-2:]}-03-01",
                         "pool_code": pool_code,
                         "note35_line": line[-1],
                         "amount_inr": pool_amount,

@@ -196,7 +196,8 @@ config {
 SELECT
   p.month AS month_start,
   p.fiscal_year,
-  EXTRACT(MONTH FROM p.month) AS fy_month_no,
+  EXTRACT(MONTH FROM CAST(CONCAT(p.month, '01') AS DATE)) AS fy_month_no,
+  (RIGHT(p.month, 2) = '03') AS is_fy_end,
   p.emp_id,
   'active' AS roll_status,
   TRUE AS is_month_end_active,
@@ -245,14 +246,14 @@ SELECT
   'State' AS state_of_posting,
   'X' AS city_class_hra,
   FALSE AS transfer_due_flag,
-  2.0 AS station_tenure_continuous_years,
+  COALESCE(pos.continuous_stay_years, 2.0) AS station_tenure_continuous_years,
 
   -- Pay
-  100000 AS entry_pay_basic_inr,
-  120000 AS entry_pay_ctc_inr,
+  COALESCE(dim_grade.entry_pay_basic_inr, 100000) AS entry_pay_basic_inr,
+  COALESCE(dim_grade.entry_pay_ctc_inr, 120000) AS entry_pay_ctc_inr,
   p.basic_pay_inr,
   p.da_inr,
-  0.0 AS arrears_inr,
+  COALESCE(p.arrears_inr, 0.0) AS arrears_inr,
   p.cafeteria_allowances_inr,
   p.hra_inr,
   p.mining_offshore_allowance_inr,
@@ -266,16 +267,16 @@ SELECT
   p.employer_cpf_inr,
   p.employer_prbs_inr,
   p.employer_prmb_inr,
-  0.0 AS csss_employer_inr,
-  0.0 AS gratuity_accrual_inr,
-  0.0 AS leave_provision_accrual_inr,
-  0.0 AS medical_scheme_cost_inr,
+  COALESCE(p.csss_contribution_inr, 0.0) AS csss_employer_inr,
+  COALESCE(p.gratuity_accrual_inr, 0.0) AS gratuity_accrual_inr,
+  COALESCE(p.leave_provision_accrual_inr, 0.0) AS leave_provision_accrual_inr,
+  COALESCE(p.medical_scheme_cost_inr, 0.0) AS medical_scheme_cost_inr,
   0.0 AS medical_reimbursement_inr,
-  0.0 AS canteen_subsidy_inr,
-  0.0 AS transport_subsidy_inr,
+  COALESCE(p.canteen_subsidy_inr, 0.0) AS canteen_subsidy_inr,
+  COALESCE(p.transport_subsidy_inr, 0.0) AS transport_subsidy_inr,
   0.0 AS insurance_premium_inr,
-  0.0 AS welfare_allocation_inr,
-  0.0 AS employer_cost_noncash_inr,
+  COALESCE(p.staff_welfare_alloc_inr, 0.0) AS welfare_allocation_inr,
+  COALESCE(p.employer_cost_noncash_inr, 0.0) AS employer_cost_noncash_inr,
   p.gross_salary_inr AS gross_earnings_inr,
   p.income_tax_tds_inr,
   0.0 AS cpf_employee_contribution_inr,
@@ -286,14 +287,14 @@ SELECT
   p.net_salary_inr AS net_pay_inr,
   
   -- CTC
-  p.gross_salary_inr * 12 AS ctc_monthly_inr,
-  p.gross_salary_inr * 12 AS ctc_annualised_inr,
-  p.gross_salary_inr AS cost_note35_a_inr,
-  p.employer_cpf_inr AS cost_note35_b_inr,
-  0.0 AS cost_note35_c_inr,
-  0.0 AS cost_note35_d_inr,
-  p.employer_prmb_inr AS cost_note35_e_inr,
-  0.0 AS cost_note35_f_inr,
+  (p.gross_salary_inr + p.employer_cpf_inr + p.employer_prbs_inr + p.employer_prmb_inr) AS ctc_monthly_inr,
+  (p.gross_salary_inr + p.employer_cpf_inr + p.employer_prbs_inr + p.employer_prmb_inr) * 12 AS ctc_annualised_inr,
+  COALESCE(p.cost_note35_a_inr, p.gross_salary_inr) AS cost_note35_a_inr,
+  COALESCE(p.cost_note35_b_inr, p.employer_cpf_inr) AS cost_note35_b_inr,
+  COALESCE(p.cost_note35_c_inr, 0.0) AS cost_note35_c_inr,
+  COALESCE(p.cost_note35_d_inr, 0.0) AS cost_note35_d_inr,
+  COALESCE(p.cost_note35_e_inr, p.employer_prmb_inr) AS cost_note35_e_inr,
+  COALESCE(p.cost_note35_f_inr, 0.0) AS cost_note35_f_inr,
   p.gross_salary_inr + p.employer_cpf_inr AS cost_total_inr,
   0.0 AS capitalised_share,
   0.0 AS cost_capitalised_inr,
@@ -303,14 +304,14 @@ SELECT
   0.0 AS cost_expensed_exploration_inr,
 
   -- Leave
-  0.0 AS el_balance_days,
-  0.0 AS hpl_balance_days,
-  0.0 AS cl_balance_days,
-  0.0 AS el_availed_days,
-  0.0 AS hpl_availed_days,
-  0.0 AS cl_availed_days,
+  COALESCE(lv.closing_balance_days, 0.0) AS el_balance_days,
+  COALESCE(lv.closing_balance_days, 0.0) AS hpl_balance_days,
+  COALESCE(lv.closing_balance_days, 0.0) AS cl_balance_days,
+  COALESCE(lv.days, 0.0) AS el_availed_days,
+  COALESCE(lv.days, 0.0) AS hpl_availed_days,
+  COALESCE(lv.days, 0.0) AS cl_availed_days,
   0.0 AS other_leave_days,
-  0.0 AS el_encashable_days,
+  COALESCE(lv.encashable_balance_days, 0.0) AS el_encashable_days,
   30 AS working_days,
   30 AS days_present,
   0 AS unauthorised_absence_days,
@@ -318,34 +319,49 @@ SELECT
   0.0 AS offshore_days,
 
   -- Training
-  0.0 AS training_hours,
+  COALESCE(trn.training_hours, 0.0) AS training_hours,
   0.0 AS training_hours_fytd,
   TRUE AS mandatory_training_done,
 
   -- APAR
   p.fiscal_year AS apar_fy,
-  'Good' AS apar_grade,
-  4.0 AS apar_score,
-  TRUE AS dpc_eligible_flag,
+  COALESCE(apar.final_rating, 'Good') AS apar_grade,
+  COALESCE(apar.numerical_score, 4.0) AS apar_score,
+  COALESCE(apar.is_dpc_eligible, TRUE) AS dpc_eligible_flag,
   m.doj AS dpc_due_date,
   FALSE AS promoted_in_month_flag,
   p.grade_id AS promotion_from_grade,
   FALSE AS succession_pool_flag,
 
   -- Lifecycle
-  FALSE AS joined_in_month_flag,
+  (p.month = FORMAT_DATE('%Y%m', m.doj)) AS joined_in_month_flag,
   p.fiscal_year AS recruitment_fy,
   'Campus' AS recruitment_channel,
-  FALSE AS separated_in_month_flag,
-  CAST(NULL AS DATE) AS separation_date,
-  CAST(NULL AS STRING) AS separation_type,
-  CAST(NULL AS STRING) AS separation_reason_detail,
-  FALSE AS is_attrition,
+  (sep.emp_id IS NOT NULL) AS separated_in_month_flag,
+  sep.separation_date AS separation_date,
+  sep.separation_type AS separation_type,
+  sep.separation_reason_detail AS separation_reason_detail,
+  (sep.separation_type IN ('Resignation', 'Dismissal')) AS is_attrition,
 
   -- Analytic flags
-  FALSE AS delhi_overdue_flag,
+  (p.wc_id = 'WC-DEL' AND pos.continuous_stay_years > 5) AS delhi_overdue_flag,
   CAST(NULL AS STRING) AS is_persona_identity,
   [] AS dq_flags
 
+
 FROM ${ref("sap_py_cluster_exp")} p
 LEFT JOIN ${ref("sap_pa0002_pa0001")} m ON p.emp_id = m.emp_id
+LEFT JOIN ${ref("sap_pa0001")} pos ON p.emp_id = pos.emp_id AND p.month = pos.month
+LEFT JOIN ${ref("sap_pa0000_separations")} sep ON p.emp_id = sep.emp_id AND p.month = sep.month
+LEFT JOIN ${ref("sap_eapar_ratings")} apar ON p.emp_id = apar.emp_id AND p.fiscal_year = apar.fiscal_year
+LEFT JOIN ${ref("sap_pa2001_pa2006")} lv ON p.emp_id = lv.emp_id AND p.month = lv.month
+LEFT JOIN ${ref("db_exports_lms_attendance")} trn ON p.emp_id = trn.emp_id AND p.month = trn.month
+LEFT JOIN ${ref("sap_pa0000_promotions")} prom ON p.emp_id = prom.emp_id AND p.month = prom.month
+LEFT JOIN ${ref("db_exports_medical_claims_export")} med ON p.emp_id = med.emp_id AND p.month = med.month
+LEFT JOIN ${ref("excel_dpc_tracker")} dpc ON p.emp_id = dpc.emp_id AND p.fiscal_year = dpc.fiscal_year
+LEFT JOIN ${ref("dim_grade_pay_scale")} dim_grade ON p.grade_id = dim_grade.grade_id
+LEFT JOIN ${ref("dim_benefit_scheme")} dim_ben ON p.grade_id = dim_ben.grade_id
+LEFT JOIN ${ref("dim_insurance_plan")} dim_ins ON p.grade_id = dim_ins.grade_id
+LEFT JOIN ${ref("dim_allowance_rule")} dim_all ON p.wc_id = dim_all.wc_id
+LEFT JOIN ${ref("sap_payroll_policy_fy")} dim_pol ON p.fiscal_year = dim_pol.fiscal_year
+

@@ -1,2 +1,7 @@
-config { type: "assertion", name: "assert_recon_block_pass" }
-SELECT * FROM ${ref("recon_checks")} WHERE severity = 'BLOCK' AND status = 'FAIL'
+config {
+  type: "assertion",
+  schema: "hrfin_gold",
+  name: "assert_recon_block_pass"
+}
+SELECT * FROM ${ref("recon_checks")}
+WHERE severity = 'BLOCK' AND status = 'FAIL'

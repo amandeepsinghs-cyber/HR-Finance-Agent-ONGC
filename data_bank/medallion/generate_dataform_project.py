@@ -63,7 +63,7 @@ def write_sources_js():
         "excel_icc_committees", "excel_reserves_annual", "excel_price_fx", "excel_treasury_forex_hedges",
         "excel_actuarial_benefit_liabilities", "excel_energy_transition_progress", "excel_cag_paras_register", "excel_board_agenda_index",
         # 4 Addendum bronze tables
-        "db_exports_env_incident_log", "excel_posh_register", "sap_apprentice_ledger", "sap_ekko_channel"
+        "db_exports_env_incident_log", "excel_posh_register", "sap_apprentice_ledger", "sap_ekko_channel", "sap_employee_cost_pool", "sap_payroll_policy_fy"
     ]
 
     ref_dims = [
@@ -90,6 +90,19 @@ refDims.forEach(tableName => {
   declare({
     database: "ongc-hr-finance-agent",
     schema: "hrfin_silver",
+    name: tableName,
+  });
+});
+
+// hrfin_ref dims
+const hrfinRefDims = [
+  "dim_grade_pay_scale", "dim_ida_rate", "dim_hra_rate", "dim_allowance_rule", "dim_payroll_policy_fy", "dim_benefit_scheme", "dim_insurance_plan"
+];
+
+hrfinRefDims.forEach(tableName => {
+  declare({
+    database: "ongc-hr-finance-agent",
+    schema: "hrfin_ref",
     name: tableName,
   });
 });
@@ -209,7 +222,7 @@ def generate_silver_models():
         "env_incidents": "db_exports_env_incident_log",
         "posh_cases": "excel_posh_register",
         "apprentices": "sap_apprentice_ledger",
-        "po_channel": "sap_ekko_channel",
+        "po_channel": "sap_ekko_channel", "employee_cost_pool": "sap_employee_cost_pool", "payroll_policy_fy": "sap_payroll_policy_fy",
     }
 
     excel_column_positions = {
@@ -2209,3 +2222,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

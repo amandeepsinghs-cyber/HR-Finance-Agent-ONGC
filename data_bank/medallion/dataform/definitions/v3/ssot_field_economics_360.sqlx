@@ -1,0 +1,58 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "ssot_field_economics_360",
+  description: "Cost-object x month SSOT Field Economics-360 table",
+  bigquery: {
+    partitionBy: "month_start",
+    clusterBy: ["segment", "object_type", "object_id"]
+  }
+}
+
+SELECT
+  DATE_TRUNC(COALESCE(SAFE.PARSE_DATE('%Y-%m-%d', CONCAT(p.fiscal_year, '-04-01')), DATE '2025-04-01'), MONTH) AS month_start,
+  p.fiscal_year,
+  COALESCE(p.field_id, p.pnl_id) AS object_id,
+  COALESCE(f.name, p.pnl_id) AS object_name,
+  p.line_type AS object_type,
+  p.asset_wc_id,
+  f.basin_name AS basin,
+  f.state_code AS state,
+  CASE
+    WHEN f.onshore_offshore = 'offshore' THEN 'Offshore'
+    WHEN f.onshore_offshore = 'onshore' THEN 'Onshore'
+    ELSE 'Unallocated'
+  END AS segment,
+  'Operated' AS operatorship,
+  CAST(1.0 AS NUMERIC) AS pi_share,
+  COALESCE(f.field_category, 'mature') AS maturity,
+  COALESCE(f.hydrocarbon_type, 'oil+gas') AS hydrocarbon,
+  CONCAT('Modelled field split — totals reconcile to ONGC AR ', p.fiscal_year, ' (standalone)') AS data_label,
+  'v3_ras_run' AS build_run_id,
+  CAST(p.total_production_boe AS NUMERIC) AS prod_boe,
+  CAST(p.oil_revenue_inr_cr * 10 AS NUMERIC) AS rev_crude,
+  CAST(p.gas_revenue_inr_cr * 10 AS NUMERIC) AS rev_gas,
+  CAST(0 AS NUMERIC) AS rev_vap,
+  CAST(0 AS NUMERIC) AS rev_other_operating,
+  CAST(p.gross_revenue_inr_cr * 10 AS NUMERIC) AS revenue_from_operations,
+  CAST(p.statutory_royalty_inr_cr * 10 AS NUMERIC) AS royalty,
+  CAST(p.statutory_cess_inr_cr * 10 AS NUMERIC) AS oidb_cess,
+  CAST(p.statutory_windfall_tax_saed_inr_cr * 10 AS NUMERIC) AS excise_saed,
+  CAST((p.statutory_royalty_inr_cr + p.statutory_cess_inr_cr + p.statutory_windfall_tax_saed_inr_cr) * 10 AS NUMERIC) AS levies_total,
+  CAST(p.allocated_manpower_cost_inr_cr * 10 AS NUMERIC) AS staff_expenditure,
+  CAST(p.allocated_manpower_cost_inr_cr * 1e7 AS NUMERIC) AS cost_expensed_production_inr,
+  CAST(p.workover_repairs_cost_inr_cr * 10 AS NUMERIC) AS workover_ops,
+  CAST(p.water_handling_cost_inr_cr * 10 AS NUMERIC) AS water_injection_desalting,
+  CAST(p.chemicals_consumables_cost_inr_cr * 10 AS NUMERIC) AS consumption_stores_spares,
+  CAST(p.logistics_osv_chopper_cost_inr_cr * 10 AS NUMERIC) AS transport_expenditure,
+  CAST(p.power_fuel_cost_inr_cr * 10 AS NUMERIC) AS power_fuel,
+  CAST(p.contractor_cost_inr_cr * 10 AS NUMERIC) AS contractual_hire,
+  CAST(p.other_opex_inr_cr * 10 AS NUMERIC) AS other_production_exp,
+  CAST(p.total_opex_inr_cr * 10 AS NUMERIC) AS opex_total,
+  CAST(p.dda_depreciation_inr_cr * 10 AS NUMERIC) AS dda_total,
+  CAST(p.ebitda_inr_cr * 10 AS NUMERIC) AS ebitda,
+  CAST(p.pbt_inr_cr * 10 AS NUMERIC) AS segment_result_contrib,
+  CAST(p.pbt_inr_cr * 10 AS NUMERIC) AS pbt_contrib,
+  CAST(p.ebitda_margin_pct AS NUMERIC) AS field_ebitda_margin_pct
+FROM ${ref("field_pnl_annual")} p
+LEFT JOIN ${ref("hrfin_silver", "dim_field")} f ON p.field_id = f.field_id

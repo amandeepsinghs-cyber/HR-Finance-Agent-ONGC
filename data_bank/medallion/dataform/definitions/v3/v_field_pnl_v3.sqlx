@@ -1,0 +1,8 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "v_field_pnl_v3",
+  description: "Compatibility view over v_field_economics_fy for field P&L"
+}
+
+SELECT * FROM ${ref("v_field_economics_fy")}
