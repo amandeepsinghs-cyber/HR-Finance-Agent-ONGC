@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 06:53 UTC · branch `v3/P0-stabilise` @ `87b8cca`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 07:41 UTC · branch `v3/P0-stabilise` @ `b92dc35`
 
 > [!IMPORTANT]
-> **Overall: 48% complete (weighted)** — 27/62 steps ✅ done, 8 in flight, 27 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 18 warning(s).
+> **Overall: 50% complete (weighted)** — 28/62 steps ✅ done, 7 in flight, 27 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 20 warning(s).
 
 ## 1. Phase progress
 
@@ -11,7 +11,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `███████████████░░░░░` 77% | 8 | 1 | 0 | 2 | 1 | 0 | 12 |
-| **P2H** | HR: personas, V19, Employee-360 | `██████░░░░░░░░░░░░░░` 28% | 1 | 1 | 0 | 2 | 4 | 0 | 8 |
+| **P2H** | HR: personas, V19, Employee-360 | `████████░░░░░░░░░░░░` 38% | 2 | 1 | 0 | 1 | 4 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `█░░░░░░░░░░░░░░░░░░░` 4% | 0 | 0 | 0 | 1 | 5 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
 | **P4** | Visual 9/10 + exports (V21) | `████████████████░░░░` 81% | 7 | 0 | 0 | 1 | 1 | 0 | 9 |
@@ -26,7 +26,6 @@
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.10a | 🔍 In review | Compiler on verified rows + honest provenance (`YUKTI_FIN_SSOT_V3`) | O | Apply review findings / approve |
 | P1.11 | 🔄 In progress | Finance golden set (P1 gate) + V20 chain (P2F gate) | F + FL | Complete build + evidence |
-| P2H.2 | 🔄 In progress | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Complete build + evidence |
 | P2H.3 | 🔍 In review | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | Apply review findings / approve |
 | P2H.5 | 🔄 In progress | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | Complete build + evidence |
 | P2F.1 | 🔄 In progress | Year clarification (chips + voice) | O | Complete build + evidence |
@@ -65,7 +64,7 @@
 | V14 | FEAT-007, FEAT-010, FEAT-011, FEAT-014 | 🟡 🔴 🟡 🔴 | P2F.5, P3.1, P5.4, P5.5, P5.6 | 🟡 |
 | V15 | FEAT-015, FEAT-026 | 🟡 🔴 | P4.5, P4.8 | 🟡 |
 | V16 | FEAT-016 | 🟡 |  | 🟡 |
-| V17 | FEAT-017, FEAT-031 | 🔴 🔴 | P2H.2 | 🔴 |
+| V17 | FEAT-017, FEAT-031 | 🔴 🔴 |  | 🔴 |
 | V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.10a, P2H.7, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
 | V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5, P2F.6 | 🔴 |
@@ -97,7 +96,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-014 Eval-gated release & Cloud Run redeploy | 🔴 | 2/5 |
 | FEAT-015 Any-chart re-presentation & chart excellence | 🟡 | 0/0 |
 | FEAT-016 AI aura visual language | 🟡 | 1/1 |
-| FEAT-017 Eleven-persona matrix + function split + `self` scope | 🔴 | 1/2 |
+| FEAT-017 Eleven-persona matrix + function split + `self` scope | 🔴 | 2/2 |
 | FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 6/8 |
 | FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 1/2 |
 | FEAT-020 Knowledge RAG over real AR text | 🔴 | 1/1 |
@@ -117,7 +116,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 6 · 🟠 in progress 6 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 31 total — 🔴 open 15 · 🟠 in progress 10 · ↩ regressed 0 · ✅ closed 6
+- **Important:** 31 total — 🔴 open 13 · 🟠 in progress 12 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
@@ -127,7 +126,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-02 | open | BS/CF/ratios wrong (FY24 total assets 4,22,820 vs AR 4,46,021; FY25 CFO 63,180 vs 73,010;  | P0.3, P1.10b, P1.2 | P0.3:✅ P1.10b:✅ P1.2:✅ |
 | BUG-03 | open | Same metric, three values (FY17 royalty 7,635 / 8,548 / AR 11,575) | P1.10b, P1.6 | P1.10b:✅ P1.6:✅ |
 | BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:🔍 P1.11:🔄 P5.1:⬜ P5.3:⬜ |
-| BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:🔄 |
+| BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:✅ |
 | BUG-07 | in_progress | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:✅ |
 | BUG-08 | in_progress | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:✅ |
 | BUG-09 | in_progress | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:✅ |
@@ -141,6 +140,14 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `07704f5` | 2026-10-24 | P2H.2 (G4 r6 fix): Pass principal to runner on HTTP/WS, CMD audit-only query_data, HTTP tests added |
+| `36b86c0` | 2026-10-24 | P2H.5 (WIP r2): plugs removed, bounds enforced, FY20 added; known gap documented |
+| `8f52a91` | 2026-10-24 | P1.10a (G4 r5 fixes): fix BQ snapshot fallback, add legacy_unverified and derived metrics |
+| `24f439a` | 2026-10-24 | P2H.2 (G4 r5 fix): Restrict query_data to CMD, instantiate agent per principal turn, pass rbac r5 bypass tests |
+| `c0b1df2` | 2026-10-24 | P2H.2 (G4 r4b): Fix D-64 query_data tool absence test, fix literal table name in catalog consistency test |
+| `2a94fe1` | 2026-10-24 | P1.11 (pre-G4) golden runner + P1 run: 95/117 |
+| `a692dd7` | 2026-10-24 | P1.10a (G4 r4 fixes): Fix snapshot mode ratios, remove trend insights narratives, fix test_p110a assertions, ROCE badges |
+| `80a842d` | 2026-10-24 | P2H.2 (G4 r4 security fix): E1-E4 query_data block, DIR_HR/FIN sqlglot column RBAC, POSH regex expansion |
 | `e772869` | 2026-10-24 | P2H.2 (G4 r3 security fix): Fixed POSH policy topic classification, D-61 secondary suppression label, and tool-level table access  |
 | `15a0e8c` | 2026-10-24 | P1.11 (pre-G4) golden runner + P1 run: 21/117 |
 | `f400a3a` | 2026-10-24 | P1.10b (G4 r2 fixes): Remove archived files from Dockerfile and update landing CSV |
@@ -148,18 +155,11 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `7508d87` | 2026-10-24 | P2H.2 (G4 r2 security fix): Block composite policy+named/sensitive questions and add defence-in-depth |
 | `c8c0cbe` | 2026-10-24 | P2H.5 (pre-G4): Employee-360 synthetic generator regeneration and evidence |
 | `6413d9f` | 2026-10-24 | P2H.2 (G4 r1c security fix): Fix M8/BUG-44 Hindi individual pay/APAR leak |
-| `d904f39` | 2026-10-24 | P1.10a (pre-G4): switch compiler & fallback to verified SSOT, honest provenance, and P1.6 R2-m1..m6 follow-ups |
-| `b23b178` | 2026-10-24 | P2H.2 (G4 r1b fixes): M6 (Hindi refusal fallback fixed via validate_and_repair_contract unconditionally rewriting legacy visual.no |
-| `7bfa44d` | 2026-10-24 | P2F.1 (pre-G4) frontend: ClarifySpec type (SPEC-08 §3.2) + clarify chips on text cards (latest card only; chip sends option value  |
-| `7925561` | 2026-10-24 | P2H.5a (pre-G4): reference YAMLs, employee_targets_fy.csv, pay_rules.py, gen_app_users Rule 5a fix |
-| `36d2c26` | 2026-10-24 | P2H.2 (G4 r1 fixes) backend: SPEC-06 refusal on check_access/repair (M1), question_hi & dedup on alternatives (M4), all chips pass |
-| `45a4016` | 2026-10-24 | P2H.2 (G4 r1 fixes) frontend: M2 blocking first-visit sign-in (no default identity, no data/ws call before a pick), M3 no CMD fall |
-| `8a387b6` | 2026-10-24 | P2H.3 (pre-G4): V19 turns 1-3 ordered levels, DELHI_GT5_CONT_V1 rule, 7-col roster & cohort store (FEAT-032/033; closes BUG-34) |
-| `5cb8a0f` | 2026-10-24 | P4.5 B2 (pre-G4) frontend: bubble (x·y·sqrt-size, size legend, ≤50 labels), sunburst (Σ-conserving tree, per-fill label contrast), |
 
 ## 8. Integrity checks
 
 - ⚠️ BUG-02 is still open although all its steps (P0.3, P1.10b, P1.2) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-06 is still in_progress although all its steps (P0.4, P2H.2) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-02 is still open although all its steps (P0.3, P1.10b, P1.2) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-02 is still open although all its steps (P0.3, P1.10b, P1.2) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-03 is still open although all its steps (P1.10b, P1.6) are ✅ — close it in BUG_REGISTER.md.
@@ -168,6 +168,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 - ⚠️ BUG-07 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-27 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-28 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-06 is still in_progress although all its steps (P0.4, P2H.2) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-08 is still in_progress although all its steps (P4.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-09 is still in_progress although all its steps (P4.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-22 is still in_progress although all its steps (P4.1) are ✅ — close it in BUG_REGISTER.md.
