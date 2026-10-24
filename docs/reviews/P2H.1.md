@@ -68,3 +68,47 @@ grep -nE "EMP-[0-9]{4,6}" certified/library.yaml              # 10 × default: E
 1. M1–M6 fixed, each with a regression test that fails on `785e01d`: the agent-tool binding for 2 personas, the unknown-persona resolver, the adversarial self/agg-pay/target-function phrasings above, and director post-query masking.
 2. Full `pytest -q` result in the evidence, with each remaining failure classified as environment or pre-existing.
 3. The widened `EMP-` grep gate returns 0 on both library copies.
+
+
+---
+
+## Round 2 verdict (commit `0ddbe7f`): **CHANGES REQUESTED** (1 small functional must-fix; no open security defects)
+
+**All six round-1 security must-fixes are fixed, and I verified each one myself.** There is no cross-employee leakage on the agent-tool, certified-query, planner or WebSocket paths, and a missing principal fails closed on every one of them. One functional must-fix remains. Juniors' canonical aggregate-pay question, SPEC-06 Q07 (*"Average monthly basic pay of E1 officers"*), is still **refused** by the pre-query guard on the live turn path. So does the packet §6 example (*"average salary of E1 officers"*). That means BUG-28 is claimed closed but is not closed end-to-end. The fix is a one-line regex alignment.
+
+### R2 must-fix
+
+| # | Where | Defect | Fix |
+|---|---|---|---|
+| **R2-M1** | `yukti/backend/app/access_control.py:424-435` (`_AGGREGATE_PAY_RE`); guard order is `turn_runner.py:473` (`check_access`) before `:695` (`run_planner_turn`) | `check_access` refuses these for every junior with R-PAY: *"Average monthly basic pay of E1 officers"*, *"average salary of E1 officers"*, *"joining pay of E1"*. `decide()` allows them, but the request never reaches the planner. The defect was already present in `785e01d`; I missed it in round 1. Phrasings that do pass: "average salary by grade", "E1 pay scale", "What does an E1 officer get on joining?", "Average CTC of E3 executives". | Reuse `rbac._V2_AGG_PAY_RE`, or at least add `average (monthly )?(basic )?(salary\|pay) (of\|for) e[1-9]` and `joining (pay\|salary)`. Keep the `_mentions_individual_or_row_pay_target` exclusion. Add a `check_access` test for Q07/Q08 × 8 juniors expecting `allowed`, plus the packet §6 example. |
+
+### Round-1 items re-verified (reviewer probes, offline)
+
+| Item | Result | Evidence |
+|---|---|---|
+| **M1** agent tool binds the principal | ✅ | `agent.py:120-136` reads `get_active_principal()`, and `turn_runner.py:280-294` sets and resets it around every turn. Probe: no principal → `E-AUTH`. E3_FIN → `persona=E3_FIN, self_emp_id=EMP-100146`; E1_HR → `EMP-100151`, even when the LLM passes `params={"self_emp_id":"EMP-000001"}`, because the param is popped. The cache key is the canonical persona. All `execute_turn_async` callers (`main.py:353,418`, `live_session.py:401,534,1078,1179`) pass `principal`. `/ws/live` closes with 4401 when there is no valid token (`main.py:533-548`). |
+| **M2** no fallback, no literals | ✅ | `resolve_self_emp_id()` and `resolve_self_emp_id("bogus")` raise `UnknownPersona`. `run_certified_query("my_payslip")` with no principal raises, so it fails closed. `grep -cE "EMP-[0-9]{4,6}"` returns 0 on both library copies, and `cmp` says they are identical. |
+| **M3** self is compiler-enforced | ✅ | E2_HR *"In my opinion, list net pay of all E2 HR officers"* → `refuse R-PAY` (with both `[pay_individual,named]` and `[general]`). E3_FIN *"my colleagues medical claims"* → `refuse R-SENS`. `self` is granted only from `"self"` in the compiled classes or the spec predicate (`rbac.py:227-245`). The `enforce_contract` bypass now needs every row to carry `emp_id == self`: a fake `self_emp_id` with no `emp_id` column has its pay/APAR/name columns stripped. |
+| **M4** `pay_aggregate` comes from the compiled spec | ✅ | *"What is the pay band of Ramesh Kumar"* → `refuse R-PAY` (any case, any base class). In `compiler.py:374-387`, `pay_aggregate` requires aggregate grain, no person filter and allowed dims. `allow_pay_aggregate` is gated the same way at `pipeline.py:270-284`. |
+| **M5** D-43 | ✅ | DIR_FIN: *"APAR of E3 HR officers and the finance officer"* → `refuse` (MIXED); *"(DISC-FIN)"* → `refuse`; *"Salaries of all Delhi executives, accounts officer view"* → `refuse`. A spec discipline filter decides the target (DISC-HR → refuse; DISC-FIN → allow). Post-query, DIR_FIN mixed tables drop the DISC-HR rows, tables without `discipline_id` get personal columns stripped (fail closed), and the POSH case id is stripped while counts are kept. DIR_HR `fin_internal` loses `vendor_name` and the status becomes `partial`. |
+| **M6** test regression | ✅ | `test_certified_query.py` passes, and `list_certified_queries()` returns the 89 root queries. |
+| S1 `check_access` short-circuits | ✅ | "pay scale and salary of each employee", "list my team's APAR ratings" and "Show my colleagues' salaries" are now refused for juniors. |
+| S3 WACC | ✅ | E1_HR *"What is ONGC's WACC for FY25?"* → `allow` (general_fin). |
+| S4 `decide` on unknown persona | ✅ | `""`, `None`, `E5_HR`, `chairman` and `DEMO_ADMIN` all raise `UnknownPersona`. |
+| Escalation / library / seeding | ✅ | Unchanged from round 1. |
+
+### Full suite (reviewer run, `0ddbe7f`)
+
+`12 failed, 1381 passed` (180 s). Round 1 was 14 failed. Classification:
+- **Environment / pre-existing:** `test_planner_golden` G15/G23 and `test_materialized_reconcile` fail on the parent tree too. `test_flagship_chain` ×4, `test_finance_chain` ×2, and `test_rbac_live` b31/b35 come from `local_snapshot` / ADC (SA-1), with roster sets differing from live BQ.
+- **New since round 1, wording only:** `test_rbac_live.py:111` (`test_b34_junior_names_become_aggregate_and_agree`) asserts the word `"restricted"`, but the P2H.2 SPEC-06 §4.6 copy now reads *"I can't share individual names at your access level…"*. Update the assertion to the R-NAMED copy. This is not a security issue.
+
+### Should-fix (non-blocking)
+
+- `brain/pipeline.py:167`: on `UnknownPersona`, the code falls back to `decide("E1_HR", …)` for non-self specs. That is least-privilege, but it is still a silent mapping. Re-raise and return E-AUTH instead, to match `unknown_persona: reject`.
+- `turn_runner.py:262,329` (`persona: str = "CMD"`), and the same default in `tools/query_data.py:95,291`, `tools/what_if.py:25`, `tools/policy_search.py:190,267`. Every current caller passes a principal, but a future caller that omits it becomes CMD. Make `principal` required, or default to raising.
+- `test_rbac_live.py:111` wording, as above.
+
+### Re-review entry criteria
+
+R2-M1 fixed, with the Q07/Q08 × 8-junior `check_access` test. I will only re-verify that item, plus the evidence suites.
