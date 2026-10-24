@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 14:23 UTC · branch `v3/P0-stabilise` @ `bc2d32c`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 14:46 UTC · branch `v3/P0-stabilise` @ `f604c85`
 
 > [!IMPORTANT]
-> **Overall: 94% complete (weighted)** — 57/62 steps ✅ done, 4 in flight, 1 to do, 0 blocked. **2 blocker bugs open.** Integrity: 0 error(s), 1 warning(s).
+> **Overall: 95% complete (weighted)** — 58/62 steps ✅ done, 3 in flight, 1 to do, 0 blocked. **2 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
@@ -11,7 +11,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `███████████████████░` 94% | 11 | 0 | 0 | 1 | 0 | 0 | 12 |
-| **P2H** | HR: personas, V19, Employee-360 | `██████████████░░░░░░` 72% | 5 | 0 | 0 | 3 | 0 | 0 | 8 |
+| **P2H** | HR: personas, V19, Employee-360 | `████████████████░░░░` 81% | 6 | 0 | 0 | 2 | 0 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `████████████████████` 100% | 6 | 0 | 0 | 0 | 0 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `████████████████████` 100% | 10 | 0 | 0 | 0 | 0 | 0 | 10 |
 | **P4** | Visual 9/10 + exports (V21) | `████████████████████` 100% | 9 | 0 | 0 | 0 | 0 | 0 | 9 |
@@ -24,7 +24,6 @@
 | Step | Status | Task | Owner | Next action |
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
-| P2H.6 | 🔄 In progress | Employee-360 Dataform build, semantic model (pay components, KPIs, entry pay), certified queries | O→F (O: certified SQL; F: Dataform wiring) | Complete build + evidence |
 | P2H.7 | 🔄 In progress | Field Economics-360: production recalibration, RAS allocation engine, Dataform | O | Complete build + evidence |
 | P2H.8 | 🔄 In progress | Reconciliation gates: `recon_checks` (30 EMP-R + 17 FLD-R), assertions, offline tests, golden eval | O→F (O: recon rules/SQL + BLOCK assertion; F: tests) | Complete build + evidence |
 
@@ -57,17 +56,17 @@
 | V8 | FEAT-001, FEAT-013 | ✅ 🔴 |  | 🟡 |
 | V11 | FEAT-001, FEAT-002, FEAT-003, FEAT-009 | ✅ 🟡 ✅ 🔴 |  | 🟡 |
 | V12 | FEAT-004, FEAT-005 | 🟡 ✅ |  | 🟡 |
-| V13 | FEAT-006, FEAT-009, FEAT-010, FEAT-011, FEAT-021 | 🟡 🔴 🔴 🟡 🟡 | P2H.6, P2H.8 | 🟡 |
+| V13 | FEAT-006, FEAT-009, FEAT-010, FEAT-011, FEAT-021 | 🟡 🔴 🔴 🟡 🟡 | P2H.8 | 🟡 |
 | V14 | FEAT-007, FEAT-010, FEAT-011, FEAT-014 | 🟡 🔴 🟡 🔴 | P5.6 | 🟡 |
 | V15 | FEAT-015, FEAT-026 | 🟡 🔴 |  | 🟡 |
 | V16 | FEAT-016 | 🟡 |  | 🟡 |
 | V17 | FEAT-017, FEAT-031 | 🔴 🔴 |  | 🔴 |
 | V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P2H.7, P2H.8 | 🔴 |
-| V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P2H.6, P2H.8 | 🟡 |
+| V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P2H.8 | 🟡 |
 | V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1 | 🔴 |
 | V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 |  | 🟡 |
 | V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1 | ⛔ |
-| V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P2H.6, P2H.7, P2H.8 | 🟡 |
+| V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P2H.7, P2H.8 | 🟡 |
 
 _Not mapped to a feature (process / question-bank / naming verbatims, tracked in UPGRADE_CHECKLIST Part A and docs/question_bank.md): V1, V4, V5, V9, V10._
 
@@ -84,7 +83,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-005 Executive UI modernisation | ✅ | 0/0 |
 | FEAT-006 CMD named employee roster | 🟡 | 1/1 |
 | FEAT-007 Answer contract v2 | 🟡 | 1/1 |
-| FEAT-008 Generated semantic layer | 🟡 | 0/1 |
+| FEAT-008 Generated semantic layer | 🟡 | 1/1 |
 | FEAT-009 QuerySpec planner & compiler (replaces fast-paths) | 🔴 | 1/1 |
 | FEAT-010 Granular-data RBAC (row/column masking) | 🔴 | 0/0 |
 | FEAT-011 Insight engine & drill-down chips | 🟡 | 1/1 |
@@ -97,7 +96,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 7/8 |
 | FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 1/2 |
 | FEAT-020 Knowledge RAG over real AR text | 🔴 | 1/1 |
-| FEAT-021 Employee-360 enterprise table (realistic, reconciled) | 🟡 | 2/4 |
+| FEAT-021 Employee-360 enterprise table (realistic, reconciled) | 🟡 | 3/4 |
 | FEAT-022 Field economics-360 reconciled to company AR totals | 🔴 | 1/3 |
 | FEAT-023 V19 transfer workflow: Excel intent + Email agent | 🔴 | 2/2 |
 | FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ⛔ | 7/7 |
@@ -113,7 +112,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 1 · 🟠 in progress 1 · ↩ regressed 0 · ✅ closed 12
-- **Important:** 31 total — 🔴 open 1 · 🟠 in progress 1 · ↩ regressed 0 · ✅ closed 29
+- **Important:** 31 total — 🔴 open 0 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 31
 - **Cosmetic:** 1 total — 🔴 open 0 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 1
 
 **Open blockers:**
@@ -145,7 +144,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 ## 8. Integrity checks
 
-- ⚠️ BUG-29 is still open although all its steps (P2H.5) are ✅ — close it in BUG_REGISTER.md.
+✅ No inconsistencies between checklist, bug register, feature list, packets, reviews and git.
 
 ---
 **How this stays current:** every step completion = (1) update the step's Status in `UPGRADE_CHECKLIST.md` (⬜ → 🔨 Built → 🔍 In review → ✅ Done only with a `docs/reviews/<step>.md` APPROVE), (2) close the linked bugs in `BUG_REGISTER.md`, (3) run `python3 scripts/progress/build_progress.py` (regenerate) and `--check` (validate), (4) commit all three files together. The optional git hook (`scripts/progress/install_hook.sh`) blocks commits when `--check` fails.
