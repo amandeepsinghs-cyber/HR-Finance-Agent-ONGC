@@ -69,6 +69,7 @@ export interface ChartSpec {
 
 export interface TableMasking {
   level: 'none' | 'partial' | 'aggregate' | 'refused';
+  code?: string;
   masked_columns?: string[];
   reason?: string;
   rule_ref?: string;
@@ -154,6 +155,12 @@ export interface VisualContainer {
   clause?: ClauseSpec;
   document?: DocumentSpec;
   map?: MapSpec;
+  /** P2H.2: refusal metadata mirrored on the visual */
+  code?: string;
+  rule_ref?: string;
+  alternative?: RefusalAlternative | string | null;
+  alternatives?: RefusalAlternative[];
+  auto_answer_turn_id?: string | null;
   /** v2 (U2.1): side-by-side comparison when mode = 'compare' */
   compare?: CompareSpec;
   /** UI-only (U5.7): the answer's original rows, kept so repeated re-plots never drift */
@@ -241,11 +248,22 @@ export interface SourceCitation {
 
 export type AccessStatus = 'allowed' | 'partial' | 'refused';
 
+/** P2H.2 (SPEC-06 §4.6): a permitted alternative offered with a refusal. */
+export interface RefusalAlternative {
+  label: string;
+  question: string;
+}
+
 export interface AccessControl {
   status: AccessStatus;
   reason?: string;
   rule_ref?: string;
-  alternative?: string;
+  /** refusal code (R-NAMED, R-PAY, R-ROLE, …) */
+  code?: string;
+  alternative?: RefusalAlternative | string | null;
+  alternatives?: RefusalAlternative[];
+  self_emp_id?: string | null;
+  allow_pay_aggregate?: boolean;
 }
 
 export type ExportOption = 'sheets' | 'docs' | 'word' | 'pdf' | 'xlsx';

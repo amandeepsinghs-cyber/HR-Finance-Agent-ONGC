@@ -1,5 +1,6 @@
 'use client';
 
+import { altQuestion } from '@/personas';
 import { PERSONA_DIRECTORY } from '@/personas';
 import React, { useEffect, useState } from 'react';
 import { VoiceOrb, OrbState } from './VoiceOrb';
@@ -197,7 +198,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
           isLatest
           onAsk={onAsk}
           onReplot={onReplot ? (v) => onReplot(latest.id, v) : undefined}
-          onNavigateToAlternative={() => onNavigateToAlternative?.(latest.contract?.access?.alternative)}
+          onNavigateToAlternative={() => onNavigateToAlternative?.(altQuestion(latest.contract?.access?.alternative))}
         />
       ) : null}
     </div>

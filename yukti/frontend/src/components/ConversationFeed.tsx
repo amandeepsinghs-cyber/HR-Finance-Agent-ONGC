@@ -5,6 +5,7 @@
  * (question → answer). The newest card scrolls into view automatically; scrolling up > 100 px pauses
  * that and shows a "Jump to latest" pill. Every historic card stays fully interactive.
  */
+import { altQuestion } from '@/personas';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnswerCard } from './AnswerCard';
 import { LevelMeter } from './TopBar';
@@ -240,7 +241,7 @@ export const ConversationFeed: React.FC<ConversationFeedProps> = ({
                   isLatest={isLast}
                   onAsk={onAsk}
                   onReplot={onReplot ? (v) => onReplot(t.id, v) : undefined}
-                  onNavigateToAlternative={() => onNavigateToAlternative?.(t.contract?.access?.alternative)}
+                  onNavigateToAlternative={() => onNavigateToAlternative?.(altQuestion(t.contract?.access?.alternative))}
                 />
               )}
             </section>

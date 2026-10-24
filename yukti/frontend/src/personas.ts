@@ -62,3 +62,9 @@ export interface PublicPersona {
   grade?: string;
   work_centre?: string;
 }
+
+/** Question text of a refusal alternative (object or legacy string). */
+export function altQuestion(a: { question?: string } | string | null | undefined): string | undefined {
+  if (!a) return undefined;
+  return typeof a === 'string' ? a : a.question || undefined;
+}

@@ -412,7 +412,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               {effectiveVisualType === 'clause' && visual?.clause && <ClauseRenderer clause={visual.clause} isDark={isDark} />}
               {effectiveVisualType === 'document' && visual?.document && <DocumentRenderer document={visual.document} isDark={isDark} />}
               {effectiveVisualType === 'map' && visual?.map && <MapRenderer mapSpec={visual.map} isDark={isDark} />}
-              {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} onViewAlternative={onNavigateToAlternative} />}
+              {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} onAsk={onAsk ? (q) => onAsk(q) : undefined} onViewAlternative={onNavigateToAlternative} />}
               {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
             </section>
 
