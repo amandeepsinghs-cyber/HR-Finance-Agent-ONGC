@@ -358,10 +358,26 @@ class AgentTurnRunner:
             q_clean = query.strip().lower().rstrip("?!.")
             sc_intent = None
 
+        # P4.1 (BEH-07.34 / fedback2): single-metric waterfall request ("Ankleshwar का टोटल रेवेन्यू का वॉटरफॉल चार्ट बना दो")
+        # cannot build a bridge from one number; route to the set_chart_kind waterfall guard so BridgeError copy is returned.
+        if sc_intent is None and requested_chart_kind == "waterfall":
+            is_single_metric_wf = bool(
+                re.search(r"(टोटल\s+रेवेन्यू|कुल\s+रेवेन्यू|total\s+revenue|रेवेन्यू\s+का\s+वॉटरफॉल|रेवेन्यू\s+का\s+वाटरफॉल)", q_clean)
+                and not re.search(r"\b(pat|pbt|profit|pnl|p&l|statement|bridge|income\s+statement)\b|लाभ|प्रॉफिट", q_clean)
+            )
+            if is_single_metric_wf:
+                sc_intent = {"action": "chart_kind", "command": "set_chart_kind", "value": "waterfall"}
+
         if sc_intent:
             cmd = sc_intent["command"]
             val = sc_intent["value"]
             last_vis = dict(session_state.get_last_visual() or {"type": "none", "mode": "replace"})
+            sc_suggestions = [
+                "Plot this as a pie chart",
+                "Show as a horizontal bar chart",
+                "Draft a briefing note on this",
+            ]
+            sc_ui_action: Optional[Dict[str, str]] = {"command": cmd, "value": val}
             if cmd == "go_home":
                 last_vis = {"type": "none", "mode": "replace"}
                 spoken_sc = "Returned to the Yukti home screen."
@@ -377,16 +393,91 @@ class AgentTurnRunner:
             elif cmd == "set_panel_mode":
                 spoken_sc = f"Adjusted the conversation panel to {val}."
             elif cmd == "set_chart_kind":
+                from app.brain.bridge import BridgeError, BridgeOk, bridge, bridge_class_of, single_value_error
+
                 tbl = last_vis.get("table") or {}
                 cols = tbl.get("columns") or session_state.last_columns or []
                 rows = session_state.last_rows or tbl.get("rows") or []
                 if not rows and last_vis.get("chart") and isinstance(last_vis["chart"].get("data"), list):
                     rows = last_vis["chart"]["data"]
                     cols = list(rows[0].keys()) if rows else []
-                if val == "table" and rows:
-                    last_vis["type"] = "table"
+
+                spoken_sc = ""
+                existing_chart = last_vis.get("chart") if isinstance(last_vis.get("chart"), dict) else None
+                has_typed_wf = bool(
+                    existing_chart
+                    and existing_chart.get("kind") == "waterfall"
+                    and isinstance(existing_chart.get("data"), list)
+                    and existing_chart["data"]
+                    and all(isinstance(r, dict) and r.get("type") in ("total", "delta") for r in existing_chart["data"])
+                )
+                is_stmt_vis = bool(
+                    last_vis.get("type") == "statement"
+                    or isinstance(last_vis.get("statement"), dict)
+                    or ("line_code" in cols)
+                    or any(isinstance(r, dict) and bridge_class_of(r.get("line_code")) for r in rows)
+                )
+
+                if val == "table":
+                    if isinstance(last_vis.get("statement"), dict):
+                        last_vis["type"] = "statement"
+                        last_vis["mode"] = "refine"
+                    elif isinstance(last_vis.get("table"), dict) and last_vis["table"].get("rows"):
+                        last_vis["type"] = "table"
+                        last_vis["mode"] = "refine"
+                    elif rows:
+                        last_vis["type"] = "table"
+                        last_vis["mode"] = "refine"
+                        last_vis["table"] = {"columns": cols, "rows": rows[:50]}
+                elif val == "waterfall":
+                    if is_stmt_vis:
+                        stmt_source = last_vis.get("statement") if isinstance(last_vis.get("statement"), dict) else rows
+                        b_res = bridge(stmt_source)
+                        if isinstance(b_res, BridgeOk):
+                            last_vis["type"] = "chart"
+                            last_vis["mode"] = "refine"
+                            last_vis["chart"] = b_res.to_chart_spec(
+                                title=last_vis.get("title") or b_res.default_title()
+                            )
+                            spoken_sc = b_res.spoken_summary(lang=det_lang)
+                        else:
+                            # Keep statement/table on screen; never emit false re-plot confirmation
+                            if isinstance(last_vis.get("statement"), dict):
+                                last_vis["type"] = "statement"
+                            elif isinstance(last_vis.get("table"), dict) and last_vis["table"].get("rows"):
+                                last_vis["type"] = "table"
+                            spoken_sc = b_res.message(lang=det_lang)
+                            sc_ui_action = None
+                    elif has_typed_wf:
+                        last_vis["type"] = "chart"
+                        last_vis["mode"] = "refine"
+                    elif len(rows) <= 1 or last_vis.get("type") in ("kpi", "none"):
+                        b_err = single_value_error()
+                        spoken_sc = b_err.message(lang=det_lang)
+                        ent_name = None
+                        if re.search(r"ankleshwar|अंकलेश्वर", query, re.I) or "ankleshwar" in str(last_vis.get("title") or "").lower():
+                            ent_name = "Ankleshwar"
+                        elif session_state.active_entities.get("wc_name"):
+                            ent_name = str(session_state.active_entities["wc_name"])
+                        sug = b_err.suggestion(lang=det_lang, entity=ent_name)
+                        if sug:
+                            sc_suggestions = [sug] + sc_suggestions[:2]
+                        sc_ui_action = None
+                    elif rows and cols:
+                        last_vis["type"] = "chart"
+                        last_vis["mode"] = "refine"
+                        last_vis["chart"] = build_chart_spec(
+                            kind=val,
+                            columns=cols,
+                            rows=rows,
+                            title=last_vis.get("title", "Updated Chart View"),
+                        )
+                        if not last_vis.get("table"):
+                            last_vis["table"] = {"columns": cols, "rows": rows[:30]}
+                elif existing_chart and existing_chart.get("kind") == val and existing_chart.get("data"):
+                    # Keep existing chart when kinds match
+                    last_vis["type"] = "chart"
                     last_vis["mode"] = "refine"
-                    last_vis["table"] = {"columns": cols, "rows": rows[:50]}
                 elif rows and cols:
                     last_vis["type"] = "chart"
                     last_vis["mode"] = "refine"
@@ -398,22 +489,57 @@ class AgentTurnRunner:
                     )
                     if not last_vis.get("table"):
                         last_vis["table"] = {"columns": cols, "rows": rows[:30]}
-                chart_friendly = {
-                    "pie": "pie chart",
-                    "donut": "donut chart",
-                    "histogram": "histogram distribution",
-                    "hbar": "horizontal ranked bar chart",
-                    "bar": "vertical bar chart",
-                    "stacked_bar": "stacked bar chart",
-                    "line": "line trend chart",
-                    "area": "area chart",
-                    "scatter": "scatter plot",
-                    "treemap": "hierarchical treemap",
-                    "heatmap": "heatmap matrix",
-                    "waterfall": "waterfall bridge chart",
-                    "table": "data table",
-                }.get(val, f"{val} view")
-                spoken_sc = f"I've replotted the current data as a {chart_friendly} on screen."
+
+                # Verify that a valid target visual exists before emitting confirmation copy (BEH-04.20–.21)
+                if val == "table":
+                    visual_ok = last_vis.get("type") in ("table", "statement") and bool(
+                        (last_vis.get("table") or {}).get("rows") or last_vis.get("statement")
+                    )
+                else:
+                    visual_ok = (
+                        sc_ui_action is not None
+                        and last_vis.get("type") == "chart"
+                        and isinstance(last_vis.get("chart"), dict)
+                        and bool(last_vis["chart"].get("data"))
+                    )
+
+                if not visual_ok:
+                    sc_ui_action = None
+                    if not spoken_sc:
+                        if det_lang == "hi":
+                            spoken_sc = f"स्क्रीन पर अभी कोई डेटा उपलब्ध नहीं है जिसे {val} में बदला जा सके। कृपया पहले कोई डेटा प्रश्न पूछें।"
+                        else:
+                            spoken_sc = f"There is no chartable dataset on screen yet to re-plot as a {val}. Ask a data question first, and then I can switch the chart view."
+                elif not spoken_sc:
+                    chart_friendly = {
+                        "pie": "pie chart",
+                        "donut": "donut chart",
+                        "histogram": "histogram distribution",
+                        "hbar": "horizontal ranked bar chart",
+                        "bar": "vertical bar chart",
+                        "stacked_bar": "stacked bar chart",
+                        "line": "line trend chart",
+                        "area": "area chart",
+                        "scatter": "scatter plot",
+                        "treemap": "hierarchical treemap",
+                        "heatmap": "heatmap matrix",
+                        "waterfall": "waterfall bridge chart",
+                        "table": "data table",
+                    }.get(val, f"{val} view")
+                    if det_lang == "hi":
+                        hi_friendly = {
+                            "pie": "पाई चार्ट",
+                            "donut": "डोनट चार्ट",
+                            "histogram": "हिस्टोग्राम",
+                            "hbar": "क्षैतिज बार चार्ट",
+                            "bar": "कॉलम चार्ट",
+                            "line": "रेखा चार्ट",
+                            "waterfall": "वॉटरफॉल चार्ट",
+                            "table": "डेटा तालिका",
+                        }.get(val, chart_friendly)
+                        spoken_sc = f"मैंने वर्तमान डेटा को स्क्रीन पर {hi_friendly} के रूप में प्रदर्शित कर दिया है।"
+                    else:
+                        spoken_sc = f"I've replotted the current data as a {chart_friendly} on screen."
             elif cmd == "export":
                 spoken_sc = f"Exporting the current view to {val.upper()}."
             elif cmd == "navigate_history":
@@ -421,26 +547,23 @@ class AgentTurnRunner:
             else:
                 spoken_sc = f"Applied screen command {cmd}."
 
-            sc_contract = {
+            sc_contract: Dict[str, Any] = {
                 "turn_id": turn_id,
                 "language": det_lang,
                 "persona": norm_persona,
                 "spoken_summary": spoken_sc,
                 "display_text": spoken_sc,
                 "visual": last_vis,
-                "insights": [f"Visual mode updated to {val}"],
+                "insights": [f"Visual mode updated to {val}" if sc_ui_action else "Visual unchanged"],
                 "sources": [{"kind": "data", "object": "hrfin_gold", "sql": session_state.last_sql or ""}],
-                "suggestions": [
-                    "Plot this as a pie chart",
-                    "Show as a horizontal bar chart",
-                    "Draft a briefing note on this",
-                ],
+                "suggestions": sc_suggestions,
                 "access": {"status": "allowed"},
                 "export_options": ["pdf", "xlsx", "sheets"],
                 "status_events": [spoken_sc],
-                "ui_action": {"command": cmd, "value": val},
                 "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
             }
+            if sc_ui_action is not None:
+                sc_contract["ui_action"] = sc_ui_action
             self._validate_contract(sc_contract)
             session_state.record_turn(sc_contract, user_query=query)
             return sc_contract

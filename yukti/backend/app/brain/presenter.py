@@ -152,7 +152,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
     dims = [alias for _, alias in compiled.dims]
     val = compiled.value_columns[0] if compiled.value_columns else (columns[-1] if columns else None)
     if compiled.metric == "pnl_statement" and dims and dims[0] == "line_item":
-        # Single-FY 23-line Schedule III + Yahoo Finance (ONGC.NS) Statement of Profit & Loss
+        # Single-FY Schedule III Statement of Profit & Loss
         fy = (compiled.effective_period or {}).get("fy", "FY26")
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
         rev_r = by_code.get("gross_revenue_inr_cr", {})
@@ -185,35 +185,20 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                 "delta": f"{cpat_r.get('yoy_change_pct'):+.1f}% YoY (Group)" if isinstance(cpat_r.get("yoy_change_pct"), (int, float)) else "Group Net Income",
             },
         ]
-        # 7 clean display columns so Key Takeaways sit side-by-side on desktop
-        disp_cols = ["line_item", "note_ref", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_revenue"]
+        # 7 clean display columns + hidden line_code so frontend re-plot can classify statement lines
+        disp_cols = ["line_item", "note_ref", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_revenue", "line_code"]
         disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
-        # Build step-by-step P&L Waterfall Bridge (Revenue -> Levies -> Opex -> EBITDA -> Other Inc -> Expl/DD&A/Fin -> PBT -> Tax -> PAT)
-        rev_v = _num(by_code.get("gross_revenue_inr_cr", {}).get("amount_cr"))
-        lev_v = -abs(_num(by_code.get("statutory_levies_total_inr_cr", {}).get("amount_cr")))
-        opex_v = round(
-            _num(by_code.get("ebitda_inr_cr", {}).get("amount_cr")) - (rev_v + lev_v), 2
-        )
-        eb_v = _num(by_code.get("ebitda_inr_cr", {}).get("amount_cr"))
-        oi_v = _num(by_code.get("other_income_inr_cr", {}).get("amount_cr"))
-        pbt_v = _num(by_code.get("pbt_inr_cr", {}).get("amount_cr"))
-        below_eb_v = round(pbt_v - (eb_v + oi_v), 2)
-        tax_v = round(_num(by_code.get("pat_inr_cr", {}).get("amount_cr")) - pbt_v, 2)
-        pat_v = _num(by_code.get("pat_inr_cr", {}).get("amount_cr"))
-        wf_rows = [
-            {"pnl_stage": "Revenue from Ops", "amount_cr": rev_v, "type": "total"},
-            {"pnl_stage": "Statutory Levies", "amount_cr": lev_v, "type": "delta"},
-            {"pnl_stage": "Operating Expenses", "amount_cr": opex_v, "type": "delta"},
-            {"pnl_stage": "Standalone EBITDA", "amount_cr": eb_v, "type": "total"},
-            {"pnl_stage": "Other Income", "amount_cr": oi_v, "type": "delta"},
-            {"pnl_stage": "Expl, DD&A & Fin", "amount_cr": below_eb_v, "type": "delta"},
-            {"pnl_stage": "Profit Before Tax", "amount_cr": pbt_v, "type": "total"},
-            {"pnl_stage": "Tax Expense", "amount_cr": tax_v, "type": "delta"},
-            {"pnl_stage": "Standalone PAT", "amount_cr": pat_v, "type": "total"},
-        ]
+        # P4.1 (SPEC-09 §4.3): build the signed P&L waterfall bridge from statement lines (no EBITDA plug)
+        from app.brain.bridge import BridgeOk, bridge, bridge_chart_rows
+
+        b_res = bridge(rows, period=fy)
         ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "waterfall"
-        vis["chart"] = build_chart_spec(kind=ck, columns=["pnl_stage", "amount_cr"], rows=wf_rows, title=title, unit="₹ Cr")
+        if ck == "waterfall" and isinstance(b_res, BridgeOk):
+            vis["chart"] = b_res.to_chart_spec(title=title)
+        else:
+            wf_rows = bridge_chart_rows(b_res) if isinstance(b_res, BridgeOk) else []
+            vis["chart"] = build_chart_spec(kind=ck, columns=["step", "amount_cr"], rows=wf_rows, title=title, unit="₹ Cr")
         # Table-First rule: default to structured statement table unless a chart (e.g., waterfall) was explicitly requested
         vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
         return vis
@@ -251,7 +236,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                 "delta": f"{cash_r.get('yoy_change_pct'):+.1f}% YoY (Net Cash Positive)" if isinstance(cash_r.get("yoy_change_pct"), (int, float)) else "Note 15/16",
             },
         ]
-        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_change_pct", "pct_of_assets"]
+        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_change_pct", "pct_of_assets", "line_code"]
         disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
         bs_chart_codes = [
@@ -304,7 +289,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                 "delta": f"{cls_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(cls_r.get("yoy_change_pct"), (int, float)) else "Note 15/16",
             },
         ]
-        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "pct_of_ocf"]
+        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "pct_of_ocf", "line_code"]
         disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
         pbt_v = _num(by_code.get("pbt_inr_cr", {}).get("amount_cr"))
@@ -345,7 +330,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             {"label": f"Return on Equity ({fy})", "value": roe_r.get("value"), "unit": "%", "delta": "PAT / Net Worth"},
             {"label": f"Debt-to-Equity ({fy})", "value": de_r.get("value"), "unit": "x", "delta": "Net Cash Positive Balance Sheet"},
         ]
-        disp_cols = ["line_item", "category", "unit", "value", "prior_fy_value", "yoy_delta", "formula"]
+        disp_cols = ["line_item", "category", "unit", "value", "prior_fy_value", "yoy_delta", "formula", "line_code"]
         disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
         pct_rows = [r for r in rows if r.get("unit") == "%"]
