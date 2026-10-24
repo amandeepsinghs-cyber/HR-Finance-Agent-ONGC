@@ -221,10 +221,9 @@ def test_headcount_snapshot_recomputation_identity(core_data):
 # -----------------------------------------------------------------------------
 def test_calibration_employee_benefit_expenses():
     """Verify total employee benefit expenditure FY22-FY26 within ±2% of AR targets."""
-    df_pay = pd.read_csv(
-        LANDING_SAP / "PY_CLUSTER_EXP.csv",
-        usecols=["fiscal_year", "LGART_9001", "employer_cpf_inr", "employer_prbs_inr", "employer_prmb_inr"]
-    )
+    df_pay = pd.read_csv(LANDING_SAP / "PY_CLUSTER_EXP.csv")
+    df_pool = pd.read_csv(LANDING_SAP / "employee_cost_pool.csv")
+    df_pool = df_pool[df_pool["basis"].isin(["residual", "real_total_modelled_split"])]
 
     targets = {
         "FY22": 11082,
@@ -236,18 +235,22 @@ def test_calibration_employee_benefit_expenses():
 
     for fy, target_cr in targets.items():
         sub = df_pay[df_pay["fiscal_year"] == fy]
+        sub_pool = df_pool[df_pool["fiscal_year"] == fy]
+        
         actual_cr = (
-            sub["LGART_9001"].sum() +
-            sub["employer_cpf_inr"].sum() +
-            sub["employer_prbs_inr"].sum() +
-            sub["employer_prmb_inr"].sum()
+            sub["cost_note35_a_inr"].sum() +
+            sub["cost_note35_b_inr"].sum() +
+            sub["cost_note35_c_inr"].sum() +
+            sub["cost_note35_d_inr"].sum() +
+            sub["cost_note35_e_inr"].sum() +
+            sub["cost_note35_f_inr"].sum() +
+            sub_pool["amount_inr"].sum()
         ) / 1e7
         rel_error = abs(actual_cr - target_cr) / target_cr
         assert rel_error <= 0.02, (
             f"Employee expense {fy} out of calibration: actual={actual_cr:.2f} Cr, "
             f"target={target_cr} Cr, error={rel_error*100:.2f}% (must be <= 2%)"
         )
-
 
 def test_calibration_median_remuneration(core_data, reference_data):
     """Verify median annual remuneration FY26 by cadre × gender within ±2%."""

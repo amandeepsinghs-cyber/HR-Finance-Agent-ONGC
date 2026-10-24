@@ -19,7 +19,7 @@ def test_emp_r01_to_r09_reconciliation():
     pools_df = pools_df[pools_df["basis"].isin(["residual", "real_total_modelled_split"])]
     pool_sums = pools_df.groupby(["fiscal_year", "note35_line"])["amount_inr"].sum().reset_index()
     
-    for fy in ["FY17", "FY18", "FY19", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]:
+    for fy in ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]:
         target_total_series = targets_df[(targets_df["fiscal_year"] == fy) & (targets_df["metric"] == "employee_cost_total")]
         if not target_total_series.empty:
             target_total = target_total_series["value"].values[0] * 1e6
@@ -54,7 +54,7 @@ def test_emp_r10_headcount():
     hc_df = pd.read_csv(LANDING_SAP / "headcount_monthly_snapshot.csv")
     targets_df = pd.read_csv(TARGETS_CSV)
     
-    for fy in ["FY17", "FY18", "FY19", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]:
+    for fy in ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]:
         target_series = targets_df[(targets_df["fiscal_year"] == fy) & (targets_df["metric"] == "headcount_fy_end")]["value"]
         if target_series.empty: continue
         target_hc = target_series.values[0]

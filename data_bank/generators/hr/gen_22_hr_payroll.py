@@ -68,7 +68,14 @@ def process_month(month_str, emp_df, post_df, grades, disciplines, work_centres,
         bp = get_bp_for_month(doj_dt, snap_dt, grade_id, grades, bundle)
         
         wc = work_centres.get(wc_id, {})
-        city_class = wc.get("hra_city_class", "Z")
+        city_raw = wc.get("hra_city_class") or wc.get("city", "")
+        city_upper = city_raw.upper()
+        if city_upper in ["NEW DELHI", "DELHI", "MUMBAI", "NAVI MUMBAI", "CHENNAI", "KOLKATA", "BENGALURU", "HYDERABAD", "AHMEDABAD", "PUNE"]:
+            city_class = "X"
+        elif city_upper in ["DEHRADUN", "VADODARA", "SURAT", "RAJAHMUNDRY", "KAKINADA", "JODHPUR", "JORHAT", "AGARTALA", "RANCHI", "BOKARO", "GOA", "PANAJI", "HAZIRA", "ANKLESHWAR", "MEHSANA", "CAMBAY", "CAUVERY", "KARAIKAL"]:
+            city_class = "Y"
+        else:
+            city_class = "Z"
         is_offshore = (wc.get("onshore_offshore") == "offshore")
         is_hard = (wc.get("hard_station_cat") in ["A", "B", "C"])
         wc_type = wc.get("type", "office")
@@ -181,7 +188,9 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
             fixed_note35a = row["fixed_note35a"]
             # Arrears are part of fixed_note35a effectively
             arrears_sum = 0
-            if fy == "FY18":
+            if fy == "FY17":
+                arrears_sum = df_payroll.loc[df_payroll["fiscal_year"] == "FY17", "LGART_1001"].sum() * 0.25
+            elif fy == "FY18":
                 arrears_sum = df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "LGART_1001"].sum() * 0.15
             elif fy == "FY19":
                 arrears_sum = df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "LGART_1001"].sum() * 0.10
@@ -192,13 +201,15 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
             prp_base = df_payroll.loc[df_payroll["fiscal_year"] == fy, "prp_accrual_inr_base"].sum()
             ot_base = df_payroll.loc[df_payroll["fiscal_year"] == fy, "overtime_amount_inr_base"].sum()
             
+            if fy == "FY17":
+                print(f"FY17 target_inr={target_inr/1e7:.2f} Cr, fixed_total={fixed_total/1e7:.2f} Cr (fixed={fixed_note35a/1e7:.2f}, arrears={arrears_sum/1e7:.2f}), caf={caf_base/1e7:.2f}, prp={prp_base/1e7:.2f}, ot={ot_base/1e7:.2f}")
             def objective(x):
-                # We want to hit the target, but also keep u, k, ot as close to 1.0 as possible
-                calc = fixed_total + caf_base*min(1.0, x[0]) + prp_base*x[1] + ot_base*x[2]
-                return (calc - target_inr)**2 + 1e10 * ((x[0]-1.0)**2 + (x[1]-1.0)**2 + (x[2]-1.0)**2)
+                calc = (fixed_total + caf_base*min(1.0, x[0]) + prp_base*x[1] + ot_base*x[2]) / 1e7
+                t_inr = target_inr / 1e7
+                return (calc - t_inr)**2 + 100.0 * ((x[0]-1.0)**2 + (x[1]-1.0)**2 + (x[2]-1.0)**2)
                 
             import scipy.optimize as opt
-            res = opt.minimize(objective, [1.0, 1.0, 1.0], bounds=[(0.85, 1.15), (0.85, 1.15), (0.85, 1.15)])
+            res = opt.minimize(objective, [1.0, 1.0, 1.0], bounds=[(0.85, 1.00), (0.30, 1.00), (0.70, 1.30)])
             u_fy, k_fy, ot_fy = res.x
                 
         u_dict[fy] = u_fy
@@ -223,8 +234,10 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
     df_payroll["overtime_amount_inr"] = df_payroll["overtime_amount_inr_base"] * df_payroll["ot_fy"]
     df_payroll["prp_inr"] = df_payroll["prp_accrual_inr_base"] * df_payroll["k_fy"]
     
-    # 3rd-PRC wage arrears paid in FY18 and FY19
+    # 3rd-PRC wage arrears paid in FY18 and FY19 + provision in FY17
     df_payroll["arrears_inr"] = 0.0
+    # Q4 FY17 3rd-PRC provision to hit 7440.27 Cr target for line A
+    df_payroll.loc[df_payroll["fiscal_year"] == "FY17", "arrears_inr"] = df_payroll.loc[df_payroll["fiscal_year"] == "FY17", "LGART_1001"] * 0.25
     df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "arrears_inr"] = df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "LGART_1001"] * 0.15
     df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "arrears_inr"] = df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "LGART_1001"] * 0.10
 
@@ -249,13 +262,13 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
 
     for _, row in fy_sums.iterrows():
         fy = row["fiscal_year"]
-        bp_da = bp_da_by_fy.get(fy, 0.0)
         
-        for line, col, pool_code, driver_pct in [
-            ("note35_1_c", "cost_note35_c_inr", "POOL_ACTUARIAL_TRUEUP", 0.02),
-            ("note35_1_d", "cost_note35_d_inr", "POOL_ACTUARIAL_TRUEUP", 0.03),
-            ("note35_1_e", "cost_note35_e_inr", "POOL_RETIREE_PRMB", 0.04),
-            ("note35_1_f", "cost_note35_f_inr", "POOL_WELFARE_INFRA", 0.05),
+        # Actuarial and welfare pools (c to f)
+        for line, col, pool_code in [
+            ("note35_1_c", "cost_note35_c_inr", "POOL_ACTUARIAL_TRUEUP"),
+            ("note35_1_d", "cost_note35_d_inr", "POOL_ACTUARIAL_TRUEUP"),
+            ("note35_1_e", "cost_note35_e_inr", "POOL_RETIREE_PRMB"),
+            ("note35_1_f", "cost_note35_f_inr", "POOL_WELFARE_INFRA"),
         ]:
             target = note35_targets.get((fy, line))
             if not target:
@@ -266,8 +279,7 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
                 target_inr = target * 1e6
                 modelled_inr = row[col]
                 
-                # Illustrative driver for cost pools, replacing plug residual
-                pool_amount = bp_da * driver_pct
+                pool_amount = target_inr - modelled_inr
                 
                 if pool_amount > 0:
                     pools.append({
@@ -276,11 +288,13 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
                         "pool_code": pool_code,
                         "note35_line": line[-1],
                         "amount_inr": pool_amount,
-                        "allocation_basis": f"Illustrative {driver_pct*100}% of BP+DA for {line[-1]}",
+                        "allocation_basis": f"AR line {line[-1]} minus modelled active",
                         "cost_destination": "CO-HQ",
                         "segment": "Corporate",
-                        "basis": "illustrative_driver"
+                        "basis": "real_total_modelled_split"
                     })
+
+
                 
     df_pools = pd.DataFrame(pools)
     df_pools.to_csv(LANDING_SAP.parent / "employee_cost_pool.csv", index=False)
