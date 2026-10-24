@@ -1,7 +1,7 @@
 """Financial Statement Visual Builder (P4.2; SPEC-09 §4.1, SPEC-01 §5.1–5.2, SPEC-03 §5.1).
 
-Transforms verified SSOT rows (`hrfin_gold.fact_financial_statement_line`) or local snapshot
-rows into the canonical `visual.type = "statement"` (`StatementSpec`) payload for:
+Transforms verified SPEC-01 statement-line SSOT rows or local snapshot rows into the canonical
+`visual.type = "statement"` (`StatementSpec`) payload for:
   - `pnl` (Statement of Profit and Loss)
   - `balance_sheet` (Balance Sheet)
   - `cash_flow` (Statement of Cash Flows)
@@ -15,13 +15,14 @@ Key guarantees:
    suffixes (`"(I + II)"`, `"(A1 to A7)"`) are stripped so hierarchy is expressed purely via
    `level` (0–3) and `kind` (`"line" | "subtotal" | "total"`) (BUG-39).
 5. `totals_check` is computed for P&L, Balance Sheet (`A = E + L`), and Cash Flow
-   (`Closing Cash = Opening Cash + Net Cash Change`).
+   (`Closing Cash = Opening Cash + Net Cash Change = BS Cash`).
 6. Emission of `visual.type="statement"` in `presenter.py` is gated behind the `statement`
    token in `YUKTI_CONTRACT_V3_FIELDS` (SPEC-03 §5.1).
 """
 
 from __future__ import annotations
 
+from functools import lru_cache
 import json
 import os
 from pathlib import Path
@@ -258,8 +259,8 @@ STATEMENT_LINE_META: Dict[str, Tuple[StatementKind, str, str, int, RowKind, int,
     "opening_cash_inr_cr": ("cash_flow", "cash_summary", "Cash and Cash Equivalents", 1, "line", 16, "Opening cash and cash equivalents"),
     "CF.CCE_CLOSE": ("cash_flow", "cash_summary", "Cash and Cash Equivalents", 0, "total", 17, "Closing cash and cash equivalents"),
     "closing_cash_inr_cr": ("cash_flow", "cash_summary", "Cash and Cash Equivalents", 0, "total", 17, "Closing cash and cash equivalents"),
-    "CF.FCF": ("cash_flow", "cash_summary", "Cash and Cash Equivalents", 0, "subtotal", 18, "Free cash flow (OCF less capex)"),
-    "free_cash_flow_inr_cr": ("cash_flow", "cash_summary", "Cash and Cash Equivalents", 0, "subtotal", 18, "Free cash flow (OCF less capex)"),
+    "CF.FCF": ("cash_flow", "cash_summary", "Cash and Cash Equivalents", 1, "line", 18, "Free cash flow (OCF less capex)"),
+    "free_cash_flow_inr_cr": ("cash_flow", "cash_summary", "Cash and Cash Equivalents", 1, "line", 18, "Free cash flow (OCF less capex)"),
 }
 
 _SECTION_LABELS_FALLBACK: Dict[str, str] = {
@@ -478,7 +479,7 @@ def compute_totals_check(
             elif ta is not None and teql is not None:
                 deltas.append(abs(ta - teql))
     elif statement == "cash_flow":
-        identity = "Closing Cash = Opening Cash + Net Cash Change"
+        bs_tie_checked = False
         for p in periods:
             ocf = _val(["CF.CFO", "operating_cash_flow_inr_cr", "OCF"], p)
             icf = _val(["CF.CFI", "investing_cash_flow_inr_cr", "ICF"], p)
@@ -492,6 +493,12 @@ def compute_totals_check(
                 deltas.append(abs((open_c + net_chg) - close_c))
             if bs_cash_by_period and close_c is not None and isinstance(bs_cash_by_period.get(p), (int, float)):
                 deltas.append(abs(close_c - float(bs_cash_by_period[p])))  # type: ignore[arg-type]
+                bs_tie_checked = True
+        identity = (
+            "Closing Cash = Opening Cash + Net Cash Change = BS Cash"
+            if bs_tie_checked
+            else "Closing Cash = Opening Cash + Net Cash Change"
+        )
     else:
         identity = "Total Income = Revenue + Other Income; PAT = PBT - Tax"
         for p in periods:
@@ -515,6 +522,35 @@ def compute_totals_check(
     }
 
 
+@lru_cache(maxsize=1)
+def load_snapshot_bs_cash_by_period() -> Dict[str, Optional[float]]:
+    """Loads Balance Sheet cash & bank balances (`cash_and_bank_inr_cr` / `BS.CCE`) per FY from the local snapshot (M3)."""
+    out: Dict[str, Optional[float]] = {}
+    try:
+        bs_path = (
+            Path(__file__).resolve().parents[4]
+            / "financial_build"
+            / "data"
+            / "ongc_10yr_balance_sheet_lines.json"
+        )
+        if not bs_path.exists():
+            return out
+        with open(bs_path, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+        if isinstance(data, list):
+            for r in data:
+                if isinstance(r, dict) and r.get("line_code") in ("cash_and_bank_inr_cr", "BS.CCE"):
+                    fy = str(r.get("fiscal_year") or "").strip().upper()
+                    val = _coerce_num_or_none(
+                        r.get("amount_inr_cr", r.get("amount_cr", r.get("value_inr_cr")))
+                    )
+                    if fy and val is not None:
+                        out[fy] = val
+    except Exception:
+        pass
+    return out
+
+
 def build_statement_spec(
     statement: StatementKind,
     rows: Sequence[Dict[str, Any]],
@@ -534,6 +570,7 @@ def build_statement_spec(
 ) -> Dict[str, Any]:
     """Builds a `StatementSpec` dict conforming to `yukti/contracts/answer_contract.schema.json`."""
     # 1. Filter to verified=TRUE rows only (SPEC-09 §4.1, P4.2 §5.1)
+    # TODO(P1): tighten to `r.get("verified") is True` once SPEC-01 SSOT rows replace the local snapshot (S1).
     verified_rows: List[Dict[str, Any]] = []
     unverified_periods: set[str] = set()
     for r in rows:
@@ -605,22 +642,9 @@ def build_statement_spec(
         key = code or f"__row_{idx}_{clean_statement_label(raw_lbl)}"
 
         if key not in grouped:
-            # Prefer clean canonical label for legacy numbered snapshot strings ("A1.", "I.", "Less:")
-            has_legacy_prefix = bool(
-                _LEADING_DASH_RE.match(raw_lbl)
-                or _LEADING_CODE_RE.match(raw_lbl)
-                or _LEADING_VERB_RE.match(raw_lbl)
-                or _TRAILING_FORMULA_RE.search(raw_lbl)
-            )
-            meta_entry = (
-                ("cash_flow", "operating", "Cash Flows from Operating Activities", 1, "line", 1, "Profit before tax")
-                if (statement == "cash_flow" and code == "pbt_inr_cr")
-                else STATEMENT_LINE_META.get(code or "")
-            )
-            if has_legacy_prefix and meta_entry and meta_entry[0] == statement:
-                clean_lbl = meta_entry[6]
-            else:
-                clean_lbl = clean_statement_label(raw_lbl, code)
+            # S2 (BUG-39): strip artificial prefixes/formula suffixes from the reported label rather than
+            # replacing reported parentheticals (e.g. "(HPCL, OVL, MRPL, OPaL)") with a generic label.
+            clean_lbl = clean_statement_label(raw_lbl, code)
 
             grouped[key] = {
                 "line_code": code,

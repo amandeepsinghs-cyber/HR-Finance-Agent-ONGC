@@ -980,11 +980,12 @@ def build_chart_spec(
 
     # Single-row entity with multiple numeric measures: pivot measures into plain metric rows.
     # P4.1 (BUG-09): never synthesise subtotals or expense plugs from a single row.
+    # P4.4 S1: keep the single row intact for gauge/bullet/kpi so target columns are preserved.
     all_num_cols = [
         col for col in columns
         if isinstance(rows[0].get(col), (int, float)) and not isinstance(rows[0].get(col), bool)
     ]
-    if len(rows) == 1 and len(all_num_cols) >= 2:
+    if len(rows) == 1 and len(all_num_cols) >= 2 and kind not in ("gauge", "bullet", "kpi"):
         r0 = rows[0]
         piv_rows = [
             {"metric": col.replace("_cr", " (₹ Cr)").replace("_", " ").title(), "value": float(r0.get(col) or 0)}

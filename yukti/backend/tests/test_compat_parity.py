@@ -16,6 +16,7 @@ import pytest
 
 from app.brain.chart_rules import (
     ALL_KINDS,
+    build_chart_spec,
     compatibility,
     kinds_for,
     profile,
@@ -287,6 +288,11 @@ def test_p44_specific_gating_rules_and_defaults():
     }
     gauge_rows = CANONICAL_VISUALS["portfolio_gauge"]["chart"]["data"]
     assert select_chart_kind(list(gauge_rows[0].keys()), gauge_rows) == "gauge"
+    # P4.4 S1: build_chart_spec("gauge", ...) keeps the 1-row target intact instead of pivoting measures
+    gauge_spec = build_chart_spec("gauge", list(gauge_rows[0].keys()), gauge_rows)
+    assert gauge_spec["kind"] == "gauge"
+    assert len(gauge_spec["data"]) == 1
+    assert "target" in gauge_spec["data"][0]
 
     # 6. scatter: requires 2 measures (never fabricates a rank axis)
     assert compatibility(profile(CANONICAL_VISUALS["categorical"]), "scatter") == {

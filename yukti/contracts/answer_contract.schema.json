@@ -1067,6 +1067,7 @@
         },
         "source": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "primary": {
               "type": "string"

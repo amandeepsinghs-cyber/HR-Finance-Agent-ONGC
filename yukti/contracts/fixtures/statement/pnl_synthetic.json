@@ -50,7 +50,7 @@
               "note_ref": "30",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -70,7 +70,7 @@
               "note_ref": "31",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -89,7 +89,7 @@
               "yoy_pct": -3.7,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             }
@@ -115,7 +115,7 @@
               "note_ref": "35",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -135,7 +135,7 @@
               "note_ref": "35",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -155,7 +155,7 @@
               "note_ref": "35.1",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -175,7 +175,7 @@
               "note_ref": "36",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -195,7 +195,7 @@
               "note_ref": "37",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -215,7 +215,7 @@
               "note_ref": "36",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -235,7 +235,7 @@
               "note_ref": "32",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -255,7 +255,7 @@
               "note_ref": "38",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             }
@@ -281,7 +281,7 @@
               "note_ref": "39",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -300,7 +300,7 @@
               "yoy_pct": -8.6,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -320,7 +320,7 @@
               "note_ref": "40",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -339,7 +339,7 @@
               "yoy_pct": -7.6,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -359,7 +359,7 @@
               "note_ref": "41",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             },
@@ -379,7 +379,7 @@
               "note_ref": "42",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 1
+                "page": null
               },
               "is_restated": false
             }
@@ -395,8 +395,10 @@
         "Figures in ₹ crore. Negative values in parentheses."
       ],
       "source": {
-        "kind": "synthetic_fixture",
-        "label": "Labelled synthetic — awaits SPEC-01"
+        "primary": "Labelled synthetic — awaits SPEC-01",
+        "basis": "synthetic",
+        "extraction": "none",
+        "verified": false
       },
       "as_of": "2026-03-31",
       "synthetic": true

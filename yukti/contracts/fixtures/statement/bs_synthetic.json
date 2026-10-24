@@ -35,7 +35,7 @@
           "label": "Non-Current Assets",
           "rows": [
             {
-              "label": "Oil and gas assets (net block)",
+              "label": "Oil & Gas Producing Properties (Net Block)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -50,11 +50,11 @@
               "note_ref": "5",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Other property, plant, equipment & right-of-use assets",
+              "label": "Other Property, Plant, Equipment & ROU Lease Assets",
               "level": 1,
               "kind": "line",
               "values": {
@@ -69,11 +69,11 @@
               "note_ref": "6",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Capital work-in-progress (CWIP & development wells)",
+              "label": "Capital Work-in-Progress (CWIP & Dev Wells)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -88,11 +88,11 @@
               "note_ref": "7",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Exploratory & evaluation wells-in-progress",
+              "label": "Exploratory & Evaluation Wells-in-Progress",
               "level": 1,
               "kind": "line",
               "values": {
@@ -107,11 +107,11 @@
               "note_ref": "8/9",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Investments in subsidiaries, joint ventures & associates",
+              "label": "Investments in Subsidiaries, JVs & Associates (HPCL, OVL, MRPL, OPaL)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -126,11 +126,11 @@
               "note_ref": "10",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Site restoration / abandonment deposit fund",
+              "label": "Site Restoration / Abandonment Escrow Deposit (SBI)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -145,11 +145,11 @@
               "note_ref": "11",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Long-term loans, tax & other non-current assets",
+              "label": "Long-Term Loans, Tax & Other Non-Current Assets",
               "level": 1,
               "kind": "line",
               "values": {
@@ -164,11 +164,11 @@
               "note_ref": "12",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Total non-current assets",
+              "label": "Total Non-Current Assets",
               "level": 0,
               "kind": "subtotal",
               "values": {
@@ -182,7 +182,7 @@
               "yoy_pct": 4.9,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             }
           ]
@@ -192,7 +192,7 @@
           "label": "Current Assets",
           "rows": [
             {
-              "label": "Inventories",
+              "label": "Inventories (Crude, VAP & Drilling Stores)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -207,11 +207,11 @@
               "note_ref": "13",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Current investments",
+              "label": "Current Investments",
               "level": 1,
               "kind": "line",
               "values": {
@@ -226,11 +226,11 @@
               "note_ref": "10",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Trade receivables",
+              "label": "Trade Receivables (Crude & Natural Gas Offtakers)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -245,11 +245,11 @@
               "note_ref": "14",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Cash, cash equivalents & other bank balances",
+              "label": "Cash, Cash Equivalents & Term Bank Deposits",
               "level": 1,
               "kind": "line",
               "values": {
@@ -264,11 +264,11 @@
               "note_ref": "15/16",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Short-term loans & other current assets",
+              "label": "Short-Term Loans & Other Current Assets",
               "level": 1,
               "kind": "line",
               "values": {
@@ -283,11 +283,11 @@
               "note_ref": "17/18",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Total current assets",
+              "label": "Total Current Assets",
               "level": 0,
               "kind": "subtotal",
               "values": {
@@ -301,11 +301,11 @@
               "yoy_pct": 9.8,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Total assets",
+              "label": "TOTAL ASSETS",
               "level": 0,
               "kind": "total",
               "values": {
@@ -319,7 +319,7 @@
               "yoy_pct": 5.5,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             }
           ]
@@ -329,7 +329,7 @@
           "label": "Equity",
           "rows": [
             {
-              "label": "Equity share capital",
+              "label": "Equity Share Capital (₹5 Face Value)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -344,11 +344,11 @@
               "note_ref": "19",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Other equity (retained earnings & reserves)",
+              "label": "Other Equity (Retained Earnings & Reserves)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -363,11 +363,11 @@
               "note_ref": "20",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Total equity",
+              "label": "Total Standalone Equity / Net Worth",
               "level": 0,
               "kind": "subtotal",
               "values": {
@@ -381,7 +381,7 @@
               "yoy_pct": 5.3,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             }
           ]
@@ -391,7 +391,7 @@
           "label": "Non-Current Liabilities",
           "rows": [
             {
-              "label": "Long-term borrowings",
+              "label": "Long-Term Borrowings (Bonds & Term Loans)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -406,11 +406,11 @@
               "note_ref": "21",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Non-current lease liabilities",
+              "label": "Long-Term Lease Liabilities (Ind-AS 116 Rigs/FPSOs)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -425,11 +425,11 @@
               "note_ref": "21A",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Decommissioning & site restoration provisions",
+              "label": "Site Restoration & Decommissioning Provision (ARO)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -444,11 +444,11 @@
               "note_ref": "22",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Deferred tax liabilities (net)",
+              "label": "Deferred Tax Liabilities (Net)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -463,11 +463,11 @@
               "note_ref": "23",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             },
             {
-              "label": "Total non-current liabilities",
+              "label": "Total Non-Current Liabilities (incl. Other NCL)",
               "level": 0,
               "kind": "subtotal",
               "values": {
@@ -481,7 +481,7 @@
               "yoy_pct": 3.1,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             }
           ]
@@ -491,7 +491,7 @@
           "label": "Current Liabilities",
           "rows": [
             {
-              "label": "Total current liabilities",
+              "label": "Total Current Liabilities (ST Debt, Trade Payables & Provisions)",
               "level": 0,
               "kind": "subtotal",
               "values": {
@@ -505,7 +505,7 @@
               "yoy_pct": 8.8,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 192
+                "page": null
               }
             }
           ]
@@ -520,8 +520,10 @@
         "Figures in ₹ crore. Negative values in parentheses."
       ],
       "source": {
-        "kind": "synthetic_fixture",
-        "label": "Labelled synthetic — awaits SPEC-01"
+        "primary": "Labelled synthetic — awaits SPEC-01",
+        "basis": "synthetic",
+        "extraction": "none",
+        "verified": false
       },
       "as_of": "2026-03-31",
       "synthetic": true

@@ -68,6 +68,17 @@ def test_pnl_bs_cf_synthetic_fixtures_structure_and_schema():
         assert stmt["totals_check"]["passed"] is True
         assert stmt["totals_check"]["max_abs_delta_cr"] == 0.0
         assert stmt["synthetic"] is True
+        # M5: statement.source uses SPEC-09 §4.1 / TS keys {primary, basis, extraction, verified} and row page is None
+        assert stmt["source"] == {
+            "primary": "Labelled synthetic — awaits SPEC-01",
+            "basis": "synthetic",
+            "extraction": "none",
+            "verified": False,
+        }
+        for sec in stmt["sections"]:
+            for r in sec["rows"]:
+                if "source" in r:
+                    assert r["source"].get("page") is None
 
     # P&L specific checks (P4.2 §6): sections [income, expenses, profit], PAT kind "total"
     pnl_stmt = pnl["visual"]["statement"]
@@ -86,9 +97,9 @@ def test_pnl_bs_cf_synthetic_fixtures_structure_and_schema():
     bs_stmt = bs["visual"]["statement"]
     assert bs_stmt["totals_check"]["identity"] == "A = E + L"
 
-    # CF specific checks: identity "Closing Cash = Opening Cash + Net Cash Change"
+    # CF specific checks (M3): identity includes BS Cash tie-out
     cf_stmt = cf["visual"]["statement"]
-    assert cf_stmt["totals_check"]["identity"] == "Closing Cash = Opening Cash + Net Cash Change"
+    assert cf_stmt["totals_check"]["identity"] == "Closing Cash = Opening Cash + Net Cash Change = BS Cash"
 
 
 def test_ssot_line_order_preserved_100_percent():
@@ -211,10 +222,12 @@ def test_presenter_flag_gating_for_statement_visual(monkeypatch):
         {"line_order": 8, "line_code": "DDA", "line_item": "VIII. Depletion, depreciation & amortisation", "amount_cr": 18250.00, "prior_fy_cr": 19610.00},
         {"line_order": 9, "line_code": "FIN_COST", "line_item": "IX. Finance costs", "amount_cr": 4120.00, "prior_fy_cr": 4080.00},
         {"line_order": 10, "line_code": "OTHER_EXP", "line_item": "X. Other expenses", "amount_cr": 1860.00, "prior_fy_cr": 2163.97},
-        {"line_order": 11, "line_code": "EXCEPTIONAL", "line_item": "XI. Exceptional items", "amount_cr": 1520.00, "prior_fy_cr": 460.00},
-        {"line_order": 12, "line_code": "PBT", "line_item": "XII. Profit before tax", "amount_cr": 50666.07, "prior_fy_cr": 47282.07},
-        {"line_order": 13, "line_code": "TAX_EXP", "line_item": "XIII. Tax expense", "amount_cr": 12318.00, "prior_fy_cr": 11671.75},
-        {"line_order": 14, "line_code": "PAT", "line_item": "XIV. Profit for the year (PAT)", "amount_cr": 38348.07, "prior_fy_cr": 35610.32},
+        {"line_order": 11, "line_code": "ebitda_inr_cr", "line_item": "EBITDA", "amount_cr": 70000.00, "prior_fy_cr": 68000.00},
+        {"line_order": 12, "line_code": "EXCEPTIONAL", "line_item": "XI. Exceptional items", "amount_cr": 1520.00, "prior_fy_cr": 460.00},
+        {"line_order": 13, "line_code": "PBT", "line_item": "XII. Profit before tax", "amount_cr": 50666.07, "prior_fy_cr": 47282.07},
+        {"line_order": 14, "line_code": "TAX_EXP", "line_item": "XIII. Tax expense", "amount_cr": 12318.00, "prior_fy_cr": 11671.75},
+        {"line_order": 15, "line_code": "PAT", "line_item": "XIV. Profit for the year (PAT)", "amount_cr": 38348.07, "prior_fy_cr": 35610.32},
+        {"line_order": 16, "line_code": "consolidated_pat_inr_cr", "line_item": "Memo: Consolidated PAT", "amount_cr": 49120.00, "prior_fy_cr": 46200.00},
     ]
 
     spec = QuerySpec(
@@ -231,7 +244,7 @@ def test_presenter_flag_gating_for_statement_visual(monkeypatch):
         metric_label="Profit & Loss Statement",
         unit="inr_cr",
         source="certified:pnl",
-        tables=["hrfin_gold.fact_financial_statement_line"],
+        tables=[],
         dims=[("line_item", "line_item")],
         value_columns=["amount_cr"],
         effective_period={"fy": "FY26"},
@@ -240,7 +253,7 @@ def test_presenter_flag_gating_for_statement_visual(monkeypatch):
     )
     cols = ["line_order", "line_code", "line_item", "amount_cr", "prior_fy_cr"]
 
-    # 1. Flag unset -> legacy v2 `table` visual
+    # 1. Flag unset -> legacy v2 `table` visual with all 4 KPIs preserved (M1)
     monkeypatch.delenv("YUKTI_CONTRACT_V3_FIELDS", raising=False)
     assert v3_field_enabled("statement") is False
     vis_legacy = build_visual(
@@ -255,6 +268,8 @@ def test_presenter_flag_gating_for_statement_visual(monkeypatch):
     )
     assert vis_legacy["type"] == "table"
     assert "statement" not in vis_legacy
+    assert len(vis_legacy["kpis"]) == 4
+    assert any("Consolidated PAT" in k["label"] for k in vis_legacy["kpis"])
 
     # 2. Flag enabled -> `statement` visual emitted, validates against statement_spec, KPIs capped at 3
     monkeypatch.setenv("YUKTI_CONTRACT_V3_FIELDS", "statement")
@@ -271,7 +286,7 @@ def test_presenter_flag_gating_for_statement_visual(monkeypatch):
     )
     assert vis_v3["type"] == "statement"
     assert "statement" in vis_v3
-    assert len(vis_v3["kpis"]) <= 3
+    assert len(vis_v3["kpis"]) == 3
     errs = list(STATEMENT_SPEC_VALIDATOR.iter_errors(vis_v3["statement"]))
     assert not errs, f"Presenter statement_spec validation errors: {[e.message for e in errs]}"
     assert vis_v3["statement"]["periods"] == ["FY26", "FY25"]
@@ -291,6 +306,59 @@ def test_presenter_flag_gating_for_statement_visual(monkeypatch):
     assert vis_wf["type"] == "chart"
     assert vis_wf["chart"]["kind"] == "waterfall"
     assert "statement" in vis_wf
+
+    # 4. Cash Flow presenter branch wires `bs_cash_by_period` and checks Closing Cash = BS Cash tie-out (M3)
+    cf_raw = json.loads((BASE_DIR / "financial_build/data/ongc_10yr_cash_flow_lines.json").read_text())
+    cf_fy26_rows = [
+        {
+            "line_order": r["line_order"],
+            "line_code": r["line_code"],
+            "line_item": r["line_name"],
+            "note_ref": r.get("schedule_ref"),
+            "section": r.get("section"),
+            "amount_cr": r["amount_inr_cr"],
+            "prior_fy_cr": r["prior_fy_amount_inr_cr"],
+            "yoy_change_pct": r.get("yoy_change_pct"),
+            "pct_of_ocf": r.get("pct_of_ocf"),
+        }
+        for r in cf_raw
+        if r.get("fiscal_year") == "FY26"
+    ]
+    cf_spec = QuerySpec(
+        domain="finance",
+        metric="cash_flow_statement",
+        aggregation="sum",
+        dimensions=["line_item"],
+        period={"fy": "FY26"},
+    )
+    cf_compiled = CompiledQuery(
+        sql="SELECT 1",
+        subject="cash_flow",
+        metric="cash_flow_statement",
+        metric_label="Cash Flow Statement",
+        unit="inr_cr",
+        source="certified:cf",
+        tables=[],
+        dims=[("line_item", "line_item")],
+        value_columns=["amount_cr"],
+        effective_period={"fy": "FY26"},
+        grain="aggregate",
+        aggregation="sum",
+    )
+    vis_cf = build_visual(
+        cf_spec,
+        cf_compiled,
+        cols,
+        cf_fy26_rows,
+        None,
+        "Statement of Cash Flows",
+        "FY26",
+        "replace",
+    )
+    assert vis_cf["type"] == "statement"
+    assert vis_cf["statement"]["totals_check"]["identity"] == "Closing Cash = Opening Cash + Net Cash Change = BS Cash"
+    assert vis_cf["statement"]["totals_check"]["passed"] is True
+    assert vis_cf["statement"]["totals_check"]["max_abs_delta_cr"] == 0.0
 
 
 def test_sort_periods_latest_first():

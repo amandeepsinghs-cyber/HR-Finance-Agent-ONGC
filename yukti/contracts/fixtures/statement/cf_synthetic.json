@@ -35,7 +35,7 @@
           "label": "Cash Flows from Operating Activities",
           "rows": [
             {
-              "label": "Profit before tax",
+              "label": "Profit Before Tax (PBT)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -49,11 +49,11 @@
               "yoy_pct": -7.5,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Adjustments for non-cash items (DD&A, write-offs & other)",
+              "label": "Non-Cash Adjustments (+DD&A, +Exploration Write-Offs, ±Other)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -67,11 +67,11 @@
               "yoy_pct": -2.8,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Working capital changes",
+              "label": "Working Capital Changes (Receivables, Inventories, Payables)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -85,11 +85,11 @@
               "yoy_pct": 24.2,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Income taxes paid (net of refunds)",
+              "label": "Direct Income Taxes Paid (Net of Refunds)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -104,11 +104,11 @@
               "note_ref": "37",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Net cash from operating activities",
+              "label": "Net Cash from Operating Activities (OCF)",
               "level": 0,
               "kind": "subtotal",
               "values": {
@@ -122,7 +122,7 @@
               "yoy_pct": -5.3,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             }
           ]
@@ -132,7 +132,7 @@
           "label": "Cash Flows from Investing Activities",
           "rows": [
             {
-              "label": "Capital expenditure on oil & gas assets, PPE & CWIP",
+              "label": "Capital Expenditure on Oil & Gas Assets, PPE & CWIP",
               "level": 1,
               "kind": "line",
               "values": {
@@ -146,11 +146,11 @@
               "yoy_pct": 5.7,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Investments in subsidiaries, joint ventures & associates",
+              "label": "Equity Investment / Acquisition in Subsidiaries & JVs (HPCL, OPaL, Green)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -165,11 +165,11 @@
               "note_ref": "10",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Dividends and treasury interest received",
+              "label": "Dividends & Treasury Interest Received",
               "level": 1,
               "kind": "line",
               "values": {
@@ -184,11 +184,11 @@
               "note_ref": "25",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Net cash used in investing activities",
+              "label": "Net Cash Used in Investing Activities",
               "level": 0,
               "kind": "subtotal",
               "values": {
@@ -201,7 +201,7 @@
               "line_code": "investing_cash_flow_inr_cr",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             }
           ]
@@ -211,7 +211,7 @@
           "label": "Cash Flows from Financing Activities",
           "rows": [
             {
-              "label": "Proceeds from / (repayment of) borrowings",
+              "label": "Proceeds from / (Repayment of) Borrowings",
               "level": 1,
               "kind": "line",
               "values": {
@@ -226,11 +226,11 @@
               "note_ref": "21",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Payment of lease liabilities",
+              "label": "Payment of Lease Liabilities (Ind-AS 116)",
               "level": 1,
               "kind": "line",
               "values": {
@@ -245,11 +245,11 @@
               "note_ref": "21A",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Finance costs / interest paid",
+              "label": "Finance Costs / Interest Paid",
               "level": 1,
               "kind": "line",
               "values": {
@@ -264,11 +264,11 @@
               "note_ref": "34",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Dividends paid to equity shareholders",
+              "label": "Dividends Paid to Equity Shareholders",
               "level": 1,
               "kind": "line",
               "values": {
@@ -283,11 +283,11 @@
               "note_ref": "20",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Net cash used in financing activities",
+              "label": "Net Cash from / (Used in) Financing Activities",
               "level": 0,
               "kind": "subtotal",
               "values": {
@@ -300,7 +300,7 @@
               "line_code": "financing_cash_flow_inr_cr",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             }
           ]
@@ -310,7 +310,7 @@
           "label": "Cash and Cash Equivalents",
           "rows": [
             {
-              "label": "Net increase / (decrease) in cash and cash equivalents",
+              "label": "Net Increase / (Decrease) in Cash & Cash Equivalents",
               "level": 0,
               "kind": "subtotal",
               "values": {
@@ -323,7 +323,7 @@
               "line_code": "net_cash_change_inr_cr",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
@@ -342,7 +342,7 @@
               "note_ref": "15/16",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
@@ -361,13 +361,13 @@
               "note_ref": "15/16",
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             },
             {
-              "label": "Free cash flow (OCF less capex)",
-              "level": 0,
-              "kind": "subtotal",
+              "label": "Free Cash Flow (OCF − Total Capex)",
+              "level": 1,
+              "kind": "line",
               "values": {
                 "FY26": 23962.0,
                 "FY25": 25123.0,
@@ -379,14 +379,14 @@
               "yoy_pct": -4.6,
               "source": {
                 "doc": "Synthetic Fixture (pre-SPEC-01)",
-                "page": 196
+                "page": null
               }
             }
           ]
         }
       ],
       "totals_check": {
-        "identity": "Closing Cash = Opening Cash + Net Cash Change",
+        "identity": "Closing Cash = Opening Cash + Net Cash Change = BS Cash",
         "passed": true,
         "max_abs_delta_cr": 0.0
       },
@@ -394,8 +394,10 @@
         "Figures in ₹ crore. Negative values in parentheses."
       ],
       "source": {
-        "kind": "synthetic_fixture",
-        "label": "Labelled synthetic — awaits SPEC-01"
+        "primary": "Labelled synthetic — awaits SPEC-01",
+        "basis": "synthetic",
+        "extraction": "none",
+        "verified": false
       },
       "as_of": "2026-03-31",
       "synthetic": true

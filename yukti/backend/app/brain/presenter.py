@@ -6,6 +6,7 @@ the insight library, drill-down chips and the numeric-grounding check on top of 
 
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.brain.compiler import CompiledQuery, QueryResult
@@ -119,6 +120,20 @@ def scope_phrases(spec: QuerySpec, compiled: Optional[CompiledQuery] = None) -> 
     return out
 
 
+def _resolve_stmt_periods(ep: Dict[str, Any], periods: Optional[List[str]]) -> Optional[List[str]]:
+    """Derives explicit latest-first period list from `periods` or `effective_period.from..to` (S6)."""
+    if periods:
+        return list(periods)
+    if ep.get("from") and ep.get("to"):
+        m_lo = re.search(r"(\d{2})$", str(ep["from"]))
+        m_hi = re.search(r"(\d{2})$", str(ep["to"]))
+        if m_lo and m_hi:
+            lo_y, hi_y = int(m_lo.group(1)), int(m_hi.group(1))
+            if hi_y >= lo_y:
+                return [f"FY{y:02d}" for y in range(hi_y, lo_y - 1, -1)]
+    return None
+
+
 def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: List[Dict[str, Any]],
                  chart_kind: Optional[str], title: str, subtitle: str, mode: str,
                  n_total: Optional[int] = None,
@@ -162,14 +177,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
 
         ep = compiled.effective_period or {}
         fy = ep.get("fy", "FY26")
-        stmt_periods = list(periods) if periods else None
-        if stmt_periods is None and ep.get("from") and ep.get("to"):
-            m_lo = re.search(r"(\d{2})$", str(ep["from"]))
-            m_hi = re.search(r"(\d{2})$", str(ep["to"]))
-            if m_lo and m_hi:
-                lo_y, hi_y = int(m_lo.group(1)), int(m_hi.group(1))
-                if hi_y >= lo_y:
-                    stmt_periods = [f"FY{y:02d}" for y in range(hi_y, lo_y - 1, -1)]
+        stmt_periods = _resolve_stmt_periods(ep, periods)
 
         stmt_spec = build_statement_spec(
             statement="pnl",
@@ -219,7 +227,8 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                     "delta": f"{eb_r.get('pct_of_revenue'):.1f}% EBITDA margin" if isinstance(eb_r.get("pct_of_revenue"), (int, float)) else "",
                 },
             )
-        if cpat_val is not None and len(kpis) < 3:
+        # M1 (SPEC-03 §5.1 rule 2): preserve Consolidated PAT KPI when flag is off; `kpis[:3]` caps when flag is on
+        if cpat_val is not None:
             kpis.append(
                 {
                     "label": "Consolidated PAT (Group)",
@@ -269,14 +278,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
 
         ep = compiled.effective_period or {}
         fy = ep.get("fy", "FY26")
-        stmt_periods = list(periods) if periods else None
-        if stmt_periods is None and ep.get("from") and ep.get("to"):
-            m_lo = re.search(r"(\d{2})$", str(ep["from"]))
-            m_hi = re.search(r"(\d{2})$", str(ep["to"]))
-            if m_lo and m_hi:
-                lo_y, hi_y = int(m_lo.group(1)), int(m_hi.group(1))
-                if hi_y >= lo_y:
-                    stmt_periods = [f"FY{y:02d}" for y in range(hi_y, lo_y - 1, -1)]
+        stmt_periods = _resolve_stmt_periods(ep, periods)
 
         stmt_spec = build_statement_spec(
             statement="balance_sheet",
@@ -349,18 +351,15 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
         (dims and dims[0] == "line_item")
         or any(isinstance(r, dict) and ("line_code" in r or "values" in r) for r in rows)
     ):
-        from app.brain.statement_builder import build_statement_spec, v3_field_enabled
+        from app.brain.statement_builder import (
+            build_statement_spec,
+            load_snapshot_bs_cash_by_period,
+            v3_field_enabled,
+        )
 
         ep = compiled.effective_period or {}
         fy = ep.get("fy", "FY26")
-        stmt_periods = list(periods) if periods else None
-        if stmt_periods is None and ep.get("from") and ep.get("to"):
-            m_lo = re.search(r"(\d{2})$", str(ep["from"]))
-            m_hi = re.search(r"(\d{2})$", str(ep["to"]))
-            if m_lo and m_hi:
-                lo_y, hi_y = int(m_lo.group(1)), int(m_hi.group(1))
-                if hi_y >= lo_y:
-                    stmt_periods = [f"FY{y:02d}" for y in range(hi_y, lo_y - 1, -1)]
+        stmt_periods = _resolve_stmt_periods(ep, periods)
 
         stmt_spec = build_statement_spec(
             statement="cash_flow",
@@ -369,6 +368,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             fy=fy,
             title=title or "Statement of Cash Flows (Standalone)",
             include_prior_from_single_fy=(stmt_periods is None),
+            bs_cash_by_period=load_snapshot_bs_cash_by_period(),
         )
         emit_stmt = v3_field_enabled("statement")
         default_table_type = "statement" if emit_stmt else "table"
