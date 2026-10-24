@@ -37,7 +37,18 @@ from app.config import (
     allowed_origins,
 )
 from app.live_session import LiveSessionManager
-from app.tools.export_tool import DocumentExporter
+from app.export_audit import (
+    DEFAULT_EXPORT_TTL_SECONDS,
+    TurnOwnershipError,
+    enforce_export_rbac,
+    filename_from_contract,
+    register_artifact,
+    register_turn_contract,
+    resolve_turn_contract,
+    verify_artifact_access,
+    write_export_audit,
+)
+from app.tools.export_tool import DOCS_TOAST, SHEETS_TOAST, DocumentExporter
 from app.turn_runner import get_agent_turn_runner
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -173,11 +184,27 @@ def _note_persona_assertion(asserted: Optional[str], principal: Principal, chann
 
 
 class ExportRequest(BaseModel):
+    turn_id: Optional[str] = None
+    session_id: Optional[str] = None
     format: str = "pdf"
     title: str = "Yukti_Export"
     content: Optional[str] = None
     columns: Optional[List[str]] = None
     rows: Optional[List[Dict[str, Any]]] = None
+    chart_png: Optional[str] = None
+    chart_svg: Optional[str] = None
+    email_draft: Optional[Dict[str, Any]] = None
+    contract: Optional[Dict[str, Any]] = None
+
+
+class ExportAuditRequest(BaseModel):
+    turn_id: str = ""
+    session_id: Optional[str] = None
+    format: str = "png"
+    filename: Optional[str] = None
+    rows: int = 0
+    columns: Optional[List[str]] = None
+    masked: bool = False
 
 
 # P0.1 (BUG-01): ADC health, cached for 60 s so /health polling never hammers the token endpoint.
@@ -363,6 +390,13 @@ async def execute_turn(req: TurnRequest, response: Response, principal: Principa
             principal=principal,
         )
         _apply_admin_switch(contract, principal, response, query=req.query)
+        register_turn_contract(
+            turn_id=str(contract.get("turn_id") or ""),
+            contract=contract,
+            emp_id=principal.emp_id,
+            persona=principal.persona,
+            session_id=session_id,
+        )
         return contract
     except Exception as exc:
         logger.exception(f"Error executing turn: {exc}")
@@ -448,35 +482,219 @@ def _sweep_old_exports() -> None:
 
 
 @app.post("/api/export")
-def create_export(req: ExportRequest, principal: Principal = Depends(require_principal)) -> Dict[str, Any]:
-    """Generates an export file and returns {export_id, filename, format}."""
-    fmt = req.format.lower().strip()
-    # H1.3a: 128-bit random ids (unguessable — downloads are unauthenticated); old files are swept on each create
+def create_export(
+    req: ExportRequest,
+    request: Request,
+    principal: Principal = Depends(require_principal),
+) -> Dict[str, Any]:
+    """Generates an RBAC-masked, audit-logged export file and returns `{artifact, toast?, ...}` (SPEC-10 §5)."""
+    fmt = (req.format or "pdf").lower().strip()
     export_id = f"exp_{uuid.uuid4().hex}"
     _sweep_old_exports()
-    clean_title = re.sub(r"[^a-zA-Z0-9_\-]", "_", req.title or "Yukti_Export")
-    
-    try:
-        if "word" in fmt or "docx" in fmt:
-            filename = f"{clean_title}.docx"
-            exporter.export_word(markdown_text=req.content or "", filename=f"{export_id}.docx")
-            return {"export_id": export_id, "filename": filename, "format": "docx"}
-        elif "pdf" in fmt:
-            filename = f"{clean_title}.pdf"
-            exporter.export_pdf(markdown_text=req.content or "", filename=f"{export_id}.pdf")
-            return {"export_id": export_id, "filename": filename, "format": "pdf"}
-        elif "xlsx" in fmt or "sheets" in fmt:
-            filename = f"{clean_title}.xlsx"
-            exporter.export_xlsx(columns=req.columns or [], rows=req.rows or [], filename=f"{export_id}.xlsx")
-            return {"export_id": export_id, "filename": filename, "format": "xlsx"}
-        elif "docs" in fmt:
-            filename = f"{clean_title}.docx"
-            res = exporter.export_google_docs(title=clean_title, markdown_text=req.content or "", file_id=export_id)
-            return {"export_id": export_id, "filename": filename, "format": "docs", "url": res.get("url")}
+
+    # 1. Resolve format & honest Sheets/Docs toast (SPEC-10 §4.7 / BUG-25)
+    toast_parts: List[str] = []
+    if fmt in ("sheets", "google_sheets", "gsheet"):
+        kind, ext = "xlsx", "xlsx"
+        toast_parts.append(SHEETS_TOAST)
+    elif fmt in ("xlsx", "excel", "xls"):
+        kind, ext = "xlsx", "xlsx"
+    elif fmt == "csv":
+        kind, ext = "csv", "csv"
+    elif fmt == "pdf":
+        kind, ext = "pdf", "pdf"
+    elif fmt in ("docs", "google_docs", "gdoc"):
+        kind, ext = "docx", "docx"
+        toast_parts.append(DOCS_TOAST)
+    elif fmt in ("docx", "word", "doc"):
+        kind, ext = "docx", "docx"
+    elif fmt in ("eml", "email"):
+        kind, ext = "eml", "eml"
+    else:
         raise HTTPException(
             status_code=400,
             detail={"type": "error", "message": f"Unsupported export format: {req.format}", "retryable": False},
         )
+
+    # 2. Resolve source contract for (session, turn_id, principal) — 403 if owned by another principal
+    session_id = req.session_id or ""
+    base_contract: Optional[Dict[str, Any]] = None
+    if req.turn_id:
+        try:
+            resolved = resolve_turn_contract(req.turn_id, principal.emp_id, principal.persona)
+        except TurnOwnershipError:
+            write_export_audit(
+                emp_id=principal.emp_id,
+                persona=principal.persona,
+                session_id=session_id,
+                turn_id=req.turn_id,
+                fmt=kind,
+                filename="forbidden",
+                sha256="",
+                rows=0,
+                columns=[],
+                data_classes=["restricted"],
+                masked=True,
+                delivery="download",
+                client_ip=request.client.host if request.client else None,
+            )
+            raise HTTPException(
+                status_code=403,
+                detail={"type": "error", "message": "You do not have permission to export another user's turn.", "retryable": False},
+            )
+        if resolved is not None:
+            base_contract, resolved_sid = resolved
+            if not session_id:
+                session_id = resolved_sid
+
+    if base_contract is None:
+        if req.contract and isinstance(req.contract, dict):
+            base_contract = dict(req.contract)
+        else:
+            base_contract = {
+                "turn_id": req.turn_id or "",
+                "persona": principal.persona,
+                "visual": {
+                    "type": "table",
+                    "mode": "replace",
+                    "title": req.title or "Yukti_Export",
+                    "table": {
+                        "columns": list(req.columns or []),
+                        "rows": list(req.rows or []),
+                    },
+                },
+            }
+            if req.email_draft:
+                base_contract["email_draft"] = req.email_draft
+
+    # 3. Enforce RBAC & column intersection on contract
+    masked_contract, masked_flag, is_aggregate, data_classes, dropped_cols = enforce_export_rbac(
+        base_contract,
+        principal.persona,
+        requested_columns=req.columns if (req.turn_id or req.contract) else None,
+    )
+    if dropped_cols:
+        toast_parts.append(
+            f"Dropped restricted or unknown column(s) for {principal.persona}: {', '.join(dropped_cols)}."
+        )
+
+    vis = masked_contract.get("visual") if isinstance(masked_contract.get("visual"), dict) else {}
+    stmt = vis.get("statement") if isinstance(vis.get("statement"), dict) else None
+    tbl = vis.get("table") if isinstance(vis.get("table"), dict) else {}
+    eff_cols = list(tbl.get("columns") or [])
+    eff_rows = list(tbl.get("rows") or [])
+    if stmt:
+        eff_cols = ["label"] + list(stmt.get("periods") or [])
+        eff_rows = [r for sec in (stmt.get("sections") or []) for r in (sec.get("rows") or [])]
+
+    title_override = req.title if (req.title and req.title != "Yukti_Export") else None
+    canonical_filename = filename_from_contract(
+        masked_contract,
+        ext=ext,
+        persona=principal.persona,
+        is_aggregate=is_aggregate,
+        title_override=title_override,
+    )
+
+    try:
+        disk_name = f"{export_id}.{ext}"
+        if kind == "xlsx":
+            out_path = exporter.export_xlsx(
+                columns=eff_cols,
+                rows=eff_rows,
+                filename=disk_name,
+                contract=masked_contract,
+                persona=principal.persona,
+                masked=masked_flag,
+                is_aggregate=is_aggregate,
+            )
+        elif kind == "csv":
+            out_path = exporter.export_csv(
+                columns=eff_cols,
+                rows=eff_rows,
+                filename=disk_name,
+                contract=masked_contract,
+            )
+        elif kind == "pdf":
+            out_path = exporter.export_pdf(
+                markdown_text=req.content or "",
+                filename=disk_name,
+                contract=masked_contract,
+                title=title_override,
+                columns=eff_cols,
+                rows=eff_rows,
+                chart_png=req.chart_png,
+                persona=principal.persona,
+                masked=masked_flag,
+                is_aggregate=is_aggregate,
+            )
+        elif kind == "docx":
+            out_path = exporter.export_word(
+                markdown_text=req.content or "",
+                filename=disk_name,
+                contract=masked_contract,
+                title=title_override,
+                columns=eff_cols,
+                rows=eff_rows,
+                chart_png=req.chart_png,
+                email_draft=req.email_draft,
+                persona=principal.persona,
+                masked=masked_flag,
+                is_aggregate=is_aggregate,
+            )
+        elif kind == "eml":
+            out_path = exporter.export_eml(
+                email_draft=req.email_draft,
+                filename=disk_name,
+                contract=masked_contract,
+                persona=principal.persona,
+                masked=masked_flag,
+                is_aggregate=is_aggregate,
+            )
+        else:
+            raise ValueError(f"Unhandled export kind {kind}")
+
+        rec = register_artifact(
+            export_id=export_id,
+            kind=kind,
+            filename=canonical_filename,
+            disk_path=out_path,
+            rows=len(eff_rows),
+            columns=eff_cols,
+            masked=masked_flag,
+            is_aggregate=is_aggregate,
+            emp_id=principal.emp_id,
+            persona=principal.persona,
+            session_id=session_id,
+            turn_id=str(req.turn_id or masked_contract.get("turn_id") or ""),
+            ttl_seconds=DEFAULT_EXPORT_TTL_SECONDS,
+        )
+
+        write_export_audit(
+            emp_id=principal.emp_id,
+            persona=principal.persona,
+            session_id=session_id,
+            turn_id=str(req.turn_id or masked_contract.get("turn_id") or ""),
+            fmt=kind,
+            filename=canonical_filename,
+            sha256=rec.sha256,
+            rows=len(eff_rows),
+            columns=eff_cols,
+            data_classes=data_classes,
+            masked=masked_flag,
+            delivery="eml" if kind == "eml" else "download",
+            client_ip=request.client.host if request.client else None,
+        )
+
+        artifact_dict = rec.public_artifact()
+        resp_payload: Dict[str, Any] = {
+            **artifact_dict,
+            "format": kind,
+            "artifact": artifact_dict,
+        }
+        if toast_parts:
+            resp_payload["toast"] = " ".join(toast_parts)
+        return resp_payload
     except HTTPException:
         raise
     except Exception as exc:
@@ -487,17 +705,73 @@ def create_export(req: ExportRequest, principal: Principal = Depends(require_pri
         )
 
 
+@app.post("/api/export/audit")
+def create_export_audit_event(
+    req: ExportAuditRequest,
+    request: Request,
+    principal: Principal = Depends(require_principal),
+) -> Dict[str, Any]:
+    """Audit endpoint for client-side PNG/SVG exports (SPEC-10 §4.4, §5)."""
+    fmt = (req.format or "png").lower().strip()
+    if fmt not in ("png", "svg"):
+        fmt = "png"
+    fname = req.filename or filename_from_contract(
+        {"turn_id": req.turn_id},
+        ext=fmt,
+        persona=principal.persona,
+        is_aggregate=bool(req.masked),
+    )
+    row = write_export_audit(
+        emp_id=principal.emp_id,
+        persona=principal.persona,
+        session_id=req.session_id or "",
+        turn_id=req.turn_id or "",
+        fmt=fmt,
+        filename=fname,
+        sha256="client_rendered",
+        rows=int(req.rows or 0),
+        columns=list(req.columns or []),
+        data_classes=["general"],
+        masked=bool(req.masked),
+        delivery="download",
+        client_ip=request.client.host if request.client else None,
+    )
+    return {"status": "ok", "filename": fname, "audit": row}
+
+
 @app.get("/api/export/{export_id}")
+@app.get("/api/download/{export_id}")
 def download_export(export_id: str, principal: Principal = Depends(require_principal)):
-    """Downloads an exported file securely from the exports directory only."""
+    """Downloads an exported file securely from the exports directory only.
+    Enforces creator-principal ownership (403 on mismatch) and 24 h expiry (404 when expired).
+    """
     # H1.3a: only ids we mint (exp_<32 hex>) are servable; anything else is a 404 (no globbing on user input)
     if not re.fullmatch(r"exp_[0-9a-f]{32}", export_id or ""):
         raise HTTPException(
             status_code=404,
             detail={"type": "error", "message": "Export not found.", "retryable": False},
         )
+
+    try:
+        rec = verify_artifact_access(
+            export_id=export_id,
+            principal_emp_id=principal.emp_id,
+            principal_persona=principal.persona,
+            exports_dir=EXPORTS_DIR,
+        )
+    except TurnOwnershipError:
+        raise HTTPException(
+            status_code=403,
+            detail={"type": "error", "message": "You do not have permission to download another user's export.", "retryable": False},
+        )
+
     root = EXPORTS_DIR.resolve()
-    matches = [p for p in EXPORTS_DIR.glob(f"{export_id}.*") if p.resolve().parent == root and p.suffix.lower() in (".docx", ".xlsx", ".pdf", ".csv")]
+    allowed_exts = (".docx", ".xlsx", ".pdf", ".csv", ".eml", ".zip")
+    matches = [
+        p
+        for p in EXPORTS_DIR.glob(f"{export_id}.*")
+        if p.resolve().parent == root and p.suffix.lower() in allowed_exts
+    ]
     if not matches:
         raise HTTPException(
             status_code=404,
@@ -509,13 +783,17 @@ def download_export(export_id: str, principal: Principal = Depends(require_princ
         ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         ".pdf": "application/pdf",
-        ".csv": "text/csv",
+        ".csv": "text/csv; charset=utf-8",
+        ".eml": "message/rfc822",
+        ".zip": "application/zip",
     }
     media_type = media_types.get(ext, "application/octet-stream")
+    download_filename = rec.filename if rec and rec.filename else file_path.name
     return FileResponse(
         path=file_path,
-        filename=file_path.name,
+        filename=download_filename,
         media_type=media_type,
+        headers={"Content-Disposition": f'attachment; filename="{download_filename}"'},
     )
 
 

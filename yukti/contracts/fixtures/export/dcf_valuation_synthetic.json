@@ -1,0 +1,112 @@
+{
+  "turn_id": "turn_dcf_standalone_synthetic",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Illustrative DCF valuation based on FY26 standalone FCFF and assumptions.",
+  "display_text": "Illustrative DCF workbook model (synthetic assumptions, SPEC-02/SPEC-10 §4.1) [1].",
+  "contract_version": 2,
+  "dcf_workbook": {
+    "as_of": "31-Mar-2026",
+    "basis": "Standalone DCF (Illustrative synthetic assumptions)",
+    "assumptions": [
+      {
+        "key": "BASE_FCFF",
+        "name": "Base Year FCFF (FY26)",
+        "value": 34200.0,
+        "unit": "INR_crore",
+        "source": "Synthetic CF Fixture",
+        "as_of": "FY26"
+      },
+      {
+        "key": "WACC",
+        "name": "Weighted Average Cost of Capital (WACC)",
+        "value": 0.105,
+        "unit": "pct",
+        "source": "Illustrative Assumption",
+        "as_of": "FY26"
+      },
+      {
+        "key": "TERM_G",
+        "name": "Terminal Growth Rate",
+        "value": 0.025,
+        "unit": "pct",
+        "source": "Illustrative Assumption",
+        "as_of": "FY26"
+      },
+      {
+        "key": "STAGE1_G",
+        "name": "5-Year Explicit FCFF Growth Rate",
+        "value": 0.04,
+        "unit": "pct",
+        "source": "Illustrative Assumption",
+        "as_of": "FY26"
+      },
+      {
+        "key": "NET_DEBT",
+        "name": "Net Debt (Standalone)",
+        "value": 12500.0,
+        "unit": "INR_crore",
+        "source": "Synthetic BS Fixture",
+        "as_of": "FY26"
+      },
+      {
+        "key": "SHARES_CR",
+        "name": "Shares Outstanding (Crore)",
+        "value": 1258.03,
+        "unit": "count",
+        "source": "ONGC Capital Structure",
+        "as_of": "FY26"
+      }
+    ]
+  },
+  "visual": {
+    "type": "table",
+    "mode": "replace",
+    "title": "ONGC Standalone DCF Valuation Summary (Illustrative)",
+    "subtitle": "As of 31-Mar-2026 · Source: Synthetic DCF Model (Illustrative)",
+    "table": {
+      "columns": [
+        "metric",
+        "value_inr_cr",
+        "notes"
+      ],
+      "rows": [
+        {
+          "metric": "Base FCFF (FY26)",
+          "value_inr_cr": 34200.0,
+          "notes": "Reported OCF less Capex"
+        },
+        {
+          "metric": "Enterprise Value (EV)",
+          "value_inr_cr": 462150.0,
+          "notes": "5Y explicit + Gordon terminal"
+        },
+        {
+          "metric": "Equity Value",
+          "value_inr_cr": 449650.0,
+          "notes": "EV less Net Debt"
+        }
+      ]
+    }
+  },
+  "insights": [
+    "Illustrative DCF valuation model with live formula sheets."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.mart_corporate_performance",
+      "title": "Synthetic DCF Fixture (Illustrative)"
+    }
+  ],
+  "suggestions": [
+    "Export DCF workbook to Excel"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "xlsx",
+    "pdf"
+  ]
+}

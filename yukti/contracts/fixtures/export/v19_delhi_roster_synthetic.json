@@ -1,0 +1,816 @@
+{
+  "turn_id": "turn_v19_delhi_roster_synthetic",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Here are the 65 executives in Delhi with more than 5 years of continuous stay (synthetic fixture).",
+  "display_text": "Delhi executives with > 5 years continuous stay as of 19-Oct-2026 (synthetic, Illustrative) [1].",
+  "contract_version": 2,
+  "definition_id": "DELHI_GT5_CONT_V1",
+  "definition_meta": {
+    "definition_id": "DELHI_GT5_CONT_V1",
+    "title": "Delhi > 5 Years Continuous Stay (Executives E1–E9)",
+    "as_of": "19-Oct-2026",
+    "basis": "synthetic (Illustrative)",
+    "rule_text": "JRTP Rev 4, clause 3.2: rotation after 3–5 years at a station (Illustrative — ONGC JRTP text is not public).",
+    "citations": [
+      {
+        "id": "JRTP-3.2",
+        "label": "JRTP Rev 4, clause 3.2 (Illustrative — synthetic policy clause)",
+        "illustrative": true
+      },
+      {
+        "id": "J-03",
+        "label": "Delhi High Court LPA 744/2013 (13-Feb-2018), p.14 of 60 (real judicial citation)",
+        "illustrative": false
+      }
+    ]
+  },
+  "query_spec": {
+    "subject": "workforce",
+    "grain": "roster",
+    "filters": {
+      "wc_id": "WC-DEL",
+      "continuous_stay_gt_years": 5.0
+    },
+    "as_of": "2026-10-19"
+  },
+  "visual": {
+    "type": "table",
+    "mode": "replace",
+    "title": "Delhi >5y roster",
+    "subtitle": "As of 19-Oct-2026 · Source: SSOT (synthetic, Illustrative)",
+    "kpis": [
+      {
+        "label": "Executives > 5 yrs (Delhi)",
+        "value": "65",
+        "sub": "Continuous stay > 1,826 days"
+      },
+      {
+        "label": "Recorded Exemptions",
+        "value": "7",
+        "sub": "Pre-retirement & medical"
+      }
+    ],
+    "table": {
+      "columns": [
+        "name",
+        "functional_designation",
+        "grade",
+        "ongc_tenure_years",
+        "delhi_tenure_years",
+        "years_to_retirement",
+        "exemption"
+      ],
+      "headers": {
+        "name": "Name",
+        "functional_designation": "Designation",
+        "grade": "Level",
+        "ongc_tenure_years": "ONGC service (yrs)",
+        "delhi_tenure_years": "Tenure in Delhi (yrs)",
+        "years_to_retirement": "Years to retirement",
+        "exemption": "Exemption"
+      },
+      "rows": [
+        {
+          "emp_id": "EMP-100001",
+          "name": "अधिकारी 1 / Officer 1",
+          "functional_designation": "Production Engineer",
+          "grade": "E1",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 7.3,
+          "delhi_tenure_years": 11.1,
+          "years_to_retirement": 9.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100002",
+          "name": "अधिकारी 2 / Officer 2",
+          "functional_designation": "Production Engineer",
+          "grade": "E1",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 8.1,
+          "delhi_tenure_years": 11.0,
+          "years_to_retirement": 10.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100003",
+          "name": "अधिकारी 3 / Officer 3",
+          "functional_designation": "HR Executive",
+          "grade": "E1",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 8.9,
+          "delhi_tenure_years": 11.0,
+          "years_to_retirement": 11.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100004",
+          "name": "अधिकारी 4 / Officer 4",
+          "functional_designation": "Production Engineer",
+          "grade": "E1",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 9.7,
+          "delhi_tenure_years": 10.9,
+          "years_to_retirement": 12.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100005",
+          "name": "अधिकारी 5 / Officer 5",
+          "functional_designation": "Finance Officer",
+          "grade": "E1",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 10.5,
+          "delhi_tenure_years": 10.8,
+          "years_to_retirement": 13.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100006",
+          "name": "अधिकारी 6 / Officer 6",
+          "functional_designation": "HR Executive",
+          "grade": "E1",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 11.3,
+          "delhi_tenure_years": 10.7,
+          "years_to_retirement": 14.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100007",
+          "name": "अधिकारी 7 / Officer 7",
+          "functional_designation": "Production Engineer",
+          "grade": "E1",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 12.1,
+          "delhi_tenure_years": 10.6,
+          "years_to_retirement": 15.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100008",
+          "name": "अधिकारी 8 / Officer 8",
+          "functional_designation": "Production Engineer",
+          "grade": "E1",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 12.9,
+          "delhi_tenure_years": 10.6,
+          "years_to_retirement": 16.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100009",
+          "name": "अधिकारी 9 / Officer 9",
+          "functional_designation": "HR Executive",
+          "grade": "E2",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 13.7,
+          "delhi_tenure_years": 10.5,
+          "years_to_retirement": 17.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100010",
+          "name": "अधिकारी 10 / Officer 10",
+          "functional_designation": "Finance Officer",
+          "grade": "E2",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 14.5,
+          "delhi_tenure_years": 10.4,
+          "years_to_retirement": 18.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100011",
+          "name": "अधिकारी 11 / Officer 11",
+          "functional_designation": "Production Engineer",
+          "grade": "E2",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 15.3,
+          "delhi_tenure_years": 10.3,
+          "years_to_retirement": 19.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100012",
+          "name": "अधिकारी 12 / Officer 12",
+          "functional_designation": "HR Executive",
+          "grade": "E2",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 16.1,
+          "delhi_tenure_years": 10.2,
+          "years_to_retirement": 8.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100013",
+          "name": "अधिकारी 13 / Officer 13",
+          "functional_designation": "Production Engineer",
+          "grade": "E2",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 16.9,
+          "delhi_tenure_years": 10.2,
+          "years_to_retirement": 9.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100014",
+          "name": "अधिकारी 14 / Officer 14",
+          "functional_designation": "Production Engineer",
+          "grade": "E2",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 17.7,
+          "delhi_tenure_years": 10.1,
+          "years_to_retirement": 10.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100015",
+          "name": "अधिकारी 15 / Officer 15",
+          "functional_designation": "Finance Officer",
+          "grade": "E2",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 18.5,
+          "delhi_tenure_years": 10.0,
+          "years_to_retirement": 1.5,
+          "exemption": "pre_retirement"
+        },
+        {
+          "emp_id": "EMP-100016",
+          "name": "अधिकारी 16 / Officer 16",
+          "functional_designation": "Production Engineer",
+          "grade": "E2",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 19.3,
+          "delhi_tenure_years": 9.9,
+          "years_to_retirement": 12.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100017",
+          "name": "अधिकारी 17 / Officer 17",
+          "functional_designation": "Production Engineer",
+          "grade": "E2",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 20.1,
+          "delhi_tenure_years": 9.8,
+          "years_to_retirement": 13.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100018",
+          "name": "अधिकारी 18 / Officer 18",
+          "functional_designation": "HR Executive",
+          "grade": "E2",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 6.5,
+          "delhi_tenure_years": 9.8,
+          "years_to_retirement": 14.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100019",
+          "name": "अधिकारी 19 / Officer 19",
+          "functional_designation": "Production Engineer",
+          "grade": "E2",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 7.3,
+          "delhi_tenure_years": 9.7,
+          "years_to_retirement": 15.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100020",
+          "name": "अधिकारी 20 / Officer 20",
+          "functional_designation": "Finance Officer",
+          "grade": "E2",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 8.1,
+          "delhi_tenure_years": 9.6,
+          "years_to_retirement": 16.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100021",
+          "name": "अधिकारी 21 / Officer 21",
+          "functional_designation": "HR Executive",
+          "grade": "E3",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 8.9,
+          "delhi_tenure_years": 9.5,
+          "years_to_retirement": 17.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100022",
+          "name": "अधिकारी 22 / Officer 22",
+          "functional_designation": "Production Engineer",
+          "grade": "E3",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 9.7,
+          "delhi_tenure_years": 9.4,
+          "years_to_retirement": 18.0,
+          "exemption": "medical"
+        },
+        {
+          "emp_id": "EMP-100023",
+          "name": "अधिकारी 23 / Officer 23",
+          "functional_designation": "Production Engineer",
+          "grade": "E3",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 10.5,
+          "delhi_tenure_years": 9.4,
+          "years_to_retirement": 19.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100024",
+          "name": "अधिकारी 24 / Officer 24",
+          "functional_designation": "HR Executive",
+          "grade": "E3",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 11.3,
+          "delhi_tenure_years": 9.3,
+          "years_to_retirement": 8.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100025",
+          "name": "अधिकारी 25 / Officer 25",
+          "functional_designation": "Finance Officer",
+          "grade": "E3",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 12.1,
+          "delhi_tenure_years": 9.2,
+          "years_to_retirement": 9.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100026",
+          "name": "अधिकारी 26 / Officer 26",
+          "functional_designation": "Production Engineer",
+          "grade": "E3",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 12.9,
+          "delhi_tenure_years": 9.1,
+          "years_to_retirement": 10.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100027",
+          "name": "अधिकारी 27 / Officer 27",
+          "functional_designation": "HR Executive",
+          "grade": "E3",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 13.7,
+          "delhi_tenure_years": 9.0,
+          "years_to_retirement": 11.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100028",
+          "name": "अधिकारी 28 / Officer 28",
+          "functional_designation": "Production Engineer",
+          "grade": "E3",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 14.5,
+          "delhi_tenure_years": 9.0,
+          "years_to_retirement": 12.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100029",
+          "name": "अधिकारी 29 / Officer 29",
+          "functional_designation": "Production Engineer",
+          "grade": "E3",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 15.3,
+          "delhi_tenure_years": 8.9,
+          "years_to_retirement": 13.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100030",
+          "name": "अधिकारी 30 / Officer 30",
+          "functional_designation": "Finance Officer",
+          "grade": "E3",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 16.1,
+          "delhi_tenure_years": 8.8,
+          "years_to_retirement": 1.5,
+          "exemption": "pre_retirement"
+        },
+        {
+          "emp_id": "EMP-100031",
+          "name": "अधिकारी 31 / Officer 31",
+          "functional_designation": "Production Engineer",
+          "grade": "E3",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 16.9,
+          "delhi_tenure_years": 8.7,
+          "years_to_retirement": 15.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100032",
+          "name": "अधिकारी 32 / Officer 32",
+          "functional_designation": "Production Engineer",
+          "grade": "E3",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 17.7,
+          "delhi_tenure_years": 8.6,
+          "years_to_retirement": 16.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100033",
+          "name": "अधिकारी 33 / Officer 33",
+          "functional_designation": "HR Executive",
+          "grade": "E3",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 18.5,
+          "delhi_tenure_years": 8.6,
+          "years_to_retirement": 17.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100034",
+          "name": "अधिकारी 34 / Officer 34",
+          "functional_designation": "Production Engineer",
+          "grade": "E3",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 19.3,
+          "delhi_tenure_years": 8.5,
+          "years_to_retirement": 18.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100035",
+          "name": "अधिकारी 35 / Officer 35",
+          "functional_designation": "Finance Officer",
+          "grade": "E4",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 20.1,
+          "delhi_tenure_years": 8.4,
+          "years_to_retirement": 19.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100036",
+          "name": "अधिकारी 36 / Officer 36",
+          "functional_designation": "HR Executive",
+          "grade": "E4",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 6.5,
+          "delhi_tenure_years": 8.3,
+          "years_to_retirement": 8.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100037",
+          "name": "अधिकारी 37 / Officer 37",
+          "functional_designation": "Production Engineer",
+          "grade": "E4",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 7.3,
+          "delhi_tenure_years": 8.2,
+          "years_to_retirement": 9.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100038",
+          "name": "अधिकारी 38 / Officer 38",
+          "functional_designation": "Production Engineer",
+          "grade": "E4",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 8.1,
+          "delhi_tenure_years": 8.2,
+          "years_to_retirement": 10.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100039",
+          "name": "अधिकारी 39 / Officer 39",
+          "functional_designation": "HR Executive",
+          "grade": "E4",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 8.9,
+          "delhi_tenure_years": 8.1,
+          "years_to_retirement": 11.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100040",
+          "name": "अधिकारी 40 / Officer 40",
+          "functional_designation": "Finance Officer",
+          "grade": "E4",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 9.7,
+          "delhi_tenure_years": 8.0,
+          "years_to_retirement": 12.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100041",
+          "name": "अधिकारी 41 / Officer 41",
+          "functional_designation": "Production Engineer",
+          "grade": "E4",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 10.5,
+          "delhi_tenure_years": 7.9,
+          "years_to_retirement": 13.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100042",
+          "name": "अधिकारी 42 / Officer 42",
+          "functional_designation": "HR Executive",
+          "grade": "E4",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 11.3,
+          "delhi_tenure_years": 7.8,
+          "years_to_retirement": 14.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100043",
+          "name": "अधिकारी 43 / Officer 43",
+          "functional_designation": "Production Engineer",
+          "grade": "E4",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 12.1,
+          "delhi_tenure_years": 7.8,
+          "years_to_retirement": 15.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100044",
+          "name": "अधिकारी 44 / Officer 44",
+          "functional_designation": "Production Engineer",
+          "grade": "E4",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 12.9,
+          "delhi_tenure_years": 7.7,
+          "years_to_retirement": 16.0,
+          "exemption": "medical"
+        },
+        {
+          "emp_id": "EMP-100045",
+          "name": "अधिकारी 45 / Officer 45",
+          "functional_designation": "Finance Officer",
+          "grade": "E5",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 13.7,
+          "delhi_tenure_years": 7.6,
+          "years_to_retirement": 1.5,
+          "exemption": "pre_retirement"
+        },
+        {
+          "emp_id": "EMP-100046",
+          "name": "अधिकारी 46 / Officer 46",
+          "functional_designation": "Production Engineer",
+          "grade": "E5",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 14.5,
+          "delhi_tenure_years": 7.5,
+          "years_to_retirement": 18.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100047",
+          "name": "अधिकारी 47 / Officer 47",
+          "functional_designation": "Production Engineer",
+          "grade": "E5",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 15.3,
+          "delhi_tenure_years": 7.4,
+          "years_to_retirement": 19.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100048",
+          "name": "अधिकारी 48 / Officer 48",
+          "functional_designation": "HR Executive",
+          "grade": "E5",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 16.1,
+          "delhi_tenure_years": 7.4,
+          "years_to_retirement": 8.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100049",
+          "name": "अधिकारी 49 / Officer 49",
+          "functional_designation": "Production Engineer",
+          "grade": "E5",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 16.9,
+          "delhi_tenure_years": 7.3,
+          "years_to_retirement": 9.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100050",
+          "name": "अधिकारी 50 / Officer 50",
+          "functional_designation": "Finance Officer",
+          "grade": "E5",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 17.7,
+          "delhi_tenure_years": 7.2,
+          "years_to_retirement": 10.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100051",
+          "name": "अधिकारी 51 / Officer 51",
+          "functional_designation": "HR Executive",
+          "grade": "E5",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 18.5,
+          "delhi_tenure_years": 7.1,
+          "years_to_retirement": 11.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100052",
+          "name": "अधिकारी 52 / Officer 52",
+          "functional_designation": "Production Engineer",
+          "grade": "E5",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 19.3,
+          "delhi_tenure_years": 7.0,
+          "years_to_retirement": 12.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100053",
+          "name": "अधिकारी 53 / Officer 53",
+          "functional_designation": "Production Engineer",
+          "grade": "E6",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 20.1,
+          "delhi_tenure_years": 7.0,
+          "years_to_retirement": 13.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100054",
+          "name": "अधिकारी 54 / Officer 54",
+          "functional_designation": "HR Executive",
+          "grade": "E6",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 6.5,
+          "delhi_tenure_years": 6.9,
+          "years_to_retirement": 14.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100055",
+          "name": "अधिकारी 55 / Officer 55",
+          "functional_designation": "Finance Officer",
+          "grade": "E6",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 7.3,
+          "delhi_tenure_years": 6.8,
+          "years_to_retirement": 15.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100056",
+          "name": "अधिकारी 56 / Officer 56",
+          "functional_designation": "Production Engineer",
+          "grade": "E6",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 8.1,
+          "delhi_tenure_years": 6.7,
+          "years_to_retirement": 16.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100057",
+          "name": "अधिकारी 57 / Officer 57",
+          "functional_designation": "HR Executive",
+          "grade": "E6",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 8.9,
+          "delhi_tenure_years": 6.6,
+          "years_to_retirement": 17.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100058",
+          "name": "अधिकारी 58 / Officer 58",
+          "functional_designation": "Production Engineer",
+          "grade": "E7",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 9.7,
+          "delhi_tenure_years": 6.6,
+          "years_to_retirement": 18.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100059",
+          "name": "अधिकारी 59 / Officer 59",
+          "functional_designation": "Production Engineer",
+          "grade": "E7",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 10.5,
+          "delhi_tenure_years": 6.5,
+          "years_to_retirement": 19.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100060",
+          "name": "अधिकारी 60 / Officer 60",
+          "functional_designation": "Finance Officer",
+          "grade": "E7",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 11.3,
+          "delhi_tenure_years": 6.4,
+          "years_to_retirement": 1.5,
+          "exemption": "pre_retirement"
+        },
+        {
+          "emp_id": "EMP-100061",
+          "name": "अधिकारी 61 / Officer 61",
+          "functional_designation": "Production Engineer",
+          "grade": "E8",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 12.1,
+          "delhi_tenure_years": 6.3,
+          "years_to_retirement": 9.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100062",
+          "name": "अधिकारी 62 / Officer 62",
+          "functional_designation": "Production Engineer",
+          "grade": "E8",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 12.9,
+          "delhi_tenure_years": 6.2,
+          "years_to_retirement": 10.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100063",
+          "name": "अधिकारी 63 / Officer 63",
+          "functional_designation": "HR Executive",
+          "grade": "E8",
+          "discipline": "DISC-HR",
+          "ongc_tenure_years": 13.7,
+          "delhi_tenure_years": 6.2,
+          "years_to_retirement": 11.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100064",
+          "name": "अधिकारी 64 / Officer 64",
+          "functional_designation": "Production Engineer",
+          "grade": "E9",
+          "discipline": "DISC-PRD",
+          "ongc_tenure_years": 14.5,
+          "delhi_tenure_years": 6.1,
+          "years_to_retirement": 12.0,
+          "exemption": "—"
+        },
+        {
+          "emp_id": "EMP-100065",
+          "name": "अधिकारी 65 / Officer 65",
+          "functional_designation": "Finance Officer",
+          "grade": "E9",
+          "discipline": "DISC-FIN",
+          "ongc_tenure_years": 15.3,
+          "delhi_tenure_years": 6.0,
+          "years_to_retirement": 13.0,
+          "exemption": "—"
+        }
+      ]
+    }
+  },
+  "insights": [
+    "65 executives have >5.0 years continuous stay in Delhi (WC-DEL) as of 19-Oct-2026 (Illustrative synthetic fixture)."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.v_continuous_stay",
+      "title": "SSOT Workforce Snapshot (synthetic, Illustrative)",
+      "as_of": "2026-10-19"
+    }
+  ],
+  "suggestions": [
+    "Export to Excel",
+    "Draft email to Director (HR)"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "xlsx",
+    "csv",
+    "pdf",
+    "docx"
+  ]
+}

@@ -5,9 +5,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
     UV_COMPILE_BYTECODE=1
 
-# Install Node.js 20, curl, and uv
+# Install Node.js 20, curl, Pango/HarfBuzz (P4.6 WeasyPrint PDF shaping), and uv
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ca-certificates gnupg && \
+    curl ca-certificates gnupg \
+    libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 \
+    libharfbuzz0b libharfbuzz-subset0 shared-mime-info && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y --no-install-recommends nodejs && \
     pip install --no-cache-dir uv && \
