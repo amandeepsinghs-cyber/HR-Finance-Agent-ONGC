@@ -112,3 +112,30 @@ grep -nE "EMP-[0-9]{4,6}" certified/library.yaml              # 10 × default: E
 ### Re-review entry criteria
 
 R2-M1 fixed, with the Q07/Q08 × 8-junior `check_access` test. I will only re-verify that item, plus the evidence suites.
+
+
+---
+
+## Round 3 verdict (commit `a34a2a0`): **APPROVE**
+
+**R2-M1 is fixed. Junior aggregate pay now gets through the pre-query guard, and individual pay of others is still refused. No blocking items remain for P2H.1.**
+
+### What I checked (offline probes: 8 juniors, both `check_access` and `decide`)
+
+| Probe set | Result |
+|---|---|
+| Should be allowed: Q07 *"Average monthly basic pay of E1 officers"*, Q08 *"What does an E1 officer get on joining?"*, *"average salary of E1 officers"*, *"joining pay of E1"*, *"average salary by grade"*, *"E1 pay scale"* | ✅ 48/48 allowed by both layers |
+| Should be refused: *"pay of Ramesh Kumar"*, *"What is the pay of Ramesh Kumar?"*, *"my colleague's salary"*, *"What is my colleague's salary?"*, *"pay scale and salary of each employee in Delhi"*, *"list salaries of all E1 officers"*, *"average salary of E1 officers in my team"*, *"What is the pay band of Ramesh Kumar"*, *"salary of my reporting officer"* | ✅ refused by both layers for all 8 juniors |
+| Own name or own emp_id (*"What is Pooja Verma's salary?"* as E2_HR, *"salary of EMP-100146"* as E3_FIN) | `check_access` returns allowed (own record) and `decide` refuses. Neither leaks. |
+
+### Tests
+- 14 RBAC/persona/auth/catalog/planner suites: **1171 passed, 3 failed**. The failures are `planner_golden` G15/G23, which also fail on the parent, and G04, which passed 3/3 when run alone. G04 is the follow-up "Compare with Mumbai" and depends on G03; I treat it as an order-dependent flake. The fix doesn't touch the follow-up/patch path.
+- The new 40-case `test_r2_m1_check_access_and_decide_allow_junior_aggregate_pay` passes. The `test_rbac_live.py:111` wording assert was updated to the R-NAMED copy.
+- `pipeline.py:177`: `UnknownPersona` is now re-raised instead of being silently downgraded (it closes the round-2 should-fix).
+
+### Remaining should-fix (non-blocking; can go into P2H.2/P2H.3)
+1. `rbac.py:161-187` (`_mentions_individual_or_row_pay_target`): a name not preceded by "of/for" or possessive is missed. *"Average monthly basic pay of E1 officer Ramesh Kumar"* passes both text guards as `pay_aggregate`. That is **not a leak** today: on the planner path the compiled spec decides (a name filter → `pay_individual` → refuse, and an unmappable filter → CompileError → legacy). On the legacy path `enforce_contract` masks pay columns for juniors, because `allow_pay_aggregate` is set only by the planner. Still, harden the name detector, e.g. any capitalised two-word token pair not in `_NON_PERSON_PROPER_WORDS`.
+2. `turn_runner.py:262,329` and `tools/query_data.py:95,291`, `tools/what_if.py:25`, `tools/policy_search.py:190,267` still default to `persona="CMD"`. Make the principal required (carried over from round 2).
+3. Investigate the G04 order-dependent flake.
+
+**Overall P2H.1 status:** security, RBAC, self scope, function scope, k≥5 and seeding are verified. Ready to merge from a G4 standpoint.

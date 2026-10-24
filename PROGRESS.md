@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:46 UTC · branch `v3/P0-stabilise` @ `2759d2e`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:51 UTC · branch `v3/P0-stabilise` @ `1a56582`
 
 > [!IMPORTANT]
-> **Overall: 35% complete (weighted)** — 20/62 steps ✅ done, 6 in flight, 36 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 5 warning(s).
+> **Overall: 38% complete (weighted)** — 22/62 steps ✅ done, 4 in flight, 36 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 8 warning(s).
 
 ## 1. Phase progress
 
@@ -11,10 +11,10 @@
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `██████████░░░░░░░░░░` 52% | 5 | 1 | 0 | 2 | 4 | 0 | 12 |
-| **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 6% | 0 | 0 | 0 | 2 | 6 | 0 | 8 |
+| **P2H** | HR: personas, V19, Employee-360 | `███░░░░░░░░░░░░░░░░░` 16% | 1 | 0 | 0 | 1 | 6 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `█████████░░░░░░░░░░░` 47% | 4 | 0 | 0 | 1 | 4 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `███████████░░░░░░░░░` 56% | 5 | 0 | 0 | 0 | 4 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -26,14 +26,14 @@
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.6 | 🔍 In review | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; | O (+F gates, FL evidence) | Apply review findings / approve |
 | P1.7 | 🔄 In progress | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | Complete build + evidence |
-| P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
 | P2H.2 | 🔄 In progress | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Complete build + evidence |
-| P4.2 | 🔄 In progress | `visual.type=statement` contract + presenter emit (multi-FY) | O | Complete build + evidence |
 
 **Ready to start:**
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
+| P2H.3 | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | P2H.1 |
+| P2H.5 | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | P2H.1 |
 | P4.5 | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions | F | P4.4 |
 
 ## 3. Sponsor action items
@@ -53,7 +53,7 @@
 | Verbatim | Features | Feature status | Open steps | Coverage |
 |---|---|---|---|---|
 | V2 | FEAT-027 | 🟡 | P2H.4, P3.5, P4.6, P4.7 | 🟡 |
-| V3 | FEAT-010, FEAT-031 | 🔴 🔴 | P2H.1 | 🔴 |
+| V3 | FEAT-010, FEAT-031 | 🔴 🔴 |  | 🔴 |
 | V6 | FEAT-013 | 🔴 | P5.2 | 🔴 |
 | V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ 🟡 🔴 🟡 | P2H.4, P3.5, P4.5, P4.6, P4.7, P4.8 | 🟡 |
 | V8 | FEAT-001, FEAT-013 | ✅ 🔴 | P5.2 | 🟡 |
@@ -63,11 +63,11 @@
 | V14 | FEAT-007, FEAT-010, FEAT-011, FEAT-014 | 🟡 🔴 🟡 🔴 | P2F.5, P3.1, P5.4, P5.5, P5.6 | 🟡 |
 | V15 | FEAT-015, FEAT-026 | 🟡 🔴 | P4.5, P4.8 | 🟡 |
 | V16 | FEAT-016 | 🟡 |  | 🟡 |
-| V17 | FEAT-017, FEAT-031 | 🔴 🔴 | P2H.1, P2H.2 | 🔴 |
+| V17 | FEAT-017, FEAT-031 | 🔴 🔴 | P2H.2 | 🔴 |
 | V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.6, P1.7, P1.10a, P1.10b, P2H.7, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P1.7, P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
 | V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5, P2F.6 | 🔴 |
-| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.2, P4.5, P4.6, P4.7, P4.8 | 🟡 |
+| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.5, P4.6, P4.7, P4.8 | 🟡 |
 | V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1, P1.9, P3.1, P3.2, P3.3, P3.4, P3.4b, P3.5 … | ⛔ |
 | V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P1.7, P1.10a, P2H.5, P2H.6, P2H.7, P2H.8 | 🟡 |
 
@@ -95,7 +95,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-014 Eval-gated release & Cloud Run redeploy | 🔴 | 2/5 |
 | FEAT-015 Any-chart re-presentation & chart excellence | 🟡 | 0/0 |
 | FEAT-016 AI aura visual language | 🟡 | 1/1 |
-| FEAT-017 Eleven-persona matrix + function split + `self` scope | 🔴 | 0/2 |
+| FEAT-017 Eleven-persona matrix + function split + `self` scope | 🔴 | 1/2 |
 | FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 3/8 |
 | FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 1/2 |
 | FEAT-020 Knowledge RAG over real AR text | 🔴 | 1/1 |
@@ -103,19 +103,19 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-022 Field economics-360 reconciled to company AR totals | 🔴 | 0/3 |
 | FEAT-023 V19 transfer workflow: Excel intent + Email agent | 🔴 | 0/2 |
 | FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ⛔ | 0/7 |
-| FEAT-025 Financial statement table visual | 🟡 | 1/4 |
+| FEAT-025 Financial statement table visual | 🟡 | 2/4 |
 | FEAT-026 Chart portfolio completion + correct waterfall | 🔴 | 2/4 |
 | FEAT-027 Export suite | 🟡 | 0/4 |
 | FEAT-028 Coordinator + agent registry + jobs + permission UX | ⛔ | 0/6 |
 | FEAT-029 DCF valuation agent | ⛔ | 0/4 |
 | FEAT-030 One-brain consolidation + numeric golden eval | ⛔ | 1/8 |
-| FEAT-031 Identity & security hardening | 🔴 | 2/3 |
+| FEAT-031 Identity & security hardening | 🔴 | 3/3 |
 | FEAT-032 Provenance honesty & degraded-mode transparency | 🔴 | 3/4 |
 
 ## 6. Bugs
 
-- **Blockers:** 14 total — 🔴 open 7 · 🟠 in progress 5 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 26 total — 🔴 open 15 · 🟠 in progress 5 · ↩ regressed 0 · ✅ closed 6
+- **Blockers:** 14 total — 🔴 open 6 · 🟠 in progress 6 · ↩ regressed 0 · ✅ closed 2
+- **Important:** 26 total — 🔴 open 13 · 🟠 in progress 7 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
@@ -126,7 +126,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-03 | open | Same metric, three values (FY17 royalty 7,635 / 8,548 / AR 11,575) | P1.10b, P1.6 | P1.10b:⬜ P1.6:🔍 |
 | BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:⬜ P1.11:⬜ P5.1:⬜ P5.3:⬜ |
 | BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:🔄 |
-| BUG-07 | open | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:🔄 |
+| BUG-07 | in_progress | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:✅ |
 | BUG-08 | in_progress | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:✅ |
 | BUG-09 | in_progress | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:✅ |
 | BUG-10 | open | "Can you export this as an Excel file" not understood | P2H.4 | P2H.4:⬜ |
@@ -139,6 +139,8 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `0e84527` | 2026-10-24 | P4.2 (G4 r2 follow-up) frontend: add sensitivity_grid/tornado VisualType stubs mirroring backend _VALID_VISUAL_TYPES |
+| `a34a2a0` | 2026-10-24 | P2H.1 (G4 r3 fix): align check_access aggregate-pay regex with rbac._V2_AGG_PAY_RE (R2-M1, BUG-28) and update test_rbac_live R-NAM |
 | `c651a99` | 2026-10-24 | P4.2 (G4 r2 fixes) backend: preserve 4 KPIs with flag off, fix catalog scan docstring, wire CF-BS cash tie, fix fixture source key |
 | `41b998a` | 2026-10-24 | P1.6 (pre-G4): build verified financial SSOT fact/dim tables, V01-V12 gates, conflicts, snapshot, and BQ load |
 | `c05192c` | 2026-10-24 | P4.4 (pre-G4) backend: mirror frontend compat rules into chart_rules.py and add 280-cell parity suite |
@@ -152,11 +154,12 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `e4993d6` | 2026-10-24 | P4.1 (frontend): render backend visual.note / note_hi (BridgeError copy) in the answer card |
 | `7c87812` | 2026-10-24 | P4.1 (G4 r2 fixes) backend: fix M1 shortcut guard, M2 multi-FY which-year & period pass-through, M3 presenter BridgeError fallback |
 | `7105556` | 2026-10-24 | P2H.2 (pre-G4) frontend part 1: 11-persona directory (src/personas.ts, fictional identities per D-60), PersonaPicker 'Sign in as…' |
-| `785e01d` | 2026-10-24 | P2H.1 (pre-G4): 11 personas, dim_app_user, function-scoped RBAC v2, self scope & junior aggregate pay |
-| `8ae11eb` | 2026-10-24 | P4.9 (G4 r2 fix) M1: restore white rgba() colour strings in VoiceOrb core/feather gradients (regex rename had turned string litera |
 
 ## 8. Integrity checks
 
+- ⚠️ BUG-07 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-27 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-28 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-08 is still in_progress although all its steps (P4.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-09 is still in_progress although all its steps (P4.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-22 is still in_progress although all its steps (P4.1) are ✅ — close it in BUG_REGISTER.md.

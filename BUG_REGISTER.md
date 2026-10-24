@@ -17,7 +17,7 @@
 | BUG-04 | ✅ | Answers say "Compiled SQL / BigQuery" but come from local JSON | Silent fallback `compiler.py:867-1007` | `source=local_snapshot` + badge | P0.3 | 032 |
 | BUG-05 | 🟠 | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loop | Legacy ADK prompt lacks statement tables, says FY18–FY27 (`semantic_layer.py:60`); no coverage source of truth; statement route absent in HEAD | Planner regex fix in WIP (keyword phrasings only); coverage manifest; one brain | P1.10a, P1.11, P5.1, P5.3 | 030 |
 | BUG-06 | 🟠 | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | `turn_runner.py:265-268`; `page.tsx:330`; persona in request body (`main.py`) | Server-side persona; no free-text role switching | P0.4, P2H.2 | 031 |
-| BUG-07 | 🔴 | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | `yukti/backend/certified/library.yaml:1617,1649,1673,1743` hard-coded emp_id | `dim_app_user` + `@self_emp_id` | P2H.1 | 017, 031 |
+| BUG-07 | 🟠 | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | `yukti/backend/certified/library.yaml:1617,1649,1673,1743` hard-coded emp_id | `dim_app_user` + `@self_emp_id` | P2H.1 | 017, 031 |
 | BUG-08 | 🟠 | "Express this as a waterfall" → Total ≈ 3× revenue | `turn_runner.py:275-296` and `compat.ts:71-73` discard the correct `presenter.py:192-216` bridge; `options.ts:392-420` sums untyped rows | Keep `chart.data`; signed bridge helper; test ends at PAT | P4.1 | 026 |
 | BUG-09 | 🟠 | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | `plan.ts:146`, `compat.ts:130`, `chart_rules.py` single-row branch | Delete synthesis; re-query or refuse | P4.1 | 026 |
 | BUG-10 | 🔴 | "Can you export this as an Excel file" not understood | `ui_control.py:291`, `uiCommands.ts:251` literal phrases only | Broad EN/HI intent + columns + link | P2H.4 | 023 |
@@ -43,8 +43,8 @@
 | BUG-24 | 🔴 | PDF export prints ₹ and Hindi as ■; text only, 90-char truncation | reportlab Helvetica `export_tool.py:142-166` | Embedded Noto fonts + tables + chart image | P4.6 | 027 |
 | BUG-25 | 🔴 | "Google Docs" opens a dead `docs.google.com/document/d/exp_…` link; "Sheets" downloads xlsx | Dry-run URL treated as real (`AnswerCard.tsx:248-251`; `main.py:343`) | Honest download + toast; Drive OAuth later | P4.6–P4.7 | 027 |
 | BUG-26 | 🟠 | E1 salary breakdown: crore totals, then a fudge-scaled per-head; "joining E1 pay" = average of incumbents (19.6 yrs service) | No component metrics; `turn_runner.py:1881-1900` scale factor; no entry-pay logic | Component metrics; entry pay from `dim_grade` | P2H.5–P2H.6 | 021 |
-| BUG-27 | 🔴 | Only 5 of 11 personas; unknown persona → E2_HR silently | `access_control.py:12,243`; `rbac_policy.yaml:15`; `TopBar.tsx:26-31` | 11 personas + function split | P2H.1 | 017 |
-| BUG-28 | 🔴 | Juniors refused aggregate pay by grade (V14 allows aggregates) | `topic_keywords.pay` | Allow aggregate by grade | P2H.1 | 017 |
+| BUG-27 | 🟠 | Only 5 of 11 personas; unknown persona → E2_HR silently | `access_control.py:12,243`; `rbac_policy.yaml:15`; `TopBar.tsx:26-31` | 11 personas + function split | P2H.1 | 017 |
+| BUG-28 | 🟠 | Juniors refused aggregate pay by grade (V14 allows aggregates) | `topic_keywords.pay` | Allow aggregate by grade | P2H.1 | 017 |
 | BUG-29 | 🔴 | SSOT leave balances likely always 0 | `yukti/backend/scripts/build_ssot_gold.py:76-78` filters "EL"; values are `Earned_Leave_EL` | Fix mapping in the Employee-360 build | P2H.5–6 | 021 |
 | BUG-30 | 🔴 | Age band "30-40" actually spans 30–50; "40-50" has 9 people | `data_bank/generators/hr/gen_21_hr_core.py:280-288` | BRSR bands | P2H.5 | 021 |
 | BUG-31 | ✅ | Gemini-generated policy clauses presented as "authentic, statutory-grade ONGC" (R16) | `current_refinements.md:52`; `rulebooks_clause_index.csv` | **Label "Illustrative"** (D-35) | P0.7 | 032 |

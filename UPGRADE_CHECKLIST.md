@@ -72,7 +72,7 @@
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
-| P2H.1 | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | 017, 031 | SPEC-06, BEH-01 | 07, 27, 28 | 11 × 18 = 198 matrix cases pass; no cross-employee `self` leakage | [P2H.1](docs/delegation/packets/v3/P2H.1.md) | 🔄 |
+| P2H.1 | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | 017, 031 | SPEC-06, BEH-01 | 07, 27, 28 | 11 × 18 = 198 matrix cases pass; no cross-employee `self` leakage | [P2H.1](docs/delegation/packets/v3/P2H.1.md) | ✅ |
 | P2H.2 | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | 017 | SPEC-06 §4.4, §4.6 | 06 (UI) | Picker issues token; refusals suggest an allowed alternative | [P2H.2](docs/delegation/packets/v3/P2H.2.md) | 🔄 |
 | P2H.3 | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | 023, 006 | SPEC-07 §4.1–4.3, BEH-02 | 34 | Exact counts per definition (executives default, all-cadres toggle) | [P2H.3](docs/delegation/packets/v3/P2H.3.md) | ⬜ |
 | P2H.4 | V19 turns 4–5: export intent + columns + xlsx link; email agent (.eml/.docx/mailto); delete canned proposal | O→F | 023, 027 | SPEC-07 §4.4–4.5, SPEC-10, BEH-02 | 10, 11, 12 | BEH-02 steps 4–5 pass for 10 phrasings; email counts = roster | [P2H.4](docs/delegation/packets/v3/P2H.4.md) | ⬜ |
@@ -112,7 +112,7 @@
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
 | P4.1 | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-value message | O→F | 026 | SPEC-09 §4.3–4.4, BEH-04 | 08, 09, 22 | FY24 bridge ends at PAT ₹40,526 cr; probe phrasings pass | [P4.1](docs/delegation/packets/v3/P4.1.md) | ✅ |
-| P4.2 | `visual.type=statement` contract + presenter emit (multi-FY) | O | 025 | SPEC-09 §4.1 | — | Fixture validates; values = SSOT | [P4.2](docs/delegation/packets/v3/P4.2.md) | 🔄 |
+| P4.2 | `visual.type=statement` contract + presenter emit (multi-FY) | O | 025 | SPEC-09 §4.1 | — | Fixture validates; values = SSOT | [P4.2](docs/delegation/packets/v3/P4.2.md) | ✅ |
 | P4.3 | `StatementTable` renderer | F | 025 | SPEC-09 §4.2 | 38, 39 | Rubric ≥ 9/10 light + dark; line labels never truncated (wrap) at 1366/1920 px + big screen; no artificial numbering (AR names, hierarchy by indent) | [P4.3](docs/delegation/packets/v3/P4.3.md) | ✅ |
 | P4.4 | Portfolio batch A: combo dual-axis, 100% stacked, heatmap, box, gauge, scatter fix; compat matrix | F | 026 | SPEC-09 §4.5–4.6 | 23 | Every kind renders from a fixture | [P4.4](docs/delegation/packets/v3/P4.4.md) | ✅ |
 | P4.5 | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions` composites | F | 026 | SPEC-09 §4.5, §5 | — | Every kind renders from a fixture | [P4.5](docs/delegation/packets/v3/P4.5.md) | ⬜ |
