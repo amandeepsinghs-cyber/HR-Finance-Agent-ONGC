@@ -27,8 +27,14 @@
         "CMD",
         "DIR_HR",
         "DIR_FIN",
+        "E1_HR",
         "E2_HR",
-        "E3_FIN"
+        "E3_HR",
+        "E4_HR",
+        "E1_FIN",
+        "E2_FIN",
+        "E3_FIN",
+        "E4_FIN"
       ]
     },
     "spoken_summary": {
@@ -374,6 +380,9 @@
             "refused"
           ]
         },
+        "code": {
+          "type": "string"
+        },
         "reason": {
           "type": "string"
         },
@@ -381,7 +390,53 @@
           "type": "string"
         },
         "alternative": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "required": [
+                "label",
+                "question"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "question": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "question"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "self_emp_id": {
           "type": "string"
+        },
+        "allow_pay_aggregate": {
+          "type": "boolean"
         }
       }
     },

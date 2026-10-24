@@ -279,23 +279,47 @@ async def run_planner_turn(
     # B3.4 consistency: access status, text and visual agree.
     tbl = visual.get("table")
     if policy is not None and policy.action == "aggregate":
-        contract["access"] = {"status": "partial", "reason": policy.reason or "Names restricted for this role",
-                              "rule_ref": policy.rule_ref or "D-11"}
+        from app.answer_composer import render_refusal_copy
+        agg_code = policy.code or "R-NAMED"
+        rc = render_refusal_copy(agg_code, lang=language, persona=persona)
+        contract["access"] = {
+            "status": "partial",
+            "code": agg_code,
+            "reason": rc["text"],
+            "rule_ref": policy.rule_ref or rc["rule_ref"],
+            "alternative": rc["alternative"],
+            "alternatives": rc["alternatives"],
+        }
         if isinstance(tbl, dict):
-            tbl["masking"] = {"level": "aggregate", "masked_columns": ["name", "emp_id"],
-                              "reason": policy.reason or "Names restricted for this role", "rule_ref": "D-11"}
-        lead = "Names are restricted for your role, so here are the counts instead. "
+            tbl["masking"] = {
+                "level": "aggregate",
+                "code": agg_code,
+                "masked_columns": ["name", "emp_id"],
+                "reason": rc["text"],
+                "rule_ref": policy.rule_ref or rc["rule_ref"],
+            }
+        lead = rc["text"] + " "
         contract["spoken_summary"] = lead + contract["spoken_summary"]
         contract["display_text"] = contract["spoken_summary"][:590]
     elif isinstance(tbl, dict):
         tbl["masking"] = {"level": "none"}
     if suppressed and isinstance(tbl, dict):
+        from app.answer_composer import render_refusal_copy
+        rc_k5 = render_refusal_copy("R-K5", lang=language, persona=persona)
         tbl.setdefault("masking", {"level": "aggregate"})
         tbl["masking"]["level"] = "aggregate"
+        tbl["masking"]["code"] = "R-K5"
         tbl["masking"]["reason"] = f"{suppressed} cell(s) below 5 shown as <5 (D-11 small-cell rule)"
         tbl["masking"]["rule_ref"] = "D-11"
         if contract["access"]["status"] == "allowed":
-            contract["access"] = {"status": "partial", "reason": tbl["masking"]["reason"], "rule_ref": "D-11"}
+            contract["access"] = {
+                "status": "partial",
+                "code": "R-K5",
+                "reason": tbl["masking"]["reason"],
+                "rule_ref": "D-11",
+                "alternative": rc_k5["alternative"],
+                "alternatives": rc_k5["alternatives"],
+            }
         note = "Groups under 5 people are shown as <5 and left out of totals (D-11)."
         contract["caveat"] = (contract.get("caveat", "") + "; " if contract.get("caveat") else "") + note
         if note not in contract["spoken_summary"]:
@@ -359,21 +383,19 @@ async def _previous_period_rows(spec: QuerySpec, compiled, compiler) -> Optional
 
 
 def _refusal_contract(policy, spec: QuerySpec, persona: str, turn_id: str, language: str, t0: float) -> Dict[str, Any]:
-    """Refusal card for a planner question the policy refuses (D-11); never ships granular data."""
-    reason = policy.reason or "This information is confidential for your role."
-    spoken = f"I can't share that for your role. {reason} I can show aggregate workforce counts instead."
-    return {
-        "turn_id": turn_id, "language": language, "persona": persona,
-        "spoken_summary": spoken, "display_text": spoken[:590],
-        "visual": {"type": "refusal", "mode": "replace", "title": "Access restricted",
-                   "table": {"columns": [], "rows": [],
-                             "masking": {"level": "refused", "reason": reason, "rule_ref": "D-11"}}},
-        "insights": [reason], "sources": [{"kind": "policy", "title": policy.rule_ref or "D-11"}],
-        "suggestions": [], "access": {"status": "refused", "reason": reason, "rule_ref": policy.rule_ref or "D-11"},
-        "export_options": ["pdf"], "status_events": [f"RBAC: refused ({policy.trigger}) for {policy.persona_class}"],
-        "latency_ms": round((time.perf_counter() - t0) * 1000, 2), "contract_version": 2,
-        "query_spec": spec.to_contract(),
-    }
+    """Refusal card for a planner question the policy refuses (SPEC-06 §4.6 / P2H.2); never ships granular data."""
+    from app.answer_composer import build_refusal_contract
+
+    code = policy.code or "R-NAMED"
+    return build_refusal_contract(
+        code=code,
+        persona=persona,
+        turn_id=turn_id,
+        language=language,
+        rule_ref=policy.rule_ref,
+        query_spec=spec.to_contract(),
+        latency_ms=round((time.perf_counter() - t0) * 1000, 2),
+    )
 
 
 def _replot(plan: Plan, prev: QuerySpec, session_state: Any, persona: str, turn_id: str, language: str,

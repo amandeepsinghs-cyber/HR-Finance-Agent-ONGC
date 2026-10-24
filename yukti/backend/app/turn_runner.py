@@ -188,7 +188,15 @@ class AgentTurnRunner:
                                                         "designation": norm_persona, "function": "", "grade": ""})
             who = Principal(emp_id=info["emp_id"], persona=norm_persona, function=info["function"], grade=info["grade"],
                             display_name=info["display_name"], designation=info["designation"])
-        text = r_role_text(who, det_lang)
+        from app.answer_composer import render_refusal_copy
+        rc_role = render_refusal_copy(
+            "R-ROLE",
+            lang=det_lang,
+            persona=norm_persona,
+            display_name=who.display_name,
+            designation=who.designation,
+        )
+        text = rc_role["text"]
         audit("role_switch_denied", who, turn_id=turn_id, decision="refused", rule_ref="SPEC-06 §4.4 R-ROLE",
               query=query, requested=target)
         contract = {
@@ -197,8 +205,14 @@ class AgentTurnRunner:
             "visual": {"type": "none", "mode": "replace"},
             "insights": [], "sources": [{"kind": "policy", "title": "SPEC-06 §4.4 (R-ROLE)"}],
             "suggestions": ["What can I ask?"],
-            "access": {"status": "refused", "reason": "Access level cannot be changed from a conversation.",
-                       "rule_ref": "SPEC-06 §4.4 R-ROLE"},
+            "access": {
+                "status": "refused",
+                "code": "R-ROLE",
+                "reason": "Access level cannot be changed from a conversation.",
+                "rule_ref": "SPEC-06 §4.4 R-ROLE",
+                "alternative": rc_role["alternative"],
+                "alternatives": rc_role["alternatives"],
+            },
             "export_options": [], "status_events": ["Role change from conversation refused (R-ROLE)"],
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
         }
