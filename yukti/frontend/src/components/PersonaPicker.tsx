@@ -13,7 +13,9 @@ import type { PersonaType } from '@/contracts/answerContract';
 
 export interface PersonaPickerProps {
   open: boolean;
-  current: PersonaType;
+  current: PersonaType | null;
+  /** blocking first sign-in: no close button, Escape / backdrop do nothing (BEH-01.01) */
+  required?: boolean;
   onPick: (id: PersonaType) => void;
   onClose: () => void;
 }
@@ -25,7 +27,7 @@ const ACCESS_NOTE: Record<string, string> = {
   junior: 'Own records, policies and aggregates (names hidden)',
 };
 
-export function PersonaPicker({ open, current, onPick, onClose }: PersonaPickerProps) {
+export function PersonaPicker({ open, current, required = false, onPick, onClose }: PersonaPickerProps) {
   const [server, setServer] = useState<PublicPersona[] | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
@@ -45,11 +47,11 @@ export function PersonaPicker({ open, current, onPick, onClose }: PersonaPickerP
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && !required && onClose();
     document.addEventListener('keydown', onKey);
     dialogRef.current?.querySelector<HTMLButtonElement>('[aria-checked="true"], button[data-persona]')?.focus();
     return () => document.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+  }, [open, onClose, required]);
 
   if (!open || typeof document === 'undefined') return null;
 
@@ -61,7 +63,7 @@ export function PersonaPicker({ open, current, onPick, onClose }: PersonaPickerP
   // Portal to <body>: the TopBar uses backdrop-blur, which makes it the containing block for `position: fixed`
   // descendants — rendered inside it, the modal was centred on the 92 px header and its top was cut off.
   return createPortal(
-    <div data-testid="persona-picker" className="fixed inset-0 z-[70] grid place-items-center bg-[color-mix(in_srgb,var(--ink)_28%,transparent)] p-4" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+    <div data-testid="persona-picker-overlay" className="fixed inset-0 z-[70] grid place-items-center bg-[color-mix(in_srgb,var(--ink)_28%,transparent)] p-4" onMouseDown={(e) => e.target === e.currentTarget && !required && onClose()}>
       <div
         ref={dialogRef}
         role="dialog"
@@ -77,9 +79,9 @@ export function PersonaPicker({ open, current, onPick, onClose }: PersonaPickerP
             </h2>
             <p className="text-caption text-[var(--ink-2)] mt-0.5">Demo identities (illustrative). Access follows the role you pick; it cannot be changed by voice or text.</p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close" className="w-8 h-8 grid place-items-center rounded-full text-[var(--ink-2)] hover:bg-[var(--surface)]">
+          {!required && <button type="button" onClick={onClose} aria-label="Close" className="w-8 h-8 grid place-items-center rounded-full text-[var(--ink-2)] hover:bg-[var(--surface)]">
             <X className="w-4 h-4" />
-          </button>
+          </button>}
         </div>
         <div className="px-3 py-3 grid gap-3">
           {GROUPS.map((g) => (

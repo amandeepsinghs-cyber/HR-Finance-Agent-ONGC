@@ -296,7 +296,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   // v2 contracts carry explicit context chips; v1 answers derive them from the title / unit / period.
   const contextChips = (contract.context_chips?.length
     ? contract.context_chips.filter((c) => c.kind !== 'source').map((c) => c.label)
-    : [ROLE_SHORT[persona || contract.persona || 'CMD'] || 'CMD', subject, population, fyMatch ? fyMatch[0].toUpperCase().replace(/\s/, '') : '']
+    : [ROLE_SHORT[persona || contract.persona || ''] || '', subject, population, fyMatch ? fyMatch[0].toUpperCase().replace(/\s/, '') : ''] // M3: no CMD fallback
   ).filter((x, i, arr) => x && arr.indexOf(x) === i);
   const firstSource = sources[0];
   // P0.3 (BUG-04, SPEC-11 §7.2): answers served from the local JSON snapshot carry an explicit badge.
@@ -412,7 +412,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               {effectiveVisualType === 'clause' && visual?.clause && <ClauseRenderer clause={visual.clause} isDark={isDark} />}
               {effectiveVisualType === 'document' && visual?.document && <DocumentRenderer document={visual.document} isDark={isDark} />}
               {effectiveVisualType === 'map' && visual?.map && <MapRenderer mapSpec={visual.map} isDark={isDark} />}
-              {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} onAsk={onAsk ? (q) => onAsk(q) : undefined} onViewAlternative={onNavigateToAlternative} />}
+              {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} language={(contract as any).language} onAsk={onAsk ? (q) => onAsk(q) : undefined} onViewAlternative={onNavigateToAlternative} />}
               {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
             </section>
 

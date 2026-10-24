@@ -267,6 +267,9 @@ export type AccessStatus = 'allowed' | 'partial' | 'refused';
 export interface RefusalAlternative {
   label: string;
   question: string;
+  /** P2H.2 G4 M4: the same permitted question in Hindi (asked when the conversation is in Hindi) */
+  question_hi?: string;
+  label_hi?: string;
 }
 
 export interface AccessControl {

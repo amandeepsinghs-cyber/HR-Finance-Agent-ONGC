@@ -9,7 +9,8 @@ import { Sun, Moon, ChevronDown, SkipBack, SkipForward, Languages } from 'lucide
 import { IconButton } from './ui/primitives';
 
 interface TopBarProps {
-  currentPersona: PersonaType;
+  /** null = not signed in (P2H.2 G4 M2/M3): the button reads "Sign in as…" and never shows CMD */
+  currentPersona: PersonaType | null;
   onPersonaChange: (p: PersonaType) => void;
   isDark: boolean;
   onThemeToggle: () => void;
@@ -95,7 +96,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const ddRef = useRef<HTMLDivElement | null>(null);
-  const active = personaInfo(currentPersona) || PERSONA_DIRECTORY[0];
+  const active = currentPersona ? personaInfo(currentPersona) : undefined;
 
   useEffect(() => {
     if (!open) return;
@@ -202,11 +203,11 @@ export const TopBar: React.FC<TopBarProps> = ({
             aria-haspopup="dialog"
             aria-expanded={open}
             data-testid="persona-button"
-            title={`Signed in as ${active.display_name}, ${active.designation} (illustrative identity). Click to sign in as another role.`}
+            title={active ? `Signed in as ${active.display_name}, ${active.designation} (illustrative identity). Click to sign in as another role.` : 'Not signed in. Click to choose a demo identity.'}
             className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-pill hover:bg-[var(--surface)] text-label transition-colors"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-ongc-maroon" />
-            <span className="font-semibold text-[var(--ink)]">{active.tier === 'junior' ? `${active.short} · ${active.display_name}` : active.designation}</span>
+            <span className="font-semibold text-[var(--ink)]">{!active ? 'Sign in as…' : active.tier === 'junior' ? `${active.short} · ${active.display_name}` : active.designation}</span>
             <ChevronDown className="w-4 h-4 text-[var(--ink-3)]" />
           </button>
           <PersonaPicker

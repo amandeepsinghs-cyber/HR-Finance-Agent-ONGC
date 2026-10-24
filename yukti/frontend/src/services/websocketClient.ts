@@ -58,7 +58,8 @@ export class YuktiApiClient {
   private listeners: Map<keyof YuktiStreamingEvents, Set<Function>> = new Map();
   private sessionId: string;
   private pending: string[] = [];
-  private opts = { persona: 'CMD', language: 'en', voice: 'Leda' };
+  // persona is advisory only (the server reads it from the signed session); never default to CMD (P2H.2 G4 M3)
+  private opts = { persona: '', language: 'en', voice: 'Leda' };
   private wantOpen = false;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempts = 0;
@@ -347,7 +348,7 @@ export class YuktiApiClient {
   /** Typed turn via REST, with retry on 429/503. */
   public async executeTurnRest(
     query: string,
-    persona = 'CMD',
+    persona = '',
     language = 'en',
     maxRetries = 2,
     signal?: AbortSignal,

@@ -12,23 +12,43 @@ import { ShieldAlert, ArrowRight, ChevronDown } from 'lucide-react';
 interface RefusalRendererProps {
   access: AccessControl;
   isDark?: boolean;
+  /** conversation language: Hindi chips ask the Hindi question */
+  language?: string;
   /** ask the permitted alternative question (chip click) */
   onAsk?: (question: string) => void;
   /** legacy: navigate to a precomputed alternative visual */
   onViewAlternative?: () => void;
 }
 
-function alternativesOf(access: AccessControl): RefusalAlternative[] {
-  const list: RefusalAlternative[] = [...(access.alternatives || [])];
+/**
+ * Chips for the permitted alternatives. G4 M4: de-duplicated by visible label AND question (the backend may send
+ * both `alternative` and `alternatives`), and in Hindi the chip asks `question_hi` so the conversation stays Hindi.
+ */
+export function alternativesOf(access: AccessControl, lang?: string): RefusalAlternative[] {
+  const raw: RefusalAlternative[] = [];
   const a = access.alternative;
-  if (a && typeof a === 'object' && a.question && !list.some((x) => x.question === a.question)) list.unshift(a);
-  if (typeof a === 'string' && a.trim() && !list.some((x) => x.question === a)) list.unshift({ label: a, question: a });
-  return list.slice(0, 3);
+  if (a && typeof a === 'object' && (a as RefusalAlternative).question) raw.push(a as RefusalAlternative);
+  if (typeof a === 'string' && a.trim()) raw.push({ label: a, question: a });
+  raw.push(...(access.alternatives || []));
+  const hi = lang === 'hi';
+  const out: RefusalAlternative[] = [];
+  const seen = new Set<string>();
+  for (const x of raw) {
+    const label = (hi && x.label_hi) || x.label || x.question;
+    const question = (hi && x.question_hi) || x.question;
+    const kl = label.trim().toLowerCase();
+    const kq = question.trim().toLowerCase();
+    if (!question.trim() || seen.has(kl) || seen.has(kq)) continue;
+    seen.add(kl);
+    seen.add(kq);
+    out.push({ ...x, label, question });
+  }
+  return out.slice(0, 3);
 }
 
-export const RefusalRenderer: React.FC<RefusalRendererProps> = ({ access, onAsk, onViewAlternative }) => {
+export const RefusalRenderer: React.FC<RefusalRendererProps> = ({ access, language, onAsk, onViewAlternative }) => {
   const [why, setWhy] = useState(false);
-  const alts = alternativesOf(access);
+  const alts = alternativesOf(access, language);
   return (
     <div
       data-testid="refusal-card"
