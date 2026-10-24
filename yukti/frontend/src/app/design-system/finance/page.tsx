@@ -30,6 +30,20 @@ const FIXTURES: Record<string, AnswerContract> = {
   sunburst: contractOf('sunburst', sunburst, 'Illustrative fixture: revenue split by segment and product.'),
   sankey: contractOf('sankey', sankey, 'Illustrative fixture: where the volume goes.'),
   actions: contractOf('actions', actions, 'Illustrative fixture: the top actions and who should act.'),
+  // P2F.1 (SPEC-08 §3.2): options come from the coverage manifest in production; fixed here for the showcase
+  clarify: {
+    ...contractOf('clarify', { type: 'none', mode: 'replace' }, 'Which year would you like: FY26, FY25, or the last five or ten years?'),
+    clarify: {
+      slot: 'fiscal_period',
+      question: 'Which year would you like: FY26, FY25, or the last five or ten years?',
+      options: [
+        { label: 'FY26 (latest)', value: 'FY26' },
+        { label: 'FY25 (last year)', value: 'FY25' },
+        { label: 'Last 5 years', value: 'FY22..FY26' },
+        { label: 'Last 10 years', value: 'FY17..FY26' },
+      ],
+    },
+  } as unknown as AnswerContract,
 };
 
 export default function FinanceDesignSystemPage() {

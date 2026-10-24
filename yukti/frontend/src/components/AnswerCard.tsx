@@ -126,15 +126,41 @@ export interface AnswerCardProps {
 }
 
 /** Spoken-only / conversational answer (no visual): a quiet text card. */
-const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: string; q: string; patch?: SpecPatch }[]; onAsk?: (q: string, patch?: SpecPatch) => void }> = ({ contract, followUps = [], onAsk }) => {
+const TextAnswer: React.FC<{
+  contract: AnswerContract;
+  followUps?: { label: string; q: string; patch?: SpecPatch }[];
+  onAsk?: (q: string, patch?: SpecPatch) => void;
+  /** clarify chips are live only on the latest card (an old question must not be re-answered) */
+  isLatest?: boolean;
+}> = ({ contract, followUps = [], onAsk, isLatest = false }) => {
   const text = cleanText(contract.display_text || contract.spoken_summary || '');
+  const clarify = contract.clarify;
+  const options = (clarify?.options || []).filter((o) => o && o.label && o.value).slice(0, 6);
   return (
-    <article className="flex flex-col gap-3" data-testid="answer-card" data-visual-type="none">
+    <article className="flex flex-col gap-3" data-testid="answer-card" data-visual-type={clarify ? 'clarify' : 'none'}>
       <div className="py-[0.5rem] max-w-[72rem] flex items-start gap-3">
         <Sparkles className="w-4 h-4 mt-[0.3rem] shrink-0 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
-        <p className="text-body text-[var(--ink)] leading-relaxed">{text || '…'}</p>
+        <p className="text-body text-[var(--ink)] leading-relaxed">{cleanText(clarify?.question || '') || text || '…'}</p>
       </div>
-      {onAsk && followUps.length > 0 && (
+      {/* P2F.1 (SPEC-08 §3.2–3.3): one tap answers the clarifying question; the chip sends its value as the reply */}
+      {clarify && options.length >= 2 && (
+        <div role="group" aria-label={cleanText(clarify.question)} className="flex flex-wrap gap-2 pl-7" data-testid="clarify-options">
+          {options.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              disabled={!isLatest || !onAsk}
+              onClick={() => onAsk?.(o.value)}
+              data-testid="clarify-chip"
+              data-value={o.value}
+              className="px-3.5 py-1.5 rounded-pill border border-[var(--hairline)] bg-[var(--surface)] text-label text-[var(--ink)] hover:bg-[var(--accent-pale)] disabled:opacity-50 disabled:hover:bg-[var(--surface)] transition-colors"
+            >
+              {cleanText(o.label)}
+            </button>
+          ))}
+        </div>
+      )}
+      {!clarify && onAsk && followUps.length > 0 && (
         <nav aria-label="Follow-up questions" className="mt-auto pt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5" data-testid="follow-ups">
           {followUps.map((f) => (
             <button
@@ -456,7 +482,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     : (contract.suggestions || []).map((s) => ({ label: s, q: s }))
   ).slice(0, 4);
 
-  if (isGreeting) return <TextAnswer contract={contract} followUps={isLatest && onAsk ? followUps : []} onAsk={onAsk} />;
+  if (isGreeting) return <TextAnswer contract={contract} followUps={isLatest && onAsk ? followUps : []} onAsk={onAsk} isLatest={isLatest} />;
 
   return (
     <article className="flex flex-col gap-[1.1rem]" data-testid="answer-card" data-visual-type={effectiveVisualType}>
