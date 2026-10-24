@@ -1,0 +1,2 @@
+# inputs.py
+pass
