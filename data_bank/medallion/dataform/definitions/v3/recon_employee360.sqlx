@@ -50,9 +50,15 @@ WITH emp_fy AS (
       COUNTIF(joined_in_month_flag AND age_band_brsr = '<30') * 100.0,
       NULLIF(COUNTIF(joined_in_month_flag), 0)
     ) AS hires_age_lt30_pct,
-    CAST(COUNTIF(separated_in_month_flag) AS FLOAT64) AS seps_total,
-    CAST(COUNTIF(separated_in_month_flag AND cadre IN ('executive', 'board')) AS FLOAT64) AS seps_exec,
-    CAST(COUNTIF(separated_in_month_flag AND cadre = 'non_executive') AS FLOAT64) AS seps_nonexec,
+    -- Employees separating in April of FY(t) have their final payroll row in March of FY(t-1)
+    -- (fy_month_no = 12 AND is_month_end_active = TRUE); employees separating May..March of FY(t)
+    -- have their final payroll row in FY(t) with NOT (fy_month_no = 12 AND is_month_end_active).
+    CAST(COUNTIF(separated_in_month_flag AND NOT (fy_month_no = 12 AND is_month_end_active)) AS FLOAT64) AS seps_in_fy_m1_11,
+    CAST(COUNTIF(separated_in_month_flag AND fy_month_no = 12 AND is_month_end_active) AS FLOAT64) AS seps_m12_active,
+    CAST(COUNTIF(separated_in_month_flag AND NOT (fy_month_no = 12 AND is_month_end_active) AND cadre IN ('executive', 'board')) AS FLOAT64) AS seps_exec_in_fy_m1_11,
+    CAST(COUNTIF(separated_in_month_flag AND fy_month_no = 12 AND is_month_end_active AND cadre IN ('executive', 'board')) AS FLOAT64) AS seps_exec_m12_active,
+    CAST(COUNTIF(separated_in_month_flag AND NOT (fy_month_no = 12 AND is_month_end_active) AND cadre = 'non_executive') AS FLOAT64) AS seps_nonexec_in_fy_m1_11,
+    CAST(COUNTIF(separated_in_month_flag AND fy_month_no = 12 AND is_month_end_active AND cadre = 'non_executive') AS FLOAT64) AS seps_nonexec_m12_active,
     SAFE_DIVIDE(
       SUM(training_hours),
       NULLIF(COUNTIF(fy_month_no = 12 AND is_month_end_active), 0)
@@ -63,11 +69,18 @@ WITH emp_fy AS (
     ) AS women_wage_share_pct,
     AVG(IF(grade_id = 'E1' AND joined_in_month_flag, ctc_annualised_inr / 1e5, NULL)) AS entry_e1_ctc_lakhs,
     CAST(COUNTIF(superannuation_pct_bp_da > 0.3001) AS FLOAT64) AS superann_cap_violations,
+    -- 3rd PRC pay scales (pay_scale_min_inr, pay_scale_max_inr) took effect 01-Jan-2017 (DPE OM 3-Aug-2017);
+    -- Apr-Dec 2016 rows in FY17 were on 2nd-PRC (2007) scales, so scale-band check applies to month_start >= 2017-01-01.
     CAST(COUNTIF(
       SAFE_DIVIDE(cafeteria_allowance_inr, NULLIF(basic_pay_inr, 0)) > 0.3501
       OR (hra_inr > 0 AND ROUND(SAFE_DIVIDE(hra_inr, NULLIF(basic_pay_inr, 0)), 2) NOT IN (0.08, 0.09, 0.10, 0.16, 0.18, 0.20, 0.24, 0.27, 0.30))
-      OR basic_pay_inr < pay_scale_min_inr - 1.0
-      OR basic_pay_inr > GREATEST(pay_scale_max_inr, IF(grade_id = 'E0', 160000.0, pay_scale_max_inr)) * 1.092727 + 100.0
+      OR (
+        month_start >= DATE '2017-01-01'
+        AND (
+          basic_pay_inr < pay_scale_min_inr - 1.0
+          OR basic_pay_inr > GREATEST(pay_scale_max_inr, IF(grade_id = 'E0', 160000.0, pay_scale_max_inr)) * 1.092727 + 100.0
+        )
+      )
     ) AS FLOAT64) AS pay_rule_violations,
     APPROX_QUANTILES(
       IF(fy_month_no = 12 AND is_month_end_active AND grade_id = 'E1', total_service_years, NULL),
@@ -114,6 +127,9 @@ combined_fy AS (
     LAG(e.hc_fy_end) OVER (ORDER BY e.fiscal_year) AS prev_hc_fy_end,
     LAG(e.hc_exec) OVER (ORDER BY e.fiscal_year) AS prev_hc_exec,
     LAG(e.hc_nonexec) OVER (ORDER BY e.fiscal_year) AS prev_hc_nonexec,
+    (e.seps_in_fy_m1_11 + COALESCE(LAG(e.seps_m12_active) OVER (ORDER BY e.fiscal_year), 0.0)) AS seps_total,
+    (e.seps_exec_in_fy_m1_11 + COALESCE(LAG(e.seps_exec_m12_active) OVER (ORDER BY e.fiscal_year), 0.0)) AS seps_exec,
+    (e.seps_nonexec_in_fy_m1_11 + COALESCE(LAG(e.seps_nonexec_m12_active) OVER (ORDER BY e.fiscal_year), 0.0)) AS seps_nonexec,
     COALESCE(p.pool_total_mn, 0.0) AS pool_total_mn,
     COALESCE(p.pool_a_mn, 0.0) AS pool_a_mn,
     COALESCE(p.pool_b_mn, 0.0) AS pool_b_mn,
@@ -586,17 +602,16 @@ raw_checks AS (
   LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'employee_cost_total'
 
   UNION ALL
-  -- EMP-R23: Cafeteria <= 35% BP, HRA tier in allowed set, basic pay within scale bounds (FY18-FY26)
+  -- EMP-R23: Cafeteria <= 35% BP, HRA tier in allowed set, basic pay within 3rd PRC scale bounds (month >= 2017-01)
   SELECT
     'EMP-R23', c.fiscal_year, 'FY', 'ALL', 'pay_rule_violations',
     c.pay_rule_violations,
     IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'COUNT',
     0.0, CAST(NULL AS FLOAT64), 'BLOCK',
     'DPE_OM_3AUG2017', 1, 1, 'pay_rule_violations',
-    'Zero rows violating cafeteria <= 35% BP, HRA rate tier, or pay scale bounds'
+    'Zero rows violating cafeteria <= 35% BP, HRA rate tier, or 3rd PRC pay scale bounds (from 01-Jan-2017)'
   FROM combined_fy c
   LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'employee_cost_total'
-  WHERE c.fiscal_year IN ('FY18', 'FY19', 'FY20', 'FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26')
 
   UNION ALL
   -- EMP-R24: Active E1 median tenure <= 4 yrs (fixes BUG-32)

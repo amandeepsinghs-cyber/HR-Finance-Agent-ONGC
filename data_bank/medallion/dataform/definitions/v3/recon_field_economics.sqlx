@@ -15,6 +15,13 @@ WITH fld_fy AS (
     SUM(rev_other_operating) AS rev_other_op_mn,
     SUM(IF(segment = 'Offshore', revenue_from_operations, 0)) AS seg_rev_off_mn,
     SUM(IF(segment = 'Onshore', revenue_from_operations, 0)) AS seg_rev_on_mn,
+    SUM(royalty) AS n35_royalty_mn,
+    SUM(oidb_cess) AS n35_oidb_cess_mn,
+    SUM(nccd) AS n35_nccd_mn,
+    SUM(excise_saed) AS n35_excise_saed_mn,
+    SUM(port_trust) AS n35_port_trust_mn,
+    SUM(other_levies) AS n35_other_levies_mn,
+    SUM(staff_expenditure) AS n35_staff_exp_mn,
     SUM(workover_ops) AS n35_workover_mn,
     SUM(water_injection_desalting) AS n35_water_inj_mn,
     SUM(consumption_stores_spares) AS n35_stores_mn,
@@ -22,56 +29,53 @@ WITH fld_fy AS (
     SUM(transport_expenditure) AS n35_transport_mn,
     SUM(insurance) AS n35_insurance_mn,
     SUM(power_fuel) AS n35_power_fuel_mn,
-    SUM(subcontracting) AS n35_subcontract_mn,
-    SUM(repair_maintenance) AS n35_repair_mn,
+    SUM(repairs_maintenance) AS n35_repairs_mn,
     SUM(contractual_hire) AS n35_contractual_mn,
     SUM(other_production_exp) AS n35_other_prod_mn,
-    SUM(royalty) AS n35_royalty_mn,
-    SUM(oidb_cess) AS n35_oidb_cess_mn,
-    SUM(nccd) AS n35_nccd_mn,
-    SUM(excise_saed) AS n35_excise_saed_mn,
-    SUM(port_trust_pipeline) AS n35_port_pipe_mn,
-    SUM(staff_expenditure) AS n35_staff_exp_mn,
-    SUM(general_admin) AS n35_gen_admin_mn,
+    SUM(transport_freight_products) AS n35_freight_mn,
+    SUM(r_and_d) AS n35_rnd_mn,
+    SUM(gae) AS n35_gae_mn,
+    SUM(csr) AS n35_csr_mn,
     SUM(exchange_loss) AS n35_exch_loss_mn,
-    SUM(pol_consumption) AS n35_pol_mn,
-    SUM(octroi_other_levies) AS n35_octroi_mn,
-    SUM(services_received) AS n35_services_mn,
-    SUM(misc_expenditure) AS n35_misc_mn,
-    SUM(note35_total) AS n35_total_mn,
-    SUM(expl_survey_cost) AS pl_expl_survey_mn,
-    SUM(expl_wells_written_off) AS pl_expl_wells_mn,
-    SUM(dda_total) AS pl_dda_mn,
+    SUM(misc_exp) AS n35_misc_mn,
+    SUM(fv_loss) AS n35_fv_loss_mn,
+    SUM(levies_total + opex_total) AS pl_prod_exp_mn,
+    SUM(expl_survey_wo) AS pl_expl_survey_mn,
+    SUM(expl_wells_wo) AS pl_expl_wells_mn,
+    SUM(dda_total + impairment_net) AS pl_dda_mn,
     SUM(impairment_net) AS n37_impairment_mn,
     SUM(provisions_writeoffs) AS pl_provisions_mn,
-    SUM(finance_cost_unwinding + finance_cost_interest) AS pl_fin_cost_mn,
+    SUM(finance_cost) AS pl_fin_cost_mn,
     SUM(IF(segment = 'Offshore', dda_total, 0)) AS seg_dda_off_mn,
     SUM(IF(segment = 'Onshore', dda_total, 0)) AS seg_dda_on_mn,
     SUM(IF(segment = 'Unallocated', dda_total, 0)) AS seg_dda_unalloc_mn,
-    SUM(IF(segment = 'Offshore', expl_survey_cost + expl_wells_written_off, 0)) AS seg_wo_off_mn,
-    SUM(IF(segment = 'Onshore', expl_survey_cost + expl_wells_written_off, 0)) AS seg_wo_on_mn,
+    SUM(IF(segment = 'Offshore', provisions_writeoffs, 0)) AS seg_wo_off_mn,
+    SUM(IF(segment = 'Onshore', provisions_writeoffs, 0)) AS seg_wo_on_mn,
     SUM(IF(segment = 'Offshore', segment_result_contrib, 0)) AS seg_res_off_mn,
     SUM(IF(segment = 'Onshore', segment_result_contrib, 0)) AS seg_res_on_mn,
     SUM(IF(object_id = 'CO-HQ', segment_result_contrib, 0)) AS seg_unalloc_mn,
     SUM(pbt_contrib) AS pl_pbt_mn,
-    SUM(IF(operatorship = 'Operated', prod_crude_mt + prod_condensate_mt, 0)) / 1e6 AS prod_crude_ongc_mmt,
-    SUM(IF(operatorship = 'JV', prod_crude_mt + prod_condensate_mt, 0)) / 1e6 AS prod_crude_jv_mmt,
-    SUM(IF(operatorship = 'Operated', prod_gas_mmscm, 0)) / 1e3 AS prod_gas_ongc_bcm,
-    SUM(IF(operatorship = 'JV', prod_gas_mmscm, 0)) / 1e3 AS prod_gas_jv_bcm,
-    SUM(sales_crude_mt) / 1e6 AS qty_crude_sold_mmt,
-    SUM(sales_gas_mmscm) / 1e3 AS qty_gas_sold_bcm,
-    SUM(sales_vap_kt) AS qty_vap_sold_kt,
+    SUM(IF(prod_basis = 'ONGC', oil_prod_mt, 0)) / 1e6 AS prod_crude_ongc_mmt,
+    SUM(IF(prod_basis = 'JV_SHARE', oil_prod_mt, 0)) / 1e6 AS prod_crude_jv_mmt,
+    SUM(IF(prod_basis = 'ONGC', gas_prod_mmscm, 0)) / 1e3 AS prod_gas_ongc_bcm,
+    SUM(IF(prod_basis = 'JV_SHARE', gas_prod_mmscm, 0)) / 1e3 AS prod_gas_jv_bcm,
+    SUM(oil_sales_mt) / 1e6 AS qty_crude_sold_mmt,
+    SUM(gas_sales_mmscm) / 1e3 AS qty_gas_sold_bcm,
+    SUM(vap_sales_kt) AS qty_vap_sold_kt,
     CAST(COUNTIF(
-      (object_type = 'producing_field' AND (
+      (object_type = 'field' AND (
         revenue_from_operations < 0 OR royalty < 0 OR oidb_cess < 0
         OR staff_expenditure < 0 OR dda_total < 0
-        OR expl_survey_cost != 0 OR expl_wells_written_off != 0 OR rev_vap != 0
+        OR expl_survey_wo != 0 OR expl_wells_wo != 0 OR rev_vap != 0
       ))
-      OR (object_type != 'exploration' AND (expl_survey_cost != 0 OR expl_wells_written_off != 0))
+      OR (object_type != 'exploration' AND (expl_survey_wo != 0 OR expl_wells_wo != 0))
       OR (object_type != 'plant' AND rev_vap != 0)
     ) AS FLOAT64) AS domain_negativity_violations,
     CAST(COUNTIF(
-      ABS((revenue_from_operations + other_income_alloc - opex_total) - ebitda) > 0.01
+      ABS(
+        (revenue_from_operations + other_income_segment - levies_total - opex_total - purchases_traded - inventory_change - expl_survey_wo - expl_wells_wo)
+        - ebitda
+      ) > 0.01
     ) AS FLOAT64) AS month_identity_violations,
     ABS(
       SUM(segment_result_contrib)
@@ -81,12 +85,12 @@ WITH fld_fy AS (
       - SUM(pbt_contrib)
     ) AS pbt_bridge_residual_mn,
     SAFE_DIVIDE(
-      SUM(IF(object_type = 'producing_field', lifting_cost, 0)) * 1e6 / 84.5,
-      NULLIF(SUM(IF(object_type = 'producing_field', prod_boe, 0)), 0)
+      SUM(IF(object_type = 'field', opex_lifting, 0)) * 1e6 / 84.5,
+      NULLIF(SUM(IF(object_type = 'field', prod_boe, 0)), 0)
     ) AS lifting_cost_usd_boe,
     SAFE_DIVIDE(
-      SUM(IF(object_id = 'FLD-MUMBAI-HIGH', prod_crude_mt, 0)) * 100.0,
-      NULLIF(SUM(IF(operatorship = 'Operated', prod_crude_mt, 0)), 0)
+      SUM(IF(object_id IN ('FLD-MHN', 'FLD-MHS'), oil_prod_mt, 0)) * 100.0,
+      NULLIF(SUM(IF(prod_basis = 'ONGC', oil_prod_mt, 0)), 0)
     ) AS mh_crude_share_pct
   FROM ${ref("ssot_field_economics_360")}
   WHERE month_start >= DATE '2016-04-01'
@@ -117,30 +121,30 @@ targets AS (
   FROM ${ref("int_fe_targets_fy")}
 ),
 n35_unpivoted AS (
-  SELECT fiscal_year, 'N35.WORKOVER' AS line_code, CAST(n35_workover_mn AS FLOAT64) AS ssot_val FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.WATER_INJECTION', CAST(n35_water_inj_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.STORES_SPARES', CAST(n35_stores_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.POLLUTION', CAST(n35_pollution_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.TRANSPORT', CAST(n35_transport_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.INSURANCE', CAST(n35_insurance_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.POWER_FUEL', CAST(n35_power_fuel_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.SUBCONTRACTING', CAST(n35_subcontract_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.REPAIR_MAINT', CAST(n35_repair_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.CONTRACTUAL_HIRE', CAST(n35_contractual_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.OTHER_PROD', CAST(n35_other_prod_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.ROYALTY', CAST(n35_royalty_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  SELECT fiscal_year, 'N35.ROYALTY' AS line_code, CAST(n35_royalty_mn AS FLOAT64) AS ssot_val FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
   UNION ALL SELECT fiscal_year, 'N35.OIDB_CESS', CAST(n35_oidb_cess_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
   UNION ALL SELECT fiscal_year, 'N35.NCCD', CAST(n35_nccd_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
   UNION ALL SELECT fiscal_year, 'N35.EXCISE_SAED', CAST(n35_excise_saed_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.PORT_PIPELINE', CAST(n35_port_pipe_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.PORT_TRUST', CAST(n35_port_trust_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.OTHER_LEVIES', CAST(n35_other_levies_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
   UNION ALL SELECT fiscal_year, 'N35.STAFF_EXPENDITURE', CAST(n35_staff_exp_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.GEN_ADMIN', CAST(n35_gen_admin_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.WORKOVER_OPS', CAST(n35_workover_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.WATER_INJECTION_DESALTING', CAST(n35_water_inj_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.CONSUMPTION_STORES_SPARES', CAST(n35_stores_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.POLLUTION_CONTROL', CAST(n35_pollution_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.TRANSPORT_EXPENDITURE', CAST(n35_transport_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.INSURANCE', CAST(n35_insurance_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.POWER_FUEL', CAST(n35_power_fuel_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.REPAIRS_MAINTENANCE', CAST(n35_repairs_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.CONTRACTUAL_HIRE', CAST(n35_contractual_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.OTHER_PRODUCTION_EXP', CAST(n35_other_prod_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.TRANSPORT_FREIGHT_PRODUCTS', CAST(n35_freight_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.R_AND_D', CAST(n35_rnd_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.GAE', CAST(n35_gae_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.CSR', CAST(n35_csr_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
   UNION ALL SELECT fiscal_year, 'N35.EXCHANGE_LOSS', CAST(n35_exch_loss_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.POL', CAST(n35_pol_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.OCTROI', CAST(n35_octroi_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.SERVICES', CAST(n35_services_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.MISC', CAST(n35_misc_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
-  UNION ALL SELECT fiscal_year, 'N35.TOTAL', CAST(n35_total_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.MISC_EXP', CAST(n35_misc_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.FV_LOSS', CAST(n35_fv_loss_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
 ),
 raw_checks AS (
   -- FLD-R01: Revenue from operations (FY17-FY26)
@@ -237,7 +241,7 @@ raw_checks AS (
   WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
 
   UNION ALL
-  -- FLD-R04: All 23 Note 35 lines + N35.TOTAL (FY21-FY26)
+  -- FLD-R04: All 24 Note 35 lines + PL.PROD_EXP (FY21-FY26)
   SELECT
     'FLD-R04', u.fiscal_year, 'NOTE35', u.line_code, u.line_code,
     u.ssot_val, t.value, 'INR_MN',
@@ -246,6 +250,18 @@ raw_checks AS (
     CONCAT('Note 35 production/corporate expense line ', u.line_code)
   FROM n35_unpivoted u
   LEFT JOIN targets t ON u.fiscal_year = t.fiscal_year AND t.line_code = u.line_code
+
+  UNION ALL
+  -- FLD-R04: Note 35 total production & corporate expenditure PL.PROD_EXP (FY21-FY26)
+  SELECT
+    'FLD-R04', f.fiscal_year, 'NOTE35', 'PL.PROD_EXP', 'PL.PROD_EXP',
+    CAST(f.pl_prod_exp_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 297, 25, 'PL.PROD_EXP',
+    'Note 35 total production and corporate expenditure (PL.PROD_EXP)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.PROD_EXP'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
 
   UNION ALL
   -- FLD-R05: Cross-domain Staff Expenditure (Field Economics vs Employee 360)
@@ -443,7 +459,7 @@ raw_checks AS (
   UNION ALL
   -- FLD-R10a: Operated crude oil + condensate production MMT (FY21-FY26)
   SELECT
-    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'Operated', 'PROD.CRUDE_ONGC',
+    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'ONGC_OPERATED', 'PROD.CRUDE_ONGC',
     CAST(f.prod_crude_ongc_mmt AS FLOAT64), t.value, 'MMT',
     0.005, CAST(NULL AS FLOAT64), 'BLOCK',
     COALESCE(t.source_doc, 'ONGC_AR'), 28, 1, 'PROD.CRUDE_ONGC',
@@ -455,7 +471,7 @@ raw_checks AS (
   UNION ALL
   -- FLD-R10b: JV share crude oil production MMT (FY21-FY26)
   SELECT
-    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'JV', 'PROD.CRUDE_JV',
+    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'JV_NON_OPERATED', 'PROD.CRUDE_JV',
     CAST(f.prod_crude_jv_mmt AS FLOAT64), t.value, 'MMT',
     0.005, CAST(NULL AS FLOAT64), 'BLOCK',
     COALESCE(t.source_doc, 'ONGC_AR'), 28, 2, 'PROD.CRUDE_JV',
@@ -467,7 +483,7 @@ raw_checks AS (
   UNION ALL
   -- FLD-R10c: Operated natural gas production BCM (FY21-FY26)
   SELECT
-    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'Operated', 'PROD.GAS_ONGC',
+    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'ONGC_OPERATED', 'PROD.GAS_ONGC',
     CAST(f.prod_gas_ongc_bcm AS FLOAT64), t.value, 'BCM',
     0.005, CAST(NULL AS FLOAT64), 'BLOCK',
     COALESCE(t.source_doc, 'ONGC_AR'), 28, 3, 'PROD.GAS_ONGC',
@@ -479,7 +495,7 @@ raw_checks AS (
   UNION ALL
   -- FLD-R10d: JV share natural gas production BCM (FY21-FY26)
   SELECT
-    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'JV', 'PROD.GAS_JV',
+    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'JV_NON_OPERATED', 'PROD.GAS_JV',
     CAST(f.prod_gas_jv_bcm AS FLOAT64), t.value, 'BCM',
     0.005, CAST(NULL AS FLOAT64), 'BLOCK',
     COALESCE(t.source_doc, 'ONGC_AR'), 28, 4, 'PROD.GAS_JV',
@@ -590,12 +606,12 @@ raw_checks AS (
   UNION ALL
   -- FLD-R17: Mumbai High share of operated crude in [30%, 45%] (WARN)
   SELECT
-    'FLD-R17', f.fiscal_year, 'OBJECT', 'FLD-MUMBAI-HIGH', 'mumbai_high_crude_share_pct',
+    'FLD-R17', f.fiscal_year, 'OBJECT', 'FLD-MHN+FLD-MHS', 'mumbai_high_crude_share_pct',
     CAST(f.mh_crude_share_pct AS FLOAT64),
     IF(t.value IS NOT NULL, 37.5, CAST(NULL AS FLOAT64)), 'PCT',
     7.5, CAST(NULL AS FLOAT64), 'WARN',
     'SPEC05_S7_2', 1, 1, 'mumbai_high_crude_share_pct',
-    'Mumbai High share of operated crude in [30.0%, 45.0%] (37.5 +/- 7.5 pp)'
+    'Mumbai High (FLD-MHN + FLD-MHS) share of operated crude in [30.0%, 45.0%] (37.5 +/- 7.5 pp)'
   FROM fld_fy f
   LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.REV_OPS'
   WHERE f.fiscal_year = 'FY26'

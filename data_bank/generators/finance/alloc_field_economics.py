@@ -140,6 +140,18 @@ def verify_target_identities(targets: pd.DataFrame) -> None:
             f"{fy} Segment identity failed: {seg_pbt:.2f} != PL.PBT {m['PL.PBT']:.2f}"
         )
 
+        # 4. Revenue product sum and segment sum == PL.REV_OPS to 2 dp
+        rev_prod_sum = sum(
+            m[p] for p in ("REV.CRUDE", "REV.GAS", "REV.VAP", "REV.OTHER_OP")
+        )
+        assert abs(rev_prod_sum - m["PL.REV_OPS"]) <= 0.01, (
+            f"{fy} Revenue product sum {rev_prod_sum:.2f} != PL.REV_OPS {m['PL.REV_OPS']:.2f}"
+        )
+        rev_seg_sum = m["SEG.REV.OFF"] + m["SEG.REV.ON"]
+        assert abs(rev_seg_sum - m["PL.REV_OPS"]) <= 0.01, (
+            f"{fy} Segment revenue sum {rev_seg_sum:.2f} != PL.REV_OPS {m['PL.REV_OPS']:.2f}"
+        )
+
 
 def build_staff_seeds(
     py_exp: pd.DataFrame,
@@ -564,15 +576,31 @@ def run_allocation():
                     }
                 )
 
-        # Allocate each product column to objects matching exact 10-yr product target
+        # Round 2 x 4 RAS-fitted revenue matrix via largest_remainder_round so every
+        # product column sum equals tmap[p] AND every segment row sum equals SEG.REV.OFF / SEG.REV.ON
+        # AND grand total equals PL.REV_OPS to exact 2 decimal places (0.00 diff).
+        rounded_rev_mat = np.zeros_like(rev_fitted_mat)
         for j, p in enumerate(rev_products):
-            col_target = tmap[p]
-            # Segment shares from RAS fitted matrix
-            seg_shares = rev_fitted_mat[:, j] / np.sum(rev_fitted_mat[:, j])
-            seg_targets = largest_remainder_round(
-                seg_shares * col_target, col_target, precision=2
+            c_tot = round(float(rev_col_targets[j]), 2)
+            rounded_rev_mat[:, j] = largest_remainder_round(
+                rev_fitted_mat[:, j], c_tot, precision=2
             )
+        rev_row_targets_2d = np.array([round(rt, 2) for rt in rev_row_targets])
+        rev_row_diffs = np.round(
+            rev_row_targets_2d - np.sum(rounded_rev_mat, axis=1), 2
+        )
+        if abs(rev_row_diffs[0]) > 0:
+            rounded_rev_mat[0, 0] = round(
+                rounded_rev_mat[0, 0] + rev_row_diffs[0], 2
+            )
+            rounded_rev_mat[1, 0] = round(
+                rounded_rev_mat[1, 0] - rev_row_diffs[0], 2
+            )
+
+        # Allocate each (segment, product) cell to objects and months via largest_remainder_round
+        for j, p in enumerate(rev_products):
             for s_i, seg in enumerate(["Offshore", "Onshore"]):
+                cell_target = round(float(rounded_rev_mat[s_i, j]), 2)
                 seg_oids = [
                     oid
                     for oid in rev_objs_all
@@ -591,34 +619,16 @@ def run_allocation():
                     for oid in seg_oids
                 }
                 allocate_line_to_objects(
-                    p, w_dict, float(seg_targets[s_i]), m_prof, basis="RT", precision=2
+                    p, w_dict, cell_target, m_prof, basis="RT", precision=2
                 )
 
-        # Allocate PL.REV_OPS per segment to match SEG.REV.OFF and SEG.REV.ON to ₹0.00 mn
-        for s_i, (seg, seg_code) in enumerate(
-            [("Offshore", "SEG.REV.OFF"), ("Onshore", "SEG.REV.ON")]
-        ):
-            seg_rev_target = tmap[seg_code]
-            seg_oids = [
-                oid for oid in rev_objs_all if obj_meta[oid]["segment"] == seg
-            ]
-            # Weight by sum of allocated product revenues on each object
-            w_dict = {}
-            m_prof = {}
-            for oid in seg_oids:
-                m_sum = sum(
-                    alloc_m.get((oid, p), np.zeros(12)) for p in rev_products
-                )
-                w_dict[oid] = float(np.sum(m_sum))
-                m_prof[oid] = m_sum
-            allocate_line_to_objects(
-                "PL.REV_OPS",
-                w_dict,
-                seg_rev_target,
-                m_prof,
-                basis="RT",
-                precision=2,
+        # Set PL.REV_OPS on every object & month as the exact sum of the 4 allocated revenue products
+        # so that REV.CRUDE + REV.GAS + REV.VAP + REV.OTHER_OP == PL.REV_OPS at object, segment, and FY levels.
+        for oid in rev_objs_all:
+            alloc_m[(oid, "PL.REV_OPS")] = np.round(
+                sum(alloc_m.get((oid, p), np.zeros(12)) for p in rev_products), 2
             )
+            basis_map[(oid, "PL.REV_OPS")] = "RT"
 
         # ------------------------------------------------------------------
         # 3. Non-interest Other Income (SPEC-05 §4.C, §6.3)

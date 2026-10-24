@@ -422,6 +422,8 @@ def test_emp_r23_cafeteria_hra_and_scale_bounds(py_df: pd.DataFrame):
         for g in grades_meta
     }
 
+    # 3rd PRC pay scales (pay_scale_min_inr, pay_scale_max_inr) took effect 01-Jan-2017 (DPE OM 3-Aug-2017);
+    # Apr-Dec 2016 rows in FY17 were on 2nd-PRC (2007) scales, so apply the scale-band check to month >= '2017-01'.
     py17 = py_df[py_df["FPPER"] >= "2017-01"]
     s_min = py17["grade_id"].map(min_map).astype(float)
     s_max = py17["grade_id"].map(max_map).astype(float)

@@ -99,3 +99,57 @@ Approving `P2H.8` in this state would allow un-reconciled or broken SSOT tables 
   1. Every `values:` entry across both files is `[1]` (`BEH-06.01`, `.10`, `.11`, `.12`, `.13`, `.14`, `.15`, `.16`, `.20`, `.21`, `.23`, `.32`) instead of the real AR/BRSR/scale anchor numbers from `BEH-06` (e.g., `60000` basic pay for `BEH-06.01`, `10211.83` Cr for `BEH-06.10`, `30782` headcount for `BEH-06.14`, `37.55` L median pay for `BEH-06.15`, `42414.89` Cr PBT for `BEH-06.21`).
   2. Every `recompute_sql:` entry across both files is literally `SELECT 1` instead of a real SQL query over `ssot_employee_360` / `v_field_economics_fy`.
   3. Several items contain unparsed markdown prose from `BEH-06.md`: `persona: "E2_HR."` and `visual_type: "as"` (`BEH-06.02`, lines 12, 17), `persona: ".05 answered."` (`BEH-06.06`, line 50), `persona: "a scenario parameter cap = 30 h/month."` (`BEH-06.25`, line 146), and raw `**Then**` prose inside `utterance:` (`BEH-06.02`, `.04`, `.17`, `.19`).
+
+---
+
+## Round 3 Review (`0d28521` vs `984e449`)
+- **Commit Reviewed:** `0d28521`
+- **Round 3 Verdict:** **CHANGES REQUESTED**
+
+### Executive Summary (BLUF)
+**Reject `P2H.8` in Round 3 (`CHANGES REQUESTED`):** The Employee-360 reconciliation side (`recon_employee360.sqlx`, `test_60_employee360_recon.py`, `golden_employee360.yaml`, and `run_employee_reconciliation` in `reconcile.py`) is now **100% resolved and schema-aligned** with `ssot_employee_360.sqlx` and `employee_targets_fy.csv`. However, because `p2h8-r2` and `p2h7-r2` worked in parallel, the Field-Economics reconciliation side (`recon_field_economics.sqlx`, `reconcile.py`, `test_62_recon_parity.py`, and `golden_field_econ.yaml`) uses **non-existent column names, non-existent `N35.*` line codes, and wrong `object_type`/`operatorship`/`object_id` literals** that do not exist in `ssot_field_economics_360.sqlx`, `v_field_economics_fy.sqlx`, or `field_econ_targets_fy.csv` (`int_fe_targets_fy`). Executing `recon_field_economics.sqlx` or `golden_field_econ.yaml` `recompute_sql` on BigQuery will fail immediately with `Unrecognized name`.
+
+### Remaining Must-Fix Blockers in `0d28521` (`file:line`)
+
+#### `P2H8-B1` (Blocking) — `recon_field_economics.sqlx` Queries 20 Non-Existent Columns, 15 Non-Existent `N35.*` Target Codes, and Wrong Enum Literals
+- **Location:** [recon_field_economics.sqlx](file:///usr/local/google/home/amandeepsinghs/o&g%20agentic%20transformation/Oil%20&%20Gas%20Agent%20Portfolio/cloud_run_apps/HR%20and%20Finance_ONGC__v3P2H5/data_bank/medallion/dataform/definitions/v3/recon_field_economics.sqlx#L22-L160)
+- **Defect & Exact Mapping to `ssot_field_economics_360.sqlx` / `int_fe_targets_fy`:**
+  1. **Column name mismatches on `ssot_field_economics_360` (`lines 25–90`):**
+     - `subcontracting` (`line 31`) → does not exist in `ssot_field_economics_360.sqlx`; remove and add the missing Note 35 columns from `ssot_field_economics_360.sqlx`: `port_trust` (`line 29`), `other_levies` (`line 30`), `transport_freight_products` (`line 46`), `r_and_d` (`line 47`), `csr` (`line 49`), `fv_loss` (`line 51`).
+     - `repair_maintenance` (`line 32`) → `repairs_maintenance` (`ssot_field_economics_360.sqlx:43`).
+     - `port_trust_pipeline` (`line 34`) → `port_trust` (`line 29`) and `transport_freight_products` (`line 46`).
+     - `general_admin` (`line 36`) → `gae` (`ssot_field_economics_360.sqlx:48`).
+     - `pol_consumption` (`line 39`), `octroi_other_levies` (`line 40`), `services_received` (`line 41`) → replace with `other_levies` (`line 30`), `r_and_d` (`line 47`), `csr` (`line 49`), `fv_loss` (`line 51`).
+     - `misc_expenditure` (`line 43`) → `misc_exp` (`ssot_field_economics_360.sqlx:50`).
+     - `note35_total` (`line 45`) → `opex_total` (`ssot_field_economics_360.sqlx:53`), reconciling to `line_code = 'PL.PROD_EXP'` in `int_fe_targets_fy`.
+     - `expl_survey_cost` (`lines 46, 55, 56, 74, 75`) → `expl_survey_wo` (`ssot_field_economics_360.sqlx:58`).
+     - `expl_wells_written_off` (`lines 47, 55, 56, 74, 75`) → `expl_wells_wo` (`ssot_field_economics_360.sqlx:59`).
+     - `finance_cost_unwinding + finance_cost_interest` (`line 51`) → `finance_cost` (`ssot_field_economics_360.sqlx:66`).
+     - `prod_crude_mt`, `prod_condensate_mt`, `prod_gas_mmscm` (`lines 61–64, 88–89`) → `oil_prod_mt`, `condensate_prod_mt`, `gas_prod_mmscm` (`ssot_field_economics_360.sqlx:13-15`).
+     - `sales_crude_mt`, `sales_gas_mmscm`, `sales_vap_kt` (`lines 66–68`) → `oil_sales_mt`, `gas_sales_mmscm`, `vap_sales_kt` (`ssot_field_economics_360.sqlx:17-19`).
+     - `other_income_alloc` (`line 78`) → `other_income_segment` (`ssot_field_economics_360.sqlx:26`).
+     - `lifting_cost` (`line 86`) → `opex_lifting` (`ssot_field_economics_360.sqlx:54`).
+  2. **Enum literal mismatches (`lines 61–89, 593`):**
+     - `object_type = 'producing_field'` (`lines 71, 86, 87`) → in `dim_cost_object.sqlx` / `ssot_field_economics_360.sqlx`, producing field rows have `object_type = 'field'` (or `object_type IN ('field', 'jv_share')`).
+     - `operatorship = 'Operated'` and `operatorship = 'JV'` (`lines 61–64, 88`) → in `ssot_field_economics_360.sqlx`, use `prod_basis = 'ONGC'` (or `operatorship = 'ONGC_OPERATED'`) and `prod_basis = 'JV_SHARE'` (or `operatorship = 'JV_NON_OPERATED'`).
+     - `object_id = 'FLD-MUMBAI-HIGH'` (`line 89`) → in `dim_cost_object.sqlx`, Mumbai High is split into `'FLD-MHN'` and `'FLD-MHS'` (`object_id IN ('FLD-MHN', 'FLD-MHS')`).
+  3. **`N35.*` `line_code` mismatches in `n35_unpivoted` (`recon_field_economics.sqlx:119-145`):**
+     - Replace the 15 invented codes (`N35.WORKOVER`, `N35.WATER_INJECTION`, `N35.STORES_SPARES`, `N35.POLLUTION`, `N35.TRANSPORT`, `N35.SUBCONTRACTING`, `N35.REPAIR_MAINT`, `N35.OTHER_PROD`, `N35.PORT_PIPELINE`, `N35.GEN_ADMIN`, `N35.POL`, `N35.OCTROI`, `N35.SERVICES`, `N35.MISC`, `N35.TOTAL`) with the canonical `field_econ_targets_fy.csv` (`int_fe_targets_fy`) codes:
+       `N35.ROYALTY`, `N35.OIDB_CESS`, `N35.NCCD`, `N35.EXCISE_SAED`, `N35.PORT_TRUST`, `N35.OTHER_LEVIES`, `N35.STAFF_EXPENDITURE`, `N35.WORKOVER_OPS`, `N35.WATER_INJECTION_DESALTING`, `N35.CONSUMPTION_STORES_SPARES`, `N35.POLLUTION_CONTROL`, `N35.TRANSPORT_EXPENDITURE`, `N35.INSURANCE`, `N35.CONTRACTUAL_PAYMENTS`, `N35.OTHER_PRODUCTION_EXP`, `N35.REPAIRS_MAINTENANCE`, `N35.HIRE_CHARGES_EQUIP_RIGS`, `N35.POWER_FUEL`, `N35.TRANSPORT_FREIGHT_PRODUCTS`, `N35.R_AND_D`, `N35.GAE`, `N35.CSR`, `N35.MISC_EXP`, `N35.FV_LOSS`, `N35.EXCHANGE_LOSS`, `N35.SHUTDOWN_EXP`, and `PL.PROD_EXP`.
+
+#### `P2H8-B2` (Blocking) — `reconcile.py` and `test_62_recon_parity.py` Use the Same Non-Existent Field Columns/Codes and `reconcile.py` Lacks its CLI Entrypoint
+- **Location:**
+  - [reconcile.py](file:///usr/local/google/home/amandeepsinghs/o&g%20agentic%20transformation/Oil%20&%20Gas%20Agent%20Portfolio/cloud_run_apps/HR%20and%20Finance_ONGC__v3P2H5/data_bank/generators/reconcile.py#L14-L39) (`lines 14–39, 553–875`)
+  - [test_62_recon_parity.py](file:///usr/local/google/home/amandeepsinghs/o&g%20agentic%20transformation/Oil%20&%20Gas%20Agent%20Portfolio/cloud_run_apps/HR%20and%20Finance_ONGC__v3P2H5/data_bank/tests/test_62_recon_parity.py#L66-L107)
+- **Defect:**
+  1. `N35_LINE_TO_COL` (`reconcile.py:14-39`), `_ensure_wide_field_df` (`reconcile.py:553-606`), `run_field_reconciliation` (`reconcile.py:609-875`), and `_build_compliant_field_dataset` (`test_62_recon_parity.py:66-107`) use the exact same wrong column names, wrong `N35.*` target codes, and wrong enum literals listed in `P2H8-B1`.
+  2. `reconcile.py` removed its `if __name__ == "__main__":` CLI entrypoint required by `P2H.8_reconciliation_tests.md` §3 (`python -m generators.reconcile --domain all --out /tmp/recon_checks.csv`, exiting non-zero on any `severity == 'BLOCK'` failure). Restore the CLI entrypoint so `reconcile.py` can run against the real generated files (`CO_PA_v3.csv`, `field_econ_targets_fy.csv`, `field_alloc_audit.csv`, `PY_CLUSTER_EXP.csv`, `employee_targets_fy.csv`).
+
+#### `P2H8-B3` (Blocking) — `golden_field_econ.yaml` (`BEH-06.17`, `.18`, `.19`, `.23`, `.24`) `recompute_sql` References Non-Existent Columns and Enum Values on `v_field_economics_fy`
+- **Location:** [golden_field_econ.yaml](file:///usr/local/google/home/amandeepsinghs/o&g%20agentic%20transformation/Oil%20&%20Gas%20Agent%20Portfolio/cloud_run_apps/HR%20and%20Finance_ONGC__v3P2H5/yukti/backend/eval/golden_field_econ.yaml#L22-L102)
+- **Defect:**
+  1. `BEH-06.17` (`line 22`): `object_type = 'producing_field'` → change to `object_type = 'field'` (or `object_type IN ('field', 'jv_share')`).
+  2. `BEH-06.18` (`line 34`): `lifting_cost` and `object_type = 'producing_field'` → in `v_field_economics_fy.sqlx`, the column is `opex_lifting` (and `opex_lifting_per_boe_inr` / `opex_lifting_per_boe_usd`), and `object_type = 'field'`.
+  3. `BEH-06.19` (`line 46`): `object_id IN ('FLD-MUMBAI-HIGH','FLD-BASSEIN','FLD-NEELAM-HEERA','FLD-KG-DWN-98-2')` → in `dim_cost_object.sqlx` / `v_field_economics_fy.sqlx`, the actual IDs are `'FLD-MHN'`, `'FLD-MHS'`, `'FLD-BAS'`, `'FLD-NEE'`, `'FLD-HEE'`, `'FLD-KG982'`.
+  4. `BEH-06.23` (`line 91`): `object_type = 'producing_field'` → change to `object_type = 'field'`.
+  5. `BEH-06.24` (`line 102`): `prod_crude_mt + prod_condensate_mt` and `prod_gas_mmscm` → in `v_field_economics_fy.sqlx`, the columns are `oil_prod_mt + condensate_prod_mt` (or `oil_prod_mmt + condensate_prod_mmt`) and `gas_prod_mmscm` (or `gas_prod_bcm`), and `operatorship` values are `'ONGC_OPERATED'` / `'JV_NON_OPERATED'` (or `prod_basis` `'ONGC'` / `'JV_SHARE'`).

@@ -1,5 +1,6 @@
-"""Parity and seeded-break tests for Employee-360 & Field-Economics-360 reconciliation (P2H.8)."""
+"""Parity, seeded-break, and schema-guard tests for Employee-360 & Field-Economics-360 reconciliation (P2H.8)."""
 
+import re
 import sys
 from pathlib import Path
 import duckdb
@@ -13,6 +14,10 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 from generators.reconcile import (
+    LEVIES_COLS,
+    LIFTING_COLS,
+    N35_LINE_TO_COL,
+    OPEX_COLS,
     _ensure_wide_field_df,
     run_employee_reconciliation,
     run_field_reconciliation,
@@ -32,6 +37,49 @@ def fixture_dfs():
     audit_df = pd.read_csv(FIXTURES_DIR / "audit_fixture.csv")
     targets_df = pd.read_csv(FIXTURES_DIR / "targets_fixture.csv")
     return emp_df, pool_df, fld_df, audit_df, targets_df
+
+
+def _extract_sqlx_select_columns(sqlx_text: str) -> set[str]:
+    """Extract output column names from the final SELECT list of a Dataform SQLX file."""
+    # Find the last SELECT ... FROM block
+    matches = list(re.finditer(r"\bSELECT\b(.*?)\bFROM\b", sqlx_text, flags=re.IGNORECASE | re.DOTALL))
+    assert matches, "No SELECT ... FROM block found in SQLX"
+    select_body = matches[-1].group(1)
+
+    cols: set[str] = set()
+    # Split top-level comma-separated expressions
+    depth = 0
+    current: list[str] = []
+    parts: list[str] = []
+    for ch in select_body:
+        if ch == "(":
+            depth += 1
+            current.append(ch)
+        elif ch == ")":
+            depth = max(0, depth - 1)
+            current.append(ch)
+        elif ch == "," and depth == 0:
+            parts.append("".join(current).strip())
+            current = []
+        else:
+            current.append(ch)
+    if current:
+        parts.append("".join(current).strip())
+
+    for part in parts:
+        # Remove SQL single-line comments
+        lines = [ln.split("--")[0].strip() for ln in part.splitlines() if ln.split("--")[0].strip()]
+        cleaned = " ".join(lines).strip()
+        if not cleaned:
+            continue
+        m_as = re.search(r"\bAS\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*$", cleaned, flags=re.IGNORECASE)
+        if m_as:
+            cols.add(m_as.group(1))
+        else:
+            m_col = re.search(r"(?:[a-zA-Z_][a-zA-Z0-9_]*\.)?([a-zA-Z_][a-zA-Z0-9_]*)\s*$", cleaned)
+            if m_col:
+                cols.add(m_col.group(1))
+    return cols
 
 
 def test_fixture_row_limits(fixture_dfs):
@@ -68,6 +116,142 @@ def test_sqlx_no_hardcoded_zero_stubs():
     assert "IFNULL(t.value, 0)" not in emp_sql, "Found IFNULL(t.value, 0) in recon_employee360.sqlx"
     assert "IFNULL(t.value, 0)" not in fld_sql, "Found IFNULL(t.value, 0) in recon_field_economics.sqlx"
     assert "severity = 'BLOCK' AND status = 'FAIL'" in assert_sql
+
+
+def test_field_econ_schema_and_n35_guard(fixture_dfs):
+    """Guard against schema/enum/N35 drift across recon_field_economics.sqlx, reconcile.py, and golden_field_econ.yaml."""
+    _, _, fld_df, _, _ = fixture_dfs
+
+    ssot_sql = (SQLX_DIR / "ssot_field_economics_360.sqlx").read_text(encoding="utf-8")
+    v_fy_sql = (SQLX_DIR / "v_field_economics_fy.sqlx").read_text(encoding="utf-8")
+    recon_fld_sql = (SQLX_DIR / "recon_field_economics.sqlx").read_text(encoding="utf-8")
+    reconcile_py = (BASE_DIR / "generators" / "reconcile.py").read_text(encoding="utf-8")
+    golden_fld_text = (EVAL_DIR / "golden_field_econ.yaml").read_text(encoding="utf-8")
+
+    ssot_cols = _extract_sqlx_select_columns(ssot_sql)
+    v_fy_cols = _extract_sqlx_select_columns(v_fy_sql)
+    assert len(ssot_cols) >= 44, f"Expected >= 44 columns in ssot_field_economics_360.sqlx, got {len(ssot_cols)}"
+    assert len(v_fy_cols) >= 44, f"Expected >= 44 columns in v_field_economics_fy.sqlx, got {len(v_fy_cols)}"
+
+    # 1. None of the non-existent legacy column names or enum literals may appear anywhere
+    banned_legacy_identifiers = {
+        "subcontracting",
+        "repair_maintenance",
+        "port_trust_pipeline",
+        "general_admin",
+        "pol_consumption",
+        "octroi_other_levies",
+        "services_received",
+        "misc_expenditure",
+        "note35_total",
+        "expl_survey_cost",
+        "expl_wells_written_off",
+        "finance_cost_unwinding",
+        "finance_cost_interest",
+        "prod_crude_mt",
+        "prod_condensate_mt",
+        "prod_gas_mmscm",
+        "sales_crude_mt",
+        "sales_gas_mmscm",
+        "sales_vap_kt",
+        "other_income_alloc",
+        "lifting_cost",
+        "producing_field",
+        "FLD-MUMBAI-HIGH",
+        "FLD-ANKLESHWAR",
+        "FLD-PANNA-MUKTA",
+    }
+    for banned in banned_legacy_identifiers:
+        pat = rf"(?<![a-zA-Z0-9_]){re.escape(banned)}(?![a-zA-Z0-9_])"
+        assert not re.search(pat, recon_fld_sql), f"Banned legacy identifier {banned!r} found in recon_field_economics.sqlx"
+        assert not re.search(pat, reconcile_py), f"Banned legacy identifier {banned!r} found in reconcile.py"
+        assert not re.search(pat, golden_fld_text), f"Banned legacy identifier {banned!r} found in golden_field_econ.yaml"
+
+    # 2. All column constants in reconcile.py must exist in ssot_field_economics_360.sqlx and v_field_economics_fy.sqlx
+    reconcile_col_constants = set(N35_LINE_TO_COL.values()) | set(LEVIES_COLS) | set(OPEX_COLS) | set(LIFTING_COLS)
+    missing_in_ssot = reconcile_col_constants - ssot_cols
+    missing_in_v_fy = reconcile_col_constants - v_fy_cols
+    assert not missing_in_ssot, f"reconcile.py column constants missing from ssot_field_economics_360.sqlx: {missing_in_ssot}"
+    assert not missing_in_v_fy, f"reconcile.py column constants missing from v_field_economics_fy.sqlx: {missing_in_v_fy}"
+
+    w_fld = _ensure_wide_field_df(fld_df)
+    wide_generated_cols = set(w_fld.columns) - set(fld_df.columns)
+    assert wide_generated_cols.issubset(ssot_cols), (
+        f"_ensure_wide_field_df generated non-canonical columns: {wide_generated_cols - ssot_cols}"
+    )
+
+    # 3. Parse every ssot_field_economics_360 column referenced in recon_field_economics.sqlx and verify it exists
+    sql_keywords = {
+        "SELECT", "FROM", "WHERE", "GROUP", "BY", "UNION", "ALL", "AS", "IF", "IN", "AND", "OR",
+        "NOT", "NULL", "IS", "LEFT", "JOIN", "ON", "USING", "WITH", "CASE", "WHEN", "THEN", "ELSE",
+        "END", "SUM", "COUNTIF", "ABS", "SAFE_DIVIDE", "COALESCE", "NULLIF", "MAX", "MIN", "AVG", "ROUND",
+        "GENERATE_UUID", "CURRENT_TIMESTAMP", "STRUCT", "UNNEST", "TRUE", "FALSE", "CAST", "FLOAT64", "DATE",
+    }
+    fld_fy_match = re.search(r"WITH\s+fld_fy\s+AS\s*\((.*?)\),\s*emp_staff_fy", recon_fld_sql, flags=re.DOTALL)
+    assert fld_fy_match, "Could not locate fld_fy CTE in recon_field_economics.sqlx"
+    fld_fy_body = fld_fy_match.group(1)
+    # Remove ${ref("ssot_field_economics_360")} and string literals
+    fld_fy_clean = re.sub(r"\$\{ref\([^)]+\)\}", "ssot", fld_fy_body)
+    fld_fy_clean = re.sub(r"'[^']*'", "", fld_fy_clean)
+    alias_To_col: dict[str, str] = {}
+    for m_sum in re.finditer(r"SUM\(([a-z_][a-z0-9_]*)\)\s+AS\s+([a-z_][a-z0-9_]*)", fld_fy_clean):
+         alias_To_col[m_sum.group(2)] = m_sum.group(1)
+
+    for tok in re.findall(r"\b[a-z_][a-z0-9_]*\b", fld_fy_clean):
+        if tok.upper() in sql_keywords or tok in {"ssot"}:
+            continue
+        if re.search(rf"\bAS\s+{re.escape(tok)}\b", fld_fy_clean, flags=re.IGNORECASE):
+            continue
+        assert tok in ssot_cols, (
+            f"Column {tok!r} referenced in recon_field_economics.sqlx fld_fy CTE not in ssot_field_economics_360.sqlx"
+        )
+
+    # Check all 24 (line_code, alias) pairs in n35_unpivoted
+    n35_cte_match = re.search(r"n35_unpivoted\s+AS\s*\((.*?)\),\s*raw_checks", recon_fld_sql, flags=re.DOTALL)
+    assert n35_cte_match, "Could not locate n35_unpivoted CTE in recon_field_economics.sqlx"
+    n35_cte_body = n35_cte_match.group(1)
+    sqlx_n35_pairs = re.findall(
+        r"SELECT\s+fiscal_year\s*,\s*'(N35\.[A-Z0-9_]+)'(?:\s+AS\s+line_code)?\s*,\s*CAST\(([a-zA-Z_][a-zA-Z0-9_]*)\s+AS\s+FLOAT64\)",
+        n35_cte_body,
+    )
+    assert len(sqlx_n35_pairs) == 24, f"Expected 24 N35 pairs in n35_unpivoted, got {len(sqlx_n35_pairs)}"
+    for lcode, alias_name in sqlx_n35_pairs:
+        col_name = alias_To_col.get(alias_name)
+        assert col_name in ssot_cols, f"n35_unpivoted alias {alias_name!r} -> {col_name!r} for {lcode} not in ssot_field_economics_360.sqlx"
+        assert N35_LINE_TO_COL.get(lcode) == col_name, f"Mismatch between SQLX and reconcile.py for {lcode}: {col_name}"
+
+    # 4. Assert every N35.* code in SQLX and reconcile.py exists in field_econ_targets_fy.csv
+    real_targets_df = pd.read_csv(BASE_DIR / "world_bible" / "reference" / "real_targets" / "field_econ_targets_fy.csv")
+    target_n35_codes = set(
+        real_targets_df[real_targets_df["line_code"].str.startswith("N35.")]["line_code"].unique()
+    )
+    assert len(target_n35_codes) == 24
+    assert set(N35_LINE_TO_COL.keys()) == target_n35_codes
+    assert {lc for lc, _ in sqlx_n35_pairs} == target_n35_codes
+
+    # 5. Parse every recompute_sql in golden_field_econ.yaml and verify columns & object_ids
+    co_cfg = yaml.safe_load((BASE_DIR / "world_bible" / "reference" / "cost_objects.yaml").read_text(encoding="utf-8"))
+    valid_object_ids = {obj["object_id"] for obj in co_cfg["cost_objects"]}
+    fld_scenarios = yaml.safe_load(golden_fld_text)["scenarios"]
+    for sc in fld_scenarios:
+        sid = sc["id"]
+        sql = sc["expected"].get("recompute_sql")
+        if not sql or "v_field_economics_fy" not in sql:
+            continue
+        # Verify object_id literals in recompute_sql exist in cost_objects.yaml
+        for oid in re.findall(r"'(?:FLD|JV|WC|EXP|CO)-[A-Z0-9_-]+'", sql):
+            oid_clean = oid.strip("'")
+            assert oid_clean in valid_object_ids, f"{sid}: unknown object_id {oid_clean!r} in recompute_sql"
+        # Verify column identifiers in recompute_sql exist in v_field_economics_fy.sqlx
+        sql_no_str = re.sub(r"'[^']*'", "", sql)
+        sql_no_table = re.sub(r"`[^`]+`", "tbl", sql_no_str)
+        aliases = set(re.findall(r"\bAS\s+([a-zA-Z_][a-zA-Z0-9_]*)\b", sql_no_table, flags=re.IGNORECASE))
+        for tok in re.findall(r"\b[a-z_][a-z0-9_]*\b", sql_no_table):
+            if tok.upper() in sql_keywords or tok in aliases or tok in {"tbl", "DESC", "ASC", "LIMIT", "ORDER"}:
+                continue
+            assert tok in v_fy_cols, (
+                f"{sid}: column {tok!r} in recompute_sql not found in v_field_economics_fy.sqlx ({sorted(v_fy_cols)})"
+            )
 
 
 def test_parity(fixture_dfs):
@@ -139,7 +323,7 @@ def test_fld_r04_seeded_break(fixture_dfs):
     fld_mut = fld_df.copy()
     royalty_mask = (
         (fld_mut["fiscal_year"] == "FY26")
-        & (fld_mut["object_id"] == "FLD-MUMBAI-HIGH")
+        & (fld_mut["object_id"] == "FLD-MHN")
         & (fld_mut["line_code"] == "N35.ROYALTY")
     )
     assert royalty_mask.sum() == 1

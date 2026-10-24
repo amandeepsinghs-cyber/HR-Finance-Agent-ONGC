@@ -339,7 +339,11 @@ SELECT
   (RIGHT(p.month, 2) = '03') AS is_fy_end,
   p.emp_id,
   CASE
-    WHEN sep.separation_date IS NOT NULL AND FORMAT_DATE('%Y-%m', sep.separation_date) = p.month THEN 'separated'
+    WHEN sep.separation_date IS NOT NULL
+      AND p.month IN (
+        FORMAT_DATE('%Y-%m', sep.separation_date),
+        FORMAT_DATE('%Y-%m', DATE_SUB(DATE_TRUNC(sep.separation_date, MONTH), INTERVAL 1 MONTH))
+      ) THEN 'separated'
     WHEN FORMAT_DATE('%Y-%m', m.doj) = p.month THEN 'joined'
     ELSE 'active'
   END AS roll_status,
@@ -544,8 +548,9 @@ SELECT
   p.net_salary_inr AS net_pay_inr,
 
   -- Family I: CTC, accounting employee cost & Note 35 / segment mapping (15 cols + extra audit cols)
-  (p.gross_salary_inr - p.arrears_inr - p.leave_encashment_paid_inr + p.prp_inr - p.prp_paid_inr + p.employer_cost_noncash_inr) AS ctc_monthly_inr,
-  (p.gross_salary_inr - p.arrears_inr - p.leave_encashment_paid_inr + p.prp_inr - p.prp_paid_inr + p.employer_cost_noncash_inr) * 12 AS ctc_annualised_inr,
+  -- Note: gross_salary_inr (LGART_9001) already includes prp_inr (gen_22_hr_payroll.py:334)
+  (p.gross_salary_inr - p.arrears_inr - p.leave_encashment_paid_inr - p.prp_paid_inr + p.employer_cost_noncash_inr) AS ctc_monthly_inr,
+  (p.gross_salary_inr - p.arrears_inr - p.leave_encashment_paid_inr - p.prp_paid_inr + p.employer_cost_noncash_inr) * 12 AS ctc_annualised_inr,
   p.cost_note35_a_inr,
   p.cost_note35_b_inr,
   p.cost_note35_c_inr,
@@ -591,10 +596,18 @@ SELECT
   (g.level_order >= 8) AS succession_pool_flag,
 
   -- Family L: Lifecycle events in the month — joins & separations (9 cols)
+  -- Separated employees have no payroll row in their separation month (active_emp_mask requires sep_dt > snap_dt),
+  -- so flag their final payroll row (month M-1) as well as any row in separation month M.
   (FORMAT_DATE('%Y-%m', m.doj) = p.month) AS joined_in_month_flag,
   m.fiscal_year_joined AS recruitment_fy,
   m.entry_mode AS recruitment_channel,
-  (sep.separation_date IS NOT NULL AND FORMAT_DATE('%Y-%m', sep.separation_date) = p.month) AS separated_in_month_flag,
+  (
+    sep.separation_date IS NOT NULL
+    AND p.month IN (
+      FORMAT_DATE('%Y-%m', sep.separation_date),
+      FORMAT_DATE('%Y-%m', DATE_SUB(DATE_TRUNC(sep.separation_date, MONTH), INTERVAL 1 MONTH))
+    )
+  ) AS separated_in_month_flag,
   sep.separation_date,
   UPPER(sep.separation_type) AS separation_type,
   sep.exit_interview_reason AS separation_reason_detail,

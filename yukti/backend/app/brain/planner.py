@@ -504,6 +504,13 @@ class Planner:
             spec = prev.model_copy(update={"chart_kind": "waterfall"})
             return Plan(intent="data", is_followup=True, spec=spec, patch=SpecPatch(chart_kind="waterfall"), chart_kind="waterfall", raw=raw)
 
+        # Hypothetical simulation guard ("If Brent falls to $60...", "What if crude drops...")
+        if re.search(
+            r"\b(?:what[- ]if|if\s+(?:brent|crude|oil|gas|fx|rupee|usd|realisation)(?:\s+price)?\s+(?:falls?|drops?|rises?|goes|reaches|hits|were|is)\s+(?:to|below|above|by))\b",
+            ql_early,
+        ):
+            return Plan(intent="what_if", raw=raw)
+
         # Deterministic Financial Causal & Action Guard ("Why did X happen?", "What action should the Finance Director take?")
         fin_kw = re.search(
             r"\b(pat|profit|pbt|revenue|ebitda|levies|royalty|oidb|saed|windfall|exploration|dry\s+well|survey\s+cost|"
@@ -517,7 +524,7 @@ class Planner:
         if not prev_is_fin and prev is not None:
             psubj, _, ptdef = self._subject_for(prev.metric)
             prev_is_fin = bool((psubj and psubj.domain == "finance") or (ptdef and ptdef.domain == "finance"))
-        if (intent != "data" or not raw.get("metric")) and (fin_kw or (prev_is_fin and re.search(r"\b(why|what\s+happened|action|recommend\w*|interven\w*|improv\w*|explain|driver\w*|reason\w*|cause\w*|how)\b", ql_early))):
+        if intent not in ("what_if", "document", "policy", "replot") and (intent != "data" or not raw.get("metric")) and (fin_kw or (prev_is_fin and re.search(r"\b(why|what\s+happened|action|recommend\w*|interven\w*|improv\w*|explain|driver\w*|reason\w*|cause\w*|how)\b", ql_early))):
             inferred_m = raw.get("metric")
             if not inferred_m or not any(self._subject_for(inferred_m)):
                 if re.search(r"\b(saed|windfall|statutory\s+levies|note\s+28|note\s+26)\b", ql_early):
@@ -699,15 +706,30 @@ class Planner:
         if subject is not None:
             wc_field = "wc" if "wc" in subject.fields else ("asset" if "asset" in subject.fields else None)
         named_wcs = self.ents.resolve_wcs(question)
-        has_wc = any(f.field in ("wc", "asset", "region") for f in filters) or bool(raw.get("compare_field"))
+        has_wc = any(f.field in ("wc", "asset", "region") for f in filters) or (
+            bool(raw.get("compare_field")) and raw.get("compare_field") not in WC_ATTRIBUTE_FIELDS
+        )
         if wc_field and len(named_wcs) == 1 and not has_wc and not self.ents.resolve_region(question):
             filters.append(Filter(field=wc_field, op="=", value=named_wcs[0]))
             notes.append(f"entity guard added {wc_field}={named_wcs[0]}")
+            if not re.search(r"\b(onshore|offshore|sector|state)\b", ql_early):
+                filters = [f for f in filters if f.field not in ("onshore_offshore", "sector", "state")]
 
         # Entity guard (multi): "Compare Delhi and Mumbai" named as states/cities instead of work centres.
-        if wc_field and len(named_wcs) >= 2 and not any(f.field in ("wc", "asset") for f in filters) \
-                and not raw.get("compare_field") and not self.ents.resolve_region(question):
-            filters = [f for f in filters if f.field not in WC_ATTRIBUTE_FIELDS or f.field in subject.fields]
+        if (
+            wc_field
+            and len(named_wcs) >= 2
+            and not any(f.field in ("wc", "asset") for f in filters)
+            and (not raw.get("compare_field") or raw.get("compare_field") in WC_ATTRIBUTE_FIELDS)
+            and not self.ents.resolve_region(question)
+        ):
+            filters = [
+                f for f in filters
+                if (f.field not in WC_ATTRIBUTE_FIELDS or f.field in subject.fields)
+                and (f.field not in ("onshore_offshore", "sector", "state") or re.search(r"\b(onshore|offshore|sector|state)\b", ql_early))
+            ]
+            dims = [wc_field if d in ("state", "sector", "onshore_offshore") else d for d in dims]
+            dims = list(dict.fromkeys(dims))
             raw = dict(raw, compare_field=wc_field, compare_values=named_wcs[:4])
             notes.append(f"entity guard: compare {wc_field} {named_wcs[:4]}")
 
