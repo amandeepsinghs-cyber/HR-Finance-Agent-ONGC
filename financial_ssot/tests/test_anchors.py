@@ -1,13 +1,12 @@
 """Acceptance tests for financial SSOT anchor tables (P1.7, SPEC-01 §10, SPEC-05 §5).
 
 Verifies:
-1. Gate S1: Segment revenue and result tie-outs across all fiscal years (FY21-FY26 + FY16-FY19).
-2. Gate P1: Production basis tie-out (ONGC_standalone + JV_share == ONGC_incl_JV within 0.002).
-3. Gate R1: Crude price realisation reproduces crude sales within ±2%.
-4. Headcount vintage policy: employees_total covers FY13-FY26 with FY25 having both own (24,378)
-   and latest restated (24,368).
-5. Lineage completeness: 100% of rows have source_doc and source_page.
-6. Spot checks: exact AR figures verified across tables.
+1. Gate S1: Segment revenue, result, and total assets tie-outs across all fiscal years (FY21-FY26 + FY16-FY19).
+2. Gate P1: Production basis tie-out (ONGC_standalone + JV_share == ONGC_incl_JV within 0.002) and 10-year Quantity Sold (basis='sold') spanning FY13-FY26.
+3. Gate R1: Crude price realisation reproduces crude sales within ±2% and printed gas prices across FY21-FY26.
+4. Reserves: 2P/1P accretion, positions, and RRR across FY17-FY26.
+5. Headcount vintage policy: employees_total covers FY13-FY26 with FY25 having both own (24,378) and latest restated (24,368).
+6. Lineage completeness: 100% of rows have source_doc and source_page.
 """
 from __future__ import annotations
 
@@ -20,12 +19,11 @@ from financial_ssot.anchors.build_anchors import build_all_anchors
 
 @pytest.fixture(scope="module")
 def anchor_tables(tmp_path_factory):
-    # Run build_all_anchors into a temp directory or read existing out
+    # Run build_all_anchors into out
     repo_root = Path(__file__).resolve().parent.parent.parent
     out_dir = repo_root / "financial_ssot" / "out"
     text_dir = repo_root / "knowledge" / "public_sources" / "grounding_data" / "text"
     
-    # Ensure tables are built
     tables = build_all_anchors(out_dir=out_dir, text_dir=text_dir)
     return tables
 
@@ -43,7 +41,7 @@ def test_lineage_completeness(anchor_tables):
 
 
 def test_gate_s1_segment_identities(anchor_tables):
-    """Gate S1: Σ segments + unallocated - fin_cost + int_div == PL.PBT (±0.05 cr) and rev tie."""
+    """Gate S1: Revenue, PBT, and Total Assets tie-outs (≤ ₹0.05 cr tolerance)."""
     df_seg = anchor_tables["fact_segment"]
     sa = df_seg[df_seg["scope"] == "standalone"]
     
@@ -72,6 +70,17 @@ def test_gate_s1_segment_identities(anchor_tables):
         delta_cr = abs(calc_pbt - pbt) / 10.0
         assert delta_cr <= 0.05, f"Gate S1 PBT failed for {fy}: calc {calc_pbt} vs rep {pbt} (delta {delta_cr:.4f} cr)"
 
+        # 3. Total Assets tie (where reported in notes)
+        off_ast = fy_df[fy_df["line_code"] == "SEG.SEGMENT_ASSETS.OFF"]
+        on_ast = fy_df[fy_df["line_code"] == "SEG.SEGMENT_ASSETS.ON"]
+        un_ast = fy_df[fy_df["line_code"] == "SEG.UNALLOCATED_ASSETS"]
+        tot_ast = fy_df[fy_df["line_code"] == "SEG.TOTAL_ASSETS"]
+        if not off_ast.empty and not on_ast.empty and not un_ast.empty and not tot_ast.empty:
+            calc_ast = off_ast.iloc[0]["value_inr_mn"] + on_ast.iloc[0]["value_inr_mn"] + un_ast.iloc[0]["value_inr_mn"]
+            rep_ast = tot_ast.iloc[0]["value_inr_mn"]
+            delta_ast_cr = abs(calc_ast - rep_ast) / 10.0
+            assert delta_ast_cr <= 0.05, f"Gate S1 Assets failed for {fy}: calc {calc_ast} vs rep {rep_ast}"
+
 
 def test_fy26_segment_spot_checks(anchor_tables):
     """Assert FY26 segment values exactly match AR FY26 Note 44.2 (p.368)."""
@@ -97,10 +106,10 @@ def test_fy26_segment_spot_checks(anchor_tables):
 
 
 def test_gate_p1_production_basis(anchor_tables):
-    """Gate P1: ONGC_standalone + JV_share == ONGC_incl_JV within 0.002 tolerance."""
+    """Gate P1: ONGC_standalone + JV_share == ONGC_incl_JV within 0.002 tolerance, and sold basis spans FY13-FY26."""
     df_prod = anchor_tables["fact_production_annual"]
     
-    # Check for FY21 - FY26
+    # 1. P1 tie-out across FY21 - FY26
     for fy in ["FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]:
         for prod in ["crude_oil", "natural_gas"]:
             sub = df_prod[(df_prod["fiscal_year"] == fy) & (df_prod["product"] == prod)]
@@ -115,6 +124,13 @@ def test_gate_p1_production_basis(anchor_tables):
             calc_tot = s_row.iloc[0]["value"] + j_row.iloc[0]["value"]
             rep_tot = tot_row.iloc[0]["value"]
             assert abs(calc_tot - rep_tot) <= 0.002001, f"Gate P1 failed for {fy} {prod}: {calc_tot} vs {rep_tot}"
+
+    # 2. basis='sold' rows span FY13 through FY26
+    sold_df = df_prod[df_prod["basis"] == "sold"]
+    assert not sold_df.empty, "fact_production_annual missing basis='sold' rows"
+    sold_fys = set(sold_df["fiscal_year"].unique())
+    expected_fys = {f"FY{yy}" for yy in range(13, 27)}
+    assert expected_fys.issubset(sold_fys), f"Missing sold fiscal years: {expected_fys - sold_fys}"
 
 
 def test_fy26_production_spot_checks(anchor_tables):
@@ -149,9 +165,10 @@ def test_fact_reserves_accretion_and_position(anchor_tables):
     assert fy26_tot["accretion_mmtoe"] == 44.01
     assert fy26_tot["rrr"] == 1.17
     
-    # FY25: 1P Total 525.92, Accretion 39.50, RRR 1.01 (p.104)
+    # FY25: 1P Total 525.92, Accretion 39.50, RRR 1.01 (p.104 & p.14)
     fy25_tot = df_res[(df_res["fiscal_year"] == "FY25") & (df_res["region"] == "domestic_total")].iloc[0]
     assert fy25_tot["value_mmtoe"] == 525.92
+    assert fy25_tot["accretion_mmtoe"] == 39.50
     assert fy25_tot["rrr"] == 1.01
 
     # FY24: 2P Total 716.95, Accretion 45.20, RRR 1.15 (p.68)
@@ -165,6 +182,16 @@ def test_fact_reserves_accretion_and_position(anchor_tables):
     assert fy23_tot["value_mmtoe"] == 729.83
     assert fy23_tot["accretion_mmtoe"] == 40.62
     assert fy23_tot["rrr"] == 1.01
+
+    # FY18: 2P Total Accretion 68.85 (ONGC 67.83), RRR 1.48 (AR FY18 p.13)
+    fy18_tot = df_res[(df_res["fiscal_year"] == "FY18") & (df_res["region"] == "domestic_total")].iloc[0]
+    assert fy18_tot["accretion_mmtoe"] == 68.85
+    assert fy18_tot["rrr"] == 1.48
+
+    # FY17: 2P Domestic Accretion 64.54, RRR 1.45 (AR FY17 p.7)
+    fy17_ongc = df_res[(df_res["fiscal_year"] == "FY17") & (df_res["region"] == "domestic_ongc")].iloc[0]
+    assert fy17_ongc["accretion_mmtoe"] == 64.54
+    assert fy17_ongc["rrr"] == 1.45
 
 
 def test_hr_aggregates_headcount_vintages(anchor_tables):
@@ -224,7 +251,7 @@ def test_hr_brsr_metrics_spot_checks(anchor_tables):
 
 
 def test_gate_r1_price_realisation(anchor_tables):
-    """Gate R1: Realisation * Qty sold reproduces crude sales line within ±2%."""
+    """Gate R1: Realisation * Qty sold reproduces crude sales line within ±2%, and printed gas prices exist."""
     df_price = anchor_tables["fact_price_realisation"]
     
     # FY26 nominated crude
@@ -247,6 +274,19 @@ def test_gate_r1_price_realisation(anchor_tables):
     assert fy24_crude["realisation_inr_per_unit"] == 6687.0
     assert bool(fy24_crude["verified"]) is True
     assert "R1" in fy24_crude["verified_rule_ids"]
+
+    # FY23 APM gas prices parsed from AR23 p.171
+    fy23_apm_h1 = df_price[(df_price["fiscal_year"] == "FY23") & (df_price["basis"] == "apm_h1")].iloc[0]
+    assert fy23_apm_h1["realisation_usd_per_mmbtu"] == 6.10
+    assert bool(fy23_apm_h1["verified"]) is True
+
+    fy23_apm_h2 = df_price[(df_price["fiscal_year"] == "FY23") & (df_price["basis"] == "apm_h2")].iloc[0]
+    assert fy23_apm_h2["realisation_usd_per_mmbtu"] == 8.57
+    assert bool(fy23_apm_h2["verified"]) is True
+
+    # Confirm NO invented crude price for FY23 exists
+    fy23_crude = df_price[(df_price["fiscal_year"] == "FY23") & (df_price["product"] == "crude")]
+    assert fy23_crude.empty, "FY23 crude should be omitted (narrative range only)"
 
 
 def test_anchors_issues_csv_empty(anchor_tables):
