@@ -15,37 +15,57 @@ export interface ExportIntent {
 }
 
 // Order matters: multi-word / more specific triggers first (google sheets before sheets, email file before email).
+// G4 r1 (M2): bare "sheet(s)" is NOT an Excel word ("balance sheet", "fact sheet"); "to/in Sheets" means Google Sheets.
 const LEXICON: [ExportFormat, RegExp][] = [
-  ['sheets', /\b(google\s*sheets?|g\s?sheets?)\b|गूगल\s*शीट/i],
+  ['sheets', /\b(google\s*sheets?|g\s?sheets?|(?:to|in|into|as)\s+sheets)\b|गूगल\s*शीट/i],
   ['docs', /\b(google\s*docs?|g\s?docs?)\b|गूगल\s*डॉक/i],
   ['eml', /\b(email\s*file|e-?mail\s*draft\s*file|outlook\s*draft|\.?eml)\b|ईमेल\s*फ़?फ?ाइल/i],
-  ['xlsx', /\b(excel|xlsx|xls|spreadsheet|workbook|sheets?)\b|एक्सेल|स्प्रेडशीट/i],
+  ['xlsx', /\b(excel|xlsx|xls|spreadsheet|workbook)\b|एक्सेल|स्प्रेडशीट/i],
   ['csv', /\b(csv|comma[\s-]*separated)\b|सीएसवी/i],
   ['pdf', /\b(pdf|printable|print)\b|पीडीएफ|प्रिंट/i],
   ['svg', /\b(svg|vector)\b|एसवीजी/i],
-  ['png', /\b(png|image|picture|photo|screenshot)\b|फ़?फ?ोटो|इमेज|चित्र/i],
+  ['png', /\b(png|image|picture|photo|screenshot)\b|फ़?फ?ोटो|इमेज|चित्र|पीएनजी/i],
   ['docx', /\b(word|docx|doc|document)\b|वर्ड|डॉक्यूमेंट/i],
 ];
 
-// An export verb (or Hindi equivalent) must be present, so "show the excel numbers" is not an export.
-const VERB_RE =
-  /\b(export|download|save|send\s+(me\s+)?(as|in)|give\s+(me\s+)?(it|this|that)?\s*(as|in)|get\s+(me\s+)?(it|this|that)?\s*(as|in)|as\s+an?\s+(excel|pdf|png|svg|csv|word|image)\s+file)\b|डाउनलोड|एक्सपोर्ट|सेव|भेजो|में\s+(दो|दे\s*दो|बनाओ|डाउनलोड)/i;
-
-// Data questions that merely mention a format word stay with the backend.
-const NOT_EXPORT_RE = /\b(how\s+many|what\s+is|which|why|compare|trend|show\s+me\s+the\s+(numbers|data))\b/i;
+// Dedicated export verbs: may resolve a default format when a target/demonstrative is present.
+const STRONG_VERB_RE = /\b(export|download)\b|डाउनलोड|एक्सपोर्ट/i;
+// Weaker verbs ("save as", "send as", "में दो"): only count when an explicit format word is present.
+const WEAK_VERB_RE =
+  /\b(save|send\s+(me\s+)?(it\s+|this\s+)?(as|in)|give\s+(me\s+)?(it|this|that)?\s*(as|in)|get\s+(me\s+)?(it|this|that)?\s*(as|in)|as\s+an?\s+(excel|pdf|png|svg|csv|word|image)\s+file)\b|सेव|में\s+(दो|दे\s*दो)/i;
+// What the export applies to: a demonstrative or a visual noun. Required for a formatless default.
+const TARGET_RE =
+  /\b(this|it|that|the\s+(chart|graph|plot|visual|table|statement|balance\s+sheet|p&l|income\s+statement|cash\s+flow|roster|list|rows|answer))\b|यह|इसे|इसको|(?:^|\s)इस(?:\s|$)|चार्ट|ग्राफ|टेबल|तालिका|सूची/i;
+const BARE_EXPORT_RE = /^(export|download|एक्सपोर्ट|डाउनलोड)(\s+(it|this|करो|करें|कीजिए|कर\s*दो))?$/i;
+// Recipient-directed sends belong to the backend email flow (P2H.4) unless an .eml file is explicitly asked for.
+const RECIPIENT_RE =
+  /\b(send|email|e-mail|mail|forward|share)\b.*\b(to|with)\s+(the\s+)?(director|dir|cmd|chairman|hr|finance|board|gm|cgm|ed|officer|team|manager|boss|him|her|them)\b|(डायरेक्टर|निदेशक|सीएमडी|अधिकारी|बोर्ड|टीम|एचआर|मुझे)\s+.*?(को)?\s*(भेजो|भेजें|ईमेल)|को\s+(भेजो|भेजें|ईमेल\s+करो)/i;
+// Data questions / domain collocations that merely contain an export-ish word stay with the backend.
+const NOT_EXPORT_RE =
+  /\b(how\s+many|how\s+much|what\s+is|what\s+are|which|why|compare|trend|show\s+me\s+the\s+(numbers|data)|can\s+we\s+save|export\s+(volume|volumes|credit|duty|duties|tariff|revenue|sales|target|scheme|market|price)|save\s+(cost|costs|money|crore|cr|opex|capex|₹))\b|क्या|कैसे|कितना|कितने|कितनी|क्यों|कौन/i;
 
 export function resolveExportIntent(text: string, visualType?: string): ExportIntent | null {
   const s = String(text || '').trim();
-  if (!s || !VERB_RE.test(s) || NOT_EXPORT_RE.test(s)) return null;
+  if (!s || NOT_EXPORT_RE.test(s)) return null;
+  const strong = STRONG_VERB_RE.test(s);
+  const weak = WEAK_VERB_RE.test(s);
+  if (!strong && !weak) return null;
+  let explicit: ExportFormat | null = null;
+  for (const [fmt, re] of LEXICON) {
+    if (re.test(s)) {
+      explicit = fmt;
+      break;
+    }
+  }
+  if (RECIPIENT_RE.test(s) && explicit !== 'eml') return null;
   const target: ExportIntent['target'] = /\b(chart|graph|plot|visual)\b|चार्ट|ग्राफ/i.test(s)
     ? 'chart'
-    : /\b(table|statement|roster|list|rows)\b|टेबल|तालिका|सूची/i.test(s)
+    : /\b(table|statement|balance\s+sheet|p&l|income\s+statement|cash\s+flow|roster|list|rows)\b|टेबल|तालिका|सूची/i.test(s)
       ? 'table'
       : undefined;
-  for (const [fmt, re] of LEXICON) {
-    if (re.test(s)) return { format: fmt, defaulted: false, target };
-  }
-  // No format word: chart → PNG, table → xlsx; else by the visual on screen.
+  if (explicit) return { format: explicit, defaulted: false, target };
+  // Formatless: only a dedicated export verb with a target/demonstrative (or a bare "export" / "डाउनलोड करो").
+  if (!strong || !(TARGET_RE.test(s) || BARE_EXPORT_RE.test(s))) return null;
   if (target === 'chart') return { format: 'png', defaulted: true, target };
   if (target === 'table') return { format: 'xlsx', defaulted: true, target };
   const isChart = visualType === 'chart';
@@ -102,6 +122,6 @@ export function honestWorkspaceCopy(format: 'sheets' | 'docs', lang: string | un
 }
 
 export function defaultedCopy(format: ExportFormat, lang: string | undefined): string {
-  const fmt = format === 'png' ? 'PNG image' : 'Excel file';
-  return lang === 'hi' ? `कोई फ़ॉर्मैट नहीं बताया गया, इसलिए ${format === 'png' ? 'PNG इमेज' : 'एक्सेल फ़ाइल'} बनाई।` : `No format given, so I made a ${fmt}.`;
+  const fmt = format === 'png' ? 'a PNG image' : 'an Excel file';
+  return lang === 'hi' ? `कोई फ़ॉर्मैट नहीं बताया गया, इसलिए ${format === 'png' ? 'PNG इमेज' : 'एक्सेल फ़ाइल'} बनाई।` : `No format given, so I made ${fmt}.`;
 }

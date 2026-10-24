@@ -88,6 +88,66 @@ const NEGATIVE = [
   'which document covers transfer policy',
 ];
 
+// G4 r1 (reviewer-p47) adversarial probes: must NOT become local exports (re-plots, recipient sends, data questions).
+const ADVERSARIAL = [
+  'इसे वॉटरफॉल में बनाओ',
+  'इसे बार चार्ट में बनाओ',
+  'इसे टेबल में बनाओ',
+  'इसको लाइन चार्ट में बनाओ',
+  'इसे डायरेक्टर को भेजो',
+  'यह सूची डायरेक्टर एचआर को भेजो',
+  'सीएमडी को यह रिपोर्ट भेजो',
+  'crude oil export volume in fy26',
+  'export credit scheme applicability in ongc',
+  'can we save ₹500 crore in opex this year?',
+  'save cost in drilling operations',
+  'मुझे दिल्ली के आंकड़े भेजो',
+  'ओएनजीसी का कच्चा तेल एक्सपोर्ट कितना है?',
+  'बचत कैसे करें और खर्च कैसे सेव करें?',
+  'send this to director hr',
+  'email the roster to the cmd',
+  'export this list and email it to director hr',
+];
+// G4 r1 M2: "sheet" inside "balance sheet" is not Excel; "to Sheets" is Google Sheets.
+const M2_CASES: [string, string, boolean][] = [
+  ['Export this statement to Sheets', 'sheets', false],
+  ['export to sheets', 'sheets', false],
+  ['export the balance sheet to pdf', 'pdf', false],
+  ['download the balance sheet as csv', 'csv', false],
+  ['export the balance sheet to word', 'docx', false],
+  ['export the balance sheet', 'xlsx', true],
+  ['इस चार्ट को पीएनजी में डाउनलोड करो', 'png', false],
+  ['send it as pdf', 'pdf', false],
+  ['save this as an eml file', 'eml', false],
+];
+for (const q of ADVERSARIAL) {
+  check(`adversarial "${q}"`, () => {
+    // "export this list and email it…" splits into clauses; the email clause is not a UI command, so the whole
+    // utterance must go to the backend (parseUiCommands → null).
+    const cmds = parseUiCommands(q);
+    assert.ok(!cmds?.some((c) => c.action === 'export'), `parseUiCommands → ${JSON.stringify(cmds)}`);
+    if (!/\band\b/.test(q)) assert.equal(resolveExportIntent(q), null);
+  });
+}
+for (const [q, fmt, defaulted] of M2_CASES) {
+  check(`M2 "${q}"`, () => {
+    const r = resolveExportIntent(q);
+    assert.ok(r, 'no intent');
+    assert.equal(r!.format, fmt);
+    assert.equal(r!.defaulted, defaulted);
+  });
+}
+check('Hindi re-plot still re-plots', () => {
+  const c = parseUiCommands('इसे वॉटरफॉल में बनाओ');
+  assert.ok(c && c[0].action === 'chart_kind', JSON.stringify(c));
+});
+check('defaulted copy grammar', () => {
+  // imported lazily to keep the header list short
+  const { defaultedCopy } = require('../src/services/exportIntent');
+  assert.equal(defaultedCopy('xlsx', 'en'), 'No format given, so I made an Excel file.');
+  assert.equal(defaultedCopy('png', 'en'), 'No format given, so I made a PNG image.');
+});
+
 assert.equal(POSITIVE.length, 45, 'positive set must be 45');
 assert.equal(NEGATIVE.length, 10, 'negative set must be 10');
 

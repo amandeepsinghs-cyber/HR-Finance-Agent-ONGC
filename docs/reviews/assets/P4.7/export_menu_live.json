@@ -12,7 +12,7 @@
   {
     "name": "PNG name matches §4.9",
     "ok": true,
-    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.png"
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0524.png"
   },
   {
     "name": "PNG ≥ 1600 px wide",
@@ -22,17 +22,17 @@
   {
     "name": "SVG name matches §4.9",
     "ok": true,
-    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.svg"
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0524.svg"
   },
   {
     "name": "SVG is markup with title text",
     "ok": true,
-    "info": "14398 bytes"
+    "info": "14461 bytes"
   },
   {
     "name": "intent \"download the chart as png\" → .png",
     "ok": true,
-    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.png"
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0524.png"
   },
   {
     "name": "ready toast shown after export",
@@ -42,27 +42,27 @@
   {
     "name": "xlsx via menu",
     "ok": true,
-    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.xlsx"
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0524.xlsx"
   },
   {
     "name": "csv via menu",
     "ok": true,
-    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.csv"
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0524.csv"
   },
   {
     "name": "pdf via menu",
     "ok": true,
-    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.pdf"
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0524.pdf"
   },
   {
     "name": "docx via menu",
     "ok": true,
-    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.docx"
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0524.docx"
   },
   {
     "name": "sheets downloads a local file",
     "ok": true,
-    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.xlsx"
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0524.xlsx"
   },
   {
     "name": "sheets honest toast",
@@ -72,7 +72,7 @@
   {
     "name": "docs downloads a local file",
     "ok": true,
-    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.docx"
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0524.docx"
   },
   {
     "name": "docs honest toast",
@@ -82,7 +82,7 @@
   {
     "name": "Hindi intent → .pdf",
     "ok": true,
-    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.pdf"
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0524.pdf"
   },
   {
     "name": "no docs.google.com request or popup",

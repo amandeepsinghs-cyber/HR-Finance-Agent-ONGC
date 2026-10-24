@@ -303,7 +303,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
           ink2: themeTok.sub,
           fontFamily: typeof window !== 'undefined' ? getComputedStyle(document.body).fontFamily : undefined,
         };
-        const filename = exportFilename({ ...filenamePartsFromContract(contract), persona: who, ext: format, aggregate });
+        const filename = exportFilename({ ...filenamePartsFromContract(contract, aggregate), persona: who, ext: format, aggregate });
         if (format === 'png') {
           const { dataUrl } = await chartsToPng(charts, meta);
           triggerDownload(dataUrl, filename);
@@ -382,7 +382,8 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   const exportRef = useRef(handleExport);
   exportRef.current = handleExport;
   useEffect(() => {
-    if (!isLatest) return;
+    // A greeting / text-only card has nothing to export and no toast surface: let the event fall through.
+    if (!isLatest || isGreeting) return;
     const onExport = (e: Event) => {
       const d = (e as CustomEvent<ExportEventDetail>).detail;
       if (!d || d.handled) return;
@@ -406,7 +407,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     };
     window.addEventListener(EXPORT_EVENT, onExport);
     return () => window.removeEventListener(EXPORT_EVENT, onExport);
-  }, [isLatest, effectiveVisualType, exportDisabled, refused, contract]);
+  }, [isLatest, isGreeting, effectiveVisualType, exportDisabled, refused, contract]);
 
   const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map');
   const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table' || displayVisualType === 'statement';

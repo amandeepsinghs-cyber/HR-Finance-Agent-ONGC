@@ -26,13 +26,23 @@ export interface ImageMeta {
 // File naming (SPEC-10 §4.9)
 // ---------------------------------------------------------------------------------------------------------------
 
+// Mirrors backend export_audit._HINDI_TRANSLIT (longest phrases first) so client and server names agree.
 const HI_TRANSLIT: [RegExp, string][] = [
+  [/ओएनजीसी/g, 'ongc'],
+  [/राजस्व/g, 'rajasva'],
+  [/शुद्ध\s*लाभ/g, 'shuddh_labh'],
+  [/लाभ/g, 'labh'],
+  [/वित्तीय/g, 'vittiya'],
+  [/सारांश/g, 'saransh'],
   [/दिल्ली/g, 'delhi'],
+  [/मुम्बई/g, 'mumbai'],
   [/मुंबई/g, 'mumbai'],
-  [/वेतन/g, 'pay'],
-  [/कर्मचारी/g, 'employees'],
-  [/लाभ/g, 'profit'],
-  [/तुलन\s*पत्र/g, 'balance_sheet'],
+  [/अधिकारी/g, 'adhikari'],
+  [/कर्मचारी/g, 'karmachari'],
+  [/वेतन/g, 'vetan'],
+  [/स्थानांतरण/g, 'transfer'],
+  [/सूची/g, 'roster'],
+  [/रिपोर्ट/g, 'report'],
 ];
 
 /** Lowercase ASCII snake_case token `[a-z0-9_-]`; Hindi words transliterated when known, else dropped. */
@@ -85,7 +95,7 @@ export function exportFilename(p: FilenameParts): string {
 }
 
 /** Subject/scope/period from an answer contract (same heuristics as backend filename_from_contract). */
-export function filenamePartsFromContract(c: any): Pick<FilenameParts, 'subject' | 'scope' | 'period'> {
+export function filenamePartsFromContract(c: any, aggregate = false): Pick<FilenameParts, 'subject' | 'scope' | 'period'> {
   const vis = c?.visual || {};
   const qs = c?.query_spec || {};
   const title = String(vis.title || c?.definition_id || qs.subject || 'report');
@@ -99,7 +109,9 @@ export function filenamePartsFromContract(c: any): Pick<FilenameParts, 'subject'
     if (fys.length >= 2) period = `${fys[0]}-${fys[fys.length - 1]}`;
     else if (fys.length === 1) period = fys[0];
   }
-  return { subject: slugToken(title, 'report', 24), scope, period };
+  let subject = slugToken(title, 'report', 24);
+  if (aggregate && subject.endsWith('_roster')) subject = `${subject.slice(0, -7)}_bylevel`; // backend parity
+  return { subject, scope, period };
 }
 
 // ---------------------------------------------------------------------------------------------------------------

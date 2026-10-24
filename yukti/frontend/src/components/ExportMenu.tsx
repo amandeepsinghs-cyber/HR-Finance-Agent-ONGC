@@ -31,7 +31,11 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({ hasChart, allowed, busy,
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') {
+        setOpen(false);
+        // return focus to the trigger (G4 S2)
+        ref.current?.querySelector<HTMLButtonElement>('[data-testid="export-button"]')?.focus();
+      }
     };
     document.addEventListener('mousedown', onDoc);
     document.addEventListener('keydown', onKey);
