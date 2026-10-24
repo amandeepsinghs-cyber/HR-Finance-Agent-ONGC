@@ -28,7 +28,133 @@ EXPECTED = {
 @pytest.mark.parametrize("persona", PERSONAS)
 @pytest.mark.parametrize("data_class", CLASSES)
 def test_rbac_matrix(persona, data_class):
-    assert decide(persona, [data_class]).action == EXPECTED[persona][data_class]
+    # Legacy D-10 matrix (director_function_scope=False: Directors have full cross-functional allow)
+    assert decide(persona, [data_class], director_function_scope=False).action == EXPECTED[persona][data_class]
+
+
+V2_PERSONAS = [
+    "CMD",
+    "DIR_HR",
+    "DIR_FIN",
+    "E1_HR",
+    "E2_HR",
+    "E3_HR",
+    "E4_HR",
+    "E1_FIN",
+    "E2_FIN",
+    "E3_FIN",
+    "E4_FIN",
+]
+
+V2_DATA_CLASSES = [
+    "general_hr",
+    "general_fin",
+    "fin_internal",
+    "policy",
+    "named",
+    "pay_aggregate",
+    "pay_individual",
+    "apar",
+    "sensitive",
+    "self",
+    "board_confidential",
+    "valuation_run",
+]
+
+# Expected 11 × 12 = 132 decisions under D-43 (director_function_scope=True, default target_function per domain)
+EXPECTED_V2_DIR_SCOPE_TRUE = {
+    "CMD": {dc: "allow" for dc in V2_DATA_CLASSES},
+    "DIR_HR": {
+        "general_hr": "allow",
+        "general_fin": "allow",
+        "fin_internal": "aggregate",
+        "policy": "allow",
+        "named": "allow",
+        "pay_aggregate": "allow",
+        "pay_individual": "allow",
+        "apar": "allow",
+        "sensitive": "allow",
+        "self": "allow",
+        "board_confidential": "refuse",
+        "valuation_run": "refuse",
+    },
+    "DIR_FIN": {
+        "general_hr": "allow",
+        "general_fin": "allow",
+        "fin_internal": "allow",
+        "policy": "allow",
+        "named": "aggregate",
+        "pay_aggregate": "allow",
+        "pay_individual": "refuse",
+        "apar": "refuse",
+        "sensitive": "aggregate",
+        "self": "allow",
+        "board_confidential": "allow",
+        "valuation_run": "allow",
+    },
+}
+for _jp in ("E1_HR", "E2_HR", "E3_HR", "E4_HR"):
+    EXPECTED_V2_DIR_SCOPE_TRUE[_jp] = {
+        "general_hr": "allow",
+        "general_fin": "allow",
+        "fin_internal": "aggregate",
+        "policy": "allow",
+        "named": "aggregate",
+        "pay_aggregate": "allow",
+        "pay_individual": "refuse",
+        "apar": "refuse",
+        "sensitive": "refuse",
+        "self": "allow",
+        "board_confidential": "refuse",
+        "valuation_run": "refuse",
+    }
+for _jp in ("E1_FIN", "E2_FIN", "E3_FIN", "E4_FIN"):
+    EXPECTED_V2_DIR_SCOPE_TRUE[_jp] = {
+        "general_hr": "aggregate",
+        "general_fin": "allow",
+        "fin_internal": "allow",
+        "policy": "allow",
+        "named": "aggregate",
+        "pay_aggregate": "allow",
+        "pay_individual": "refuse",
+        "apar": "refuse",
+        "sensitive": "refuse",
+        "self": "allow",
+        "board_confidential": "refuse",
+        "valuation_run": "refuse",
+    }
+
+
+@pytest.mark.parametrize("persona", V2_PERSONAS)
+@pytest.mark.parametrize("data_class", V2_DATA_CLASSES)
+def test_rbac_v2_matrix_132(persona: str, data_class: str):
+    """P2H.1: 11 personas × 12 data classes = 132 decisions match rbac_policy.yaml (director_function_scope=True)."""
+    dec = decide(persona, [data_class], director_function_scope=True)
+    assert dec.action == EXPECTED_V2_DIR_SCOPE_TRUE[persona][data_class], (persona, data_class, dec)
+
+
+@pytest.mark.parametrize("persona", V2_PERSONAS)
+@pytest.mark.parametrize("data_class", V2_DATA_CLASSES)
+def test_rbac_v2_director_function_scope_false(persona: str, data_class: str):
+    """P2H.1: when director_function_scope=False, both Directors receive full allow on all 12 classes."""
+    dec = decide(persona, [data_class], director_function_scope=False)
+    if persona in ("CMD", "DIR_HR", "DIR_FIN"):
+        assert dec.action == "allow"
+    else:
+        assert dec.action == EXPECTED_V2_DIR_SCOPE_TRUE[persona][data_class]
+
+
+def test_director_function_scope_hr_vs_fin_targets():
+    """D-43: DIR_FIN gets allow on FIN-scoped named/pay_individual/apar/board_confidential, aggregate/refuse on HR."""
+    for dc in ("named", "pay_individual", "apar", "board_confidential"):
+        assert decide("DIR_FIN", [dc], target_function="FIN", director_function_scope=True).action == "allow"
+    assert decide("DIR_FIN", ["named"], target_function="HR", director_function_scope=True).action == "aggregate"
+    assert decide("DIR_FIN", ["pay_individual"], target_function="HR", director_function_scope=True).action == "refuse"
+    assert decide("DIR_FIN", ["pay_individual"], target_function="HR", director_function_scope=True).code == "R-PAY"
+    assert decide("DIR_FIN", ["apar"], target_function="HR", director_function_scope=True).action == "refuse"
+    assert decide("DIR_FIN", ["apar"], target_function="HR", director_function_scope=True).code == "R-APAR"
+    assert decide("DIR_HR", ["board_confidential"], target_function="FIN", director_function_scope=True).code == "R-BOARD"
+    assert decide("DIR_HR", ["valuation_run"], target_function="FIN", director_function_scope=True).code == "R-FUNC"
 
 
 def test_matrix_is_complete_and_unknown_persona_is_junior():

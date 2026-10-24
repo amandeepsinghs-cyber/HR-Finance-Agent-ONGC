@@ -76,6 +76,7 @@ class QuerySpec(BaseModel):
     grain: Literal["aggregate", "row"] = "aggregate"
     sort: Optional[Sort] = None
     limit: Optional[int] = Field(default=None, ge=1)
+    self_scope: bool = False
 
     # ------------------------------------------------------------ helpers
     def filter_on(self, field: str) -> Optional[Filter]:
@@ -83,7 +84,9 @@ class QuerySpec(BaseModel):
 
     def to_contract(self) -> Dict[str, Any]:
         """Exactly the contract `query_spec` object (no nulls, 'from' alias)."""
-        return self.model_dump(by_alias=True, exclude_none=True, mode="json")
+        d = self.model_dump(by_alias=True, exclude_none=True, mode="json")
+        d.pop("self_scope", None)
+        return d
 
     @classmethod
     def from_contract(cls, data: Dict[str, Any]) -> "QuerySpec":

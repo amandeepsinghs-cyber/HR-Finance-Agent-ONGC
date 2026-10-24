@@ -1,0 +1,52 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "dim_app_user",
+  description: "Canonical Yukti v3 application personas and their seeded synthetic employee bindings (D-41, D-43, D-60, SPEC-06)"
+}
+
+SELECT
+  u.persona_id,
+  u.emp_id,
+  u.display_name,
+  u.grade,
+  u.function,
+  u.discipline_id,
+  u.wc_id,
+  COALESCE(w.short_name, u.work_centre, 'Delhi HQ') AS work_centre,
+  u.functional_designation,
+  u.tier,
+  CAST(u.is_admin AS BOOL) AS is_admin,
+  CAST(u.synthetic AS BOOL) AS synthetic,
+  CAST(u.has_pay_fy26 AS BOOL) AS has_pay_fy26,
+  CAST(u.has_leave_el AS BOOL) AS has_leave_el,
+  CAST(u.has_posting AS BOOL) AS has_posting,
+  CAST(u.has_apar AS BOOL) AS has_apar,
+  e.dob,
+  e.doj,
+  e.gender,
+  e.category,
+  g.pay_scale_min_inr,
+  g.pay_scale_max_inr
+FROM `hrfin_raw.dim_app_user` u
+LEFT JOIN `hrfin_silver.dim_employee` e
+  ON u.emp_id = e.emp_id
+LEFT JOIN `hrfin_silver.dim_work_centre` w
+  ON u.wc_id = w.wc_id
+LEFT JOIN `hrfin_silver.dim_grade` g
+  ON u.grade = g.grade_id
+ORDER BY
+  CASE u.persona_id
+    WHEN 'CMD' THEN 1
+    WHEN 'DIR_HR' THEN 2
+    WHEN 'DIR_FIN' THEN 3
+    WHEN 'E1_HR' THEN 4
+    WHEN 'E2_HR' THEN 5
+    WHEN 'E3_HR' THEN 6
+    WHEN 'E4_HR' THEN 7
+    WHEN 'E1_FIN' THEN 8
+    WHEN 'E2_FIN' THEN 9
+    WHEN 'E3_FIN' THEN 10
+    WHEN 'E4_FIN' THEN 11
+    ELSE 99
+  END

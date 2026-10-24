@@ -37,15 +37,147 @@ logger = logging.getLogger("yukti.auth")
 COOKIE_NAME = "yk_session"
 TOKEN_TTL_S = 8 * 3600
 
-# P0 persona set = the 5 existing personas + DEMO_ADMIN (P2H.1 extends to 11 via dim_app_user).
-# emp_ids are demo placeholders until dim_app_user lands (P2H.1); display data mirrors the UI picker.
-PERSONA_DIRECTORY: Dict[str, Dict[str, str]] = {
-    "CMD": {"emp_id": "DEMO-CMD", "display_name": "Arun", "designation": "Chairman & CEO", "function": "BOARD", "grade": "BOARD"},
-    "DIR_HR": {"emp_id": "DEMO-DIR-HR", "display_name": "Director (HR)", "designation": "Director (HR)", "function": "HR", "grade": "BOARD"},
-    "DIR_FIN": {"emp_id": "DEMO-DIR-FIN", "display_name": "Director (Finance)", "designation": "Director (Finance)", "function": "FIN", "grade": "BOARD"},
-    "E2_HR": {"emp_id": "DEMO-E2-HR", "display_name": "Pooja Verma", "designation": "Assistant Manager, HR", "function": "HR", "grade": "E2"},
-    "E3_FIN": {"emp_id": "DEMO-E3-FIN", "display_name": "Rajesh Kulkarni", "designation": "Deputy Manager, Finance", "function": "FIN", "grade": "E3"},
+# P2H.1 (SPEC-06 §4.1 / D-41 / D-60): 11 canonical personas seeded from dim_app_user.csv / app_users.yaml + DEMO_ADMIN.
+_DEFAULT_PERSONA_DIRECTORY: Dict[str, Dict[str, Any]] = {
+    "CMD": {
+        "emp_id": "EMP-000001",
+        "display_name": "Arun Mehra",
+        "designation": "Chairman & Managing Director",
+        "functional_designation": "Chairman & Managing Director",
+        "function": "EXEC",
+        "grade": "CMD",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
+    "DIR_HR": {
+        "emp_id": "EMP-000002",
+        "display_name": "Manish Deshpande",
+        "designation": "Director (HR)",
+        "functional_designation": "Director (HR)",
+        "function": "HR",
+        "grade": "DIR",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
+    "DIR_FIN": {
+        "emp_id": "EMP-000003",
+        "display_name": "Vivek Rao",
+        "designation": "Director (Finance)",
+        "functional_designation": "Director (Finance)",
+        "function": "FIN",
+        "grade": "DIR",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
+    "E1_HR": {
+        "emp_id": "EMP-100151",
+        "display_name": "Dinesh Deshmukh",
+        "designation": "HR Officer (E1)",
+        "functional_designation": "HR Officer (E1)",
+        "function": "HR",
+        "grade": "E1",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
+    "E2_HR": {
+        "emp_id": "EMP-102451",
+        "display_name": "Pooja Verma",
+        "designation": "HR Executive (E2)",
+        "functional_designation": "HR Executive (E2)",
+        "function": "HR",
+        "grade": "E2",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
+    "E3_HR": {
+        "emp_id": "EMP-100144",
+        "display_name": "Pooja Pillai",
+        "designation": "Senior HR Executive (E3)",
+        "functional_designation": "Senior HR Executive (E3)",
+        "function": "HR",
+        "grade": "E3",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
+    "E4_HR": {
+        "emp_id": "EMP-100178",
+        "display_name": "Aarti Saikia",
+        "designation": "Dy. Manager HR (E4)",
+        "functional_designation": "Dy. Manager HR (E4)",
+        "function": "HR",
+        "grade": "E4",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
+    "E1_FIN": {
+        "emp_id": "EMP-100150",
+        "display_name": "Ajay Deshmukh",
+        "designation": "Accounts Officer (E1)",
+        "functional_designation": "Accounts Officer (E1)",
+        "function": "FIN",
+        "grade": "E1",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
+    "E2_FIN": {
+        "emp_id": "EMP-100152",
+        "display_name": "Praveen Nair",
+        "designation": "Finance Executive (E2)",
+        "functional_designation": "Finance Executive (E2)",
+        "function": "FIN",
+        "grade": "E2",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
+    "E3_FIN": {
+        "emp_id": "EMP-100146",
+        "display_name": "Asha Mishra",
+        "designation": "Finance Officer (E3)",
+        "functional_designation": "Finance Officer (E3)",
+        "function": "FIN",
+        "grade": "E3",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
+    "E4_FIN": {
+        "emp_id": "EMP-100145",
+        "display_name": "Santosh Banerjee",
+        "designation": "Dy. Manager Finance (E4)",
+        "functional_designation": "Dy. Manager Finance (E4)",
+        "function": "FIN",
+        "grade": "E4",
+        "wc_id": "WC-DEL",
+        "work_centre": "Delhi HQ",
+    },
 }
+
+
+def _load_persona_directory() -> Dict[str, Dict[str, Any]]:
+    yaml_path = Path(__file__).resolve().parent / "brain" / "app_users.yaml"
+    if yaml_path.exists():
+        try:
+            import yaml
+
+            raw = yaml.safe_load(yaml_path.read_text(encoding="utf-8")) or {}
+            personas = raw.get("personas") or {}
+            if len(personas) == 11:
+                out: Dict[str, Dict[str, Any]] = {}
+                for pid, info in personas.items():
+                    desig = info.get("functional_designation") or info.get("designation") or ""
+                    out[pid] = {
+                        **info,
+                        "designation": desig,
+                        "functional_designation": desig,
+                        "wc_id": info.get("wc_id", "WC-DEL"),
+                        "work_centre": info.get("work_centre", "Delhi HQ"),
+                    }
+                return out
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(f"Could not load app_users.yaml ({exc}); using built-in persona directory")
+    return {k: dict(v) for k, v in _DEFAULT_PERSONA_DIRECTORY.items()}
+
+
+PERSONA_DIRECTORY: Dict[str, Dict[str, Any]] = _load_persona_directory()
 ADMIN_PERSONA_ID = "DEMO_ADMIN"
 ADMIN_DEFAULT_ACTING_PERSONA = "CMD"
 
@@ -66,10 +198,15 @@ class Principal:
     demo: bool = True
     jti: str = ""
     exp: int = 0
+    wc_id: str = "WC-DEL"
+    work_centre: str = "Delhi HQ"
+    functional_designation: str = ""
 
     def public(self) -> Dict[str, Any]:
         d = asdict(self)
         d.pop("jti", None)
+        if not d.get("functional_designation"):
+            d["functional_designation"] = self.designation
         return d
 
 
@@ -264,6 +401,9 @@ def verify_token(token: str, now: Optional[int] = None) -> Principal:
         demo=bool(claims.get("demo", True)),
         jti=str(claims.get("jti") or ""),
         exp=exp,
+        wc_id=str(info.get("wc_id", "WC-DEL")),
+        work_centre=str(info.get("work_centre", "Delhi HQ")),
+        functional_designation=str(info.get("functional_designation") or info["designation"]),
     )
 
 
@@ -328,10 +468,36 @@ def set_session_cookie(response: Any, token: str) -> None:
 
 
 def personas_public() -> List[Dict[str, Any]]:
-    out = [{"id": pid, "display_name": v["display_name"], "designation": v["designation"],
-            "function": v["function"], "grade": v["grade"]} for pid, v in PERSONA_DIRECTORY.items()]
-    out.append({"id": ADMIN_PERSONA_ID, "display_name": "Demo presenter", "designation": "Presenter (admin)",
-                "function": "ADMIN", "grade": "-", "requires_passphrase": True})
+    out = [
+        {
+            "id": pid,
+            "persona_id": pid,
+            "emp_id": v["emp_id"],
+            "display_name": v["display_name"],
+            "designation": v["designation"],
+            "functional_designation": v.get("functional_designation", v["designation"]),
+            "function": v["function"],
+            "grade": v["grade"],
+            "wc_id": v.get("wc_id", "WC-DEL"),
+            "work_centre": v.get("work_centre", "Delhi HQ"),
+        }
+        for pid, v in PERSONA_DIRECTORY.items()
+    ]
+    out.append(
+        {
+            "id": ADMIN_PERSONA_ID,
+            "persona_id": ADMIN_PERSONA_ID,
+            "emp_id": "EMP-000001",
+            "display_name": "Demo presenter",
+            "designation": "Presenter (admin)",
+            "functional_designation": "Presenter (admin)",
+            "function": "ADMIN",
+            "grade": "-",
+            "wc_id": "WC-DEL",
+            "work_centre": "Delhi HQ",
+            "requires_passphrase": True,
+        }
+    )
     return out
 
 
@@ -375,12 +541,20 @@ def is_role_switch_request(query: str) -> bool:
 
 
 def requested_persona(query: str) -> Optional[str]:
-    """Best-effort target persona for an admin switch ("switch role to E3_FIN" -> E3_FIN)."""
+    """Best-effort target persona for an admin switch ("switch role to E3_FIN" -> E3_FIN) across all 11 personas."""
     q = (query or "").lower()
     table = [
-        (r"\b(e3[\s_-]?fin|rajesh)\b", "E3_FIN"), (r"\b(e2[\s_-]?hr|pooja)\b", "E2_HR"),
-        (r"\b(dir(ector)?[\s_-]*(\()?(fin|finance)|cfo)\b", "DIR_FIN"), (r"\b(dir(ector)?[\s_-]*(\()?hr)\b", "DIR_HR"),
-        (r"\b(cmd|chairman|ceo)\b", "CMD"),
+        (r"\b(e1[\s_-]?hr|hr[\s_-]?e1|dinesh\s+deshmukh)\b", "E1_HR"),
+        (r"\b(e2[\s_-]?hr|hr[\s_-]?e2|pooja\s+verma|pooja)\b", "E2_HR"),
+        (r"\b(e3[\s_-]?hr|hr[\s_-]?e3|pooja\s+pillai)\b", "E3_HR"),
+        (r"\b(e4[\s_-]?hr|hr[\s_-]?e4|aarti\s+saikia)\b", "E4_HR"),
+        (r"\b(e1[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e1|ajay\s+deshmukh)\b", "E1_FIN"),
+        (r"\b(e2[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e2|praveen\s+nair)\b", "E2_FIN"),
+        (r"\b(e3[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e3|asha\s+mishra|rajesh\s+kulkarni|rajesh)\b", "E3_FIN"),
+        (r"\b(e4[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e4|santosh\s+banerjee)\b", "E4_FIN"),
+        (r"\b(dir(ector)?[\s_-]*(\()?(fin|finance)|finance\s+director|cfo|vivek\s+rao)\b", "DIR_FIN"),
+        (r"\b(dir(ector)?[\s_-]*(\()?hr|hr\s+director|director\s+human\s+resources|manish\s+deshpande)\b", "DIR_HR"),
+        (r"\b(cmd|c\.m\.d|chairman|ceo|arun\s+mehra)\b", "CMD"),
     ]
     for pat, pid in table:
         if re.search(pat, q):

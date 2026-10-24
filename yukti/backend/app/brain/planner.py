@@ -512,6 +512,41 @@ class Planner:
             intent = "data"
             raw = dict(raw, intent="data", metric=inferred_m, is_followup=bool(prev_is_fin and inferred_m == (prev.metric if prev else None)))
 
+        # SPEC-06 §4.3 / BUG-28: deterministic entry / starting pay scale guard -> pay_scale_min_inr
+        is_entry_pay = bool(
+            re.search(
+                r"\b(starting\s+(?:basic\s+)?(?:pay|salary|scale)|entry[- ]?(?:level\s+)?(?:basic\s+)?(?:pay|salary|scale)|"
+                r"minimum\s+(?:basic\s+)?(?:pay|scale)|get\s+on\s+joining|joining\s+pay|pay\s+scale\s+of\s+e[1-9])\b",
+                ql_early,
+            )
+        )
+        if is_entry_pay and (intent != "data" or not raw.get("metric")):
+            g_match = re.search(r"\b(e[1-9])\b", ql_early, re.I)
+            f_list = list(raw.get("filters") or [])
+            if g_match and not any(f.get("field") == "grade" for f in f_list if isinstance(f, dict)):
+                f_list.append({"field": "grade", "op": "=", "values": [g_match.group(1).upper()]})
+            intent = "data"
+            raw = dict(raw, intent="data", metric="pay_scale_min_inr", is_followup=False, dimensions=["grade"], filters=f_list)
+
+        # SPEC-06 §4.5: possessive first-person ("my", "mera/meri", "मेरा/मेरी") + HR entity -> self_scope=True
+        is_self_hr = bool(
+            re.search(
+                r"(?:(?<![a-z])(?:my|mine|myself|mera|meri|mere|i\s+have\s+been|have\s+i\s+been)(?![a-z])|(?:मेरा|मेरी|मेरे))"
+                r".*?"
+                r"(?:(?<![a-z])(?:salary|payslip|pay\s*slip|pay\s+components|pay\s+scale|ctc|basic\s*pay|da|hra|prp|"
+                r"leave|el|cl|hpl|balance|posting|postings|posted|tenure|station|transfer|apar|rating|ratings|score|appraisal|"
+                r"entitlement|entitlements|advance|advances|medical|reimbursement)(?![a-z])|"
+                r"(?:वेतन|सैलरी|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|पात्रता))",
+                question,
+                re.I,
+            )
+        )
+        if is_self_hr:
+            raw = dict(raw, self_scope=True)
+            if intent != "data" or not raw.get("metric"):
+                intent = "data"
+                raw = dict(raw, intent="data", metric="headcount", grain="row", is_followup=False, dimensions=[], filters=[])
+
         if intent != "data":
             return Plan(intent=intent, raw=raw)
 
@@ -690,9 +725,13 @@ class Planner:
             spec = self._fit_to_subject(apply_patch(prev, patch), notes)
             return Plan(intent="data", is_followup=True, spec=spec, patch=patch, chart_kind=chart, notes=notes, raw=raw)
 
+        is_self_scope = bool(raw.get("self_scope"))
+        if is_self_scope:
+            filters = [f for f in filters if f.field != "wc"]
+            grain = "row"
         spec = QuerySpec(domain=(subject.domain if subject else (tdef.domain if tdef else None)), metric=metric,
-                         dimensions=dims, filters=filters, period=period,
-                         grain=grain or "aggregate", sort=sort, limit=limit)
+                         dimensions=[] if is_self_scope else dims, filters=filters, period=period,
+                         grain=grain or "aggregate", sort=sort, limit=limit, self_scope=is_self_scope)
         if compare:
             spec = apply_patch(spec, SpecPatch(compare=compare))
         return Plan(intent="data", is_followup=False, spec=spec, chart_kind=chart, notes=notes, raw=raw)

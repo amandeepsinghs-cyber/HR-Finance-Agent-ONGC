@@ -4,32 +4,180 @@ the refusal answers from official ONGC governance policies for D1–D6, P18–P2
 """
 
 from dataclasses import dataclass
+import re
 from typing import Any, Dict, Optional, Set
 
 from app.config import GCP_PROJECT
 
-# Personas allowed in answer contract schema
-VALID_PERSONAS = {"CMD", "DIR_HR", "DIR_FIN", "E2_HR", "E3_FIN"}
+CANONICAL_PERSONAS: tuple[str, ...] = (
+    "CMD",
+    "DIR_HR",
+    "DIR_FIN",
+    "E1_HR",
+    "E2_HR",
+    "E3_HR",
+    "E4_HR",
+    "E1_FIN",
+    "E2_FIN",
+    "E3_FIN",
+    "E4_FIN",
+)
+
+# Personas allowed in answer contract schema (D-41: 11 personas)
+ALL_PERSONAS_ORDERED: tuple[str, ...] = CANONICAL_PERSONAS
+VALID_PERSONAS: Set[str] = set(CANONICAL_PERSONAS)
+
+JUNIOR_HR_PERSONAS: frozenset[str] = frozenset({"E1_HR", "E2_HR", "E3_HR", "E4_HR"})
+JUNIOR_FIN_PERSONAS: frozenset[str] = frozenset({"E1_FIN", "E2_FIN", "E3_FIN", "E4_FIN"})
+JUNIOR_PERSONAS: frozenset[str] = JUNIOR_HR_PERSONAS | JUNIOR_FIN_PERSONAS
+DIRECTOR_PERSONAS: frozenset[str] = frozenset({"DIR_HR", "DIR_FIN"})
+SENIOR_PERSONAS: frozenset[str] = frozenset({"CMD", "DIR_HR", "DIR_FIN"})
 
 # Persona alias normalization map
 PERSONA_ALIASES = {
+    # CMD
     "cmd": "CMD",
     "chairman": "CMD",
     "chairman & ceo": "CMD",
+    "chairman and ceo": "CMD",
+    "chairman & md": "CMD",
+    "chairman and md": "CMD",
+    "chairman & managing director": "CMD",
+    "chairman and managing director": "CMD",
+    "ceo": "CMD",
+    "cmd_exec": "CMD",
+    "arun": "CMD",
+    "arun mehra": "CMD",
+    # DIR_HR
     "dir hr": "DIR_HR",
+    "dir-hr": "DIR_HR",
     "director (hr)": "DIR_HR",
+    "director hr": "DIR_HR",
+    "director - hr": "DIR_HR",
+    "hr director": "DIR_HR",
+    "director (human resources)": "DIR_HR",
     "dir_hr": "DIR_HR",
+    "manish": "DIR_HR",
+    "manish deshpande": "DIR_HR",
+    # DIR_FIN
     "dir fin": "DIR_FIN",
+    "dir-fin": "DIR_FIN",
     "director (finance)": "DIR_FIN",
+    "director finance": "DIR_FIN",
+    "director - finance": "DIR_FIN",
+    "finance director": "DIR_FIN",
+    "director (fin)": "DIR_FIN",
+    "cfo": "DIR_FIN",
     "dir_fin": "DIR_FIN",
+    "vivek": "DIR_FIN",
+    "vivek rao": "DIR_FIN",
+    # E1_HR
+    "e1_hr": "E1_HR",
+    "e1-hr": "E1_HR",
+    "e1 hr": "E1_HR",
+    "e1 · hr": "E1_HR",
+    "hr_e1": "E1_HR",
+    "hr-e1": "E1_HR",
+    "hr e1": "E1_HR",
+    "e1 hr officer": "E1_HR",
+    "e1 hr executive": "E1_HR",
+    "hr officer (e1)": "E1_HR",
+    "dinesh deshmukh": "E1_HR",
+    # E2_HR
     "e2_hr": "E2_HR",
+    "e2-hr": "E2_HR",
+    "e2 hr": "E2_HR",
     "e2 · hr": "E2_HR",
+    "hr_e2": "E2_HR",
+    "hr-e2": "E2_HR",
+    "hr e2": "E2_HR",
+    "e2 hr officer": "E2_HR",
+    "e2 hr executive": "E2_HR",
+    "hr executive (e2)": "E2_HR",
     "pooja verma": "E2_HR",
     "e1–e4 officer (hr)": "E2_HR",
+    # E3_HR
+    "e3_hr": "E3_HR",
+    "e3-hr": "E3_HR",
+    "e3 hr": "E3_HR",
+    "e3 · hr": "E3_HR",
+    "hr_e3": "E3_HR",
+    "hr-e3": "E3_HR",
+    "hr e3": "E3_HR",
+    "e3 hr officer": "E3_HR",
+    "e3 hr executive": "E3_HR",
+    "senior hr executive (e3)": "E3_HR",
+    "sr. hr executive (e3)": "E3_HR",
+    "pooja pillai": "E3_HR",
+    # E4_HR
+    "e4_hr": "E4_HR",
+    "e4-hr": "E4_HR",
+    "e4 hr": "E4_HR",
+    "e4 · hr": "E4_HR",
+    "hr_e4": "E4_HR",
+    "hr-e4": "E4_HR",
+    "hr e4": "E4_HR",
+    "e4 hr officer": "E4_HR",
+    "e4 hr executive": "E4_HR",
+    "dy. manager hr (e4)": "E4_HR",
+    "deputy manager hr (e4)": "E4_HR",
+    "aarti saikia": "E4_HR",
+    # E1_FIN
+    "e1_fin": "E1_FIN",
+    "e1-fin": "E1_FIN",
+    "e1 fin": "E1_FIN",
+    "e1 · fin": "E1_FIN",
+    "fin_e1": "E1_FIN",
+    "fin-e1": "E1_FIN",
+    "fin e1": "E1_FIN",
+    "e1 finance": "E1_FIN",
+    "e1 finance officer": "E1_FIN",
+    "e1 accounts officer": "E1_FIN",
+    "accounts officer (e1)": "E1_FIN",
+    "ajay deshmukh": "E1_FIN",
+    # E2_FIN
+    "e2_fin": "E2_FIN",
+    "e2-fin": "E2_FIN",
+    "e2 fin": "E2_FIN",
+    "e2 · fin": "E2_FIN",
+    "fin_e2": "E2_FIN",
+    "fin-e2": "E2_FIN",
+    "fin e2": "E2_FIN",
+    "e2 finance": "E2_FIN",
+    "e2 finance officer": "E2_FIN",
+    "e2 finance executive": "E2_FIN",
+    "finance executive (e2)": "E2_FIN",
+    "praveen nair": "E2_FIN",
+    # E3_FIN
     "e3_fin": "E3_FIN",
+    "e3-fin": "E3_FIN",
+    "e3 fin": "E3_FIN",
     "e3 · fin": "E3_FIN",
+    "fin_e3": "E3_FIN",
+    "fin-e3": "E3_FIN",
+    "fin e3": "E3_FIN",
+    "e3 finance": "E3_FIN",
+    "e3 finance officer": "E3_FIN",
+    "e3 finance executive": "E3_FIN",
+    "finance officer": "E3_FIN",
+    "finance officer (e3)": "E3_FIN",
+    "asha mishra": "E3_FIN",
     "rajesh kulkarni": "E3_FIN",
     "e1–e4 officer (finance)": "E3_FIN",
+    # E4_FIN
+    "e4_fin": "E4_FIN",
+    "e4-fin": "E4_FIN",
+    "e4 fin": "E4_FIN",
+    "e4 · fin": "E4_FIN",
+    "fin_e4": "E4_FIN",
+    "fin-e4": "E4_FIN",
+    "fin e4": "E4_FIN",
+    "e4 finance": "E4_FIN",
+    "e4 finance officer": "E4_FIN",
+    "e4 finance executive": "E4_FIN",
+    "dy. manager finance (e4)": "E4_FIN",
+    "deputy manager finance (e4)": "E4_FIN",
+    "santosh banerjee": "E4_FIN",
 }
 
 # The 11 refusal questions and their statutory definitions
@@ -39,7 +187,7 @@ REFUSAL_DEFINITIONS = {
         "rule_ref": "ONGC CDA Rules 1994, Rule 5.0 (Confidentiality of Personal Information) & DPE Executive Compensation Guidelines.",
         "alternative": "Public executive pay scale bands (E0 to E9) and statutory DA/allowance brackets.",
         # D-10: CMD and Directors see individual pay; only E1–E4 are refused (D-11).
-        "restricted_personas": {"E2_HR", "E3_FIN"},
+        "restricted_personas": set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     grade_id,
     designation,
@@ -54,7 +202,7 @@ ORDER BY level_order;"""
         "reason": "Unapproved draft transfer proposals and placement notes are non-final deliberative records exempt from disclosure prior to official notification by Director (HR).",
         "rule_ref": "ONGC Job Rotation and Transfer Policy (JRTP) Clause 11.0 (Confidentiality & Promulgation of Transfer Orders) & RTI Act Section 8(1)(i).",
         "alternative": "Station tenure guidelines (JRTP Clause 3.0) and aggregate count of Mumbai executives overdue for rotational transfer.",
-        "restricted_personas": {"E2_HR", "E3_FIN"},
+        "restricted_personas": set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     grade_id,
     discipline_id,
@@ -71,7 +219,7 @@ ORDER BY grade_id, discipline_id;"""
         "reason": "Departmental Promotion Committee (DPC) deliberations, assessment rosters, and promotion panel recommendations are classified confidential records.",
         "rule_ref": "Modified Recruitment & Promotion Regulations 1980 / Service Rules 1995, Clause 8.0 (Confidentiality of DPC Proceedings & Sealed Cover).",
         "alternative": "Published promotion policy residency requirements and benchmark APAR eligibility criteria by grade.",
-        "restricted_personas": {"E2_HR", "E3_FIN"},
+        "restricted_personas": set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     grade_id,
     designation,
@@ -86,7 +234,7 @@ ORDER BY level_order;"""
         "reason": "Field-level profitability statements and draft forward capital budget allocations are commercially sensitive operational data restricted to senior management.",
         "rule_ref": "Book of Delegated Powers (BDP 2015) Clause 8.0 & Corporate Commercial Information Protection Guidelines.",
         "alternative": "Company-wide gross revenues, standalone capital expenditure, and net profit from published annual accounts.",
-        "restricted_personas": {"E2_HR", "E3_FIN"},
+        "restricted_personas": set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     fiscal_year,
     gross_revenue_inr_cr,
@@ -102,7 +250,7 @@ LIMIT 5;"""
         "reason": "Bulk nominal employee rosters containing personal tenure and posting histories are restricted from disclosure to general staff to protect personal privacy.",
         "rule_ref": "ONGC IT Data Governance Policy & CDA Rules 1994, Rule 5.0.",
         "alternative": "Aggregated counts of Delhi executives possessing station tenure >= 5 years, grouped by grade band.",
-        "restricted_personas": {"E2_HR", "E3_FIN"},
+        "restricted_personas": set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     grade_id,
     COUNT(DISTINCT emp_id) AS executives_ge_5yr_count
@@ -118,7 +266,7 @@ ORDER BY grade_id;"""
         "reason": "Vigilance inquiry records, preliminary investigation reports, and complaint dossiers are strictly classified and protected against unauthorized disclosure.",
         "rule_ref": "Central Vigilance Commission (CVC) Operating Manual & ONGC Vigilance Guidelines, Clause 7.0.",
         "alternative": "Standard procedure for lodging vigilance complaints and Whistle Blower Policy protections.",
-        "restricted_personas": {"E2_HR", "E3_FIN"},
+        "restricted_personas": set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     doc_id,
     clause_ref,
@@ -133,7 +281,7 @@ LIMIT 5;"""
         "reason": "Annual rotational transfer orders in draft proposal stage are privileged administrative deliberations pending formal approval by Director (HR) and CMD.",
         "rule_ref": "Job Rotation and Transfer Policy (JRTP) Clause 11.0 (Confidentiality & Promulgation of Transfer Orders).",
         "alternative": "Published JRTP rotation calendar, station tenure norms (Clause 3.0), and hard station service rules.",
-        "restricted_personas": {"E2_HR", "E3_FIN"},
+        "restricted_personas": set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     doc_id,
     clause_ref,
@@ -147,7 +295,7 @@ ORDER BY clause_ref;"""
         "reason": "The internal discretionary financial delegation matrix and reserved authorization limits for Whole-Time Directors are classified administrative records.",
         "rule_ref": "Book of Delegated Powers (BDP 2015) Clause 8.0 (Confidentiality & Exceptions).",
         "alternative": "Operational financial delegation limits assigned to Key Executives / Level-1 Asset Managers for day-to-day procurement.",
-        "restricted_personas": {"E2_HR", "E3_FIN"},
+        "restricted_personas": set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     doc_id,
     clause_ref,
@@ -161,7 +309,7 @@ ORDER BY clause_ref;"""
         "reason": "Board agenda memoranda, internal valuation sheets, and commercial deliberations on asset divestment are strictly confidential Board documents.",
         "rule_ref": "Companies Act 2013 Section 118 / ONGC Board Secretariat Governance Norms.",
         "alternative": "Government policy guidelines for Discovered Small Fields (DSF) and the Production Enhancement Contract (PEC) framework for mature fields.",
-        "restricted_personas": {"DIR_HR", "E2_HR", "E3_FIN"},
+        "restricted_personas": {"DIR_HR"} | set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     doc_id,
     clause_ref,
@@ -177,7 +325,7 @@ LIMIT 5;"""
         "rule_ref": "ONGC CDA Rules 1994, Rule 5.0 (Confidentiality of Personal Records) & Right to Privacy guidelines.",
         "alternative": "Official procedure for an officer to access their own appraisal and pay slip via Employee Self Service (ESS) portal.",
         # D-10: CMD and Directors see individual pay and APAR; only E1–E4 are refused (D-11).
-        "restricted_personas": {"E2_HR", "E3_FIN"},
+        "restricted_personas": set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     grade_id,
     designation,
@@ -192,7 +340,7 @@ ORDER BY level_order;"""
         "reason": "Field-level profitability reports and individual field margin economics are restricted commercially sensitive operational data.",
         "rule_ref": "Book of Delegated Powers (BDP 2015) Clause 8.0 & Corporate Commercial Policy.",
         "alternative": "Standalone corporate revenue, gross operating profit (EBITDA), and total production figures from published annual accounts.",
-        "restricted_personas": {"E2_HR", "E3_FIN"},
+        "restricted_personas": set(JUNIOR_PERSONAS),
         "alternative_sql": f"""SELECT
     fiscal_year,
     gross_revenue_inr_cr,
@@ -232,26 +380,111 @@ class AccessDecision:
     alternative: Optional[str] = None
     alternative_sql: Optional[str] = None
     refusal_id: Optional[str] = None
+    self_emp_id: Optional[str] = None
+    code: Optional[str] = None
 
 
 class UnknownPersona(ValueError):
     """P0.4 (SPEC-06 §4.4 rule 1): an unknown persona is an identity error (HTTP 401), never coerced."""
 
 
-def normalize_persona(persona: Optional[str]) -> str:
-    """Normalizes a known persona id or alias into the contract personas.
+_JUNIOR_ALIAS_RE = re.compile(
+    r"^(?:(hr|human\s*resources|fin|finance|accounts)[\s_\-·]*)?"
+    r"e([1-4])"
+    r"(?:[\s_\-·]*(hr|human\s*resources|fin|finance|accounts))?"
+    r"(?:[\s_\-]+(?:officer|executive|exec|manager|dy\.?\s*manager|sr\.?\s*executive|senior\s*executive))?$",
+    re.IGNORECASE,
+)
 
-    P0.4: unknown or empty values raise UnknownPersona instead of being coerced (was: unknown -> E2_HR,
-    None -> CMD). Identity comes from the signed session token (app/auth.py), not from free text.
+
+def normalize_persona(persona: Optional[str]) -> str:
+    """Normalizes a known persona id or alias into the 11 contract personas.
+
+    P0.4 / P2H.1: unknown or empty values raise UnknownPersona instead of being coerced.
     """
-    if not persona or not str(persona).strip():
+    if not persona or not isinstance(persona, str) or not persona.strip():
         raise UnknownPersona("empty persona")
-    p_clean = persona.strip().lower()
+    cleaned = persona.strip()
+    p_clean = cleaned.lower()
     if p_clean in PERSONA_ALIASES:
         return PERSONA_ALIASES[p_clean]
-    if persona.strip().upper() in VALID_PERSONAS:
-        return persona.strip().upper()
+    if cleaned.upper() in VALID_PERSONAS:
+        return cleaned.upper()
+    m = _JUNIOR_ALIAS_RE.match(cleaned)
+    if m:
+        fn_prefix, grade_num, fn_suffix = m.group(1), m.group(2), m.group(3)
+        fn_raw = (fn_prefix or fn_suffix or "").lower()
+        if fn_raw.startswith("hr") or "human" in fn_raw:
+            return f"E{grade_num}_HR"
+        if fn_raw.startswith("fin") or fn_raw.startswith("acc"):
+            return f"E{grade_num}_FIN"
     raise UnknownPersona(f"unknown persona {persona!r}")
+
+
+_AGGREGATE_PAY_RE = re.compile(
+    r"\b("
+    r"average\s+ctc|avg\.?\s+ctc|mean\s+ctc|median\s+ctc|"
+    r"starting\s+(?:basic\s+)?(?:pay|salary|scale)|"
+    r"entry[\s\-]+(?:level\s+)?(?:basic\s+)?(?:pay|salary|scale)|"
+    r"minimum\s+(?:basic\s+)?(?:pay|scale)|"
+    r"pay\s+(?:scale|band|range|matrix|slab)s?|"
+    r"grade[\s\-]*wise\s+(?:average\s+|avg\s+)?(?:ctc|salary|pay)|"
+    r"average\s+(?:salary|pay)\s+(?:by\s+grade|across\s+grades|for\s+e[1-4]\s+executives)"
+    r")\b",
+    re.IGNORECASE,
+)
+
+_SELF_QUERY_RE = re.compile(
+    r"(?:(?<![a-z])(?:my|mine|myself|mera|meri|mere)(?![a-z])|(?:मेरा|मेरी|मेरे))"
+    r".*?"
+    r"(?:(?<![a-z])(?:salary|payslip|pay\s*slip|pay\s+components|ctc|basic\s*pay|da|hra|prp|gross\s*pay|net\s*pay|"
+    r"leave|el|cl|hpl|balance|posting|postings|tenure|station|transfer|apar|rating|ratings|score|appraisal|"
+    r"entitlement|entitlements|advance|advances|hba|car\s+advance|furniture|laptop|medical|reimbursement)(?![a-z])|"
+    r"(?:वेतन|सैलरी|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|पात्रता))",
+    re.IGNORECASE,
+)
+
+
+def is_aggregate_pay_question(question: Optional[str]) -> bool:
+    """Return True if `question` asks for cohort/grade average CTC or entry pay scale policy (closes BUG-07)."""
+    if not question:
+        return False
+    q = question.strip()
+    if not _AGGREGATE_PAY_RE.search(q):
+        return False
+    if re.search(r"\bEMP-\d{4,6}\b", q, re.IGNORECASE):
+        return False
+    if re.search(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?'s\s+(?:salary|ctc|pay|payslip)\b", q):
+        return False
+    return True
+
+
+def is_self_question(question: Optional[str], persona: Optional[str] = None) -> bool:
+    """Return True if `question` is a self-service query for the caller's own record."""
+    if not question:
+        return False
+    q = question.strip()
+    q_low = q.lower()
+    if "reporting officer" in q_low:
+        return False
+    if _SELF_QUERY_RE.search(q):
+        return True
+    if persona:
+        try:
+            canon = normalize_persona(persona)
+        except UnknownPersona:
+            canon = None
+        if canon:
+            from app.auth import PERSONA_DIRECTORY
+
+            info = PERSONA_DIRECTORY.get(canon, {})
+            emp_id = str(info.get("emp_id", ""))
+            disp = str(info.get("display_name", ""))
+            if emp_id and emp_id.lower() in q_low:
+                return True
+            if disp and len(disp) > 3 and disp.lower() in q_low:
+                return True
+    return False
 
 
 def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[str] = None) -> AccessDecision:
@@ -261,13 +494,33 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
     """
     normalized_persona = normalize_persona(persona)
 
+    # 0. Self-scope check (own payslip/leave/posting/APAR/entitlements -> allowed across all 11 personas)
+    if query and is_self_question(query, normalized_persona):
+        from app.auth import PERSONA_DIRECTORY
+
+        self_id = PERSONA_DIRECTORY.get(normalized_persona, {}).get("emp_id")
+        return AccessDecision(
+            status="allowed",
+            reason="Self-service query bound to @self_emp_id.",
+            rule_ref="SPEC-06 §5.3",
+            self_emp_id=self_id,
+        )
+
+    # 0b. Aggregate pay / entry basic pay check (closes BUG-07 -> allowed across all 11 personas)
+    if query and is_aggregate_pay_question(query):
+        return AccessDecision(
+            status="allowed",
+            reason="Aggregate pay / entry pay-scale query allowed across all personas (k >= 5).",
+            rule_ref="SPEC-06 §5.1 · D-41",
+        )
+
     # 1. Check if entry_id corresponds to a known refusal
     root_id = entry_id.split("__")[0] if entry_id else None
 
     # Check for direct refusal mapping
     if root_id and root_id in REFUSAL_DEFINITIONS:
         ref_def = REFUSAL_DEFINITIONS[root_id]
-        
+
         # If persona is restricted for this refusal
         if normalized_persona in ref_def["restricted_personas"]:
             return AccessDecision(
@@ -286,33 +539,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
     # 2. Text / Query keyword heuristic for novel queries
     if query:
         q_low = query.lower()
-        if normalized_persona in ("E2_HR", "E3_FIN"):
-            # D-11 (B3): pay, APAR and vigilance/POSH/medical topics are refused for E1–E4, whatever the
-            # wording (topic keywords live in app/brain/rbac_policy.yaml).
-            from app.brain.rbac import topic_classes
-            topics = topic_classes(query)
-            if topics:
-                q_l = query.lower()
-                if "apar" in topics:
-                    rid = "M3"
-                elif "pay" in topics:
-                    rid = "D1"
-                elif "posh" in q_l or "harassment" in q_l:
-                    rid = "R-POSH"
-                elif "medical" in q_l or "health" in q_l:
-                    rid = "R-MED"
-                else:
-                    rid = "D6"
-                d = REFUSAL_DEFINITIONS[rid]
-                return AccessDecision(
-                    status="refused",
-                    reason=d["reason"],
-                    rule_ref=d["rule_ref"] + " · D-11",
-                    alternative=d["alternative"],
-                    alternative_sql=d["alternative_sql"],
-                    refusal_id=rid,
-                )
-            # Check for salary of other person
+        if normalized_persona in JUNIOR_PERSONAS:
             if "salary of my reporting officer" in q_low or ("salary" in q_low and "reporting officer" in q_low):
                 d = REFUSAL_DEFINITIONS["D1"]
                 return AccessDecision(
@@ -322,6 +549,34 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                     alternative=d["alternative"],
                     alternative_sql=d["alternative_sql"],
                     refusal_id="D1",
+                    code="R-PAY",
+                )
+            # D-11 (B3): pay, APAR and vigilance/POSH/medical topics are refused for E1–E4, whatever the
+            # wording (topic keywords live in app/brain/rbac_policy.yaml).
+            from app.brain.rbac import topic_classes
+
+            topics = topic_classes(query)
+            if topics:
+                q_l = query.lower()
+                if "apar" in topics:
+                    rid, code = "M3", "R-APAR"
+                elif "pay" in topics:
+                    rid, code = "D1", "R-PAY"
+                elif "posh" in q_l or "harassment" in q_l:
+                    rid, code = "R-POSH", "R-SENS"
+                elif "medical" in q_l or "health" in q_l:
+                    rid, code = "R-MED", "R-SENS"
+                else:
+                    rid, code = "D6", "R-SENS"
+                d = REFUSAL_DEFINITIONS[rid]
+                return AccessDecision(
+                    status="refused",
+                    reason=d["reason"],
+                    rule_ref=d["rule_ref"] + " · D-11",
+                    alternative=d["alternative"],
+                    alternative_sql=d["alternative_sql"],
+                    refusal_id=rid,
+                    code=code,
                 )
             # Check for draft transfer list
             if "draft transfer list" in q_low or "draft fy27 transfer order" in q_low:
@@ -366,6 +621,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                     alternative=d["alternative"],
                     alternative_sql=d["alternative_sql"],
                     refusal_id="D5",
+                    code="R-NAMED",
                 )
             # Check for vigilance inquiry
             if "vigilance inquiry" in q_low or "under vigilance" in q_low:
@@ -377,6 +633,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                     alternative=d["alternative"],
                     alternative_sql=d["alternative_sql"],
                     refusal_id="D6",
+                    code="R-SENS",
                 )
             # Check for director limits
             if "financial limits for directors" in q_low:
@@ -389,7 +646,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                     alternative_sql=d["alternative_sql"],
                     refusal_id="P19",
                 )
-        if normalized_persona in ("DIR_HR", "E2_HR", "E3_FIN"):
+        if normalized_persona == "DIR_HR" or normalized_persona in JUNIOR_PERSONAS:
             if "divesting marginal fields" in q_low or "divestment" in q_low and "marginal fields" in q_low:
                 d = REFUSAL_DEFINITIONS["P20"]
                 return AccessDecision(
@@ -399,6 +656,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                     alternative=d["alternative"],
                     alternative_sql=d["alternative_sql"],
                     refusal_id="P20",
+                    code="R-BOARD",
                 )
 
     return AccessDecision(status="allowed")

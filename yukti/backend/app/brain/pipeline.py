@@ -34,7 +34,8 @@ def planner_enabled() -> bool:
 
 _DOC_RE = re.compile(r"^\s*(please\s+)?(draft|prepare|write|generate|create|compose)\b.*\b(note|memo|reply|letter|"
                      r"proposal|sheet|report|brief|order|document|minutes)\b", re.I)
-_PERSON_RE = re.compile(r"\b(my|mine|am i)\b|\b(employee|emp|staff|officer|cpf)\s*(id|no\.?|number|code)?\s*[#:]?\s*\d{4,}", re.I)
+# SPEC-06 §4.5: _PERSON_RE no longer blocks "my/mine/am i" (those use self_scope -> @self_emp_id).
+_PERSON_RE = re.compile(r"\b(employee|emp|staff|officer|cpf)\s*(id|no\.?|number|code)?\s*[#:]?\s*\d{4,}", re.I)
 
 
 def _planner_allowed(query: str, persona: str) -> bool:
@@ -140,19 +141,26 @@ async def run_planner_turn(
     spec = plan.spec
     compiler = get_compiler()
     policy = None
+    from app.auth import PERSONA_DIRECTORY
+    self_emp_id = (PERSONA_DIRECTORY.get(persona) or {}).get("emp_id")
     try:
-        compiled = compiler.compile(spec)
-        # B3.3 pre-query policy on the compiled spec (data classes of metric + roster columns) and
-        # on the question's topic (pay / APAR / vigilance ...).
-        policy = decide(persona, compiled.data_classes, query)
+        compiled = compiler.compile(spec, self_emp_id=self_emp_id)
+        # B3.3 / SPEC-06 pre-query policy on the compiled spec (data classes of metric + roster columns)
+        # and on the question's topic (pay / APAR / vigilance / self ...).
+        policy = decide(
+            persona,
+            compiled.data_classes,
+            query,
+            self_emp_id=self_emp_id if (spec.self_scope or "self" in compiled.data_classes) else None,
+        )
         if policy.action == "refuse":
             return {"contract": _refusal_contract(policy, spec, persona, turn_id, language, t0), "meta": {"spec": None}}
         if policy.action == "aggregate":
             spec = to_aggregate(spec)
-            compiled = compiler.compile(spec)
+            compiled = compiler.compile(spec, self_emp_id=self_emp_id)
             status.append("RBAC: names restricted for this role; answering with aggregate counts (D-11)")
-        if _is_junior(persona) and compiled.grain == "aggregate":
-            compiled = compiler.compile(spec, cell_count=True)  # per-cell population for suppression
+        if _is_junior(persona) and compiled.grain == "aggregate" and not spec.self_scope:
+            compiled = compiler.compile(spec, cell_count=True, self_emp_id=self_emp_id)  # per-cell population for suppression
         result = await compiler.execute(compiled)
     except CompileError as e:
         logger.info(f"planner compile fallback: {e}")
@@ -245,7 +253,11 @@ async def run_planner_turn(
             if compiled.subject == "corporate" or compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios") else []
         ),
         "suggestions": [],
-        "access": {"status": "allowed"},
+        "access": {
+            "status": "allowed",
+            **({"self_emp_id": policy.self_emp_id} if (policy and policy.self_emp_id) else {}),
+            **({"allow_pay_aggregate": True} if (policy and "pay_aggregate" in policy.data_classes and policy.action == "allow") else {}),
+        },
         "export_options": ["sheets", "xlsx", "pdf"],
         "status_events": status,
         "latency_ms": round((time.perf_counter() - t0) * 1000, 2),

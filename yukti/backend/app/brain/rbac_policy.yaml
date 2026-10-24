@@ -1,33 +1,286 @@
-# Yukti RBAC policy (B3.3, FEAT-010). Persona class x data class -> allow | mask | aggregate | refuse.
-# Decisions: D-5 / D-10 (CMD and Directors see everything incl. individual pay and APAR),
-#            D-11 (E1–E4: aggregate by default, no names, cells < 5 suppressed; refuse pay,
-#                  APAR, vigilance, POSH, medical), OD-5 option (a): E2_HR / E3_FIN are the junior class.
-# Applied pre-query to the QuerySpec (app/brain/rbac.py: decide) and post-query to the result
-# and to every contract (enforce_contract), so a refusal never ships a granular table.
-version: 1
+# Single Source of Truth for Yukti v3 RBAC (P2H.1 / SPEC-06 / BEH-01 / D-41 / D-43 / D-60).
+# Every enforcement point (planner, compiler, contract post-processor, narrator,
+# document tools, and UI chips) derives its decision from this file via `app/brain/rbac.py`.
+
+version: 2
+unknown_persona: reject
+small_cell_threshold: 5
+aggregate_dimension_default: grade
+
+# D-43: When true (default), DIR_FIN is function-scoped on HR personal data (names -> aggregate,
+# individual pay/APAR -> refuse R-FUNC, sensitive -> aggregate) and DIR_HR sees fin_internal as
+# aggregate. When false, both Directors receive full cross-functional allow as in v2 legacy (D-10).
+director_function_scope: true
+
 rule_refs:
-  D-10: "D-10: CMD and Directors see granular and statutory-confidential data"
-  D-11: "D-11: E1–E4 officers see aggregates only (no names; cells under 5 suppressed); pay, APAR, vigilance, POSH and medical records are refused"
+  D-10: "D-10: CMD and Directors see granular and statutory-confidential data within their functional scope"
+  D-11: "D-11: E1–E4 officers see aggregates only (no names; cells under 5 suppressed); individual pay, APAR, vigilance, POSH and medical records of others are refused"
+  D-41: "D-41: 11 canonical personas (CMD, DIR_HR, DIR_FIN, E1_HR..E4_HR, E1_FIN..E4_FIN) + DEMO_ADMIN"
+  D-43: "D-43: Function-scoped Director access (HR vs FIN) with self-scope and junior aggregate pay"
+
+functions:
+  EXEC: [HR, FIN, CORP]
+  HR: [HR, CORP]
+  FIN: [FIN, CORP]
 
 persona_classes:
   leadership: [CMD]
   director: [DIR_HR, DIR_FIN]
-  junior: [E2_HR, E3_FIN]
+  junior: [E1_HR, E2_HR, E3_HR, E4_HR, E1_FIN, E2_FIN, E3_FIN, E4_FIN]
 
-data_classes:
-  general:   "Aggregates and non-personal facts"
-  named:     "Individual-level rows: names, employee ids, designation, tenure, posting"
-  pay:       "Individual or aggregate compensation (salary, allowances, PRP)"
-  apar:      "Performance appraisal ratings/scores"
-  sensitive: "Vigilance, POSH, medical, disciplinary records"
-
+# Legacy 5-class summary matrix preserved for backward compatibility with B3 tests.
 matrix:
   leadership: {general: allow, named: allow, pay: allow, apar: allow, sensitive: allow}
   director:   {general: allow, named: allow, pay: allow, apar: allow, sensitive: allow}
   junior:     {general: allow, named: aggregate, pay: refuse, apar: refuse, sensitive: refuse}
 
-small_cell_threshold: 5          # junior aggregates: counts below this are shown as "<5"
-aggregate_dimension_default: grade   # roster -> counts by grade when names are not allowed
+personas:
+  CMD:
+    tier: cmd
+    function: EXEC
+    grade: CMD
+    emp_id: EMP-000001
+    display_name: "Arun Mehra"
+    label: "CMD (Arun Mehra)"
+  DIR_HR:
+    tier: director
+    function: HR
+    grade: DIR
+    emp_id: EMP-000002
+    display_name: "Manish Deshpande"
+    label: "Director (HR) — Manish Deshpande"
+  DIR_FIN:
+    tier: director
+    function: FIN
+    grade: DIR
+    emp_id: EMP-000003
+    display_name: "Vivek Rao"
+    label: "Director (Finance) — Vivek Rao"
+  E1_HR:
+    tier: junior
+    function: HR
+    grade: E1
+    emp_id: EMP-100151
+    display_name: "Dinesh Deshmukh"
+    label: "E1 HR Officer (Dinesh Deshmukh)"
+  E2_HR:
+    tier: junior
+    function: HR
+    grade: E2
+    emp_id: EMP-102451
+    display_name: "Pooja Verma"
+    label: "E2 HR Executive (Pooja Verma)"
+  E3_HR:
+    tier: junior
+    function: HR
+    grade: E3
+    emp_id: EMP-100144
+    display_name: "Pooja Pillai"
+    label: "E3 Sr. HR Executive (Pooja Pillai)"
+  E4_HR:
+    tier: junior
+    function: HR
+    grade: E4
+    emp_id: EMP-100178
+    display_name: "Aarti Saikia"
+    label: "E4 Dy. Manager HR (Aarti Saikia)"
+  E1_FIN:
+    tier: junior
+    function: FIN
+    grade: E1
+    emp_id: EMP-100150
+    display_name: "Ajay Deshmukh"
+    label: "E1 Accounts Officer (Ajay Deshmukh)"
+  E2_FIN:
+    tier: junior
+    function: FIN
+    grade: E2
+    emp_id: EMP-100152
+    display_name: "Praveen Nair"
+    label: "E2 Finance Executive (Praveen Nair)"
+  E3_FIN:
+    tier: junior
+    function: FIN
+    grade: E3
+    emp_id: EMP-100146
+    display_name: "Asha Mishra"
+    label: "E3 Finance Officer (Asha Mishra)"
+  E4_FIN:
+    tier: junior
+    function: FIN
+    grade: E4
+    emp_id: EMP-100145
+    display_name: "Santosh Banerjee"
+    label: "E4 Dy. Manager Finance (Santosh Banerjee)"
+
+# 12 canonical v2 data classes (SPEC-06 §5.1 / §5.2).
+data_classes:
+  general_hr:
+    cmd: allow
+    director_hr: allow
+    director_fin: allow
+    junior_hr: allow
+    junior_fin: aggregate
+    refusal_code: R-NAMED
+    mask_columns: []
+
+  general_fin:
+    cmd: allow
+    director_hr: allow
+    director_fin: allow
+    junior_hr: allow
+    junior_fin: allow
+    mask_columns: []
+
+  fin_internal:
+    cmd: allow
+    director_hr: aggregate
+    director_fin: allow
+    junior_hr: aggregate
+    junior_fin: allow
+    refusal_code: R-FUNC
+    mask_columns:
+      - vendor_id
+      - vendor_name
+      - invoice_no
+      - cost_center_owner
+      - po_number
+
+  policy:
+    cmd: allow
+    director_hr: allow
+    director_fin: allow
+    junior_hr: allow
+    junior_fin: allow
+    mask_columns: []
+
+  named:
+    cmd: allow
+    director_hr: allow
+    director_fin: function_scoped
+    junior_hr: aggregate
+    junior_fin: aggregate
+    refusal_code: R-NAMED
+    mask_columns:
+      - emp_id
+      - emp_name
+      - name
+      - employee_name
+      - manager_name
+      - reporting_officer
+      - email
+      - phone
+      - posted_since
+      - continuous_stay_years
+      - ongc_tenure_years
+      - years_to_retirement
+
+  pay_aggregate:
+    cmd: allow
+    director_hr: allow
+    director_fin: allow
+    junior_hr: allow
+    junior_fin: allow
+    min_cohort_n: 5
+    refusal_code: R-K5
+    mask_columns:
+      - emp_id
+      - emp_name
+      - name
+      - employee_name
+
+  pay_individual:
+    cmd: allow
+    director_hr: allow
+    director_fin: function_scoped_refuse
+    junior_hr: refuse
+    junior_fin: refuse
+    refusal_code: R-PAY
+    mask_columns:
+      - emp_id
+      - emp_name
+      - name
+      - employee_name
+      - basic_pay_inr
+      - da_inr
+      - hra_inr
+      - perks_allowance_inr
+      - performance_pay_prp_inr
+      - gross_pay_inr
+      - net_pay_inr
+      - total_ctc_inr
+      - ctc_lakh
+      - avg_ctc_lakh
+      - pay_band
+
+  apar:
+    cmd: allow
+    director_hr: allow
+    director_fin: function_scoped_refuse
+    junior_hr: refuse
+    junior_fin: refuse
+    refusal_code: R-APAR
+    mask_columns:
+      - emp_id
+      - emp_name
+      - name
+      - employee_name
+      - final_score
+      - final_grade
+      - apar_score
+      - apar_grade
+      - reporting_officer_score
+      - reviewing_officer_score
+      - accepting_authority_score
+      - promotion_ready
+
+  sensitive:
+    cmd: allow
+    director_hr: allow
+    director_fin: aggregate
+    junior_hr: refuse
+    junior_fin: refuse
+    refusal_code: R-SENS
+    mask_columns:
+      - emp_id
+      - emp_name
+      - name
+      - employee_name
+      - case_id
+      - posh_case
+      - disciplinary_case
+      - vigilance_flag
+      - medical_category
+      - pwd_flag
+      - pwd_category
+      - health_condition
+
+  self:
+    cmd: allow
+    director_hr: allow
+    director_fin: allow
+    junior_hr: allow
+    junior_fin: allow
+    requires_param: self_emp_id
+    mask_columns: []
+
+  board_confidential:
+    cmd: allow
+    director_hr: refuse
+    director_fin: allow
+    junior_hr: refuse
+    junior_fin: refuse
+    refusal_code: R-BOARD
+    mask_columns: []
+
+  valuation_run:
+    cmd: allow
+    director_hr: refuse
+    director_fin: allow
+    junior_hr: refuse
+    junior_fin: refuse
+    refusal_code: R-FUNC
+    mask_columns: []
 
 # Result columns that carry a data class (post-query masking on any path, incl. the legacy LLM path).
 column_classes:
@@ -62,3 +315,45 @@ row_actions:
     question_template: "Draft a transfer note for the selected {n} employees"
     min_role: DIR_HR
     subjects: [workforce]
+
+refusal_templates:
+  pay_individual:
+    code: R-PAY
+    en: "Individual salary, CTC, and payroll breakdowns of other employees are restricted to CMD and the respective functional Director. Under your current role ({persona_label}), I can share grade-wise pay scales, starting basic pay, or cohort-level average CTC (for cohorts of 5 or more), as well as your own payslip."
+    hi: "अन्य कर्मचारियों का व्यक्तिगत वेतन, CTC और पेरोल विवरण केवल CMD और संबंधित निदेशक के लिए उपलब्ध है। आपकी वर्तमान भूमिका ({persona_label}) के तहत मैं ग्रेड-वार वेतनमान, प्रारंभिक मूल वेतन, समूह-स्तरीय औसत CTC (5 या अधिक कर्मचारियों के लिए), या आपकी अपनी वेतन पर्ची साझा कर सकता हूँ।"
+  pay:
+    code: R-PAY
+    en: "Individual salary, CTC, and payroll breakdowns of other employees are restricted to CMD and the respective functional Director. Under your current role ({persona_label}), I can share grade-wise pay scales, starting basic pay, or cohort-level average CTC (for cohorts of 5 or more), as well as your own payslip."
+    hi: "अन्य कर्मचारियों का व्यक्तिगत वेतन, CTC और पेरोल विवरण केवल CMD और संबंधित निदेशक के लिए उपलब्ध है। आपकी वर्तमान भूमिका ({persona_label}) के तहत मैं ग्रेड-वार वेतनमान, प्रारंभिक मूल वेतन, समूह-स्तरीय औसत CTC (5 या अधिक कर्मचारियों के लिए), या आपकी अपनी वेतन पर्ची साझा कर सकता हूँ।"
+  apar:
+    code: R-APAR
+    en: "Individual APAR performance scores, ratings, and DPC appraisal dossiers of other employees are confidential and accessible only to CMD and the respective functional Director. Under {persona_label}, I can share your own APAR history or organisation-level appraisal distributions."
+    hi: "अन्य कर्मचारियों के व्यक्तिगत APAR प्रदर्शन स्कोर और DPC मूल्यांकन गोपनीय हैं और केवल CMD तथा संबंधित निदेशक के लिए सुलभ हैं। {persona_label} के अंतर्गत मैं आपका अपना APAR इतिहास या संगठन-स्तरीय वितरण साझा कर सकता हूँ।"
+  sensitive:
+    code: R-SENS
+    en: "Vigilance, POSH, disciplinary, and medical case records contain sensitive personal data and are restricted to CMD and Director (HR). Under {persona_label}, I cannot disclose individual case details."
+    hi: "सतर्कता, POSH, अनुशासनात्मक और चिकित्सा मामलों के रिकॉर्ड संवेदनशील व्यक्तिगत डेटा हैं और केवल CMD तथा निदेशक (HR) के लिए प्रतिबंधित हैं। {persona_label} के अंतर्गत व्यक्तिगत विवरण साझा नहीं किया जा सकता।"
+  named:
+    code: R-NAMED
+    en: "Named employee rosters and individual service records are restricted to CMD and functional Directors. Under {persona_label}, I have provided the anonymised aggregate distribution."
+    hi: "नामित कर्मचारी सूची और व्यक्तिगत सेवा रिकॉर्ड केवल CMD और निदेशकों के लिए उपलब्ध हैं। {persona_label} के अंतर्गत अनाम समग्र वितरण नीचे दिया गया है।"
+  function_mismatch:
+    code: R-FUNC
+    en: "Cross-functional individual HR/payroll/APAR records outside your functional scope are restricted under ONGC's function-segregated access policy (D-43). Under {persona_label}, you may access individual records within your function ({persona_function}) or organisation-wide anonymised aggregates."
+    hi: "आपके कार्यात्मक क्षेत्र से बाहर के व्यक्तिगत HR/पेरोल/APAR रिकॉर्ड ONGC की कार्य-विभाजित नीति (D-43) के तहत प्रतिबंधित हैं। {persona_label} के अंतर्गत आप अपने फ़ंक्शन ({persona_function}) के रिकॉर्ड या संगठन-स्तरीय समग्र आंकड़े देख सकते हैं।"
+  board_confidential:
+    code: R-BOARD
+    en: "Board-confidential succession notes and deliberation drafts are restricted to CMD and the sponsoring functional Director. Under {persona_label}, this action is not permitted."
+    hi: "बोर्ड-गोपनीय उत्तराधिकार नोट्स और विचार-विमर्श ड्राफ्ट केवल CMD और संबंधित कार्यात्मक निदेशक के लिए प्रतिबंधित हैं। {persona_label} के अंतर्गत यह अनुमति नहीं है।"
+  role_escalation:
+    code: R-ROLE
+    en: "Persona cannot be changed from inside a question. Your active session remains {persona_label}. To switch personas in a demo, please use the top-right Persona selector (or sign in as Demo Admin)."
+    hi: "प्रश्न के भीतर से भूमिका (परसोना) नहीं बदली जा सकती। आपका सक्रिय सत्र {persona_label} बना हुआ है। भूमिका बदलने के लिए कृपया शीर्ष-दाईं ओर परसोना चयनकर्ता का उपयोग करें।"
+  small_cell:
+    code: R-K5
+    en: "This cohort has fewer than 5 employees (k < 5). To prevent indirect identification of individual compensation or personal attributes, cell values for cohorts smaller than 5 are suppressed."
+    hi: "इस समूह में 5 से कम कर्मचारी हैं (k < 5)। व्यक्तिगत वेतन या विवरण की अप्रत्यक्ष पहचान रोकने के लिए 5 से छोटे समूहों के आंकड़े प्रदर्शित नहीं किए जाते।"
+  default:
+    code: R-NAMED
+    en: "This data is restricted under your current role ({persona_label}). Please switch to an authorised Director or CMD persona, or request an aggregate summary."
+    hi: "यह डेटा आपकी वर्तमान भूमिका ({persona_label}) के अंतर्गत प्रतिबंधित है। कृपया अधिकृत निदेशक या CMD भूमिका का चयन करें, अथवा समग्र सारांश का अनुरोध करें।"

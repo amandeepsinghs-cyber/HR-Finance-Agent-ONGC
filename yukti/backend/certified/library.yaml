@@ -1614,12 +1614,16 @@ queries:
   parameterized_sql: "-- Answer Key SQL: E1\n-- Question: What is my leave balance, and how many earned leave days can I encash?\n\
     -- Type: data\n-- Semantic audit 2026-10-20: Latest ledger row per leave type (no hard-coded FY), plus in-service encashment\
     \ per Leave Rules 4.3 (up to 30 days, retain 30) next to the ledger field.\n\nWITH latest AS (\n    SELECT fiscal_year,\
-    \ leave_type, closing_balance_days, encashable_balance_days\n    FROM leave_ledger\n    WHERE emp_id = 'EMP-102451'\n\
+    \ leave_type, closing_balance_days, encashable_balance_days\n    FROM leave_ledger\n    WHERE emp_id = @self_emp_id\n\
     \    QUALIFY ROW_NUMBER() OVER (PARTITION BY leave_type ORDER BY fiscal_year DESC, to_date DESC) = 1\n)\nSELECT\n    fiscal_year,\n\
     \    leave_type,\n    closing_balance_days,\n    encashable_balance_days AS encashable_days_per_ledger,\n    IF(LOWER(leave_type)\
     \ = 'earned_leave_el', LEAST(30, GREATEST(closing_balance_days - 30, 0)), NULL) AS in_service_encashable_per_rule_4_3\n\
     FROM latest\nORDER BY leave_type;"
-  params: {}
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
   visual_kind: table
   provenance:
     source_file: data_bank/answer_key/sql/E1.sql
@@ -1646,9 +1650,13 @@ queries:
     \        WHEN DATE_DIFF(DATE '2026-10-19', p.from_date, MONTH) > 60 THEN 'beyond 5-year window - due in next AGT'\n  \
     \      WHEN DATE_DIFF(DATE '2026-10-19', p.from_date, MONTH) >= 36 THEN 'within 3-5 year window - eligible'\n        ELSE\
     \ 'not yet eligible (under 3 years)'\n    END AS rotation_status,\n    DATE '2027-07-01' AS next_agt_effective_by,\n \
-    \   p.exemption_tag\nFROM posting_history p\nJOIN dim_work_centre w ON p.wc_id = w.wc_id\nWHERE p.emp_id = 'EMP-102451'\n\
+    \   p.exemption_tag\nFROM posting_history p\nJOIN dim_work_centre w ON p.wc_id = w.wc_id\nWHERE p.emp_id = @self_emp_id\n\
     \  AND p.is_current_posting = TRUE;"
-  params: {}
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
   visual_kind: table
   provenance:
     source_file: data_bank/answer_key/sql/E2.sql
@@ -1670,8 +1678,12 @@ queries:
     -- Semantic audit 2026-10-20: Added claim type, patient, submission/settlement dates and claimed amount so status can\
     \ be stated; ordered by recency.\n\nSELECT\n    claim_id,\n    claim_type,\n    patient_relationship,\n    submission_date,\n\
     \    claim_status,\n    claimed_amount_inr,\n    approved_amount_inr,\n    settlement_date\nFROM medical_claims\nWHERE\
-    \ emp_id = 'EMP-102451'\nORDER BY submission_date DESC;"
-  params: {}
+    \ emp_id = @self_emp_id\nORDER BY submission_date DESC;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
   visual_kind: table
   provenance:
     source_file: data_bank/answer_key/sql/E3.sql
@@ -1740,12 +1752,16 @@ queries:
     -- Semantic audit 2026-10-20: Old SQL listed all 36 FY27 programmes without checking eligibility or whether they are still\
     \ ahead of 2026-10-19.\n-- Semantic audit 2026-10-20: Now filters to the employee's grade and experience prerequisite\
     \ and flags still_open / discipline_listed.\n\nWITH me AS (\n    SELECT current_grade_id AS grade_id, discipline_id, total_tenure_years\n\
-    \    FROM employee_master\n    WHERE emp_id = 'EMP-102451'\n)\nSELECT\n    t.programme_id,\n    t.programme_name,\n  \
+    \    FROM employee_master\n    WHERE emp_id = @self_emp_id\n)\nSELECT\n    t.programme_id,\n    t.programme_name,\n  \
     \  t.institute,\n    t.location_city,\n    LOWER(t.category) AS category,\n    t.start_date,\n    t.duration_days,\n \
     \   t.prerequisite_experience_years,\n    t.start_date >= DATE '2026-10-19' AS still_open,\n    me.discipline_id IN UNNEST(t.eligible_disciplines)\
     \ AS discipline_listed\nFROM training_calendar t\nCROSS JOIN me\nWHERE t.fiscal_year = 'FY27'\n  AND me.grade_id IN UNNEST(t.eligible_grades)\n\
     \  AND t.prerequisite_experience_years <= me.total_tenure_years\nORDER BY t.start_date;"
-  params: {}
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
   visual_kind: table
   provenance:
     source_file: data_bank/answer_key/sql/E6.sql
@@ -3547,3 +3563,158 @@ queries:
     source_file: data_bank/answer_key/sql/X10.sql
     sha256: 8f998c3dd063b608ba3d7189a22babdca912e6fd7fb84ab8b2b7ec3bb7eddff2
     gold_objects: hrfin_silver, hrfin_gold
+self_queries:
+- id: my_payslip
+  group: self
+  data_class: self
+  canonical_question: Show my latest payslip and monthly pay breakdown.
+  intent_keywords:
+  - my
+  - payslip
+  - pay
+  - salary
+  - monthly
+  parameterized_sql: "SELECT payroll_id, emp_id, pay_period, fiscal_year, wc_id, grade_id, discipline_id,\n  basic_pay_inr,\
+    \ da_inr, hra_inr, cafeteria_allowances_inr, mining_offshore_allowance_inr,\n  prp_inr, gross_salary_inr, income_tax_tds_inr,\
+    \ net_salary_inr\nFROM payroll_monthly\nWHERE emp_id = @self_emp_id\nORDER BY pay_period DESC\nLIMIT 12;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_pay_components_fy
+  group: self
+  data_class: self
+  canonical_question: Show my YTD and fiscal-year pay components breakdown.
+  intent_keywords:
+  - my
+  - pay
+  - components
+  - ytd
+  - ctc
+  parameterized_sql: "SELECT emp_id, fiscal_year,\n  SUM(basic_pay_inr) AS basic_pay_inr,\n  SUM(da_inr) AS da_inr,\n  SUM(hra_inr)\
+    \ AS hra_inr,\n  SUM(cafeteria_allowances_inr) AS cafeteria_allowances_inr,\n  SUM(prp_inr) AS prp_inr,\n  SUM(gross_salary_inr)\
+    \ AS gross_salary_inr,\n  SUM(net_salary_inr) AS net_salary_inr\nFROM payroll_monthly\nWHERE emp_id = @self_emp_id\nGROUP\
+    \ BY emp_id, fiscal_year\nORDER BY fiscal_year DESC;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_leave_balance
+  group: self
+  data_class: self
+  canonical_question: What is my current EL, CL, and HPL leave balance?
+  intent_keywords:
+  - my
+  - leave
+  - balance
+  - el
+  - cl
+  - hpl
+  parameterized_sql: "WITH latest AS (\n  SELECT emp_id, fiscal_year, leave_type, closing_balance_days, encashable_balance_days\n\
+    \  FROM leave_ledger\n  WHERE emp_id = @self_emp_id\n  QUALIFY ROW_NUMBER() OVER (PARTITION BY leave_type ORDER BY fiscal_year\
+    \ DESC, to_date DESC) = 1\n)\nSELECT emp_id, fiscal_year, leave_type, closing_balance_days,\n  encashable_balance_days\
+    \ AS encashable_days_per_ledger,\n  IF(LOWER(leave_type) IN ('el', 'earned_leave_el'), LEAST(30, GREATEST(closing_balance_days\
+    \ - 30, 0)), NULL) AS in_service_encashable_per_rule_4_3\nFROM latest\nORDER BY leave_type;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_leave_ledger
+  group: self
+  data_class: self
+  canonical_question: Show my leave ledger and transaction history.
+  intent_keywords:
+  - my
+  - leave
+  - ledger
+  - history
+  parameterized_sql: "SELECT emp_id, fiscal_year, leave_type, transaction_type, from_date, to_date, days,\n  closing_balance_days,\
+    \ encashable_balance_days\nFROM leave_ledger\nWHERE emp_id = @self_emp_id\nORDER BY fiscal_year DESC, to_date DESC\nLIMIT\
+    \ 24;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_postings
+  group: self
+  data_class: self
+  canonical_question: Show my posting history across work centres.
+  intent_keywords:
+  - my
+  - posting
+  - history
+  - transfer
+  parameterized_sql: "SELECT p.posting_id, p.emp_id, p.wc_id, w.name AS work_centre, p.grade_id, p.designation,\n  p.from_date,\
+    \ p.to_date, p.tenure_months, p.is_current_posting, p.exemption_tag\nFROM posting_history p\nLEFT JOIN dim_work_centre\
+    \ w ON p.wc_id = w.wc_id\nWHERE p.emp_id = @self_emp_id\nORDER BY p.from_date DESC;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_station_tenure
+  group: self
+  data_class: self
+  canonical_question: What is my current station tenure and rotation eligibility?
+  intent_keywords:
+  - my
+  - station
+  - tenure
+  - rotation
+  parameterized_sql: "SELECT p.emp_id, p.wc_id, w.name AS work_centre, w.cluster_id, p.grade_id,\n  p.from_date AS station_since,\n\
+    \  DATE_DIFF(DATE '2026-10-19', p.from_date, MONTH) AS tenure_months,\n  ROUND(DATE_DIFF(DATE '2026-10-19', p.from_date,\
+    \ DAY) / 365.25, 2) AS continuous_stay_years,\n  p.exemption_tag\nFROM posting_history p\nJOIN dim_work_centre w ON p.wc_id\
+    \ = w.wc_id\nWHERE p.emp_id = @self_emp_id\n  AND p.is_current_posting = TRUE;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_apar
+  group: self
+  data_class: self
+  canonical_question: Show my APAR ratings and performance scores.
+  intent_keywords:
+  - my
+  - apar
+  - rating
+  - score
+  - appraisal
+  parameterized_sql: "SELECT apar_id, emp_id, fiscal_year, wc_id, grade_id, discipline_id,\n  numerical_score, final_rating,\
+    \ benchmark_score, is_dpc_eligible\nFROM apar_ratings\nWHERE emp_id = @self_emp_id\nORDER BY fiscal_year DESC\nLIMIT 5;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_entitlements
+  group: self
+  data_class: self
+  canonical_question: What are my house building, car advance, and grade entitlements?
+  intent_keywords:
+  - my
+  - entitlement
+  - advance
+  - hba
+  - car
+  parameterized_sql: "SELECT e.emp_id, e.name, e.current_grade_id AS grade_id, g.designation,\n  g.pay_scale_min_inr, g.pay_scale_max_inr,\
+    \ g.typical_residency_years\nFROM employee_master e\nJOIN dim_grade g ON e.current_grade_id = g.grade_id\nWHERE e.emp_id\
+    \ = @self_emp_id;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: EMP-102451
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+

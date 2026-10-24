@@ -386,3 +386,10 @@ templates:
     period: fiscal_year
     default_from: FY17
     default_to: FY26
+  pay_scale_min_inr:
+    domain: policy
+    label: "Executive Grade Pay Scale (Starting & Maximum Basic Pay)"
+    description: "Official DPE / ONGC executive grade pay scale bands (pay_scale_min_inr and pay_scale_max_inr) from hrfin_silver.dim_grade (E0–E9)."
+    period: fixed
+    default_from: FY26
+    default_to: FY26

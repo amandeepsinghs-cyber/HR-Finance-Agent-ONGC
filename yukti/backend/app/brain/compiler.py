@@ -65,6 +65,8 @@ class CompiledQuery:
     grain: str = "aggregate"
     data_classes: List[str] = field(default_factory=list)
     aggregation: str = "count"          # metric aggregation: only count/sum results may be added up
+    params: List[Any] = field(default_factory=list)
+    self_emp_id: Optional[str] = None
 
 
 @dataclass
@@ -207,7 +209,7 @@ class Compiler:
         return out
 
     # ------------------------------------------------------------ compile
-    def compile(self, spec: QuerySpec, cell_count: bool = False) -> CompiledQuery:
+    def compile(self, spec: QuerySpec, cell_count: bool = False, self_emp_id: Optional[str] = None) -> CompiledQuery:
         """`cell_count=True` adds `COUNT(*) AS _n` per group on employee-grain subjects, so junior
         aggregates of averages/ratios can be suppressed when a cell holds < 5 people (D-11)."""
         subject, metric, template = self.model.resolve_metric(spec.metric)
@@ -217,10 +219,11 @@ class Compiler:
             raise CompileError(f"unknown metric {spec.metric}")
         notes: List[str] = []
         dropped: List[str] = []
+        bq_params: List[Any] = []
 
         # Map fields that do not exist on this subject via declared fallbacks (field -> asset ...).
         def map_field(name: str) -> Optional[str]:
-            if name in subject.fields or name == "region":
+            if name in subject.fields or name == "region" or name == "emp_id":
                 return name
             if name in WC_ATTRIBUTE_FIELDS and ("wc" in subject.fields or "asset" in subject.fields):
                 return name  # expanded to a work-centre list by _expand_regions
@@ -228,7 +231,11 @@ class Compiler:
             return fb if fb in subject.fields else None
 
         filters: List[Filter] = []
+        has_self_filter = False
         for f in spec.filters:
+            if f.field == "emp_id" and str(f.value) == "@self_emp_id":
+                has_self_filter = True
+                continue
             mf = map_field(f.field)
             if f.field == "fy":
                 continue  # periods are expressed through spec.period
@@ -297,13 +304,20 @@ class Compiler:
         for f in filters:
             where.append(self._filter_sql(subject, f, col_override))
 
+        is_self = bool(spec.self_scope or has_self_filter)
+        if is_self:
+            where.append("emp_id = @self_emp_id")
+            if self_emp_id:
+                bq_params.append(bigquery.ScalarQueryParameter("self_emp_id", "STRING", str(self_emp_id)))
+
         ents_cols: Dict[str, str] = {}
-        data_classes = {metric.data_class}
+        data_classes = {"self"} if is_self else {metric.data_class}
         if grain == "row":
             cols = []
             for rc in subject.row_columns:
                 cols.append(f"{rc['expr']} AS {rc['as']}")
-                data_classes.add(rc.get("data_class", "general"))
+                if not is_self:
+                    data_classes.add(rc.get("data_class", "general"))
             row_aliases = {rc["as"] for rc in subject.row_columns}
             sort = spec.sort.model_dump() if (spec.sort and spec.sort.by in row_aliases) else (subject.row_sort or None)
             order = f" ORDER BY {sort['by']} {sort.get('dir', 'desc').upper()}" if sort else ""
@@ -314,7 +328,8 @@ class Compiler:
             return CompiledQuery(sql=sql, subject=subject.name, metric=metric.name, metric_label=metric.label,
                                  unit=metric.unit, source="generated", tables=[table], notes=notes, dropped=dropped,
                                  effective_period=eff_period, grain="row", value_columns=[],
-                                 data_classes=sorted(data_classes), aggregation=metric.aggregation)
+                                 data_classes=sorted(data_classes), aggregation=metric.aggregation,
+                                 params=bq_params, self_emp_id=self_emp_id)
 
         select: List[str] = []
         group: List[str] = []
@@ -358,7 +373,13 @@ class Compiler:
                 metrics = [metric.name] + [m for m in base_fam if m != metric.name and m in subject.metrics]
         for mn in metrics:
             select.append(f"{subject.metrics[mn].expr} AS {mn}")
-            data_classes.add(subject.metrics[mn].data_class)
+            if not is_self:
+                dc = subject.metrics[mn].data_class
+                if dc == "pay" and grain == "aggregate" and not is_self:
+                    data_classes.add("pay_aggregate")
+                    data_classes.discard("pay")
+                else:
+                    data_classes.add(dc)
         if cell_count and subject.name in CELL_COUNT_SUBJECTS:
             select.append("COUNT(*) AS _n")
         sql = f"SELECT {', '.join(select)} FROM {_q(table)}"
@@ -380,7 +401,7 @@ class Compiler:
                              unit=metric.unit, source="generated", tables=[table], dims=dim_out,
                              entity_columns=ents_cols, value_columns=metrics, notes=notes, dropped=dropped,
                              effective_period=eff_period, grain="aggregate", data_classes=sorted(data_classes),
-                             aggregation=metric.aggregation)
+                             aggregation=metric.aggregation, params=bq_params, self_emp_id=self_emp_id)
 
     def _compile_asof(self, subject: SubjectDef, spec: QuerySpec, filters: List[Filter], dims: List[str],
                       fy: str, notes: List[str], dropped: List[str]) -> CompiledQuery:
@@ -430,6 +451,8 @@ class Compiler:
                              data_classes=["general"])
 
     def _compile_template(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        if t.name == "pay_scale_min_inr":
+            return self._compile_pay_scale(t, spec)
         if t.name == "headcount_change":
             return self._compile_headcount_change(t, spec)
         if t.name == "pnl_statement":
@@ -482,6 +505,39 @@ ORDER BY j.capex_cr DESC"""
                              value_columns=["capex_cr", "reserves_2p_mmtoe", "capex_cr_per_mmtoe"],
                              notes=[f"Capex {lo}–{hi} vs {res_fy} 2P reserves; capex is recorded by asset, not field"],
                              effective_period={"from": lo, "to": hi}, grain="aggregate", data_classes=["general"])
+
+    def _compile_pay_scale(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        where = ["LOWER(cadre) = 'executive'"]
+        f = spec.filter_on("grade")
+        if f:
+            codes = [self._entity_code("grade", v) for v in (f.value if isinstance(f.value, list) else [f.value])]
+            where.append(f"grade_id IN ({', '.join(_lit(c) for c in codes)})")
+        sql = f"""SELECT
+  grade_id AS grade,
+  designation,
+  pay_scale_min_inr,
+  pay_scale_max_inr,
+  typical_residency_years
+FROM {_q('hrfin_silver.dim_grade')}
+WHERE {' AND '.join(where)}
+ORDER BY level_order ASC"""
+        return CompiledQuery(
+            sql=sql,
+            subject="workforce",
+            metric="pay_scale_min_inr",
+            metric_label=t.label,
+            unit="inr",
+            source=f"template:{t.name}",
+            tables=["hrfin_silver.dim_grade"],
+            dims=[("grade", "grade")],
+            entity_columns={"grade": "grade"},
+            value_columns=["pay_scale_min_inr", "pay_scale_max_inr"],
+            notes=["Official DPE / ONGC executive pay scale bands (hrfin_silver.dim_grade)"],
+            effective_period={"fy": "FY26"},
+            grain="aggregate",
+            data_classes=["policy", "pay_aggregate"],
+            aggregation="min",
+        )
 
     def _compile_headcount_change(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
         p = spec.period or Period()
@@ -840,19 +896,28 @@ ORDER BY line_order ASC"""
         if not ok:
             raise CompileError(f"unsafe SQL rejected: {err}")
 
-    def dry_run(self, sql: str) -> int:
+    def dry_run(self, sql: str, params: Optional[List[Any]] = None) -> int:
         self._validate(sql)
-        cfg = bigquery.QueryJobConfig(dry_run=True, use_query_cache=False, labels=JOB_LABELS)
+        cfg = bigquery.QueryJobConfig(
+            dry_run=True,
+            use_query_cache=False,
+            labels=JOB_LABELS,
+            query_parameters=list(params or []),
+        )
         job = self.client.query(sql, job_config=cfg)
         b = job.total_bytes_processed or 0
         if b > MAX_BYTES_BILLED:
             raise CompileError(f"query would scan {b} bytes (cap {MAX_BYTES_BILLED})")
         return b
 
-    def _run_sync(self, sql: str) -> QueryResult:
+    def _run_sync(self, sql: str, params: Optional[List[Any]] = None) -> QueryResult:
         t0 = time.perf_counter()
-        dry = self.dry_run(sql)
-        cfg = bigquery.QueryJobConfig(labels=JOB_LABELS, maximum_bytes_billed=MAX_BYTES_BILLED)
+        dry = self.dry_run(sql, params=params)
+        cfg = bigquery.QueryJobConfig(
+            labels=JOB_LABELS,
+            maximum_bytes_billed=MAX_BYTES_BILLED,
+            query_parameters=list(params or []),
+        )
         job = self.client.query(sql, job_config=cfg)
         res = job.result()
         cols = [f.name for f in res.schema] if res.schema else []
@@ -1007,7 +1072,7 @@ ORDER BY line_order ASC"""
         try:
             if os.getenv("YUKTI_FORCE_BQ_FAIL", "0") in ("1", "true", "yes"):  # BEH-07.22 forced-failure test flag
                 raise ConnectionError("forced BigQuery failure (YUKTI_FORCE_BQ_FAIL=1)")
-            return await asyncio.to_thread(self._run_sync, compiled.sql)
+            return await asyncio.to_thread(self._run_sync, compiled.sql, compiled.params)
         except Exception as e:
             fb = self._execute_local_financial_fallback(compiled)
             if fb is not None:
@@ -1051,3 +1116,15 @@ def get_compiler() -> Compiler:
     if _COMPILER is None:
         _COMPILER = Compiler()
     return _COMPILER
+
+
+def compile_spec(
+    spec: QuerySpec,
+    project: Optional[str] = None,
+    *,
+    self_emp_id: Optional[str] = None,
+    cell_count: bool = False,
+) -> CompiledQuery:
+    """Compile a `QuerySpec` into a `CompiledQuery` (with `@self_emp_id` parameter binding when `self_scope=True`)."""
+    return get_compiler().compile(spec, cell_count=cell_count, self_emp_id=self_emp_id)
+

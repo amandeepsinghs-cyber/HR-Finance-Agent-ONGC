@@ -30,18 +30,37 @@ def _get_certified_index() -> Dict[str, Dict[str, Any]]:
     if not _CERTIFIED_INDEX:
         if CERTIFIED_PATH.exists():
             with open(CERTIFIED_PATH, "r", encoding="utf-8") as f:
-                data = yaml.safe_load(f)
+                data = yaml.safe_load(f) or {}
                 for q in data.get("queries", []):
                     _CERTIFIED_INDEX[q["id"].upper()] = q
+                    _CERTIFIED_INDEX[q["id"]] = q
+                for sq in data.get("self_queries", []):
+                    _CERTIFIED_INDEX[sq["id"].upper()] = sq
+                    _CERTIFIED_INDEX[sq["id"]] = sq
         else:
             logger.warning(f"Certified library not found at {CERTIFIED_PATH}")
     return _CERTIFIED_INDEX
 
 
 def get_certified_entry(query_id: str) -> Optional[Dict[str, Any]]:
-    """Retrieves metadata for a certified query."""
+    """Retrieves metadata for a certified query (including self_queries)."""
     index = _get_certified_index()
-    return index.get(query_id.strip().upper())
+    cleaned = (query_id or "").strip()
+    return index.get(cleaned) or index.get(cleaned.upper())
+
+
+def resolve_self_emp_id(persona: str = "E2_HR", self_emp_id: Optional[str] = None) -> str:
+    """Resolve `@self_emp_id` strictly from server-side Principal / PERSONA_DIRECTORY (never free text)."""
+    if self_emp_id and re.match(r"^EMP-\d{6}$", str(self_emp_id).strip()):
+        return str(self_emp_id).strip()
+    from app.access_control import UnknownPersona, normalize_persona
+    from app.auth import PERSONA_DIRECTORY
+
+    try:
+        canon = normalize_persona(persona)
+    except UnknownPersona:
+        canon = "E2_HR"
+    return str(PERSONA_DIRECTORY.get(canon, {}).get("emp_id", "EMP-102451"))
 
 
 def list_certified_queries() -> List[Dict[str, Any]]:
@@ -62,13 +81,15 @@ def run_certified_query(
     query_id: str,
     params: Optional[Dict[str, Any]] = None,
     persona: str = "CMD",
+    self_emp_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Executes a certified parameterized query from the verified query library.
 
     Args:
-        query_id: The certified query ID (e.g. 'C1', 'C6', 'C12', 'X7').
-        params: Optional key-value dictionary overriding default parameters (e.g.
-          {'wc_id': 'WC-MUM', 'min_stay_months': 36, 'fiscal_year': 'FY26'}).
+        query_id: The certified query ID (e.g. 'C1', 'C6', 'E1', 'my_payslip').
+        params: Optional key-value dictionary overriding default parameters.
+        persona: Active server-verified persona.
+        self_emp_id: Optional explicit Principal.emp_id from server session.
 
     Returns:
         Structured response with rows, row_count, columns, deterministic_summary,
@@ -83,7 +104,10 @@ def run_certified_query(
             "retryable": False,
         }
 
-    user_params = params or {}
+    user_params = dict(params or {})
+    # Never allow caller/LLM free-text params to override @self_emp_id
+    user_params.pop("self_emp_id", None)
+
     merged_params = {}
     param_defs = entry.get("params", {})
 
@@ -98,6 +122,11 @@ def run_certified_query(
     for k, v in user_params.items():
         if k not in merged_params:
             merged_params[k] = v
+
+    # P2H.1 (SPEC-06 §5.3): always bind @self_emp_id from server-side Principal/persona
+    raw_sql = entry["parameterized_sql"]
+    if "@self_emp_id" in raw_sql or "self_emp_id" in param_defs:
+        merged_params["self_emp_id"] = resolve_self_emp_id(persona=persona, self_emp_id=self_emp_id)
 
     # H1.2: Validate parameter names and values against injection patterns before execution or caching
     _UNSAFE_PARAM_RE = re.compile(
