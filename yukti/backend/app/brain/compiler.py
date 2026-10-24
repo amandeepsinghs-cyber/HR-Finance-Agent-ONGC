@@ -11,13 +11,16 @@ import asyncio
 import datetime
 from dataclasses import dataclass, field
 from decimal import Decimal
+from functools import lru_cache
 import logging
 import os
+from pathlib import Path
 import re
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
 from google.cloud import bigquery
+import yaml
 
 from app.brain.query_spec import Filter, Period, QuerySpec
 from app.brain.semantic_model import FieldDef, SemanticModel, SubjectDef, TemplateDef, get_semantic_model
@@ -41,6 +44,13 @@ CELL_COUNT_SUBJECTS = {"workforce", "separations"}
 WC_ATTRIBUTE_FIELDS = {"sector": "sector", "state": "state", "hard_station_cat": "hard_station_cat",
                        "onshore_offshore": "onshore_offshore", "wc_type": "type", "city": "city"}
 _OPS_SQL = {"=": "=", "!=": "!=", ">": ">", ">=": ">=", "<": "<", "<=": "<="}
+
+GRADE_LEVEL_ORDER: Dict[str, int] = {
+    "E1": 1, "E2": 2, "E3": 3, "E4": 4, "E5": 5, "E6": 6, "E7": 7, "E8": 8, "E9": 9,
+    "GRP-B": 10, "GRP-C": 11, "GRP-D": 12,
+}
+EXEC_GRADES: Tuple[str, ...] = ("E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9")
+ALL_CADRE_GRADES: Tuple[str, ...] = ("E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "GRP-B", "GRP-C", "GRP-D")
 
 
 class CompileError(ValueError):
@@ -67,6 +77,27 @@ class CompiledQuery:
     aggregation: str = "count"          # metric aggregation: only count/sum results may be added up
     params: List[Any] = field(default_factory=list)
     self_emp_id: Optional[str] = None
+    definition_id: Optional[str] = None
+    all_cadres: bool = False
+    station_wc_id: Optional[str] = None
+
+
+DEFINITIONS_PATH = Path(__file__).resolve().parent.parent / "semantic" / "definitions.yaml"
+
+
+@lru_cache(maxsize=1)
+def get_definitions() -> Dict[str, Dict[str, Any]]:
+    """Load canonical semantic definitions (`DELHI_GT5_CONT_V1`, `STATION_GT5_CONT_V1`) from `definitions.yaml`."""
+    if not DEFINITIONS_PATH.exists():
+        return {}
+    raw = yaml.safe_load(DEFINITIONS_PATH.read_text(encoding="utf-8")) or {}
+    return dict(raw.get("definitions") or {})
+
+
+def get_definition(definition_id: Optional[str]) -> Optional[Dict[str, Any]]:
+    if not definition_id:
+        return None
+    return get_definitions().get(definition_id)
 
 
 @dataclass
@@ -301,10 +332,63 @@ class Compiler:
             if period.fy and period.fy < current_fy():
                 notes.append("Workforce data is a current snapshot (19-Oct-2026)")
 
+        is_self = bool(spec.self_scope or has_self_filter)
+
+        # SPEC-07 §4.2 (P2H.3): Canonical 5-year station-tenure cohort expansion (`DELHI_GT5_CONT_V1` / `STATION_GT5_CONT_V1`)
+        definition_id: Optional[str] = None
+        all_cadres: bool = False
+        station_wc_id: Optional[str] = None
+        wc_eq = next((f for f in filters if f.field == "wc" and f.op == "=" and not isinstance(f.value, list)), None)
+        if wc_eq is not None:
+            station_wc_id = str(wc_eq.value)
+
+        has_all_cadres_filter = any(
+            (f.field == "cadre" and str(f.value).lower() in ("all", "all_cadres"))
+            or (
+                f.field == "grade"
+                and isinstance(f.value, list)
+                and any(str(x).upper() in ("GRP-B", "GRP-C", "GRP-D") for x in f.value)
+            )
+            for f in filters
+        )
+        if has_all_cadres_filter:
+            all_cadres = True
+            filters = [f for f in filters if not (f.field == "cadre" and str(f.value).lower() in ("all", "all_cadres"))]
+
+        if subject.name == "workforce" and not is_self:
+            gt5_idx: Optional[int] = None
+            for idx, f in enumerate(filters):
+                if f.field in ("station_tenure_years", "delhi_tenure_years") and f.op in (">=", ">"):
+                    try:
+                        val_f = float(f.value if not isinstance(f.value, list) else f.value[0])
+                        if abs(val_f - 5.0) < 1e-6:
+                            gt5_idx = idx
+                            break
+                    except Exception:
+                        pass
+            if gt5_idx is not None:
+                definition_id = "DELHI_GT5_CONT_V1" if station_wc_id == "WC-DEL" else "STATION_GT5_CONT_V1"
+                defn = get_definition(definition_id) or {}
+                min_days = int(defn.get("min_days_exclusive", 1826))
+                as_of_str = str(defn.get("as_of", ANCHOR_DATE.isoformat()))
+                stay_col = str(defn.get("stay_start_column", "continuous_from_date"))
+                # Remove the coarse station_tenure_years filter and expand to the canonical > 1826 day predicate
+                filters = [f for i, f in enumerate(filters) if i != gt5_idx]
+                where.append(f"DATE_DIFF(DATE '{as_of_str}', {stay_col}, DAY) > {min_days}")
+                has_explicit_grade = any(f.field == "grade" for f in filters)
+                if not has_explicit_grade:
+                    grades_list = (
+                        defn.get("grades_all_cadres", ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "GRP-B", "GRP-C", "GRP-D"])
+                        if all_cadres
+                        else defn.get("grades_executives", ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"])
+                    )
+                    # Remove redundant cadre='executive' filter when canonical grade list is applied
+                    filters = [f for f in filters if f.field != "cadre"]
+                    where.append(f"current_grade_id IN ({', '.join(_lit(g) for g in grades_list)})")
+
         for f in filters:
             where.append(self._filter_sql(subject, f, col_override))
 
-        is_self = bool(spec.self_scope or has_self_filter)
         if is_self:
             where.append("emp_id = @self_emp_id")
             if self_emp_id:
@@ -315,12 +399,19 @@ class Compiler:
         if grain == "row":
             cols = []
             for rc in subject.row_columns:
-                cols.append(f"{rc['expr']} AS {rc['as']}")
+                expr = rc["expr"]
+                if definition_id and rc["as"] in ("delhi_tenure_years", "station_tenure_years"):
+                    expr = "ROUND(DATE_DIFF(DATE '2026-10-19', continuous_from_date, DAY) / 365.25, 1)"
+                cols.append(f"{expr} AS {rc['as']}")
                 if not is_self:
                     data_classes.add(rc.get("data_class", "general"))
             row_aliases = {rc["as"] for rc in subject.row_columns}
             sort = spec.sort.model_dump() if (spec.sort and spec.sort.by in row_aliases) else (subject.row_sort or None)
-            order = f" ORDER BY {sort['by']} {sort.get('dir', 'desc').upper()}" if sort else ""
+            if sort:
+                tie_breaker = ", emp_id ASC" if "emp_id" in row_aliases and sort["by"] != "emp_id" else ""
+                order = f" ORDER BY {sort['by']} {sort.get('dir', 'desc').upper()}{tie_breaker}"
+            else:
+                order = ""
             limit = min(spec.limit or ROW_LIMIT_DEFAULT, ROW_LIMIT_DEFAULT)  # bounded (G4 B2 F-12)
             cols.append("COUNT(*) OVER () AS _total_rows")  # exact match count even when rows are capped
             sql = (f"SELECT {', '.join(cols)} FROM {_q(table)}"
@@ -329,7 +420,8 @@ class Compiler:
                                  unit=metric.unit, source="generated", tables=[table], notes=notes, dropped=dropped,
                                  effective_period=eff_period, grain="row", value_columns=[],
                                  data_classes=sorted(data_classes), aggregation=metric.aggregation,
-                                 params=bq_params, self_emp_id=self_emp_id)
+                                 params=bq_params, self_emp_id=self_emp_id, definition_id=definition_id,
+                                 all_cadres=all_cadres, station_wc_id=station_wc_id)
 
         select: List[str] = []
         group: List[str] = []
@@ -401,6 +493,8 @@ class Compiler:
                 sql += f" ORDER BY {spec.sort.by} {spec.sort.dir.upper()}"
             elif dims and dims[0] == "fy":
                 sql += " ORDER BY fiscal_year ASC"
+            elif dims == ["grade"] and "grade_level_order" in subject.fields:
+                sql += " ORDER BY MIN(grade_level_order) ASC, grade ASC"
             else:
                 sql += f" ORDER BY {metric.name} DESC"
             sql += f" LIMIT {int(min(spec.limit or 1000, 1000))}"
@@ -408,7 +502,8 @@ class Compiler:
                              unit=metric.unit, source="generated", tables=[table], dims=dim_out,
                              entity_columns=ents_cols, value_columns=metrics, notes=notes, dropped=dropped,
                              effective_period=eff_period, grain="aggregate", data_classes=sorted(data_classes),
-                             aggregation=metric.aggregation, params=bq_params, self_emp_id=self_emp_id)
+                             aggregation=metric.aggregation, params=bq_params, self_emp_id=self_emp_id,
+                             definition_id=definition_id, all_cadres=all_cadres, station_wc_id=station_wc_id)
 
     def _compile_asof(self, subject: SubjectDef, spec: QuerySpec, filters: List[Filter], dims: List[str],
                       fy: str, notes: List[str], dropped: List[str]) -> CompiledQuery:

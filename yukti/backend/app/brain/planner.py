@@ -46,7 +46,7 @@ def normalize_asr_query(question: str) -> str:
 
 PLANNER_MODEL = os.getenv("YUKTI_PLANNER_MODEL", DEFAULT_TEXT_MODEL)
 _OPS = ["=", "!=", ">", ">=", "<", "<=", "in", "not_in", "between", "like"]
-_CHARTS = ["pie", "donut", "bar", "hbar", "stacked_bar", "grouped_bar", "line", "area", "combo", "histogram",
+_CHARTS = ["pie", "donut", "bar", "column", "hbar", "stacked_bar", "grouped_bar", "line", "area", "combo", "histogram",
            "box", "treemap", "heatmap", "waterfall", "bullet", "gauge", "funnel", "scatter", "kpi", "table", "map"]
 
 PLAN_SCHEMA: Dict[str, Any] = {
@@ -568,6 +568,130 @@ class Planner:
             if intent != "data" or not raw.get("metric"):
                 intent = "data"
                 raw = dict(raw, intent="data", metric="headcount", grain="row", is_followup=False, dimensions=[], filters=[])
+
+        # SPEC-07 §4.1–4.3 (P2H.3): V19 Turn 1–3 deterministic guards (ordered levels, >5-yr cohort, named roster, all-cadres chip)
+        is_all_cadres_chip = bool(
+            prev is not None
+            and re.search(r"\b(include\s+all\s+cadres|all\s+cadres|including\s+non[- ]?executives?)\b|सभी\s+कैडर", ql_early)
+        )
+        if is_all_cadres_chip and prev is not None:
+            patch = SpecPatch(
+                add_filters=[Filter(field="cadre", op="=", value="all")],
+                dimensions=prev.dimensions or ["grade"],
+                grain="aggregate",
+                chart_kind="column",
+            )
+            spec = self._fit_to_subject(apply_patch(prev, patch), notes)
+            return Plan(intent="data", is_followup=True, spec=spec, patch=patch, chart_kind="column", notes=notes, raw=raw)
+
+        asks_level_breakdown = bool(
+            re.search(
+                r"\b(across\s+(?:different\s+)?levels?|by\s+levels?|level[- ]?wise|across\s+(?:different\s+)?grades?|by\s+grades?|grade[- ]?wise)\b",
+                ql_early,
+            )
+            or re.search(r"(अलग-अलग\s+लेवल|लेवल\s+के\s+अनुसार|ग्रेड\s+के\s+अनुसार|अलग-अलग\s+ग्रेड)", question)
+        )
+        asks_histogram = bool(re.search(r"\bhistogram\b|हिस्टोग्राम", ql_early))
+        asks_gt5_tenure = bool(
+            re.search(
+                r"(?:more\s+than\s+(?:5|five)\s+years?|(?:5|five)\s*\+\s*years?|(?:5|five)\s+years?\s+or\s+more|over\s+(?:5|five)\s+years?|"
+                r"(?:paanch|panch|5)\s+saal\s+se\s+zyada|(?:पाँच|पांच|5)\s+(?:साल|वर्ष)\s+से\s+(?:ज़्यादा|ज्यादा|अधिक))",
+                ql_early,
+            )
+            and not re.search(r"\b(minimum|maximum|policy\s+clause|what\s+is\s+the\s+rule)\b", ql_early)
+        )
+        asks_names_followup = bool(
+            prev is not None
+            and (
+                re.search(
+                    r"\b(give\s+me\s+(?:the\s+)?names?|show\s+(?:the\s+)?names?|list\s+them|who\s+are\s+they|their\s+names?)\b",
+                    ql_early,
+                )
+                or re.search(r"(?:उनके|इनके|उन\s+कर्मचारियों\s+के)?\s*नाम.*(?:बताओ|दिखाओ|दे\s+दो)", question)
+            )
+        )
+
+        if asks_names_followup and prev is not None:
+            intent = "data"
+            sort_col = "delhi_tenure_years" if (
+                re.search(r"\bdelhi\b|दिल्ली", ql_early)
+                or any(f.field == "wc" and f.value == "WC-DEL" for f in (prev.filters or []))
+            ) else (raw.get("sort_by") or "station_tenure_years")
+            raw = dict(
+                raw,
+                intent="data",
+                is_followup=True,
+                metric=prev.metric or "headcount",
+                grain="row",
+                set_dimensions=True,
+                dimensions=[],
+                sort_by=sort_col,
+                sort_dir="desc",
+            )
+        elif asks_gt5_tenure:
+            is_fu_gt5 = bool(
+                prev is not None
+                and (
+                    bool(raw.get("is_followup"))
+                    or bool(re.search(r"\b(these|those|them|out\s+of\s+these|of\s+these|more\s+than\s+5\s+years\s+in\s+delhi)\b|इनमें|उनमें|ये|इन", ql_early))
+                )
+            )
+            f_list = [
+                (
+                    {"field": "station_tenure_years", "op": ">=", "values": ["5"]}
+                    if isinstance(x, dict)
+                    and x.get("field") in ("station_tenure_years", "delhi_tenure_years", "continuous_stay_years")
+                    and str((x.get("values") or [x.get("value")])[0] if (x.get("values") or x.get("value") is not None) else "") in ("5", "5.0")
+                    else x
+                )
+                for x in (raw.get("filters") or [])
+            ]
+            if not any(isinstance(x, dict) and x.get("field") in ("station_tenure_years", "delhi_tenure_years", "total_tenure_years") for x in f_list):
+                f_list.append({"field": "station_tenure_years", "op": ">=", "values": ["5"]})
+            wants_all_cadres = bool(re.search(r"\b(all\s+cadres|including\s+non[- ]?executives?|non[- ]?executives?)\b|सभी\s+कैडर", ql_early))
+            if not wants_all_cadres and not any(isinstance(x, dict) and x.get("field") == "cadre" for x in f_list):
+                f_list.append({"field": "cadre", "op": "=", "values": ["executive"]})
+            dims_gt5 = list(raw.get("dimensions") or [])
+            if not dims_gt5:
+                dims_gt5 = ["grade"]
+            if not chart or chart in ("bar", "histogram", "donut", "pie"):
+                chart = "column"
+            intent = "data"
+            raw = dict(
+                raw,
+                intent="data",
+                is_followup=is_fu_gt5,
+                metric=raw.get("metric") or (prev.metric if is_fu_gt5 and prev else "headcount"),
+                grain=raw.get("grain") or "aggregate",
+                set_dimensions=True,
+                dimensions=dims_gt5,
+                filters=f_list,
+            )
+        elif asks_level_breakdown and not is_self_hr:
+            dims_lvl = list(raw.get("dimensions") or [])
+            if "grade" not in dims_lvl and "grade_id" not in dims_lvl:
+                dims_lvl = ["grade"] + dims_lvl
+            f_list = list(raw.get("filters") or [])
+            # T1 ("How many employees are posted in Delhi across different levels?"): keep all staff unless "executives"/"officers" was asked
+            if not re.search(r"\b(executives?|officers?)\b|अधिकारी|एग्जीक्यूटिव", ql_early):
+                f_list = [x for x in f_list if not (isinstance(x, dict) and x.get("field") == "cadre")]
+            if asks_histogram:
+                chart = "column"
+                notes.append("level_histogram_requested")
+            elif not chart or chart in ("histogram", "donut", "pie"):
+                chart = "column"
+            is_fu_lvl = bool(prev is not None and re.search(r"\b(these|those|them)\b|इनमें|उनमें", ql_early))
+            intent = "data"
+            raw = dict(
+                raw,
+                intent="data",
+                is_followup=is_fu_lvl,
+                metric=raw.get("metric") if raw.get("metric") in ("headcount", "avg_gross_salary_lakh", "pay_scale_min_inr", "separations", "voluntary_exits") else "headcount",
+                grain="aggregate",
+                set_dimensions=True,
+                dimensions=dims_lvl,
+                filters=f_list,
+            )
 
         if intent != "data":
             return Plan(intent=intent, raw=raw)

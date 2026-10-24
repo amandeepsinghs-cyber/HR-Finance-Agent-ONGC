@@ -123,6 +123,35 @@
               "type": "integer",
               "description": "Full row count when rows[] is a page/sample"
             },
+            "column_labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "hidden_columns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "default_sort": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "dir": {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ]
+                }
+              }
+            },
+            "as_of": {
+              "type": "string"
+            },
             "row_actions": {
               "type": "array",
               "items": {
@@ -508,6 +537,13 @@
     "query_spec": {
       "$ref": "#/$defs/query_spec"
     },
+    "definition_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Canonical rule definition ID from app/semantic/definitions.yaml (e.g. DELHI_GT5_CONT_V1)"
+    },
     "caveat": {
       "type": "string",
       "description": "data note shown inside Sources (caveats, assumptions)"
@@ -542,6 +578,7 @@
             "pie",
             "donut",
             "bar",
+            "column",
             "hbar",
             "stacked_bar",
             "grouped_bar",
@@ -561,6 +598,20 @@
             "table",
             "map"
           ]
+        },
+        "x_order": {
+          "enum": [
+            "explicit",
+            "value_desc",
+            "value_asc",
+            "alpha"
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "footnote": {
+          "type": "string"
         },
         "data": {
           "type": "array",

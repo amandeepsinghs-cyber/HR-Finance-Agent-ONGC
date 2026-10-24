@@ -18,11 +18,17 @@ logger = logging.getLogger("yukti.session_memory")
 MAX_SESSION_TURNS = 50
 MAX_VISUAL_HISTORY = 20
 MAX_SPEC_HISTORY = 20
+MAX_COHORTS = 50
 MAX_SESSIONS = 200
 SESSION_TTL_SECONDS = 3600
 
 
-# Work-centre names/aliases come from the single entity dictionary (B1.2).
+def _emp_id_for_persona(persona: str) -> str:
+    try:
+        from app.auth import PERSONA_DIRECTORY
+        return str((PERSONA_DIRECTORY.get(persona) or {}).get("emp_id") or "")
+    except Exception:
+        return ""
 
 
 @dataclass
@@ -43,6 +49,200 @@ class SessionState:
     last_turn_time: float = field(default_factory=time.time)
     # B2.5: QuerySpec history (contract-v2 `query_spec` dicts), newest last; follow-ups patch [-1].
     spec_history: List[Dict[str, Any]] = field(default_factory=list)
+    # SPEC-07 §4.6: Session cohort store (C-1 through C-8; bounded LRU <= 50)
+    cohorts: List[Dict[str, Any]] = field(default_factory=list)
+    active_cohort_id: Optional[str] = None
+    principal_emp_id: Optional[str] = None
+
+    def ensure_principal(self, persona: str, emp_id: Optional[str] = None) -> None:
+        """C-8: Tag cohorts with `principal.emp_id`; clear cohorts and active dataset when persona/login changes."""
+        eff_emp = emp_id if emp_id is not None else _emp_id_for_persona(persona)
+        persona_changed = bool(self.persona and persona and self.persona != persona)
+        emp_changed = bool(self.principal_emp_id and eff_emp and self.principal_emp_id != eff_emp)
+        if persona_changed or emp_changed:
+            self.cohorts.clear()
+            self.active_cohort_id = None
+            self.last_rows.clear()
+            self.last_columns.clear()
+            self.spec_history.clear()
+        if persona:
+            self.persona = persona
+        if eff_emp:
+            self.principal_emp_id = eff_emp
+
+    def get_cohort(self, cohort_id: Optional[str]) -> Optional[Dict[str, Any]]:
+        if not cohort_id:
+            return None
+        for c in reversed(self.cohorts):
+            if c.get("cohort_id") == cohort_id:
+                return c
+        return None
+
+    def get_active_cohort(self) -> Optional[Dict[str, Any]]:
+        return self.get_cohort(self.active_cohort_id)
+
+    def restore_cohort(self, query: str = "") -> Optional[Dict[str, Any]]:
+        """C-2: Re-activates the parent/root cohort (e.g. 'go back to all Delhi staff' -> C0)."""
+        if not self.cohorts:
+            return None
+        q_low = (query or "").lower()
+        target: Optional[Dict[str, Any]] = None
+        if "all delhi" in q_low or "all staff" in q_low or "c0" in q_low:
+            target = self.get_cohort("C0") or self.cohorts[0]
+        if target is None:
+            active = self.get_active_cohort()
+            if active and active.get("parent_cohort_id"):
+                target = self.get_cohort(active.get("parent_cohort_id"))
+        if target is None and len(self.cohorts) >= 2:
+            target = self.cohorts[-2]
+        if target is None:
+            target = self.cohorts[0]
+        self.active_cohort_id = target["cohort_id"]
+        if target.get("rows") and target.get("columns"):
+            self.last_rows = list(target["rows"])[:2000]
+            self.last_columns = list(target["columns"])
+        if target.get("spec"):
+            self.spec_history.append(dict(target["spec"]))
+            if len(self.spec_history) > MAX_SPEC_HISTORY:
+                self.spec_history[:] = self.spec_history[-MAX_SPEC_HISTORY:]
+        return target
+
+    def _record_cohort(
+        self,
+        turn_contract: Dict[str, Any],
+        all_rows: Optional[List[Dict[str, Any]]] = None,
+    ) -> None:
+        """SPEC-07 §4.6 C-1..C-8: Creates or updates the session cohort entry for data turns."""
+        # C-3: Visual re-plots or UI commands never change the active cohort
+        ui_cmd = (turn_contract.get("ui_action") or {}).get("command")
+        if turn_contract.get("replot") or ui_cmd in (
+            "set_chart_kind",
+            "set_theme",
+            "set_language",
+            "set_panel_mode",
+            "export",
+            "navigate_history",
+            "go_home",
+        ):
+            return
+        vis = turn_contract.get("visual")
+        if not isinstance(vis, dict) or vis.get("type") not in ("chart", "table", "kpi"):
+            return
+        if vis.get("mode") == "restore":
+            return
+        acc = turn_contract.get("access") or {}
+        if acc.get("status") == "refused":
+            return
+
+        tbl = vis.get("table") if isinstance(vis.get("table"), dict) else {}
+        cols = list(tbl.get("columns") or [])
+        rows = list(
+            tbl.get("rows")
+            if (isinstance(tbl.get("rows"), list) and tbl.get("rows"))
+            else (all_rows or (vis.get("chart") or {}).get("data") or [])
+        )[:2000]
+        if not cols and rows and isinstance(rows[0], dict):
+            cols = list(rows[0].keys())
+        if not rows and not vis.get("kpis"):
+            return
+
+        qspec = dict(turn_contract.get("query_spec") or {})
+        def_id = turn_contract.get("definition_id")
+        if not def_id and qspec:
+            flts = qspec.get("filters") or []
+            has_tenure = any(
+                isinstance(f, dict) and f.get("field") in ("station_tenure_years", "delhi_tenure_years")
+                for f in flts
+            )
+            if has_tenure:
+                wc_vals = [
+                    f.get("value")
+                    for f in flts
+                    if isinstance(f, dict) and f.get("field") == "wc"
+                ]
+                def_id = "DELHI_GT5_CONT_V1" if (not wc_vals or wc_vals[0] in ("WC-DEL", ["WC-DEL"])) else "STATION_GT5_CONT_V1"
+
+        kpis = vis.get("kpis") or []
+        kpi_val = kpis[0].get("value") if (kpis and isinstance(kpis[0], dict) and isinstance(kpis[0].get("value"), int)) else None
+        if qspec.get("grain") == "row":
+            row_count = int(tbl.get("total_rows") if tbl.get("total_rows") is not None else len(rows))
+        elif kpi_val is not None:
+            row_count = int(kpi_val)
+        else:
+            row_count = int(tbl.get("total_rows") if tbl.get("total_rows") is not None else len(rows))
+
+        mask_lvl = (tbl.get("masking") or {}).get("level") if isinstance(tbl.get("masking"), dict) else None
+        rbac_dec = "aggregate" if mask_lvl == "aggregate" else ("allow" if acc.get("status") == "allowed" else str(acc.get("status") or "allow"))
+        emp_id = self.principal_emp_id or _emp_id_for_persona(self.persona)
+
+        active = self.get_active_cohort()
+        is_all_cadres = any(
+            isinstance(f, dict) and f.get("field") == "cadre" and str(f.get("value")).lower() in ("all", "all_cadres")
+            for f in (qspec.get("filters") or [])
+        )
+
+        # Case 1: T3 row expansion of the active cohort (same definition, aggregate -> row)
+        if (
+            active is not None
+            and def_id is not None
+            and active.get("definition_id") == def_id
+            and (active.get("spec") or {}).get("grain") == "aggregate"
+            and qspec.get("grain") == "row"
+        ):
+            active["turn_id"] = turn_contract.get("turn_id")
+            active["spec"] = qspec
+            active["row_count"] = row_count
+            active["columns"] = cols
+            active["rows"] = rows
+            active["rbac_decision"] = rbac_dec
+            active["visual"] = dict(vis)
+            return
+
+        # Case 2: Determine cohort_id and parent_cohort_id
+        if not self.cohorts:
+            cid = "C0"
+            parent_id = None
+        elif active is not None and def_id is not None and active.get("definition_id") == def_id and is_all_cadres:
+            cid = f"{active['cohort_id'].rstrip(chr(39))}'"
+            parent_id = active.get("parent_cohort_id") or "C0"
+        elif active is not None and (vis.get("mode") in ("refine", "compare") or def_id is not None):
+            base_idx = sum(1 for c in self.cohorts if not str(c.get("cohort_id", "")).endswith("'"))
+            cid = f"C{base_idx}"
+            parent_id = "C0" if any(c.get("cohort_id") == "C0" for c in self.cohorts) else active.get("cohort_id")
+        else:
+            base_idx = sum(1 for c in self.cohorts if not str(c.get("cohort_id", "")).endswith("'"))
+            cid = "C0" if base_idx == 0 else f"C{base_idx}"
+            parent_id = None
+
+        entry: Dict[str, Any] = {
+            "cohort_id": cid,
+            "parent_cohort_id": parent_id,
+            "turn_id": turn_contract.get("turn_id"),
+            "definition_id": def_id,
+            "spec": qspec,
+            "row_count": row_count,
+            "columns": cols,
+            "rows": rows,
+            "level_rows": list(rows) if "grade" in cols else (list(active.get("level_rows") or []) if active else []),
+            "rbac_decision": rbac_dec,
+            "as_of": str(tbl.get("as_of") or "2026-10-19"),
+            "emp_id": emp_id,
+            "artifacts": [],
+            "visual": dict(vis),
+        }
+        # Replace in-place if same cohort_id exists, otherwise append
+        replaced = False
+        for idx, existing in enumerate(self.cohorts):
+            if existing.get("cohort_id") == cid:
+                entry["artifacts"] = list(existing.get("artifacts") or [])
+                self.cohorts[idx] = entry
+                replaced = True
+                break
+        if not replaced:
+            self.cohorts.append(entry)
+        if len(self.cohorts) > MAX_COHORTS:
+            self.cohorts[:] = self.cohorts[-MAX_COHORTS:]
+        self.active_cohort_id = cid
 
     def record_turn(
         self,
@@ -87,6 +287,8 @@ class SessionState:
         if turn_contract.get("generated_sql"):
             self.last_sql = turn_contract["generated_sql"]
             self._extract_entities_from_sql(self.last_sql)
+
+        self._record_cohort(turn_contract, all_rows=all_rows)
 
         self.turns.append(enriched)
         if len(self.turns) > MAX_SESSION_TURNS:
@@ -279,20 +481,24 @@ class SessionManager:
         session_id: str,
         persona: str = "CMD",
         language: str = "en",
+        emp_id: Optional[str] = None,
     ) -> SessionState:
         if session_id not in self.sessions:
             self._evict()
-            self.sessions[session_id] = SessionState(
+            st = SessionState(
                 session_id=session_id,
                 persona=persona,
                 language=language,
+                principal_emp_id=emp_id or _emp_id_for_persona(persona),
             )
+            self.sessions[session_id] = st
         else:
-            self.sessions[session_id].last_turn_time = time.time()
+            st = self.sessions[session_id]
+            st.last_turn_time = time.time()
             if persona:
-                self.sessions[session_id].persona = persona
+                st.ensure_principal(persona, emp_id=emp_id)
             if language:
-                self.sessions[session_id].language = language
+                st.language = language
         return self.sessions[session_id]
 
 

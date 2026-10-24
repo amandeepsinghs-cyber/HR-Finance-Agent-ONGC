@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 Op = Literal["=", "!=", ">", ">=", "<", "<=", "in", "not_in", "between", "like"]
 Aggregation = Literal["count", "sum", "avg", "min", "max", "distinct_count", "ratio"]
-ChartKind = Literal["pie", "donut", "bar", "hbar", "stacked_bar", "grouped_bar", "line", "area", "combo",
+ChartKind = Literal["pie", "donut", "bar", "column", "hbar", "stacked_bar", "grouped_bar", "line", "area", "combo",
                     "histogram", "box", "treemap", "heatmap", "waterfall", "bullet", "gauge", "funnel",
                     "scatter", "kpi", "table", "map"]
 

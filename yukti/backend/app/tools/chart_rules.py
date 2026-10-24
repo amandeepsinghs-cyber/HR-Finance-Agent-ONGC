@@ -153,7 +153,7 @@ def select_chart_kind(
                 return req
             vo = candidate.lower().strip()
             if vo in {
-                "pie", "donut", "bar", "hbar", "stacked_bar", "grouped_bar", "line", "area",
+                "pie", "donut", "bar", "column", "hbar", "stacked_bar", "grouped_bar", "line", "area",
                 "combo", "histogram", "treemap", "heatmap", "waterfall", "bullet", "gauge",
                 "funnel", "scatter", "kpi", "table", "map",
             }:
@@ -182,12 +182,12 @@ def select_chart_kind(
     if time_cols and len(rows) >= 3:
         return "line"
 
-    # 6. Executive tenure by grade (C1 pattern) -> Donut by grade (UX Spec §6)
+    # 6. Ordered grade / level breakdown (SPEC-07 §4.1–4.2, BUG-34) -> Column chart in level order
     grade_cols = [c for c in columns if "grade" in c.lower()]
     if grade_cols and len(columns) == 2:
         distinct_grades = {str(r.get(grade_cols[0])) for r in rows}
-        if len(distinct_grades) <= 10:
-            return "donut"
+        if len(distinct_grades) <= 16:
+            return "column"
 
     # 7. Ranking (sorted top fields, vendors, assets)
     if any(k in " ".join(col_names_lower) for k in ["rank", "loss", "profit", "pbt", "ebitda", "revenue", "spend", "cost", "deficit", "implication", "vacanc"]) and len(rows) <= 60:

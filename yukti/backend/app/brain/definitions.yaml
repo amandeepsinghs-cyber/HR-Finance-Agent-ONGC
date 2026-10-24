@@ -1,0 +1,99 @@
+# Canonical Yukti v3 semantic definitions (SPEC-07 §4.2, D-51, P2H.3)
+# Single source of truth for station tenure (> 5.0 years continuous stay as of 19-Oct-2026).
+version: 1
+anchor_date: "2026-10-19"
+
+definitions:
+  DELHI_GT5_CONT_V1:
+    definition_id: DELHI_GT5_CONT_V1
+    title: "Delhi continuous stay > 5.0 years (as of 19-Oct-2026)"
+    wc_id: "WC-DEL"
+    station_label: "Delhi"
+    as_of: "2026-10-19"
+    tenure_basis: "continuous_stay"
+    threshold_years_exclusive: 5.0
+    min_days_exclusive: 1826
+    stay_start_column: "continuous_from_date"
+    grades_executives: ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"]
+    grades_all_cadres: ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "GRP-B", "GRP-C", "GRP-D"]
+    board_grades_excluded: ["CMD", "DIR"]
+    exemption_handling: "counted_not_removed"
+    rule_sentence: "Continuous stay at the current station, more than 5.0 years, as of 19-Oct-2026"
+    citations:
+      - doc_id: "ONGC-HR-POL-JRTP"
+        kind: "policy"
+        title: "JRTP Rev 4 cl. 3.2 — rotation after 3–5 years (**Illustrative**)"
+        section: "cl. 3.2"
+        illustrative: true
+      - doc_id: "J-03"
+        kind: "case_law"
+        title: "Delhi High Court (2018), ONGC v. B.V. Srihari Rao"
+        section: "2018 SCC OnLine Del (Administrative Exigency & Rotation)"
+        illustrative: false
+    reference_sql: |
+      SELECT
+        e.emp_id,
+        e.emp_name AS name,
+        COALESCE(NULLIF(e.current_designation, ''), e.grade_designation) AS functional_designation,
+        e.current_grade_id AS grade,
+        e.grade_level_order,
+        e.discipline_id,
+        ROUND(e.total_tenure_years, 1) AS ongc_tenure_years,
+        ROUND(DATE_DIFF(DATE '2026-10-19', s.continuous_from_date, DAY) / 365.25, 1) AS delhi_tenure_years,
+        ROUND(e.years_to_retirement, 1) AS years_to_retirement,
+        e.exemption_tag AS exemption,
+        e.is_superannuation_exempt
+      FROM `hrfin_gold.ssot_workforce_employee` e
+      JOIN `hrfin_gold.v_continuous_stay` s
+        ON s.emp_id = e.emp_id AND s.is_current_stay = TRUE
+      WHERE e.employment_status = 'Active'
+        AND e.wc_id = 'WC-DEL'
+        AND e.current_grade_id IN UNNEST(@grades)
+        AND DATE_DIFF(DATE '2026-10-19', s.continuous_from_date, DAY) > 1826
+
+  STATION_GT5_CONT_V1:
+    definition_id: STATION_GT5_CONT_V1
+    title: "Station continuous stay > 5.0 years (as of 19-Oct-2026)"
+    wc_id: "@wc_id"
+    station_label: "current station"
+    as_of: "2026-10-19"
+    tenure_basis: "continuous_stay"
+    threshold_years_exclusive: 5.0
+    min_days_exclusive: 1826
+    stay_start_column: "continuous_from_date"
+    grades_executives: ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"]
+    grades_all_cadres: ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "GRP-B", "GRP-C", "GRP-D"]
+    board_grades_excluded: ["CMD", "DIR"]
+    exemption_handling: "counted_not_removed"
+    rule_sentence: "Continuous stay at the current station, more than 5.0 years, as of 19-Oct-2026"
+    citations:
+      - doc_id: "ONGC-HR-POL-JRTP"
+        kind: "policy"
+        title: "JRTP Rev 4 cl. 3.2 — rotation after 3–5 years (**Illustrative**)"
+        section: "cl. 3.2"
+        illustrative: true
+      - doc_id: "J-03"
+        kind: "case_law"
+        title: "Delhi High Court (2018), ONGC v. B.V. Srihari Rao"
+        section: "2018 SCC OnLine Del (Administrative Exigency & Rotation)"
+        illustrative: false
+    reference_sql: |
+      SELECT
+        e.emp_id,
+        e.emp_name AS name,
+        COALESCE(NULLIF(e.current_designation, ''), e.grade_designation) AS functional_designation,
+        e.current_grade_id AS grade,
+        e.grade_level_order,
+        e.discipline_id,
+        ROUND(e.total_tenure_years, 1) AS ongc_tenure_years,
+        ROUND(DATE_DIFF(DATE '2026-10-19', s.continuous_from_date, DAY) / 365.25, 1) AS station_tenure_years,
+        ROUND(e.years_to_retirement, 1) AS years_to_retirement,
+        e.exemption_tag AS exemption,
+        e.is_superannuation_exempt
+      FROM `hrfin_gold.ssot_workforce_employee` e
+      JOIN `hrfin_gold.v_continuous_stay` s
+        ON s.emp_id = e.emp_id AND s.is_current_stay = TRUE
+      WHERE e.employment_status = 'Active'
+        AND e.wc_id = @wc_id
+        AND e.current_grade_id IN UNNEST(@grades)
+        AND DATE_DIFF(DATE '2026-10-19', s.continuous_from_date, DAY) > 1826

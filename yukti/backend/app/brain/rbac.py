@@ -351,6 +351,8 @@ def _enrich_classes_from_question(
     q_low = q.lower()
     # Keep ALL compiler-derived base classes intact (never strip pay_individual, named, apar, sensitive)
     classes = list(base_classes or ["general"])
+    if spec is not None and spec.domain == "hr" and not spec.self_scope:
+        classes = ["general_hr" if c == "general" else c for c in classes]
 
     if not q:
         return classes
@@ -661,6 +663,9 @@ def to_aggregate(spec: QuerySpec) -> QuerySpec:
     data["grain"] = "aggregate"
     if not data.get("dimensions"):
         data["dimensions"] = [load_policy().get("aggregate_dimension_default", "grade")]
+    sort_obj = data.get("sort")
+    if isinstance(sort_obj, dict) and sort_obj.get("by") not in (data.get("dimensions") or []):
+        data["sort"] = None
     return QuerySpec.model_validate(data)
 
 

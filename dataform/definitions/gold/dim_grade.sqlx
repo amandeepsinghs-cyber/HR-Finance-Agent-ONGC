@@ -1,0 +1,55 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "dim_grade",
+  description: "Canonical ONGC grade dimension with explicit level order for V19 charts and rosters (SPEC-07 §4.1, BUG-34)"
+}
+
+SELECT
+  g.grade_id,
+  g.cadre,
+  g.`group`,
+  g.designation,
+  g.pay_scale_min_inr,
+  g.pay_scale_max_inr,
+  g.scale_type,
+  g.scale_source,
+  g.promotion_mode,
+  g.typical_residency_years,
+  g.dpc_evaluation_type,
+  CASE g.grade_id
+    WHEN 'E1' THEN 1
+    WHEN 'E2' THEN 2
+    WHEN 'E3' THEN 3
+    WHEN 'E4' THEN 4
+    WHEN 'E5' THEN 5
+    WHEN 'E6' THEN 6
+    WHEN 'E7' THEN 7
+    WHEN 'E8' THEN 8
+    WHEN 'E9' THEN 9
+    WHEN 'GRP-B' THEN 10
+    WHEN 'GRP-C' THEN 11
+    WHEN 'GRP-D' THEN 12
+    WHEN 'CMD' THEN NULL
+    WHEN 'DIR' THEN NULL
+    ELSE NULL
+  END AS grade_level_order
+FROM `hrfin_silver.dim_grade` g
+ORDER BY
+  CASE g.grade_id
+    WHEN 'E1' THEN 1
+    WHEN 'E2' THEN 2
+    WHEN 'E3' THEN 3
+    WHEN 'E4' THEN 4
+    WHEN 'E5' THEN 5
+    WHEN 'E6' THEN 6
+    WHEN 'E7' THEN 7
+    WHEN 'E8' THEN 8
+    WHEN 'E9' THEN 9
+    WHEN 'GRP-B' THEN 10
+    WHEN 'GRP-C' THEN 11
+    WHEN 'GRP-D' THEN 12
+    WHEN 'DIR' THEN 98
+    WHEN 'CMD' THEN 99
+    ELSE 100
+  END

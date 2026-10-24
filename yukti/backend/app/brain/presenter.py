@@ -6,12 +6,173 @@ the insight library, drill-down chips and the numeric-grounding check on top of 
 
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List, Optional, Tuple
 
-from app.brain.compiler import CompiledQuery, QueryResult
+from app.brain.compiler import GRADE_LEVEL_ORDER, CompiledQuery, QueryResult
 from app.brain.query_spec import QuerySpec
 from app.semantic.entities import get_entities
 from app.tools.chart_rules import build_chart_spec, select_chart_kind
+
+EXEC_LEVELS: List[str] = ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"]
+ALL_NON_BOARD_LEVELS: List[str] = ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "GRP-B", "GRP-C", "GRP-D"]
+LEVEL_CHART_NOTE = "Levels are categories, so this is a column chart in level order."
+
+
+def _station_short_name(wc_id: Optional[str]) -> str:
+    if not wc_id:
+        return "ONGC"
+    if wc_id == "WC-DEL":
+        return "Delhi"
+    ents = get_entities()
+    wc_meta = ents.work_centres.get(wc_id) or {}
+    city = str(wc_meta.get("city") or "").strip()
+    return city or ents.wc_name(wc_id)
+
+
+def _format_exemption(r: Dict[str, Any]) -> str:
+    ex = r.get("exemption")
+    if ex is not None:
+        s = str(ex).strip()
+        if s and s.upper() not in ("NONE", "NULL", "FALSE", "—", "-"):
+            if s.upper() == "SUPERANNUATION":
+                return "Superannuation (<3 yrs)"
+            return s.replace("_", "-").title()
+    if r.get("is_superannuation_exempt") in (True, 1, "true", "True"):
+        return "Superannuation (<3 yrs)"
+    return "—"
+
+
+def format_workforce_roster_table(
+    spec: QuerySpec,
+    compiled: CompiledQuery,
+    columns: List[str],
+    rows: List[Dict[str, Any]],
+    n_total: Optional[int],
+    persona: str = "CMD",
+    query: str = "",
+) -> Tuple[Dict[str, Any], bool]:
+    """Formats a workforce roster table per SPEC-07 §4.3 and board #77 contract.
+
+    Returns `(table_dict, used_grade_designation_fallback)`.
+    """
+    cap = 2000
+    q_low = (query or "").lower()
+    if spec.self_scope or re.search(r"\b(salary|pay|ctc|gross|apar|rating|score|vigilance|posh|medical|leave)\b", q_low):
+        return {
+            "columns": columns,
+            "rows": rows[:cap],
+            "total_rows": n_total if n_total is not None else len(rows),
+        }, False
+
+    is_delhi = (compiled.station_wc_id in (None, "WC-DEL")) and not any(
+        f.field == "wc" and f.value not in ("WC-DEL", ["WC-DEL"]) for f in (spec.filters or [])
+    )
+    station_short = _station_short_name(compiled.station_wc_id)
+    tenure_key = "delhi_tenure_years" if is_delhi else "station_tenure_years"
+    tenure_label = "Tenure in Delhi (yrs)" if is_delhi else f"Tenure at {station_short} (yrs)"
+
+    visible_cols = [
+        "name",
+        "functional_designation",
+        "grade",
+        "ongc_tenure_years",
+        tenure_key,
+        "years_to_retirement",
+        "exemption",
+    ]
+    can_keep_hidden = (persona or "").strip().upper() in ("CMD", "DIR_HR")
+    hidden_cols = ["emp_id", "discipline"] if can_keep_hidden else []
+    all_cols = visible_cols + hidden_cols
+
+    out_rows: List[Dict[str, Any]] = []
+    used_fallback = False
+    for r in rows[:cap]:
+        if not r.get("current_designation"):
+            used_fallback = True
+        desig = r.get("functional_designation") or r.get("current_designation") or r.get("designation") or r.get("grade") or ""
+        t_val = r.get("delhi_tenure_years") if r.get("delhi_tenure_years") is not None else r.get("station_tenure_years")
+        ongc_val = r.get("ongc_tenure_years")
+        ret_val = r.get("years_to_retirement")
+        row_out: Dict[str, Any] = {
+            "name": r.get("name"),
+            "functional_designation": desig,
+            "grade": r.get("grade"),
+            "ongc_tenure_years": round(float(ongc_val), 1) if isinstance(ongc_val, (int, float)) else ongc_val,
+            tenure_key: round(float(t_val), 1) if isinstance(t_val, (int, float)) else t_val,
+            "years_to_retirement": round(float(ret_val), 1) if isinstance(ret_val, (int, float)) else ret_val,
+            "exemption": _format_exemption(r),
+        }
+        if can_keep_hidden:
+            row_out["emp_id"] = r.get("emp_id")
+            row_out["discipline"] = r.get("discipline")
+        out_rows.append(row_out)
+
+    column_labels = {
+        "name": "Name",
+        "functional_designation": "Designation",
+        "grade": "Level",
+        "ongc_tenure_years": "ONGC service (yrs)",
+        tenure_key: tenure_label,
+        "years_to_retirement": "Years to retirement",
+        "exemption": "Exemption",
+    }
+    tbl: Dict[str, Any] = {
+        "columns": all_cols,
+        "rows": out_rows,
+        "total_rows": n_total if n_total is not None else len(rows),
+        "column_labels": column_labels,
+        "hidden_columns": hidden_cols,
+        "default_sort": {"key": tenure_key, "dir": "desc"},
+        "as_of": "2026-10-19",
+    }
+    return tbl, used_fallback
+
+
+def order_workforce_grade_rows(
+    spec: QuerySpec,
+    compiled: CompiledQuery,
+    val_col: str,
+    rows: List[Dict[str, Any]],
+) -> Tuple[List[Dict[str, Any]], int, int, int]:
+    """Separates CMD/DIR board rows and orders level rows explicitly by `GRADE_LEVEL_ORDER`.
+
+    Returns `(ordered_rows, cmd_count, dir_count, total_including_board)`.
+    """
+    by_grade: Dict[str, Dict[str, Any]] = {}
+    cmd_n = 0
+    dir_n = 0
+    total_with_board = 0
+    for r in rows:
+        g = str(r.get("grade") or "").strip().upper()
+        v = _num(r.get(val_col))
+        total_with_board += int(round(v))
+        if g == "CMD":
+            cmd_n += int(round(v))
+        elif g == "DIR":
+            dir_n += int(round(v))
+        elif g:
+            by_grade[g] = dict(r)
+
+    has_explicit_grade_filter = any(f.field == "grade" for f in (spec.filters or []))
+    is_exec_only = (
+        (compiled.definition_id in ("DELHI_GT5_CONT_V1", "STATION_GT5_CONT_V1") and not compiled.all_cadres)
+        or any(f.field == "cadre" and str(f.value).lower() == "executive" for f in (spec.filters or []))
+    )
+    if has_explicit_grade_filter:
+        target_levels = sorted(by_grade.keys(), key=lambda g: GRADE_LEVEL_ORDER.get(g, 99))
+    elif is_exec_only:
+        target_levels = list(EXEC_LEVELS)
+    else:
+        target_levels = list(ALL_NON_BOARD_LEVELS)
+
+    ordered: List[Dict[str, Any]] = []
+    for lvl in target_levels:
+        if lvl in by_grade:
+            ordered.append(by_grade[lvl])
+        else:
+            ordered.append({"grade": lvl, val_col: 0})
+    return ordered, cmd_n, dir_n, total_with_board
 
 UNIT_WORDS = {"employees": "employees", "posts": "posts", "workers": "contract workers", "inr_cr": "₹ crore",
               "inr_lakh": "₹ lakh", "usd_per_boe": "$/BOE", "inr_per_boe": "₹/BOE", "pct": "%", "years": "years", "hours": "hours",
@@ -122,15 +283,25 @@ def scope_phrases(spec: QuerySpec, compiled: Optional[CompiledQuery] = None) -> 
 def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: List[Dict[str, Any]],
                  chart_kind: Optional[str], title: str, subtitle: str, mode: str,
                  n_total: Optional[int] = None,
-                 breakdown: Optional[Tuple[List[str], List[Dict[str, Any]]]] = None) -> Dict[str, Any]:
+                 breakdown: Optional[Tuple[List[str], List[Dict[str, Any]]]] = None,
+                 persona: str = "CMD",
+                 query: str = "") -> Dict[str, Any]:
     unit = CHART_UNIT.get(compiled.unit)
     unit_word = UNIT_WORDS.get(compiled.unit, "")
     cap = 2000 if compiled.grain == "row" else 200   # rosters ship whole (UI virtualises, U5.2)
-    table = {"columns": columns, "rows": rows[:cap], "total_rows": n_total if n_total is not None else len(rows)}
+    table: Dict[str, Any] = {"columns": columns, "rows": rows[:cap], "total_rows": n_total if n_total is not None else len(rows)}
     vis: Dict[str, Any] = {"type": "table", "mode": mode, "title": title, "subtitle": subtitle, "table": table}
     if not rows:
         return vis
     if compiled.grain == "row":
+        if compiled.subject == "workforce":
+            roster_tbl, used_fallback = format_workforce_roster_table(
+                spec, compiled, columns, rows, n_total, persona=persona, query=query
+            )
+            vis["table"] = roster_tbl
+            if used_fallback:
+                vis["_designation_fallback"] = True
+            return vis
         # MoU target scorecard is row-grain (10 parameters) but always renders a horizontal target chart + summary KPIs
         if compiled.subject == "mou" and "parameter" in columns and "pct_of_excellent" in columns:
             ck = chart_kind if chart_kind and chart_kind != "table" else "hbar"
@@ -365,13 +536,27 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
         if breakdown and breakdown[1] and len(breakdown[0]) >= 2:
             bd_cols, bd_rows = breakdown
             bd_dim, bd_val = bd_cols[0], bd_cols[1]
-            ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else (
-                "line" if bd_dim in ("fiscal_year", "fy") else select_chart_kind(columns=[bd_dim, bd_val], rows=bd_rows)
-            )
-            if ck in ("kpi", "table"):
-                ck = "hbar"
-            vis["type"] = "chart"
-            vis["chart"] = build_chart_spec(kind=ck, columns=[bd_dim, bd_val] + [c for c in bd_cols[2:5]], rows=bd_rows, title=title, unit=unit)
+            if compiled.subject == "workforce" and bd_dim == "grade" and compiled.metric == "headcount":
+                ordered_bd, cmd_n, dir_n, _ = order_workforce_grade_rows(spec, compiled, bd_val, bd_rows)
+                bd_rows = ordered_bd
+                ck = chart_kind if (chart_kind and chart_kind not in ("kpi", "table", "histogram", "bar")) else "column"
+                vis["type"] = "chart"
+                chart_bd = build_chart_spec(kind=ck, columns=[bd_dim, bd_val], rows=bd_rows, title=title, unit=unit)
+                chart_bd["x_order"] = "explicit"
+                chart_bd["note"] = LEVEL_CHART_NOTE
+                if cmd_n > 0 or dir_n > 0:
+                    st_short = _station_short_name(compiled.station_wc_id)
+                    chart_bd["footnote"] = f"Also in {st_short}: CMD {cmd_n}, Directors {dir_n}"
+                vis["chart"] = chart_bd
+                vis["table"] = {"columns": [bd_dim, bd_val], "rows": bd_rows, "total_rows": len(bd_rows)}
+            else:
+                ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else (
+                    "line" if bd_dim in ("fiscal_year", "fy") else select_chart_kind(columns=[bd_dim, bd_val], rows=bd_rows)
+                )
+                if ck in ("kpi", "table"):
+                    ck = "hbar"
+                vis["type"] = "chart"
+                vis["chart"] = build_chart_spec(kind=ck, columns=[bd_dim, bd_val] + [c for c in bd_cols[2:5]], rows=bd_rows, title=title, unit=unit)
             num_bd = [r for r in bd_rows if isinstance(r.get(bd_val), (int, float)) and not isinstance(r.get(bd_val), bool)]
             if num_bd:
                 top_b = max(num_bd, key=lambda r: _num(r.get(bd_val)))
@@ -419,6 +604,54 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
         return vis
     if compiled.unit in ("pct", "usd_per_boe", "ratio") and len(compiled.value_columns) > 1:
         pass  # mixed measures still chart the primary measure only
+    if compiled.subject == "workforce" and dims == ["grade"] and compiled.metric == "headcount" and val:
+        ordered_rows, cmd_n, dir_n, total_with_board = order_workforce_grade_rows(spec, compiled, val, rows)
+        st_short = _station_short_name(compiled.station_wc_id)
+        exec_num_rows = [
+            r for r in ordered_rows
+            if str(r.get("grade")) in EXEC_LEVELS and isinstance(r.get(val), (int, float)) and not isinstance(r.get(val), bool)
+        ]
+        if not compiled.definition_id and exec_num_rows:
+            top_ex = max(exec_num_rows, key=lambda r: _num(r.get(val)))
+            top_ex_lvl = str(top_ex.get("grade"))
+            top_ex_n = int(round(_num(top_ex.get(val))))
+            title = f"{st_short}: {total_with_board:,} staff; {top_ex_lvl} is the largest executive level ({top_ex_n:,})"
+            vis["title"] = title
+        vis["table"] = {"columns": columns, "rows": ordered_rows, "total_rows": len(ordered_rows)}
+        ck_lvl = chart_kind if (chart_kind and chart_kind not in ("kpi", "histogram", "bar")) else "column"
+        if ck_lvl != "table":
+            vis["type"] = "chart"
+            chart_lvl = build_chart_spec(
+                kind=ck_lvl,
+                columns=["grade", val] + [c for c in compiled.value_columns[1:] if c != val],
+                rows=ordered_rows,
+                title=title,
+                unit=unit,
+            )
+            chart_lvl["x_order"] = "explicit"
+            chart_lvl["note"] = LEVEL_CHART_NOTE
+            if cmd_n > 0 or dir_n > 0:
+                chart_lvl["footnote"] = f"Also in {st_short}: CMD {cmd_n}, Directors {dir_n}"
+            vis["chart"] = chart_lvl
+        kpis_lvl: List[Dict[str, Any]] = [
+            {
+                "label": f"Total {st_short} Staff" if st_short != "ONGC" else "Total Active Staff",
+                "value": total_with_board,
+                "unit": unit_word,
+                "delta": f"Also in {st_short}: CMD {cmd_n}, Directors {dir_n}" if (cmd_n or dir_n) else f"Across {len(ordered_rows)} levels",
+            }
+        ]
+        if exec_num_rows:
+            top_ex = max(exec_num_rows, key=lambda r: _num(r.get(val)))
+            kpis_lvl.append(
+                {
+                    "label": f"Largest Executive Level · {top_ex.get('grade')}",
+                    "value": top_ex.get(val),
+                    "unit": unit_word,
+                }
+            )
+        vis["kpis"] = kpis_lvl[:3]
+        return vis
     kind = chart_kind or ("line" if dims[0] == "fiscal_year" else select_chart_kind(columns=[dims[0], val], rows=rows))
     if kind == "kpi":
         kind = "bar"
@@ -459,10 +692,12 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
         lead = f"{n:,} {noun} match ({scope})." if scope else f"{n:,} {noun} match."
         if n > len(rows):
             lead += f" Showing the first {len(rows):,}."
-        sorted_by_stay = (not spec.sort) or (spec.sort.by == "station_tenure_years" and spec.sort.dir == "desc")
-        if compiled.subject == "workforce" and first.get("name") and sorted_by_stay:
-            lead += (f" The longest station stay is {first.get('name')}, {first.get('designation') or first.get('grade')}, "
-                     f"at {fmt_num(first.get('station_tenure_years'))} years.")
+        sorted_by_stay = (not spec.sort) or (spec.sort.by in ("station_tenure_years", "delhi_tenure_years") and spec.sort.dir == "desc")
+        stay_val = first.get("delhi_tenure_years") if first.get("delhi_tenure_years") is not None else first.get("station_tenure_years")
+        desig_val = first.get("functional_designation") or first.get("designation") or first.get("grade")
+        if compiled.subject == "workforce" and first.get("name") and sorted_by_stay and stay_val is not None:
+            lead += (f" The longest station stay is {first.get('name')}, {desig_val}, "
+                     f"at {fmt_num(stay_val)} years.")
         elif compiled.subject == "mou":
             weakest = min(rows, key=lambda r: float(r.get("pct_of_excellent") or 0))
             lead = (f"{len(rows)} MoU parameters ({scope}). Weakest against the Excellent target: "

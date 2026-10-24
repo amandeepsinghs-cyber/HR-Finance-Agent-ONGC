@@ -124,9 +124,27 @@ def make_drilldowns(spec: QuerySpec, persona: str, grain: str, max_n: int = 3) -
         return chips[:max_n]
 
     junior = persona_class(persona) == "junior"
+    wc_f = spec.filter_on("wc")
+    tenure_f = spec.filter_on("station_tenure_years") or spec.filter_on("delhi_tenure_years")
+    # 0. V19 T1 ("by level" in a single WC with no tenure filter): offer the canonical >5-yr refinement chip first.
+    if subject.name == "workforce" and grain != "row" and wc_f is not None and wc_f.op == "=" and tenure_f is None and "grade" in spec.dimensions:
+        st_lbl = "Delhi" if str(wc_f.value) == "WC-DEL" else ents.wc_name(str(wc_f.value))
+        add(
+            f"More than 5 years in {st_lbl}",
+            f"How many of these are in {st_lbl} for more than five years?",
+            {"add_filters": [{"field": "station_tenure_years", "op": ">=", "value": 5}, {"field": "cadre", "op": "=", "value": "executive"}]},
+        )
     # 1. Names (roster) — only where named data is allowed.
     if subject.name == "workforce" and grain != "row" and not junior and not spec.is_compare():
         add("Show the names", "Give me their names", {"grain": "row"})
+    # 1b. V19 T2 ("Include all cadres" toggle chip on >5-yr station-tenure cohort).
+    if subject.name == "workforce" and grain != "row" and tenure_f is not None:
+        cadre_f = spec.filter_on("cadre")
+        if cadre_f is None or str(cadre_f.value).lower() != "all":
+            add("Include all cadres", "Include all cadres", {"add_filters": [{"field": "cadre", "op": "=", "value": "all"}]})
+        if "grade" in spec.dimensions:
+            add("Export to Excel", "Can you export this as an Excel file?", None)
+            add("Draft email to Director (HR)", "Draft an email to Director (HR) for the overdue cohort", None)
     # 2. Breakdowns not yet applied.
     for d in ("discipline", "grade", "wc", "asset", "field"):
         if d in subject.fields and d not in spec.dimensions and not (
@@ -163,8 +181,13 @@ def make_drilldowns(spec: QuerySpec, persona: str, grain: str, max_n: int = 3) -
             {"period": {"fy": last_complete_fy()}})
     elif subject.name == "workforce" and spec.filter_on("station_tenure_years") and not (spec.period and spec.period.fy):
         add("Same view last year", "What about last year?", {"period": {"fy": last_complete_fy()}})
-    # 5. Draft.
-    if subject.name == "workforce" and grain == "row" and not junior:
+    # 5. Draft & Export (V19 T2 / T3).
+    if subject.name == "workforce" and tenure_f is not None and grain != "row":
+        add("Export to Excel", "Can you export this as an Excel file?", None)
+        add("Draft email to Director (HR)", "Draft an email to Director (HR) for the overdue cohort", None)
+    elif subject.name == "workforce" and grain == "row" and not junior:
+        add("Export to Excel", "Can you export this as an Excel file with their names, designations, levels and tenure in Delhi?", None)
+        add("Draft email to Director (HR)", "Draft an email to Director (HR) with this list attached", None)
         add("Draft transfer note", "Draft a transfer note for them", None)
     else:
         add("Draft a briefing note", "Draft a briefing note on this", None)

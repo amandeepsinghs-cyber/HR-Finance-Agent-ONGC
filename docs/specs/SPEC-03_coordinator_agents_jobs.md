@@ -99,6 +99,7 @@ Rules: (1) every v3 field enters `answer_contract.schema.json` + `answerContract
 |---|---|---|---|---|---|
 | `clarify` | P2F.1 | P2F | O | `clarify` | SPEC-08 §3.2 |
 | `visual.type="actions"` + `actions` payload | P2F.6 (O part, before F starts) | P2F | O | `actions` | SPEC-08 §7.3 |
+| `chart.{kind="column", x_order, note, footnote}`, `table.{column_labels, hidden_columns, default_sort, as_of}` | P2H.3 | P2H | O | `v19_roster` | SPEC-07 §4.1–4.3 |
 | `artifacts[]` (`$defs/artifact`, SPEC-10 §5 shape incl. `expires_at`, `sha256`) | P2H.4 | P2H | O | `artifacts` | SPEC-10 §5, SPEC-07 §5 |
 | `ui_action.type="download"` | P2H.4 | P2H | O | `artifacts` | SPEC-07 §5 |
 | `visual.type="email_draft"` | P2H.4 | P2H | O | `email_draft` | SPEC-07 §4.5 |

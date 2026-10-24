@@ -304,7 +304,11 @@ class AgentTurnRunner:
             persona_eff = req_persona
             contract["persona"] = req_persona
         contract = enforce_contract(contract, persona_eff)
-        if persona_class(persona_eff) == "junior" or (contract.get("access") or {}).get("status") != "allowed":
+        if (
+            persona_class(persona_eff) == "junior"
+            or persona_eff == "DIR_FIN"
+            or (contract.get("access") or {}).get("status") != "allowed"
+        ):
             self._sync_session_after_enforce(session_id, contract)
         # B4: legacy-path data answers also carry deterministic insights (computed from the table
         # actually shown, after RBAC masking) so every data answer has insights_v2.
@@ -351,9 +355,10 @@ class AgentTurnRunner:
             session_id=session_id,
             persona=norm_persona,
             language=det_lang,
+            emp_id=getattr(principal, "emp_id", None),
         )
         session_state.hydrate_from_client_history(history=history, ui_context=ui_context)
-        session_state.persona = norm_persona  # P0.4: the session persona always follows the signed principal
+        session_state.ensure_principal(norm_persona, getattr(principal, "emp_id", None))  # P0.4 / SPEC-07 §4.6 C-8
 
         turn_index = len(session_state.turns) + 1
         turn_id = f"turn-{session_id}-{turn_index:03d}"
@@ -439,7 +444,19 @@ class AgentTurnRunner:
             elif cmd == "export":
                 spoken_sc = f"Exporting the current view to {val.upper()}."
             elif cmd == "navigate_history":
-                spoken_sc = "Restored the previous visual on screen."
+                restored = session_state.restore_cohort(query)
+                if restored and isinstance(restored.get("visual"), dict):
+                    last_vis = dict(restored["visual"])
+                    last_vis["mode"] = "restore"
+                    spoken_sc = (
+                        f"Restored the parent cohort ({restored.get('cohort_id', 'C0')}: "
+                        f"{restored.get('row_count', 0):,} employees) on screen."
+                    )
+                else:
+                    if len(session_state.visual_history) >= 2:
+                        last_vis = dict(session_state.visual_history[-2])
+                    last_vis["mode"] = "restore"
+                    spoken_sc = "Restored the previous visual on screen."
             else:
                 spoken_sc = f"Applied screen command {cmd}."
 
@@ -896,9 +913,17 @@ class AgentTurnRunner:
             "year", "yr", "saal", "month", "mahine", "stay", "tenure", "continuous", "rotation", "transfer", "due",
             "exempt", "cluster", "vacanc", "vacant", "retire", "superannuat", "dpc", "promot", "resign", "attrition",
             "women", "female", "gender", "sc", "st", "obc", "pwd", "contract", "apprentice", "training", "overtime",
-            "salary", "pay", "medical", "leave", "boe", "production", "added headcount", "c11", "histogram", "distribution",
+            "salary", "pay", "medical", "leave", "boe", "production", "added headcount", "c11",
+            "age histogram", "age distribution", "employee ages", "ages in",
         ]
         if not planner_on and any(t in q_clean for t in hc_triggers) and not any(ex in q_clean for ex in hc_exclusions):
+            if any(k in q_clean for k in ["level", "levels", "across levels", "across different levels", "by level", "by grade", "स्तर", "ग्रेड"]):
+                planned_lvl = await run_planner_turn(
+                    query, session_state, norm_persona, turn_id, det_lang, t0, principal=principal
+                )
+                if planned_lvl is not None:
+                    return self._finalize_planner_contract(planned_lvl, session_state, query, t0)
+
             from app.tools.query_data import query_data as qd
 
             matched_wc = get_entities().resolve_wc(q_clean)
@@ -910,7 +935,7 @@ class AgentTurnRunner:
                     f"COUNT(*) AS employees "
                     f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_workforce_employee` "
                     f"WHERE active_headcount = 1 AND wc_id = '{matched_wc}' "
-                    f"GROUP BY 1, 2 ORDER BY 3 DESC"
+                    f"GROUP BY 1, 2 ORDER BY MIN(grade_level_order) ASC, grade_id ASC"
                 )
                 sql_posts = (
                     f"SELECT sanctioned_strength_fy26 AS sanctioned_posts, "
@@ -1180,8 +1205,8 @@ class AgentTurnRunner:
                 metric_label = "Years"
                 val_col = "employees"
                 source_obj = "hrfin_gold.ssot_workforce_employee"
-            else:
-                # Default to Employee Age Distribution Histogram
+            elif any(k in q_clean for k in ["age", "ages", "आयु", "उम्र"]):
+                # Explicit Employee Age Distribution Histogram (never a silent default for level questions: BEH-02.30)
                 sql_hist = (
                     f"SELECT "
                     f"CONCAT(CAST(CAST(FLOOR(age_years / 5) * 5 AS INT64) AS STRING), '–', CAST(CAST(FLOOR(age_years / 5) * 5 + 4 AS INT64) AS STRING), ' yrs') AS bucket, "
@@ -1197,9 +1222,11 @@ class AgentTurnRunner:
                 metric_label = "Age (Years)"
                 val_col = "employees"
                 source_obj = "hrfin_gold.ssot_workforce_employee"
+            else:
+                sql_hist = None
 
-            res_hist = await asyncio.to_thread(qd, sql_hist, title=hist_title)
-            rows_hist = res_hist.get("all_rows") or res_hist.get("rows", [])
+            res_hist = await asyncio.to_thread(qd, sql_hist, title=hist_title) if sql_hist else {}
+            rows_hist = (res_hist.get("all_rows") or res_hist.get("rows", [])) if sql_hist else []
             if rows_hist:
                 total_n = sum(int(float(r.get(val_col, 0) or 0)) for r in rows_hist)
                 weighted_sum = sum(float(r.get("avg_metric", 0) or 0) * float(r.get(val_col, 0) or 0) for r in rows_hist)
@@ -1874,6 +1901,19 @@ class AgentTurnRunner:
         tbl = vis.get("table") or {}
         st.last_rows = list(tbl.get("rows") or [])[:2000]
         st.last_columns = list(tbl.get("columns") or [])
+        active_cohort = st.get_active_cohort()
+        if active_cohort is not None and active_cohort.get("turn_id") == contract.get("turn_id"):
+            acc = contract.get("access") or {}
+            if acc.get("status") == "refused":
+                st.cohorts = [c for c in st.cohorts if c.get("turn_id") != contract.get("turn_id")]
+                st.active_cohort_id = st.cohorts[-1]["cohort_id"] if st.cohorts else None
+            else:
+                mask_lvl = (tbl.get("masking") or {}).get("level") if isinstance(tbl.get("masking"), dict) else None
+                active_cohort["rows"] = list(tbl.get("rows") or [])[:2000]
+                active_cohort["columns"] = list(tbl.get("columns") or [])
+                if mask_lvl == "aggregate":
+                    active_cohort["rbac_decision"] = "aggregate"
+                active_cohort["visual"] = dict(vis)
 
     async def _maybe_salary_breakdown_turn(
         self,

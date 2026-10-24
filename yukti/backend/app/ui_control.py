@@ -269,7 +269,10 @@ def detect_ui_control_intent(query: str) -> Optional[Dict[str, str]]:
         "होम स्क्रीन",
     ):
         return {"action": "open_screen", "value": "home"}
-    if q in ("go back", "previous chart", "previous visual", "previous screen", "back", "पीछे जाओ"):
+    if q in ("go back", "previous chart", "previous visual", "previous screen", "back", "पीछे जाओ") or re.search(
+        r"^(?:go\s+back|back|return|restore)\s+to\s+(?:all\s+|the\s+)?(?:delhi|mumbai|staff|employees|workforce|cohort|level|first|initial)",
+        q,
+    ):
         return {"action": "history", "value": "back"}
     if q in ("go forward", "next chart", "next screen", "forward"):
         return {"action": "history", "value": "forward"}

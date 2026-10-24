@@ -30,7 +30,9 @@ subjects:
       age_band: {column: age_band, kind: categorical}
       tenure_band: {column: tenure_band, kind: categorical}
       exemption_tag: {column: exemption_tag, kind: categorical}
+      grade_level_order: {column: grade_level_order, kind: number}
       station_tenure_years: {column: continuous_stay_years, kind: number}
+      delhi_tenure_years: {column: continuous_stay_years, kind: number}
       total_tenure_years: {column: total_tenure_years, kind: number}
       age: {column: age_years, kind: number}
       years_to_retirement: {column: years_to_retirement, kind: number}
@@ -48,17 +50,23 @@ subjects:
       training_hours_per_employee: {expr: "ROUND(AVG(fy26_training_hours), 1)", aggregation: avg, unit: hours, label: "Training hours per employee (FY26)"}
       avg_gross_salary_lakh: {expr: "ROUND(AVG(fy26_gross_salary_lakh), 2)", aggregation: avg, unit: inr_lakh, label: "Average gross pay (FY26, ₹ lakh)", data_class: pay}
       avg_apar_score: {expr: "ROUND(AVG(fy26_apar_score), 1)", aggregation: avg, unit: score, label: "Average APAR score (FY26)", data_class: apar}
-    row_columns:   # roster grain (B3.1): what "give me their names" returns
+    row_columns:   # roster grain (B3.1 / SPEC-07 §4.3): what "give me their names" returns
       - {expr: emp_id, as: emp_id}
       - {expr: emp_name, as: name, data_class: named}
+      - {expr: "CASE WHEN current_designation IS NOT NULL AND current_designation != '' THEN current_designation ELSE grade_designation END", as: functional_designation}
       - {expr: grade_designation, as: designation}
+      - {expr: current_designation, as: current_designation}
       - {expr: current_grade_id, as: grade}
+      - {expr: grade_level_order, as: grade_level_order}
+      - {expr: discipline_id, as: discipline_id}
       - {expr: discipline_name, as: discipline}
       - {expr: wc_name, as: work_centre}
       - {expr: "ROUND(total_tenure_years, 1)", as: ongc_tenure_years}
+      - {expr: "ROUND(continuous_stay_years, 1)", as: delhi_tenure_years}
       - {expr: "ROUND(continuous_stay_years, 1)", as: station_tenure_years}
       - {expr: "ROUND(years_to_retirement, 1)", as: years_to_retirement}
       - {expr: is_retiring_within_3yr, as: retiring_within_3yr}
+      - {expr: is_superannuation_exempt, as: is_superannuation_exempt}
       - {expr: exemption_tag, as: exemption}
     row_sort: {by: station_tenure_years, dir: desc}
     asof:   # past-FY station-tenure questions ("last year") — continuous stays as of 31-Mar of the FY
