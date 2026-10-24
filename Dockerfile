@@ -40,8 +40,6 @@ COPY financial_build/data/ongc_10yr_schedule_iii_lines.json \
      financial_build/data/ongc_10yr_cash_flow_lines.json \
      financial_build/data/ongc_10yr_ratios_lines.json \
      financial_build/data/ongc_10yr_corporate_wide.json \
-     financial_build/data/ssot_financial_line_context.json \
-     financial_build/data/financial_notes_corpus.jsonl \
      financial_build/data/snapshot_manifest.json \
      /app/financial_build/data/
 COPY financial_ssot/out/fact_snapshot.parquet /app/financial_ssot/out/fact_snapshot.parquet

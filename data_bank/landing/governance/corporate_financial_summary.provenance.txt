@@ -1,0 +1,4 @@
+Command: uv run financial_ssot/export_landing_csv.py
+Git SHA: d904f399d76320df89b25d45b834a697e726266c
+Timestamp: 2026-10-24T06:47:23.040645+00:00Z
+Source: fact_financial_statement_line snapshot run 170734893be34a8c

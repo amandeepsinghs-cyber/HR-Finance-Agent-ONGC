@@ -1,3 +1,5 @@
+# RETIRED 2026-10 (SPEC-01 §11): LLM-authored values, not AR-extracted. Do not use.
+
 #!/usr/bin/env python3
 """
 Stage 4: Build & Load Hybrid Financial Context Database (10-Year Historical + Present FY17-FY26):

@@ -1,3 +1,5 @@
+# RETIRED 2026-10 (SPEC-01 §11): LLM-authored values, not AR-extracted. Do not use.
+
 #!/usr/bin/env python3
 """
 Autonomous 30-Scenario × 4-Turn (120 Total Conversational Turns) Stress-Test & Q&A Curation Runner.

@@ -1,6 +1,6 @@
 {
   "snapshot_date": "2026-10-24",
-  "label": "Verified Annual Report SSOT snapshot (fact_financial_statement_line)",
+  "label": "Annual Report snapshot (fact_financial_statement_line)",
   "note": "P1.10a: runtime snapshot exported from verified fact_snapshot.parquet.",
   "files": {
     "ongc_10yr_schedule_iii_lines.json": "fa1d85ccfa4183b984dc0f963de0a02739a29b570a0c361fe3c89645485bcf97",

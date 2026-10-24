@@ -1,3 +1,5 @@
+# RETIRED 2026-10 (SPEC-01 §11): LLM-authored values, not AR-extracted. Do not use.
+
 #!/usr/bin/env python3
 """
 Stage 2: Verify all 20 accounting identities across all 10 years (FY17-FY26)

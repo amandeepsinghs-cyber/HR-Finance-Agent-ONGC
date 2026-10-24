@@ -1,3 +1,5 @@
+# RETIRED 2026-10 (SPEC-01 §11): LLM-authored values, not AR-extracted. Do not use.
+
 #!/usr/bin/env python3
 """Stage 1: Build Complete 10-Year Three-Statement ONGC Financial Dataset (FY17-FY26).
 
