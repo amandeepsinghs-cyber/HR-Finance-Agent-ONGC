@@ -353,6 +353,22 @@ class Planner:
         prev_subject = self._subject_for(prev.metric)[0] if prev else None
         avail = fiscal_years_for_sql(f"FROM {prev_subject.table}") if prev_subject else []
         fy_hint = resolve_fy(question, available=avail or None)
+        ql_fast = question.lower()
+        # R2-M1: single-FY waterfall bridge requests ("Show FY23 P&L as a waterfall", "Show FY23 as a waterfall")
+        # resolve deterministically to single-FY pnl_statement with chart_kind="waterfall" without waiting on LLM.
+        if (
+            re.search(r"\b(waterfall|bridge)\b|वॉटरफॉल|वाटरफॉल", ql_fast)
+            and fy_hint
+            and fy_hint.get("fy")
+            and not fy_hint.get("from")
+            and not self.ents.resolve_wcs(question)
+            and not self.ents.resolve_field(question)
+            and not re.search(r"\b(balance\s+sheet|cash\s*flow)\b", ql_fast)
+        ):
+            det_plan = self.to_plan(question, {}, prev, fy_hint)
+            if det_plan.intent == "data" and det_plan.spec is not None:
+                det_plan.latency_ms = round((time.perf_counter() - t0) * 1000, 1)
+                return det_plan
         try:
             raw = await asyncio.wait_for(self._call(self._prompt(question, prev, history or [], fy_hint)), timeout=12)
         except Exception as e:  # planner failure => try deterministic guards in to_plan first before legacy fallback
@@ -425,10 +441,21 @@ class Planner:
             and no_sub_entity
             and not re.search(r"\b(asset|assets)\b", ql_early)
         )
+        is_fy_waterfall_followup = bool(
+            wants_waterfall
+            and fy_hint
+            and fy_hint.get("fy")
+            and not fy_hint.get("from")
+            and no_sub_entity
+            and not is_corp_bs_stmt
+            and not is_corp_cf_stmt
+            and re.search(r"\b(show|plot|view|display|express|make|draw)\s+fy\s*\d{2}\b", ql_early)
+        )
         is_corp_pnl_stmt = bool(
             (
                 re.search(r"\b(p\s*&\s*l|pnl|profit\s+and\s+loss|income\s+statement\w*|financial\s+statement\w*|annual\s+statement\w*|schedule\s+iii)\b", ql_early)
                 or is_rev_cost_bridge
+                or is_fy_waterfall_followup
             )
             and no_sub_entity
             and not is_corp_bs_stmt

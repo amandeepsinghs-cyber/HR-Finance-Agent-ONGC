@@ -249,7 +249,7 @@ def is_pure_replot_request(query: str) -> Tuple[bool, Optional[str]]:
         if k:
             return True, k
 
-    # Match "plot/show/switch/view (this/it/current data) as a <chart>" only if there are no domain filters
+    # Match "plot/show/switch/view (this/it/current data) as a <chart>" only if there are no domain filters or FYs
     domain_words = [
         "ahmedabad", "mumbai", "delhi", "dehradun", "assam", "mehsana", "ankleshwar", "cambay",
         "jorhat", "tripura", "rajahmundry", "cauvery", "kakinada", "vadodara", "kolkata", "chennai",
@@ -257,8 +257,9 @@ def is_pure_replot_request(query: str) -> Tuple[bool, Optional[str]]:
         "age", "ages", "salary", "pay", "tenure", "stay", "lifting", "water cut", "production",
         "vacancy", "vacancies", "overtime", "apar", "grade", "discipline", "employee", "employees",
         "executive", "executives", "field", "fields", "brent", "mou", "capex", "revenue", "pbt", "pat", "ebitda",
+        "p&l", "pnl", "profit and loss", "income statement", "balance sheet", "cash flow",
     ]
-    if any(w in q for w in domain_words):
+    if any(w in q for w in domain_words) or re.search(r"\bfy\s*\d{2}\b|\b20\d{2}\s*[-–]\s*\d{2}\b", q):
         return False, None
 
     kind = resolve_kind(q)

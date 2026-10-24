@@ -280,6 +280,21 @@ def which_year_copy(periods: Sequence[str], lang: str = "en") -> str:
     return f"Which year would you like to see as a waterfall bridge? Please pick a year ({periods_str})."
 
 
+def non_bridge_data_copy(current_kind: str = "table", lang: str = "en") -> str:
+    """Honest refusal copy when waterfall is requested on untyped non-statement rows (R2-S4)."""
+    errors_cfg = _load_copy_cfg().get("errors") or {}
+    entry = errors_cfg.get("non_bridge_data") or {}
+    lang_key = "hi" if lang == "hi" else ("hi_en" if lang == "hi-en" else "en")
+    en_label = _KIND_FRIENDLY_EN.get(current_kind, f"{current_kind} view")
+    kind_label = _KIND_FRIENDLY_HI.get(current_kind, en_label) if lang == "hi" else en_label
+    tmpl = entry.get(lang_key) or entry.get("en")
+    if tmpl:
+        return tmpl.format(kind_label=kind_label)
+    if lang == "hi":
+        return f"वॉटरफॉल चार्ट के लिए प्रारंभ-से-अंत ब्रिज (जैसे रेवेन्यू से PAT) आवश्यक है; यह डेटा {kind_label} के रूप में दिखाया गया है।"
+    return f"A waterfall chart requires a start-to-end bridge (such as Revenue to PAT); this data is shown as a {kind_label}."
+
+
 def bridge_chart_rows(res: BridgeOk) -> List[Dict[str, Any]]:
     """Convert `BridgeOk.bars` to typed chart rows understood by `waterfallOption`."""
     rows: List[Dict[str, Any]] = []

@@ -685,3 +685,165 @@ def test_s4_cash_flow_statement_replot_as_waterfall_preserves_typed_cf_bridge() 
     assert res["visual"]["type"] == "chart"
     assert res["visual"]["chart"]["kind"] == "waterfall"
     assert len(res["visual"]["chart"]["data"]) == 7
+
+
+def test_r2_m1_which_year_chip_roundtrip_and_s1_s2_s4(monkeypatch: pytest.MonkeyPatch) -> None:
+    """R2-M1: Multi-year P&L trend -> 'Show this as a waterfall' -> 'Which year?' chips -> clicking
+    'Show FY23 P&L as a waterfall' or 'Show FY23 as a waterfall' routes to the planner/presenter
+    single-FY bridge and returns a typed FY23 waterfall (never a second 'Which year?').
+    Also verifies R2-S1 (FY in re-plot title/HI copy), R2-S2 (refusal keeps visual.type), and
+    R2-S4 (neutral non-bridge copy for non-statement rows).
+    """
+    monkeypatch.setenv("YUKTI_FORCE_BQ_FAIL", "1")
+    sm = get_session_manager()
+    runner = AgentTurnRunner.__new__(AgentTurnRunner)
+    runner.session_manager = sm
+
+    wide_rows = [
+        {"fiscal_year": "FY24", "revenue_from_ops_cr": 138402.13, "ebitda_cr": 70248.0, "pbt_cr": 53658.0, "pat_cr": 40525.96},
+        {"fiscal_year": "FY23", "revenue_from_ops_cr": 155517.32, "ebitda_cr": 65120.0, "pbt_cr": 50402.87, "pat_cr": 38828.87},
+        {"fiscal_year": "FY22", "revenue_from_ops_cr": 110345.40, "ebitda_cr": 58410.0, "pbt_cr": 46039.74, "pat_cr": 39005.74},
+    ]
+    wide_cols = list(wide_rows[0].keys())
+
+    for idx, followup_q in enumerate(["Show FY23 P&L as a waterfall", "Show FY23 as a waterfall"]):
+        sid = f"test-r2-m1-roundtrip-{idx}"
+        st = sm.get_or_create(sid, persona="CMD", language="en")
+        st.record_turn(
+            {
+                "turn_id": "turn-001",
+                "language": "en",
+                "persona": "CMD",
+                "spoken_summary": "3-year P&L line trend is on screen.",
+                "display_text": "3-year P&L line trend is on screen.",
+                "visual": {
+                    "type": "chart",
+                    "mode": "replace",
+                    "title": "P&L Multi-Year Trend (FY22–FY24)",
+                    "chart": {"kind": "line", "data": wide_rows, "x": "fiscal_year", "y": "pat_cr"},
+                    "table": {"columns": wide_cols, "rows": wide_rows},
+                },
+                "insights": [],
+                "sources": [{"kind": "data", "object": "hrfin_gold"}],
+                "suggestions": [],
+                "access": {"status": "allowed"},
+                "export_options": ["pdf"],
+                "status_events": [],
+            },
+            user_query="Show P&L trend for FY22 to FY24",
+            all_rows=wide_rows,
+        )
+
+        # Step 1: "Show this as a waterfall" -> asks "Which year?", keeps visual.type == "chart" (R2-S2)
+        res_which = asyncio.run(
+            runner._execute_turn_inner(
+                query="Show this as a waterfall",
+                session_id=sid,
+                persona="CMD",
+                language="en",
+            )
+        )
+        assert "which year" in res_which["spoken_summary"].lower()
+        assert res_which["visual"]["type"] == "chart", "R2-S2: refusal/clarify must not flip chart -> table"
+        assert "Show FY23 P&L as a waterfall" in res_which.get("suggestions", [])
+
+        # Step 2: Send chip text ("Show FY23 P&L as a waterfall") or plain ("Show FY23 as a waterfall")
+        res_chip = asyncio.run(
+            runner._execute_turn_inner(
+                query=followup_q,
+                session_id=sid,
+                persona="CMD",
+                language="en",
+            )
+        )
+        assert "which year" not in res_chip["spoken_summary"].lower(), f"Chip '{followup_q}' looped back to Which year?"
+        assert res_chip["visual"]["type"] == "chart"
+        wf_chart = res_chip["visual"]["chart"]
+        assert wf_chart["kind"] == "waterfall"
+        assert wf_chart["title"].startswith("FY23:"), f"Expected FY23 bridge title, got {wf_chart['title']}"
+        assert all(r.get("type") in ("total", "delta") for r in wf_chart["data"])
+
+    # R2-S1: Presenter-shaped single-FY P&L rows (no fiscal_year column on rows) recover FY25 from title/KPIs
+    pnl_fx = _load_pnl_fixture()
+    fy25_presenter_rows = [
+        {"line_code": r["line_code"], "line_item": r["label"], "amount_cr": r["values"]["FY25"]}
+        for r in _rows_of(pnl_fx)
+    ]
+    st_s1 = sm.get_or_create("test-r2-s1-presenter-fy", persona="CMD", language="hi")
+    st_s1.record_turn(
+        {
+            "turn_id": "turn-001",
+            "language": "hi",
+            "persona": "CMD",
+            "spoken_summary": "FY25 P&L तालिका स्क्रीन पर है।",
+            "display_text": "FY25 P&L तालिका स्क्रीन पर है।",
+            "visual": {
+                "type": "table",
+                "mode": "replace",
+                "title": "Statement of Profit and Loss · FY25",
+                "table": {"columns": ["line_item", "amount_cr", "line_code"], "rows": fy25_presenter_rows},
+            },
+            "insights": [],
+            "sources": [{"kind": "data", "object": "hrfin_gold"}],
+            "suggestions": [],
+            "access": {"status": "allowed"},
+            "export_options": ["pdf"],
+            "status_events": [],
+        },
+        user_query="FY25 P&L दिखाओ",
+        all_rows=fy25_presenter_rows,
+    )
+    res_s1 = asyncio.run(
+        runner._execute_turn_inner(
+            query="इसे वॉटरफॉल में दिखाओ",
+            session_id="test-r2-s1-presenter-fy",
+            persona="CMD",
+            language="hi",
+        )
+    )
+    assert res_s1["visual"]["chart"]["title"] == "FY25: ₹137,846 cr revenue to ₹35,610 cr PAT"
+    assert "FY25" in res_s1["spoken_summary"] and "current period" not in res_s1["spoken_summary"]
+
+    # R2-S4: Untyped non-statement rows (headcount by region on a bar chart) keep visual.type == "chart" and use neutral copy
+    hc_rows = [
+        {"region": "Mumbai", "headcount": 6200},
+        {"region": "Delhi", "headcount": 2100},
+        {"region": "Assam", "headcount": 4300},
+    ]
+    st_s4 = sm.get_or_create("test-r2-s4-non-bridge", persona="CMD", language="en")
+    st_s4.record_turn(
+        {
+            "turn_id": "turn-001",
+            "language": "en",
+            "persona": "CMD",
+            "spoken_summary": "Headcount by region is on screen.",
+            "display_text": "Headcount by region is on screen.",
+            "visual": {
+                "type": "chart",
+                "mode": "replace",
+                "title": "Headcount by Region",
+                "chart": {"kind": "bar", "data": hc_rows, "x": "region", "y": "headcount"},
+                "table": {"columns": ["region", "headcount"], "rows": hc_rows},
+            },
+            "insights": [],
+            "sources": [{"kind": "data", "object": "hrfin_gold"}],
+            "suggestions": [],
+            "access": {"status": "allowed"},
+            "export_options": ["pdf"],
+            "status_events": [],
+        },
+        user_query="Show headcount by region",
+        all_rows=hc_rows,
+    )
+    res_s4 = asyncio.run(
+        runner._execute_turn_inner(
+            query="Show this as a waterfall",
+            session_id="test-r2-s4-non-bridge",
+            persona="CMD",
+            language="en",
+        )
+    )
+    assert res_s4["visual"]["type"] == "chart"
+    assert "start-to-end bridge" in res_s4["spoken_summary"].lower()
+    assert "statement table" not in res_s4["spoken_summary"].lower()
+

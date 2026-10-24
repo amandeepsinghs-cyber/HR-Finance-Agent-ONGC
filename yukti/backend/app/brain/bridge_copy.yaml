@@ -41,6 +41,11 @@ errors:
     hi: "आप किस वित्तीय वर्ष का वॉटरफॉल ब्रिज देखना चाहेंगे? P&L वॉटरफॉल ब्रिज एक बार में एक ही वित्तीय वर्ष दिखाता है — कृपया नीचे से वर्ष चुनें ({periods})।"
     hi_en: "Aap kis fiscal year ka waterfall bridge dekhna chahenge? Please niche se year select karein ({periods})."
 
+  non_bridge_data:
+    en: "A waterfall chart requires a start-to-end bridge (such as Revenue to PAT); this data is shown as a {kind_label}."
+    hi: "वॉटरफॉल चार्ट के लिए प्रारंभ-से-अंत ब्रिज (जैसे रेवेन्यू से PAT) आवश्यक है; यह डेटा {kind_label} के रूप में दिखाया गया है।"
+    hi_en: "Waterfall chart ke liye start-to-end bridge (jaise Revenue se PAT) chahiye; yeh data {kind_label} mein dikhaya gaya hai."
+
 success:
   bridge:
     en: "Here is the {period} P&L waterfall bridge from ₹{rev} crore revenue to ₹{pat} crore PAT."
