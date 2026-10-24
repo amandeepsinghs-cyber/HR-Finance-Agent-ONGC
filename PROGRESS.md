@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:19 UTC · branch `v3/P0-stabilise` @ `5855b90`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:25 UTC · branch `v3/P0-stabilise` @ `25fc51d`
 
 > [!IMPORTANT]
-> **Overall: 34% complete (weighted)** — 19/62 steps ✅ done, 6 in flight, 37 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 4 warning(s).
+> **Overall: 34% complete (weighted)** — 19/62 steps ✅ done, 7 in flight, 36 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 4 warning(s).
 
 ## 1. Phase progress
 
@@ -14,7 +14,7 @@
 | **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 6% | 0 | 0 | 0 | 2 | 6 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `███████░░░░░░░░░░░░░` 36% | 3 | 0 | 0 | 1 | 5 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `████████░░░░░░░░░░░░` 39% | 3 | 0 | 0 | 2 | 4 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -29,12 +29,13 @@
 | P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
 | P2H.2 | 🔄 In progress | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Complete build + evidence |
 | P4.2 | 🔄 In progress | `visual.type=statement` contract + presenter emit (multi-FY) | O | Complete build + evidence |
+| P4.4 | 🔄 In progress | Portfolio batch A: combo dual-axis, 100% stacked, heatmap, box, gauge, scatter fix; compat matrix | F | Complete build + evidence |
 
 **Ready to start:**
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
-| P4.4 | Portfolio batch A: combo dual-axis, 100% stacked, heatmap, box, gauge, scatter fix; compat matrix | F | P4.1 |
+| — | Nothing is unblocked: finish the in-flight steps above (G4 reviews) first. | | |
 
 ## 3. Sponsor action items
 
@@ -115,7 +116,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 7 · 🟠 in progress 5 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 26 total — 🔴 open 16 · 🟠 in progress 4 · ↩ regressed 0 · ✅ closed 6
+- **Important:** 26 total — 🔴 open 15 · 🟠 in progress 5 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
@@ -139,6 +140,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `02742aa` | 2026-10-24 | P4.4 (pre-G4) frontend: combo dual-axis, 100% stacked, heatmap, box plot (client quartiles + outliers), gauge (target only) render |
 | `3d39d40` | 2026-10-24 | P4.1 (G4 r3 fix) backend: route FY-specific waterfall chips from multi-year trend to planner single-FY bridge + R2-S1..S4 |
 | `dde5194` | 2026-10-24 | P2H.2 (pre-G4) frontend part 2: RefusalRenderer (backend refusal copy line, alternative chips that ask the permitted question, Why |
 | `9645676` | 2026-10-24 | P2H.2 (pre-G4) backend: refusal_copy.yaml (9 codes EN/HI), answer_composer 11-persona display & refusal contract |
@@ -153,7 +155,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `3fe4973` | 2026-10-24 | P4.1 (pre-G4) backend: signed P&L bridge, kind precedence, re-plot & false-success fix |
 | `61ddef0` | 2026-10-24 | P4.9 (pre-G4): Siri-like orb visible in docked/fullscreen while listening/thinking/speaking (same mic-button/stop-speaking testids |
 | `4433ffc` | 2026-10-24 | P4.1 (pre-G4) frontend: bridge.ts (signed P&L bridge from shared classes JSON), compat.replot statement/typed-waterfall path, dele |
-| `632b5b7` | 2026-10-24 | P4.1a (pre-G4): shared bridge contract + fixtures |
 
 ## 8. Integrity checks
 
