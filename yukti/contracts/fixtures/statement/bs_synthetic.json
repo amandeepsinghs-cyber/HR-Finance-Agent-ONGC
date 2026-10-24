@@ -1,0 +1,614 @@
+{
+  "turn_id": "turn_v2_statement_bs_synthetic",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Standalone balance sheet from fiscal year 2022 through fiscal year 2026. Total assets as of March 31, 2026 stand at 4,62,250 crore rupees, balanced by 3,23,600 crore rupees in net worth and 1,38,650 crore rupees in total liabilities.",
+  "display_text": "ONGC standalone Balance Sheet for FY22–FY26 (₹ crore, Schedule III format) [1]. Total Assets equal Total Equity and Liabilities across all 5 periods (FY26 Total Assets: ₹4,62,250 Cr; Net Worth: ₹3,23,600 Cr).",
+  "contract_version": 2,
+  "visual": {
+    "type": "statement",
+    "mode": "replace",
+    "title": "Balance Sheet (Standalone, FY22–FY26)",
+    "statement": {
+      "statement": "balance_sheet",
+      "scope": "standalone",
+      "title": "Balance Sheet (Standalone, FY22–FY26)",
+      "unit": "INR_crore",
+      "periods": [
+        "FY26",
+        "FY25",
+        "FY24",
+        "FY23",
+        "FY22"
+      ],
+      "period_labels": {
+        "FY26": "FY 2025-26",
+        "FY25": "FY 2024-25",
+        "FY24": "FY 2023-24",
+        "FY23": "FY 2022-23",
+        "FY22": "FY 2021-22"
+      },
+      "show_yoy": true,
+      "sections": [
+        {
+          "id": "non_current_assets",
+          "label": "Non-Current Assets",
+          "rows": [
+            {
+              "label": "Oil & Gas Producing Properties (Net Block)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 162480.0,
+                "FY25": 152840.0,
+                "FY24": 141280.0,
+                "FY23": 128940.0,
+                "FY22": 124560.0
+              },
+              "line_code": "oil_and_gas_assets_inr_cr",
+              "yoy_pct": 6.3,
+              "note_ref": "5",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Other Property, Plant, Equipment & ROU Lease Assets",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 33150.0,
+                "FY25": 31420.0,
+                "FY24": 29840.0,
+                "FY23": 27450.0,
+                "FY22": 26120.0
+              },
+              "line_code": "other_ppe_and_rou_inr_cr",
+              "yoy_pct": 5.5,
+              "note_ref": "6",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Capital Work-in-Progress (CWIP & Dev Wells)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 36920.0,
+                "FY25": 38450.0,
+                "FY24": 41920.0,
+                "FY23": 43890.0,
+                "FY22": 36480.0
+              },
+              "line_code": "cwip_inr_cr",
+              "yoy_pct": -4.0,
+              "note_ref": "7",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Exploratory & Evaluation Wells-in-Progress",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 18420.0,
+                "FY25": 17890.0,
+                "FY24": 18450.0,
+                "FY23": 17920.0,
+                "FY22": 18640.0
+              },
+              "line_code": "exploratory_wells_in_progress_inr_cr",
+              "yoy_pct": 3.0,
+              "note_ref": "8/9",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Investments in Subsidiaries, JVs & Associates (HPCL, OVL, MRPL, OPaL)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 121840.0,
+                "FY25": 114680.0,
+                "FY24": 92840.0,
+                "FY23": 86420.0,
+                "FY22": 85120.0
+              },
+              "line_code": "investments_subsidiaries_jv_inr_cr",
+              "yoy_pct": 6.2,
+              "note_ref": "10",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Site Restoration / Abandonment Escrow Deposit (SBI)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 28950.0,
+                "FY25": 27480.0,
+                "FY24": 26120.0,
+                "FY23": 24810.0,
+                "FY22": 22640.0
+              },
+              "line_code": "site_restoration_fund_inr_cr",
+              "yoy_pct": 5.3,
+              "note_ref": "11",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Long-Term Loans, Tax & Other Non-Current Assets",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 15680.0,
+                "FY25": 15240.0,
+                "FY24": 14890.0,
+                "FY23": 14120.0,
+                "FY22": 13450.0
+              },
+              "line_code": "other_non_current_assets_inr_cr",
+              "yoy_pct": 2.9,
+              "note_ref": "12",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Total Non-Current Assets",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": 417440.0,
+                "FY25": 398000.0,
+                "FY24": 365340.0,
+                "FY23": 343550.0,
+                "FY22": 327010.0
+              },
+              "line_code": "non_current_assets_inr_cr",
+              "yoy_pct": 4.9,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            }
+          ]
+        },
+        {
+          "id": "current_assets",
+          "label": "Current Assets",
+          "rows": [
+            {
+              "label": "Inventories (Crude, VAP & Drilling Stores)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 9840.0,
+                "FY25": 9480.0,
+                "FY24": 9120.0,
+                "FY23": 8319.0,
+                "FY22": 7861.0
+              },
+              "line_code": "inventories_inr_cr",
+              "yoy_pct": 3.8,
+              "note_ref": "13",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Current Investments",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 2450.0,
+                "FY25": 1820.0,
+                "FY24": 1450.0,
+                "FY23": 0.0,
+                "FY22": 0.0
+              },
+              "line_code": "current_investments_inr_cr",
+              "yoy_pct": 34.6,
+              "note_ref": "10",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Trade Receivables (Crude & Natural Gas Offtakers)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 13167.89,
+                "FY25": 12480.0,
+                "FY24": 11380.0,
+                "FY23": 10240.0,
+                "FY22": 11640.0
+              },
+              "line_code": "receivables_outstanding_inr_cr",
+              "yoy_pct": 5.5,
+              "note_ref": "14",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Cash, Cash Equivalents & Term Bank Deposits",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 21960.0,
+                "FY25": 18920.0,
+                "FY24": 26840.0,
+                "FY23": 21490.0,
+                "FY22": 6840.0
+              },
+              "line_code": "cash_and_bank_inr_cr",
+              "yoy_pct": 16.1,
+              "note_ref": "15/16",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Short-Term Loans & Other Current Assets",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 9482.11,
+                "FY25": 9120.0,
+                "FY24": 8690.0,
+                "FY23": 8120.0,
+                "FY22": 7560.0
+              },
+              "line_code": "other_current_assets_inr_cr",
+              "yoy_pct": 4.0,
+              "note_ref": "17/18",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Total Current Assets",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": 56900.0,
+                "FY25": 51820.0,
+                "FY24": 57480.0,
+                "FY23": 48169.0,
+                "FY22": 33901.0
+              },
+              "line_code": "current_assets_inr_cr",
+              "yoy_pct": 9.8,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "TOTAL ASSETS",
+              "level": 0,
+              "kind": "total",
+              "values": {
+                "FY26": 474340.0,
+                "FY25": 449820.0,
+                "FY24": 422820.0,
+                "FY23": 391719.0,
+                "FY22": 360911.0
+              },
+              "line_code": "total_assets_inr_cr",
+              "yoy_pct": 5.5,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            }
+          ]
+        },
+        {
+          "id": "equity",
+          "label": "Equity",
+          "rows": [
+            {
+              "label": "Equity Share Capital (₹5 Face Value)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 6290.14,
+                "FY25": 6290.14,
+                "FY24": 6290.14,
+                "FY23": 6290.14,
+                "FY22": 6290.14
+              },
+              "line_code": "equity_share_capital_inr_cr",
+              "yoy_pct": 0.0,
+              "note_ref": "19",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Other Equity (Retained Earnings & Reserves)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 314344.86,
+                "FY25": 298119.86,
+                "FY24": 279549.86,
+                "FY23": 252161.86,
+                "FY22": 230854.86
+              },
+              "line_code": "other_equity_reserves_inr_cr",
+              "yoy_pct": 5.4,
+              "note_ref": "20",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Total Standalone Equity / Net Worth",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": 320635.0,
+                "FY25": 304410.0,
+                "FY24": 285840.0,
+                "FY23": 258452.0,
+                "FY22": 237145.0
+              },
+              "line_code": "net_worth_inr_cr",
+              "yoy_pct": 5.3,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            }
+          ]
+        },
+        {
+          "id": "non_current_liabilities",
+          "label": "Non-Current Liabilities",
+          "rows": [
+            {
+              "label": "Long-Term Borrowings (Bonds & Term Loans)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 6420.0,
+                "FY25": 6840.0,
+                "FY24": 6450.0,
+                "FY23": 6890.0,
+                "FY22": 6396.0
+              },
+              "line_code": "long_term_debt_inr_cr",
+              "yoy_pct": -6.1,
+              "note_ref": "21",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Long-Term Lease Liabilities (Ind-AS 116 Rigs/FPSOs)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 12890.0,
+                "FY25": 12450.0,
+                "FY24": 11240.0,
+                "FY23": 8920.0,
+                "FY22": 7420.0
+              },
+              "line_code": "lease_liabilities_non_current_inr_cr",
+              "yoy_pct": 3.5,
+              "note_ref": "21A",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Site Restoration & Decommissioning Provision (ARO)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 38450.0,
+                "FY25": 36820.0,
+                "FY24": 34890.0,
+                "FY23": 32410.0,
+                "FY22": 29850.0
+              },
+              "line_code": "abandonment_provision_inr_cr",
+              "yoy_pct": 4.4,
+              "note_ref": "22",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Deferred Tax Liabilities (Net)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 19716.0,
+                "FY25": 19103.0,
+                "FY24": 18263.0,
+                "FY23": 17413.0,
+                "FY22": 17831.0
+              },
+              "line_code": "deferred_tax_liability_net_inr_cr",
+              "yoy_pct": 3.2,
+              "note_ref": "23",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            },
+            {
+              "label": "Total Non-Current Liabilities (incl. Other NCL)",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": 81096.0,
+                "FY25": 78693.0,
+                "FY24": 74133.0,
+                "FY23": 68753.0,
+                "FY22": 64387.0
+              },
+              "line_code": "non_current_liabilities_inr_cr",
+              "yoy_pct": 3.1,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            }
+          ]
+        },
+        {
+          "id": "current_liabilities",
+          "label": "Current Liabilities",
+          "rows": [
+            {
+              "label": "Total Current Liabilities (ST Debt, Trade Payables & Provisions)",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": 72609.0,
+                "FY25": 66717.0,
+                "FY24": 62847.0,
+                "FY23": 64514.0,
+                "FY22": 59379.0
+              },
+              "line_code": "current_liabilities_inr_cr",
+              "yoy_pct": 8.8,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": null
+              }
+            }
+          ]
+        }
+      ],
+      "totals_check": {
+        "identity": "A = E + L",
+        "passed": true,
+        "max_abs_delta_cr": 0.0
+      },
+      "footnotes": [
+        "Figures in ₹ crore. Negative values in parentheses."
+      ],
+      "source": {
+        "primary": "Labelled synthetic — awaits SPEC-01",
+        "basis": "synthetic",
+        "extraction": "none",
+        "verified": false
+      },
+      "as_of": "2026-03-31",
+      "synthetic": true
+    },
+    "kpis": [
+      {
+        "label": "Total Assets (FY26)",
+        "value": 462250,
+        "unit": "₹ Cr",
+        "delta": "+4.4% vs FY25"
+      },
+      {
+        "label": "Total Equity / Net Worth (FY26)",
+        "value": 323600,
+        "unit": "₹ Cr",
+        "delta": "+6.3% vs FY25"
+      },
+      {
+        "label": "Cash & Bank Balances (FY26)",
+        "value": 30220,
+        "unit": "₹ Cr",
+        "delta": "+8.6% vs FY25"
+      }
+    ]
+  },
+  "insights_v2": [
+    {
+      "text": "Balance sheet identity (Assets = Equity + Liabilities) holds exactly with 0.00 Cr variance across FY22–FY26.",
+      "kind": "headline",
+      "value": 462250,
+      "unit": "₹ Cr"
+    },
+    {
+      "text": "Long-term debt decreased 17.5% YoY in FY26 to ₹6,520 Cr while net worth expanded to ₹3,23,600 Cr.",
+      "kind": "trend",
+      "value": 6520,
+      "unit": "₹ Cr"
+    }
+  ],
+  "drilldowns": [
+    {
+      "label": "Cash flow statement FY22–FY26",
+      "question": "Show standalone cash flow statement for FY22 to FY26"
+    }
+  ],
+  "context_chips": [
+    {
+      "label": "CMD",
+      "kind": "role"
+    },
+    {
+      "label": "FY22–FY26",
+      "kind": "period"
+    },
+    {
+      "label": "Balance Sheet",
+      "kind": "subject"
+    },
+    {
+      "label": "₹ Cr",
+      "kind": "filter"
+    }
+  ],
+  "query_spec": {
+    "version": 1,
+    "domain": "finance",
+    "metric": "balance_sheet",
+    "aggregation": "sum",
+    "period": {
+      "fy": "FY26"
+    }
+  },
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.fact_financial_statement_line"
+    }
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "word",
+    "pdf"
+  ]
+}
