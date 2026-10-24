@@ -59,7 +59,7 @@
 | P1.2 | AR 10-yr table parser (FY13–FY26) | F | 018 | SPEC-01 §4.2 | 02 | Cross-AR overlaps agree or flagged restated; 60-line spot set = AR | [P1.2](docs/delegation/packets/v3/P1.2_ar_10yr_table_parser.md) | ✅ |
 | P1.3 | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | 018 | SPEC-01 §4.3 | 02 | Every AR subtotal reproduced; A = E + L vs AR totals; cash ties | [P1.3](docs/delegation/packets/v3/P1.3_ar_full_statement_extraction.md) | 🔄 |
 | P1.4 | NSE XBRL parser | F | 018 | SPEC-01 §4.4 | — | XBRL vs AR agreement report; FY18/FY19 revenue & PAT exact | [P1.4](docs/delegation/packets/v3/P1.4_xbrl_parser.md) | ✅ |
-| P1.5 | Yahoo loader + market provider chain (optional, retryable) | F | 019 | SPEC-01 §9.1 | — | FY26 consolidated = AR ±₹1 cr when Yahoo reachable; fallback chain works | [P1.5](docs/delegation/packets/v3/P1.5_yahoo_loader.md) | 🔍 |
+| P1.5 | Yahoo loader + market provider chain (optional, retryable) | F | 019 | SPEC-01 §9.1 | — | FY26 consolidated = AR ±₹1 cr when Yahoo reachable; fallback chain works | [P1.5](docs/delegation/packets/v3/P1.5_yahoo_loader.md) | 🔄 |
 | P1.6 | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; as-reported + restated vintages) | O (+F gates, FL evidence) | 018 | SPEC-01 §5–§6 | 03 | 0 plug lines; 100% reported lines `verified=TRUE`; gate report | [P1.6](docs/delegation/packets/v3/P1.6_fact_tables_bq_load_and_gates.md) | ⬜ |
 | P1.7 | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | 018, 021, 022 | SPEC-01 §10 | — | Each row cites doc + page; totals = AR | [P1.7](docs/delegation/packets/v3/P1.7_anchor_tables.md) | ⬜ |
 | P1.8 | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | 020 | SPEC-01 §8 | 16 (part) | 0 generated chunks; page refs verified; safe parameterised retriever (retrieval quality target moved to P2F.5, D-58) | [P1.8](docs/delegation/packets/v3/P1.8_ar_text_chunks_vector.md) | 🔍 |
@@ -142,7 +142,7 @@ See `docs/DECISIONS.md` → Open decisions.
 
 | ID | Action | Needed by | Status |
 |---|---|---|---|
-| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) | P0.1 | ✅ Done 23-Oct |
+| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) — expires daily | P0.1, P1.6+ | ⬜ **Expired again 24-Oct** (needed for BigQuery steps + live app) |
 | SA-2 | Approve v3 doc set + OD-7…OD-18 | P0.8 | ✅ Done 23-Oct (D-43…D-54) |
 | SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ⬜ Pending |
 | SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |

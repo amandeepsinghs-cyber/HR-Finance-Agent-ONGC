@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 23-Oct-2026 10:29 UTC · branch `v3/P0-stabilise` @ `ea72346`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:21 UTC · branch `v3/P0-stabilise` @ `022ebf5`
 
 > [!IMPORTANT]
-> **Overall: 24% complete (weighted)** — 13/62 steps ✅ done, 4 in flight, 45 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 23% complete (weighted)** — 13/62 steps ✅ done, 4 in flight, 45 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `███████░░░░░░░░░░░░░` 33% | 2 | 2 | 0 | 2 | 6 | 0 | 12 |
+| **P1** | Real finance SSOT | `██████░░░░░░░░░░░░░░` 29% | 2 | 1 | 0 | 3 | 6 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 8 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
@@ -25,7 +25,7 @@
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.3 | 🔄 In progress | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | Complete build + evidence |
-| P1.5 | 🔍 In review | Yahoo loader + market provider chain (optional, retryable) | F | Apply review findings / approve |
+| P1.5 | 🔄 In progress | Yahoo loader + market provider chain (optional, retryable) | F | Complete build + evidence |
 | P1.8 | 🔍 In review | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | Apply review findings / approve |
 
 **Ready to start:**
@@ -41,7 +41,7 @@
 
 | ID | Action | Needed by | Status |
 |---|---|---|---|
-| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) | P0.1 | ✅ Done 23-Oct |
+| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) — expires daily | P0.1, P1.6+ | ⬜ **Expired again 24-Oct** (needed for BigQuery steps + live app) |
 | SA-2 | Approve v3 doc set + OD-7…OD-18 | P0.8 | ✅ Done 23-Oct (D-43…D-54) |
 | SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ⬜ Pending |
 | SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |
@@ -140,6 +140,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `aa1ae08` | 2026-10-23 | P1.8 (G4 r2 fixes): BigQuery re-tag applied (8,712 rows to chunker v2; 61 section moves), evidence §8.1 |
 | `d639520` | 2026-10-23 | P1.5 (pre-G4) beta weekly pull: NSE last-trading-day weekly closes ONGC + NIFTY 50, 104 wks 2024-10-25..2026-10-16 (214 req, 0 blo |
 | `1a885ee` | 2026-10-23 | P1.8 (G4 r2 fixes): C1 held-out paraphrase eval (18 Q, LEXICAL_WEIGHT frozen: hybrid 7/18, vector 8/18) + leakage/skew/in-sample d |
 | `7b3047e` | 2026-10-23 | P1.3 (pre-G4): deterministic AR statement parser (BS/P&L/CF, standalone+consolidated, FY17-19 + FY22-26 own ARs; 5,062 rows, 957/9 |
@@ -154,7 +155,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `8a95da5` | 2026-10-23 | P0.10a (pre-G4): stopgap half-duplex mic gate (browser: no PCM while playing +300 ms; backend: drop while generating/speak/estimat |
 | `3f5e4b3` | 2026-10-23 | P0.9 (G4 r2 fixes): end-to-end degraded-run evidence (with/without snapshot, broken ADC), Dockerfile fail-closed + demo-mode notes |
 | `4945902` | 2026-10-23 | P0.5 (G4 r2 fixes): prod with no YUKTI_ALLOWED_ORIGINS allows no cross-origin callers (minor) |
-| `6467e8f` | 2026-10-23 | P0.3 (G4 r2 fixes): insight context no longer labelled 'Annual Report' (unverified snapshot) + guard test |
 
 ## 8. Integrity checks
 
