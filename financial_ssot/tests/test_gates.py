@@ -302,8 +302,7 @@ def test_views_unique_per_fy_scope_line_and_strict_own_vintage(gold_artifacts):
     as_rep = fact[
         fact["verified"]
         & (fact["period_type"] == "annual")
-        & fact["is_own_vintage"]
-        & ((fact["source_system"] == "ar") | (fact["fiscal_year"] == "FY20"))
+        & (fact["is_own_vintage"] | fact["is_fallback_vintage"])
     ]
     dup_as_rep = as_rep.groupby(["fiscal_year", "scope", "line_code"]).size()
     assert (dup_as_rep == 1).all(), f"Duplicate keys in v_fin_statement_as_reported: {dup_as_rep[dup_as_rep > 1]}"

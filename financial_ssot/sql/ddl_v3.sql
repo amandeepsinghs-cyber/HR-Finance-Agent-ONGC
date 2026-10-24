@@ -326,14 +326,18 @@ SELECT
   d.unit_default,
   d.is_subtotal,
   d.is_total,
-  d.is_kpi
+  d.is_kpi,
+  CASE
+    WHEN f.is_fallback_vintage THEN CONCAT(f.fiscal_year, ' from ', f.report_vintage, ' comparative/summary (no own-year AR table)')
+    WHEN f.source_system = 'xbrl' THEN CONCAT(f.fiscal_year, ' from ', f.report_vintage, ' BSE Reg 33 filing (AR PDF scanned)')
+    ELSE NULL
+  END AS footnote_marker
 FROM `ongc-hr-finance-agent.hrfin_gold.fact_financial_statement_line` f
 JOIN `ongc-hr-finance-agent.hrfin_gold.dim_financial_line` d
   USING (line_code)
 WHERE f.verified = TRUE
   AND f.period_type = 'annual'
-  AND f.is_own_vintage = TRUE
-  AND (f.source_system = 'ar' OR f.fiscal_year = 'FY20');
+  AND (f.is_own_vintage = TRUE OR f.is_fallback_vintage = TRUE);
 
 CREATE OR REPLACE VIEW `ongc-hr-finance-agent.hrfin_gold.v_fin_trend_latest` AS
 SELECT
@@ -362,6 +366,7 @@ SELECT
   d.is_kpi,
   CASE
     WHEN f.is_restated THEN CONCAT(f.fiscal_year, ' restated in ', f.report_vintage)
+    WHEN f.is_fallback_vintage THEN CONCAT(f.fiscal_year, ' from ', f.report_vintage, ' comparative/summary (no own-year AR table)')
     ELSE NULL
   END AS footnote_marker
 FROM `ongc-hr-finance-agent.hrfin_gold.fact_financial_statement_line` f
