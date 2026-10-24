@@ -372,6 +372,8 @@ class Planner:
                 fy_hint: Optional[Dict[str, Any]] = None) -> Plan:
         """Deterministic conversion + guards (unit-testable without the LLM)."""
         question = normalize_asr_query(question)
+        if fy_hint is None:
+            fy_hint = resolve_fy(question)
         intent = raw.get("intent") or "other"
         notes: List[str] = []
         chart = raw.get("chart_kind")
@@ -391,7 +393,7 @@ class Planner:
             )
         )
         if intent == "replot" and prev is not None:
-            if prev.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios"):
+            if prev.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios", "wacc_pct", "wacc_components", "wacc_change_attribution"):
                 ck = "waterfall" if wants_waterfall else (chart or "table")
                 spec = prev.model_copy(update={"chart_kind": ck})
                 return Plan(intent="data", is_followup=True, spec=spec, patch=SpecPatch(chart_kind=ck), chart_kind=ck, raw=raw)
@@ -459,27 +461,78 @@ class Planner:
                 chart = "waterfall"
             else:
                 chart = "table"
-        elif wants_waterfall and prev is not None and prev.metric in ("pnl_statement", "cash_flow_statement"):
+        elif wants_waterfall and prev is not None and prev.metric in ("pnl_statement", "cash_flow_statement", "wacc_change_attribution", "wacc_components", "wacc_pct"):
             spec = prev.model_copy(update={"chart_kind": "waterfall"})
             return Plan(intent="data", is_followup=True, spec=spec, patch=SpecPatch(chart_kind="waterfall"), chart_kind="waterfall", raw=raw)
 
+        is_wacc_q = bool(
+            re.search(r"\b(wacc|weighted\s+average\s+cost\s+of\s+capital)\b", ql_early)
+            and no_sub_entity
+        )
+        prev_is_wacc = bool(
+            prev is not None
+            and prev.metric in ("wacc_pct", "wacc_components", "wacc_build_up", "wacc_change_attribution")
+        )
+        if is_wacc_q or prev_is_wacc:
+            is_why = bool(re.search(r"\b(why|what\s+drove|reason\w*|cause\w*|attribut\w*|how\s+come|rise|rose|fallen|drop\w*|high\w*|low\w*)\b", ql_early))
+            is_components = bool(re.search(r"\b(build[- ]?up\s*/\s*driver\w*|component\w*|breakdown|build[- ]?up\s+and\s+components|stack\w*)\b", ql_early))
+            is_single_build_up = bool(re.search(r"\b(parameter\w*|inputs?)\b", ql_early) or (re.search(r"\bbuild[- ]?up\b", ql_early) and not is_components and (fy_hint and fy_hint.get("fy"))))
+            has_single_fy = bool(fy_hint and fy_hint.get("fy") and not fy_hint.get("from") and not is_why and not re.search(r"\b(past|last|\d+\s+years?|trend|history)\b", ql_early))
+            if is_why:
+                intent = "data"
+                raw = dict(raw, intent="data", metric="wacc_change_attribution", is_followup=bool(prev_is_wacc and not is_wacc_q), dimensions=[])
+                chart = "waterfall"
+                if fy_hint and fy_hint.get("fy"):
+                    raw["fy"] = fy_hint["fy"]
+                elif not raw.get("fy"):
+                    raw["fy"] = "FY23"
+            elif is_components:
+                intent = "data"
+                raw = dict(raw, intent="data", metric="wacc_components", is_followup=bool(prev_is_wacc and not is_wacc_q), dimensions=[])
+                chart = "stacked_bar"
+                if not (raw.get("fy_from") or (fy_hint and fy_hint.get("from"))):
+                    raw["fy_from"] = "FY22"
+                    raw["fy_to"] = "FY26"
+            elif is_single_build_up or has_single_fy:
+                intent = "data"
+                raw = dict(raw, intent="data", metric="wacc_build_up", is_followup=bool(prev_is_wacc and not is_wacc_q), dimensions=[])
+                chart = "table"
+                if fy_hint and fy_hint.get("fy"):
+                    raw["fy"] = fy_hint["fy"]
+                elif not raw.get("fy"):
+                    raw["fy"] = "FY26"
+            elif is_wacc_q:
+                intent = "data"
+                raw = dict(raw, intent="data", metric="wacc_pct", is_followup=False, dimensions=[])
+                chart = "line"
+                if re.search(r"\b(10\s+years?|ten\s+years?)\b", ql_early) or (fy_hint and fy_hint.get("n_years") == 10):
+                    raw["fy_from"] = "FY17"
+                    raw["fy_to"] = "FY26"
+                elif not (raw.get("fy_from") or (fy_hint and fy_hint.get("from"))):
+                    raw["fy_from"] = "FY22"
+                    raw["fy_to"] = "FY26"
+
         # Deterministic Financial Causal & Action Guard ("Why did X happen?", "What action should the Finance Director take?")
         fin_kw = re.search(
-            r"\b(pat|profit|pbt|revenue|ebitda|levies|royalty|oidb|saed|windfall|exploration|dry\s+well|survey\s+cost|"
+            r"\b(wacc|weighted\s+average\s+cost\s+of\s+capital|"
+            r"pat|profit|pbt|revenue|ebitda|levies|royalty|oidb|saed|windfall|exploration|dry\s+well|survey\s+cost|"
             r"dd&a|dda|depreciation|depletion|impairment|115baa|deferred\s+tax|cwip|opal|hpcl|mrpl|ovl|otpc|subsidiar\w*|"
             r"borrowing\w*|debt|net\s+debt|lease\s+liabilit\w*|ind[- ]?as|abandonment|aro|site\s+restoration|"
             r"cash\s*flow|ocf|fcf|free\s+cash|capex|dividend\w*|buyback|roce|roe|roa|margin\w*|realisation|crude|gas|"
             r"lifting\s+cost|pec|new\s+well\s+gas|nwng|note\s+\d+|finance\s+director|director\s+finance)\b",
             ql_early,
         )
-        prev_is_fin = bool(prev is not None and prev.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios"))
+        prev_is_fin = bool(prev is not None and (prev.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios") or prev_is_wacc))
         if not prev_is_fin and prev is not None:
             psubj, _, ptdef = self._subject_for(prev.metric)
             prev_is_fin = bool((psubj and psubj.domain == "finance") or (ptdef and ptdef.domain == "finance"))
         if (intent != "data" or not raw.get("metric")) and (fin_kw or (prev_is_fin and re.search(r"\b(why|what\s+happened|action|recommend\w*|interven\w*|improv\w*|explain|driver\w*|reason\w*|cause\w*|how)\b", ql_early))):
             inferred_m = raw.get("metric")
             if not inferred_m or not any(self._subject_for(inferred_m)):
-                if re.search(r"\b(saed|windfall|statutory\s+levies|note\s+28|note\s+26)\b", ql_early):
+                if is_wacc_q or (prev_is_wacc and re.search(r"\b(why|what|driver\w*|reason\w*|cause\w*|high\w*|low\w*)\b", ql_early)):
+                    inferred_m = "wacc_change_attribution"
+                    chart = "waterfall"
+                elif re.search(r"\b(saed|windfall|statutory\s+levies|note\s+28|note\s+26)\b", ql_early):
                     inferred_m = "statutory_levies_cr"
                 elif re.search(r"\b(exploration|dry\s+well\w*|note\s+32)\b", ql_early):
                     inferred_m = "exploration_costs_written_off_cr"
@@ -505,6 +558,10 @@ class Planner:
                     inferred_m = "lifting_cost_usd_per_boe"
                 elif re.search(r"\b(loss[- ]making\s+field\w*|pec|field\s+profit\w*)\b", ql_early):
                     inferred_m = "pbt_cr"
+                elif prev_is_wacc and prev is not None:
+                    inferred_m = "wacc_change_attribution" if re.search(r"\b(why|what|driver\w*|reason\w*|cause\w*)\b", ql_early) else prev.metric
+                    if inferred_m == "wacc_change_attribution":
+                        chart = "waterfall"
                 elif prev_is_fin and prev is not None:
                     inferred_m = prev.metric
                 else:

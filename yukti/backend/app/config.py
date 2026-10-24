@@ -72,3 +72,6 @@ def allowed_origins() -> list:
         items = [o for o in items if o != "*"]
     return items
 
+def v3_field_enabled(field: str) -> bool:
+    fields = [x.strip() for x in os.getenv("YUKTI_CONTRACT_V3_FIELDS", "").split(",") if x.strip()]
+    return field in fields

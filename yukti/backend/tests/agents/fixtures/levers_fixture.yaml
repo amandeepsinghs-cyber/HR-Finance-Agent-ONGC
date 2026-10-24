@@ -1,0 +1,57 @@
+levers:
+  - id: L02
+    title: "Receivables collection"
+    owner: DIR_FIN
+    kpi: "Debtor days"
+    horizon_days: 90
+    confidence_base: 1.0
+    uses_assumption: false
+    uses_synthetic: false
+    trigger:
+      inputs: ["RATIO.DEBTOR_DAYS", "PL.REV_OPS"]
+      expr: "RATIO.DEBTOR_DAYS > prior(RATIO.DEBTOR_DAYS)"
+    impact:
+      kind: one_off
+      low_expr: "(RATIO.DEBTOR_DAYS - prior(RATIO.DEBTOR_DAYS)) * (PL.REV_OPS / 365) * 0.8"
+      mid_expr: "(RATIO.DEBTOR_DAYS - prior(RATIO.DEBTOR_DAYS)) * (PL.REV_OPS / 365)"
+      high_expr: "(RATIO.DEBTOR_DAYS - prior(RATIO.DEBTOR_DAYS)) * (PL.REV_OPS / 365) * 1.2"
+    what_to_do_template: "Bring debtor days from {RATIO.DEBTOR_DAYS} back to {prior(RATIO.DEBTOR_DAYS)} on revenue from operations of ₹{PL.REV_OPS} cr through accelerated PSU/offtaker billing reconciliation."
+    ask_template: "Bring debtor days from {RATIO.DEBTOR_DAYS} back to {prior(RATIO.DEBTOR_DAYS)}"
+
+  - id: L08
+    title: "FX exposure & natural/forward hedging"
+    owner: DIR_FIN
+    kpi: "FX loss ₹ cr"
+    horizon_days: 30
+    confidence_base: 1.0
+    uses_assumption: true
+    uses_synthetic: false
+    trigger:
+      inputs: ["OPEX.EXCH_LOSS"]
+      expr: "(OPEX.EXCH_LOSS > 1000) or (OPEX.EXCH_LOSS > (2 * prior(OPEX.EXCH_LOSS)))"
+    impact:
+      kind: annual
+      low_expr: "OPEX.EXCH_LOSS * 0.35"
+      mid_expr: "OPEX.EXCH_LOSS * 0.50"
+      high_expr: "OPEX.EXCH_LOSS * 0.65"
+    what_to_do_template: "Hedge 50% of USD-denominated lease/vendor exposure to mitigate exchange loss (₹{OPEX.EXCH_LOSS} cr vs prior year ₹{prior(OPEX.EXCH_LOSS)} cr)."
+    ask_template: "Implement 50% FX hedge coverage on USD lease and payable exposures"
+
+  - id: L09
+    title: "Provisions & write-offs review"
+    owner: DIR_FIN
+    kpi: "Provisions ₹ cr"
+    horizon_days: 90
+    confidence_base: 1.0
+    uses_assumption: false
+    uses_synthetic: false
+    trigger:
+      inputs: ["OPEX.PROVISIONS"]
+      expr: "yoy(OPEX.PROVISIONS) > 0.25"
+    impact:
+      kind: annual
+      low_expr: "(OPEX.PROVISIONS - prior(OPEX.PROVISIONS)) * 0.75"
+      mid_expr: "OPEX.PROVISIONS - prior(OPEX.PROVISIONS)"
+      high_expr: "(OPEX.PROVISIONS - prior(OPEX.PROVISIONS)) * 1.15"
+    what_to_do_template: "Audit ageing doubtful advances and disputed claims driving the increase in provisions and write-offs (₹{OPEX.PROVISIONS} cr vs prior year ₹{prior(OPEX.PROVISIONS)} cr)."
+    ask_template: "Review and resolve disputed claims driving ₹{OPEX.PROVISIONS} cr in provisions"

@@ -117,9 +117,13 @@ def resolve_fy(text: str, available: Optional[Iterable[str]] = None,
         return {"fy": fy_label(int(m.group(1)))}
 
     if re.search(r"\byear before last\b|\bpichle se pichle saal\b", t):
-        return {"fy": fy_label(last - 2)}
-    if re.search(r"\b(last|previous|prior)\s+(fiscal\s+|financial\s+)?year\b|\blast fy\b|\bpichle saal\b|\bpichhle saal\b|\bpichla saal\b|\bगत वर्ष\b|\bपिछले साल\b", t):
+        if avail and len(avail) >= 3:
+            return {"fy": avail[-3]}
         return {"fy": fy_label(last - 1)}
+    if re.search(r"\b(last|previous|prior)\s+(fiscal\s+|financial\s+)?year\b|\blast fy\b|\bpichle saal\b|\bpichhle saal\b|\bpichla saal\b|\bगत वर्ष\b|\bपिछले साल\b", t):
+        if avail and len(avail) >= 2:
+            return {"fy": avail[-2]}
+        return {"fy": fy_label(last)}
     if re.search(r"\b(next|coming)\s+(fiscal\s+|financial\s+)?year\b|\bagle saal\b", t):
         return {"fy": fy_label(cur + 1)}
     if re.search(r"\b(this|current|present)\s+(fiscal\s+|financial\s+)?year\b|\bthis fy\b|\bcurrent fy\b|\bis saal\b|\bयह साल\b|\bइस साल\b|\bytd\b|\byear[- ]to[- ]date\b", t):

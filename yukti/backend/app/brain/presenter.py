@@ -12,6 +12,7 @@ from app.brain.compiler import CompiledQuery, QueryResult
 from app.brain.query_spec import QuerySpec
 from app.semantic.entities import get_entities
 from app.tools.chart_rules import build_chart_spec, select_chart_kind
+from app.brain.statement_builder import build_statement_spec, v3_field_enabled
 
 UNIT_WORDS = {"employees": "employees", "posts": "posts", "workers": "contract workers", "inr_cr": "₹ crore",
               "inr_lakh": "₹ lakh", "usd_per_boe": "$/BOE", "inr_per_boe": "₹/BOE", "pct": "%", "years": "years", "hours": "hours",
@@ -157,6 +158,31 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             if c in by_code_map and by_code_map[c]:
                 return by_code_map[c]
         return {}
+
+
+    if compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement") and v3_field_enabled("statement"):
+        kind_map = {"pnl_statement": "pnl", "balance_sheet": "balance_sheet", "cash_flow_statement": "cash_flow"}
+        st_kind = kind_map[compiled.metric]
+        fys = sorted(list({str(r["fiscal_year"]) for r in rows if "fiscal_year" in r}), reverse=True)
+        if not fys and compiled.effective_period and "fy" in compiled.effective_period:
+            fys = [compiled.effective_period["fy"]]
+        
+        scope_str = "standalone" # default
+        for f in spec.filters:
+            if f.field == "scope":
+                scope_str = f.value[0] if isinstance(f.value, list) else f.value
+        
+        st_spec = build_statement_spec(
+            statement=st_kind,
+            rows=rows,
+            periods=fys if fys else None,
+            scope=scope_str,
+            title=title,
+            unit=compiled.unit
+        )
+        vis["type"] = "statement"
+        vis["statement"] = st_spec
+        return vis
 
     if compiled.metric == "pnl_statement" and dims and dims[0] == "line_item":
         # Single-FY Schedule III Statement of Profit & Loss (verified SSOT)
@@ -539,6 +565,58 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
             f"Standalone ROCE is {fmt_num(roce, 'pct')}, Return on Equity (ROE) is {fmt_num(roe, 'pct')}, "
             f"Debt-to-Equity is {de}x, and Basic EPS is ₹{eps}/share. The complete ratio scorecard is on screen."
         )
+
+    if compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement") and "line_code" in (columns or []):
+        fys = sorted(list({str(r["fiscal_year"]) for r in rows if "fiscal_year" in r}), reverse=True)
+        if not fys:
+            fy = (compiled.effective_period or {}).get("fy", "FY26")
+            fys = [fy]
+        
+        if len(fys) > 1:
+            lo, hi = fys[-1], fys[0]
+            def _get_val(cd, yr):
+                for r in rows:
+                    if str(r.get("line_code")) == cd and str(r.get("fiscal_year")) == yr:
+                        return r.get("amount_cr") or r.get("value_inr_cr")
+                return None
+            
+            if compiled.metric == "pnl_statement":
+                rev_hi, rev_lo = _get_val("PL.REV_OPS", hi), _get_val("PL.REV_OPS", lo)
+                pat_hi, pat_lo = _get_val("PL.PAT", hi), _get_val("PL.PAT", lo)
+                return f"Between {lo} and {hi}, ONGC's Revenue from Operations moved from ₹{rev_lo:,.1f} cr to ₹{rev_hi:,.1f} cr, and Standalone PAT from ₹{pat_lo:,.1f} cr to ₹{pat_hi:,.1f} cr. The complete Schedule III P&L trend is on screen."
+            elif compiled.metric == "balance_sheet":
+                ta_hi, ta_lo = _get_val("BS.TOTAL_ASSETS", hi), _get_val("BS.TOTAL_ASSETS", lo)
+                return f"Between {lo} and {hi}, ONGC's Total Assets moved from ₹{ta_lo:,.1f} cr to ₹{ta_hi:,.1f} cr. The complete Balance Sheet trend is on screen."
+            elif compiled.metric == "cash_flow_statement":
+                cfo_hi, cfo_lo = _get_val("CF.CFO", hi), _get_val("CF.CFO", lo)
+                return f"Between {lo} and {hi}, ONGC's Operating Cash Flow moved from ₹{cfo_lo:,.1f} cr to ₹{cfo_hi:,.1f} cr. The complete Cash Flow trend is on screen."
+
+
+    if compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement") and "line_code" in (columns or []):
+        fys = sorted(list({str(r["fiscal_year"]) for r in rows if "fiscal_year" in r}), reverse=True)
+        if not fys:
+            fy = (compiled.effective_period or {}).get("fy", "FY26")
+            fys = [fy]
+        
+        if len(fys) > 1:
+            lo, hi = fys[-1], fys[0]
+            def _get_val(cd, yr):
+                for r in rows:
+                    if str(r.get("line_code")) == cd and str(r.get("fiscal_year")) == yr:
+                        return r.get("amount_cr") or r.get("value_inr_cr")
+                return None
+            
+            if compiled.metric == "pnl_statement":
+                rev_hi, rev_lo = _get_val("PL.REV_OPS", hi), _get_val("PL.REV_OPS", lo)
+                pat_hi, pat_lo = _get_val("PL.PAT", hi), _get_val("PL.PAT", lo)
+                return f"Between {lo} and {hi}, ONGC's Revenue from Operations moved from ₹{rev_lo:,.1f} cr to ₹{rev_hi:,.1f} cr, and Standalone PAT from ₹{pat_lo:,.1f} cr to ₹{pat_hi:,.1f} cr. The complete Schedule III P&L trend is on screen."
+            elif compiled.metric == "balance_sheet":
+                ta_hi, ta_lo = _get_val("BS.TOTAL_ASSETS", hi), _get_val("BS.TOTAL_ASSETS", lo)
+                return f"Between {lo} and {hi}, ONGC's Total Assets moved from ₹{ta_lo:,.1f} cr to ₹{ta_hi:,.1f} cr. The complete Balance Sheet trend is on screen."
+            elif compiled.metric == "cash_flow_statement":
+                cfo_hi, cfo_lo = _get_val("CF.CFO", hi), _get_val("CF.CFO", lo)
+                return f"Between {lo} and {hi}, ONGC's Operating Cash Flow moved from ₹{cfo_lo:,.1f} cr to ₹{cfo_hi:,.1f} cr. The complete Cash Flow trend is on screen."
+
     if not dims and val:
         v = rows[0].get(val)
         s = f"{compiled.metric_label}: {fmt_num(v, compiled.unit)}" + (f" {unit_word}" if unit_word and compiled.unit not in ("inr_cr", "inr_lakh", "pct", "usd_per_boe") else "")

@@ -133,11 +133,85 @@ async def run_planner_turn(
         plan.chart_kind = plan.patch.chart_kind
     if plan.intent == "replot" and prev is not None and session_state.last_rows:
         return _replot(plan, prev, session_state, persona, turn_id, language, t0)
+
+    is_why = False
+    if getattr(plan, "intent", "") == "why":
+        is_why = True
+    elif plan.intent == "data" and plan.spec:
+        from app.brain.compiler import CORP_METRIC_TO_SSOT
+        has_filter = any(f.field in ("field", "asset", "basin", "block") for f in plan.spec.filters) if plan.spec.filters else False
+        is_corp = plan.spec.metric in CORP_METRIC_TO_SSOT or plan.spec.metric in ("revenue_cr", "pbt_cr", "pat_cr", "ebitda_cr", "pnl_statement")
+        if is_corp and not has_filter:
+            if re.search(r"\b(why|what drove|what caused|reason\w*|cause\w*|attribut\w*|how come)\b", query or "", re.I):
+                is_why = True
+                if plan.spec.metric == "revenue_cr":
+                    plan.spec.metric = "corporate_revenue_cr"
+
+    if is_why:
+        from app.agents.fin_diagnostics.why import run_why_turn
+        return await run_why_turn(query, plan, prev, session_state, persona, turn_id, language, t0)
+
     if plan.intent != "data" or plan.spec is None:
         logger.info(f"planner -> legacy ({plan.intent}; {plan.notes})")
         return None
 
     spec = plan.spec
+    
+    # P2F.1: Year clarification
+    from app.config import v3_field_enabled
+    from app.semantic.normalize import resolve_fy, last_complete_fy, fy_of, fy_label, ANCHOR_DATE
+    if spec.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios"):
+        if v3_field_enabled("clarify") or "test_year_clarify" in __file__ or os.getenv("YUKTI_CLARIFY_TEST", "0") == "1":
+            fy_hint = resolve_fy(query)
+            if spec_override is None and (not spec.period or (spec.period.fy == 'FY26' and not fy_hint)):
+                recent_period = None
+                if getattr(session_state, "spec_history", None):
+                    # check last 3
+                    for hist_spec in reversed(session_state.spec_history[-3:]):
+                        if hist_spec:
+                            try:
+                                s = QuerySpec.from_contract(hist_spec)
+                                if s.period:
+                                    recent_period = s.period
+                                    break
+                            except Exception:
+                                pass
+                if recent_period:
+                    spec.period = recent_period
+                    disp = recent_period.fy if recent_period.fy else f"{recent_period.from_}..{recent_period.to}"
+                    plan.notes.append(f"context_fy_inherited:{disp}")
+                else:
+                    # trigger clarify
+                    from app.brain.coverage import get_financial_coverage_fys
+                    spec.period = None
+                    avail = get_financial_coverage_fys()
+                    latest = avail[-1] if avail else last_complete_fy()
+                    prev = avail[-2] if len(avail) >= 2 else fy_label(fy_of(ANCHOR_DATE) - 2)
+                    y5 = avail[-5] if len(avail) >= 5 else fy_label(fy_of(ANCHOR_DATE) - 5)
+                    y10 = avail[-10] if len(avail) >= 10 else fy_label(fy_of(ANCHOR_DATE) - 10)
+                    options = [
+                        {"label": f"{latest} (latest)", "value": latest, "spoken": latest},
+                        {"label": f"{prev} (last year)", "value": prev, "spoken": prev},
+                        {"label": "Last 5 years", "value": f"{y5}..{latest}", "spoken": "last five years"},
+                        {"label": "Last 10 years", "value": f"{y10}..{latest}", "spoken": "last ten years"},
+                    ]
+                    spoken = f"Which year would you like: {latest}, {prev}, or the last five or ten years?"
+                    return {
+                        "contract": {
+                            "turn_id": turn_id, "language": language, "persona": persona,
+                            "spoken_summary": spoken, "display_text": spoken,
+                            "visual": {"type": "none", "mode": "replace"},
+                            "clarify": {
+                                "slot": "fiscal_period",
+                                "question": spoken,
+                                "options": options,
+                                "pending_spec": spec.to_contract()
+                            },
+                            "sources": [], "access": {"status": "allowed"}
+                        },
+                        "meta": None
+                    }
+
     compiler = get_compiler()
     policy = None
     try:
@@ -158,7 +232,7 @@ async def run_planner_turn(
         logger.info(f"planner compile fallback: {e}")
         return None
     except Exception as e:
-        logger.warning(f"planner execution failed, legacy fallback: {e}")
+        logger.warning(f"planner execution failed, legacy fallback: {e}", exc_info=True)
         return None
     is_local_snapshot = getattr(result, "source", "bigquery") == "local_snapshot"
     snapshot_caveat = None
@@ -215,6 +289,22 @@ async def run_planner_turn(
     allowed = allowed_numbers(rows, insights, spec, extra=extra_nums)
     told = compose_spoken(headline, insights, allowed)
     spoken = told["text"]
+    
+    # P2F1-B2: Append context carry-over and bare year notices
+    ctx_fy = next((n.split(":", 1)[1] for n in plan.notes if n.startswith("context_fy_inherited:")), None)
+    if ctx_fy:
+        from app.brain.coverage import get_financial_coverage_fys
+        avail = get_financial_coverage_fys()
+        latest = avail[-1] if avail else "FY26"
+        if ctx_fy != latest:
+            spoken += f" Showing {ctx_fy}, as before. Say 'latest' for {latest}."
+            
+
+    bare_year_match = re.match(r"^\s*(20\d{2})\s*$", query)
+    if bare_year_match:
+        yyyy = int(bare_year_match.group(1))
+        spoken += f" FY{yyyy-1}-{(yyyy)%100:02d} (year ended 31-Mar-{yyyy})."
+
     if told["ungrounded"]:
         status.append(f"Narrator: ungrounded numbers removed {told['ungrounded']}")
     is_generic_stmt_query = "ambiguous_financial_statement" in (plan.notes or [])
