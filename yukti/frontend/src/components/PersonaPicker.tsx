@@ -6,6 +6,7 @@
  * (the parent calls `POST /api/auth/session`); this is the ONLY way to change persona in the UI.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Check, X } from 'lucide-react';
 import { PERSONA_DIRECTORY, personaInfo, type PersonaGroup, type PublicPersona } from '@/personas';
 import type { PersonaType } from '@/contracts/answerContract';
@@ -50,15 +51,17 @@ export function PersonaPicker({ open, current, onPick, onClose }: PersonaPickerP
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || typeof document === 'undefined') return null;
 
   const rows = PERSONA_DIRECTORY.map((p) => {
     const s = server?.find((x) => x.persona_id === p.id);
     return { ...p, display_name: s?.display_name || p.display_name, designation: s?.functional_designation || s?.designation || p.designation };
   });
 
-  return (
-    <div className="fixed inset-0 z-[70] grid place-items-center bg-[color-mix(in_srgb,var(--ink)_28%,transparent)] p-4" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+  // Portal to <body>: the TopBar uses backdrop-blur, which makes it the containing block for `position: fixed`
+  // descendants — rendered inside it, the modal was centred on the 92 px header and its top was cut off.
+  return createPortal(
+    <div data-testid="persona-picker" className="fixed inset-0 z-[70] grid place-items-center bg-[color-mix(in_srgb,var(--ink)_28%,transparent)] p-4" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div
         ref={dialogRef}
         role="dialog"
@@ -114,6 +117,7 @@ export function PersonaPicker({ open, current, onPick, onClose }: PersonaPickerP
           ))}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
