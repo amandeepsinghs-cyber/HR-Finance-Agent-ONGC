@@ -47,16 +47,26 @@ def build_wacc_dataset(
         kd_pretax = None
         kd_flag = "ok"
         if b.finance_cost_inr_cr is not None and b.avg_total_debt_inr_cr and b.avg_total_debt_inr_cr > 0:
-            effective_unwind = b.decom_unwind_inr_cr if b.decom_unwind_inr_cr is not None else 0.0
-            kd_pretax = round(
-                ((b.finance_cost_inr_cr - effective_unwind) / b.avg_total_debt_inr_cr) * 100.0,
-                4,
-            )
-
-        # Check Kd sanity band if Rf is available: [Rf - 1.0pp, Rf + 3.0pp]
-        if kd_pretax is not None and b.rf_used_pct is not None:
-            if not (b.rf_used_pct - 1.0 <= kd_pretax <= b.rf_used_pct + 3.0):
+            if b.decom_unwind_inr_cr is None:
+                # Truth Rule D-35 / Packet P1.9 §7: no silent defaults when decommissioning unwinding note is absent
+                kd_pretax = None
                 kd_flag = "out_of_band"
+            else:
+                kd_pretax = round(
+                    ((b.finance_cost_inr_cr - b.decom_unwind_inr_cr) / b.avg_total_debt_inr_cr) * 100.0,
+                    4,
+                )
+
+        # Check Kd sanity band:
+        # If Rf is available: [Rf - 1.0pp, Rf + 3.0pp]
+        # Fallback sanity check when Rf is missing: [3.0%, 12.0%] per SPEC-02 §3.4
+        if kd_pretax is not None:
+            if b.rf_used_pct is not None:
+                if not (b.rf_used_pct - 1.0 <= kd_pretax <= b.rf_used_pct + 3.0):
+                    kd_flag = "out_of_band"
+            else:
+                if not (3.0 <= kd_pretax <= 12.0):
+                    kd_flag = "out_of_band"
 
         kd_used = kd_pretax
         kd_method = "statement_notes"
@@ -93,13 +103,19 @@ def build_wacc_dataset(
                 )
 
         # Verification & Rule IDs
-        failed_rules = list(b.failed_rule_ids)
-        if b.rf_gsec_10y_pct is None:
+        failed_rules = list(dict.fromkeys(b.failed_rule_ids))
+        if b.rf_gsec_10y_pct is None and "W1" not in failed_rules:
+            failed_rules.append("W1")
+        if b.equity_mv_inr_cr is None and "W1" not in failed_rules:
+            failed_rules.append("W1")
+        if b.decom_unwind_inr_cr is None:
             if "W1" not in failed_rules:
                 failed_rules.append("W1")
-        if b.equity_mv_inr_cr is None:
-            if "W1" not in failed_rules:
-                failed_rules.append("W1")
+            if "W4" not in failed_rules:
+                failed_rules.append("W4")
+        if kd_flag == "out_of_band":
+            if "W4" not in failed_rules:
+                failed_rules.append("W4")
 
         is_verified = len(failed_rules) == 0
 
@@ -110,8 +126,13 @@ def build_wacc_dataset(
             notes_parts.append("Market prices unavailable: Hamada industry relevered beta used")
         if b.damodaran_notes:
             notes_parts.append(b.damodaran_notes)
-        if kd_flag == "out_of_band":
-            notes_parts.append("Kd out of sanity band [Rf - 1pp, Rf + 3pp]")
+        if b.decom_unwind_inr_cr is None:
+            notes_parts.append(f"N36.UNWIND_DECOM unavailable for {fy}")
+        elif kd_flag == "out_of_band":
+            if b.rf_used_pct is not None:
+                notes_parts.append("Kd out of sanity band [Rf - 1pp, Rf + 3pp]")
+            else:
+                notes_parts.append("Kd out of sanity band [3.0%, 12.0%]")
 
         note_str = "; ".join(notes_parts) if notes_parts else None
 
@@ -202,7 +223,39 @@ def build_wacc_dataset(
             "notes": "Lead decision OD-11: raw INR 10-yr G-sec yield",
         })
 
-        # 4. ERP total India
+        # 4. ERP mature
+        input_rows.append({
+            "fiscal_year": fy,
+            "input_code": "erp_mature",
+            "value": b.erp_mature_pct,
+            "unit": "percent",
+            "source_system": "damodaran",
+            "source_doc": b.damodaran_doc,
+            "source_page": None,
+            "source_url": "https://pages.stern.nyu.edu/~adamodar/",
+            "retrieved_at": datetime.date.today().isoformat(),
+            "formula": None,
+            "depends_on": [],
+            "notes": "Mature market equity risk premium (US base)",
+        })
+
+        # 5. CRP India
+        input_rows.append({
+            "fiscal_year": fy,
+            "input_code": "crp_india",
+            "value": b.crp_pct,
+            "unit": "percent",
+            "source_system": "damodaran",
+            "source_doc": b.damodaran_doc,
+            "source_page": None,
+            "source_url": "https://pages.stern.nyu.edu/~adamodar/",
+            "retrieved_at": datetime.date.today().isoformat(),
+            "formula": None,
+            "depends_on": [],
+            "notes": "Country risk premium for India",
+        })
+
+        # 6. ERP total India
         input_rows.append({
             "fiscal_year": fy,
             "input_code": "erp_total_india",
@@ -218,14 +271,30 @@ def build_wacc_dataset(
             "notes": b.damodaran_notes or "Total equity risk premium for India",
         })
 
-        # 5. Beta industry relevered
+        # 7. Unlevered beta
+        input_rows.append({
+            "fiscal_year": fy,
+            "input_code": "unlevered_beta",
+            "value": b.unlevered_beta,
+            "unit": "ratio",
+            "source_system": "damodaran",
+            "source_doc": b.beta_doc,
+            "source_page": None,
+            "source_url": "https://pages.stern.nyu.edu/~adamodar/",
+            "retrieved_at": datetime.date.today().isoformat(),
+            "formula": None,
+            "depends_on": [],
+            "notes": "Emerging markets Oil/Gas (Production and Exploration) unlevered beta",
+        })
+
+        # 8. Beta industry relevered
         input_rows.append({
             "fiscal_year": fy,
             "input_code": "beta_industry_relevered",
             "value": beta_industry_rel,
             "unit": "ratio",
             "source_system": "derived",
-            "source_doc": b.damodaran_doc,
+            "source_doc": b.beta_doc,
             "source_page": None,
             "source_url": None,
             "retrieved_at": datetime.date.today().isoformat(),
@@ -234,7 +303,7 @@ def build_wacc_dataset(
             "notes": "Hamada equation relevered at book D/E",
         })
 
-        # 6. Kd pretax
+        # 9. Kd pretax
         input_rows.append({
             "fiscal_year": fy,
             "input_code": "kd_pretax",
@@ -250,7 +319,39 @@ def build_wacc_dataset(
             "notes": f"Pretax cost of debt; flag={kd_flag}",
         })
 
-        # 7. Tax rate
+        # 10. Kd used
+        input_rows.append({
+            "fiscal_year": fy,
+            "input_code": "kd_used",
+            "value": kd_used,
+            "unit": "percent",
+            "source_system": "derived",
+            "source_doc": None,
+            "source_page": None,
+            "source_url": None,
+            "retrieved_at": datetime.date.today().isoformat(),
+            "formula": "kd_used = kd_pretax",
+            "depends_on": ["kd_pretax"],
+            "notes": f"Pretax cost of debt used in WACC; flag={kd_flag}",
+        })
+
+        # 11. Ke
+        input_rows.append({
+            "fiscal_year": fy,
+            "input_code": "ke",
+            "value": ke,
+            "unit": "percent",
+            "source_system": "derived",
+            "source_doc": None,
+            "source_page": None,
+            "source_url": None,
+            "retrieved_at": datetime.date.today().isoformat(),
+            "formula": "rf_used + beta_industry_relevered * erp_total_india",
+            "depends_on": ["rf_used", "beta_industry_relevered", "erp_total_india"],
+            "notes": "Cost of equity via CAPM",
+        })
+
+        # 12. Tax rate
         input_rows.append({
             "fiscal_year": fy,
             "input_code": "tax_rate",
@@ -266,7 +367,7 @@ def build_wacc_dataset(
             "notes": "Statutory corporate tax rate",
         })
 
-        # 8. Debt BV
+        # 13. Debt BV
         input_rows.append({
             "fiscal_year": fy,
             "input_code": "debt_bv",
@@ -282,7 +383,7 @@ def build_wacc_dataset(
             "notes": "Total book debt (borrowings and lease liabilities)",
         })
 
-        # 9. Equity BV
+        # 14. Equity BV
         input_rows.append({
             "fiscal_year": fy,
             "input_code": "equity_bv",
@@ -296,6 +397,38 @@ def build_wacc_dataset(
             "formula": "BS.EQUITY.TOTAL",
             "depends_on": ["BS.EQUITY.TOTAL"],
             "notes": "Total book equity",
+        })
+
+        # 15. Equity MV
+        input_rows.append({
+            "fiscal_year": fy,
+            "input_code": "equity_mv",
+            "value": b.equity_mv_inr_cr,
+            "unit": "inr_cr",
+            "source_system": "derived" if b.equity_mv_inr_cr is not None else "missing_seed",
+            "source_doc": "market_prices_seed.csv" if b.equity_mv_inr_cr is not None else None,
+            "source_page": None,
+            "source_url": None,
+            "retrieved_at": datetime.date.today().isoformat(),
+            "formula": "close_price * shares_outstanding" if b.equity_mv_inr_cr is not None else None,
+            "depends_on": ["market_close_price", "shares_outstanding"] if b.equity_mv_inr_cr is not None else [],
+            "notes": "Market equity value (close × shares outstanding)" if b.equity_mv_inr_cr is not None else "Market price seed missing",
+        })
+
+        # 16. WACC
+        input_rows.append({
+            "fiscal_year": fy,
+            "input_code": "wacc",
+            "value": wacc,
+            "unit": "percent",
+            "source_system": "derived",
+            "source_doc": None,
+            "source_page": None,
+            "source_url": None,
+            "retrieved_at": datetime.date.today().isoformat(),
+            "formula": "(equity_mv / (equity_mv + debt_bv)) * ke + (debt_bv / (equity_mv + debt_bv)) * kd_used * (1 - tax_rate)",
+            "depends_on": ["equity_mv", "debt_bv", "ke", "kd_used", "tax_rate"],
+            "notes": "Weighted average cost of capital",
         })
 
     df_annual = pd.DataFrame(annual_rows)

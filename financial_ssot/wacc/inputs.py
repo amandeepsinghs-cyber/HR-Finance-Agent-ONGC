@@ -61,6 +61,7 @@ class FYInputBundle:
     crp_pct: float | None = None
     erp_total_pct: float | None = None
     unlevered_beta: float | None = None
+    beta_doc: str | None = None
     tax_rate_pct: float | None = None
     finance_cost_inr_cr: float | None = None
     decom_unwind_inr_cr: float | None = None
@@ -84,7 +85,11 @@ def load_statement_inputs(parquet_path: Path | None = None) -> dict[str, dict[st
         raise FileNotFoundError(f"Parquet file not found: {parquet_path}")
 
     df = pd.read_parquet(parquet_path)
-    sa = df[df["scope"] == "standalone"]
+    sa = df[
+        (df["scope"] == "standalone")
+        & (df["period_type"] == "annual")
+        & (df["verified"] == True)
+    ]
 
     fys = [f"FY{y}" for y in range(16, 27)]
     out: dict[str, dict[str, float]] = {}
@@ -106,17 +111,37 @@ def load_statement_inputs(parquet_path: Path | None = None) -> dict[str, dict[st
         fin_cost = get_val("PL.FIN_COST")
         decom_unwind = get_val("N36.UNWIND_DECOM")
 
-        # Borrowings: prefer 10-year summary total, else sum NC + C
+        # Borrowings: prefer audited Balance Sheet (NC + C) when present and > 0, fallback to 10-year summary
         borrow_10yr = get_val("BS.BORROW_TOTAL_10YR")
-        borrow_nc = get_val("BS.BORROW_NC") or 0.0
-        borrow_cur = get_val("BS.BORROW_CUR") or 0.0
-        borrowings = borrow_10yr if borrow_10yr is not None else (borrow_nc + borrow_cur)
+        borrow_nc = get_val("BS.BORROW_NC")
+        borrow_cur = get_val("BS.BORROW_CUR")
+        borrow_bs = (
+            (borrow_nc or 0.0) + (borrow_cur or 0.0)
+            if (borrow_nc is not None or borrow_cur is not None)
+            else None
+        )
+        if borrow_bs is not None and borrow_bs > 0:
+            borrowings = borrow_bs
+        elif borrow_10yr is not None:
+            borrowings = borrow_10yr
+        else:
+            borrowings = borrow_bs
 
-        # Lease liabilities: prefer 10-year summary total, else sum NC + C
+        # Lease liabilities: prefer audited Balance Sheet (NC + C) when present and > 0, fallback to 10-year summary
         lease_10yr = get_val("BS.LEASE_LIAB_TOTAL_10YR")
-        lease_nc = get_val("BS.LEASE_LIAB_NC") or 0.0
-        lease_cur = get_val("BS.LEASE_LIAB_C") or 0.0
-        lease_liab = lease_10yr if lease_10yr is not None else (lease_nc + lease_cur)
+        lease_nc = get_val("BS.LEASE_LIAB_NC")
+        lease_cur = get_val("BS.LEASE_LIAB_C")
+        lease_bs = (
+            (lease_nc or 0.0) + (lease_cur or 0.0)
+            if (lease_nc is not None or lease_cur is not None)
+            else None
+        )
+        if lease_bs is not None and lease_bs > 0:
+            lease_liab = lease_bs
+        elif lease_10yr is not None:
+            lease_liab = lease_10yr
+        else:
+            lease_liab = lease_bs
 
         equity = get_val("BS.EQUITY.TOTAL")
 
@@ -178,12 +203,14 @@ def build_all_inputs(
     parquet_path: Path | None = None,
     market_dir: Path | None = None,
     rbi_seed_csv: Path | None = None,
+    market_seed_csv: Path | None = None,
 ) -> dict[str, FYInputBundle]:
     """Assemble all WACC input bundles for FY17 through FY26."""
     erp_data = damodaran.extract_india_erp(market_dir)
     beta_data = damodaran.extract_industry_beta(market_dir)
     stmt_data = load_statement_inputs(parquet_path)
     rbi_rates = load_rbi_seed(rbi_seed_csv)
+    market_prices = load_market_prices_seed(market_seed_csv)
 
     bundles: dict[str, FYInputBundle] = {}
 
@@ -211,6 +238,15 @@ def build_all_inputs(
         # Rf used = raw INR 10-yr G-sec (OD-11 decision)
         rf_used = rf
 
+        # Market prices seed -> equity MV if available
+        # Shares outstanding = 12,580,279,206 per SPEC-01 §9.1 and SPEC-02 §4
+        close_price = market_prices.get(as_of) or market_prices.get(fy)
+        equity_mv = (
+            round((close_price * 12_580_279_206) / 1e7, 2)
+            if close_price is not None
+            else None
+        )
+
         bundle = FYInputBundle(
             fiscal_year=fy,
             as_of_date=as_of,
@@ -221,6 +257,7 @@ def build_all_inputs(
             crp_pct=erp_info.get("crp_pct"),
             erp_total_pct=erp_info.get("erp_total_pct"),
             unlevered_beta=beta_info.get("unlevered_beta"),
+            beta_doc=beta_info.get("source_doc"),
             tax_rate_pct=STATUTORY_TAX_RATES.get(fy, 25.17),
             finance_cost_inr_cr=stmt_info.get("fin_cost"),
             decom_unwind_inr_cr=stmt_info.get("decom_unwind"),
@@ -230,12 +267,14 @@ def build_all_inputs(
             prior_total_debt_inr_cr=prior_debt,
             avg_total_debt_inr_cr=avg_debt,
             equity_bv_inr_cr=stmt_info.get("equity_bv"),
-            equity_mv_inr_cr=None,  # Market price missing
+            equity_mv_inr_cr=equity_mv,
             damodaran_doc=erp_info.get("source_doc"),
             damodaran_notes=erp_info.get("notes"),
         )
 
         if rf is None:
+            bundle.failed_rule_ids.append("W1")
+        if equity_mv is None:
             bundle.failed_rule_ids.append("W1")
 
         bundles[fy] = bundle

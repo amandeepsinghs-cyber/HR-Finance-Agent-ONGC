@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import numpy as np
+import pandas as pd
 import pytest
 
 from financial_ssot.wacc import calculator, damodaran, inputs
@@ -145,8 +146,60 @@ def test_build_wacc_dataset_structure():
         assert r["verified"] is False
         assert "W1" in r["failed_rule_ids"]
         assert r["beta_industry_relevered"] is not None
-        assert r["kd_pretax_pct"] is not None
+        if r["fiscal_year"] == "FY20":
+            # P19-B1: FY20 missing N36.UNWIND_DECOM must have None / NaN kd_pretax and W4 failed
+            assert pd.isna(r["kd_pretax_pct"])
+            assert r["kd_flag"] == "out_of_band"
+            assert "W4" in r["failed_rule_ids"]
+            assert "N36.UNWIND_DECOM unavailable for FY20" in r["notes"]
+        else:
+            assert not pd.isna(r["kd_pretax_pct"])
 
-    # Lineage inputs: at least 9 lineage rows per FY = 90 rows
-    assert len(df_input) >= 90
+    # Lineage inputs: 16 lineage rows per FY = 160 rows
+    assert len(df_input) == 160
     assert "# WACC Input Pack and fact_wacc_annual Build Report" in report_md
+
+
+def test_p19_b1_b2_b3_reviews():
+    """Verify specific fixes for reviewer comments P19-B1, P19-B2, and P19-B3."""
+    df_annual, df_input, _ = build_wacc_dataset()
+    annual_by_fy = {r["fiscal_year"]: r for _, r in df_annual.iterrows()}
+
+    # P19-B1: FY17 and FY18 out-of-band sanity check when Rf missing
+    assert annual_by_fy["FY17"]["kd_flag"] == "out_of_band"
+    assert "W4" in annual_by_fy["FY17"]["failed_rule_ids"]
+    assert annual_by_fy["FY18"]["kd_flag"] == "out_of_band"
+    assert "W4" in annual_by_fy["FY18"]["failed_rule_ids"]
+
+    # P19-B2: FY17 preserved lease liabilities from balance sheet
+    fy17_debt = annual_by_fy["FY17"]["debt_bv_inr_cr"]
+    assert fy17_debt == pytest.approx(41.796, abs=1e-3)
+
+    # P19-B3: All 16 input codes present per fiscal year
+    expected_codes = {
+        "rf_gsec_10y",
+        "default_spread_india",
+        "rf_used",
+        "erp_mature",
+        "crp_india",
+        "erp_total_india",
+        "unlevered_beta",
+        "beta_industry_relevered",
+        "kd_pretax",
+        "kd_used",
+        "ke",
+        "tax_rate",
+        "debt_bv",
+        "equity_bv",
+        "equity_mv",
+        "wacc",
+    }
+    for fy in [f"FY{y}" for y in range(17, 27)]:
+        fy_codes = set(df_input[df_input["fiscal_year"] == fy]["input_code"])
+        assert expected_codes.issubset(fy_codes)
+
+        # Check beta_industry_relevered source_doc cites beta workbook
+        beta_rel_row = df_input[
+            (df_input["fiscal_year"] == fy) & (df_input["input_code"] == "beta_industry_relevered")
+        ].iloc[0]
+        assert "betaemerg" in beta_rel_row["source_doc"]
