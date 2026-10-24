@@ -27,6 +27,7 @@ export type ChartKind =
   | 'donut'
   | 'bar'
   | 'hbar'
+  | 'column'
   | 'stacked_bar'
   | 'grouped_bar'
   | 'line'
@@ -65,6 +66,12 @@ export interface ChartSpec {
   target?: number;
   /** rows are already buckets/bins: a histogram draws them as-is (U5.7) */
   prebinned?: boolean;
+  /** P2H.3 (SPEC-07 §4.1): 'explicit' = rows arrive in their meaningful order (e.g. grade_level_order); never re-sort */
+  x_order?: 'explicit' | 'auto';
+  /** P2H.3: one-time explanatory note (shown once per session per text) */
+  note?: string;
+  /** P2H.3: footnote under the chart (e.g. board levels excluded from the axis) */
+  footnote?: string;
 }
 
 export interface TableMasking {
@@ -91,6 +98,14 @@ export interface TableSpec {
   masking?: TableMasking;
   total_rows?: number;
   row_actions?: RowAction[];
+  /** P2H.3 (SPEC-07 §4.3): header text per column key (falls back to humanizeKey) */
+  column_labels?: Record<string, string>;
+  /** P2H.3: present in rows but hidden by default; CMD / DIR_HR can reveal them with the column picker */
+  hidden_columns?: string[];
+  /** P2H.3: initial sort, e.g. { key: 'delhi_tenure_years', dir: 'desc' } */
+  default_sort?: { key: string; dir: 'asc' | 'desc' };
+  /** P2H.3: data as-of date (ISO), stated under the table */
+  as_of?: string;
 }
 
 export interface KpiTile {

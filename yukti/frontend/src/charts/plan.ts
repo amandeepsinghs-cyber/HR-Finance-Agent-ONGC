@@ -115,7 +115,10 @@ export function planChart(spec: ChartSpec): ChartPlan {
 
   let rows: Row[] = data.map((r) => ({ label: humanizeValue(r[dimKey]), raw: r, value: toNumber(r[valueKey]) ?? 0 }));
   const labels = rows.map((r) => r.label);
-  const ordinal = labels.length > 0 && labels.filter((l) => ORDINAL_RE.test(l)).length >= Math.ceil(labels.length * 0.7);
+  // P2H.3: the backend may declare its row order meaningful (grade_level_order E1→E9, GRP-B/C/D) — never re-sort it.
+  const explicitOrder = (spec as any).x_order === 'explicit';
+  const ordinal =
+    explicitOrder || (labels.length > 0 && labels.filter((l) => ORDINAL_RE.test(l)).length >= Math.ceil(labels.length * 0.7));
   const timeLike =
     (TIME_KEY_RE.test(dimKey) || labels.filter((l) => /^(FY\s?\d{2}|\d{4}(-\d{2})?|Q[1-4]\s?\d{2,4}|[A-Z][a-z]{2}[- ]\d{2,4})/.test(l)).length >= Math.ceil(labels.length * 0.7)) &&
     rows.length >= 3;
@@ -180,6 +183,9 @@ export function planChart(spec: ChartSpec): ChartPlan {
   } else if (kind === 'line') {
     if (metricKeys.length >= 2) seriesKeys = metricKeys.slice(0, 6);
     form = 'line';
+  } else if (kind === 'column') {
+    // P2H.3 (SPEC-07 §4.1): explicit ordered column chart (a categorical "histogram" of levels)
+    form = 'column';
   } else if (kind === 'bar') {
     // U5.9 (C3): columns are for ordinal / time categories. Many (> 8) or long-named (> 12 chars) nominal
     // categories read as ranked H-bars instead of rotated, truncated column labels.
