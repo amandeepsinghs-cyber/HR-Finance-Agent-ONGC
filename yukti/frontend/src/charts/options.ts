@@ -1517,11 +1517,13 @@ export function boxOption(plan: ChartPlan, t: ChartTokens, data: Record<string, 
     groups = Array.from(by.keys());
     boxes = groups.map((g, gi) => {
       const vals = by.get(g)!;
-      const [, q1, , q3] = fiveNumber(vals);
+      const [, q1, md, q3] = fiveNumber(vals);
       const iqr = q3 - q1;
       const inside = vals.filter((v) => v >= q1 - 1.5 * iqr && v <= q3 + 1.5 * iqr);
       vals.filter((v) => !inside.includes(v)).forEach((v) => outliers.push([gi, v]));
-      return fiveNumber(inside.length ? inside : vals);
+      // S1: true quartiles of all values; whiskers to the furthest non-outlier points
+      const body = inside.length ? inside : vals;
+      return [Math.min(...body), q1, md, q3, Math.max(...body)];
     });
   }
   return {

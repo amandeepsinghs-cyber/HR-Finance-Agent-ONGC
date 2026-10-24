@@ -168,13 +168,16 @@ export function compatibility(p: DataProfile, kind: ReplotKind): { status: Replo
     return { status: 'alternative', alternative: p.shape === 'single' ? 'table' : 'bar', note: p.hasNegative ? 'A 100% stacked bar cannot show negative values.' : 'A 100% stacked bar needs two or more parts per category.' };
   }
   if (kind === 'heatmap') {
-    return textCols.length >= 1 && p.measures.length >= 1
+    // P4.4 M3: two categories + a measure, or records with two categorical columns (counted)
+    return (textCols.length >= 1 && p.measures.length >= 1) || (p.shape === 'records' && p.groupable.length >= 2)
       ? { status: 'native' }
       : { status: 'alternative', alternative: 'bar', note: 'A heatmap needs two categories and a measure (e.g. work centre × month).' };
   }
   if (kind === 'box') {
     const pre = ['min', 'q1', 'median', 'q3', 'max'].every((k) => p.columns.includes(k));
-    return pre || (p.shape === 'records' && p.measures.length >= 1) || (p.n >= 10 && p.measures.length >= 1 && (textCols.length >= 1 || p.groupable.length >= 1))
+    // P4.4 M2b: also allow when the dimension itself repeats (several records per group)
+    const repeated = new Set(p.rows.map((r) => r[p.dimKey])).size < p.n;
+    return pre || (p.shape === 'records' && p.measures.length >= 1) || (repeated && p.measures.length >= 1) || (p.n >= 10 && p.measures.length >= 1 && (textCols.length >= 1 || p.groupable.length >= 1))
       ? { status: 'native' }
       : { status: 'alternative', alternative: 'bar', note: 'A box plot needs individual records per group; showing the summary instead.' };
   }
@@ -344,7 +347,30 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
   let kind: ChartKind = applied as ChartKind;
   let chartUnit = unit;
 
-  if (p.shape === 'single' && p.rows[0] && p.measures.length >= 1) {
+  if (applied === 'gauge' || applied === 'bullet') {
+    // P4.4 M1: keep the row (incl. its target column) — pivoting would drop the target the gauge needs
+    data = p.rows;
+  } else if (applied === 'box') {
+    // P4.4 M2a: quartiles need the individual records, grouped by a category (never per-group counts)
+    data = p.rows;
+    x = p.shape === 'records' && p.groupable.length ? p.groupable[0] : p.dimKey;
+    y = p.primary;
+  } else if (applied === 'heatmap' && p.shape === 'records' && p.groupable.length >= 2) {
+    // P4.4 M3: records → heatmap = 2-D count of the first two categorical columns
+    const [g1, g2] = p.groupable;
+    const m = new Map<string, number>();
+    for (const r of p.rows) {
+      const k = `${r[g1] ?? '—'}\u0000${r[g2] ?? '—'}`;
+      m.set(k, (m.get(k) || 0) + 1);
+    }
+    data = Array.from(m, ([k, v]) => {
+      const [a, b] = k.split('\u0000');
+      return { [g1]: a, [g2]: b, count: v };
+    });
+    x = g1;
+    y = 'count';
+    chartUnit = p.people ? 'people' : undefined;
+  } else if (p.shape === 'single' && p.rows[0] && p.measures.length >= 1) {
     const piv = pivotSingleRow(p.rows[0], p.measures);
     data = piv.rows;
     x = piv.x;

@@ -135,4 +135,34 @@ test('every contract chart kind used by the planner has a renderer case', () => 
   for (const form of ['combo', 'stacked100', 'heatmap', 'box', 'gauge']) assert.match(src, new RegExp(`case '${form}'`));
 });
 
+test('M1: replot(single + target, "gauge") keeps the target → gauge form', () => {
+  const f = fx('gauge_mou.json');
+  const r = replot({ type: 'chart', mode: 'replace', chart: { kind: 'kpi', data: f.data, unit: '%' } }, 'gauge');
+  assert.equal(r.applied, 'gauge');
+  assert.equal(planChart(r.visual.chart).form, 'gauge');
+});
+test('M2: replot(grouped records, "box") draws quartiles of the measure, not counts', () => {
+  const f = fx('box_tenure.json');
+  const r = replot({ type: 'chart', mode: 'replace', chart: { kind: 'bar', data: f.data, x: 'grade', y: 'tenure_years' } }, 'box');
+  assert.equal(r.applied, 'box');
+  const plan = planChart(r.visual.chart);
+  assert.equal(plan.form, 'box');
+  const o = opts.boxOption(plan, t, r.visual.chart.data);
+  assert.equal(o.series[0].data.length, 2);
+  assert.notDeepEqual(o.series[0].data[1], [4, 4, 4, 4, 4]);
+});
+test('M3: replot(records, "heatmap") counts two categorical columns → heatmap form', () => {
+  const rows = Array.from({ length: 70 }, (_, i) => ({ emp_name: `P${i}`, emp_id: `E${i}`, grade: ['E1', 'E2', 'E3'][i % 3], wc: ['Delhi', 'Mumbai'][i % 2], tenure_years: i % 9 }));
+  const r = replot({ type: 'table', mode: 'replace', table: { columns: Object.keys(rows[0]), rows } }, 'heatmap');
+  assert.equal(r.applied, 'heatmap');
+  assert.equal(planChart(r.visual.chart).form, 'heatmap');
+  assert.equal(r.visual.chart.data.reduce((s, x) => s + x.count, 0), 70);
+});
+test('S1: box keeps true quartiles of all values', () => {
+  const plan = planChart(fx('box_tenure.json'));
+  const o = opts.boxOption(plan, t, fx('box_tenure.json').data);
+  const e1 = o.series[0].data[0];
+  assert.deepEqual(e1.slice(1, 4), opts.fiveNumber([1, 2, 2.5, 3, 30]).slice(1, 4));
+});
+
 console.log(`\n${passed} passed`);
