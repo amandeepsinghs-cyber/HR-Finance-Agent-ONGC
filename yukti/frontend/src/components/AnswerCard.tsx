@@ -264,6 +264,9 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     return { values: vals, kind: plan.timeLike ? ('line' as const) : ('bars' as const), highlight: vals.indexOf(Math.max(...vals)) };
   }, [visual]);
 
+  // P4.5: typed finance visuals are ECharts canvases too (fixed height, PNG/SVG export)
+  const isFinanceVisual = effectiveVisualType === 'sensitivity_grid' || effectiveVisualType === 'tornado';
+
   const showToast = (msg: string) => {
     setToast(msg);
     if (toastTimer.current) window.clearTimeout(toastTimer.current);
@@ -408,10 +411,8 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     };
     window.addEventListener(EXPORT_EVENT, onExport);
     return () => window.removeEventListener(EXPORT_EVENT, onExport);
-  }, [isLatest, isGreeting, effectiveVisualType, exportDisabled, refused, contract]);
+  }, [isLatest, isGreeting, effectiveVisualType, isFinanceVisual, exportDisabled, refused, contract]);
 
-  // P4.5: typed finance visuals are ECharts canvases too (fixed height, PNG/SVG export)
-  const isFinanceVisual = effectiveVisualType === 'sensitivity_grid' || effectiveVisualType === 'tornado';
   const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map' || isFinanceVisual);
   const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table' || displayVisualType === 'statement';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
