@@ -187,6 +187,35 @@ export interface StatementSpec {
   synthetic?: boolean;
 }
 
+// ---------- P4.5 B1 (SPEC-09 §5, field names identical to SPEC-02 engine output) ----------
+export interface SensitivityAxis {
+  name: string; // e.g. "WACC"
+  unit: string; // e.g. "%"
+  values: number[];
+}
+export interface SensitivityGridSpec {
+  row_input: SensitivityAxis;
+  col_input: SensitivityAxis;
+  output: { name: string; unit: string }; // e.g. { name: 'Value per share', unit: 'INR' }
+  /** cells[row][col]; null = not meaningful (SPEC-02 §8: WACC − g < 1pp) → rendered "n/m" */
+  cells: (number | null)[][];
+  base: { row_idx: number; col_idx: number };
+  source?: string;
+}
+export interface TornadoBarSpec {
+  driver: string;
+  low_input: string;
+  high_input: string;
+  low_inr: number;
+  high_inr: number;
+}
+export interface TornadoSpec {
+  output: { name: string; unit: string; base: number };
+  /** sorted by |high_inr − low_inr| desc by the producer; the renderer re-sorts defensively */
+  bars: TornadoBarSpec[];
+  source?: string;
+}
+
 export interface VisualContainer {
   type: VisualType;
   mode: VisualMode;
@@ -199,6 +228,9 @@ export interface VisualContainer {
   map?: MapSpec;
   /** P4.2: financial statement (type = 'statement') */
   statement?: StatementSpec;
+  /** P4.5: typed finance visuals (type = 'sensitivity_grid' | 'tornado') */
+  sensitivity_grid?: SensitivityGridSpec;
+  tornado?: TornadoSpec;
   /** v2 (U2.1): side-by-side comparison when mode = 'compare' */
   compare?: CompareSpec;
   /** UI-only (U5.7): the answer's original rows, kept so repeated re-plots never drift */

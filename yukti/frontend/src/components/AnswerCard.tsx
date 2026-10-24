@@ -20,6 +20,7 @@ import { RefusalRenderer } from './renderers/RefusalRenderer';
 import { SourceChipsModal } from './SourceChipsModal';
 import { RosterTable } from './renderers/RosterTable';
 import { CompareRenderer } from './renderers/CompareRenderer';
+import { SensitivityGrid, Tornado } from './renderers/FinanceVisuals';
 import { replot, profile, ReplotResult, ReplotKind } from '@/charts/compat';
 import { normalizeRows } from '@/charts/normalize';
 import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
@@ -325,7 +326,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
 
       // Server-side formats. PDF/Word embed the visible chart image when there is one.
       let chartPng: string | undefined;
-      if ((format === 'pdf' || format === 'docx' || format === 'docs') && effectiveVisualType === 'chart') {
+      if ((format === 'pdf' || format === 'docx' || format === 'docs') && (effectiveVisualType === 'chart' || isFinanceVisual)) {
         const charts = chartsWithin(visualRef.current);
         if (charts.length) {
           try {
@@ -392,7 +393,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
       let fmt = normalizeExportFormat(raw);
       let defaulted = flag === 'default';
       if (fmt === 'auto') {
-        fmt = effectiveVisualType === 'chart' && chartsWithin(visualRef.current).length ? 'png' : 'xlsx';
+        fmt = (effectiveVisualType === 'chart' || isFinanceVisual) && chartsWithin(visualRef.current).length ? 'png' : 'xlsx';
         defaulted = true;
       }
       if ((fmt === 'png' || fmt === 'svg') && !chartsWithin(visualRef.current).length) {
@@ -409,7 +410,9 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     return () => window.removeEventListener(EXPORT_EVENT, onExport);
   }, [isLatest, isGreeting, effectiveVisualType, exportDisabled, refused, contract]);
 
-  const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map');
+  // P4.5: typed finance visuals are ECharts canvases too (fixed height, PNG/SVG export)
+  const isFinanceVisual = effectiveVisualType === 'sensitivity_grid' || effectiveVisualType === 'tornado';
+  const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map' || isFinanceVisual);
   const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table' || displayVisualType === 'statement';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
 
@@ -478,7 +481,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               </div>
               {!exportDisabled && !refused && (
                 <ExportMenu
-                  hasChart={effectiveVisualType === 'chart'}
+                  hasChart={effectiveVisualType === 'chart' || isFinanceVisual}
                   busy={exporting}
                   onPick={(f) => void handleExport(f)}
                 />
@@ -548,6 +551,8 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               {effectiveVisualType === 'map' && visual?.map && <MapRenderer mapSpec={visual.map} isDark={isDark} />}
               {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} onViewAlternative={onNavigateToAlternative} />}
               {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
+              {effectiveVisualType === 'sensitivity_grid' && effVisual?.sensitivity_grid && <SensitivityGrid spec={effVisual.sensitivity_grid} isDark={isDark} />}
+              {effectiveVisualType === 'tornado' && effVisual?.tornado && <Tornado spec={effVisual.tornado} isDark={isDark} />}
             </section>
 
             {insights.length > 0 && !refused && (
