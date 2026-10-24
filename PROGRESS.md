@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 05:37 UTC · branch `v3/P0-stabilise` @ `b3d9754`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 05:47 UTC · branch `v3/P0-stabilise` @ `a0e02d6`
 
 > [!IMPORTANT]
-> **Overall: 44% complete (weighted)** — 24/62 steps ✅ done, 8 in flight, 30 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 8 warning(s).
+> **Overall: 46% complete (weighted)** — 25/62 steps ✅ done, 7 in flight, 30 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 11 warning(s).
 
 ## 1. Phase progress
 
@@ -11,10 +11,10 @@
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `████████████░░░░░░░░` 60% | 6 | 1 | 0 | 2 | 3 | 0 | 12 |
-| **P2H** | HR: personas, V19, Employee-360 | `██████░░░░░░░░░░░░░░` 28% | 1 | 1 | 0 | 2 | 4 | 0 | 8 |
+| **P2H** | HR: personas, V19, Employee-360 | `███████░░░░░░░░░░░░░` 34% | 1 | 2 | 0 | 1 | 4 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `██████████████░░░░░░` 72% | 6 | 0 | 0 | 2 | 1 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `████████████████░░░░` 81% | 7 | 0 | 0 | 1 | 1 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -27,10 +27,9 @@
 | P1.11 | 🔄 In progress | Finance golden set (P1 gate) + V20 chain (P2F gate) | F + FL | Complete build + evidence |
 | P1.6 | 🔍 In review | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; | O (+F gates, FL evidence) | Apply review findings / approve |
 | P2H.2 | 🔍 In review | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Apply review findings / approve |
-| P2H.3 | 🔄 In progress | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | Complete build + evidence |
+| P2H.3 | 🔍 In review | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | Apply review findings / approve |
 | P2H.5 | 🔄 In progress | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | Complete build + evidence |
 | P4.5 | 🔄 In progress | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions | F | Complete build + evidence |
-| P4.6 | 🔄 In progress | Export backend: formatted xlsx, CSV, PDF (WeasyPrint + Noto), docx, honest Sheets/Docs, audit, naming | O→F | Complete build + evidence |
 
 **Ready to start:**
 
@@ -48,16 +47,16 @@
 | SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |
 | SA-5 | Review the 10 finance action levers + assumption % (SPEC-08 §7, D-50) | P2F.6 | ⬜ Pending |
 | SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ✅ P0 signed off 23-Oct 09:52 · ⬜ P1 next |
-| SA-7 | Go-ahead for the Cloud Run redeploy | P5.6 | ⬜ Pending |
+| SA-7 | Go-ahead for the Cloud Run redeploy (**note:** deploy with `max-instances=1` until exports move to a GCS store; P4.6 G4 r2: the turn registry and export files are per-instance and fail closed with 403 across instances) | P5.6 | ⬜ Pending |
 
 ## 4. Requirement coverage by verbatim (V1–V23)
 
 | Verbatim | Features | Feature status | Open steps | Coverage |
 |---|---|---|---|---|
-| V2 | FEAT-027 | 🟡 | P2H.4, P3.5, P4.6 | 🟡 |
+| V2 | FEAT-027 | 🟡 | P2H.4, P3.5 | 🟡 |
 | V3 | FEAT-010, FEAT-031 | 🔴 🔴 |  | 🔴 |
 | V6 | FEAT-013 | 🔴 | P5.2 | 🔴 |
-| V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ 🟡 🔴 🟡 | P2H.4, P3.5, P4.5, P4.6, P4.8 | 🟡 |
+| V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ 🟡 🔴 🟡 | P2H.4, P3.5, P4.5, P4.8 | 🟡 |
 | V8 | FEAT-001, FEAT-013 | ✅ 🔴 | P5.2 | 🟡 |
 | V11 | FEAT-001, FEAT-002, FEAT-003, FEAT-009 | ✅ 🟡 ✅ 🔴 | P5.1 | 🟡 |
 | V12 | FEAT-004, FEAT-005 | 🟡 ✅ |  | 🟡 |
@@ -69,7 +68,7 @@
 | V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.6, P1.10a, P1.10b, P2H.7, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
 | V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5, P2F.6 | 🔴 |
-| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.5, P4.6, P4.8 | 🟡 |
+| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.5, P4.8 | 🟡 |
 | V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1, P1.9, P3.1, P3.2, P3.3, P3.4, P3.4b, P3.5 … | ⛔ |
 | V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P1.10a, P2H.5, P2H.6, P2H.7, P2H.8 | 🟡 |
 
@@ -107,7 +106,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ⛔ | 0/7 |
 | FEAT-025 Financial statement table visual | 🟡 | 2/4 |
 | FEAT-026 Chart portfolio completion + correct waterfall | 🔴 | 2/4 |
-| FEAT-027 Export suite | 🟡 | 1/4 |
+| FEAT-027 Export suite | 🟡 | 2/4 |
 | FEAT-028 Coordinator + agent registry + jobs + permission UX | ⛔ | 0/6 |
 | FEAT-029 DCF valuation agent | ⛔ | 0/4 |
 | FEAT-030 One-brain consolidation + numeric golden eval | ⛔ | 1/8 |
@@ -117,7 +116,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 6 · 🟠 in progress 6 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 28 total — 🔴 open 14 · 🟠 in progress 8 · ↩ regressed 0 · ✅ closed 6
+- **Important:** 28 total — 🔴 open 12 · 🟠 in progress 10 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
@@ -141,6 +140,12 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `8a387b6` | 2026-10-24 | P2H.3 (pre-G4): V19 turns 1-3 ordered levels, DELHI_GT5_CONT_V1 rule, 7-col roster & cohort store (FEAT-032/033; closes BUG-34) |
+| `5cb8a0f` | 2026-10-24 | P4.5 B2 (pre-G4) frontend: bubble (x·y·sqrt-size, size legend, ≤50 labels), sunburst (Σ-conserving tree, per-fill label contrast), |
+| `c51caf8` | 2026-10-24 | P4.5 B1 (G4 note): define isFinanceVisual before handleExport and list it in the export-listener deps |
+| `70a5a94` | 2026-10-24 | P1.6 (G4 r2 fixes): add footnote_marker for is_fallback_vintage in serving views and BQ table creation audit |
+| `b62c8a8` | 2026-10-24 | P4.6 (G4 r2 fixes): client-supplied RBAC, fail-closed download, formula injection escaping, 24h TTL sweep, voice/live turn registr |
+| `2c3c42e` | 2026-10-24 | P1.6 (G4 r2 fixes): non-tautological gates V07-V12, open conflicts, unique views, SPEC-01 schema & staging loader |
 | `ddcdbd4` | 2026-10-24 | P4.5 B1 (pre-G4) frontend: sensitivity_grid + tornado typed visuals (SPEC-09 §5 types), ECharts builders (exact ₹ cells, diverging |
 | `0a9387e` | 2026-10-24 | P2H.2 frontend: portal PersonaPicker to <body> (TopBar backdrop-blur clipped the modal); E2E report + screenshots (8 scenarios) wi |
 | `186f6d6` | 2026-10-24 | P1.11 (pre-G4) golden YAML: 61 cases (39 P1, 22 P2F) + V20 chain (6 steps) |
@@ -150,12 +155,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `328b6f5` | 2026-10-24 | P1.7 (G4 r3 fixes): R2-1 to R2-4 fixes |
 | `c55cafc` | 2026-10-24 | P4.6 (pre-G4) backend: xlsx formats & DCF/Definition sheets, UTF-8 BOM CSV, WeasyPrint+Noto PDF, docx, eml, honest Sheets/Docs, au |
 | `8d707d7` | 2026-10-24 | P1.7 (G4 r2 fixes): deterministic text parsing, S1 total assets, R1 dynamic ten-year reads, sold basis FY13-FY26 |
-| `26430be` | 2026-10-24 | P2H.3 (pre-G4) frontend: column kind + x_order=explicit (E1→E9→GRP order kept), one-time chart note + footnote, roster column_labe |
-| `0e84527` | 2026-10-24 | P4.2 (G4 r2 follow-up) frontend: add sensitivity_grid/tornado VisualType stubs mirroring backend _VALID_VISUAL_TYPES |
-| `a34a2a0` | 2026-10-24 | P2H.1 (G4 r3 fix): align check_access aggregate-pay regex with rbac._V2_AGG_PAY_RE (R2-M1, BUG-28) and update test_rbac_live R-NAM |
-| `c651a99` | 2026-10-24 | P4.2 (G4 r2 fixes) backend: preserve 4 KPIs with flag off, fix catalog scan docstring, wire CF-BS cash tie, fix fixture source key |
-| `41b998a` | 2026-10-24 | P1.6 (pre-G4): build verified financial SSOT fact/dim tables, V01-V12 gates, conflicts, snapshot, and BQ load |
-| `c05192c` | 2026-10-24 | P4.4 (pre-G4) backend: mirror frontend compat rules into chart_rules.py and add 280-cell parity suite |
 
 ## 8. Integrity checks
 
@@ -167,6 +166,9 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 - ⚠️ BUG-22 is still in_progress although all its steps (P4.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-38 is still in_progress although all its steps (P4.3) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-23 is still in_progress although all its steps (P4.4) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-24 is still in_progress although all its steps (P4.6) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-25 is still in_progress although all its steps (P4.6, P4.7) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-25 is still in_progress although all its steps (P4.6, P4.7) are ✅ — close it in BUG_REGISTER.md.
 
 ---
 **How this stays current:** every step completion = (1) update the step's Status in `UPGRADE_CHECKLIST.md` (⬜ → 🔨 Built → 🔍 In review → ✅ Done only with a `docs/reviews/<step>.md` APPROVE), (2) close the linked bugs in `BUG_REGISTER.md`, (3) run `python3 scripts/progress/build_progress.py` (regenerate) and `--check` (validate), (4) commit all three files together. The optional git hook (`scripts/progress/install_hook.sh`) blocks commits when `--check` fails.

@@ -74,7 +74,7 @@
 |---|---|---|---|---|---|---|---|---|
 | P2H.1 | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | 017, 031 | SPEC-06, BEH-01 | 07, 27, 28 | 11 × 18 = 198 matrix cases pass; no cross-employee `self` leakage | [P2H.1](docs/delegation/packets/v3/P2H.1.md) | ✅ |
 | P2H.2 | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | 017 | SPEC-06 §4.4, §4.6 | 06 (UI) | Picker issues token; refusals suggest an allowed alternative | [P2H.2](docs/delegation/packets/v3/P2H.2.md) | 🔍 |
-| P2H.3 | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | 023, 006 | SPEC-07 §4.1–4.3, BEH-02 | 34 | Exact counts per definition (executives default, all-cadres toggle) | [P2H.3](docs/delegation/packets/v3/P2H.3.md) | 🔄 |
+| P2H.3 | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | 023, 006 | SPEC-07 §4.1–4.3, BEH-02 | 34 | Exact counts per definition (executives default, all-cadres toggle) | [P2H.3](docs/delegation/packets/v3/P2H.3.md) | 🔍 |
 | P2H.4 | V19 turns 4–5: export intent + columns + xlsx link; email agent (.eml/.docx/mailto); delete canned proposal | O→F | 023, 027 | SPEC-07 §4.4–4.5, SPEC-10, BEH-02 | 10, 11, 12 | BEH-02 steps 4–5 pass for 10 phrasings; email counts = roster | [P2H.4](docs/delegation/packets/v3/P2H.4.md) | ⬜ |
 | P2H.5 | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | 021 | SPEC-04 §5–§7 | 26, 29, 30 | SPEC-04 §7.4 EMP-R01 (employee cost = AR) and EMP-R10 (FY-end headcount 23,117) pass; realism checks + calibrated marginals = AR/BRSR | [P2H.5](docs/delegation/packets/v3/P2H.5_employee360_generator.md) | 🔄 |
 | P2H.6 | Employee-360 Dataform build, semantic model (pay components, KPIs, entry pay), certified queries | O→F (O: certified SQL; F: Dataform wiring) | 021, 008 | SPEC-04 §3, §4, §8, §9, BEH-06 | 26, 29 | Dataform green; BEH-06 values exact | [P2H.6](docs/delegation/packets/v3/P2H.6_employee360_dataform.md) | ⬜ |
@@ -116,7 +116,7 @@
 | P4.3 | `StatementTable` renderer | F | 025 | SPEC-09 §4.2 | 38, 39 | Rubric ≥ 9/10 light + dark; line labels never truncated (wrap) at 1366/1920 px + big screen; no artificial numbering (AR names, hierarchy by indent) | [P4.3](docs/delegation/packets/v3/P4.3.md) | ✅ |
 | P4.4 | Portfolio batch A: combo dual-axis, 100% stacked, heatmap, box, gauge, scatter fix; compat matrix | F | 026 | SPEC-09 §4.5–4.6 | 23 | Every kind renders from a fixture | [P4.4](docs/delegation/packets/v3/P4.4.md) | ✅ |
 | P4.5 | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions` composites | F | 026 | SPEC-09 §4.5, §5 | — | Every kind renders from a fixture | [P4.5](docs/delegation/packets/v3/P4.5.md) | 🔄 |
-| P4.6 | Export backend: formatted xlsx, CSV, PDF (WeasyPrint + Noto), docx, honest Sheets/Docs, audit, naming | O→F | 027 | SPEC-10 | 24, 25 | pdftotext shows ₹ + Devanagari; 4+ formats per card | [P4.6](docs/delegation/packets/v3/P4.6.md) | 🔄 |
+| P4.6 | Export backend: formatted xlsx, CSV, PDF (WeasyPrint + Noto), docx, honest Sheets/Docs, audit, naming | O→F | 027 | SPEC-10 | 24, 25 | pdftotext shows ₹ + Devanagari; 4+ formats per card | [P4.6](docs/delegation/packets/v3/P4.6.md) | ✅ |
 | P4.7 | Export frontend: menu, PNG/SVG, intents for all formats EN/HI, toasts | F | 027 | SPEC-10 §4.4, §4.7–4.8 | 25 | BEH-04 export scenarios | [P4.7](docs/delegation/packets/v3/P4.7.md) | ✅ |
 | P4.8 | Finance rubric F1–F14 + scorecards | F→O | 025, 026 | SPEC-09 §4.7 | 34 | Scorecards ≥ 9/10 | [P4.8](docs/delegation/packets/v3/P4.8.md) | ⬜ |
 | P4.9 | Orb visible in docked mode + optional edge aura (low priority, V21) | F | 004, 016 | SPEC-09 §4.9 | — | Visible in non-idle states; ≥ 55 fps | [P4.9](docs/delegation/packets/v3/P4.9.md) | ✅ |
@@ -148,7 +148,7 @@ See `docs/DECISIONS.md` → Open decisions.
 | SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |
 | SA-5 | Review the 10 finance action levers + assumption % (SPEC-08 §7, D-50) | P2F.6 | ⬜ Pending |
 | SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ✅ P0 signed off 23-Oct 09:52 · ⬜ P1 next |
-| SA-7 | Go-ahead for the Cloud Run redeploy | P5.6 | ⬜ Pending |
+| SA-7 | Go-ahead for the Cloud Run redeploy (**note:** deploy with `max-instances=1` until exports move to a GCS store; P4.6 G4 r2: the turn registry and export files are per-instance and fail closed with 403 across instances) | P5.6 | ⬜ Pending |
 
 ## Part D — Sign-off log
 

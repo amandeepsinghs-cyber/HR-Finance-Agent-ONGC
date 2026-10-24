@@ -40,8 +40,8 @@
 | BUG-21 | 🔴 | "Why did revenue fall in FY23" hijacked into the Mumbai High vs Bassein FY26 comparison | Broad regex `turn_runner.py:2161-2165` before the planner | Remove | P5.1 | 030 |
 | BUG-22 | 🟠 | "… as a line chart" → waterfall; "tabular form" not recognised | `chart_rules.py:31, 42-50` | Explicit kind wins | P4.1 | 026 |
 | BUG-23 | 🟠 | `combo`/`heatmap`/`box`/`gauge` silently fall back to bar | No branch in `plan.ts:135-211` | Implement renderers | P4.4 | 026 |
-| BUG-24 | 🔴 | PDF export prints ₹ and Hindi as ■; text only, 90-char truncation | reportlab Helvetica `export_tool.py:142-166` | Embedded Noto fonts + tables + chart image | P4.6 | 027 |
-| BUG-25 | 🔴 | "Google Docs" opens a dead `docs.google.com/document/d/exp_…` link; "Sheets" downloads xlsx | Dry-run URL treated as real (`AnswerCard.tsx:248-251`; `main.py:343`) | Honest download + toast; Drive OAuth later | P4.6–P4.7 | 027 |
+| BUG-24 | 🟠 | PDF export prints ₹ and Hindi as ■; text only, 90-char truncation | reportlab Helvetica `export_tool.py:142-166` | Embedded Noto fonts + tables + chart image | P4.6 | 027 |
+| BUG-25 | 🟠 | "Google Docs" opens a dead `docs.google.com/document/d/exp_…` link; "Sheets" downloads xlsx | Dry-run URL treated as real (`AnswerCard.tsx:248-251`; `main.py:343`) | Honest download + toast; Drive OAuth later | P4.6–P4.7 | 027 |
 | BUG-26 | 🟠 | E1 salary breakdown: crore totals, then a fudge-scaled per-head; "joining E1 pay" = average of incumbents (19.6 yrs service) | No component metrics; `turn_runner.py:1881-1900` scale factor; no entry-pay logic | Component metrics; entry pay from `dim_grade` | P2H.5–P2H.6 | 021 |
 | BUG-27 | 🟠 | Only 5 of 11 personas; unknown persona → E2_HR silently | `access_control.py:12,243`; `rbac_policy.yaml:15`; `TopBar.tsx:26-31` | 11 personas + function split | P2H.1 | 017 |
 | BUG-28 | 🟠 | Juniors refused aggregate pay by grade (V14 allows aggregates) | `topic_keywords.pay` | Allow aggregate by grade | P2H.1 | 017 |
