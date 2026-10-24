@@ -117,12 +117,26 @@ def ist_date(epoch: int) -> str:
     return datetime.fromtimestamp(int(epoch), tz=timezone.utc).astimezone(IST).date().isoformat()
 
 
+def chart_interval(meta: dict, source_doc: str = "") -> str | None:
+    """Bar interval: ``meta.dataGranularity`` (e.g. '1d', '1mo'), else parsed from the saved file
+    name (``yahoo_chart_<SYM>_<range>_<interval>_...``), else None."""
+    g = (meta or {}).get("dataGranularity")
+    if g:
+        return str(g)
+    for iv in ("1d", "1wk", "1mo", "3mo"):
+        if f"_{iv}_" in source_doc or source_doc.endswith(f"_{iv}.json"):
+            return iv
+    return None
+
+
 def parse_chart(doc: dict, source_doc: str = "", provider: str = "yahoo") -> list[dict]:
-    """Price rows from a v8 chart response; bars with a null close are skipped."""
+    """Price rows from a v8 chart response; bars with a null close are skipped.  Each row carries
+    ``interval`` so monthly bars can never be mistaken for daily bars (G4 M1)."""
     out: list[dict] = []
     for res in (doc.get("chart") or {}).get("result") or []:
         meta = res.get("meta") or {}
         ticker = meta.get("symbol")
+        interval = chart_interval(meta, source_doc)
         if meta.get("currency") not in (None, "INR"):
             raise ValueError(f"non-INR chart for {ticker}: {meta.get('currency')}")
         ts = res.get("timestamp") or []
@@ -144,7 +158,7 @@ def parse_chart(doc: dict, source_doc: str = "", provider: str = "yahoo") -> lis
                 "low": at(q.get("low"), i), "close": float(close),
                 "adj_close": None if at(adj, i) is None else float(at(adj, i)),
                 "volume": None if vol is None else int(vol),
-                "provider": provider, "source_doc": source_doc,
+                "interval": interval, "provider": provider, "source_doc": source_doc,
             })
     return out
 

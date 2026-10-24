@@ -7,7 +7,9 @@
      "symbol": "ONGC.NS",
      "exchangeName": "NSI",
      "exchangeTimezoneName": "Asia/Kolkata",
-     "gmtoffset": 19800
+     "gmtoffset": 19800,
+     "dataGranularity": "1d",
+     "range": "10y"
     },
     "timestamp": [
      1774237500,

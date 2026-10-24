@@ -64,7 +64,7 @@ def test_chart_rows_ist_dates_and_adjclose():
     rows = yahoo.parse_chart(CHART, "yahoo_chart_sample.json")
     assert len(rows) == 7  # one null close dropped
     assert rows[0] == {"ticker": "ONGC.NS", "date": "2026-03-23", "open": 999.0, "high": 1010.0, "low": 990.0,
-                       "close": 1000.0, "adj_close": 999.0, "volume": 1000, "provider": "yahoo",
+                       "close": 1000.0, "adj_close": 999.0, "volume": 1000, "interval": "1d", "provider": "yahoo",
                        "source_doc": "yahoo_chart_sample.json"}
     assert rows[-1]["date"] == "2026-04-03"  # 20:00 UTC on 2-Apr = 01:30 IST on 3-Apr
     assert "2026-03-25" not in {r["date"] for r in rows}
@@ -158,6 +158,47 @@ def test_chain_order_yahoo_first(tmp_path, nse_dir):
                             mp.ManualSeedProvider(_seed(tmp_path))])
     r = chain.get_prices("ONGC.NS", "2026-03-01", "2026-04-30")
     assert r.provider == "yahoo" and r.tried == ["yahoo"] and len(r.rows) == 7
+
+
+def _monthly_chart(close=999.0):
+    m = json.loads(json.dumps(CHART))
+    res = m["chart"]["result"][0]
+    res["meta"]["dataGranularity"] = "1mo"
+    # same date as the first daily bar (2026-03-23) + one bar before the daily window (2023-11-28)
+    res["timestamp"] = [1700538300 + 7 * 86400, res["timestamp"][0]]
+    q = res["indicators"]["quote"][0]
+    for k in ("open", "high", "low", "volume"):
+        q[k] = q[k][:2]
+    q["close"] = [close, close]
+    res["indicators"]["adjclose"][0]["adjclose"] = [close, close]
+    return m
+
+
+def test_monthly_bars_never_overwrite_daily(tmp_path):
+    """G4 M1: '..._max_1mo_...' sorts after '..._10y_1d_...'; monthly must not win or pad."""
+    d = _yahoo_dir(tmp_path)
+    (d / "yahoo_chart_ONGC.NS_max_1mo_20261023T000000Z.json").write_text(json.dumps(_monthly_chart()))
+    monthly = yahoo.parse_chart(_monthly_chart(), "yahoo_chart_ONGC.NS_max_1mo_20261023T000000Z.json")
+    assert {r["interval"] for r in monthly} == {"1mo"} and "2026-03-23" in {r["date"] for r in monthly}
+    rows = mp.YahooFileProvider(d).get_prices("ONGC.NS", "2000-01-01", "2030-12-31")
+    assert len(rows) == 7 and {r["interval"] for r in rows} == {"1d"}
+    assert next(r for r in rows if r["date"] == "2026-03-23")["close"] == 1000.0
+    assert not [r for r in rows if r["date"] < "2026-01-01"] and 999.0 not in {r["close"] for r in rows}
+
+
+def test_monthly_only_yahoo_falls_through_chain(tmp_path, nse_dir):
+    d = tmp_path / "ym"
+    d.mkdir()
+    (d / "yahoo_chart_ONGC.NS_max_1mo_20261023T000000Z.json").write_text(json.dumps(_monthly_chart()))
+    r = mp.MarketChain([mp.YahooFileProvider(d), mp.NseArchiveProvider(nse_dir)]).get_prices(
+        "ONGC.NS", "2017-01-01", "2026-12-31")
+    assert r.provider == "nse_archive"
+
+
+def test_chart_interval_from_filename_when_meta_missing():
+    assert yahoo.chart_interval({}, "yahoo_chart_NSEI_max_1mo_20261023T000000Z.json") == "1mo"
+    assert yahoo.chart_interval({}, "yahoo_chart_NSEI_10y_1d_20261023T000000Z.json") == "1d"
+    assert yahoo.chart_interval({"dataGranularity": "1wk"}, "x_1d_.json") == "1wk"
 
 
 def test_chain_falls_back_to_nse_then_seed(tmp_path, nse_dir):
@@ -286,6 +327,38 @@ def test_nse_weekly_fetch_holiday_friday_and_cache(tmp_path):
     assert r2["cached"] is True and r2["trade_date"] == "2017-03-30" and len(c2.urls) == 1
     assert mp.last_friday_on_or_before(date(2026, 10, 22)) == date(2026, 10, 16)
     assert mp.last_friday_on_or_before(date(2026, 10, 16)) == date(2026, 10, 16)
+
+
+def test_nse_sleeps_at_least_3s_between_requests(tmp_path):
+    """G4 should-fix 2: every request after the first is preceded by a >= 3.0 s sleep."""
+    sleeps = []
+    responses = [(404, b"")] + [(200, _zip_bytes(OLD_BHAV)), (200, IND.encode())] * 3
+    c = FakeClient(responses)
+    f = mp.NseArchiveFetcher(tmp_path, client=c, sleep=sleeps.append)
+    f.fetch_weekly(date(2017, 3, 17), date(2017, 3, 31), log=lambda x: None)
+    assert f.requests == len(c.urls) == 7
+    assert len(sleeps) == f.requests - 1 and min(sleeps) >= 3.0 and mp.NseArchiveFetcher.MIN_INTERVAL_S >= 3.0
+
+
+def test_index_non_200_records_explicit_gap(tmp_path):
+    """G4 should-fix 3: index 404 -> gap row in _fetch_gaps.csv + result flag, nothing silent."""
+    c = FakeClient([(200, _zip_bytes(OLD_BHAV)), (404, b"<html/>")])
+    f = mp.NseArchiveFetcher(tmp_path, client=c, sleep=lambda s: None)
+    r = f.fetch_week(date(2017, 3, 31))
+    assert r["gap"] is True and r["index_file"] is None and r["index_status"] == 404
+    assert r["equity_file"] == "cm31MAR2017bhav.csv.zip"
+    gaps = list(csv.DictReader((tmp_path / "_fetch_gaps.csv").open()))
+    assert len(gaps) == 1 and gaps[0]["http_status"] == "404" and gaps[0]["trade_date"] == "2017-03-31"
+    assert gaps[0]["url"].endswith("ind_close_all_31032017.csv") and len(f.gaps) == 1
+    # FY-end path behaves the same
+    f2 = mp.NseArchiveFetcher(tmp_path / "fy", client=FakeClient([(200, _zip_bytes(OLD_BHAV)), (500, b"")]),
+                              sleep=lambda s: None)
+    r2 = f2.fetch_fy_end("FY17")
+    assert r2["gap"] is True and r2["index_status"] == 500 and len(f2.gaps) == 1
+    # a full week: no gap
+    f3 = mp.NseArchiveFetcher(tmp_path / "ok", client=FakeClient([(200, _zip_bytes(OLD_BHAV)), (200, IND.encode())]),
+                              sleep=lambda s: None)
+    assert f3.fetch_week(date(2017, 3, 31))["gap"] is False and not (tmp_path / "ok" / "_fetch_gaps.csv").exists()
 
 
 def test_nse_provider_weekly_closes(nse_dir):

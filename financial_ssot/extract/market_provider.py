@@ -49,8 +49,12 @@ NSE_DIR = MARKET_DIR / "nse"
 NSE_MANIFEST = NSE_DIR / "_fetch_manifest.csv"
 MANUAL_SEED = MARKET_DIR / "manual" / "market_prices_seed.csv"
 SEED_COLUMNS = ["ticker", "date", "close", "adj_close", "source_url", "retrieved_by", "retrieved_at"]
-PRICE_COLUMNS = ["ticker", "date", "open", "high", "low", "close", "adj_close", "volume", "provider", "source_doc"]
+PRICE_COLUMNS = ["ticker", "date", "open", "high", "low", "close", "adj_close", "volume", "interval", "provider",
+                 "source_doc"]
 MANIFEST_COLUMNS = ["file", "url", "fetched_utc", "http_status", "bytes", "sha256", "fiscal_year", "trade_date", "notes"]
+# Single fixed User-Agent for Yahoo and NSE (G4 should-fix 1, documented): a static desktop-browser
+# string, never rotated; nothing else is spoofed (no cookies, crumbs, session priming, proxies or
+# parallel requests).  Recorded in docs/reviews/P1.5_evidence.md §8 against D-45.
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 
 # ticker <-> NSE identifiers
@@ -92,10 +96,18 @@ def _in_range(rows: list[dict], ticker: str, start: str, end: str) -> list[dict]
 
 
 def _dedupe(rows: list[dict]) -> list[dict]:
+    """One row per (ticker, date, interval); later files win (newer download of the same bar)."""
     seen: dict[tuple, dict] = {}
     for r in rows:
-        seen[(r["ticker"], r["date"])] = r  # later files win (newer download)
+        seen[(r["ticker"], r["date"], r.get("interval"))] = r
     return list(seen.values())
+
+
+def prefer_daily(rows: list[dict]) -> list[dict]:
+    """Daily series only (G4 M1): dedupe by (ticker, date, interval), then keep ``1d`` bars.
+    Monthly/weekly bars never overwrite or pad a daily series.  If a ticker has no ``1d`` bars
+    at all it gets no rows here (the chain then falls through to the next provider)."""
+    return [r for r in _dedupe(rows) if r.get("interval") == "1d"]
 
 
 # --------------------------------------------------------------------------- providers
@@ -112,8 +124,7 @@ class YahooFileProvider:
         for f in sorted(self.dir.glob("*.json")):
             if yahoo.classify(f) == "chart":
                 rows += yahoo.parse_chart(json.loads(f.read_text(encoding="utf-8")), f.name)
-        # prefer daily bars: drop monthly duplicates by keeping the first per date
-        return _in_range(_dedupe(rows), ticker, start, end)
+        return _in_range(prefer_daily(rows), ticker, start, end)
 
 
 def _f(x):
@@ -148,7 +159,7 @@ def parse_bhavcopy(path: Path, symbols: dict[str, str] = NSE_EQUITY) -> list[dic
         if sym in want and series == "EQ":
             out.append({"ticker": want[sym], "date": d, "open": _f(o), "high": _f(h), "low": _f(lo),
                         "close": _f(c), "adj_close": None, "volume": None if not vol else int(float(vol)),
-                        "provider": "nse_archive", "source_doc": path.name})
+                        "interval": "1d", "provider": "nse_archive", "source_doc": path.name})
     return out
 
 
@@ -167,7 +178,7 @@ def parse_index_close(path: Path, indices: dict[str, str] = NSE_INDEX) -> list[d
                         "high": _f(r.get("High Index Value")), "low": _f(r.get("Low Index Value")),
                         "close": _f(r.get("Closing Index Value")), "adj_close": None,
                         "volume": None if vol is None else int(vol),
-                        "provider": "nse_archive", "source_doc": path.name})
+                        "interval": "1d", "provider": "nse_archive", "source_doc": path.name})
     return out
 
 
@@ -214,7 +225,7 @@ class ManualSeedProvider:
                     continue
                 rows.append({"ticker": r["ticker"], "date": r["date"], "open": None, "high": None, "low": None,
                              "close": float(r["close"]), "adj_close": _f(r.get("adj_close")), "volume": None,
-                             "provider": "manual_seed", "source_doc": r.get("source_url") or self.path.name})
+                             "interval": "1d", "provider": "manual_seed", "source_doc": r.get("source_url") or self.path.name})
         return _in_range(rows, ticker, start, end)
 
 
@@ -350,6 +361,8 @@ class NseArchiveFetcher:
         self.client = client or default_client
         self.sleep = sleep
         self.manifest = Path(manifest) if manifest else self.out_dir / NSE_MANIFEST.name
+        self.gaps_file = self.out_dir / "_fetch_gaps.csv"
+        self.gaps: list[dict] = []
         self.requests = 0
 
     def _get(self, url: str) -> tuple[int, bytes]:
@@ -376,6 +389,20 @@ class NseArchiveFetcher:
                         "fiscal_year": fy, "trade_date": d.isoformat(), "notes": notes})
         return path
 
+    def _gap(self, url: str, status: int, label: str, d: date, notes: str = "") -> None:
+        """Record a missing file explicitly (G4 should-fix 3) so equity and index series can be
+        aligned by the caller (inner join on date) instead of silently carrying a None."""
+        self.gaps.append({"label": label, "trade_date": d.isoformat(), "url": url, "http_status": status,
+                          "notes": notes or "index close missing for a date whose equity file exists"})
+        self.out_dir.mkdir(parents=True, exist_ok=True)
+        new = not self.gaps_file.exists()
+        with self.gaps_file.open("a", newline="", encoding="utf-8") as fh:
+            w = csv.DictWriter(fh, fieldnames=["logged_utc", "label", "trade_date", "url", "http_status", "notes"])
+            if new:
+                w.writeheader()
+            w.writerow({"logged_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), **self.gaps[-1]})
+        return None
+
     def fetch_fy_end(self, fy: str) -> dict:
         """Last NSE trading day on/before 31-Mar of ``fy``: walk back over weekends (no request)
         and holidays (404 on the equity file), then fetch the index close for the same date."""
@@ -387,11 +414,13 @@ class NseArchiveFetcher:
                 if status == 200 and body[:2] == b"PK":
                     eq = self._save(eq_url, body, fy, d, "equity bhavcopy (unadjusted)")
                     s2, b2 = self._get(ix_url)
-                    ix = self._save(ix_url, b2, fy, d, "index close (NIFTY 50 etc.)") if s2 == 200 else None
+                    ix = (self._save(ix_url, b2, fy, d, "index close (NIFTY 50 etc.)") if s2 == 200
+                          else self._gap(ix_url, s2, fy, d))
                     return {"fiscal_year": fy, "trade_date": d.isoformat(), "equity_file": eq.name,
-                            "index_file": ix.name if ix else None, "index_status": s2}
+                            "index_file": ix.name if ix else None, "index_status": s2, "gap": ix is None}
             d -= timedelta(days=1)
-        return {"fiscal_year": fy, "trade_date": None, "equity_file": None, "index_file": None, "index_status": None}
+        return {"fiscal_year": fy, "trade_date": None, "equity_file": None, "index_file": None, "index_status": None,
+                "gap": True}
 
     def fetch_fy_ends(self, fys: list[str]) -> list[dict]:
         return [self.fetch_fy_end(fy) for fy in fys]
@@ -406,18 +435,21 @@ class NseArchiveFetcher:
             eq_p, ix_p = self.out_dir / eq_url.rsplit("/", 1)[1], self.out_dir / ix_url.rsplit("/", 1)[1]
             if eq_p.exists() and ix_p.exists():
                 return {"week_ending": friday.isoformat(), "trade_date": d.isoformat(), "equity_file": eq_p.name,
-                        "index_file": ix_p.name, "cached": True}
+                        "index_file": ix_p.name, "index_status": 200, "cached": True, "gap": False}
             status, body = (200, eq_p.read_bytes()) if eq_p.exists() else self._get(eq_url)
             if status == 200 and body[:2] == b"PK":
                 if not eq_p.exists():
                     self._save(eq_url, body, week, d, "weekly close: equity bhavcopy (unadjusted)")
                 s2, b2 = self._get(ix_url)
-                ix = self._save(ix_url, b2, week, d, "weekly close: index close") if s2 == 200 else None
+                ix = (self._save(ix_url, b2, week, d, "weekly close: index close") if s2 == 200
+                      else self._gap(ix_url, s2, week, d))
                 return {"week_ending": friday.isoformat(), "trade_date": d.isoformat(), "equity_file": eq_p.name,
-                        "index_file": ix.name if ix else None, "cached": False}
+                        "index_file": ix.name if ix else None, "index_status": s2, "cached": False,
+                        "gap": ix is None}
             d -= timedelta(days=1)
+        self._gap(nse_urls(friday)[0], 404, week, friday, "no trading day found Mon-Fri")
         return {"week_ending": friday.isoformat(), "trade_date": None, "equity_file": None, "index_file": None,
-                "cached": False}
+                "index_status": None, "cached": False, "gap": True}
 
     def fetch_weekly(self, first_friday: date, last_friday: date, log=print) -> list[dict]:
         out = []
@@ -458,15 +490,17 @@ def main(argv: list[str] | None = None) -> int:
             print(e)
             return 3
         print(f"weekly: {len(res)} weeks {first}..{last}, {sum(1 for r in res if r['trade_date'])} with data, "
-              f"{f.requests} requests")
+              f"{f.requests} requests, {len(f.gaps)} gaps" + (f" (see {f.gaps_file})" if f.gaps else ""))
     if args.fetch_nse_fy_ends:
         try:
-            res = NseArchiveFetcher().fetch_fy_ends(fy_range(args.fetch_nse_fy_ends))
+            nf = NseArchiveFetcher()
+            res = nf.fetch_fy_ends(fy_range(args.fetch_nse_fy_ends))
         except NseBlocked as e:
             print(e)
             return 3
         for r in res:
             print(r)
+        print(f"fy-ends: {len(res)} FYs, {nf.requests} requests, {len(nf.gaps)} gaps")
     import pandas as pd
 
     chain = MarketChain()
