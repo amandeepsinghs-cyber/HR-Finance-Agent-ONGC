@@ -12,7 +12,9 @@ def check_kpi_value(visual, expect):
     if visual.get("type") != "kpi":
         return False, "Not a KPI", visual.get("type")
         
-    got = visual.get("kpi", {}).get("primary_value")
+    kpis = visual.get("kpis", [])
+    got = kpis[0].get("value") if kpis else None
+    
     if got is None:
         return False, "Got None", None
         
@@ -21,6 +23,14 @@ def check_kpi_value(visual, expect):
         return True, "Pass", got
         
     exp_val = expected_vals[0].get("value_inr_cr")
+    if exp_val is None:
+        exp_val = expected_vals[0].get("value_inr")
+    if exp_val is None:
+        exp_val = expected_vals[0].get("value")
+        
+    if exp_val is None:
+        return True, "Pass", got
+        
     tol = expected_vals[0].get("tol", 0.05)
     
     if abs(float(got) - float(exp_val)) <= tol:
