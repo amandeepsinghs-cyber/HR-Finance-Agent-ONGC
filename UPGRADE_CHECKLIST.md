@@ -79,7 +79,7 @@
 | P2H.5 | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | 021 | SPEC-04 §5–§7 | 26, 29, 30 | SPEC-04 §7.4 EMP-R01 (employee cost = AR) and EMP-R10 (FY-end headcount 23,117) pass; realism checks + calibrated marginals = AR/BRSR | [P2H.5](docs/delegation/packets/v3/P2H.5_employee360_generator.md) | ✅ |
 | P2H.6 | Employee-360 Dataform build, semantic model (pay components, KPIs, entry pay), certified queries | O→F (O: certified SQL; F: Dataform wiring) | 021, 008 | SPEC-04 §3, §4, §8, §9, BEH-06 | 26, 29 | Dataform green; BEH-06 values exact | [P2H.6](docs/delegation/packets/v3/P2H.6_employee360_dataform.md) | ✅ |
 | P2H.7 | Field Economics-360: production recalibration, RAS allocation engine, Dataform | O | 022 | SPEC-05 | — | Σ fields + CO-HQ = AR lines; segments = AR; production = AR by basis | [P2H.7](docs/delegation/packets/v3/P2H.7_field_economics_recon.md) | ✅ |
-| P2H.8 | Reconciliation gates: `recon_checks` (30 EMP-R + 17 FLD-R), assertions, offline tests, golden eval | O→F (O: recon rules/SQL + BLOCK assertion; F: tests) | 021, 022, 030 | SPEC-04 §7, SPEC-05 | — | 100% PASS; a deliberately broken input fails the build | [P2H.8](docs/delegation/packets/v3/P2H.8_reconciliation_tests.md) | 🔄 |
+| P2H.8 | Reconciliation gates: `recon_checks` (30 EMP-R + 17 FLD-R), assertions, offline tests, golden eval | O→F (O: recon rules/SQL + BLOCK assertion; F: tests) | 021, 022, 030 | SPEC-04 §7, SPEC-05 | — | 100% PASS; a deliberately broken input fails the build | [P2H.8](docs/delegation/packets/v3/P2H.8_reconciliation_tests.md) | ✅ |
 
 ### Phase P2F — Finance Diagnostics (V20) · *gate: BEH-03 passes; actions quantified + cited*
 
