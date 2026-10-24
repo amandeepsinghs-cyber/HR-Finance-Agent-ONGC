@@ -10,6 +10,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AnswerContract, ChartKind, ChartSpec, SourceCitation } from '@/contracts/answerContract';
 import { ChartRenderer } from './renderers/ChartRenderer';
 import { TableRenderer } from './renderers/TableRenderer';
+import { StatementTable } from './renderers/StatementTable';
+import { legacyStatementFromTable } from '@/charts/statementAdapter';
 import { KpiRenderer } from './renderers/KpiRenderer';
 import { ClauseRenderer } from './renderers/ClauseRenderer';
 import { DocumentRenderer } from './renderers/DocumentRenderer';
@@ -188,6 +190,16 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     return { ...t, rows: normalizeRows(t.columns, t.rows as unknown[]) };
   }, [effVisual, prof]);
   const replotNote = override?.note || visual?.replot_note;
+  // P4.3 (FEAT-025, BUG-38/39): statements render as statements — the P4.2 `statement` visual, or a legacy
+  // statement table adapted on the client (clean labels, indentation, ruled subtotals) until P4.2/P1 land.
+  const statementSpec = useMemo(() => {
+    if (effVisual?.type === 'statement' && effVisual.statement) return effVisual.statement;
+    if (effVisual?.type !== 'table') return null;
+    const qs = (contract as any).query_spec || {};
+    const fy = qs.effective_period?.fy || qs.period?.fy || ((visual?.title || '').match(/\bFY\s?\d{2}(?:\d{2}-\d{2})?\b/i) || [])[0];
+    return legacyStatementFromTable(effVisual.table, { metric: qs.metric, fy, title: visual?.title });
+  }, [effVisual, contract, visual?.title]);
+  const displayVisualType = statementSpec ? 'statement' : effectiveVisualType;
 
   const canSwitchVisual = !refused && prof.rows.length > 0 && (visual?.type === 'chart' || visual?.type === 'table');
   const activeKindPill: ReplotKind = effectiveVisualType === 'table' ? 'table' : (effectiveChartSpec?.kind as ReplotKind) || 'bar';
@@ -269,11 +281,11 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   };
 
   const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map');
-  const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
+  const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table' || displayVisualType === 'statement';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
 
   // Wide tables (> 7 columns) take the full width; takeaways stack below (no horizontal clipping).
-  const wideTable = effectiveVisualType === 'table' && (effectiveTableSpec?.columns?.length || 0) > 7;
+  const wideTable = displayVisualType === 'statement' || (effectiveVisualType === 'table' && (effectiveTableSpec?.columns?.length || 0) > 7);
 
   const applyReplot = (r: ReplotResult) => {
     if (onReplot) onReplot({ ...r.visual, replot_note: r.note } as VisualContainer);
@@ -363,14 +375,14 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
           </header>
 
           {/* KPI hero numerals */}
-          {kpis.length > 0 && effectiveVisualType !== 'kpi' && !refused && <KpiRenderer kpis={kpis} isDark={isDark} spark={spark} />}
+          {kpis.length > 0 && effectiveVisualType !== 'kpi' && !refused && <KpiRenderer kpis={displayVisualType === 'statement' ? kpis.slice(0, 3) : kpis} isDark={isDark} spark={spark} />}
 
           {/* Full-screen Visual + Key Takeaways (borderless canvas, no outer boxes, no plot-type bar) */}
           <div className={`grid gap-[1.75rem] ${insights.length && !refused && !wideTable ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
             <section
               className={`min-w-0 self-start w-full ${selfFramed ? '' : 'py-[0.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
               data-testid="visual-card"
-              data-visual-type={effectiveVisualType}
+              data-visual-type={displayVisualType}
               data-chart-kind={effectiveVisualType === 'chart' ? effectiveChartSpec?.kind : effectiveVisualType}
               data-points={effectiveVisualType === 'chart' ? effectiveChartSpec?.data?.length : effectiveTableSpec?.rows?.length}
               data-sig={effectiveVisualType === 'chart' ? sigOf(effectiveChartSpec?.data) : 0}
@@ -380,7 +392,10 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               ) : (
                 effectiveVisualType === 'chart' && effectiveChartSpec && <ChartRenderer spec={effectiveChartSpec} isDark={isDark} title={visual?.title} />
               )}
-              {effectiveVisualType === 'table' && effectiveTableSpec && isRoster && (
+              {displayVisualType === 'statement' && statementSpec && (
+                <StatementTable statement={statementSpec} onWhy={onAsk ? (r) => onAsk(`Why did ${r.label} change?`) : undefined} />
+              )}
+              {effectiveVisualType === 'table' && !statementSpec && effectiveTableSpec && isRoster && (
                 <RosterTable
                   table={effectiveTableSpec}
                   persona={persona || contract.persona}
@@ -407,7 +422,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
                   onExport={(columns, rows) => void handleExport('xlsx', { columns, rows })}
                 />
               )}
-              {effectiveVisualType === 'table' && effectiveTableSpec && !isRoster && <TableRenderer table={effectiveTableSpec} isDark={isDark} />}
+              {effectiveVisualType === 'table' && !statementSpec && effectiveTableSpec && !isRoster && <TableRenderer table={effectiveTableSpec} isDark={isDark} />}
               {effectiveVisualType === 'clause' && visual?.clause && <ClauseRenderer clause={visual.clause} isDark={isDark} />}
               {effectiveVisualType === 'document' && visual?.document && <DocumentRenderer document={visual.document} isDark={isDark} />}
               {effectiveVisualType === 'map' && visual?.map && <MapRenderer mapSpec={visual.map} isDark={isDark} />}

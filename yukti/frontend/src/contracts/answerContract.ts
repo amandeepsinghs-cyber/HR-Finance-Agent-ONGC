@@ -7,7 +7,7 @@ export type PersonaType = 'CMD' | 'DIR_HR' | 'DIR_FIN' | 'E2_HR' | 'E3_FIN';
 
 export type LanguageType = 'en' | 'hi' | 'hi-en';
 
-export type VisualType = 'chart' | 'table' | 'kpi' | 'clause' | 'document' | 'map' | 'refusal' | 'none';
+export type VisualType = 'chart' | 'table' | 'statement' | 'kpi' | 'clause' | 'document' | 'map' | 'refusal' | 'none';
 
 export type VisualMode = 'replace' | 'refine' | 'compare' | 'restore';
 
@@ -133,6 +133,46 @@ export interface CompareSpec {
   shared_axis?: boolean;
 }
 
+// ---------- P4.2 (SPEC-09 §4.1, FEAT-025): financial statement visual ----------
+export type StatementKind = 'pnl' | 'balance_sheet' | 'cash_flow';
+
+export interface StatementRow {
+  line_code?: string;
+  label: string;
+  /** 0–3; indent = level × 16 px */
+  level: number;
+  kind: 'line' | 'subtotal' | 'total';
+  /** period → value; null/absent renders "—" (never 0) */
+  values: Record<string, number | null>;
+  yoy_pct?: number | null;
+  note_ref?: string;
+  source?: { doc: string; page?: number | null };
+  is_restated?: boolean;
+}
+
+export interface StatementSection {
+  id: string;
+  label: string;
+  rows: StatementRow[];
+}
+
+export interface StatementSpec {
+  statement: StatementKind;
+  scope?: 'standalone' | 'consolidated';
+  title?: string;
+  unit?: string;
+  /** latest first */
+  periods: string[];
+  period_labels?: Record<string, string>;
+  show_yoy?: boolean;
+  sections: StatementSection[];
+  totals_check?: { identity: string; passed: boolean; max_abs_delta_cr?: number };
+  source?: { primary?: string; basis?: string; extraction?: string; verified?: boolean };
+  as_of?: string;
+  footnotes?: string[];
+  synthetic?: boolean;
+}
+
 export interface VisualContainer {
   type: VisualType;
   mode: VisualMode;
@@ -143,6 +183,8 @@ export interface VisualContainer {
   clause?: ClauseSpec;
   document?: DocumentSpec;
   map?: MapSpec;
+  /** P4.2: financial statement (type = 'statement') */
+  statement?: StatementSpec;
   /** v2 (U2.1): side-by-side comparison when mode = 'compare' */
   compare?: CompareSpec;
   /** UI-only (U5.7): the answer's original rows, kept so repeated re-plots never drift */

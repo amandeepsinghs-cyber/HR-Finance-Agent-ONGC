@@ -22,7 +22,8 @@
     "test:unit": "npx --yes tsx scripts/test_feed.ts",
     "test:voice-gate": "node scripts/test_voice_gate.mjs",
     "contracts": "node scripts/sync_contracts.mjs",
-    "test:bridge": "node scripts/sync_contracts.mjs --check && node scripts/test_bridge.mjs"
+    "test:bridge": "node scripts/sync_contracts.mjs --check && node scripts/test_bridge.mjs",
+    "test:statement": "node scripts/test_statement.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

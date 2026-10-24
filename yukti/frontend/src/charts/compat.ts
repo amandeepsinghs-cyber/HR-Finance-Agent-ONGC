@@ -227,7 +227,7 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
         const chart: ChartSpec = { ...(base.chart || {}), kind: 'waterfall', data, x: 'step', y: 'amount_cr', category: 'step', value: 'amount_cr', unit: '₹ Cr', sort: 'none' } as ChartSpec;
         return { requested, applied: 'waterfall', status: 'transform', visual: { ...base, source, type: 'chart', mode: 'refine', chart } as VisualContainer };
       }
-      return { requested, applied: 'table', status: 'alternative', note: bridgeErrorCopy(res), visual: { ...base, source, type: 'table', mode: 'refine' } as VisualContainer };
+      return { requested, applied: 'table', status: 'alternative', note: bridgeErrorCopy(res), visual: { ...base, source, type: base.statement ? 'statement' : 'table', mode: 'refine' } as VisualContainer };
     }
     // (c) a single value can never be a bridge (BEH-04.13 / BEH-07.34): keep the visual, say why
     if (p.shape === 'single') {
@@ -271,6 +271,10 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
   const keep = { title: base.title, kpis: base.kpis, source, compare: undefined } as Partial<VisualContainer> & { source: unknown };
   const unit = base.chart?.unit;
 
+  if (applied === 'table' && base.statement) {
+    // P4.3: "show it as a table" on a statement returns the statement layout, not a flat grid
+    return { requested, applied, status: 'native', visual: { ...base, type: 'statement', mode: 'refine' } as VisualContainer };
+  }
   if (applied === 'table') {
     return {
       requested,
