@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:30 UTC · branch `v3/P0-stabilise` @ `30702e2`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:49 UTC · branch `v3/P0-stabilise` @ `7fb6d38`
 
 > [!IMPORTANT]
-> **Overall: 27% complete (weighted)** — 15/62 steps ✅ done, 6 in flight, 41 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 28% complete (weighted)** — 15/62 steps ✅ done, 7 in flight, 40 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
@@ -14,7 +14,7 @@
 | **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 3% | 0 | 0 | 0 | 1 | 7 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `█░░░░░░░░░░░░░░░░░░░` 3% | 0 | 0 | 0 | 1 | 8 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `██░░░░░░░░░░░░░░░░░░` 8% | 0 | 0 | 1 | 1 | 7 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -29,12 +29,13 @@
 | P1.8 | 🔍 In review | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | Apply review findings / approve |
 | P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
 | P4.1 | 🔄 In progress | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Complete build + evidence |
+| P4.9 | 🔨 Built (pre-G4) | Orb visible in docked mode + optional edge aura (low priority, V21) | F | Run G4 review → docs/reviews/<step>.md |
 
 **Ready to start:**
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
-| P4.9 | Orb visible in docked mode + optional edge aura (low priority, V21) | F | phase gates met |
+| — | Nothing is unblocked: finish the in-flight steps above (G4 reviews) first. | | |
 
 ## 3. Sponsor action items
 
@@ -114,7 +115,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 ## 6. Bugs
 
-- **Blockers:** 14 total — 🔴 open 10 · 🟠 in progress 2 · ↩ regressed 0 · ✅ closed 2
+- **Blockers:** 14 total — 🔴 open 9 · 🟠 in progress 3 · ↩ regressed 0 · ✅ closed 2
 - **Important:** 26 total — 🔴 open 19 · 🟠 in progress 1 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
@@ -133,12 +134,15 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-11 | open | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 r | P2H.4 | P2H.4:⬜ |
 | BUG-12 | open | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 3310 | P2H.4, P5.1 | P2H.4:⬜ P5.1:⬜ |
 | BUG-13 | open | Cloud Run = baseline rev `00001`; `financial_build/` not in the image | P0.9, P5.6 | P0.9:✅ P5.6:⬜ |
-| BUG-35 | open | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | P4.9, P5.6 | P4.9:⬜ P5.6:⬜ |
+| BUG-35 | in_progress | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | P4.9, P5.6 | P4.9:🔨 P5.6:⬜ |
 
 ## 7. Recent step commits
 
 | Commit | Date | Message |
 |---|---|---|
+| `61ddef0` | 2026-10-24 | P4.9 (pre-G4): Siri-like orb visible in docked/fullscreen while listening/thinking/speaking (same mic-button/stop-speaking testids |
+| `4433ffc` | 2026-10-24 | P4.1 (pre-G4) frontend: bridge.ts (signed P&L bridge from shared classes JSON), compat.replot statement/typed-waterfall path, dele |
+| `632b5b7` | 2026-10-24 | P4.1a (pre-G4): shared bridge contract + fixtures |
 | `e7c8705` | 2026-10-24 | P1.3 (G4 r2 fixes): B1 wrapped-heading merge (connector/total keywords) + (A+B+C) letter formulas, CF completeness test, AR FY19 c |
 | `b3514b1` | 2026-10-24 | P1.5 (G4 r2 fixes): M1 chart rows carry interval, Yahoo provider dedupes by (ticker,date,interval) and serves 1d only (monthly nev |
 | `aa1ae08` | 2026-10-23 | P1.8 (G4 r2 fixes): BigQuery re-tag applied (8,712 rows to chunker v2; 61 section moves), evidence §8.1 |
@@ -151,9 +155,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `6a7985b` | 2026-10-23 | P1.4 (pre-G4): NSE XBRL parser (12 files, FY18-FY21/FY23-FY24 S+C; lxml, FourD/OneD/OneI by context name), tag->line-code map prop |
 | `9911844` | 2026-10-23 | P0.10 (G4 r2): voice barge-in off by default (BUG-41) |
 | `acea15a` | 2026-10-23 | P1.2 (pre-G4): deterministic AR 10-yr table parser (AR FY26/FY24/FY22 standalone, FY13-FY26), page/folio index, token parser, V09  |
-| `a92101d` | 2026-10-23 | P0.10 (G4 r2 fixes): barge-in needs near-continuous speech (0.5 s window, >=85% loud, no dip >100 ms, duty + echo-correlation guar |
-| `2ac6cb5` | 2026-10-23 | P0.10 (pre-G4): adaptive voice barge-in (sustained, echo-relative), speak_id gating end-to-end (no orphan/fragment bubbles), Stop  |
-| `8a95da5` | 2026-10-23 | P0.10a (pre-G4): stopgap half-duplex mic gate (browser: no PCM while playing +300 ms; backend: drop while generating/speak/estimat |
 
 ## 8. Integrity checks
 

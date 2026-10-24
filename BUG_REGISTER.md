@@ -24,7 +24,7 @@
 | BUG-11 | 🔴 | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 relocations") | No email type; `_DOC_RE` lacks email (`pipeline.py:36`); static numbers `tools/draft_document.py:105-131`; routing `turn_runner.py:1140-1245` | Email agent from the session cohort | P2H.4 | 023 |
 | BUG-12 | 🔴 | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 33108.97`, "42.6%/29.1%", FX 84.0) | `turn_runner.py:1541-1550, 1609-1613, 2192-2228`; `draft_document.py:54-63` | Delete; derive from query results | P2H.4 (`draft_document.py` literals), P5.1 | 030 |
 | BUG-13 | 🔴 | Cloud Run = baseline rev `00001`; `financial_build/` not in the image | `Dockerfile:29-36`; (was untracked; now in the snapshot) | Packaging decision; redeploy from green | P0.9, P5.6 | 014 |
-| BUG-35 | 🔴 | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | Pre-existing hard-coded rgba/hex in `FloatingConversationPanel.tsx`, `TopBar.tsx`, `VoiceOrb.tsx` (found in P0.9) | Move colours to design tokens; keep the gate | P4.9, P5.6 | 014 |
+| BUG-35 | 🟠 | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | Pre-existing hard-coded rgba/hex in `FloatingConversationPanel.tsx`, `TopBar.tsx`, `VoiceOrb.tsx` (found in P0.9) | Move colours to design tokens; keep the gate | P4.9, P5.6 | 014 |
 
 ## Important
 
