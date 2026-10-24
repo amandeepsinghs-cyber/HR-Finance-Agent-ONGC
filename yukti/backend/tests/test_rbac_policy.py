@@ -384,7 +384,7 @@ def test_r4_dir_fin_sql_parsing():
     sql_mixed = "SELECT avg_monthly_gross_inr FROM hrfin_gold.ssot_workforce_employee"
     res1 = query_data(sql_query=sql_mixed, persona="DIR_FIN")
     assert res1.get("status") == "refused"
-    assert res1.get("code") == "R-PAY"
+    assert "restricted to CMD" in res1.get("message")
     
     sql_fin = "SELECT avg_monthly_gross_inr FROM hrfin_gold.ssot_workforce_employee WHERE discipline_id = 'DISC-FIN'"
     # Mock sl.validate_sql_safety and bq to avoid live query? 

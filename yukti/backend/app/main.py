@@ -68,7 +68,7 @@ app.add_middleware(
 )
 
 # Singletons
-turn_runner = get_agent_turn_runner()
+
 demo_cache = get_demo_cache()
 exporter = DocumentExporter()
 
@@ -350,7 +350,7 @@ async def execute_turn(req: TurnRequest, response: Response, principal: Principa
 
     # 2. Standard Real Agent Path: Google ADK Runner + Gemini
     try:
-        contract = await turn_runner.execute_turn_async(
+        contract = await get_agent_turn_runner().execute_turn_async(
             query=req.query,
             session_id=session_id,
             persona=persona,
@@ -415,7 +415,7 @@ async def execute_voice_turn(req: VoiceTurnRequest, response: Response, principa
     if not transcript:
         return {"status": "silence", "transcript": ""}
 
-    contract = await turn_runner.execute_turn_async(
+    contract = await get_agent_turn_runner().execute_turn_async(
         query=transcript,
         session_id=session_id,
         persona=persona,

@@ -109,6 +109,13 @@ def query_data(
         Dict with status, row_count, columns, rows, chart_spec, deterministic summary, and metadata.
     """
     t0 = time.perf_counter()
+    from app.auth import get_active_principal
+    from app.brain.rbac import persona_class
+    p = get_active_principal()
+    pc = persona_class(p.persona) if p else "junior"
+    if not p or p.persona.upper() != "CMD":
+        return {"status": "refused", "message": "query_data tool is restricted to CMD. Do not use this tool."}
+
     sl = semantic_layer or SemanticLayer()
 
     # 1. Apply Query-Craft Rules & Project Qualification

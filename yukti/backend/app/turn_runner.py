@@ -2718,13 +2718,18 @@ class AgentTurnRunner:
 
 
 # Global Turn Runner Singleton
-_GLOBAL_RUNNER: Optional[AgentTurnRunner] = None
+_GLOBAL_RUNNERS: dict[str, AgentTurnRunner] = {}
+
 
 
 def get_agent_turn_runner(model_name: Optional[str] = None) -> AgentTurnRunner:
-    global _GLOBAL_RUNNER
+    global _GLOBAL_RUNNERS
+    from app.auth import get_active_principal
+    p = get_active_principal()
+    key = p.persona if p else "junior"
     if model_name:
-        return AgentTurnRunner(model_name=model_name)
-    if _GLOBAL_RUNNER is None:
-        _GLOBAL_RUNNER = AgentTurnRunner()
-    return _GLOBAL_RUNNER
+        key = f"{key}_{model_name}"
+    
+    if key not in _GLOBAL_RUNNERS:
+        _GLOBAL_RUNNERS[key] = AgentTurnRunner(model_name=model_name)
+    return _GLOBAL_RUNNERS[key]

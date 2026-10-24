@@ -264,7 +264,7 @@ def create_yukti_agent(
         draft_document,
         export_document,
     ]
-    if pc != "junior":
+    if principal and principal.persona.upper() == "CMD":
         tools.append(query_data)
 
     return Agent(
