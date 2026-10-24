@@ -37,25 +37,40 @@ DIM_CSV_PATH = SSOT_DIR / "dim_financial_line.csv"
 
 DIM_COLUMNS = [
     "line_code",
+    "statement",
+    "display_name",
     "line_name",
     "line_name_aliases",
-    "statement",
     "section",
     "subsection",
     "parent_line_code",
+    "level",
     "hierarchy_level",
+    "line_order",
     "display_order",
+    "line_kind",
     "line_class",
+    "subtotal_formula",
+    "formula",
+    "sign_in_parent",
     "natural_sign",
+    "schedule3_ref",
+    "ind_as_schedule_iii_ref",
+    "ar_note_ref_typical",
+    "ar_labels",
+    "ten_year_label",
+    "xbrl_tags",
+    "xbrl_element_name",
+    "yahoo_types",
+    "yahoo_field_name",
+    "yahoo_equivalence",
+    "scope_applicability",
+    "valid_from_fy",
+    "valid_to_fy",
     "unit_default",
     "is_subtotal",
     "is_total",
     "is_kpi",
-    "formula",
-    "ind_as_schedule_iii_ref",
-    "ar_note_ref_typical",
-    "xbrl_element_name",
-    "yahoo_field_name",
     "description",
 ]
 
@@ -1677,21 +1692,63 @@ def _humanize_code(line_code: str, sample_label: Optional[str] = None) -> str:
 
 
 def build_dim_financial_line(gold_df: pd.DataFrame) -> pd.DataFrame:
-    """Construct `dim_financial_line` with all 21 SPEC-01 §5.2 columns for all canonical and observed codes."""
+    """Construct `dim_financial_line` with all SPEC-01 §5.2 columns for all canonical and observed codes."""
     all_codes = sorted(set(gold_df["line_code"].dropna().unique()).union(CANONICAL_LINE_META.keys()))
     rows: List[Dict[str, Any]] = []
+
+    consolidated_only_codes = {
+        "PL.PAT_OWNERS",
+        "PL.PAT_NCI",
+        "PL.OCI_OWNERS",
+        "PL.OCI_NCI",
+        "PL.TCI_OWNERS",
+        "PL.TCI_NCI",
+        "PL.PAT_ATTR_TOTAL",
+        "PL.OCI_ATTR_TOTAL",
+        "PL.TCI_ATTR_TOTAL",
+        "PL.SHARE_ASSOC",
+        "PL.SHARE_JV",
+        "PL.SHARE_ASSOC_JV",
+        "BS.EQUITY_OWNERS",
+        "BS.NCI",
+        "BS.GOODWILL",
+    }
 
     for idx, lc in enumerate(all_codes, start=1):
         sub_df = gold_df[gold_df["line_code"] == lc]
         meta = CANONICAL_LINE_META.get(lc, {})
 
         sample_label = None
+        ar_labels_list: List[str] = []
+        ten_year_lbl: Optional[str] = None
+        valid_from_fy: Optional[str] = None
+        valid_to_fy: Optional[str] = None
+        observed_scopes: set[str] = set()
+
         if not sub_df.empty:
             non_unlabelled = sub_df[~sub_df["line_name_as_reported"].astype(str).str.contains("unlabelled|subtotal", case=False, na=True)]
             if not non_unlabelled.empty:
                 sample_label = str(non_unlabelled.iloc[-1]["line_name_as_reported"])
             else:
                 sample_label = str(sub_df.iloc[-1]["line_name_as_reported"])
+
+            ar_sub = sub_df[sub_df["source_system"] == "ar"]
+            if not ar_sub.empty:
+                seen_lbls = []
+                for lbl in ar_sub["line_name_as_reported"].dropna().astype(str):
+                    cl = lbl.strip()
+                    if cl and cl not in seen_lbls and "unlabelled" not in cl.lower():
+                        seen_lbls.append(cl)
+                ar_labels_list = seen_lbls[:8]
+            ty_sub = sub_df[sub_df["source_table"] == "ten_year_summary"]
+            if not ty_sub.empty:
+                ten_year_lbl = str(ty_sub.iloc[-1]["line_name_as_reported"]).strip()
+
+            fys_obs = sorted(sub_df["fiscal_year"].dropna().astype(str).unique())
+            if fys_obs:
+                valid_from_fy = fys_obs[0]
+                valid_to_fy = fys_obs[-1]
+            observed_scopes = set(sub_df["scope"].dropna().astype(str).unique())
 
         line_name = meta.get("line_name") or _humanize_code(lc, sample_label)
         stmt = meta.get("statement") or (str(sub_df.iloc[0]["statement"]) if not sub_df.empty else "pnl")
@@ -1730,34 +1787,106 @@ def build_dim_financial_line(gold_df: pd.DataFrame) -> pd.DataFrame:
             )
         )
 
+        if is_tot:
+            line_kind = "total"
+        elif is_sub:
+            line_kind = "subtotal"
+        elif lclass == "ratio":
+            line_kind = "ratio"
+        elif stmt in ("physical", "other_info") or lclass in ("volume", "headcount"):
+            line_kind = "memo"
+        else:
+            line_kind = "detail"
+
+        lvl = int(meta.get("level", 0 if is_tot else (1 if is_sub else 2)))
+        ord_num = int(meta.get("order", 1000 + idx))
+        nat_sign = meta.get("sign") or (
+            "credit"
+            if lc.startswith(("PL.REV", "PL.OTHER_INCOME", "PL.TOTAL_INCOME", "PL.PBT", "PL.PAT", "BS.EQUITY", "BS.SHARE", "BS.OTHER_EQUITY", "BS.LIAB", "BS.BORROW", "REV."))
+            else "debit"
+        )
+        sign_in_parent = -1 if lc in ("PL.TOTAL_EXP", "PL.TAX", "PL.TAX_CURRENT", "PL.TAX_DEFERRED", "PL.TAX_EARLIER", "CF.TAX_PAID", "CF.BANK_OVERDRAFT") else 1
+
+        if lc in consolidated_only_codes or observed_scopes == {"consolidated"}:
+            scope_app = "consolidated_only"
+        elif observed_scopes == {"standalone"} or lc.startswith(("LEVY.", "REV.", "QTY.", "PROD.", "RATIO.", "OTH.", "CAPEX.", "N35", "N36", "N37", "N22", "NTAX", "NPROV", "SEG.")):
+            scope_app = "standalone_only" if "consolidated" not in observed_scopes else "both"
+        else:
+            scope_app = "both"
+
+        xbrl_elem = meta.get("xbrl")
+        xbrl_tags_str = f"in-bse-fin:{xbrl_elem}" if xbrl_elem else None
+        yahoo_fld = meta.get("yahoo")
+        yahoo_type_str = f"annual{yahoo_fld.replace(' ', '')}" if yahoo_fld else None
+        if yahoo_fld:
+            yahoo_eq = "approx" if lc in ("PL.REV_OPS", "PL.PAT", "BS.EQUITY.TOTAL") else "exact"
+        else:
+            yahoo_eq = "none"
+
+        aliases_str = meta.get("aliases") or (sample_label if sample_label and sample_label != line_name else line_name)
+        ar_labels_str = "|".join(ar_labels_list) if ar_labels_list else aliases_str
+
         rows.append(
             {
                 "line_code": lc,
-                "line_name": line_name,
-                "line_name_aliases": meta.get("aliases") or (sample_label if sample_label and sample_label != line_name else line_name),
                 "statement": stmt,
+                "display_name": line_name,
+                "line_name": line_name,
+                "line_name_aliases": aliases_str,
                 "section": meta.get("section") or stmt.replace("_", " ").title(),
                 "subsection": meta.get("subsection"),
                 "parent_line_code": meta.get("parent"),
-                "hierarchy_level": int(meta.get("level", 0 if (is_sub or is_tot) else 1)),
-                "display_order": int(meta.get("order", 1000 + idx)),
+                "level": lvl,
+                "hierarchy_level": lvl,
+                "line_order": ord_num,
+                "display_order": ord_num,
+                "line_kind": line_kind,
                 "line_class": lclass,
-                "natural_sign": meta.get("sign") or ("credit" if lc.startswith(("PL.REV", "PL.OTHER_INCOME", "PL.TOTAL_INCOME", "PL.PBT", "PL.PAT", "BS.EQUITY", "BS.SHARE", "BS.OTHER_EQUITY", "BS.LIAB", "BS.BORROW", "REV.")) else "debit"),
+                "subtotal_formula": meta.get("formula"),
+                "formula": meta.get("formula"),
+                "sign_in_parent": sign_in_parent,
+                "natural_sign": nat_sign,
+                "schedule3_ref": meta.get("ind_as"),
+                "ind_as_schedule_iii_ref": meta.get("ind_as"),
+                "ar_note_ref_typical": meta.get("note"),
+                "ar_labels": ar_labels_str,
+                "ten_year_label": ten_year_lbl,
+                "xbrl_tags": xbrl_tags_str,
+                "xbrl_element_name": xbrl_elem,
+                "yahoo_types": yahoo_type_str,
+                "yahoo_field_name": yahoo_fld,
+                "yahoo_equivalence": yahoo_eq,
+                "scope_applicability": scope_app,
+                "valid_from_fy": valid_from_fy or "FY17",
+                "valid_to_fy": valid_to_fy or "FY26",
                 "unit_default": unit_def,
                 "is_subtotal": is_sub,
                 "is_total": is_tot,
                 "is_kpi": is_kpi,
-                "formula": meta.get("formula"),
-                "ind_as_schedule_iii_ref": meta.get("ind_as"),
-                "ar_note_ref_typical": meta.get("note"),
-                "xbrl_element_name": meta.get("xbrl"),
-                "yahoo_field_name": meta.get("yahoo"),
                 "description": meta.get("desc") or f"Canonical financial line {lc} ({line_name}).",
             }
         )
 
     dim_df = pd.DataFrame(rows, columns=DIM_COLUMNS).sort_values(["display_order", "line_code"]).reset_index(drop=True)
     return dim_df
+
+
+def _make_snippet(r: pd.Series) -> str:
+    raw_lbl = str(r.get("raw_label", "")).strip()
+    raw_val = str(r.get("raw_value_text", "")).strip()
+    s = f"{raw_lbl} | {raw_val}"
+    return s[:200]
+
+
+def _with_extract_id_note(note_val: Optional[str], extract_id: Optional[str]) -> Optional[str]:
+    if not extract_id:
+        return note_val
+    tag = f"extract_id={extract_id}"
+    if not note_val:
+        return tag
+    if tag in note_val:
+        return note_val
+    return f"{tag}; {note_val}"
 
 
 def build_gold_dataframe(out_dir: Path = OUT_DIR) -> Tuple[pd.DataFrame, pd.DataFrame, GateRunResult]:
@@ -1779,6 +1908,7 @@ def build_gold_dataframe(out_dir: Path = OUT_DIR) -> Tuple[pd.DataFrame, pd.Data
             val_cr = val / 10.0 if unit == "INR_mn" else (val if unit == "INR_cr" else np.nan)
             prec_cr = 0.001 if unit == "INR_mn" else np.nan
             nvint = normalize_vintage(r["report_vintage"])
+            ext_id = _clean_text(r.get("extract_id"))
             records.append(
                 {
                     "fiscal_year": str(r["fiscal_year"]).strip(),
@@ -1804,13 +1934,18 @@ def build_gold_dataframe(out_dir: Path = OUT_DIR) -> Tuple[pd.DataFrame, pd.Data
                     "source_page": int(r["source_page"]) if not pd.isna(r["source_page"]) else None,
                     "source_page_label": _clean_text(r.get("source_page_label")),
                     "source_table": str(r["source_table"]).strip(),
+                    "source_text_line": int(r["source_text_line"]) if "source_text_line" in r and not pd.isna(r["source_text_line"]) else None,
+                    "source_snippet": _make_snippet(r),
                     "raw_label": str(r["raw_label"]).strip(),
                     "raw_value_text": str(r["raw_value_text"]).strip(),
                     "extraction_method": str(r["extraction_method"]).strip(),
+                    "extractor_version": str(r.get("extractor_version", "p1.3")).strip(),
+                    "extracted_at": str(r.get("extracted_at", "2026-10-24T00:00:00Z")).strip(),
+                    "extract_id": ext_id,
                     "cross_check_source": None,
                     "cross_check_value": np.nan,
                     "cross_check_delta_inr_cr": np.nan,
-                    "notes": _clean_text(r.get("notes")),
+                    "notes": _with_extract_id_note(_clean_text(r.get("notes")), ext_id),
                     "bronze_subtotal_ok": bool(r["subtotal_ok"]) if not pd.isna(r.get("subtotal_ok")) else None,
                 }
             )
@@ -1841,6 +1976,7 @@ def build_gold_dataframe(out_dir: Path = OUT_DIR) -> Tuple[pd.DataFrame, pd.Data
         unit = str(r["unit"]).strip()
         val_cr = val / 10.0 if unit == "INR_mn" else (val if unit == "INR_cr" else np.nan)
         prec_cr = 0.1 if unit == "INR_mn" else np.nan
+        ext_id = _clean_text(r.get("extract_id"))
 
         # If a 2-dp full_statement row already exists for the exact same (fy, ptype, scope, lc_m, nvint),
         # attach the 10-yr value as its cross_check_source/value so V08 verifies it without grain collision.
@@ -1883,13 +2019,18 @@ def build_gold_dataframe(out_dir: Path = OUT_DIR) -> Tuple[pd.DataFrame, pd.Data
                 "source_page": int(r["source_page"]) if not pd.isna(r["source_page"]) else None,
                 "source_page_label": _clean_text(r.get("source_page_label")),
                 "source_table": "ten_year_summary",
+                "source_text_line": int(r["source_text_line"]) if "source_text_line" in r and not pd.isna(r["source_text_line"]) else None,
+                "source_snippet": _make_snippet(r),
                 "raw_label": str(r["raw_label"]).strip(),
                 "raw_value_text": str(r["raw_value_text"]).strip(),
                 "extraction_method": str(r.get("extraction_method", "text_parse")).strip(),
+                "extractor_version": str(r.get("extractor_version", "p1.2")).strip(),
+                "extracted_at": str(r.get("extracted_at", "2026-10-24T00:00:00Z")).strip(),
+                "extract_id": ext_id,
                 "cross_check_source": None,
                 "cross_check_value": np.nan,
                 "cross_check_delta_inr_cr": np.nan,
-                "notes": _clean_text(r.get("notes")),
+                "notes": _with_extract_id_note(_clean_text(r.get("notes")), ext_id),
                 "bronze_subtotal_ok": None,
             }
         )
@@ -1913,6 +2054,7 @@ def build_gold_dataframe(out_dir: Path = OUT_DIR) -> Tuple[pd.DataFrame, pd.Data
         unit = str(r["unit"]).strip()
         val_cr = val / 10.0 if unit == "INR_mn" else (val if unit == "INR_cr" else np.nan)
         prec_cr = 0.001 if unit == "INR_mn" else np.nan
+        ext_id = _clean_text(r.get("extract_id"))
 
         records.append(
             {
@@ -1939,13 +2081,18 @@ def build_gold_dataframe(out_dir: Path = OUT_DIR) -> Tuple[pd.DataFrame, pd.Data
                 "source_page": int(r["source_page"]) if not pd.isna(r["source_page"]) else None,
                 "source_page_label": _clean_text(r.get("source_page_label")),
                 "source_table": str(r["source_table"]).strip(),
+                "source_text_line": int(r["source_text_line"]) if "source_text_line" in r and not pd.isna(r["source_text_line"]) else None,
+                "source_snippet": _make_snippet(r),
                 "raw_label": str(r["raw_label"]).strip(),
                 "raw_value_text": str(r["raw_value_text"]).strip(),
                 "extraction_method": str(r.get("extraction_method", "text_parse")).strip(),
+                "extractor_version": str(r.get("extractor_version", "p1.3")).strip(),
+                "extracted_at": str(r.get("extracted_at", "2026-10-24T00:00:00Z")).strip(),
+                "extract_id": ext_id,
                 "cross_check_source": None,
                 "cross_check_value": np.nan,
                 "cross_check_delta_inr_cr": np.nan,
-                "notes": _clean_text(r.get("notes")),
+                "notes": _with_extract_id_note(_clean_text(r.get("notes")), ext_id),
                 "bronze_subtotal_ok": bool(r["subtotal_ok"]) if not pd.isna(r.get("subtotal_ok")) else None,
             }
         )
@@ -1969,6 +2116,7 @@ def build_gold_dataframe(out_dir: Path = OUT_DIR) -> Tuple[pd.DataFrame, pd.Data
         unit = str(r["unit"]).strip()
         val_cr = float(r["value_inr_cr"]) if r.get("value_inr_cr") is not None and not pd.isna(r.get("value_inr_cr")) else np.nan
         prec_cr = float(r["precision_inr_cr"]) if r.get("precision_inr_cr") is not None and not pd.isna(r.get("precision_inr_cr")) else 0.01
+        ext_id = _clean_text(r.get("extract_id"))
 
         records.append(
             {
@@ -1995,13 +2143,18 @@ def build_gold_dataframe(out_dir: Path = OUT_DIR) -> Tuple[pd.DataFrame, pd.Data
                 "source_page": None,
                 "source_page_label": None,
                 "source_table": "xbrl_instance",
+                "source_text_line": int(r["source_text_line"]) if "source_text_line" in r and not pd.isna(r["source_text_line"]) else None,
+                "source_snippet": _make_snippet(r),
                 "raw_label": str(r["raw_label"]).strip(),
                 "raw_value_text": str(r["raw_value_text"]).strip(),
                 "extraction_method": "xbrl",
+                "extractor_version": str(r.get("extractor_version", "p1.4")).strip(),
+                "extracted_at": str(r.get("extracted_at", "2026-10-24T00:00:00Z")).strip(),
+                "extract_id": ext_id,
                 "cross_check_source": None,
                 "cross_check_value": np.nan,
                 "cross_check_delta_inr_cr": np.nan,
-                "notes": _clean_text(r.get("notes")),
+                "notes": _with_extract_id_note(_clean_text(r.get("notes")), ext_id),
                 "bronze_subtotal_ok": None,
             }
         )
@@ -2009,10 +2162,16 @@ def build_gold_dataframe(out_dir: Path = OUT_DIR) -> Tuple[pd.DataFrame, pd.Data
     raw_gold = pd.DataFrame(records)
     raw_gold = compute_vintage_flags(raw_gold)
     dim_df = build_dim_financial_line(raw_gold)
+    parent_map = dict(zip(dim_df["line_code"], dim_df["parent_line_code"]))
+    order_map = dict(zip(dim_df["line_code"], dim_df["line_order"]))
+    raw_gold["parent_line_code"] = raw_gold["line_code"].map(parent_map)
+    raw_gold["line_order"] = raw_gold["line_code"].map(order_map).fillna(9999).astype("int64")
     gate_res = verify_gates(raw_gold, dim_df=dim_df)
     gold_out = gate_res.df.copy()
     gold_out["period_end"] = pd.to_datetime(gold_out["period_end"]).dt.date
     gold_out["source_page"] = pd.to_numeric(gold_out["source_page"], errors="coerce").astype("Int64")
+    gold_out["source_text_line"] = pd.to_numeric(gold_out["source_text_line"], errors="coerce").astype("Int64")
+    gold_out["line_order"] = pd.to_numeric(gold_out["line_order"], errors="coerce").fillna(9999).astype("int64")
     gate_res.df = gold_out
 
     # Also build combined bronze table fin_extract_raw.parquet (SPEC-01 §5.0)
