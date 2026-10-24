@@ -66,7 +66,7 @@
 
 | ID | Status | Symptom | Fix | Step |
 |---|---|---|---|---|
-| BUG-34 | 🔴 | Grade axis ordered by count, not E1→E9; generic titles ("Updated Chart View"); no waterfall connectors; panel thread duplicates the main feed by design | Grade order; insight titles; connectors; hide the thread when the feed is visible | P2H.3, P4.8 |
+| BUG-34 | 🟠 | Grade axis ordered by count, not E1→E9; generic titles ("Updated Chart View"); no waterfall connectors; panel thread duplicates the main feed by design | Grade order; insight titles; connectors; hide the thread when the feed is visible | P2H.3, P4.8 |
 
 ## Previously reported and fixed (verify in the P5 regression suite)
 
