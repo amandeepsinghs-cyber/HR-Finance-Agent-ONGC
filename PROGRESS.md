@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 06:00 UTC · branch `v3/P0-stabilise` @ `57a265f`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 06:19 UTC · branch `v3/P0-stabilise` @ `045157a`
 
 > [!IMPORTANT]
-> **Overall: 45% complete (weighted)** — 26/62 steps ✅ done, 6 in flight, 30 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 12 warning(s).
+> **Overall: 47% complete (weighted)** — 26/62 steps ✅ done, 8 in flight, 28 to do, 0 blocked. **12 blocker bugs open.** Integrity: 1 error(s), 12 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `████████████░░░░░░░░` 62% | 7 | 0 | 0 | 2 | 3 | 0 | 12 |
+| **P1** | Real finance SSOT | `██████████████░░░░░░` 71% | 7 | 1 | 0 | 3 | 1 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `██████░░░░░░░░░░░░░░` 28% | 1 | 1 | 0 | 2 | 4 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
@@ -24,6 +24,8 @@
 | Step | Status | Task | Owner | Next action |
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
+| P1.10a | 🔍 In review | Compiler on verified rows + honest provenance (`YUKTI_FIN_SSOT_V3`) | O | Apply review findings / approve |
+| P1.10b | 🔄 In progress | Retire LLM-authored artefacts (`build_10yr_financials.py`, generated corpus, governance CSV) | F | Complete build + evidence |
 | P1.11 | 🔄 In progress | Finance golden set (P1 gate) + V20 chain (P2F gate) | F + FL | Complete build + evidence |
 | P2H.2 | 🔄 In progress | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Complete build + evidence |
 | P2H.3 | 🔍 In review | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | Apply review findings / approve |
@@ -34,7 +36,6 @@
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
-| P1.10a | Compiler on verified rows + honest provenance (`YUKTI_FIN_SSOT_V3`) | O | P1.6 |
 | P1.9 | WACC inputs + `fact_wacc_annual` (manual RBI seed CSV with lineage; Rf = raw INR 10-yr G-sec at FY-end) | F (+O load, human RBI seed) | P1.3, P1.5, P1.6 |
 
 ## 3. Sponsor action items
@@ -116,16 +117,16 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 6 · 🟠 in progress 6 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 28 total — 🔴 open 12 · 🟠 in progress 10 · ↩ regressed 0 · ✅ closed 6
+- **Important:** 29 total — 🔴 open 13 · 🟠 in progress 10 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
 
 | Bug | Status | Symptom | Closing step(s) | Step status |
 |---|---|---|---|---|
-| BUG-02 | open | BS/CF/ratios wrong (FY24 total assets 4,22,820 vs AR 4,46,021; FY25 CFO 63,180 vs 73,010;  | P0.3, P1.10b, P1.2 | P0.3:✅ P1.10b:⬜ P1.2:✅ |
-| BUG-03 | open | Same metric, three values (FY17 royalty 7,635 / 8,548 / AR 11,575) | P1.10b, P1.6 | P1.10b:⬜ P1.6:✅ |
-| BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:⬜ P1.11:🔄 P5.1:⬜ P5.3:⬜ |
+| BUG-02 | open | BS/CF/ratios wrong (FY24 total assets 4,22,820 vs AR 4,46,021; FY25 CFO 63,180 vs 73,010;  | P0.3, P1.10b, P1.2 | P0.3:✅ P1.10b:🔄 P1.2:✅ |
+| BUG-03 | open | Same metric, three values (FY17 royalty 7,635 / 8,548 / AR 11,575) | P1.10b, P1.6 | P1.10b:🔄 P1.6:✅ |
+| BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:🔍 P1.11:🔄 P5.1:⬜ P5.3:⬜ |
 | BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:🔄 |
 | BUG-07 | in_progress | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:✅ |
 | BUG-08 | in_progress | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:✅ |
@@ -140,6 +141,11 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `d904f39` | 2026-10-24 | P1.10a (pre-G4): switch compiler & fallback to verified SSOT, honest provenance, and P1.6 R2-m1..m6 follow-ups |
+| `b23b178` | 2026-10-24 | P2H.2 (G4 r1b fixes): M6 (Hindi refusal fallback fixed via validate_and_repair_contract unconditionally rewriting legacy visual.no |
+| `7bfa44d` | 2026-10-24 | P2F.1 (pre-G4) frontend: ClarifySpec type (SPEC-08 §3.2) + clarify chips on text cards (latest card only; chip sends option value  |
+| `7925561` | 2026-10-24 | P2H.5a (pre-G4): reference YAMLs, employee_targets_fy.csv, pay_rules.py, gen_app_users Rule 5a fix |
+| `36d2c26` | 2026-10-24 | P2H.2 (G4 r1 fixes) backend: SPEC-06 refusal on check_access/repair (M1), question_hi & dedup on alternatives (M4), all chips pass |
 | `45a4016` | 2026-10-24 | P2H.2 (G4 r1 fixes) frontend: M2 blocking first-visit sign-in (no default identity, no data/ws call before a pick), M3 no CMD fall |
 | `8a387b6` | 2026-10-24 | P2H.3 (pre-G4): V19 turns 1-3 ordered levels, DELHI_GT5_CONT_V1 rule, 7-col roster & cohort store (FEAT-032/033; closes BUG-34) |
 | `5cb8a0f` | 2026-10-24 | P4.5 B2 (pre-G4) frontend: bubble (x·y·sqrt-size, size legend, ≤50 labels), sunburst (Σ-conserving tree, per-fill label contrast), |
@@ -150,14 +156,10 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `ddcdbd4` | 2026-10-24 | P4.5 B1 (pre-G4) frontend: sensitivity_grid + tornado typed visuals (SPEC-09 §5 types), ECharts builders (exact ₹ cells, diverging |
 | `0a9387e` | 2026-10-24 | P2H.2 frontend: portal PersonaPicker to <body> (TopBar backdrop-blur clipped the modal); E2E report + screenshots (8 scenarios) wi |
 | `186f6d6` | 2026-10-24 | P1.11 (pre-G4) golden YAML: 61 cases (39 P1, 22 P2F) + V20 chain (6 steps) |
-| `8afe1f6` | 2026-10-24 | P4.7 (G4 r1 fixes): M1 formatless default only with export/download verb + target (no save/भेजो/में बनाओ), recipient sends → backe |
-| `a4047ff` | 2026-10-24 | P4.7 evidence |
-| `65531be` | 2026-10-24 | P4.7 (pre-G4) frontend: ExportMenu (8 SPEC-10 items; PNG/SVG chart-only), client PNG ≥1600px + SVG with title/unit/source, §4.9 fi |
-| `328b6f5` | 2026-10-24 | P1.7 (G4 r3 fixes): R2-1 to R2-4 fixes |
-| `c55cafc` | 2026-10-24 | P4.6 (pre-G4) backend: xlsx formats & DCF/Definition sheets, UTF-8 BOM CSV, WeasyPrint+Noto PDF, docx, eml, honest Sheets/Docs, au |
 
 ## 8. Integrity checks
 
+- ❌ **Error:** P2F.1 has commit 7bfa44d but the checklist still says ⬜ — update the status (🔨 Built / 🔍 In review / ✅ Done).
 - ⚠️ BUG-07 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-27 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-28 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
