@@ -758,13 +758,13 @@ class AgentTurnRunner:
                     session_state.record_turn(disc_contract, user_query=query, all_rows=rows)
                     return disc_contract
 
-            min_stay = int(active_params.get("min_stay_months", 60))
+            min_stay = int(active_params.get("min_stay_days", 1826))
             sql_disc = (
-                f"SELECT d.name AS discipline, SUM(s.total_executives) AS executives_ge_5yr, "
-                f"SUM(s.non_exempt_due_transfer) AS due_for_transfer "
-                f"FROM `{GCP_PROJECT}.hrfin_gold.agg_headcount_tenure_summary` s "
+                f"SELECT d.name AS discipline, COUNT(DISTINCT s.emp_id) AS executives_ge_5yr, "
+                f"COUNT(DISTINCT IF(DATE_DIFF(s.retirement_date, DATE '{get_semantic_model().anchor_date}', DAY) > 2 * 365.25 AND (s.exemption_tag IS NULL OR s.exemption_tag = 'None'), s.emp_id, NULL)) AS due_for_transfer "
+                f"FROM `{GCP_PROJECT}.hrfin_gold.v_continuous_stay` s "
                 f"LEFT JOIN `{GCP_PROJECT}.hrfin_silver.dim_discipline` d ON s.discipline_id = d.discipline_id "
-                f"WHERE s.wc_id = '{active_wc}' AND s.continuous_stay_months >= {min_stay} AND s.grade_id LIKE 'E%' "
+                f"WHERE s.wc_id = '{active_wc}' AND DATE_DIFF(DATE '{get_semantic_model().anchor_date}', s.continuous_from_date, DAY) > {min_stay} AND s.grade_id LIKE 'E%' "
                 f"GROUP BY 1 ORDER BY 2 DESC"
             )
             res = await asyncio.to_thread(qd, sql_disc, title="Executive Tenure Breakdown by Discipline")
@@ -949,7 +949,7 @@ class AgentTurnRunner:
                     session_state.active_query_state = {
                         "certified_id": "C1",
                         "topic": "workforce_headcount",
-                        "params": {"wc_id": matched_wc, "min_stay_months": 60},
+                        "params": {"wc_id": matched_wc, "min_stay_days": 1826},
                         "sql": sql_hc,
                     }
                     session_state.active_entities["wc_id"] = matched_wc
@@ -2445,8 +2445,8 @@ class AgentTurnRunner:
             top = "Sabse zyada " + " aur ".join(f"{ents.friendly(k)} ({v})" for k, v in ranked) + " mein hain. "
         if tot is None:
             return "Jawab screen par hai. Details screen par hain."
-        if resp.get("query_id") == "C1" and params.get("min_stay_months"):
-            years = round(int(params["min_stay_months"]) / 12)
+        if resp.get("query_id") == "C1" and params.get("min_stay_days"):
+            years = round(int(params["min_stay_days"]) / 12)
             lead = f"{place or 'Is work centre'} mein {years} saal se zyada {tot} executives hain. "
         else:
             lead = (f"{place}: " if place else "") + f"kul {tot} records mile. "

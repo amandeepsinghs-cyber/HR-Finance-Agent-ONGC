@@ -29,15 +29,10 @@ persona_classes:
   junior: [E1_HR, E2_HR, E3_HR, E4_HR, E1_FIN, E2_FIN, E3_FIN, E4_FIN]
 
 # Legacy 5-class summary matrix preserved for backward compatibility with B3 tests.
-matrix:            # (class, function) -> data_class -> decision; most specific key wins
-  leadership:      {"*": allow, self: self}
-  director/HR:     {fin_internal: aggregate, board_confidential: refuse, valuation_run: refuse, self: self, "*": allow}
-  director/FIN:    {named: {DISC-FIN: allow, "*": aggregate}, pay_individual: {DISC-FIN: allow, "*": refuse},
-                    apar: {DISC-FIN: allow, "*": refuse}, sensitive: aggregate, self: self, "*": allow}
-  junior/HR:       {general_hr: allow, general_fin: allow, fin_internal: aggregate, policy: allow, named: aggregate,
-                    pay_aggregate: allow, self: self, "*": refuse}
-  junior/FIN:      {general_hr: aggregate, general_fin: allow, fin_internal: allow, policy: allow, named: aggregate,
-                    pay_aggregate: allow, self: self, "*": refuse}
+matrix:
+  leadership: {general: allow, named: allow, pay: allow, apar: allow, sensitive: allow}
+  director:   {general: allow, named: allow, pay: allow, apar: allow, sensitive: allow}
+  junior:     {general: allow, named: aggregate, pay: refuse, apar: refuse, sensitive: refuse}
 
 personas:
   CMD:

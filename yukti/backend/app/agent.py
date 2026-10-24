@@ -45,7 +45,7 @@ CORE OPERATIONAL BEHAVIORS:
 
 3. MANDATORY TOOL USAGE FOR ONGC DATA & METRICS:
    - You MUST call a tool (`run_certified_query`, `query_data`, `search_policy`, `what_if`, or `draft_document`) for EVERY user question inquiring about ONGC data, metrics, headcount, policies, finances, or operations.
-   - When the user inquiry matches a certified metric or question (e.g. C1 Delhi stay, C6 loss-making fields, C12 lifting cost, vacancies, capex), call `run_certified_query(query_id, params)` to execute the verified certified template, supplying parameter overrides as requested (e.g. wc_id, fiscal_year, min_stay_months).
+   - When the user inquiry matches a certified metric or question (e.g. C1 Delhi stay, C6 loss-making fields, C12 lifting cost, vacancies, capex), call `run_certified_query(query_id, params)` to execute the verified certified template, supplying parameter overrides as requested (e.g. wc_id, fiscal_year, min_stay_days).
    - Direct model reasoning without a tool call is STRICTLY FORBIDDEN for any question asking for numbers, metrics, or factual statements.
    - Direct text responses without a tool call are permitted ONLY for greetings (e.g. "hello", "good morning"), conversational pleasantries, and meta questions.
    - TOOL SELECTION RULES:
@@ -115,13 +115,13 @@ async def run_certified_query(
     params: Optional[Dict[str, Any]] = None,
     wc_id: Optional[str] = None,
     fiscal_year: Optional[str] = None,
-    min_stay_months: Optional[int] = None,
+    min_stay_days: Optional[int] = None,
     min_grade: Optional[str] = None,
     field_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Executes a certified parameterized query template from the verified query library.
     ALWAYS prefer calling `run_certified_query` first before `query_data` for standard questions:
-    - 'C1': Executives with >= N months continuous stay at a work centre (wc_id='WC-DEL'|'WC-MUM'|'WC-DDN'|'WC-AHM'|'WC-MEH'|'WC-ASM'|'WC-TRI', min_stay_months=60, min_grade='E5')
+    - 'C1': Executives with >= N months continuous stay at a work centre (wc_id='WC-DEL'|'WC-MUM'|'WC-DDN'|'WC-AHM'|'WC-MEH'|'WC-ASM'|'WC-TRI', min_stay_days=1826, min_grade='E5')
     - 'C6': Field profitability and loss-making fields (fiscal_year='FY26'|'FY25')
     - 'C10': MoU performance scorecard vs targets
     - 'C11': Assets that added headcount vs production growth
@@ -135,8 +135,8 @@ async def run_certified_query(
         merged["wc_id"] = wc_id
     if fiscal_year:
         merged["fiscal_year"] = fiscal_year
-    if min_stay_months is not None:
-        merged["min_stay_months"] = min_stay_months
+    if min_stay_days is not None:
+        merged["min_stay_days"] = min_stay_days
     if min_grade:
         merged["min_grade"] = min_grade
     if field_id:

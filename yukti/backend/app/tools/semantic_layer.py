@@ -62,9 +62,9 @@ BIGQUERY ENTERPRISE SCHEMAS & EXACT COLUMN CATALOG (Project: {GCP_PROJECT}):
 
 1. PREFERRED PRE-AGGREGATED GOLD SUMMARY TABLES (Use these first for fastest sub-second execution):
    • `hrfin_gold.agg_headcount_tenure_summary` (PREFERRED for executive station stay & transfer queries):
-     - Exact Columns: wc_id, wc_name, cluster_id, cluster_name, hard_station_cat, grade_id, discipline_id, continuous_stay_months, continuous_stay_years, total_executives, exempt_retiring_3yr, non_exempt_due_transfer.
+     - Exact Columns: wc_id, wc_name, cluster_id, cluster_name, hard_station_cat, grade_id, discipline_id, continuous_stay_months, continuous_stay_years, total_executives.
      - Clustered by: (wc_id, continuous_stay_months).
-     - Example: `SELECT grade_id, discipline_id, SUM(total_executives) as num_executives, SUM(exempt_retiring_3yr) as exempt, SUM(non_exempt_due_transfer) as due_transfer FROM hrfin_gold.agg_headcount_tenure_summary WHERE wc_id = 'WC-DEL' AND DATE_DIFF(DATE '2026-10-19', continuous_from_date, DAY) > 1826 AND grade_id LIKE 'E%' GROUP BY grade_id, discipline_id;`
+     - Example: `SELECT grade_id, discipline_id, SUM(total_executives) as num_executives FROM hrfin_gold.agg_headcount_tenure_summary WHERE wc_id = 'WC-DEL' AND continuous_stay_years >= 5 AND grade_id LIKE 'E%' GROUP BY grade_id, discipline_id;`
 
    • `hrfin_gold.agg_field_pnl_summary` (PREFERRED for field P&L economics & loss-making fields):
      - Exact Columns: pnl_id, fiscal_year, field_id, field_name, basin, onshore_offshore, asset_wc_id, asset_name, oil_revenue_inr_cr, gas_revenue_inr_cr, recomputed_gross_revenue_inr_cr, statutory_royalty_inr_cr, statutory_cess_inr_cr, statutory_windfall_tax_saed_inr_cr, recomputed_net_revenue_inr_cr, allocated_manpower_cost_inr_cr, total_opex_inr_cr, recomputed_ebitda_inr_cr, recomputed_ebitda_margin_pct, dda_depreciation_inr_cr, recomputed_pbt_inr_cr, total_production_boe, lifting_cost_per_boe_usd, manpower_cost_per_boe_usd, is_loss_making_3yr_consecutive, is_divestment_candidate.
@@ -89,12 +89,12 @@ BIGQUERY ENTERPRISE SCHEMAS & EXACT COLUMN CATALOG (Project: {GCP_PROJECT}):
      - Discipline column: `discipline_id` (e.g. 'DISC-DRL', 'DISC-FIN', 'DISC-HR', 'DISC-PRD', 'DISC-MM').
      - Delhi Corporate HQ: `wc_id = 'WC-DEL'`. Dehradun: `wc_id = 'WC-DDN'`. Mumbai: `wc_id = 'WC-MUM'`.
      - 5-year tenure threshold: `DATE_DIFF(DATE '2026-10-19', continuous_from_date, DAY) > 1826`.
-     - Retirement Exemption (JRTP Clause 7.0, 3-year practice): `is_superannuation_exempt = TRUE` or `DATE_DIFF(retirement_date, DATE '2026-10-19', DAY) <= 3 * 365.25`.
+     - Retirement Exemption (JRTP Clause 7.0, ≤2-year pre-retirement rule): `is_superannuation_exempt = TRUE` or `DATE_DIFF(retirement_date, DATE '2026-10-19', DAY) <= 2 * 365.25`.
 
    • `hrfin_gold.v_cluster_cumulative_tenure` (Cluster Stay Cap - JRTP Clause 4.0):
      - Exact Columns: emp_id, emp_name, gender, category, dob, retirement_date, current_grade_id, current_wc_id, cluster_id, cluster_name, cumulative_cluster_days, cumulative_cluster_years, is_currently_in_cluster, has_breached_cluster_10yr_cap, is_superannuation_exempt.
      - 10-year lifetime cluster ceiling: `cumulative_cluster_years >= 10.0` or `has_breached_cluster_10yr_cap = TRUE`.
-     - Exemption status: `is_superannuation_exempt = TRUE` (within 3 years of superannuation).
+     - Exemption status: `is_superannuation_exempt = TRUE` (within 2 years of superannuation).
 
    • `hrfin_gold.v_field_pnl` (Standalone Field P&L Economics):
      - Exact Columns: field_id, field_name, basin, onshore_offshore, asset_wc_id, asset_name, fiscal_year, oil_revenue_inr_cr, gas_revenue_inr_cr, recomputed_gross_revenue_inr_cr, statutory_royalty_inr_cr, statutory_cess_inr_cr, statutory_windfall_tax_saed_inr_cr, recomputed_net_revenue_inr_cr, allocated_manpower_cost_inr_cr, total_opex_inr_cr, recomputed_ebitda_inr_cr, recomputed_ebitda_margin_pct, dda_depreciation_inr_cr, recomputed_pbt_inr_cr, total_production_boe, lifting_cost_per_boe_usd, manpower_cost_per_boe_usd, boe_per_employee, is_loss_making_3yr_consecutive, is_divestment_candidate, pec_monetisation_potential_flag, root_cause_loss_code.

@@ -509,61 +509,54 @@ def _resolve_class_action(
 ) -> Tuple[str, Optional[str]]:
     """Resolve `(action, refusal_or_mask_code)` from `rbac_policy.yaml`."""
     pol = load_policy()
-    canon = _canon_or_raw(persona) or persona
-    pc = persona_class(canon)
-    p_func = persona_function(canon)
-    
+    role_key = persona_role_key(persona)
+    p_func = persona_function(persona)
     dir_scope = (
         bool(pol.get("director_function_scope", True))
         if director_function_scope is None
         else bool(director_function_scope)
     )
 
+    # Map legacy v1 data class names to v2 data_classes entries
     dc_norm = data_class
     if dc_norm == "general":
         return "allow", None
     if dc_norm == "pay":
         dc_norm = "pay_individual"
-        
-    matrix = pol.get("matrix", {})
-    
-    if pc == "leadership":
-        key = "leadership"
-    else:
-        key = f"{pc}/{p_func}"
-        
-    if pc == "director" and not dir_scope:
-        return "allow", None
-        
-    row = matrix.get(key, {})
-    decision = row.get(dc_norm)
-    if decision is None:
-        decision = row.get("*", "refuse")
-        
-    eff_target = (target_function or ("FIN" if dc_norm in ("fin_internal", "general_fin", "valuation_run") else "HR")).upper()
-    
-    if isinstance(decision, dict):
-        mapped_target = "DISC-FIN" if eff_target == "FIN" else eff_target
-        decision = decision.get(mapped_target, decision.get("*", "refuse"))
 
-    if decision == "aggregate":
+    dc_cfg = (pol.get("data_classes") or {}).get(dc_norm)
+    if not isinstance(dc_cfg, dict):
+        return "refuse", "R-NAMED"
+
+    # When director_function_scope=False (D-10 mode), Directors have full cross-functional allow
+    if not dir_scope and role_key in ("director_hr", "director_fin"):
+        return "allow", None
+
+    raw_action = dc_cfg.get(role_key, "refuse")
+    default_code = dc_cfg.get("refusal_code")
+
+    allowed_funcs = set((pol.get("functions") or {}).get(p_func, [p_func, "CORP"]))
+    eff_target = (target_function or ("FIN" if dc_norm in ("fin_internal", "general_fin", "valuation_run") else "HR")).upper()
+
+    if raw_action == "function_scoped":
+        if eff_target in allowed_funcs:
+            return "allow", None
+        return "aggregate", (default_code or "R-FUNC")
+
+    if raw_action == "function_scoped_refuse":
+        if eff_target in allowed_funcs:
+            return "allow", None
+        return "refuse", (default_code or "R-FUNC")
+
+    if raw_action == "allow":
+        return "allow", None
+    if raw_action == "aggregate":
         if dc_norm == "fin_internal":
             return "aggregate", "R-FUNC"
         if dc_norm == "sensitive":
             return "aggregate", "R-SENS"
-        return "aggregate", "R-NAMED"
-
-    if decision == "refuse":
-        dc_cfg = (pol.get("data_classes") or {}).get(dc_norm, {})
-        code = dc_cfg.get("refusal_code", "R-NAMED")
-        if dc_norm == "pay_individual": code = "R-PAY"
-        elif dc_norm == "apar": code = "R-APAR"
-        elif dc_norm == "sensitive": code = "R-SENS"
-        elif dc_norm == "board_confidential": code = "R-BOARD"
-        elif dc_norm == "fin_internal": code = "R-FUNC"
-        return "refuse", code
-
-    return decision, None
+        return "aggregate", (default_code or "R-NAMED")
+    return "refuse", (default_code or "R-NAMED")
 
 
 def refusal_text(persona: str, template_key: str, lang: str = "en") -> str:
@@ -771,7 +764,7 @@ def suppress_small_cells(
             if by_name and not _COUNT_COL.search(c):
                 continue
             num_suppressed = sum(1 for r in out if r.get(c) == f"<{t}")
-            if num_suppressed == 1:
+            if num_suppressed == 1 and not any(r.get(c) == "suppressed" for r in out):
                 min_val = None
                 min_idx = -1
                 for i, r in enumerate(out):
@@ -838,7 +831,7 @@ def _row_discipline_is_fin(row: Dict[str, Any]) -> Optional[bool]:
     for k in ("discipline_id", "discipline", "function", "discipline_name"):
         if k in row and row[k] is not None:
             val = str(row[k]).strip().upper()
-            if val in ("DISC-FIN", "FIN", "FINANCE", "FINANCE & ACCOUNTS"):
+            if val in ("DISC-FIN", "FIN", "FINANCE", "FINANCE & ACCOUNTS", "FINANCE & ACCOUNTS (F&A)") or "FIN" in val:
                 return True
             return False
     return None

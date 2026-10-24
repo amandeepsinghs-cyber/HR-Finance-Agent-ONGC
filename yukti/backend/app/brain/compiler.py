@@ -90,7 +90,11 @@ def get_definitions() -> Dict[str, Dict[str, Any]]:
     """Load canonical semantic definitions (`DELHI_GT5_CONT_V1`, `STATION_GT5_CONT_V1`) from `definitions.yaml`."""
     if not DEFINITIONS_PATH.exists():
         return {}
-    raw = yaml.safe_load(DEFINITIONS_PATH.read_text(encoding="utf-8")) or {}
+    text = DEFINITIONS_PATH.read_text(encoding="utf-8")
+    anchor = get_semantic_model().anchor_date
+    d = datetime.date.fromisoformat(anchor)
+    text = text.replace("{anchor_date}", anchor).replace("{anchor_date_fmt}", d.strftime("%d-%b-%Y"))
+    raw = yaml.safe_load(text) or {}
     return dict(raw.get("definitions") or {})
 
 

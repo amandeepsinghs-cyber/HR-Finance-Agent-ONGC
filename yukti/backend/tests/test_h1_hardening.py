@@ -105,7 +105,7 @@ def test_h1_2_repaired_sql_is_revalidated_before_execution():
                 "SELECT bad_col FROM `ongc-hr-finance-agent.hrfin_gold.v_field_pnl`",
                 persona="CMD",
             )
-            assert res["status"] in ("error", "refused")
+            assert res["status"] == "error"
             # Verify that the malicious repaired query was NEVER sent to client.query()
             executed_sqls = [call.args[0] for call in mock_client.query.call_args_list]
             assert not any("evil-proj" in s for s in executed_sqls)

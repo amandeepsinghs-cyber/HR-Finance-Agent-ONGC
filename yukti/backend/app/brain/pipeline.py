@@ -212,8 +212,6 @@ async def run_planner_turn(
             disc = str(r.get("discipline") or "").upper()
             row_func = "FIN" if "FIN" in disc else "HR"
             if row_func == my_func:
-                if "emp_id" in r:
-                    r["emp_id"] = None
                 out_rows.append(r)
             else:
                 g = str(r.get("grade") or "UNKNOWN")
@@ -247,13 +245,26 @@ async def run_planner_turn(
         breakdown = await _companion_breakdown(spec, compiled, compiler, junior=junior)
     visual = build_visual(spec, compiled, columns, rows, plan.chart_kind, title, subtitle, mode, n_total,
                           breakdown=breakdown, persona=persona, query=query, raw_rows=raw_rows_before_k5)
+    val_col = compiled.value_columns[0] if compiled.value_columns else None
+    def _num(v):
+        try:
+            return float(v)
+        except (ValueError, TypeError):
+            return 0.0
+    raw_total = sum(_num(r.get(val_col)) for r in raw_rows_before_k5) if val_col else n_total
+    
     chart_rows = visual.get("table", {}).get("rows") or rows
-    insight_rows = [r for r in chart_rows if str(r.get("grade", "")).strip().upper() not in ("CMD", "DIR")]
-    headline = narrate(spec, compiled, columns, insight_rows, n_total=n_total)
+    source_for_insights = raw_rows_before_k5 if is_partial_director else chart_rows
+    insight_rows = [
+        r for r in source_for_insights 
+        if str(r.get("grade", "")).strip().upper() not in ("CMD", "DIR")
+        and not (str(r.get("grade", "")).strip().upper() == "GRP-B" and _num(r.get(val_col)) == 0)
+    ]
+    headline = narrate(spec, compiled, columns, insight_rows, n_total=raw_total)
     # B4: deterministic insights (+ previous-FY comparison where the subject has fiscal years),
     # drill-down chips, and a narrator limited to computed facts with a numeric-grounding check.
     prev_rows = await _previous_period_rows(spec, compiled, compiler)
-    insights = compute_insights(build_insight_context(spec, compiled, insight_rows, n_total, prev_rows,
+    insights = compute_insights(build_insight_context(spec, compiled, insight_rows, raw_total, prev_rows,
                                                       scope_phrases(spec, compiled), query=query))
     extra_nums = derived_numbers(compiled, insight_rows, n_total)
     if breakdown and breakdown[1]:
@@ -334,7 +345,7 @@ async def run_planner_turn(
             existing_kpis = [k for k in (visual.get("kpis") or []) if k.get("label") != kpi_main["label"]]
             visual["kpis"] = [kpi_main] + existing_kpis[:2]
             spoken = (
-                f"{lead_t2} Rule: {rule_line} (> 1,826 days; 19-Oct-2026). "
+                f"{lead_t2} Rule: {rule_line} (> 1,826 days; {get_semantic_model().anchor_date}). "
                 f"Policy: {jrtp_line}; {hc_line}. The level-wise column chart is on screen."
             )
 
@@ -416,7 +427,29 @@ async def run_planner_turn(
         contract["caveat"] = "; ".join(notes)[:300]
     # B3.4 consistency: access status, text and visual agree.
     tbl = visual.get("table")
-    if policy is not None and policy.action == "aggregate" and (
+    if is_partial_director:
+        contract["access"] = {
+            "status": "partial",
+            "code": "R-FUNC",
+            "reason": "Director function-scope logic applied (D-43).",
+            "rule_ref": "D-43"
+        }
+        if isinstance(tbl, dict):
+            tbl["masking"] = {
+                "level": "aggregate",
+                "code": "R-FUNC",
+                "masked_columns": ["name", "emp_id"],
+                "reason": "Director function-scope logic applied (D-43).",
+                "rule_ref": "D-43",
+            }
+        
+        my_func_lbl = "Finance & Accounts" if policy.function == "FIN" else "HR/Corp"
+        n_named = sum(1 for r in out_rows if "emp_id" in r and r["emp_id"])
+        n_collapsed = len(raw_rows_before_k5) - n_named
+        lead = f"Showing named records for {my_func_lbl} ({n_named}); other disciplines are summarised by grade ({n_collapsed}) under D-43. "
+        contract["spoken_summary"] = lead + contract["spoken_summary"]
+        contract["display_text"] = contract["spoken_summary"][:590]
+    elif policy is not None and policy.action == "aggregate" and (
         downgraded_from_row
         or (policy.code in ("R-SENS", "R-FUNC") and "general_hr" not in (policy.data_classes or []))
     ):

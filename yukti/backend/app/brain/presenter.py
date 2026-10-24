@@ -282,7 +282,7 @@ def scope_phrases(spec: QuerySpec, compiled: Optional[CompiledQuery] = None) -> 
     elif p.get("from"):
         out.append(f"{p['from']}–{p['to']}")
     elif p.get("as_of"):
-        out.append("As of {get_semantic_model().anchor_date}")
+        out.append(f"As of {get_semantic_model().anchor_date}")
     return out
 
 
@@ -822,7 +822,7 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
                 + " The trend is on screen.")
     s = ""
     if additive:
-        total = sum(_num(r.get(val)) for r in rows)
+        total = n_total if n_total is not None else sum(_num(r.get(val)) for r in rows)
         s = f"{fmt_num(total, compiled.unit)}" + (f" {unit_word}" if unit_word and compiled.unit not in ("inr_cr", "inr_lakh") else "") + f" across {len(rows)} {plural}"
         s += f" ({scope}). " if scope else ". "
     top = ranked[:2]

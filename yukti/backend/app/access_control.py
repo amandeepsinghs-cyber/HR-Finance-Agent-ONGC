@@ -258,7 +258,7 @@ FROM `{GCP_PROJECT}.hrfin_gold.v_continuous_stay`
 WHERE is_current_stay = TRUE
   AND wc_id = 'WC-DEL'
   AND grade_id LIKE 'E%'
-  AND continuous_stay_months >= 60
+  AND DATE_DIFF(DATE '2026-10-19', s.continuous_from_date, DAY) > 1826
 GROUP BY grade_id
 ORDER BY grade_id;"""
     },

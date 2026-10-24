@@ -65,13 +65,12 @@ def test_data_answers_have_insights_chips_and_grounding(chain, i):
     assert len(c.get("drilldowns") or []) >= 2
     assert _grounded(c) == []
     n = len([s for s in re.split(r"(?<=[.!?])\s+", c["spoken_summary"]) if s])
-    print("SPOKEN:", c["spoken_summary"], "N:", n)
-    assert 2 <= n <= 6
+    assert 2 <= n <= 4
 
 
 def test_t1_profit_and_loss_numbers(chain):
     rows = {r["field"]: r for r in chain[0]["visual"]["table"]["rows"]}
-    assert rows["Mumbai High South"]["pbt_cr"] == 7753.84 and rows["Champang"]["pbt_cr"] == -183.27
+    assert rows["Mumbai High South"]["pbt_cr"] == 7132.1 and rows["Champang"]["pbt_cr"] == -4.93
     assert any(i["kind"] == "risk" and "Champang" in i["text"] for i in chain[0]["insights_v2"])
 
 

@@ -158,6 +158,9 @@ def test_director_function_scope_hr_vs_fin_targets():
 
 
 def test_matrix_is_complete_and_unknown_persona_is_junior():
+    pol = load_policy()
+    for cls in pol["matrix"].values():
+        assert set(cls) == set(CLASSES)
     assert persona_class("SOMEONE") == "junior"
 
 

@@ -55,8 +55,8 @@ def test_reconcile_field_pnl(bq_client):
     """
     pbt_view = list(bq_client.query(sql_champang_view).result())[0]["recomputed_pbt_inr_cr"]
 
-    assert pbt_agg == Decimal("-183.27")
-    assert True # pbt_agg == pbt_view
+    assert pbt_agg == Decimal("-4.93")
+    assert pbt_agg == pbt_view
 
     # Check FY26 field sums
     sql_sums_agg = f"""
