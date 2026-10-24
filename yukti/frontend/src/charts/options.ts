@@ -9,6 +9,12 @@ import { fmtValue, fmtNum, fmtShare, sharePct, humanizeKey, humanizeValue, toNum
 
 type Opt = echarts.EChartsOption;
 
+/** BUG-43: legend entries show display names, never raw data keys; the unit lives on the value axis, so the
+ * "(₹ Cr)" / "(%)" / "($)" suffix that humanizeKey adds is dropped here. */
+export function legendName(key: string): string {
+  return humanizeKey(key).replace(/\s\((₹ Cr|%|\$)\)$/, '');
+}
+
 function base(t: ChartTokens): Opt {
   return {
     backgroundColor: 'transparent',
@@ -641,7 +647,7 @@ export function lineOption(plan: ChartPlan, t: ChartTokens, data: Record<string,
     ...base(t),
     color: colors,
     grid: [{ left: px(t, 8), right: px(t, single ? 112 : 132), top: px(t, single ? 36 : 48), bottom: px(t, 8), containLabel: true }],
-    legend: single ? [] : [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 6), textStyle: { color: t.sub, fontSize: px(t, 12) } }],
+    legend: single ? [] : [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 6), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: legendName }],
     xAxis: [{ ...categoryAxis(t, labels, false), boundaryGap: false }],
     yAxis: [valueAxis(t, plan.unit, false, { scale: true } as any)],
     tooltip: {
@@ -699,7 +705,7 @@ export function groupedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
   return {
     ...base(t),
     color: colors,
-    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: (n: string) => humanizeKey(n) }],
+    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: legendName }],
     grid: [{ left: px(t, horizontal ? 8 : 20), right: px(t, 40), top: px(t, 48), bottom: px(t, horizontal ? 36 : 8), containLabel: true }],
     xAxis: [horizontal ? vx : ax],
     yAxis: [horizontal ? ax : vx],
@@ -746,7 +752,7 @@ export function stackedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
   return {
     ...base(t),
     color: colors,
-    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, data: keys }],
+    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, data: keys, formatter: legendName }],
     grid: [{ left: px(t, 8), right: px(t, 90), top: px(t, 44), bottom: px(t, 8), containLabel: true }],
     xAxis: [valueAxis(t, unit, true, { name: undefined } as any)],
     yAxis: [categoryAxis(t, labels, true, 200)],
@@ -1353,7 +1359,7 @@ export function comboOption(plan: ChartPlan, t: ChartTokens, data: Record<string
   return {
     ...base(t),
     color: [t.accent, t.maroon],
-    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: (n: string) => humanizeKey(n) }],
+    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: legendName }],
     grid: [{ left: px(t, 16), right: px(t, 16), top: px(t, 52), bottom: px(t, 8), containLabel: true }],
     xAxis: [categoryAxis(t, labels, false)],
     yAxis: [
@@ -1407,7 +1413,7 @@ export function stacked100Option(plan: ChartPlan, t: ChartTokens, data: Record<s
   return {
     ...base(t),
     color: t.categorical,
-    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: (n: string) => humanizeKey(n) }],
+    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: legendName }],
     grid: [{ left: px(t, 8), right: px(t, 24), top: px(t, 48), bottom: px(t, 8), containLabel: true }],
     xAxis: [horizontal ? vx : ax],
     yAxis: [horizontal ? ax : vx],

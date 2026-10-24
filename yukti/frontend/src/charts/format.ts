@@ -15,7 +15,7 @@ export interface UnitInfo {
   suffix?: string;
 }
 
-const ACRONYMS = ['PBT', 'EBITDA', 'HR', 'BOE', 'FY', 'MOU', 'NE', 'SC', 'ST', 'OBC', 'EWS', 'UR', 'PWD', 'HQ', 'ID', 'MMT', 'BCM', 'DPE', 'MOPNG', 'OMC', 'CMD', 'JV', 'APM', 'DD&A', 'IT', 'HSE', 'MM', 'F&A', 'CBM', 'KG', 'PG', 'GM', 'DGM', 'CGM', 'ED', 'PEC', 'RTI', 'JRTP', 'BE', 'RE', 'NPV', 'IRR'];
+const ACRONYMS = ['PBT', 'EBITDA', 'HR', 'BOE', 'FY', 'MOU', 'NE', 'SC', 'ST', 'OBC', 'EWS', 'UR', 'PWD', 'HQ', 'ID', 'MMT', 'BCM', 'DPE', 'MOPNG', 'OMC', 'CMD', 'JV', 'APM', 'DD&A', 'IT', 'HSE', 'MM', 'F&A', 'CBM', 'KG', 'PG', 'GM', 'DGM', 'CGM', 'ED', 'PEC', 'RTI', 'JRTP', 'BE', 'RE', 'NPV', 'IRR', 'VAP', 'PAT', 'OVL', 'CFO', 'FCF', 'WACC', 'DCF', 'LNG', 'LPG', 'HPHT', 'CAGR', 'ROCE', 'ROE', 'EPS', 'CSR', 'SAED', 'PPE', 'CWIP'];
 const ACR_MAP: Record<string, string> = Object.fromEntries(ACRONYMS.map((a) => [a.toLowerCase(), a === 'MOU' ? 'MoU' : a === 'MOPNG' ? 'MoPNG' : a]));
 
 const KEY_LABELS: Record<string, string> = {
