@@ -1,0 +1,2 @@
+{"synthetic": true, "note": "Illustrative fixture (P4.4): records per group -> box plot (outlier 30)", "kind": "box", "unit": "years",
+ "data": [{"grade":"E1","tenure_years":1},{"grade":"E1","tenure_years":2},{"grade":"E1","tenure_years":2.5},{"grade":"E1","tenure_years":3},{"grade":"E1","tenure_years":30},{"grade":"E3","tenure_years":6},{"grade":"E3","tenure_years":8},{"grade":"E3","tenure_years":9},{"grade":"E3","tenure_years":11}]}

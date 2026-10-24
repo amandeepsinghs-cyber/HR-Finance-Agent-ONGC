@@ -15,7 +15,7 @@ export interface UnitInfo {
   suffix?: string;
 }
 
-const ACRONYMS = ['PBT', 'EBITDA', 'HR', 'BOE', 'FY', 'MOU', 'NE', 'SC', 'ST', 'OBC', 'EWS', 'UR', 'PWD', 'HQ', 'ID', 'MMT', 'BCM', 'DPE', 'MOPNG', 'OMC', 'CMD', 'JV', 'APM', 'DD&A', 'IT', 'HSE', 'MM', 'F&A', 'CBM', 'KG', 'PG', 'GM', 'DGM', 'CGM', 'ED', 'PEC', 'RTI', 'JRTP', 'BE', 'RE', 'NPV', 'IRR'];
+const ACRONYMS = ['PBT', 'EBITDA', 'HR', 'BOE', 'FY', 'MOU', 'NE', 'SC', 'ST', 'OBC', 'EWS', 'UR', 'PWD', 'HQ', 'ID', 'MMT', 'BCM', 'DPE', 'MOPNG', 'OMC', 'CMD', 'JV', 'APM', 'DD&A', 'IT', 'HSE', 'MM', 'F&A', 'CBM', 'KG', 'PG', 'GM', 'DGM', 'CGM', 'ED', 'PEC', 'RTI', 'JRTP', 'BE', 'RE', 'NPV', 'IRR', 'VAP', 'PAT', 'OVL', 'CFO', 'FCF', 'WACC', 'DCF', 'LNG', 'LPG', 'HPHT', 'CAGR', 'ROCE', 'ROE', 'EPS', 'CSR', 'SAED', 'PPE', 'CWIP'];
 const ACR_MAP: Record<string, string> = Object.fromEntries(ACRONYMS.map((a) => [a.toLowerCase(), a === 'MOU' ? 'MoU' : a === 'MOPNG' ? 'MoPNG' : a]));
 
 const KEY_LABELS: Record<string, string> = {
@@ -226,4 +226,18 @@ export function toNumber(v: any): number | null {
   if (isNumeric(v)) return v;
   if (typeof v === 'string' && /^-?[\d,]+(\.\d+)?$/.test(v.trim())) return parseFloat(v.replace(/,/g, ''));
   return null;
+}
+
+/**
+ * Accounting format for statements (SPEC-09 §4.2 S4/S5): Indian grouping, 0 dp for |v| ≥ 100 and 2 dp below
+ * (₹ crore), negatives in parentheses "(1,234)" (no minus sign, default ink). null/undefined → "—".
+ */
+export function fmtAccounting(v: number | null | undefined, unit = 'INR_crore'): string {
+  if (v === null || v === undefined || !Number.isFinite(v)) return '—';
+  const abs = Math.abs(v);
+  const dp = /pct|percent/i.test(unit) ? 1 : abs >= 100 ? 0 : 2;
+  const fixed = abs.toFixed(dp);
+  const [i, f] = fixed.split('.');
+  const body = groupIndian(i) + (f !== undefined && dp > 0 ? `.${f}` : '');
+  return v < 0 && Number(fixed) !== 0 ? `(${body})` : body;
 }

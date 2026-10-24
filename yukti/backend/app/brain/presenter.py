@@ -180,7 +180,6 @@ def order_workforce_grade_rows(
         else:
             ordered.append({"grade": lvl, val_col: 0})
     return ordered, cmd_n, dir_n, total_with_board
->>>>>>> v3/P2H-hr
 
 UNIT_WORDS = {"employees": "employees", "posts": "posts", "workers": "contract workers", "inr_cr": "₹ crore",
               "inr_lakh": "₹ lakh", "usd_per_boe": "$/BOE", "inr_per_boe": "₹/BOE", "pct": "%", "years": "years", "hours": "hours",
@@ -288,13 +287,28 @@ def scope_phrases(spec: QuerySpec, compiled: Optional[CompiledQuery] = None) -> 
     return out
 
 
+def _resolve_stmt_periods(ep: Dict[str, Any], periods: Optional[List[str]]) -> Optional[List[str]]:
+    """Derives explicit latest-first period list from `periods` or `effective_period.from..to` (S6)."""
+    if periods:
+        return list(periods)
+    if ep.get("from") and ep.get("to"):
+        m_lo = re.search(r"(\d{2})$", str(ep["from"]))
+        m_hi = re.search(r"(\d{2})$", str(ep["to"]))
+        if m_lo and m_hi:
+            lo_y, hi_y = int(m_lo.group(1)), int(m_hi.group(1))
+            if hi_y >= lo_y:
+                return [f"FY{y:02d}" for y in range(hi_y, lo_y - 1, -1)]
+    return None
+
+
 def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: List[Dict[str, Any]],
                  chart_kind: Optional[str], title: str, subtitle: str, mode: str,
                  n_total: Optional[int] = None,
                  breakdown: Optional[Tuple[List[str], List[Dict[str, Any]]]] = None,
                  persona: str = "CMD",
                  query: str = "",
-                 raw_rows: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+                 raw_rows: Optional[List[Dict[str, Any]]] = None,
+                 periods: Optional[List[str]] = None) -> Dict[str, Any]:
     unit = CHART_UNIT.get(compiled.unit)
     unit_word = UNIT_WORDS.get(compiled.unit, "")
     cap = 2000 if compiled.grain == "row" else 200   # rosters ship whole (UI virtualises, U5.2)
@@ -338,135 +352,192 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                 return by_code_map[c]
         return {}
 
+    if compiled.metric == "pnl_statement" and (
+        (dims and dims[0] == "line_item")
+        or any(isinstance(r, dict) and ("line_code" in r or "values" in r or "fiscal_year" in r) for r in rows)
+    ):
+        # Single-FY or Multi-FY Schedule III Statement of Profit & Loss
+        from app.brain.bridge import BridgeOk, bridge, bridge_chart_rows
+        from app.brain.statement_builder import build_statement_spec, v3_field_enabled
 
-    if compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement") and v3_field_enabled("statement"):
-        kind_map = {"pnl_statement": "pnl", "balance_sheet": "balance_sheet", "cash_flow_statement": "cash_flow"}
-        st_kind = kind_map[compiled.metric]
-        fys = sorted(list({str(r["fiscal_year"]) for r in rows if "fiscal_year" in r}), reverse=True)
-        if not fys and compiled.effective_period and "fy" in compiled.effective_period:
-            fys = [compiled.effective_period["fy"]]
-        
-        scope_str = "standalone" # default
+        ep = compiled.effective_period or {}
+        fy = ep.get("fy", "FY26")
+        stmt_periods = _resolve_stmt_periods(ep, periods)
+        if not stmt_periods:
+            fys_found = sorted(list({str(r["fiscal_year"]) for r in rows if "fiscal_year" in r}), reverse=True)
+            if len(fys_found) > 1:
+                stmt_periods = fys_found
+
+        scope_str = "standalone"
         for f in spec.filters:
             if f.field == "scope":
                 scope_str = f.value[0] if isinstance(f.value, list) else f.value
-        
-        st_spec = build_statement_spec(
-            statement=st_kind,
-            rows=rows,
-            periods=fys if fys else None,
-            scope=scope_str,
-            title=title,
-            unit=compiled.unit
-        )
-        vis["type"] = "statement"
-        vis["statement"] = st_spec
-        return vis
 
-    if compiled.metric == "pnl_statement" and dims and dims[0] == "line_item":
-        # Single-FY Schedule III Statement of Profit & Loss (verified SSOT)
-        fy = (compiled.effective_period or {}).get("fy", "FY26")
+        stmt_spec = build_statement_spec(
+            statement="pnl",
+            rows=rows,
+            periods=stmt_periods,
+            fy=fy,
+            scope=scope_str,
+            title=title or "Statement of Profit and Loss (Standalone)",
+            include_prior_from_single_fy=(stmt_periods is None),
+        )
+        emit_stmt = v3_field_enabled("statement")
+        default_table_type = "statement" if emit_stmt else "table"
+        if emit_stmt:
+            vis["statement"] = stmt_spec
+        if stmt_spec.get("periods"):
+            fy = stmt_spec["periods"][0]
+
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-        rev_r = _pick_code(by_code, "PL.REV_OPS", "gross_revenue_inr_cr")
-        ti_r = _pick_code(by_code, "PL.TOTAL_INCOME", "total_income_inr_cr", "PL.REV_OPS", "gross_revenue_inr_cr")
-        pbt_r = _pick_code(by_code, "PL.PBT", "pbt_inr_cr")
-        pat_r = _pick_code(by_code, "PL.PAT", "pat_inr_cr")
-        vis["kpis"] = [
+        rev_r = _pick_code(by_code, "PL.REV_OPS", "gross_revenue_inr_cr", "REV_OPS")
+        eb_r = by_code.get("ebitda_inr_cr") or {}
+        pat_r = _pick_code(by_code, "PL.PAT", "pat_inr_cr", "PAT")
+        cpat_r = by_code.get("consolidated_pat_inr_cr") or {}
+        rev_val = rev_r.get("amount_cr") if "amount_cr" in rev_r else (rev_r.get("values") or {}).get(fy)
+        eb_val = eb_r.get("amount_cr") if "amount_cr" in eb_r else (eb_r.get("values") or {}).get(fy)
+        pat_val = pat_r.get("amount_cr") if "amount_cr" in pat_r else (pat_r.get("values") or {}).get(fy)
+        cpat_val = cpat_r.get("amount_cr") if "amount_cr" in cpat_r else (cpat_r.get("values") or {}).get(fy)
+        kpis = [
             {
                 "label": f"Revenue from Ops ({fy})",
-                "value": rev_r.get("amount_cr"),
+                "value": rev_val,
                 "unit": "₹ crore",
                 "delta": f"{rev_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(rev_r.get("yoy_change_pct"), (int, float)) else "",
             },
             {
-                "label": f"Total Income ({fy})",
-                "value": ti_r.get("amount_cr"),
-                "unit": "₹ crore",
-                "delta": f"{ti_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(ti_r.get("yoy_change_pct"), (int, float)) else "Schedule III III",
-            },
-            {
-                "label": f"Profit Before Tax ({fy})",
-                "value": pbt_r.get("amount_cr"),
-                "unit": "₹ crore",
-                "delta": f"{pbt_r.get('pct_of_revenue'):.1f}% of Revenue" if isinstance(pbt_r.get("pct_of_revenue"), (int, float)) else "Schedule III VII",
-            },
-            {
                 "label": f"Standalone PAT ({fy})",
-                "value": pat_r.get("amount_cr"),
+                "value": pat_val,
                 "unit": "₹ crore",
                 "delta": f"{pat_r.get('yoy_change_pct'):+.1f}% YoY · {pat_r.get('pct_of_revenue'):.1f}% margin" if isinstance(pat_r.get("yoy_change_pct"), (int, float)) and isinstance(pat_r.get("pct_of_revenue"), (int, float)) else "",
             },
         ]
-        # 7 clean display columns so Key Takeaways sit side-by-side on desktop, preserving SSOT metadata keys
-        disp_cols = ["line_item", "note_ref", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_revenue"]
+        if eb_val is not None:
+            kpis.insert(
+                1,
+                {
+                    "label": f"Standalone EBITDA ({fy})",
+                    "value": eb_val,
+                    "unit": "₹ crore",
+                    "delta": f"{eb_r.get('pct_of_revenue'):.1f}% EBITDA margin" if isinstance(eb_r.get("pct_of_revenue"), (int, float)) else "",
+                },
+            )
+        # M1 (SPEC-03 §5.1 rule 2): preserve Consolidated PAT KPI when flag is off; `kpis[:3]` caps when flag is on
+        if cpat_val is not None:
+            kpis.append(
+                {
+                    "label": "Consolidated PAT (Group)",
+                    "value": cpat_val,
+                    "unit": "₹ crore",
+                    "delta": f"{cpat_r.get('yoy_change_pct'):+.1f}% YoY (Group)" if isinstance(cpat_r.get("yoy_change_pct"), (int, float)) else "Group Net Income",
+                }
+            )
+        vis["kpis"] = kpis[:3] if emit_stmt else kpis
+        # 7 clean display columns + hidden line_code so frontend re-plot can classify statement lines
+        disp_cols = ["line_item", "note_ref", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_revenue", "line_code"]
         disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
-        # Build step-by-step Schedule III P&L Waterfall Bridge (no synthesized EBITDA stage per SPEC-01 / P1.10a §5.4)
-        rev_v = _num(rev_r.get("amount_cr"))
-        oi_v = _num(_pick_code(by_code, "PL.OTHER_INCOME", "other_income_inr_cr").get("amount_cr"))
-        ti_v = _num(ti_r.get("amount_cr")) or round(rev_v + oi_v, 2)
-        te_v = -abs(_num(_pick_code(by_code, "PL.TOTAL_EXP", "total_expenses_inr_cr").get("amount_cr")))
-        pbt_pre_v = _num(_pick_code(by_code, "PL.PBT_PRE_EXC").get("amount_cr")) or round(ti_v + te_v, 2)
-        exc_v = _num(_pick_code(by_code, "PL.EXCEPTIONAL", "exceptional_items_inr_cr").get("amount_cr"))
-        pbt_v = _num(pbt_r.get("amount_cr"))
-        tax_v = -abs(_num(_pick_code(by_code, "PL.TAX", "tax_expense_total_inr_cr").get("amount_cr")))
-        pat_v = _num(pat_r.get("amount_cr"))
-        wf_rows = [
-            {"pnl_stage": "Revenue from Ops", "amount_cr": rev_v, "type": "total"},
-            {"pnl_stage": "Other Income", "amount_cr": oi_v, "type": "delta"},
-            {"pnl_stage": "Total Income", "amount_cr": ti_v, "type": "total"},
-            {"pnl_stage": "Total Expenses", "amount_cr": te_v, "type": "delta"},
-            {"pnl_stage": "PBT before Exceptional", "amount_cr": pbt_pre_v, "type": "total"},
-            {"pnl_stage": "Exceptional Items", "amount_cr": exc_v, "type": "delta"},
-            {"pnl_stage": "Profit Before Tax", "amount_cr": pbt_v, "type": "total"},
-            {"pnl_stage": "Tax Expense", "amount_cr": tax_v, "type": "delta"},
-            {"pnl_stage": "Profit for the Year (PAT)", "amount_cr": pat_v, "type": "total"},
-        ]
-        ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "waterfall"
-        vis["chart"] = build_chart_spec(kind=ck, columns=["pnl_stage", "amount_cr"], rows=wf_rows, title=title, unit="₹ Cr")
-        # Table-First rule: default to structured statement table unless a chart (e.g., waterfall) was explicitly requested
-        vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
+
+        # P4.1 (SPEC-09 §4.3): build the signed P&L waterfall bridge from statement lines (no EBITDA plug)
+        b_res = bridge(stmt_spec if emit_stmt else rows, period=fy)
+        if isinstance(b_res, BridgeOk):
+            ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "waterfall"
+            if ck == "waterfall":
+                vis["chart"] = b_res.to_chart_spec()
+            else:
+                wf_rows = bridge_chart_rows(b_res)
+                vis["chart"] = build_chart_spec(
+                    kind=ck,
+                    columns=["step", "amount_cr"],
+                    rows=wf_rows,
+                    title=b_res.default_title(),
+                    unit="₹ Cr",
+                )
+            # Table-First rule: default to structured statement visual unless a chart (e.g., waterfall) was explicitly requested
+            vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else default_table_type
+        else:
+            # M3 (SPEC-09 §4.3 step 6): on BridgeError, keep statement/table, leave vis["chart"] unset, attach BridgeError copy
+            vis.pop("chart", None)
+            vis["type"] = default_table_type
+            if chart_kind and chart_kind not in ("kpi", "table"):
+                vis["note"] = b_res.message("en")
+                vis["note_hi"] = b_res.message("hi")
+                vis["bridge_error"] = {"code": b_res.code, "reason": b_res.reason}
         return vis
 
-    if compiled.metric == "balance_sheet" and dims and dims[0] == "line_item":
-        fy = (compiled.effective_period or {}).get("fy", "FY26")
+    if compiled.metric == "balance_sheet" and (
+        (dims and dims[0] == "line_item")
+        or any(isinstance(r, dict) and ("line_code" in r or "values" in r or "fiscal_year" in r) for r in rows)
+    ):
+        from app.brain.statement_builder import build_statement_spec, v3_field_enabled
+
+        ep = compiled.effective_period or {}
+        fy = ep.get("fy", "FY26")
+        stmt_periods = _resolve_stmt_periods(ep, periods)
+        if not stmt_periods:
+            fys_found = sorted(list({str(r["fiscal_year"]) for r in rows if "fiscal_year" in r}), reverse=True)
+            if len(fys_found) > 1:
+                stmt_periods = fys_found
+
+        scope_str = "standalone"
+        for f in spec.filters:
+            if f.field == "scope":
+                scope_str = f.value[0] if isinstance(f.value, list) else f.value
+
+        stmt_spec = build_statement_spec(
+            statement="balance_sheet",
+            rows=rows,
+            periods=stmt_periods,
+            fy=fy,
+            scope=scope_str,
+            title=title or "Balance Sheet (Standalone)",
+            include_prior_from_single_fy=(stmt_periods is None),
+        )
+        emit_stmt = v3_field_enabled("statement")
+        default_table_type = "statement" if emit_stmt else "table"
+        if emit_stmt:
+            vis["statement"] = stmt_spec
+        if stmt_spec.get("periods"):
+            fy = stmt_spec["periods"][0]
+
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
         ta_r = _pick_code(by_code, "BS.TOTAL_ASSETS", "total_assets_inr_cr")
         nw_r = _pick_code(by_code, "BS.EQUITY.TOTAL", "net_worth_inr_cr")
-        ltd_r = _pick_code(by_code, "BS.BORROW_NC", "BS.BORROW_TOTAL_10YR", "long_term_debt_inr_cr")
+        ltd_r = _pick_code(by_code, "BS.BORROW_NC", "BS.BORROW_TOTAL_10YR", "long_term_debt_inr_cr", "BS.LIAB.LT_BORROWINGS")
         cash_r = _pick_code(by_code, "BS.CCE", "cash_and_bank_inr_cr")
-        vis["kpis"] = [
+        kpis = [
             {
                 "label": f"Total Assets ({fy})",
-                "value": ta_r.get("amount_cr"),
+                "value": ta_r.get("amount_cr") if "amount_cr" in ta_r else (ta_r.get("values") or {}).get(fy),
                 "unit": "₹ crore",
                 "delta": f"{ta_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(ta_r.get("yoy_change_pct"), (int, float)) else "Assets = Equity + Liab",
             },
             {
                 "label": f"Standalone Net Worth ({fy})",
-                "value": nw_r.get("amount_cr"),
+                "value": nw_r.get("amount_cr") if "amount_cr" in nw_r else (nw_r.get("values") or {}).get(fy),
                 "unit": "₹ crore",
                 "delta": f"{nw_r.get('pct_of_assets'):.1f}% of Total Assets" if isinstance(nw_r.get("pct_of_assets"), (int, float)) else "",
             },
             {
                 "label": f"Long-Term Borrowings ({fy})",
-                "value": ltd_r.get("amount_cr"),
+                "value": ltd_r.get("amount_cr") if "amount_cr" in ltd_r else (ltd_r.get("values") or {}).get(fy),
                 "unit": "₹ crore",
                 "delta": f"{ltd_r.get('yoy_change_pct'):+.1f}% YoY" if isinstance(ltd_r.get("yoy_change_pct"), (int, float)) else "Non-Current Borrowings",
             },
             {
-                "label": f"Cash & Cash Equivalents ({fy})",
-                "value": cash_r.get("amount_cr"),
+                "label": f"Cash & Bank Balances ({fy})",
+                "value": cash_r.get("amount_cr") if "amount_cr" in cash_r else (cash_r.get("values") or {}).get(fy),
                 "unit": "₹ crore",
                 "delta": f"{cash_r.get('yoy_change_pct'):+.1f}% YoY" if isinstance(cash_r.get("yoy_change_pct"), (int, float)) else "Schedule III B(ii)",
             },
         ]
-        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_change_pct", "pct_of_assets"]
+        vis["kpis"] = kpis[:3] if emit_stmt else kpis
+        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_change_pct", "pct_of_assets", "line_code"]
         disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
         bs_chart_specs = [
-            (("BS.ASSETS.NON_CURRENT.TOTAL", "non_current_assets_inr_cr"), "Non-Current Assets"),
-            (("BS.ASSETS.CURRENT.TOTAL", "current_assets_inr_cr"), "Current Assets"),
+            (("BS.ASSETS.NON_CURRENT.TOTAL", "non_current_assets_inr_cr", "BS.NCA.TOTAL"), "Non-Current Assets"),
+            (("BS.ASSETS.CURRENT.TOTAL", "current_assets_inr_cr", "BS.CA.TOTAL"), "Current Assets"),
             (("BS.TOTAL_ASSETS", "total_assets_inr_cr"), "Total Assets"),
             (("BS.EQUITY.TOTAL", "net_worth_inr_cr"), "Total Equity"),
             (("BS.LIAB.NON_CURRENT.TOTAL", "non_current_liabilities_inr_cr"), "Non-Current Liabilities"),
@@ -479,43 +550,82 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                 bs_chart_rows.append({"bs_head": lbl, "amount_cr": matched.get("amount_cr"), "prior_fy_cr": matched.get("prior_fy_cr")})
         ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "bar"
         vis["chart"] = build_chart_spec(kind=ck, columns=["bs_head", "amount_cr", "prior_fy_cr"], rows=bs_chart_rows, title=title, unit="₹ Cr")
-        vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
+        vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else default_table_type
         return vis
 
-    if compiled.metric == "cash_flow_statement" and dims and dims[0] == "line_item":
-        fy = (compiled.effective_period or {}).get("fy", "FY26")
+    if compiled.metric == "cash_flow_statement" and (
+        (dims and dims[0] == "line_item")
+        or any(isinstance(r, dict) and ("line_code" in r or "values" in r or "fiscal_year" in r) for r in rows)
+    ):
+        from app.brain.statement_builder import (
+            build_statement_spec,
+            load_snapshot_bs_cash_by_period,
+            v3_field_enabled,
+        )
+
+        ep = compiled.effective_period or {}
+        fy = ep.get("fy", "FY26")
+        stmt_periods = _resolve_stmt_periods(ep, periods)
+        if not stmt_periods:
+            fys_found = sorted(list({str(r["fiscal_year"]) for r in rows if "fiscal_year" in r}), reverse=True)
+            if len(fys_found) > 1:
+                stmt_periods = fys_found
+
+        scope_str = "standalone"
+        for f in spec.filters:
+            if f.field == "scope":
+                scope_str = f.value[0] if isinstance(f.value, list) else f.value
+
+        stmt_spec = build_statement_spec(
+            statement="cash_flow",
+            rows=rows,
+            periods=stmt_periods,
+            fy=fy,
+            scope=scope_str,
+            title=title or "Statement of Cash Flows (Standalone)",
+            include_prior_from_single_fy=(stmt_periods is None),
+            bs_cash_by_period=load_snapshot_bs_cash_by_period(),
+        )
+        emit_stmt = v3_field_enabled("statement")
+        default_table_type = "statement" if emit_stmt else "table"
+        if emit_stmt:
+            vis["statement"] = stmt_spec
+        if stmt_spec.get("periods"):
+            fy = stmt_spec["periods"][0]
+
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
         ocf_r = _pick_code(by_code, "CF.CFO", "operating_cash_flow_inr_cr")
         icf_r = _pick_code(by_code, "CF.CFI", "investing_cash_flow_inr_cr")
-        fcf_r = _pick_code(by_code, "CF.CFF", "free_cash_flow_inr_cr", "financing_cash_flow_inr_cr")
+        fcf_r = _pick_code(by_code, "CF.FCF", "free_cash_flow_inr_cr", "CF.CFF", "financing_cash_flow_inr_cr")
         cls_r = _pick_code(by_code, "CF.CCE_CLOSE", "closing_cash_inr_cr")
-        vis["kpis"] = [
+        kpis = [
             {
                 "label": f"Operating Cash Flow ({fy})",
-                "value": ocf_r.get("amount_cr"),
+                "value": ocf_r.get("amount_cr") if "amount_cr" in ocf_r else (ocf_r.get("values") or {}).get(fy),
                 "unit": "₹ crore",
                 "delta": f"{ocf_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(ocf_r.get("yoy_change_pct"), (int, float)) else "Ind-AS 7 OCF",
             },
             {
                 "label": f"Investing Cash Flow ({fy})",
-                "value": icf_r.get("amount_cr"),
+                "value": icf_r.get("amount_cr") if "amount_cr" in icf_r else (icf_r.get("values") or {}).get(fy),
                 "unit": "₹ crore",
                 "delta": "Capex + JVs net of Dividends",
             },
             {
-                "label": f"Financing Cash Flow ({fy})",
-                "value": fcf_r.get("amount_cr"),
+                "label": f"Free Cash Flow ({fy})",
+                "value": fcf_r.get("amount_cr") if "amount_cr" in fcf_r else (fcf_r.get("values") or {}).get(fy),
                 "unit": "₹ crore",
                 "delta": f"{fcf_r.get('pct_of_ocf'):.1f}% of OCF" if isinstance(fcf_r.get("pct_of_ocf"), (int, float)) else "Ind-AS 7 CFF",
             },
             {
-                "label": f"Closing Cash & Equivalents ({fy})",
-                "value": cls_r.get("amount_cr"),
+                "label": f"Closing Cash & Bank ({fy})",
+                "value": cls_r.get("amount_cr") if "amount_cr" in cls_r else (cls_r.get("values") or {}).get(fy),
                 "unit": "₹ crore",
                 "delta": f"{cls_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(cls_r.get("yoy_change_pct"), (int, float)) else "Ind-AS 7 Closing CCE",
             },
         ]
-        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "pct_of_ocf"]
+        vis["kpis"] = kpis[:3] if emit_stmt else kpis
+        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "pct_of_ocf", "line_code"]
         disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
         pbt_v = _num(_pick_code(by_code, "CF.START_PROFIT", "pbt_inr_cr").get("amount_cr"))
@@ -540,7 +650,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
         ]
         ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "waterfall"
         vis["chart"] = build_chart_spec(kind=ck, columns=["cf_stage", "amount_cr"], rows=cf_wf_rows, title=title, unit="₹ Cr")
-        vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
+        vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else default_table_type
         return vis
 
     if compiled.metric == "financial_ratios" and dims and dims[0] == "line_item":
@@ -556,7 +666,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             {"label": f"Return on Equity ({fy})", "value": roe_r.get("value"), "unit": "%", "delta": "PAT / Net Worth"},
             {"label": f"Debt-to-Equity ({fy})", "value": de_r.get("value"), "unit": "x", "delta": "Total Debt / Net Worth"},
         ]
-        disp_cols = ["line_item", "category", "unit", "value", "prior_fy_value", "yoy_delta", "formula"]
+        disp_cols = ["line_item", "category", "unit", "value", "prior_fy_value", "yoy_delta", "formula", "line_code"]
         disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
         pct_rows = [r for r in rows if r.get("unit") == "%"]

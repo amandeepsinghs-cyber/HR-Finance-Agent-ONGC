@@ -1,0 +1,37 @@
+{
+  "fixture_id": "error_missing_start",
+  "synthetic": true,
+  "synthetic_note": "Synthetic error fixture: missing start line (Revenue from operations).",
+  "expected_error": {
+    "code": "missing_start",
+    "reason_contains": "start"
+  },
+  "type": "statement",
+  "statement": "pnl",
+  "scope": "standalone",
+  "title": "Corrupt P&L Statement (Missing Revenue)",
+  "unit": "INR_crore",
+  "periods": ["FY26"],
+  "sections": [
+    {
+      "id": "expenses",
+      "label": "Expenses",
+      "rows": [
+        {
+          "line_code": "STAT_LEVIES",
+          "label": "Statutory levies",
+          "level": 1,
+          "kind": "line",
+          "values": { "FY26": 25999.00 }
+        },
+        {
+          "line_code": "PAT",
+          "label": "Profit for the year (PAT)",
+          "level": 0,
+          "kind": "total",
+          "values": { "FY26": 32894.02 }
+        }
+      ]
+    }
+  ]
+}

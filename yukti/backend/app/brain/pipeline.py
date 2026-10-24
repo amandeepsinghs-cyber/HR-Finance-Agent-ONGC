@@ -544,6 +544,11 @@ async def run_planner_turn(
         )
         spoken = clarify_prompt + spoken
     notes = list(compiled.notes) + [f"Not applied: {d}" for d in compiled.dropped]
+    if visual.get("note") or visual.get("bridge_error"):
+        note_text = str(visual.get("note_hi" if language == "hi" else "note") or visual.get("note") or "").strip()
+        if note_text:
+            spoken = note_text
+            notes = [note_text] + notes
     is_legacy = any("ssot_corporate_annual_360" in t for t in compiled.tables)
     is_fin_ssot = (
         not is_legacy and (

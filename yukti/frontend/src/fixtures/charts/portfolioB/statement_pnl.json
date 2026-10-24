@@ -1,0 +1,338 @@
+{
+  "fixture_id": "pnl_fixture_synthetic",
+  "synthetic": true,
+  "synthetic_note": "Labelled synthetic fixture for P4.1 bridge parity testing (FY22-FY26 standalone P&L); replaced at runtime by verified SPEC-01 SSOT rows once P1 lands.",
+  "type": "statement",
+  "statement": "pnl",
+  "scope": "standalone",
+  "title": "Statement of Profit and Loss (Standalone, Synthetic Fixture)",
+  "unit": "INR_crore",
+  "periods": ["FY26", "FY25", "FY24", "FY23", "FY22"],
+  "period_labels": {
+    "FY26": "FY 2025-26",
+    "FY25": "FY 2024-25",
+    "FY24": "FY 2023-24",
+    "FY23": "FY 2022-23",
+    "FY22": "FY 2021-22"
+  },
+  "show_yoy": true,
+  "sections": [
+    {
+      "id": "income",
+      "label": "Income",
+      "rows": [
+        {
+          "line_code": "REV_OPS",
+          "label": "Revenue from operations",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 132508.14,
+            "FY25": 137846.29,
+            "FY24": 138402.13,
+            "FY23": 155517.32,
+            "FY22": 110345.40
+          },
+          "yoy_pct": -3.9,
+          "note_ref": "30",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "OTHER_INC",
+          "label": "Other income",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 10355.76,
+            "FY25": 10479.44,
+            "FY24": 10778.19,
+            "FY23": 7626.55,
+            "FY22": 6515.58
+          },
+          "yoy_pct": -1.2,
+          "note_ref": "31",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "TOT_INC",
+          "label": "Total income",
+          "level": 0,
+          "kind": "subtotal",
+          "values": {
+            "FY26": 142863.90,
+            "FY25": 148325.73,
+            "FY24": 149180.32,
+            "FY23": 163143.87,
+            "FY22": 116860.98
+          },
+          "yoy_pct": -3.7,
+          "note_ref": "",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        }
+      ]
+    },
+    {
+      "id": "expenses",
+      "label": "Expenses",
+      "rows": [
+        {
+          "line_code": "STAT_LEVIES",
+          "label": "Statutory levies",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 25999.00,
+            "FY25": 30968.00,
+            "FY24": 32410.00,
+            "FY23": 45284.20,
+            "FY22": 27932.20
+          },
+          "yoy_pct": -16.0,
+          "note_ref": "35",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "PROD_EXP",
+          "label": "Production, transportation & operating expenditure",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 31056.05,
+            "FY25": 28245.61,
+            "FY24": 30646.97,
+            "FY23": 25444.94,
+            "FY22": 21944.42
+          },
+          "yoy_pct": 9.9,
+          "note_ref": "35",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "EMP_BENEFIT",
+          "label": "Employee benefits expense",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 3106.00,
+            "FY25": 3021.60,
+            "FY24": 2961.39,
+            "FY23": 3295.08,
+            "FY22": 2530.52
+          },
+          "yoy_pct": 2.8,
+          "note_ref": "35.1",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "EXPL_WRITEOFF",
+          "label": "Exploration costs written off",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 9728.78,
+            "FY25": 9825.72,
+            "FY24": 5568.73,
+            "FY23": 9994.45,
+            "FY22": 5508.29
+          },
+          "yoy_pct": -1.0,
+          "note_ref": "36",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "DDA",
+          "label": "Depletion, depreciation & amortisation",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 25133.82,
+            "FY25": 24352.44,
+            "FY24": 20495.71,
+            "FY23": 16795.15,
+            "FY22": 14545.70
+          },
+          "yoy_pct": 3.2,
+          "note_ref": "37",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "FIN_COST",
+          "label": "Finance costs",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 4529.26,
+            "FY25": 4603.97,
+            "FY24": 4081.31,
+            "FY23": 3499.60,
+            "FY22": 2359.86
+          },
+          "yoy_pct": -1.6,
+          "note_ref": "36",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "PURCHASES",
+          "label": "Purchase of stock-in-trade",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 354.46,
+            "FY25": 416.81,
+            "FY24": 310.00,
+            "FY23": 280.00,
+            "FY22": 220.00
+          },
+          "yoy_pct": -15.0,
+          "note_ref": "32",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "OTHER_EXP",
+          "label": "Other operating expenses",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 841.64,
+            "FY25": 851.76,
+            "FY24": 790.00,
+            "FY23": 720.00,
+            "FY22": 630.00
+          },
+          "yoy_pct": -1.2,
+          "note_ref": "38",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        }
+      ]
+    },
+    {
+      "id": "profit",
+      "label": "Profit & Tax",
+      "rows": [
+        {
+          "line_code": "EXCEPTIONAL",
+          "label": "Exceptional items",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": -300.00,
+            "FY25": -280.00,
+            "FY24": 1100.00,
+            "FY23": -7435.13,
+            "FY22": 250.00
+          },
+          "yoy_pct": null,
+          "note_ref": "39",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "PBT",
+          "label": "Profit before tax",
+          "level": 0,
+          "kind": "subtotal",
+          "values": {
+            "FY26": 41814.89,
+            "FY25": 45759.82,
+            "FY24": 53016.21,
+            "FY23": 50395.32,
+            "FY22": 41439.99
+          },
+          "yoy_pct": -8.6,
+          "note_ref": "",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "TAX_EXP",
+          "label": "Tax expense",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 8920.87,
+            "FY25": 10149.50,
+            "FY24": 12490.24,
+            "FY23": 11566.45,
+            "FY22": 2434.25
+          },
+          "yoy_pct": -12.1,
+          "note_ref": "40",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "PAT",
+          "label": "Profit for the year (PAT)",
+          "level": 0,
+          "kind": "total",
+          "values": {
+            "FY26": 32894.02,
+            "FY25": 35610.32,
+            "FY24": 40525.97,
+            "FY23": 38828.87,
+            "FY22": 39005.74
+          },
+          "yoy_pct": -7.6,
+          "note_ref": "",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "OCI",
+          "label": "Other comprehensive income (net of tax)",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": -423.78,
+            "FY25": -8319.84,
+            "FY24": 18373.04,
+            "FY23": -518.64,
+            "FY22": 3731.91
+          },
+          "yoy_pct": null,
+          "note_ref": "41",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        },
+        {
+          "line_code": "EPS_BASIC",
+          "label": "Basic and diluted EPS (₹)",
+          "level": 1,
+          "kind": "line",
+          "values": {
+            "FY26": 26.15,
+            "FY25": 28.31,
+            "FY24": 32.21,
+            "FY23": 30.86,
+            "FY22": 31.01
+          },
+          "yoy_pct": -7.6,
+          "note_ref": "42",
+          "source": { "doc": "Synthetic Fixture (pre-SPEC-01)", "page": 1 },
+          "is_restated": false
+        }
+      ]
+    }
+  ],
+  "source": {
+    "primary": "Synthetic P&L bridge fixture (labelled synthetic until SPEC-01 lands)",
+    "basis": "synthetic",
+    "extraction": "fixture",
+    "verified": false
+  },
+  "as_of": "2026-10-23",
+  "footnotes": [
+    "Synthetic fixture for bridge parity testing (SPEC-09 §4.3). Figures in ₹ crore. Negative values in parentheses."
+  ]
+}

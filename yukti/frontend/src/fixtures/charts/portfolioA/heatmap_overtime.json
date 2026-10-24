@@ -1,0 +1,2 @@
+{"synthetic": true, "note": "Illustrative fixture (P4.4): category x category x measure -> heatmap", "kind": "heatmap", "unit": "hours",
+ "data": [{"wc":"Delhi","month":"Apr","ot_hours":120},{"wc":"Delhi","month":"May","ot_hours":140},{"wc":"Mumbai","month":"Apr","ot_hours":900},{"wc":"Mumbai","month":"May","ot_hours":860},{"wc":"Mehsana","month":"Apr","ot_hours":410},{"wc":"Mehsana","month":"May","ot_hours":395}]}

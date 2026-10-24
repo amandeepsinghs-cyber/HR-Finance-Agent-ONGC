@@ -1,0 +1,57 @@
+# Bilingual user-facing copy for P&L waterfall bridge and re-plot refusals
+# Refs: SPEC-09 §4.3 step 6, BEH-04.10–.16, BEH-07.34 (BUG-08, BUG-09, BUG-22)
+
+errors:
+  single_value:
+    en: "I can't build a reliable bridge from a single number. To show a waterfall, I need a statement with starting and ending totals (for example, the FY25 P&L from Revenue to PAT), or a multi-period series."
+    hi: "एक ही संख्या से वॉटरफॉल ब्रिज नहीं बनाया जा सकता। वॉटरफॉल चार्ट के लिए शुरुआती और अंतिम कुल (जैसे रेवेन्यू से PAT तक का P&L विवरण) या बहु-अवधि डेटा आवश्यक है। स्क्रीन पर वर्तमान दृश्य यथावत है।"
+    hi_en: "Ek single number se waterfall bridge nahi banaya ja sakta. Waterfall ke liye Revenue se PAT tak ke P&L lines ya multi-period data chahiye."
+    suggestion_en: "Show the {entity} revenue trend instead?"
+    suggestion_default_en: "Show the revenue trend instead?"
+    suggestion_hi: "क्या इसके बजाय {entity} रेवेन्यू का ट्रेंड दिखाऊँ?"
+    suggestion_default_hi: "क्या इसके बजाय रेवेन्यू का ट्रेंड दिखाऊँ?"
+
+  missing_start:
+    en: "I can't build a reliable bridge from these lines ({reason}). Here is the statement table."
+    hi: "इन पंक्तियों से विश्वसनीय वॉटरफॉल ब्रिज नहीं बनाया जा सकता ({reason})। यहाँ विवरण तालिका है।"
+    hi_en: "In lines se reliable waterfall bridge nahi ban sakta ({reason}). Yahan statement table hai."
+
+  missing_end:
+    en: "I can't build a reliable bridge from these lines ({reason}). Here is the statement table."
+    hi: "इन पंक्तियों से विश्वसनीय वॉटरफॉल ब्रिज नहीं बनाया जा सकता ({reason})। यहाँ विवरण तालिका है।"
+    hi_en: "In lines se reliable waterfall bridge nahi ban sakta ({reason}). Yahan statement table hai."
+
+  subtotal_mismatch:
+    en: "I can't build a reliable bridge from these lines ({reason}). Here is the statement table."
+    hi: "इन पंक्तियों से विश्वसनीय वॉटरफॉल ब्रिज नहीं बनाया जा सकता ({reason})। यहाँ विवरण तालिका है।"
+    hi_en: "In lines se reliable waterfall bridge nahi ban sakta ({reason}). Yahan statement table hai."
+
+  pat_mismatch:
+    en: "I can't build a reliable bridge from these lines ({reason}). Here is the statement table."
+    hi: "इन पंक्तियों से विश्वसनीय वॉटरफॉल ब्रिज नहीं बनाया जा सकता ({reason})। यहाँ विवरण तालिका है।"
+    hi_en: "In lines se reliable waterfall bridge nahi ban sakta ({reason}). Yahan statement table hai."
+
+  no_visual:
+    en: "There is no chartable dataset on screen yet to re-plot as a {kind}. Ask a data question first, and then I can switch the chart view."
+    hi: "स्क्रीन पर अभी कोई डेटा उपलब्ध नहीं है जिसे {kind} में बदला जा सके। कृपया पहले कोई डेटा प्रश्न पूछें।"
+    hi_en: "Screen par abhi koi data nahi hai jise {kind} mein re-plot kiya ja sake."
+
+  which_year:
+    en: "Which year would you like to see as a waterfall bridge? A P&L bridge shows one fiscal year at a time — please pick a year below ({periods})."
+    hi: "आप किस वित्तीय वर्ष का वॉटरफॉल ब्रिज देखना चाहेंगे? P&L वॉटरफॉल ब्रिज एक बार में एक ही वित्तीय वर्ष दिखाता है — कृपया नीचे से वर्ष चुनें ({periods})।"
+    hi_en: "Aap kis fiscal year ka waterfall bridge dekhna chahenge? Please niche se year select karein ({periods})."
+
+  non_bridge_data:
+    en: "A waterfall chart requires a start-to-end bridge (such as Revenue to PAT); this data is shown as a {kind_label}."
+    hi: "वॉटरफॉल चार्ट के लिए प्रारंभ-से-अंत ब्रिज (जैसे रेवेन्यू से PAT) आवश्यक है; यह डेटा {kind_label} के रूप में दिखाया गया है।"
+    hi_en: "Waterfall chart ke liye start-to-end bridge (jaise Revenue se PAT) chahiye; yeh data {kind_label} mein dikhaya gaya hai."
+
+success:
+  bridge:
+    en: "Here is the {period} P&L waterfall bridge from ₹{rev} crore revenue to ₹{pat} crore PAT."
+    hi: "यहाँ वॉटरफॉल चार्ट है: {period} में रेवेन्यू ₹{rev} करोड़ से PAT ₹{pat} करोड़ तक।"
+    hi_en: "Yahan {period} ka P&L waterfall bridge hai: Revenue ₹{rev} crore se PAT ₹{pat} crore tak."
+  replot:
+    en: "I've replotted the current data as a {kind_label} on screen."
+    hi: "मैंने वर्तमान डेटा को स्क्रीन पर {kind_label} के रूप में प्रदर्शित कर दिया है।"
+    hi_en: "Maine current data ko screen par {kind_label} mein re-plot kar diya hai."

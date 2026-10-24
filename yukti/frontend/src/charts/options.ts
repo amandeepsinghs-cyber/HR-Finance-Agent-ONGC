@@ -9,6 +9,12 @@ import { fmtValue, fmtNum, fmtShare, sharePct, humanizeKey, humanizeValue, toNum
 
 type Opt = echarts.EChartsOption;
 
+/** BUG-43: legend entries show display names, never raw data keys; the unit lives on the value axis, so the
+ * "(₹ Cr)" / "(%)" / "($)" suffix that humanizeKey adds is dropped here. */
+export function legendName(key: string): string {
+  return humanizeKey(key).replace(/\s\((₹ Cr|%|\$)\)$/, '');
+}
+
 function base(t: ChartTokens): Opt {
   return {
     backgroundColor: 'transparent',
@@ -478,7 +484,8 @@ export function waterfallOption(plan: ChartPlan, t: ChartTokens): Opt {
             {
               type: 'text',
               style: {
-                text: fmtValue(s.v, unit, { sign: s.kind !== 'total' }),
+                // P4.1 (SPEC-09 §4.3): accounting labels — deductions read "(₹x Cr)", additions "+₹x Cr", totals plain
+                text: s.kind === 'total' ? fmtValue(s.v, unit) : s.v < 0 ? `(${fmtValue(Math.abs(s.v), unit)})` : fmtValue(s.v, unit, { sign: true }),
                 x: a[0],
                 y: s.end >= s.start ? top - px(t, 8) : top + h + px(t, 8),
                 textAlign: 'center',
@@ -640,7 +647,7 @@ export function lineOption(plan: ChartPlan, t: ChartTokens, data: Record<string,
     ...base(t),
     color: colors,
     grid: [{ left: px(t, 8), right: px(t, single ? 112 : 132), top: px(t, single ? 36 : 48), bottom: px(t, 8), containLabel: true }],
-    legend: single ? [] : [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 6), textStyle: { color: t.sub, fontSize: px(t, 12) } }],
+    legend: single ? [] : [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 6), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: legendName }],
     xAxis: [{ ...categoryAxis(t, labels, false), boundaryGap: false }],
     yAxis: [valueAxis(t, plan.unit, false, { scale: true } as any)],
     tooltip: {
@@ -698,7 +705,7 @@ export function groupedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
   return {
     ...base(t),
     color: colors,
-    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: (n: string) => humanizeKey(n) }],
+    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: legendName }],
     grid: [{ left: px(t, horizontal ? 8 : 20), right: px(t, 40), top: px(t, 48), bottom: px(t, horizontal ? 36 : 8), containLabel: true }],
     xAxis: [horizontal ? vx : ax],
     yAxis: [horizontal ? ax : vx],
@@ -745,7 +752,7 @@ export function stackedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
   return {
     ...base(t),
     color: colors,
-    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, data: keys }],
+    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, data: keys, formatter: legendName }],
     grid: [{ left: px(t, 8), right: px(t, 90), top: px(t, 44), bottom: px(t, 8), containLabel: true }],
     xAxis: [valueAxis(t, unit, true, { name: undefined } as any)],
     yAxis: [categoryAxis(t, labels, true, 200)],
@@ -1334,5 +1341,254 @@ export function funnelOption(plan: ChartPlan, t: ChartTokens, colors: string[]):
         data: plan.rows.map((r, i) => ({ name: r.label, value: Math.max(0, r.value), raw: r.raw, label: { color: labelOn(colors[i % colors.length]) } })),
       } as any,
     ],
+  };
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// P4.4 portfolio batch A (SPEC-09 §4.5): combo dual-axis, 100% stacked, heatmap, box plot, gauge.
+// ---------------------------------------------------------------------------------------------------------------
+
+const PCT_UNIT: UnitInfo = { kind: 'percent', noun: '', label: '%' };
+
+/** Combo: value bars on the left axis, a % (or second-unit) line on the right axis, shared x (CFO default for value + %). */
+export function comboOption(plan: ChartPlan, t: ChartTokens, data: Record<string, any>[]): Opt {
+  const [barKey, lineKey] = plan.seriesKeys;
+  const labels = data.map((r) => humanizeValue(r[plan.dimKey]));
+  const barUnit = unitForKey(plan)(barKey);
+  const lineUnit = /pct|percent|margin|rate|ratio|%/i.test(lineKey) ? PCT_UNIT : unitForKey(plan)(lineKey);
+  return {
+    ...base(t),
+    color: [t.accent, t.maroon],
+    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: legendName }],
+    grid: [{ left: px(t, 16), right: px(t, 16), top: px(t, 52), bottom: px(t, 8), containLabel: true }],
+    xAxis: [categoryAxis(t, labels, false)],
+    yAxis: [
+      valueAxis(t, barUnit, false, { name: humanizeKey(barKey) } as any),
+      valueAxis(t, lineUnit, false, { name: humanizeKey(lineKey), position: 'right', splitLine: { show: false }, nameTextStyle: { color: t.sub, fontSize: px(t, 12), align: 'right' } } as any),
+    ],
+    tooltip: {
+      ...tooltipBase(t),
+      trigger: 'axis',
+      formatter: (ps: any) =>
+        tooltipCard(t, ps[0]?.name, ps.map((p: any) => [humanizeKey(p.seriesName), fmtValue(p.value, p.seriesIndex === 0 ? barUnit : lineUnit), p.color])),
+    },
+    series: [
+      {
+        id: 'main',
+        name: barKey,
+        type: 'bar',
+        yAxisIndex: 0,
+        barMaxWidth: px(t, 36),
+        universalTransition: { enabled: true },
+        itemStyle: { borderRadius: [px(t, 6), px(t, 6), 0, 0], color: vGradient(t.accentSoft, t.accent) as any },
+        label: { show: data.length <= 12, position: 'top', color: t.text, fontSize: px(t, 12), formatter: (p: any) => fmtValue(p.value, barUnit, { compact: true }) },
+        data: data.map((r) => toNumber(r[barKey])),
+      },
+      {
+        id: 's1',
+        name: lineKey,
+        type: 'line',
+        yAxisIndex: 1,
+        smooth: false,
+        symbol: 'circle',
+        symbolSize: px(t, 8),
+        lineStyle: { width: px(t, 2.5), color: t.maroon },
+        itemStyle: { color: t.maroon },
+        label: { show: data.length <= 12, position: 'top', color: t.maroon, fontSize: px(t, 12), formatter: (p: any) => fmtValue(p.value, lineUnit) },
+        data: data.map((r) => toNumber(r[lineKey])),
+      },
+    ] as any,
+  };
+}
+
+/** 100% stacked: each category's parts as a share of its own total; tooltip shows % and absolute. */
+export function stacked100Option(plan: ChartPlan, t: ChartTokens, data: Record<string, any>[]): Opt {
+  const keys = plan.seriesKeys;
+  const labels = data.map((r) => humanizeValue(r[plan.dimKey]));
+  const totals = data.map((r) => keys.reduce((s, k) => s + Math.max(0, toNumber(r[k]) || 0), 0));
+  const share = (r: Record<string, any>, i: number, k: string) => (totals[i] > 0 ? ((toNumber(r[k]) || 0) / totals[i]) * 100 : 0);
+  const horizontal = labels.reduce((s, l) => s + l.length, 0) / Math.max(1, labels.length) > 10;
+  const ax = categoryAxis(t, labels, horizontal);
+  const vx = valueAxis(t, PCT_UNIT, horizontal, { max: 100, name: undefined } as any);
+  return {
+    ...base(t),
+    color: t.categorical,
+    legend: [{ top: 0, left: 0, icon: 'roundRect', itemWidth: px(t, 14), itemHeight: px(t, 10), textStyle: { color: t.sub, fontSize: px(t, 12) }, formatter: legendName }],
+    grid: [{ left: px(t, 8), right: px(t, 24), top: px(t, 48), bottom: px(t, 8), containLabel: true }],
+    xAxis: [horizontal ? vx : ax],
+    yAxis: [horizontal ? ax : vx],
+    tooltip: {
+      ...tooltipBase(t),
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: (ps: any) => {
+        const i = ps[0]?.dataIndex ?? 0;
+        return tooltipCard(
+          t,
+          ps[0]?.name,
+          ps.map((p: any) => [humanizeKey(p.seriesName), `${fmtShare(p.value)} · ${fmtValue(toNumber(data[i]?.[p.seriesName]) || 0, unitForKey(plan)(p.seriesName))}`, p.color]),
+        );
+      },
+    },
+    series: keys.map((k, idx) => ({
+      id: idx === 0 ? 'main' : `s${idx}`,
+      name: k,
+      type: 'bar',
+      stack: 'share',
+      barMaxWidth: px(t, 40),
+      itemStyle: { borderColor: t.surface, borderWidth: 1 },
+      label: { show: data.length <= 10, color: t.onAccent, fontSize: px(t, 11), formatter: (p: any) => (p.value >= 6 ? fmtShare(p.value) : '') },
+      data: data.map((r, i) => Number(share(r, i, k).toFixed(2))),
+    })) as any,
+  };
+}
+
+/** Heatmap: category × category with a sequential visualMap; cell labels when ≤ 120 cells. */
+export function heatmapOption(plan: ChartPlan, t: ChartTokens, data: Record<string, any>[]): Opt {
+  const xKey = plan.dimKey;
+  const yKey = plan.dim2Key || plan.dimKey;
+  const xs = Array.from(new Set(data.map((r) => humanizeValue(r[xKey]))));
+  const ys = Array.from(new Set(data.map((r) => humanizeValue(r[yKey]))));
+  const cells = data.map((r) => [xs.indexOf(humanizeValue(r[xKey])), ys.indexOf(humanizeValue(r[yKey])), toNumber(r[plan.valueKey])]);
+  const vals = cells.map((c) => c[2]).filter((v): v is number => typeof v === 'number');
+  const lo = vals.length ? Math.min(...vals) : 0;
+  const hi = vals.length ? Math.max(...vals) : 1;
+  return {
+    ...base(t),
+    grid: [{ left: px(t, 8), right: px(t, 16), top: px(t, 16), bottom: px(t, 56), containLabel: true }],
+    xAxis: [{ ...categoryAxis(t, xs, false), splitArea: { show: true } }],
+    yAxis: [{ ...categoryAxis(t, ys, true, 160), inverse: true, splitArea: { show: true } }],
+    visualMap: [
+      {
+        min: lo,
+        max: hi === lo ? lo + 1 : hi,
+        calculable: false,
+        orient: 'horizontal',
+        left: 'center',
+        bottom: 0,
+        itemHeight: px(t, 180),
+        textStyle: { color: t.sub, fontSize: px(t, 11) },
+        inRange: { color: t.sequential },
+        formatter: (v: number) => fmtValue(v, plan.unit, { compact: true }),
+      } as any,
+    ],
+    tooltip: {
+      ...tooltipBase(t),
+      trigger: 'item',
+      formatter: (p: any) => tooltipCard(t, `${xs[p.value[0]]} · ${ys[p.value[1]]}`, [[humanizeKey(plan.valueKey), fmtValue(p.value[2], plan.unit)]]),
+    },
+    series: [
+      {
+        id: 'main',
+        type: 'heatmap',
+        data: cells,
+        label: { show: cells.length <= 120, color: t.text, fontSize: px(t, 11), formatter: (p: any) => fmtValue(p.value[2], plan.unit, { compact: true }) },
+        itemStyle: { borderColor: t.surface, borderWidth: 1 },
+        emphasis: { itemStyle: { borderColor: t.text, borderWidth: 1 } },
+      },
+    ] as any,
+  };
+}
+
+/** Five-number summary of a numeric list (inclusive quartiles). */
+export function fiveNumber(values: number[]): [number, number, number, number, number] {
+  const v = [...values].sort((a, b) => a - b);
+  const q = (p: number) => {
+    const i = (v.length - 1) * p;
+    const lo = Math.floor(i);
+    const hi = Math.ceil(i);
+    return v[lo] + (v[hi] - v[lo]) * (i - lo);
+  };
+  return [v[0], q(0.25), q(0.5), q(0.75), v[v.length - 1]];
+}
+
+/** Box plot per group: quartiles computed from records (or taken from pre-aggregated min/q1/median/q3/max rows); 1.5×IQR outliers as points. */
+export function boxOption(plan: ChartPlan, t: ChartTokens, data: Record<string, any>[]): Opt {
+  const pre = data.length > 0 && ['min', 'q1', 'median', 'q3', 'max'].every((k) => k in data[0]);
+  let groups: string[];
+  let boxes: number[][];
+  const outliers: [number, number][] = [];
+  if (pre) {
+    groups = data.map((r) => humanizeValue(r[plan.dimKey]));
+    boxes = data.map((r) => ['min', 'q1', 'median', 'q3', 'max'].map((k) => toNumber(r[k]) || 0));
+  } else {
+    const by = new Map<string, number[]>();
+    for (const r of data) {
+      const g = humanizeValue(r[plan.dimKey]);
+      const v = toNumber(r[plan.valueKey]);
+      if (v === null) continue;
+      if (!by.has(g)) by.set(g, []);
+      by.get(g)!.push(v);
+    }
+    groups = Array.from(by.keys());
+    boxes = groups.map((g, gi) => {
+      const vals = by.get(g)!;
+      const [, q1, md, q3] = fiveNumber(vals);
+      const iqr = q3 - q1;
+      const inside = vals.filter((v) => v >= q1 - 1.5 * iqr && v <= q3 + 1.5 * iqr);
+      vals.filter((v) => !inside.includes(v)).forEach((v) => outliers.push([gi, v]));
+      // S1: true quartiles of all values; whiskers to the furthest non-outlier points
+      const body = inside.length ? inside : vals;
+      return [Math.min(...body), q1, md, q3, Math.max(...body)];
+    });
+  }
+  return {
+    ...base(t),
+    grid: [{ left: px(t, 16), right: px(t, 16), top: px(t, 24), bottom: px(t, 8), containLabel: true }],
+    xAxis: [categoryAxis(t, groups, false)],
+    yAxis: [valueAxis(t, plan.unit, false)],
+    tooltip: {
+      ...tooltipBase(t),
+      trigger: 'item',
+      formatter: (p: any) => {
+        if (p.seriesType === 'scatter') return tooltipCard(t, groups[p.value[0]], [['Outlier', fmtValue(p.value[1], plan.unit)]]);
+        const [, mn, q1, md, q3, mx] = p.value;
+        return tooltipCard(t, p.name, [
+          ['Max', fmtValue(mx, plan.unit)],
+          ['Q3', fmtValue(q3, plan.unit)],
+          ['Median', fmtValue(md, plan.unit)],
+          ['Q1', fmtValue(q1, plan.unit)],
+          ['Min', fmtValue(mn, plan.unit)],
+        ]);
+      },
+    },
+    series: [
+      { id: 'main', type: 'boxplot', data: boxes, itemStyle: { color: t.accentPale, borderColor: t.accent, borderWidth: px(t, 1.5) } },
+      { id: 's1', type: 'scatter', data: outliers, symbolSize: px(t, 7), itemStyle: { color: t.maroon } },
+    ] as any,
+  };
+}
+
+/** Gauge: one value against its target band (only used when a target exists; otherwise the planner shows a KPI). */
+export function gaugeOption(plan: ChartPlan, t: ChartTokens, data: Record<string, any>[]): Opt {
+  const r0 = data[0] || {};
+  const value = toNumber(r0[plan.valueKey]) ?? 0;
+  const target = (plan.targetKey ? toNumber(r0[plan.targetKey]) : null) ?? plan.target ?? 100;
+  const max = Math.max(target * 1.25, value * 1.1, 1);
+  return {
+    ...base(t),
+    tooltip: { ...tooltipBase(t), trigger: 'item', formatter: () => tooltipCard(t, humanizeKey(plan.valueKey), [['Actual', fmtValue(value, plan.unit)], ['Target', fmtValue(target, plan.unit)]]) },
+    series: [
+      {
+        id: 'main',
+        type: 'gauge',
+        min: 0,
+        max,
+        startAngle: 210,
+        endAngle: -30,
+        radius: '88%',
+        progress: { show: true, width: px(t, 14), itemStyle: { color: value >= target ? t.positive : t.accent } },
+        axisLine: { lineStyle: { width: px(t, 14), color: [[Math.min(1, target / max), t.band[0]], [1, t.band[1]]] } },
+        axisTick: { show: false },
+        splitLine: { show: false },
+        axisLabel: { show: false },
+        pointer: { show: false },
+        anchor: { show: false },
+        title: { show: true, offsetCenter: [0, '38%'], color: t.sub, fontSize: px(t, 13) },
+        detail: { valueAnimation: true, offsetCenter: [0, '4%'], color: t.text, fontSize: px(t, 28), fontWeight: 700, formatter: () => fmtValue(value, plan.unit) },
+        markLine: undefined,
+        data: [{ value, name: `Target ${fmtValue(target, plan.unit)}` }],
+      },
+    ] as any,
   };
 }

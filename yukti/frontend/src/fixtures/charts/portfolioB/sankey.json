@@ -1,0 +1,37 @@
+{
+ "type": "chart",
+ "mode": "replace",
+ "title": "Illustrative fixture: volume flow",
+ "chart": {
+  "kind": "sankey",
+  "unit": "",
+  "data": [
+   {
+    "source": "Production",
+    "target": "Domestic sales",
+    "volume_kt": 500
+   },
+   {
+    "source": "Production",
+    "target": "Exports",
+    "volume_kt": 120
+   },
+   {
+    "source": "Production",
+    "target": "Own use",
+    "volume_kt": 30
+   },
+   {
+    "source": "Domestic sales",
+    "target": "Refiners",
+    "volume_kt": 380
+   },
+   {
+    "source": "Domestic sales",
+    "target": "Others",
+    "volume_kt": 120
+   }
+  ]
+ },
+ "source_note": "Illustrative UI test fixture, not ONGC data"
+}

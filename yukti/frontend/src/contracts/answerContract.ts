@@ -59,9 +59,9 @@ export type ChartKind =
   | 'gauge'
   | 'funnel'
   | 'scatter'
-  | 'bubble'
-  | 'sunburst'
-  | 'sankey'
+  | 'bubble' // P4.5 B2: x · y · size
+  | 'sunburst' // P4.5 B2: hierarchy (text levels → value)
+  | 'sankey' // P4.5 B2: flows {source, target, value}
   | 'kpi'
   | 'table'
   | 'map';
@@ -263,15 +263,15 @@ export interface StatementSpec {
 
 // ---------- P4.5 B1 (SPEC-09 §5, field names identical to SPEC-02 engine output) ----------
 export interface SensitivityAxis {
-  name: string;
-  unit: string;
+  name: string; // e.g. "WACC"
+  unit: string; // e.g. "%"
   values: number[];
 }
 
 export interface SensitivityGridSpec {
   row_input: SensitivityAxis;
   col_input: SensitivityAxis;
-  output: { name: string; unit: string };
+  output: { name: string; unit: string }; // e.g. { name: 'Value per share', unit: 'INR' }
   /** cells[row][col]; null = not meaningful (SPEC-02 §8: WACC − g < 1pp) → rendered "n/m" */
   cells: (number | null)[][];
   base: { row_idx: number; col_idx: number };
@@ -288,6 +288,7 @@ export interface TornadoBarSpec {
 
 export interface TornadoSpec {
   output: { name: string; unit: string; base: number };
+  /** sorted by |high_inr − low_inr| desc by the producer; the renderer re-sorts defensively */
   bars: TornadoBarSpec[];
   source?: string;
 }
@@ -402,6 +403,7 @@ export interface DcfModelSpec {
   bridge: DcfBridgeRow[];
   sensitivity_grid: SensitivityGridSpec;
   tornado: TornadoSpec;
+  /** Optional pre-formatted StatementSpecs if provided by presenter */
   fcff_statement?: StatementSpec;
   wacc_statement?: StatementSpec;
   provenance_label?: string;

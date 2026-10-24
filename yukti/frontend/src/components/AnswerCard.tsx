@@ -11,6 +11,8 @@ import { AnswerContract, ChartKind, ChartSpec, DcfModelSpec, JobSpec, Sensitivit
 import { ChartRenderer } from './renderers/ChartRenderer';
 import { TableRenderer } from './renderers/TableRenderer';
 import { PERSONA_DIRECTORY } from '@/personas';
+import { StatementTable } from './renderers/StatementTable';
+import { legacyStatementFromTable } from '@/charts/statementAdapter';
 import { KpiRenderer } from './renderers/KpiRenderer';
 import { ClauseRenderer } from './renderers/ClauseRenderer';
 import { DocumentRenderer } from './renderers/DocumentRenderer';
@@ -22,6 +24,9 @@ import { RosterTable } from './renderers/RosterTable';
 import { CompareRenderer } from './renderers/CompareRenderer';
 import { ActionCard } from './agents/ActionCard';
 import { JobCard } from './agents/JobCard';
+import { SensitivityGrid, Tornado } from './renderers/FinanceVisuals';
+import { ActionsCard } from './renderers/ActionsCard';
+import { DcfModelCard } from './renderers/DcfModelCard';
 import { replot, profile, ReplotResult, ReplotKind } from '@/charts/compat';
 import { normalizeRows } from '@/charts/normalize';
 import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
@@ -29,17 +34,36 @@ import { sourceLabel } from './FloatingConversationPanel';
 import { planChart } from '@/charts/plan';
 import { cleanText, humanizeKey, toNumber } from '@/charts/format';
 import { Badge, Card, Chip, ContextChips } from './ui/primitives';
+import { ExportMenu } from './ExportMenu';
+import { getTokens } from '@/charts/theme';
+import { chartsWithin } from '@/charts/chartRegistry';
+import {
+  chartsToPng,
+  chartsToSvg,
+  exportFilename,
+  filenamePartsFromContract,
+  triggerDownload,
+  downloadText,
+  postExportAudit,
+} from '@/charts/exportImage';
+import {
+  ExportFormat,
+  normalizeExportFormat,
+  readyCopy,
+  honestWorkspaceCopy,
+  defaultedCopy,
+} from '@/services/exportIntent';
 import { Download, ChevronRight, Database, Scale, FileText, Loader2, Volume2, BarChart3, PieChart, Activity, Table as TableIcon, SlidersHorizontal, Sparkles, CornerDownRight } from 'lucide-react';
 
 const NOISE = /^(executed sql|grounding:|query:|sql query|voice turn completed|yukti ai connected|role:|served from|canvas visual|turn complete)/i;
 
-const EXPORT_LABELS: Record<string, string> = {
-  sheets: 'Google Sheets',
-  docs: 'Google Docs',
-  word: 'Word (.docx)',
-  pdf: 'PDF',
-  xlsx: 'Excel (.xlsx)',
-};
+/** P4.7: event the page dispatches for typed/spoken export intents; the latest card performs the export. */
+export const EXPORT_EVENT = 'yukti:export';
+export interface ExportEventDetail {
+  value: string; // 'pdf' | 'png:default' | 'auto' | …
+  handled?: boolean;
+}
+
 
 const PRIMARY_KINDS: { id: ChartKind | 'table'; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'bar', label: 'Bar', icon: BarChart3 },
@@ -120,218 +144,42 @@ function dispatchJobCompleted(result: AnswerContract, finalJob: JobSpec): void {
   window.dispatchEvent(new CustomEvent('yukti:job-completed', { detail: { job: finalJob, result } }));
 }
 
-const InlineSensitivityGrid: React.FC<{ grid: SensitivityGridSpec }> = ({ grid }) => (
-  <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)] p-3" data-testid="dcf-sensitivity-grid">
-    <div className="text-caption text-[var(--ink-2)] mb-2">
-      {grid.output.name} ({grid.output.unit}) — {grid.row_input.name} ({grid.row_input.unit}) × {grid.col_input.name} ({grid.col_input.unit})
-    </div>
-    <table className="w-full text-right border-collapse text-caption font-mono tabular-nums">
-      <thead>
-        <tr className="border-b border-[var(--hairline)] text-[var(--ink-3)]">
-          <th className="py-1.5 px-2 text-left">{grid.row_input.name} \ {grid.col_input.name}</th>
-          {grid.col_input.values.map((cv, ci) => (
-            <th key={ci} className="py-1.5 px-2">
-              {cv.toFixed(1)}%
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {grid.row_input.values.map((rv, ri) => (
-          <tr key={ri} className="border-b last:border-b-0 border-[var(--hairline)]">
-            <td className="py-1.5 px-2 text-left font-semibold text-[var(--ink)]">{rv.toFixed(2)}%</td>
-            {(grid.cells[ri] || []).map((cell, ci) => {
-              const isBase = grid.base?.row_idx === ri && grid.base?.col_idx === ci;
-              return (
-                <td
-                  key={ci}
-                  className={`py-1.5 px-2 ${isBase ? 'bg-[var(--accent)]/15 font-bold text-[var(--ink)]' : 'text-[var(--ink-2)]'}`}
-                  data-testid={isBase ? 'sensitivity-base-cell' : undefined}
-                >
-                  {cell === null || cell === undefined ? 'n/m' : `₹${cell.toFixed(1)}`}
-                </td>
-              );
-            })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
-
-const InlineTornadoView: React.FC<{ tornado: TornadoSpec }> = ({ tornado }) => (
-  <div className="rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)] p-3 space-y-2" data-testid="dcf-tornado-view">
-    <div className="text-caption text-[var(--ink-2)]">
-      {tornado.output.name} ({tornado.output.unit}) · Base ₹{tornado.output.base.toFixed(1)}
-    </div>
-    <div className="space-y-1.5">
-      {tornado.bars.map((b, i) => (
-        <div key={i} className="flex items-center justify-between gap-3 py-1 border-b last:border-b-0 border-[var(--hairline)] text-caption" data-testid="tornado-driver-row">
-          <span className="font-medium text-[var(--ink)]">{b.driver}</span>
-          <span className="font-mono tabular-nums text-[var(--ink-2)]">
-            ₹{b.low_inr.toFixed(1)} ({b.low_input}) → ₹{b.high_inr.toFixed(1)} ({b.high_input})
-          </span>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-const InlineDcfModelView: React.FC<{ model: DcfModelSpec; contract: AnswerContract }> = ({ model, contract }) => {
-  const [tab, setTab] = useState<'fcff' | 'wacc' | 'bridge' | 'sensitivity' | 'tornado'>('fcff');
-  const artifacts = contract.job?.artifacts?.length ? contract.job.artifacts : contract.artifacts || [];
-  return (
-    <div className="space-y-4" data-testid="dcf-model-view">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Badge tone="warning" data-testid="dcf-illustrative-badge">Illustrative</Badge>
-          <span className="text-caption text-[var(--ink-2)]" data-testid="dcf-disclaimer">
-            {model.disclaimer || 'Illustrative valuation, not investment advice.'}
-          </span>
-        </div>
-        {artifacts.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2">
-            {artifacts.map((art) => (
-              <a
-                key={art.export_id}
-                href={art.url || `/api/export/${encodeURIComponent(art.export_id)}`}
-                download={art.filename}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-pill border border-[var(--hairline)] bg-[var(--surface)] text-label font-medium text-[var(--ink)] hover:border-[var(--accent)]"
-                data-testid="dcf-artifact-link"
-              >
-                <Download className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
-                <span>{art.filename}</span>
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* KPI header */}
-      <div className="grid gap-3 sm:grid-cols-4" data-testid="dcf-kpi-header">
-        <Card className="p-3">
-          <div className="text-caption text-[var(--ink-3)]">Intrinsic value / share</div>
-          <div className="mt-1 text-title font-mono tabular-nums font-semibold text-[var(--ink)]" data-testid="dcf-intrinsic-inr">
-            ₹{model.per_share.intrinsic_inr.toFixed(1)}
-          </div>
-        </Card>
-        <Card className="p-3">
-          <div className="text-caption text-[var(--ink-3)]">Market price / share</div>
-          <div className="mt-1 text-title font-mono tabular-nums font-semibold text-[var(--ink)]" data-testid="dcf-market-inr">
-            ₹{model.per_share.market_inr.toFixed(1)}
-          </div>
-        </Card>
-        <Card className="p-3">
-          <div className="text-caption text-[var(--ink-3)]">Upside / (Downside)</div>
-          <div className="mt-1 text-title font-mono tabular-nums font-semibold text-[var(--ink)]" data-testid="dcf-upside-pct">
-            {model.per_share.upside_pct >= 0 ? '+' : ''}
-            {model.per_share.upside_pct.toFixed(1)}%
-          </div>
-        </Card>
-        <Card className="p-3">
-          <div className="text-caption text-[var(--ink-3)]">Verdict</div>
-          <div className="mt-1 text-body font-semibold text-[var(--ink)]" data-testid="dcf-verdict">
-            {model.per_share.verdict}
-          </div>
-        </Card>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--hairline)] pb-2" role="tablist">
-        {(
-          [
-            ['fcff', 'FCFF'],
-            ['wacc', 'WACC build-up'],
-            ['bridge', 'EV → equity bridge'],
-            ['sensitivity', 'Sensitivity'],
-            ['tornado', 'Tornado'],
-          ] as const
-        ).map(([id, label]) => (
-          <Chip
-            key={id}
-            role="tab"
-            aria-selected={tab === id}
-            selected={tab === id}
-            onClick={() => setTab(id)}
-            data-testid={`dcf-tab-${id}`}
-          >
-            {label}
-          </Chip>
-        ))}
-      </div>
-
-      {tab === 'fcff' && (
-        <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)] p-3" data-testid="dcf-panel-fcff">
-          <table className="w-full text-right border-collapse text-caption font-mono tabular-nums">
-            <thead>
-              <tr className="border-b border-[var(--hairline)] text-[var(--ink-3)]">
-                <th className="py-1.5 px-2 text-left">Line (₹ Cr)</th>
-                {model.forecast.years.map((yr) => (
-                  <th key={yr} className="py-1.5 px-2">{yr}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-[var(--hairline)]">
-                <td className="py-1.5 px-2 text-left font-medium text-[var(--ink)]">FCFF</td>
-                {model.forecast.lines.fcff.map((v, i) => (
-                  <td key={i} className="py-1.5 px-2 text-[var(--ink)]">{v.toFixed(1)}</td>
-                ))}
-              </tr>
-              <tr>
-                <td className="py-1.5 px-2 text-left font-medium text-[var(--ink)]">PV of FCFF</td>
-                {model.forecast.lines.pv_fcff.map((v, i) => (
-                  <td key={i} className="py-1.5 px-2 text-[var(--ink-2)]">{v.toFixed(1)}</td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {tab === 'wacc' && (
-        <div className="rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)] p-3 grid gap-2 sm:grid-cols-3 text-caption" data-testid="dcf-panel-wacc">
-          <div>Rf used: <span className="font-mono font-semibold">{model.wacc_build.rf_used_pct.toFixed(2)}%</span></div>
-          <div>Adjusted β: <span className="font-mono font-semibold">{model.wacc_build.beta_adj.toFixed(2)}</span></div>
-          <div>ERP: <span className="font-mono font-semibold">{model.wacc_build.erp_total_pct.toFixed(2)}%</span></div>
-          <div>Cost of Equity (Ke): <span className="font-mono font-semibold">{model.wacc_build.ke_pct.toFixed(2)}%</span></div>
-          <div>After-tax Kd: <span className="font-mono font-semibold">{model.wacc_build.kd_used_pct.toFixed(2)}%</span></div>
-          <div>WACC: <span className="font-mono font-semibold">{model.wacc_build.wacc_pct.toFixed(2)}%</span></div>
-        </div>
-      )}
-
-      {tab === 'bridge' && (
-        <div className="rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)] p-3 space-y-1.5 text-caption" data-testid="dcf-panel-bridge">
-          {model.bridge.map((row, idx) => (
-            <div key={idx} className="flex items-center justify-between gap-3 py-1 border-b last:border-b-0 border-[var(--hairline)]">
-              <span className={row.type === 'total' ? 'font-semibold text-[var(--ink)]' : 'text-[var(--ink-2)]'}>{row.label}</span>
-              <span className="font-mono tabular-nums text-[var(--ink)]">₹{row.value_inr_cr.toFixed(1)} Cr</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {tab === 'sensitivity' && model.sensitivity_grid && (
-        <InlineSensitivityGrid grid={model.sensitivity_grid} />
-      )}
-
-      {tab === 'tornado' && model.tornado && (
-        <InlineTornadoView tornado={model.tornado} />
-      )}
-    </div>
-  );
-};
-
-/** Spoken-only / conversational answer (no visual): a quiet text card, plus ActionCard / JobCard when present. */
-const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: string; q: string; patch?: SpecPatch }[]; onAsk?: (q: string, patch?: SpecPatch) => void }> = ({ contract, followUps = [], onAsk }) => {
+/** Spoken-only / conversational answer (no visual): a quiet text card, plus ActionCard / JobCard / clarify chips when present. */
+const TextAnswer: React.FC<{
+  contract: AnswerContract;
+  followUps?: { label: string; q: string; patch?: SpecPatch }[];
+  onAsk?: (q: string, patch?: SpecPatch) => void;
+  /** clarify chips are live only on the latest card (an old question must not be re-answered) */
+  isLatest?: boolean;
+}> = ({ contract, followUps = [], onAsk, isLatest = false }) => {
   const text = cleanText(contract.display_text || contract.spoken_summary || '');
   const sessionId = getActiveSessionId();
+  const clarify = contract.clarify;
+  const options = (clarify?.options || []).filter((o) => o && o.label && o.value).slice(0, 6);
   return (
-    <article className="flex flex-col gap-3" data-testid="answer-card" data-visual-type="none">
+    <article className="flex flex-col gap-3" data-testid="answer-card" data-visual-type={clarify ? 'clarify' : 'none'}>
       <div className="py-[0.5rem] max-w-[72rem] flex items-start gap-3">
         <Sparkles className="w-4 h-4 mt-[0.3rem] shrink-0 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
-        <p className="text-body text-[var(--ink)] leading-relaxed">{text || '…'}</p>
+        <p className="text-body text-[var(--ink)] leading-relaxed">{cleanText(clarify?.question || '') || text || '…'}</p>
       </div>
+      {/* P2F.1 (SPEC-08 §3.2–3.3): one tap answers the clarifying question; the chip sends its value as the reply */}
+      {clarify && options.length >= 2 && (
+        <div role="group" aria-label={cleanText(clarify.question)} className="flex flex-wrap gap-2 pl-7" data-testid="clarify-options">
+          {options.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              disabled={!isLatest || !onAsk}
+              onClick={() => onAsk?.(o.value)}
+              data-testid="clarify-chip"
+              data-value={o.value}
+              className="px-3.5 py-1.5 rounded-pill border border-[var(--hairline)] bg-[var(--surface)] text-label text-[var(--ink)] hover:bg-[var(--accent-pale)] disabled:opacity-50 disabled:hover:bg-[var(--surface)] transition-colors"
+            >
+              {cleanText(o.label)}
+            </button>
+          ))}
+        </div>
+      )}
       {contract.proposed_action && (
         <ActionCard
           proposedAction={contract.proposed_action}
@@ -347,7 +195,7 @@ const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: stri
           onJobCompleted={dispatchJobCompleted}
         />
       )}
-      {onAsk && followUps.length > 0 && !contract.proposed_action && (
+      {!clarify && onAsk && followUps.length > 0 && !contract.proposed_action && (
         <nav aria-label="Follow-up questions" className="mt-auto pt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5" data-testid="follow-ups">
           {followUps.map((f) => (
             <button
@@ -369,7 +217,6 @@ const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: stri
 
 export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false, persona, isLatest = false, onNavigateToAlternative, onAsk, onReplot }) => {
   const [selectedSource, setSelectedSource] = useState<SourceCitation | null>(null);
-  const [exportOpen, setExportOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   useEffect(() => {
     setMoreOpen(false);
@@ -393,7 +240,8 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
       document.removeEventListener('keydown', onKey);
     };
   }, [moreOpen]);
-  const [exporting, setExporting] = useState<string | null>(null);
+  const [exporting, setExporting] = useState<ExportFormat | null>(null);
+  const visualRef = useRef<HTMLElement | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(toastTimer.current), []);
@@ -425,7 +273,23 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     if (!t?.rows?.length) return t && t.columns ? t : prof.rows.length ? { columns: prof.columns, rows: prof.rows } : undefined;
     return { ...t, rows: normalizeRows(t.columns, t.rows as unknown[]) };
   }, [effVisual, prof]);
-  const replotNote = override?.note || visual?.replot_note;
+  // P4.1: backend BridgeError / data-shape notes arrive as visual.note (EN) / note_hi (HI); re-plot notes as replot_note
+  const replotNote =
+    override?.note ||
+    visual?.replot_note ||
+    ((contract as any).language === 'hi' && (visual as any)?.note_hi) ||
+    (visual as any)?.note ||
+    undefined;
+  // P4.3 (FEAT-025, BUG-38/39): statements render as statements — the P4.2 `statement` visual, or a legacy
+  // statement table adapted on the client (clean labels, indentation, ruled subtotals) until P4.2/P1 land.
+  const statementSpec = useMemo(() => {
+    if (effVisual?.type === 'statement' && effVisual.statement) return effVisual.statement;
+    if (effVisual?.type !== 'table') return null;
+    const qs = (contract as any).query_spec || {};
+    const fy = qs.effective_period?.fy || qs.period?.fy || ((visual?.title || '').match(/\bFY\s?\d{2}(?:\d{2}-\d{2})?\b/i) || [])[0];
+    return legacyStatementFromTable(effVisual.table, { metric: qs.metric, fy, title: visual?.title });
+  }, [effVisual, contract, visual?.title]);
+  const displayVisualType = statementSpec ? 'statement' : effectiveVisualType;
 
   const canSwitchVisual = !refused && prof.rows.length > 0 && (visual?.type === 'chart' || visual?.type === 'table');
   const activeKindPill: ReplotKind = effectiveVisualType === 'table' ? 'table' : (effectiveChartSpec?.kind as ReplotKind) || 'bar';
@@ -451,12 +315,9 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   ).filter((x) => x.text && !NOISE.test(x.text));
   const insights = insightItems.map((x) => x.text);
   const sources = (contract.sources || []).filter((s, i, arr) => arr.findIndex((x) => sourceLabel(x) === sourceLabel(s)) === i);
-  // U2.3: every answer card offers Sheets, Docs, Word and PDF (plus anything else the backend lists) — unless the
-  // backend deliberately sent an empty list (e.g. restricted content).
-  const exportOptions =
-    contract.export_options && contract.export_options.length === 0
-      ? []
-      : Array.from(new Set([...(contract.export_options || []), 'sheets', 'docs', 'word', 'pdf'])).filter((o) => EXPORT_LABELS[o]);
+  // P4.7: every answer card offers the full SPEC-10 menu — unless the backend deliberately sent an empty list
+  // (e.g. restricted content). PNG/SVG appear only while a chart is on screen.
+  const exportDisabled = !!contract.export_options && contract.export_options.length === 0;
   const summaryBanner = cleanText(contract.display_text || contract.spoken_summary || '');
 
   const spark = useMemo(() => {
@@ -467,51 +328,161 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     return { values: vals, kind: plan.timeLike ? ('line' as const) : ('bars' as const), highlight: vals.indexOf(Math.max(...vals)) };
   }, [visual]);
 
-  const handleExport = async (format: string, pick?: { columns: string[]; rows: Record<string, any>[] }) => {
-    setExportOpen(false);
+  // P4.5: typed finance visuals are ECharts canvases too (fixed height, PNG/SVG export)
+  const isFinanceVisual = effectiveVisualType === 'sensitivity_grid' || effectiveVisualType === 'tornado';
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 6000);
+  };
+
+  /**
+   * P4.7 (SPEC-10): one export path for menu clicks, roster selections and typed/spoken intents.
+   * Server formats go through POST /api/export with the turn id (the backend re-applies RBAC masking from the
+   * signed session; client rows are only a fallback for local/legacy turns). PNG/SVG are drawn on the client from
+   * the live chart and then audit-logged.
+   */
+  const handleExport = async (format: ExportFormat, opts?: { pick?: { columns: string[]; rows: Record<string, any>[] }; defaulted?: boolean }) => {
+    const lang = (contract as any).language as string | undefined;
+    const who = persona || contract.persona || 'CMD';
+    const turnId = contract.turn_id || '';
+    const sessionId = (contract as any).session_id as string | undefined;
+    const masked = !!effectiveTableSpec?.masking && effectiveTableSpec.masking.level !== 'none';
+    const aggregate = effectiveTableSpec?.masking?.level === 'aggregate';
+    const themeTok = getTokens(isDark);
+    const lightTok = getTokens(false);
     setExporting(format);
-    const title = (visual?.title || 'Yukti_Export').replace(/[^a-zA-Z0-9_-]+/g, '_').slice(0, 60);
-    // U5.5: export the answer's own rows, normalised (array rows → objects); roster exports pass the selection.
-    const columns = pick?.columns || prof.columns;
-    const rows = pick?.rows || prof.rows;
-    const content = visual?.document?.markdown || visual?.clause?.text || cleanText(contract.display_text);
     try {
+      if (format === 'png' || format === 'svg') {
+        const charts = chartsWithin(visualRef.current);
+        if (!charts.length) throw new Error(lang === 'hi' ? 'स्क्रीन पर कोई चार्ट नहीं है' : 'There is no chart on screen to export');
+        const unit = effectiveChartSpec?.unit ? String(effectiveChartSpec.unit) : '';
+        const meta = {
+          title: cleanText(visual?.title || 'Yukti answer'),
+          // unit · as-of (the period is already in the title; a single FY here would mislabel a range)
+          subtitle:
+            [unit, (contract as any).query_spec?.as_of ? `As of ${(contract as any).query_spec.as_of}` : ''].filter(Boolean).join(' · ') ||
+            undefined,
+          source: firstSource ? `Source: ${sourceLabel(firstSource)}` : localSnapshot ? 'Source: local snapshot' : undefined,
+          // design tokens (same source as the chart): image matches the theme on screen
+          background: themeTok.surface,
+          ink: themeTok.text,
+          ink2: themeTok.sub,
+          fontFamily: typeof window !== 'undefined' ? getComputedStyle(document.body).fontFamily : undefined,
+        };
+        const filename = exportFilename({ ...filenamePartsFromContract(contract, aggregate), persona: who, ext: format, aggregate });
+        if (format === 'png') {
+          const { dataUrl } = await chartsToPng(charts, meta);
+          triggerDownload(dataUrl, filename);
+        } else {
+          downloadText(chartsToSvg(charts, meta), filename, 'image/svg+xml');
+        }
+        void postExportAudit({
+          turn_id: turnId,
+          session_id: sessionId,
+          format,
+          filename,
+          rows: effectiveChartSpec?.data?.length || 0,
+          columns: prof.columns,
+          masked,
+        });
+        showToast([opts?.defaulted ? defaultedCopy(format, lang) : '', readyCopy(format, lang)].filter(Boolean).join(' '));
+        return;
+      }
+
+      // Server-side formats. PDF/Word embed the visible chart image when there is one.
+      let chartPng: string | undefined;
+      if ((format === 'pdf' || format === 'docx' || format === 'docs') && (effectiveVisualType === 'chart' || isFinanceVisual || effectiveVisualType === 'dcf_model')) {
+        const charts = chartsWithin(visualRef.current);
+        if (charts.length) {
+          try {
+            chartPng = (
+              await chartsToPng(charts, {
+                title: cleanText(visual?.title || ''),
+                // documents print on white: always the light tokens
+                background: lightTok.surface,
+                ink: lightTok.text,
+                ink2: lightTok.sub,
+              })
+            ).dataUrl;
+          } catch {
+            chartPng = undefined; // the document still exports with its table
+          }
+        }
+      }
+      const columns = opts?.pick?.columns || prof.columns;
+      const rows = opts?.pick?.rows || prof.rows;
+      const content = visual?.document?.markdown || visual?.clause?.text || cleanText(contract.display_text);
       const res = await fetch('/api/export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ format, title, content, columns, rows }),
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          turn_id: turnId || undefined,
+          session_id: sessionId,
+          format,
+          title: cleanText(visual?.title || '') || undefined,
+          content,
+          columns,
+          rows,
+          chart_png: chartPng,
+        }),
       });
-      const j = await res.json();
-      if (!res.ok) throw new Error(j?.message || `HTTP ${res.status}`);
-      const placeholder = !!j.url && String(j.url).includes('yukti-');
-      if (j.url && /docs|sheets/.test(format) && !placeholder) {
-        setToast(`Created in ${EXPORT_LABELS[format]}.`);
-        window.open(j.url, '_blank', 'noopener');
-      } else if (j.export_id) {
-        // Workspace sign-in is not configured here: download the local copy (.docx / .xlsx) instead.
-        const a = document.createElement('a');
-        a.href = `/api/export/${encodeURIComponent(j.export_id)}`;
-        a.download = j.filename || `${title}.${j.format || format}`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setToast(placeholder ? `Google Workspace isn't connected here, so I downloaded ${j.filename || 'a local copy'} instead.` : `Downloading ${j.filename || EXPORT_LABELS[format]}`);
-      }
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j?.detail?.message || j?.message || `HTTP ${res.status}`);
+      const art = j.artifact || j;
+      const href = art.url || (art.export_id ? `/api/export/${encodeURIComponent(art.export_id)}` : '');
+      if (!href) throw new Error('No file was returned');
+      // Same-origin download only: never open an external (e.g. docs.google.com) URL from an export.
+      if (/^https?:\/\//i.test(href) && !href.startsWith(window.location.origin)) throw new Error('Unexpected export link');
+      triggerDownload(href, art.filename || `yukti_export.${art.kind || format}`);
+      const honest = format === 'sheets' || format === 'docs' ? j.toast || honestWorkspaceCopy(format, lang) : j.toast;
+      showToast([opts?.defaulted ? defaultedCopy(format, lang) : '', honest || readyCopy(format, lang)].filter(Boolean).join(' '));
     } catch (e: any) {
-      setToast(`Export failed: ${e?.message || e}`);
+      showToast(`${lang === 'hi' ? 'एक्सपोर्ट नहीं हो सका' : 'Export failed'}: ${e?.message || e}`);
     } finally {
       setExporting(null);
-      if (toastTimer.current) window.clearTimeout(toastTimer.current);
-      toastTimer.current = window.setTimeout(() => setToast(null), 4500);
     }
   };
 
-  const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map');
-  const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'email_draft' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
+  // Typed/spoken export intents (page → EXPORT_EVENT) are performed by the latest card only.
+  const exportRef = useRef(handleExport);
+  exportRef.current = handleExport;
+  useEffect(() => {
+    // A greeting / text-only card has nothing to export and no toast surface: let the event fall through.
+    if (!isLatest || isGreeting) return;
+    const onExport = (e: Event) => {
+      const d = (e as CustomEvent<ExportEventDetail>).detail;
+      if (!d || d.handled) return;
+      d.handled = true;
+      const [raw, flag] = String(d.value || 'auto').split(':');
+      let fmt = normalizeExportFormat(raw);
+      let defaulted = flag === 'default';
+      if (fmt === 'auto') {
+        fmt = (effectiveVisualType === 'chart' || isFinanceVisual) && chartsWithin(visualRef.current).length ? 'png' : 'xlsx';
+        defaulted = true;
+      }
+      if ((fmt === 'png' || fmt === 'svg') && !chartsWithin(visualRef.current).length) {
+        fmt = 'xlsx'; // asked for an image of a table: give the spreadsheet and say so
+        defaulted = true;
+      }
+      if (exportDisabled || refused) {
+        showToast((contract as any).language === 'hi' ? 'इस उत्तर का एक्सपोर्ट उपलब्ध नहीं है।' : 'Export is not available for this answer.');
+        return;
+      }
+      void exportRef.current(fmt as ExportFormat, { defaulted });
+    };
+    window.addEventListener(EXPORT_EVENT, onExport);
+    return () => window.removeEventListener(EXPORT_EVENT, onExport);
+  }, [isLatest, isGreeting, effectiveVisualType, isFinanceVisual, exportDisabled, refused, contract]);
+
+  const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map' || isFinanceVisual);
+  const selfFramed = effectiveVisualType === 'actions' || effectiveVisualType === 'dcf_model' || effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'email_draft' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table' || displayVisualType === 'statement';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
 
-  // Wide tables (> 7 columns) take the full width; takeaways stack below (no horizontal clipping).
-  const wideTable = effectiveVisualType === 'table' && (effectiveTableSpec?.columns?.length || 0) > 7;
+  // Wide tables (> 7 columns) and composite DCF cards take the full width; takeaways stack below.
+  const wideTable = displayVisualType === 'statement' || effectiveVisualType === 'dcf_model' || (effectiveVisualType === 'table' && (effectiveTableSpec?.columns?.length || 0) > 7);
 
   const applyReplot = (r: ReplotResult) => {
     if (onReplot) onReplot({ ...r.visual, replot_note: r.note } as VisualContainer);
@@ -548,7 +519,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     : (contract.suggestions || []).map((s) => ({ label: s, q: s }))
   ).slice(0, 4);
 
-  if (isGreeting) return <TextAnswer contract={contract} followUps={isLatest && onAsk ? followUps : []} onAsk={onAsk} />;
+  if (isGreeting) return <TextAnswer contract={contract} followUps={isLatest && onAsk ? followUps : []} onAsk={onAsk} isLatest={isLatest} />;
 
   return (
     <article className="flex flex-col gap-[1.1rem]" data-testid="answer-card" data-visual-type={effectiveVisualType}>
@@ -573,22 +544,12 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
                 </h2>
                 <ContextChips className="mt-2" items={contextChips} source={sourceTag} data-testid="context-chips" />
               </div>
-              {exportOptions.length > 0 && !refused && (
-                <div className="relative shrink-0">
-                  <Chip onClick={() => setExportOpen((o) => !o)} className="!py-2" aria-haspopup="menu" aria-expanded={exportOpen} data-testid="export-button">
-                    {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" />}
-                    Export
-                  </Chip>
-                  {exportOpen && (
-                    <div role="menu" className="absolute right-0 top-[calc(100%+0.4rem)] w-[13rem] rounded-[var(--radius-lg)] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-40">
-                      {exportOptions.map((o) => (
-                        <button key={o} role="menuitem" onClick={() => handleExport(o)} className="w-full text-left px-3 py-2 rounded-[var(--radius-sm)] text-label hover:bg-[var(--surface)]">
-                          {EXPORT_LABELS[o]}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              {!exportDisabled && !refused && (
+                <ExportMenu
+                  hasChart={effectiveVisualType === 'chart' || isFinanceVisual || effectiveVisualType === 'dcf_model'}
+                  busy={exporting}
+                  onPick={(f) => void handleExport(f)}
+                />
               )}
             </div>
 
@@ -601,14 +562,15 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
           </header>
 
           {/* KPI hero numerals */}
-          {kpis.length > 0 && effectiveVisualType !== 'kpi' && !refused && <KpiRenderer kpis={kpis} isDark={isDark} spark={spark} />}
+          {kpis.length > 0 && effectiveVisualType !== 'kpi' && !refused && <KpiRenderer kpis={displayVisualType === 'statement' ? kpis.slice(0, 3) : kpis} isDark={isDark} spark={spark} />}
 
           {/* Full-screen Visual + Key Takeaways (borderless canvas, no outer boxes, no plot-type bar) */}
           <div className={`grid gap-[1.75rem] ${insights.length && !refused && !wideTable ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
             <section
               className={`min-w-0 self-start w-full ${selfFramed ? '' : 'py-[0.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
+              ref={visualRef}
               data-testid="visual-card"
-              data-visual-type={effectiveVisualType}
+              data-visual-type={displayVisualType}
               data-chart-kind={effectiveVisualType === 'chart' ? effectiveChartSpec?.kind : effectiveVisualType}
               data-points={effectiveVisualType === 'chart' ? effectiveChartSpec?.data?.length : effectiveTableSpec?.rows?.length}
               data-sig={effectiveVisualType === 'chart' ? sigOf(effectiveChartSpec?.data) : 0}
@@ -618,7 +580,10 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               ) : (
                 effectiveVisualType === 'chart' && effectiveChartSpec && <ChartRenderer spec={effectiveChartSpec} isDark={isDark} title={visual?.title} />
               )}
-              {effectiveVisualType === 'table' && effectiveTableSpec && isRoster && (
+              {displayVisualType === 'statement' && statementSpec && (
+                <StatementTable statement={statementSpec} onWhy={onAsk ? (r) => onAsk(`Why did ${r.label} change?`) : undefined} />
+              )}
+              {effectiveVisualType === 'table' && !statementSpec && effectiveTableSpec && isRoster && (
                 <RosterTable
                   table={effectiveTableSpec}
                   persona={persona || contract.persona}
@@ -642,10 +607,10 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
                           : undefined,
                     );
                   }}
-                  onExport={(columns, rows) => void handleExport('xlsx', { columns, rows })}
+                  onExport={(columns, rows) => void handleExport('xlsx', { pick: { columns, rows } })}
                 />
               )}
-              {effectiveVisualType === 'table' && effectiveTableSpec && !isRoster && <TableRenderer table={effectiveTableSpec} isDark={isDark} />}
+              {effectiveVisualType === 'table' && !statementSpec && effectiveTableSpec && !isRoster && <TableRenderer table={effectiveTableSpec} isDark={isDark} />}
               {effectiveVisualType === 'clause' && visual?.clause && <ClauseRenderer clause={visual.clause} isDark={isDark} />}
               {effectiveVisualType === 'document' && visual?.document && <DocumentRenderer document={visual.document} isDark={isDark} />}
               {(effectiveVisualType === 'email_draft' || (!!emailDraftSpec && effectiveVisualType === 'none')) && emailDraftSpec && (
@@ -654,9 +619,10 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               {effectiveVisualType === 'map' && visual?.map && <MapRenderer mapSpec={visual.map} isDark={isDark} />}
               {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} language={(contract as any).language} onAsk={onAsk ? (q) => onAsk(q) : undefined} onViewAlternative={onNavigateToAlternative} />}
               {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
-              {effectiveVisualType === 'dcf_model' && visual?.dcf_model && <InlineDcfModelView model={visual.dcf_model} contract={contract} />}
-              {effectiveVisualType === 'sensitivity_grid' && visual?.sensitivity_grid && <InlineSensitivityGrid grid={visual.sensitivity_grid} />}
-              {effectiveVisualType === 'tornado' && visual?.tornado && <InlineTornadoView tornado={visual.tornado} />}
+              {effectiveVisualType === 'sensitivity_grid' && effVisual?.sensitivity_grid && <SensitivityGrid spec={effVisual.sensitivity_grid} isDark={isDark} />}
+              {effectiveVisualType === 'tornado' && effVisual?.tornado && <Tornado spec={effVisual.tornado} isDark={isDark} />}
+              {effectiveVisualType === 'actions' && effVisual?.actions && <ActionsCard actions={effVisual.actions} />}
+              {effectiveVisualType === 'dcf_model' && effVisual?.dcf_model && <DcfModelCard spec={effVisual.dcf_model} isDark={isDark} />}
               {contract.proposed_action && (
                 <ActionCard
                   proposedAction={contract.proposed_action}
@@ -763,7 +729,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
       )}
 
       {toast && (
-        <div role="status" className="fixed left-1/2 -translate-x-1/2 bottom-28 z-50 px-4 py-2.5 rounded-full bg-[var(--ink)] text-[var(--canvas)] text-label shadow-lg">
+        <div role="status" data-testid="toast" className="fixed left-1/2 -translate-x-1/2 bottom-28 z-50 max-w-[min(40rem,90vw)] px-4 py-2.5 rounded-[var(--radius-lg)] bg-[var(--ink)] text-[var(--canvas)] text-label text-center shadow-lg">
           {toast}
         </div>
       )}

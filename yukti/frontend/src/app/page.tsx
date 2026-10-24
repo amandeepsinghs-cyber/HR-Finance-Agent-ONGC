@@ -14,10 +14,12 @@ import { VoiceAudioEngine } from '@/services/audioAnalyser';
 import { FIXTURES } from '@/fixtures';
 import { routeQueryToFixture } from '@/services/mockRouter';
 import { yuktiClient, WsState } from '@/services/websocketClient';
+import { EXPORT_EVENT, type ExportEventDetail } from '@/components/AnswerCard';
 import { dispatchUi, labelOf, parseUiCommands, UiCommand, useUiCommands } from '@/services/uiCommands';
 import { cleanText } from '@/charts/format';
 import { BargeInDetector, micGateOpen, PLAYBACK_TAIL_MS, SpeakTracker } from '@/services/voiceGate';
 import { AlertTriangle, MicOff, RefreshCw, X } from 'lucide-react';
+import { EdgeAura } from '@/components/EdgeAura';
 
 type Backend = 'checking' | 'online' | 'offline';
 
@@ -378,39 +380,11 @@ export default function YuktiApp() {
         dispatchFeed({ type: 'refine', update: (c) => applyChartKind(c, val) });
       },
       export: (val) => {
-        // Backend /api/export returns {export_id, filename, format}; the file is then served
-        // from GET /api/export/{export_id}. Read the current contract from the ref (not inside a
-        // setState updater, which StrictMode double-invokes and would POST twice).
-        const v = (val || 'pdf').toLowerCase();
-        const fmt = v === 'xlsx' || v === 'sheets' || v === 'excel'
-          ? 'xlsx'
-          : v === 'docx' || v === 'word' || v === 'docs'
-            ? 'docx'
-            : 'pdf';
-        const prev = contractRef.current;
-        const title = prev?.visual?.title || 'Yukti_AI_Report';
-        const tbl = prev?.visual?.table;
-        const chartRows = ((prev?.visual?.chart as any)?.data as any[]) || [];
-        const rawRows: any[] = (tbl?.rows as any[]) || chartRows;
-        const columns: string[] = tbl?.columns || (rawRows[0] && !Array.isArray(rawRows[0]) ? Object.keys(rawRows[0]) : []);
-        // Backend expects rows as List[Dict]; zip array-shaped rows into objects.
-        const rows = rawRows.map((r) =>
-          Array.isArray(r) ? Object.fromEntries(columns.map((c, i) => [c, r[i]])) : r,
-        );
-        const docMd = prev?.visual?.document?.markdown || prev?.display_text || prev?.spoken_summary || '';
-        void yuktiClient
-          .exportFile({ format: fmt, title, content: docMd, columns, rows })
-          .then((res) => {
-            const href = res?.download_url || res?.url || (res?.export_id ? `/api/export/${encodeURIComponent(res.export_id)}` : '');
-            if (!href) return;
-            const a = document.createElement('a');
-            a.href = href;
-            a.download = res?.filename || `${title}.${res?.format || fmt}`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-          })
-          .catch((e) => console.warn('[yukti] export failed', e));
+        // P4.7 (SPEC-10 §4.8): typed/spoken export intents are performed by the latest answer card, which owns
+        // the live chart (PNG/SVG), the turn id (server-side RBAC) and the toast. Value: format | 'auto' | 'fmt:default'.
+        const detail: ExportEventDetail = { value: String(val || 'auto').toLowerCase() };
+        window.dispatchEvent(new CustomEvent<ExportEventDetail>(EXPORT_EVENT, { detail }));
+        if (!detail.handled) console.warn('[yukti] export intent with no answer on screen', detail.value);
       },
     },
     [],
@@ -446,7 +420,7 @@ export default function YuktiApp() {
     } else if ((cmd === 'set_chart_kind' || cmd === 'chart_kind') && val) {
       dispatchUi({ action: 'chart_kind', value: val.toLowerCase() });
     } else if (cmd === 'export') {
-      dispatchUi({ action: 'export', value: val || 'pdf' });
+      dispatchUi({ action: 'export', value: val || 'auto' });
     }
   }, []);
 
@@ -1183,6 +1157,7 @@ export default function YuktiApp() {
           />
         </main>
 
+        <EdgeAura state={orbState} />
         <FloatingConversationPanel
           panelMode={panelMode}
           onModeChange={setPanelMode}

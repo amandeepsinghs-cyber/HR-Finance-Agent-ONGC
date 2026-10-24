@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
-
+import { registerChart, unregisterChart } from './chartRegistry';
 
 interface EChartProps {
   option: echarts.EChartsOption;
@@ -20,10 +20,12 @@ export const EChart: React.FC<EChartProps> = ({ option, className = '', style, t
     if (!el.current) return;
     const chart = echarts.init(el.current, undefined, { renderer: 'canvas' });
     inst.current = chart;
+    registerChart(el.current, chart); // P4.7: PNG/SVG export finds the live instance from the card's DOM node
     const ro = new ResizeObserver(() => chart.resize({ animation: { duration: 200 } }));
     ro.observe(el.current);
     return () => {
       ro.disconnect();
+      if (el.current) unregisterChart(el.current);
       chart.dispose();
       inst.current = null;
     };
@@ -37,5 +39,5 @@ export const EChart: React.FC<EChartProps> = ({ option, className = '', style, t
     requestAnimationFrame(() => inst.current?.resize());
   }, [option]);
 
-  return <div ref={el} data-testid={testId} className={`w-full h-full min-w-0 overflow-hidden ${className}`} style={style} />;
+  return <div ref={el} data-testid={testId} data-echart="" className={`w-full h-full min-w-0 overflow-hidden ${className}`} style={style} />;
 };

@@ -1,0 +1,2 @@
+{"synthetic": true, "note": "Illustrative fixture (P4.4): value + % time series -> combo", "kind": "combo", "unit": "₹ Cr",
+ "data": [{"fy":"FY22","revenue_cr":110345,"pat_margin_pct":36.5},{"fy":"FY23","revenue_cr":155517,"pat_margin_pct":25.0},{"fy":"FY24","revenue_cr":138402,"pat_margin_pct":29.3},{"fy":"FY25","revenue_cr":137846,"pat_margin_pct":25.8},{"fy":"FY26","revenue_cr":132508,"pat_margin_pct":24.8}]}

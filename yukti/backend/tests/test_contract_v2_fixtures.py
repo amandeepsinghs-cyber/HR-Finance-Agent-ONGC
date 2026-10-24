@@ -14,6 +14,7 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 SCHEMA_PATH = BASE_DIR / "yukti" / "contracts" / "answer_contract.schema.json"
 FIXTURES_V1_DIR = BASE_DIR / "yukti" / "frontend" / "src" / "fixtures"
 FIXTURES_V2_DIR = FIXTURES_V1_DIR / "v2"
+STATEMENT_FIXTURES_DIR = BASE_DIR / "yukti" / "contracts" / "fixtures" / "statement"
 
 # Load schema once
 with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
@@ -23,6 +24,7 @@ VALIDATOR = jsonschema.Draft202012Validator(SCHEMA)
 
 V1_FILES = sorted([p for p in FIXTURES_V1_DIR.glob("*.json") if p.is_file()])
 V2_FILES = sorted([p for p in FIXTURES_V2_DIR.glob("*.json") if p.is_file()])
+STATEMENT_FILES = sorted([p for p in STATEMENT_FIXTURES_DIR.glob("*.json") if p.is_file()])
 
 
 def load_json(path: Path) -> dict:
@@ -301,7 +303,7 @@ def test_v2_finance_pnl_numeric_claims():
     assert risk["value"] == total_loss
 
 
-@pytest.mark.parametrize("fixture_path", V2_FILES, ids=lambda p: p.name)
+@pytest.mark.parametrize("fixture_path", V2_FILES + STATEMENT_FILES, ids=lambda p: p.name)
 def test_v2_contract_version_and_display_text(fixture_path: Path):
     """Every v2 fixture must have contract_version == 2 and display_text <= 600 characters."""
     data = load_json(fixture_path)
@@ -312,3 +314,19 @@ def test_v2_contract_version_and_display_text(fixture_path: Path):
     assert len(display_text) <= 600, (
         f"{fixture_path.name} display_text exceeds 600 chars: {len(display_text)}"
     )
+
+
+@pytest.mark.parametrize("fixture_path", STATEMENT_FILES, ids=lambda p: p.name)
+def test_statement_fixture_validates_schema_and_invariants(fixture_path: Path):
+    """Every P4.2 statement fixture must validate against schema and pass totals_check."""
+    data = load_json(fixture_path)
+    errors = list(VALIDATOR.iter_errors(data))
+    assert not errors, f"{fixture_path.name} schema errors: {[e.message for e in errors]}"
+
+    vis = data["visual"]
+    assert vis["type"] == "statement"
+    stmt = vis["statement"]
+    assert stmt["periods"] == ["FY26", "FY25", "FY24", "FY23", "FY22"]
+    assert stmt["totals_check"]["passed"] is True
+    assert stmt["totals_check"]["max_abs_delta_cr"] <= 0.5
+    assert stmt.get("synthetic") is True

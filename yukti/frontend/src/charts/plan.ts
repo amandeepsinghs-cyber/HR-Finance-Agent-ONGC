@@ -22,6 +22,14 @@ export type ChartForm =
   | 'grouped'
   | 'stacked'
   | 'multiples'
+  | 'combo' // P4.4: bars (value) on the left axis + line (%) on the right axis
+  | 'stacked100' // P4.4: each category sums to 100%
+  | 'heatmap' // P4.4: category × category × measure
+  | 'box' // P4.4: quartiles per group
+  | 'gauge' // P4.4: single value vs target band
+  | 'bubble' // P4.5 B2: x · y · size (+ label)
+  | 'sunburst' // P4.5 B2: text levels → value
+  | 'sankey' // P4.5 B2: source → target flows
   | 'kpi';
 
 export interface Row {
@@ -46,6 +54,10 @@ export interface ChartPlan {
   annotations: { x: any; label: string }[];
   /** Raw values (sorted desc) when a histogram was requested over fewer than SPARSE_N values: drawn ranked. */
   sparseRows?: Row[];
+  /** P4.4 heatmap: second category key (y axis) */
+  dim2Key?: string;
+  /** P4.4 combo: measure drawn as the right-axis line */
+  lineKey?: string;
 }
 
 /** Below this many raw values a histogram (and its density line) misleads; the renderer ranks the values. */
@@ -64,7 +76,7 @@ function numericKeys(data: Record<string, any>[]): string[] {
   });
 }
 
-function isTextKey(data: Record<string, any>[], k?: string): k is string {
+export function isTextKey(data: Record<string, any>[], k?: string): k is string {
   if (!k || !data.length || !(k in data[0])) return false;
   return data.some((r) => r[k] !== null && r[k] !== undefined && toNumber(r[k]) === null);
 }
@@ -135,32 +147,46 @@ export function planChart(spec: ChartSpec): ChartPlan {
   let seriesKeys: string[] = [valueKey];
   let sparseRows: Row[] | undefined;
 
-  if (data.length === 1 && (!kind || kind === 'kpi')) {
+  // P4.4 (SPEC-09 §4.5): explicit portfolio kinds with their own data-shape rules.
+  const textKeys = keys.filter((k) => isTextKey(data, k) && !/status|type|unit/i.test(k));
+  const isPctKey = (k: string) => /pct|percent|margin|rate|ratio|%/i.test(k);
+  let dim2Key: string | undefined;
+  let lineKey: string | undefined;
+
+  const lower = keys.map((k) => k.toLowerCase());
+  if ((kind as string) === 'sankey' && ['source', 'target'].every((k) => lower.includes(k)) && metricKeys.length >= 1) {
+    form = 'sankey';
+  } else if ((kind as string) === 'sunburst' && textKeys.length >= 2 && metricKeys.length >= 1) {
+    form = 'sunburst';
+  } else if ((kind as string) === 'bubble' && metricKeys.length >= 3) {
+    const picked = [spec.x, spec.y, spec.value].filter((k): k is string => !!k && metricKeys.includes(k));
+    const rest = metricKeys.filter((k) => !picked.includes(k));
+    seriesKeys = [...picked, ...rest].slice(0, Math.max(3, metricKeys.length));
+    form = 'bubble';
+  } else if (kind === 'gauge' && data.length === 1) {
+    form = hasTarget ? 'gauge' : 'kpi';
+  } else if (kind === 'combo' && metricKeys.length >= 2) {
+    lineKey = metricKeys.find(isPctKey) || metricKeys[1];
+    const barKey = metricKeys.find((k) => k !== lineKey) || valueKey;
+    seriesKeys = [barKey, lineKey];
+    form = 'combo';
+  } else if (kind === 'stacked_100' && metricKeys.length >= 2 && !data.some((r) => metricKeys.some((k) => (toNumber(r[k]) ?? 0) < 0))) {
+    seriesKeys = metricKeys.slice(0, 8);
+    form = 'stacked100';
+  } else if (kind === 'heatmap' && textKeys.length >= 2) {
+    dim2Key = textKeys.find((k) => k !== dimKey);
+    form = 'heatmap';
+  } else if (kind === 'box' && (textKeys.length >= 1 || ['min', 'q1', 'median', 'q3', 'max'].every((k) => keys.includes(k)))) {
+    form = 'box';
+  } else if (data.length === 1 && (!kind || kind === 'kpi')) {
     form = 'kpi';
   } else if (data.length === 1 && metricKeys.length >= 2) {
-    // Single-entity row with multiple measures (e.g. Ankleshwar Asset Revenue, EBITDA, PBT): pivot measures or build P&L waterfall
+    // Single-entity row with multiple measures (e.g. Ankleshwar Asset Revenue, EBITDA, PBT): pivot the measures.
+    // P4.1 (BUG-09): never synthesise a P&L bridge from one row (no invented EBITDA / OPEX / DD&A). A waterfall of
+    // one entity's measures is shown as plain metric bars; real bridges come from bridge.ts with typed rows.
     const r0 = data[0];
-    const revK = metricKeys.find((k) => /revenue/i.test(k));
-    const ebitdaK = metricKeys.find((k) => /ebitda/i.test(k));
-    const pbtK = metricKeys.find((k) => /\bpbt\b|profit/i.test(k));
-    if (kind === 'waterfall' && revK && pbtK) {
-      const rev = toNumber(r0[revK]) ?? 0;
-      const pbt = toNumber(r0[pbtK]) ?? 0;
-      const ebitda = ebitdaK ? (toNumber(r0[ebitdaK]) ?? Math.round((rev + pbt) / 2)) : Math.round(rev * 0.68);
-      const opex = Number((ebitda - rev).toFixed(2));
-      const dda = Number((pbt - ebitda).toFixed(2));
-      rows = [
-        { label: 'Gross Revenue', value: rev, raw: { step: 'Gross Revenue', amount_cr: rev, type: 'base' } },
-        { label: 'OPEX & Levies', value: opex, raw: { step: 'OPEX & Levies', amount_cr: opex, type: 'loss' } },
-        { label: 'EBITDA', value: ebitda, raw: { step: 'EBITDA', amount_cr: ebitda, type: 'total' } },
-        { label: 'DD&A', value: dda, raw: { step: 'DD&A', amount_cr: dda, type: 'loss' } },
-        { label: 'PBT (Net)', value: pbt, raw: { step: 'PBT (Net)', amount_cr: pbt, type: 'total' } },
-      ];
-      form = 'waterfall';
-    } else {
-      rows = metricKeys.map((k) => ({ label: humanizeValue(k), value: toNumber(r0[k]) ?? 0, raw: { metric: k, value: toNumber(r0[k]) ?? 0 } }));
-      form = kind === 'pie' ? 'pie' : kind === 'donut' ? 'donut' : kind === 'waterfall' ? 'waterfall' : kind === 'line' ? 'line' : kind === 'area' ? 'area' : kind === 'treemap' ? 'treemap' : kind === 'funnel' ? 'funnel' : kind === 'hbar' ? 'ranked' : 'column';
-    }
+    rows = metricKeys.map((k) => ({ label: humanizeValue(k), value: toNumber(r0[k]) ?? 0, raw: { metric: k, value: toNumber(r0[k]) ?? 0 } }));
+    form = kind === 'pie' ? 'pie' : kind === 'donut' ? 'donut' : kind === 'line' ? 'line' : kind === 'area' ? 'area' : kind === 'treemap' ? 'treemap' : kind === 'funnel' ? 'funnel' : kind === 'hbar' ? 'ranked' : 'column';
   } else if (kind === 'pie') {
     form = 'pie';
   } else if (kind === 'donut') {
@@ -328,5 +354,7 @@ export function planChart(spec: ChartSpec): ChartPlan {
     total,
     annotations: spec.annotations || [],
     ...(sparseRows ? { sparseRows } : {}),
+    ...(dim2Key ? { dim2Key } : {}),
+    ...(lineKey ? { lineKey } : {}),
   };
 }

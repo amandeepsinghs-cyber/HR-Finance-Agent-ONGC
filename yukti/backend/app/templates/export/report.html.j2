@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="{{ language | default('en') }}">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ title }}</title>
+  <style>
+    @font-face {
+      font-family: "NotoSans";
+      src: url("{{ fonts_dir_uri }}/NotoSans-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "NotoSans";
+      src: url("{{ fonts_dir_uri }}/NotoSans-Bold.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "NotoSansDevanagari";
+      src: url("{{ fonts_dir_uri }}/NotoSansDevanagari-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "NotoSansDevanagari";
+      src: url("{{ fonts_dir_uri }}/NotoSansDevanagari-Bold.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+    }
+    {{ css_text | safe }}
+  </style>
+</head>
+<body class="{% if landscape %}landscape{% endif %}">
+  <div class="footer-string-setter" data-footer="{{ footer_text }}"></div>
+
+  <header class="header-band">
+    <div class="wordmark">ONGC Yukti AI · ओएनजीसी युक्ति (₹)</div>
+    <h1 class="report-title">{{ title }}</h1>
+    {% if subtitle %}
+    <p class="report-subtitle">{{ subtitle }}</p>
+    {% endif %}
+  </header>
+
+  <div class="meta-line">
+    As of: <strong>{{ as_of }}</strong> · Source: <strong>{{ source_label }}</strong> · Basis: <strong>{{ basis }}</strong> · Persona: <strong>{{ persona }}</strong> · Masked: <strong>{{ "Yes" if masked else "No" }}</strong>
+  </div>
+
+  {% if is_aggregate %}
+  <div class="aggregate-banner">
+    Aggregate view (access level: {{ persona }})
+  </div>
+  {% endif %}
+
+  {% if kpis %}
+  <div class="kpi-grid">
+    {% for kpi in kpis[:3] %}
+    <div class="kpi-tile">
+      <div class="kpi-label">{{ kpi.label }}</div>
+      <div class="kpi-value">{{ kpi.value }}</div>
+      {% if kpi.sub %}
+      <div class="kpi-sub">{{ kpi.sub }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if display_text %}
+  <div class="summary-block">{{ display_text }}</div>
+  {% endif %}
+
+  {% if chart_data_url %}
+  <div class="chart-container">
+    <img class="chart-image" src="{{ chart_data_url }}" alt="Chart visual" />
+  </div>
+  {% elif chart_missing_note %}
+  <div class="chart-missing-note">
+    Chart image not included; download PNG from the card.
+  </div>
+  {% endif %}
+
+  {% if statement_table %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Line Item ({{ statement_table.unit_label }})</th>
+        {% for p in statement_table.periods %}
+        <th class="num">{{ p }}</th>
+        {% endfor %}
+        {% if statement_table.show_yoy %}
+        <th class="num">YoY (%)</th>
+        {% endif %}
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in statement_table.rows %}
+      <tr class="stmt-{{ row.kind }}">
+        <td class="indent-{{ row.level }}">{{ row.label }}</td>
+        {% for cell_val in row.period_cells %}
+        <td class="num">{{ cell_val }}</td>
+        {% endfor %}
+        {% if statement_table.show_yoy %}
+        <td class="num">{{ row.yoy_cell }}</td>
+        {% endif %}
+        <td>{{ row.note_ref }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  {% for tbl in tables %}
+  {% if tbl.title %}
+  <h2 style="font-size: 11pt; margin: 10px 0 4px 0;">{{ tbl.title }}</h2>
+  {% endif %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        {% for col in tbl.columns %}
+        <th class="{% if col.is_num %}num{% endif %}">{{ col.header }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in tbl.rows %}
+      <tr>
+        {% for cell in r %}
+        <td class="{% if cell.is_num %}num{% endif %}">{{ cell.text }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endfor %}
+
+  {% if markdown_paragraphs %}
+  <div class="summary-block">
+    {% for p in markdown_paragraphs %}
+    <p>{{ p }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if footnotes %}
+  <div class="footnotes">
+    {% for fn in footnotes %}
+    <p>{{ fn }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="doc-footer">
+    {{ footer_text }}
+  </div>
+</body>
+</html>

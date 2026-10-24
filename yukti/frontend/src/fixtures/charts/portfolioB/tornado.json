@@ -1,0 +1,71 @@
+{
+ "type": "tornado",
+ "mode": "replace",
+ "title": "Illustrative fixture: per-share swing by driver",
+ "tornado": {
+  "output": {
+   "name": "Value per share",
+   "unit": "INR",
+   "base": 250.0
+  },
+  "source": "Illustrative UI test fixture, not ONGC data",
+  "bars": [
+   {
+    "driver": "wacc",
+    "low_input": "-1pp",
+    "high_input": "+1pp",
+    "low_inr": 295.0,
+    "high_inr": 214.0
+   },
+   {
+    "driver": "brent",
+    "low_input": "-$10/bbl",
+    "high_input": "+$10/bbl",
+    "low_inr": 205.0,
+    "high_inr": 296.0
+   },
+   {
+    "driver": "holdco_discount",
+    "low_input": "0%",
+    "high_input": "30%",
+    "low_inr": 250.0,
+    "high_inr": 226.0
+   },
+   {
+    "driver": "terminal_g",
+    "low_input": "-1pp",
+    "high_input": "+1pp",
+    "low_inr": 231.0,
+    "high_inr": 274.0
+   },
+   {
+    "driver": "opex_boe",
+    "low_input": "-15%",
+    "high_input": "+15%",
+    "low_inr": 268.0,
+    "high_inr": 232.0
+   },
+   {
+    "driver": "capex",
+    "low_input": "-20%",
+    "high_input": "+20%",
+    "low_inr": 262.0,
+    "high_inr": 238.0
+   },
+   {
+    "driver": "production",
+    "low_input": "-10%",
+    "high_input": "+10%",
+    "low_inr": 222.0,
+    "high_inr": 278.0
+   },
+   {
+    "driver": "inr_usd",
+    "low_input": "-5%",
+    "high_input": "+5%",
+    "low_inr": 240.0,
+    "high_inr": 260.0
+   }
+  ]
+ }
+}

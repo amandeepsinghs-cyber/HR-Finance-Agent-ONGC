@@ -1,0 +1,116 @@
+{
+  "turn_id": "turn_hindi_rev_pat_synthetic",
+  "language": "hi",
+  "persona": "CMD",
+  "spoken_summary": "वित्त वर्ष 2022 से 2026 तक ओएनजीसी का राजस्व और कर पश्चात लाभ (PAT) यहाँ दिया गया है। वित्त वर्ष 2026 में राजस्व ₹1,32,508 करोड़ रहा।",
+  "display_text": "ओएनजीसी स्टैंडअलोन वित्तीय सारांश: राजस्व और कर पश्चात लाभ (₹ करोड़, सिंथेटिक) [1]।",
+  "contract_version": 2,
+  "visual": {
+    "type": "table",
+    "mode": "replace",
+    "title": "ओएनजीसी राजस्व और शुद्ध लाभ (FY22–FY26)",
+    "subtitle": "इकाई: ₹ करोड़ · स्रोत: सिंथेटिक (Illustrative)",
+    "kpis": [
+      {
+        "label": "राजस्व (FY26)",
+        "value": "₹1,32,508 Cr",
+        "sub": "-3.9% YoY"
+      },
+      {
+        "label": "शुद्ध लाभ PAT (FY26)",
+        "value": "₹38,348 Cr",
+        "sub": "+7.6% YoY"
+      }
+    ],
+    "table": {
+      "columns": [
+        "fiscal_year",
+        "revenue_inr_cr",
+        "pat_inr_cr",
+        "pat_margin_pct"
+      ],
+      "headers": {
+        "fiscal_year": "वित्त वर्ष (FY)",
+        "revenue_inr_cr": "राजस्व (₹ करोड़)",
+        "pat_inr_cr": "शुद्ध लाभ PAT (₹ करोड़)",
+        "pat_margin_pct": "PAT मार्जिन (%)"
+      },
+      "rows": [
+        {
+          "fiscal_year": "FY26",
+          "revenue_inr_cr": 132508.14,
+          "pat_inr_cr": 38348.07,
+          "pat_margin_pct": 28.9
+        },
+        {
+          "fiscal_year": "FY25",
+          "revenue_inr_cr": 137846.29,
+          "pat_inr_cr": 35629.5,
+          "pat_margin_pct": 25.8
+        },
+        {
+          "fiscal_year": "FY24",
+          "revenue_inr_cr": 138402.13,
+          "pat_inr_cr": 40525.96,
+          "pat_margin_pct": 29.3
+        },
+        {
+          "fiscal_year": "FY23",
+          "revenue_inr_cr": 155517.32,
+          "pat_inr_cr": 38828.87,
+          "pat_margin_pct": 25.0
+        },
+        {
+          "fiscal_year": "FY22",
+          "revenue_inr_cr": 110345.4,
+          "pat_inr_cr": 40305.74,
+          "pat_margin_pct": 36.5
+        }
+      ]
+    }
+  },
+  "email_draft": {
+    "from": {
+      "name": "Arun Mehra, Chairman & Managing Director",
+      "email": "cmd@ongc.example"
+    },
+    "to": [
+      {
+        "name": "Director (HR)",
+        "email": "director.hr@ongc.example"
+      }
+    ],
+    "cc": [],
+    "subject": "समीक्षा अनुरोध / Review requested: 65 executives at Delhi beyond 5 years continuous stay (as of 19-Oct-2026)",
+    "body_md": "चर्चा के अनुसार, दिल्ली (WC-DEL) में 5 वर्ष से अधिक निरंतर कार्यकाल वाले **65 अधिकारियों** की सूची समीक्षा हेतु संलग्न है।\n\n| Level | Count |\n| --- | --- |\n| E1 | 8 |\n| E2 | 12 |\n| E3 | 14 |\n| E4 | 10 |\n| E5 | 8 |\n| E6 | 5 |\n| E7 | 3 |\n| E8 | 3 |\n| E9 | 2 |\n| Total | 65 |\n\nनीति आधार: JRTP Rev 4 clause 3.2 (Illustrative) एवं Delhi HC LPA 744/2013 (J-03)।",
+    "citations": [
+      "JRTP Rev 4 clause 3.2 (Illustrative)",
+      "Delhi HC LPA 744/2013 (J-03)"
+    ],
+    "editable": true
+  },
+  "insights": [
+    "वित्त वर्ष 2026 में राजस्व ₹1,32,508.14 करोड़ और शुद्ध लाभ ₹38,348.07 करोड़ रहा।"
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.mart_corporate_performance",
+      "title": "सिंथेटिक वित्तीय डेटा (Illustrative)",
+      "as_of": "2026-03-31"
+    }
+  ],
+  "suggestions": [
+    "पीडीएफ डाउनलोड करें"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "pdf",
+    "xlsx",
+    "csv",
+    "docx",
+    "eml"
+  ]
+}

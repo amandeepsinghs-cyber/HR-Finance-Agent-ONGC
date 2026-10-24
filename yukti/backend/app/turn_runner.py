@@ -330,6 +330,25 @@ class AgentTurnRunner:
             except Exception as e_ins:
                 logger.info(f"legacy insights skipped: {e_ins}")
         self._validate_contract(contract)
+        try:
+            from app.export_audit import register_turn_contract
+
+            emp_id = getattr(principal, "emp_id", "") if principal is not None else ""
+            if not emp_id:
+                emp_id = PERSONA_DIRECTORY.get(persona_eff, {}).get("emp_id", "")
+            sess_st = self.session_manager.get_or_create_session(session_id, persona=persona_eff)
+            sess_st.emp_id = emp_id
+            if sess_st.turns and sess_st.turns[-1].get("turn_id") == contract.get("turn_id"):
+                sess_st.turns[-1]["emp_id"] = emp_id
+            register_turn_contract(
+                turn_id=str(contract.get("turn_id") or ""),
+                contract=contract,
+                emp_id=emp_id,
+                persona=persona_eff,
+                session_id=session_id,
+            )
+        except Exception as e_reg:
+            logger.debug(f"turn export registration skipped: {e_reg}")
         return contract
 
     async def _execute_turn_inner(
@@ -440,10 +459,53 @@ class AgentTurnRunner:
             # is exported to .xlsx with column honouring, RBAC masking, and contract.artifacts[].
             sc_intent = None
 
+        # P4.1 (BEH-07.34 / fedback2, M1 & R2-M1):
+        # 1) Single-metric waterfall request ("Ankleshwar का टोटल रेवेन्यू का वॉटरफॉल चार्ट बना दो"):
+        #    only route to set_chart_kind when the current visual on screen is a single-value KPI (or empty).
+        # 2) FY-specific waterfall request ("Show FY24 as a waterfall", "Show FY24 P&L as a waterfall"):
+        #    if a multi-period `statement` visual is on screen and already holds that FY in `statement.periods`,
+        #    route to set_chart_kind so `bridge(stmt_dict, period=req_fy)` runs directly on the on-screen statement;
+        #    otherwise (e.g. a wide multi-year P&L trend is on screen), leave `sc_intent = None` so the planner
+        #    compiles single-FY `pnl_statement` -> `bridge.py`.
+        is_fy_pnl_waterfall_req = False
+        if requested_chart_kind == "waterfall":
+            from app.semantic.normalize import resolve_fy as _resolve_fy_early
+
+            prev_vis_m1 = session_state.get_last_visual() or {}
+            prev_rows_m1 = session_state.last_rows or (prev_vis_m1.get("table") or {}).get("rows") or []
+            prev_stmt_m1 = prev_vis_m1.get("statement") if isinstance(prev_vis_m1.get("statement"), dict) else None
+            prev_stmt_periods = [str(p) for p in (prev_stmt_m1.get("periods") or []) if p] if prev_stmt_m1 else []
+            fy_early_res = _resolve_fy_early(query)
+            req_fy_early = fy_early_res.get("fy") if isinstance(fy_early_res, dict) and fy_early_res.get("fy") else None
+
+            if req_fy_early and not (fy_early_res or {}).get("from"):
+                if prev_stmt_m1 and prev_stmt_m1.get("statement") == "pnl" and req_fy_early in prev_stmt_periods:
+                    sc_intent = {"action": "chart_kind", "command": "set_chart_kind", "value": "waterfall"}
+                else:
+                    sc_intent = None
+                    if (
+                        not self.ents.resolve_wcs(query) if hasattr(self, "ents") else not get_entities().resolve_wcs(query)
+                    ) and not get_entities().resolve_field(query) and not re.search(r"\b(balance\s+sheet|cash\s*flow)\b", q_clean):
+                        is_fy_pnl_waterfall_req = True
+            elif sc_intent is None:
+                is_single_kpi_on_screen = prev_vis_m1.get("type") in ("kpi", "none", None) and len(prev_rows_m1) <= 1
+                is_single_metric_wf = bool(
+                    re.search(r"(टोटल\s+रेवेन्यू|कुल\s+रेवेन्यू|total\s+revenue|रेवेन्यू\s+का\s+वॉटरफॉल|रेवेन्यू\s+का\s+वाटरफॉल)", q_clean)
+                    and not re.search(r"\b(pat|pbt|profit|pnl|p&l|statement|bridge|income\s+statement)\b|लाभ|प्रॉफिट", q_clean)
+                )
+                if is_single_metric_wf and is_single_kpi_on_screen:
+                    sc_intent = {"action": "chart_kind", "command": "set_chart_kind", "value": "waterfall"}
+
         if sc_intent:
             cmd = sc_intent["command"]
             val = sc_intent["value"]
             last_vis = dict(session_state.get_last_visual() or {"type": "none", "mode": "replace"})
+            sc_suggestions = [
+                "Plot this as a pie chart",
+                "Show as a horizontal bar chart",
+                "Draft a briefing note on this",
+            ]
+            sc_ui_action: Optional[Dict[str, str]] = {"command": cmd, "value": val}
             if cmd == "go_home":
                 last_vis = {"type": "none", "mode": "replace"}
                 spoken_sc = "Returned to the Yukti home screen."
@@ -459,16 +521,210 @@ class AgentTurnRunner:
             elif cmd == "set_panel_mode":
                 spoken_sc = f"Adjusted the conversation panel to {val}."
             elif cmd == "set_chart_kind":
+                from app.brain.bridge import (
+                    BridgeError,
+                    BridgeOk,
+                    bridge,
+                    bridge_class_of,
+                    no_visual_copy,
+                    non_bridge_data_copy,
+                    replot_success_copy,
+                    single_value_error,
+                    which_year_copy,
+                )
+                from app.semantic.normalize import resolve_fy
+
                 tbl = last_vis.get("table") or {}
                 cols = tbl.get("columns") or session_state.last_columns or []
                 rows = session_state.last_rows or tbl.get("rows") or []
                 if not rows and last_vis.get("chart") and isinstance(last_vis["chart"].get("data"), list):
                     rows = last_vis["chart"]["data"]
                     cols = list(rows[0].keys()) if rows else []
-                if val == "table" and rows:
-                    last_vis["type"] = "table"
+
+                spoken_sc = ""
+                existing_chart = last_vis.get("chart") if isinstance(last_vis.get("chart"), dict) else None
+                has_typed_wf = bool(
+                    existing_chart
+                    and existing_chart.get("kind") == "waterfall"
+                    and isinstance(existing_chart.get("data"), list)
+                    and existing_chart["data"]
+                    and all(isinstance(r, dict) and r.get("type") in ("total", "delta") for r in existing_chart["data"])
+                )
+                rows_are_typed_wf = bool(
+                    rows
+                    and all(isinstance(r, dict) and r.get("type") in ("total", "delta") for r in rows)
+                )
+
+                stmt_dict = last_vis.get("statement") if isinstance(last_vis.get("statement"), dict) else None
+                stmt_periods = [str(p) for p in (stmt_dict.get("periods") or []) if p] if stmt_dict else []
+                flat_stmt_rows = (
+                    [
+                        r
+                        for s in (stmt_dict.get("sections") or [])
+                        if isinstance(s, dict)
+                        for r in (s.get("rows") or [])
+                        if isinstance(r, dict)
+                    ]
+                    if stmt_dict
+                    else []
+                )
+                candidate_stmt_rows = flat_stmt_rows or [r for r in rows if isinstance(r, dict)]
+                is_pnl_stmt_vis = bool(
+                    (stmt_dict and stmt_dict.get("statement") == "pnl")
+                    or any(bridge_class_of(r.get("line_code")) == "start" for r in candidate_stmt_rows)
+                    or (
+                        not has_typed_wf
+                        and any(bridge_class_of(r.get("line_code")) is not None for r in candidate_stmt_rows)
+                    )
+                )
+                is_other_stmt_vis = bool(
+                    not is_pnl_stmt_vis
+                    and (
+                        last_vis.get("type") == "statement"
+                        or stmt_dict is not None
+                        or ("line_code" in cols)
+                        or any(isinstance(r, dict) and r.get("line_code") for r in rows)
+                    )
+                )
+
+                # Detect explicit single-FY selection in the current utterance (BEH-04.12)
+                fy_res = resolve_fy(query)
+                req_fy = fy_res.get("fy") if isinstance(fy_res, dict) and fy_res.get("fy") else None
+                if (
+                    req_fy is None
+                    and len(stmt_periods) == 2
+                    and getattr(session_state, "spec_history", None)
+                    and isinstance(session_state.spec_history[-1], dict)
+                ):
+                    last_p = session_state.spec_history[-1].get("period") or {}
+                    if isinstance(last_p, dict) and last_p.get("fy") and not last_p.get("from"):
+                        req_fy = str(last_p["fy"]).upper()
+
+                # Detect multi-period statement or multi-FY P&L trend table (M2 / BEH-04.12)
+                multi_fy_list: List[str] = []
+                if len(stmt_periods) > 1:
+                    multi_fy_list = stmt_periods
+                elif len(rows) > 1 and not is_pnl_stmt_vis:
+                    fy_col = next((c for c in cols if str(c).lower() in ("fiscal_year", "fy", "financial_year")), None)
+                    has_fin_cols = any(
+                        re.search(r"revenue|pbt|pat|ebitda|income|expense|profit|margin|assets|cash", str(c), re.I)
+                        for c in cols
+                    )
+                    if fy_col and has_fin_cols:
+                        seen_fys: List[str] = []
+                        for r in rows:
+                            if isinstance(r, dict) and r.get(fy_col):
+                                fy_v = str(r[fy_col])
+                                if fy_v not in seen_fys:
+                                    seen_fys.append(fy_v)
+                        if len(seen_fys) > 1:
+                            multi_fy_list = sorted(seen_fys, reverse=True)
+
+                if val == "table":
+                    if isinstance(last_vis.get("statement"), dict):
+                        last_vis["type"] = "statement"
+                        last_vis["mode"] = "refine"
+                    elif isinstance(last_vis.get("table"), dict) and last_vis["table"].get("rows"):
+                        last_vis["type"] = "table"
+                        last_vis["mode"] = "refine"
+                    elif rows:
+                        last_vis["type"] = "table"
+                        last_vis["mode"] = "refine"
+                        last_vis["table"] = {"columns": cols, "rows": rows[:50]}
+                elif val == "waterfall":
+                    if len(multi_fy_list) > 1 and (not req_fy or not is_pnl_stmt_vis):
+                        # M2 / BEH-04.12: multi-period statement or multi-year P&L asks "Which year?" with FY chips
+                        # R2-S2: keep last_vis["type"] unchanged
+                        spoken_sc = which_year_copy(multi_fy_list, lang=det_lang)
+                        sc_suggestions = [f"Show {p} P&L as a waterfall" for p in multi_fy_list[:3]]
+                        sc_ui_action = None
+                    elif is_pnl_stmt_vis:
+                        stmt_source = stmt_dict if stmt_dict is not None else rows
+                        selected_period = req_fy or (stmt_periods[0] if len(stmt_periods) == 1 else None)
+                        if selected_period is None:
+                            row_fys = {
+                                str(r.get("fiscal_year"))
+                                for r in candidate_stmt_rows
+                                if r.get("fiscal_year")
+                            }
+                            if len(row_fys) == 1:
+                                selected_period = next(iter(row_fys))
+                        if selected_period is None:
+                            # R2-S1: recover FY from session spec_history or active visual title/KPIs
+                            if getattr(session_state, "spec_history", None) and isinstance(session_state.spec_history[-1], dict):
+                                p_obj = session_state.spec_history[-1].get("period") or {}
+                                if isinstance(p_obj, dict) and p_obj.get("fy"):
+                                    selected_period = str(p_obj["fy"]).upper()
+                            if selected_period is None:
+                                fy_m = re.search(
+                                    r"\b(FY\d{2})\b",
+                                    f"{last_vis.get('title') or ''} {last_vis.get('subtitle') or ''} {json.dumps(last_vis.get('kpis') or [])}",
+                                    re.I,
+                                )
+                                if fy_m:
+                                    selected_period = fy_m.group(1).upper()
+                        b_res = bridge(stmt_source, period=selected_period)
+                        if isinstance(b_res, BridgeOk):
+                            last_vis["type"] = "chart"
+                            last_vis["mode"] = "refine"
+                            last_vis["chart"] = b_res.to_chart_spec()
+                            spoken_sc = b_res.spoken_summary(lang=det_lang)
+                        else:
+                            # R2-S2: keep last_vis["type"] unchanged; never emit false re-plot confirmation
+                            spoken_sc = b_res.message(lang=det_lang)
+                            sc_ui_action = None
+                    elif has_typed_wf:
+                        # S4: Cash-flow statement or existing typed waterfall keeps its typed chart
+                        last_vis["type"] = "chart"
+                        last_vis["mode"] = "refine"
+                    elif is_other_stmt_vis:
+                        stmt_source = stmt_dict if stmt_dict is not None else rows
+                        selected_period = req_fy or (stmt_periods[0] if len(stmt_periods) == 1 else None)
+                        b_res = bridge(stmt_source, period=selected_period)
+                        spoken_sc = b_res.message(lang=det_lang) if isinstance(b_res, BridgeError) else single_value_error().message(lang=det_lang)
+                        sc_ui_action = None
+                    elif len(rows) <= 1 or last_vis.get("type") in ("kpi", "none"):
+                        b_err = single_value_error()
+                        spoken_sc = b_err.message(lang=det_lang)
+                        ent_name = None
+                        for ek in ("wc_name", "asset_name", "field_name"):
+                            if session_state.active_entities.get(ek):
+                                ent_name = str(session_state.active_entities[ek])
+                                break
+                        if not ent_name:
+                            vis_title = str(last_vis.get("title") or "")
+                            if ":" in vis_title:
+                                cand = vis_title.split(":", 1)[0].strip()
+                                cand = re.sub(r"\s+Asset$", "", cand, flags=re.I).strip()
+                                if cand:
+                                    ent_name = cand
+                        sug = b_err.suggestion(lang=det_lang, entity=ent_name)
+                        if sug:
+                            sc_suggestions = [sug] + sc_suggestions[:2]
+                        sc_ui_action = None
+                    elif rows_are_typed_wf and cols:
+                        last_vis["type"] = "chart"
+                        last_vis["mode"] = "refine"
+                        last_vis["chart"] = build_chart_spec(
+                            kind=val,
+                            columns=cols,
+                            rows=rows,
+                            title=last_vis.get("title", "Updated Chart View"),
+                        )
+                    else:
+                        # R2-S4: Never build an unsigned waterfall from untyped category/trend rows (BUG-08, SPEC-09 §4.3);
+                        # keep last_vis["type"] unchanged and explain with neutral non-bridge copy.
+                        cur_kind = (
+                            existing_chart.get("kind")
+                            if (last_vis.get("type") == "chart" and existing_chart and existing_chart.get("kind"))
+                            else str(last_vis.get("type") or "table")
+                        )
+                        spoken_sc = non_bridge_data_copy(str(cur_kind), lang=det_lang)
+                        sc_ui_action = None
+                elif existing_chart and existing_chart.get("kind") == val and existing_chart.get("data"):
+                    # Keep existing chart when kinds match
+                    last_vis["type"] = "chart"
                     last_vis["mode"] = "refine"
-                    last_vis["table"] = {"columns": cols, "rows": rows[:50]}
                 elif rows and cols:
                     last_vis["type"] = "chart"
                     last_vis["mode"] = "refine"
@@ -480,22 +736,26 @@ class AgentTurnRunner:
                     )
                     if not last_vis.get("table"):
                         last_vis["table"] = {"columns": cols, "rows": rows[:30]}
-                chart_friendly = {
-                    "pie": "pie chart",
-                    "donut": "donut chart",
-                    "histogram": "histogram distribution",
-                    "hbar": "horizontal ranked bar chart",
-                    "bar": "vertical bar chart",
-                    "stacked_bar": "stacked bar chart",
-                    "line": "line trend chart",
-                    "area": "area chart",
-                    "scatter": "scatter plot",
-                    "treemap": "hierarchical treemap",
-                    "heatmap": "heatmap matrix",
-                    "waterfall": "waterfall bridge chart",
-                    "table": "data table",
-                }.get(val, f"{val} view")
-                spoken_sc = f"I've replotted the current data as a {chart_friendly} on screen."
+
+                # Verify that a valid target visual exists before emitting confirmation copy (BEH-04.20–.21)
+                if val == "table":
+                    visual_ok = last_vis.get("type") in ("table", "statement") and bool(
+                        (last_vis.get("table") or {}).get("rows") or last_vis.get("statement")
+                    )
+                else:
+                    visual_ok = (
+                        sc_ui_action is not None
+                        and last_vis.get("type") == "chart"
+                        and isinstance(last_vis.get("chart"), dict)
+                        and bool(last_vis["chart"].get("data"))
+                    )
+
+                if not visual_ok:
+                    sc_ui_action = None
+                    if not spoken_sc:
+                        spoken_sc = no_visual_copy(val, lang=det_lang)
+                elif not spoken_sc:
+                    spoken_sc = replot_success_copy(val, lang=det_lang)
             elif cmd == "export":
                 spoken_sc = f"Exporting the current view to {val.upper()}."
             elif cmd == "navigate_history":
@@ -515,26 +775,23 @@ class AgentTurnRunner:
             else:
                 spoken_sc = f"Applied screen command {cmd}."
 
-            sc_contract = {
+            sc_contract: Dict[str, Any] = {
                 "turn_id": turn_id,
                 "language": det_lang,
                 "persona": norm_persona,
                 "spoken_summary": spoken_sc,
                 "display_text": spoken_sc,
                 "visual": last_vis,
-                "insights": [f"Visual mode updated to {val}"],
+                "insights": [f"Visual mode updated to {val}" if sc_ui_action else "Visual unchanged"],
                 "sources": [{"kind": "data", "object": "hrfin_gold", "sql": session_state.last_sql or ""}],
-                "suggestions": [
-                    "Plot this as a pie chart",
-                    "Show as a horizontal bar chart",
-                    "Draft a briefing note on this",
-                ],
+                "suggestions": sc_suggestions,
                 "access": {"status": "allowed"},
                 "export_options": ["pdf", "xlsx", "sheets"],
                 "status_events": [spoken_sc],
-                "ui_action": {"command": cmd, "value": val},
                 "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
             }
+            if sc_ui_action is not None:
+                sc_contract["ui_action"] = sc_ui_action
             self._validate_contract(sc_contract)
             session_state.record_turn(sc_contract, user_query=query)
             return sc_contract
@@ -740,7 +997,7 @@ class AgentTurnRunner:
         # only greeting and screen control answer before the question is understood. Anything the
         # planner cannot answer (policy, what-if, documents, unknown metric) continues on the
         # legacy path unchanged. Flag off = baseline behaviour.
-        planner_on = planner_enabled()
+        planner_on = planner_enabled() or is_fy_pnl_waterfall_req
         # B3.5: transfer note from the selected roster rows (row action: spec_patch add_filters
         # emp_id|emp_name in [...] or ui_context) or the roster on screen. Runs before the planner so a
         # row-action patch is never interpreted as a query refinement.

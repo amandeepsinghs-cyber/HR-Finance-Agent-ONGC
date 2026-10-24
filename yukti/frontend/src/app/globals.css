@@ -499,3 +499,29 @@
 @media (prefers-reduced-motion: reduce) {
   .yk-edge-aura { animation: none; opacity: 0.85; }
 }
+
+/* P4.3 (SPEC-09 §4.2): financial statement table — labels wrap (never truncated, BUG-38), sticky label column,
+   tabular right-aligned figures, bold subtotals with a hairline rule, totals with a double rule, no zebra/bars. */
+.yk-statement__table { table-layout: auto; }
+.yk-statement__head { font-weight: 600; color: var(--ink); padding: 0.7rem 0.9rem 0.15rem; white-space: nowrap; background: var(--card); }
+.yk-statement__unit { font-weight: 500; font-size: 0.78rem; color: var(--ink-2); padding: 0 0.9rem 0.55rem; white-space: nowrap; border-bottom: 1px solid var(--hairline); background: var(--card); }
+.yk-statement__scope { font-weight: 500; color: var(--ink-2); }
+.yk-statement__label-cell {
+  position: sticky; left: 0; z-index: 1; background: var(--card);
+  min-width: min(22rem, 46vw); width: 40%; max-width: 34rem;
+  white-space: normal; overflow-wrap: anywhere; word-break: normal; text-overflow: clip;
+  padding: 0.42rem 0.9rem; font-weight: 400; color: var(--ink); vertical-align: top; line-height: 1.4;
+}
+.yk-statement__label { white-space: normal; }
+.yk-statement__num { font-variant-numeric: tabular-nums lining-nums; padding: 0.42rem 0.9rem; white-space: nowrap; color: var(--ink); vertical-align: top; }
+.yk-statement__yoy { color: var(--ink-2); }
+.yk-statement__yoy--neg { color: var(--maroon); }
+.yk-statement__section th { font-size: 0.76rem; font-variant: all-small-caps; letter-spacing: 0.06em; color: var(--ink-2); font-weight: 600; padding-top: 0.85rem; }
+.yk-statement__row--subtotal th, .yk-statement__row--subtotal td { font-weight: 700; border-top: 1px solid var(--hairline); }
+.yk-statement__row--total th, .yk-statement__row--total td { font-weight: 700; border-top: 3px double var(--ink-3); }
+.yk-statement__row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.yk-statement__note { margin-left: 0.5rem; font-size: 0.74rem; color: var(--ink-3); white-space: nowrap; }
+.yk-statement__mark { margin-left: 0.15rem; color: var(--ink-2); }
+.yk-statement__why { margin-left: 0.5rem; font-size: 0.72rem; color: var(--accent); opacity: 0; transition: opacity 120ms; }
+.yk-statement__row:hover .yk-statement__why, .yk-statement__row:focus-within .yk-statement__why { opacity: 1; }
+.yk-statement__foot { margin-top: 0.55rem; font-size: 0.78rem; color: var(--ink-2); line-height: 1.5; }

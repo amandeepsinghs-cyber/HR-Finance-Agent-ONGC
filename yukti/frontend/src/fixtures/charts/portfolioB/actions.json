@@ -1,0 +1,102 @@
+{
+ "type": "actions",
+ "mode": "replace",
+ "title": "Illustrative fixture: top actions",
+ "actions": {
+  "fy": "FY26",
+  "items": [
+   {
+    "rank": 2,
+    "lever_id": "L2",
+    "title": "Illustrative lever two",
+    "what_to_do": "Template text from the lever library (fixture).",
+    "impact": {
+     "low": 100,
+     "mid": 150,
+     "high": 220,
+     "unit": "INR_cr",
+     "kind": "annual",
+     "label": "Modelled estimate"
+    },
+    "owner": "DIR_HR",
+    "horizon_days": 180,
+    "kpi": "Fixture KPI 2",
+    "evidence": [
+     {
+      "type": "data",
+      "ref": "fixture:data:2"
+     }
+    ],
+    "confidence": 0.6
+   },
+   {
+    "rank": 1,
+    "lever_id": "L1",
+    "title": "Illustrative lever one",
+    "what_to_do": "Template text from the lever library (fixture).",
+    "impact": {
+     "low": 300,
+     "mid": 420,
+     "high": 560,
+     "unit": "INR_cr",
+     "kind": "annual",
+     "label": "Modelled estimate"
+    },
+    "owner": "DIR_FIN",
+    "horizon_days": 90,
+    "kpi": "Fixture KPI 1",
+    "evidence": [
+     {
+      "type": "ar",
+      "ref": "fixture:AR p.1"
+     },
+     {
+      "type": "data",
+      "ref": "fixture:data:1"
+     }
+    ],
+    "confidence": 0.7
+   },
+   {
+    "rank": 3,
+    "lever_id": "L3",
+    "title": "Illustrative lever three",
+    "what_to_do": "Template text from the lever library (fixture).",
+    "impact": {
+     "low": 40,
+     "mid": 60,
+     "high": 90,
+     "unit": "INR_cr",
+     "kind": "one_off",
+     "label": "Modelled estimate"
+    },
+    "owner": "CMD",
+    "horizon_days": 30,
+    "kpi": "Fixture KPI 3",
+    "evidence": [
+     {
+      "type": "data",
+      "ref": "fixture:data:3"
+     }
+    ]
+   }
+  ],
+  "delegation_table": [
+   {
+    "owner": "DIR_FIN",
+    "ask": "Fixture ask one",
+    "by_when": "90 days",
+    "kpi": "Fixture KPI 1",
+    "evidence": "fixture:AR p.1"
+   },
+   {
+    "owner": "DIR_HR",
+    "ask": "Fixture ask two",
+    "by_when": "180 days",
+    "kpi": "Fixture KPI 2",
+    "evidence": "fixture:data:2"
+   }
+  ]
+ },
+ "source_note": "Illustrative UI test fixture, not ONGC data"
+}

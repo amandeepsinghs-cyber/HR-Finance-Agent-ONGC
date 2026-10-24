@@ -14,6 +14,8 @@
 
 import { useEffect } from 'react';
 import exportIntentSpec from '../../../contracts/intents/export_intent.json';
+import { resolveKind } from '@/charts/kindPrecedence';
+import { resolveExportIntent } from './exportIntent';
 
 export const UI_ACTIONS = {
   theme: ['light', 'dark'] as const,
@@ -54,7 +56,9 @@ export const UI_ACTIONS = {
   persona: ['CMD', 'DIR_HR', 'DIR_FIN', 'E1_HR', 'E2_HR', 'E3_HR', 'E4_HR', 'E1_FIN', 'E2_FIN', 'E3_FIN', 'E4_FIN'] as const,
   language: ['en', 'hi', 'hi-en'] as const,
   panel: ['expand', 'dock', 'minimise', 'close', 'open_history'] as const,
-  export: ['pdf', 'xlsx', 'docx', 'sheets', 'docs'] as const,
+  // P4.7 (SPEC-10 §4.8): all formats; 'auto' = pick by the visual on screen. A ':default' suffix (e.g.
+  // 'png:default') means no format word was given, so the card states which default it used.
+  export: ['xlsx', 'csv', 'pdf', 'png', 'svg', 'docx', 'eml', 'sheets', 'docs', 'auto'] as const,
   history: ['back', 'forward'] as const,
 } as const;
 
@@ -118,8 +122,10 @@ export function labelOf(cmd: UiCommand): string {
         : cmd.value === 'minimise'
         ? 'Minimised conversation'
         : `Panel → ${cmd.value}`;
-    case 'export':
-      return `Exported → ${cmd.value.toUpperCase()}`;
+    case 'export': {
+      const f = String(cmd.value).split(':')[0];
+      return f === 'auto' ? 'Export' : `Export → ${f.toUpperCase()}`;
+    }
     case 'history':
       return cmd.value === 'back' ? 'History → Previous visual' : 'History → Next visual';
   }
@@ -286,6 +292,23 @@ function matchClause(raw: string): UiCommand | null {
     return { action: 'panel', value: 'minimise' };
   }
 
+  // P2H.4 + P4.7 (SPEC-07 §4.4, SPEC-10 §4.8): export intents, all formats, EN + HI. Checked before re-plot so
+  // "export the table to excel" is an export, not a table view.
+  {
+    const exp = detectExportIntent(s);
+    if (exp && exp.columns.length > 0) {
+      return { action: 'export', value: exp.value, columns: exp.columns };
+    }
+    const ex = resolveExportIntent(s);
+    if (ex) {
+      const value = ex.defaulted ? (ex.target ? `${ex.format}:default` : 'auto') : ex.format;
+      return { action: 'export', value };
+    }
+    if (exp) {
+      return { action: 'export', value: exp.value };
+    }
+  }
+
   // Visual / Chart Kind morphing (ONLY when pure re-plot of current data, anchored ^...$)
   if (/^(show|view|plot|display|switch|make)\s+(this\s+|it\s+|current\s+)?(as\s+|to\s+|in\s+)?(a\s+)?table(\s+view)?$|^टेबल\s*में\s*दिखाओ$/.test(s)) {
     return { action: 'chart_kind', value: 'table' };
@@ -318,13 +341,18 @@ function matchClause(raw: string): UiCommand | null {
     return { action: 'chart_kind', value: 'waterfall' };
   }
 
-  // Export (shared SPEC-07 §4.4 patterns from export_intent.json)
-  const exp = detectExportIntent(s);
-  if (exp) {
-    return exp.columns.length > 0
-      ? { action: 'export', value: exp.value, columns: exp.columns }
-      : { action: 'export', value: exp.value };
+  // P4.1 (BUG-22, SPEC-09 §4.4): generic re-plot of the CURRENT visual — "can you express it as a waterfall",
+  // "convert this to a line chart", "इसे वॉटरफॉल में दिखाओ". Requires a pronoun (it/this/that/इसे) so data questions
+  // ("show revenue as a line chart for 5 years") still go to the backend. The kind comes from the shared precedence.
+  if (
+    /^(can\s+you\s+|could\s+you\s+|please\s+)*(show|view|plot|draw|switch|make|express|display|convert|change|turn|present|redraw)\s+(this|it|that)\b/.test(s) ||
+    /^(इसे|इसको|यह)\s.*(दिखाओ|दिखाइए|बनाओ)$/.test(s)
+  ) {
+    const k = resolveKind(s);
+    if (k && (UI_ACTIONS.chart_kind as readonly string[]).includes(k)) return { action: 'chart_kind', value: k as (typeof UI_ACTIONS.chart_kind)[number] };
   }
+
+  // Export: handled above by resolveExportIntent (P4.7).
 
   // Persona: P0.4 (BUG-06, SPEC-06 §4.4) — never switched from typed/spoken text. Such requests go to the
   // backend, which answers R-ROLE (or, for the demo presenter, issues a new signed session).
