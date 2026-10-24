@@ -85,7 +85,7 @@
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
-| P2F.1 | Year clarification (chips + voice) | O | 024 | SPEC-08 §3, BEH-03 | 14 | "give me income statement" → clarify card; choice kept in context | [P2F.1](docs/delegation/packets/v3/P2F.1_year_clarification.md) | ⬜ |
+| P2F.1 | Year clarification (chips + voice) | O | 024 | SPEC-08 §3, BEH-03 | 14 | "give me income statement" → clarify card; choice kept in context | [P2F.1](docs/delegation/packets/v3/P2F.1_year_clarification.md) | 🔄 |
 | P2F.2 | Multi-year statement payload (4–10 FY columns) | O | 024, 025 | SPEC-08 §4 | — | Every cell = SSOT ± ₹0.05 cr | [P2F.2](docs/delegation/packets/v3/P2F.2_multiyear_statement.md) | ⬜ |
 | P2F.3 | WACC metric + chart + driver attribution | O (Shapley → F optional) | 024 | SPEC-02 §5 | 15 | Chart = `fact_wacc_annual` ± 0.01pp, 10 points | [P2F.3](docs/delegation/packets/v3/P2F.3_wacc_metric_chart.md) | ⬜ |
 | P2F.4 | Variance-attribution engine (pure module + fixtures) | F | 024 | SPEC-08 §6.1 | 16 | Σ attribution = Δ; FY23→FY24 fixture | [P2F.4](docs/delegation/packets/v3/P2F.4_variance_attribution_engine.md) | ⬜ |

@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 06:19 UTC · branch `v3/P0-stabilise` @ `045157a`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 06:19 UTC · branch `v3/P0-stabilise` @ `fbe523c`
 
 > [!IMPORTANT]
-> **Overall: 47% complete (weighted)** — 26/62 steps ✅ done, 8 in flight, 28 to do, 0 blocked. **12 blocker bugs open.** Integrity: 1 error(s), 12 warning(s).
+> **Overall: 47% complete (weighted)** — 26/62 steps ✅ done, 9 in flight, 27 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 12 warning(s).
 
 ## 1. Phase progress
 
@@ -12,7 +12,7 @@
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `██████████████░░░░░░` 71% | 7 | 1 | 0 | 3 | 1 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `██████░░░░░░░░░░░░░░` 28% | 1 | 1 | 0 | 2 | 4 | 0 | 8 |
-| **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
+| **P2F** | Finance diagnostics (V20) | `█░░░░░░░░░░░░░░░░░░░` 4% | 0 | 0 | 0 | 1 | 5 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
 | **P4** | Visual 9/10 + exports (V21) | `████████████████░░░░` 81% | 7 | 0 | 0 | 1 | 1 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
@@ -30,6 +30,7 @@
 | P2H.2 | 🔄 In progress | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Complete build + evidence |
 | P2H.3 | 🔍 In review | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | Apply review findings / approve |
 | P2H.5 | 🔄 In progress | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | Complete build + evidence |
+| P2F.1 | 🔄 In progress | Year clarification (chips + voice) | O | Complete build + evidence |
 | P4.5 | 🔄 In progress | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions | F | Complete build + evidence |
 
 **Ready to start:**
@@ -159,7 +160,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 ## 8. Integrity checks
 
-- ❌ **Error:** P2F.1 has commit 7bfa44d but the checklist still says ⬜ — update the status (🔨 Built / 🔍 In review / ✅ Done).
 - ⚠️ BUG-07 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-27 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-28 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
