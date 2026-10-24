@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AnswerContract, ChartKind, ChartSpec, SourceCitation } from '@/contracts/answerContract';
 import { ChartRenderer } from './renderers/ChartRenderer';
 import { TableRenderer } from './renderers/TableRenderer';
+import { PERSONA_DIRECTORY } from '@/personas';
 import { KpiRenderer } from './renderers/KpiRenderer';
 import { ClauseRenderer } from './renderers/ClauseRenderer';
 import { DocumentRenderer } from './renderers/DocumentRenderer';
@@ -56,7 +57,7 @@ const MORE_KINDS: { id: ChartKind; label: string }[] = [
   { id: 'stacked_bar', label: 'Stacked bar' },
   { id: 'bullet', label: 'Bullet (vs target)' },
 ];
-const ROLE_SHORT: Record<string, string> = { CMD: 'CMD', DIR_HR: 'Director HR', DIR_FIN: 'Director Finance', E2_HR: 'E2 · HR', E3_FIN: 'E3 · Finance' };
+const ROLE_SHORT: Record<string, string> = Object.fromEntries(PERSONA_DIRECTORY.map((p) => [p.id, p.short]));
 
 function eyebrowFor(c: AnswerContract): string {
   const v = c.visual;

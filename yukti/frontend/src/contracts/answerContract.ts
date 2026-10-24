@@ -3,7 +3,18 @@
  * Directly reflects yukti/contracts/answer_contract.schema.json
  */
 
-export type PersonaType = 'CMD' | 'DIR_HR' | 'DIR_FIN' | 'E2_HR' | 'E3_FIN';
+export type PersonaType =
+  | 'CMD'
+  | 'DIR_HR'
+  | 'DIR_FIN'
+  | 'E1_HR'
+  | 'E2_HR'
+  | 'E3_HR'
+  | 'E4_HR'
+  | 'E1_FIN'
+  | 'E2_FIN'
+  | 'E3_FIN'
+  | 'E4_FIN';
 
 export type LanguageType = 'en' | 'hi' | 'hi-en';
 

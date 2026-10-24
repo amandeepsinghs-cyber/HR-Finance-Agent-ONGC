@@ -50,7 +50,7 @@ export const UI_ACTIONS = {
   ] as const,
   grade_filter: ['ALL', 'E5_PLUS', 'E7_PLUS'] as const,
   breakdown: ['grade', 'discipline'] as const,
-  persona: ['CMD', 'DIR_HR', 'DIR_FIN', 'E2_HR', 'E3_FIN'] as const,
+  persona: ['CMD', 'DIR_HR', 'DIR_FIN', 'E1_HR', 'E2_HR', 'E3_HR', 'E4_HR', 'E1_FIN', 'E2_FIN', 'E3_FIN', 'E4_FIN'] as const,
   language: ['en', 'hi', 'hi-en'] as const,
   panel: ['expand', 'dock', 'minimise', 'close', 'open_history'] as const,
   export: ['pdf', 'xlsx', 'docx', 'sheets', 'docs'] as const,

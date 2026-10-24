@@ -1,4 +1,5 @@
 import { TableSpec, RowAction } from '@/contracts/answerContract';
+import { PERSONA_DIRECTORY, personaRank } from '@/personas';
 import { humanizeValue, toNumber, fmtNum } from '@/charts/format';
 
 export interface NormalizedRow extends Record<string, any> {
@@ -11,13 +12,8 @@ export interface FilterableColumn {
   options: string[];
 }
 
-export const ROLE_RANK: Record<string, number> = {
-  E2_HR: 1,
-  E3_FIN: 1,
-  DIR_HR: 2,
-  DIR_FIN: 2,
-  CMD: 3,
-};
+// P2H.2: ranks for all 11 personas (junior 1 · director 2 · CMD 3); unknown → 0
+export const ROLE_RANK: Record<string, number> = Object.fromEntries(PERSONA_DIRECTORY.map((p) => [p.id, personaRank(p.id)]));
 
 export function isActionAllowed(action: RowAction, persona?: string): boolean {
   if (!action.min_role) return true;

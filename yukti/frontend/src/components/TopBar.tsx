@@ -1,9 +1,11 @@
 'use client';
 
+import { PERSONA_DIRECTORY, personaInfo } from '@/personas';
+import { PersonaPicker } from './PersonaPicker';
 import React, { useEffect, useRef, useState } from 'react';
 import { PersonaType } from '@/contracts/answerContract';
 import { OrbState } from './VoiceOrb';
-import { Sun, Moon, ChevronDown, Check, SkipBack, SkipForward, Languages } from 'lucide-react';
+import { Sun, Moon, ChevronDown, SkipBack, SkipForward, Languages } from 'lucide-react';
 import { IconButton } from './ui/primitives';
 
 interface TopBarProps {
@@ -22,14 +24,8 @@ interface TopBarProps {
   micLevel?: () => number;
 }
 
-// Board members are shown by role only; officer personas carry the officer's name.
-export const PERSONAS: { id: PersonaType; label: string; role: string; name?: string }[] = [
-  { id: 'CMD', label: 'CMD', role: 'Chairman & CEO' },
-  { id: 'DIR_HR', label: 'Dir HR', role: 'Director (HR)' },
-  { id: 'DIR_FIN', label: 'Dir Fin', role: 'Director (Finance)' },
-  { id: 'E2_HR', label: 'E2 · HR', role: 'Assistant Manager, HR', name: 'Pooja Verma' },
-  { id: 'E3_FIN', label: 'E3 · Fin', role: 'Deputy Manager, Finance', name: 'Rajesh Kulkarni' },
-];
+// P2H.2: persona labels come from the shared directory (11 personas, D-41/D-60); the server is the source of truth.
+export const PERSONAS = PERSONA_DIRECTORY.map((p) => ({ id: p.id, label: p.short, role: p.designation, name: p.display_name }));
 
 const STATE_LABEL: Record<OrbState, string> = {
   idle: 'Ready',
@@ -99,7 +95,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const ddRef = useRef<HTMLDivElement | null>(null);
-  const active = PERSONAS.find((p) => p.id === currentPersona) || PERSONAS[0];
+  const active = personaInfo(currentPersona) || PERSONA_DIRECTORY[0];
 
   useEffect(() => {
     if (!open) return;
@@ -202,46 +198,26 @@ export const TopBar: React.FC<TopBarProps> = ({
 
         <div className="relative" ref={ddRef}>
           <button
-            onClick={() => setOpen((o) => !o)}
-            aria-haspopup="listbox"
+            onClick={() => setOpen(true)}
+            aria-haspopup="dialog"
             aria-expanded={open}
             data-testid="persona-button"
-            title="Switch role (access level)"
+            title={`Signed in as ${active.display_name}, ${active.designation} (illustrative identity). Click to sign in as another role.`}
             className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-pill hover:bg-[var(--surface)] text-label transition-colors"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-ongc-maroon" />
-            <span className="font-semibold text-[var(--ink)]">{active.name ? `${active.label} · ${active.name}` : active.role}</span>
-            <ChevronDown className={`w-4 h-4 text-[var(--ink-3)] transition-transform ${open ? 'rotate-180' : ''}`} />
+            <span className="font-semibold text-[var(--ink)]">{active.tier === 'junior' ? `${active.short} · ${active.display_name}` : active.designation}</span>
+            <ChevronDown className="w-4 h-4 text-[var(--ink-3)]" />
           </button>
-          {open && (
-            <div role="listbox" className="absolute right-0 top-[calc(100%+0.5rem)] w-[18rem] rounded-[var(--radius-lg)] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-50">
-              {PERSONAS.map((p) => {
-                const sel = p.id === currentPersona;
-                return (
-                  <button
-                    key={p.id}
-                    role="option"
-                    aria-selected={sel}
-                    data-testid={`persona-${p.id}`}
-                    onClick={() => {
-                      onPersonaChange(p.id);
-                      setOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-[var(--radius-md)] flex items-center justify-between gap-3 transition-colors ${sel ? 'bg-[var(--accent-pale)]' : 'hover:bg-[var(--surface)]'}`}
-                  >
-                    <span className="min-w-0">
-                      <span className="block text-label font-semibold text-[var(--ink)]">
-                        {p.role}
-                        {p.name && <span className="font-normal text-[var(--ink-2)]"> · {p.name}</span>}
-                      </span>
-                      <span className="block text-caption text-[var(--ink-3)]">{p.id.startsWith('E') ? 'Aggregates only (names hidden)' : 'Full access incl. named records'}</span>
-                    </span>
-                    {sel && <Check className="w-4 h-4 text-[var(--accent)] shrink-0" />}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          <PersonaPicker
+            open={open}
+            current={currentPersona}
+            onClose={() => setOpen(false)}
+            onPick={(id) => {
+              setOpen(false);
+              if (id !== currentPersona) onPersonaChange(id);
+            }}
+          />
         </div>
 
         <span aria-hidden className="w-px h-5 bg-[var(--hairline)] mx-1" />

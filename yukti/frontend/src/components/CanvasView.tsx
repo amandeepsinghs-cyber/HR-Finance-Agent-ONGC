@@ -1,5 +1,6 @@
 'use client';
 
+import { PERSONA_DIRECTORY } from '@/personas';
 import React, { useEffect, useState } from 'react';
 import { VoiceOrb, OrbState } from './VoiceOrb';
 import { VoiceAudioEngine } from '@/services/audioAnalyser';
@@ -66,9 +67,10 @@ const STARTERS: Record<string, Starter[]> = {
     { icon: TrendingUp, tag: 'Finance · Public', title: 'ONGC FY26 revenue and profit', q: 'What were ONGC revenue and profit in FY26?' },
   ],
 };
-STARTERS.E3_FIN = STARTERS.E2_HR;
+// P2H.2: E1–E4 in HR and Finance share the junior starters (aggregate / self-service asks, D-11)
+for (const id of ['E1_HR', 'E3_HR', 'E4_HR', 'E1_FIN', 'E2_FIN', 'E3_FIN', 'E4_FIN']) STARTERS[id] = STARTERS.E2_HR;
 
-const ADDRESS: Record<string, string> = { CMD: 'Arun', DIR_HR: 'Director', DIR_FIN: 'Director', E2_HR: 'Pooja', E3_FIN: 'Rajesh' };
+const ADDRESS: Record<string, string> = Object.fromEntries(PERSONA_DIRECTORY.map((p) => [p.id, p.address]));
 
 function greetingWord(): string {
   const h = new Date().getHours();
