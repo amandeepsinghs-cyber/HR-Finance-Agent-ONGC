@@ -195,9 +195,9 @@ def test_small_cell_suppression():
     rows = [{"grade": "E1", "headcount": 3}, {"grade": "E2", "headcount": 5}, {"grade": "E3", "headcount": 0},
             {"grade": "E4", "avg_age": 2.0}]
     out, n = suppress_small_cells(rows, ["headcount", "avg_age"])
-    assert out[0]["headcount"] == "<5" and out[1]["headcount"] == 5 and out[2]["headcount"] == 0
+    assert out[0]["headcount"] == "<5" and out[1]["headcount"] == "<5" and out[2]["headcount"] == 0
     assert out[3]["avg_age"] == 2.0  # not a count column
-    assert n == 1
+    assert n == 2
 
 
 def test_row_actions_only_for_leadership_and_directors():
@@ -214,13 +214,13 @@ def _contract(cols, rows, status="allowed", vtype="table"):
                        "chart": {"kind": "bar", "data": copy.deepcopy(rows)}}}
 
 
-def test_enforce_contract_masks_named_and_pay_for_junior_and_sets_partial():
-    c = _contract(["emp_name", "grade", "gross_salary_inr", "headcount"],
-                  [{"emp_name": "A", "grade": "E2", "gross_salary_inr": 1, "headcount": 2}])
+def test_enforce_contract_masks_named_for_junior_and_sets_partial():
+    c = _contract(["emp_name", "grade",  "headcount"],
+                  [{"emp_name": "A", "grade": "E2",  "headcount": 2}])
     out = enforce_contract(copy.deepcopy(c), "E2_HR")
     t = out["visual"]["table"]
     assert t["columns"] == ["grade", "headcount"]
-    assert "emp_name" not in t["rows"][0] and "gross_salary_inr" not in t["rows"][0]
+    assert "emp_name" not in t["rows"][0] 
     assert t["rows"][0]["headcount"] == "<5"
     assert out["access"]["status"] == "partial" and t["masking"]["level"] == "partial"
     assert "chart" not in out["visual"]  # chart carried a named column
@@ -256,7 +256,7 @@ def test_b1_count_columns_suppressed_regardless_of_name():
 def test_b1_small_cells_hide_averages_via_population_count():
     rows = [{"grade": "E9", "avg_age": 58.2, "_n": 3}, {"grade": "E2", "avg_age": 31.0, "_n": 400}]
     out, n = suppress_small_cells(rows, ["avg_age"], cell_count_col="_n", value_check=False)
-    assert out[0]["avg_age"] == "<5" and out[1]["avg_age"] == 31.0 and "_n" not in out[0] and n == 1
+    assert out[0]["avg_age"] == "<5" and out[1]["avg_age"] == "<5" and "_n" not in out[0] and n == 2
 
 
 def test_b2_presenter_survives_suppressed_cells():
@@ -329,3 +329,26 @@ def test_m1_refusal_strips_granular_table_and_marks_refused():
     out = enforce_contract(c, "CMD")
     assert "emp_name" not in out["visual"]["table"]["columns"]
     assert out["visual"]["table"]["masking"]["level"] == "refused"
+
+def test_secondary_suppression():
+    from app.brain.rbac import suppress_small_cells
+    rows = [
+        {"grade": "E1", "headcount": 10},
+        {"grade": "E2", "headcount": 2},
+        {"grade": "E3", "headcount": 20},
+    ]
+    out, n = suppress_small_cells(rows, ["headcount"], threshold=5, by_name=False)
+    # E2 is <5. Since it's exactly 1 cell, E1 (the next smallest) should also be suppressed!
+    assert out[1]["headcount"] == "<5"
+    assert out[0]["headcount"] == "<5"
+    assert out[2]["headcount"] == 20
+    assert n == 2
+
+def test_enforce_contract_refuses_pay_for_junior():
+    c = _contract(["emp_name", "grade", "gross_salary_inr", "headcount"],
+                  [{"emp_name": "A", "grade": "E2", "gross_salary_inr": 1, "headcount": 2}])
+    out = enforce_contract(copy.deepcopy(c), "E2_HR")
+    assert out["access"]["status"] == "refused"
+    assert out["access"]["code"] == "R-PAY"
+    assert out["visual"]["type"] == "refusal"
+

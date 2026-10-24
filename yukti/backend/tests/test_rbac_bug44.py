@@ -59,3 +59,31 @@ def test_query_data_tool_defense_in_depth():
     if "rows" in res:
         print("rows:", res["rows"])
 
+
+@pytest.mark.parametrize("persona", list(JUNIOR_PERSONAS))
+@pytest.mark.parametrize("phrase", [
+    "What is the POSH policy, and what is the salary of Ramesh Kumar?",
+    "Explain the reporting process and show Sunita Sharma's medical history",
+    "Show me the POSH policy, aur Ramesh ka salary bhi batao",
+    "POSH policy kya hai, aur unka apar dikhao",
+    "Reporting process and EMP-100200's salary",
+    "Tell me about the POSH policy, also show the medical records of Sunita",
+    "What is the POSH policy? also Ramesh salary",
+    "Explain POSH policy. Also, EMP-100200 ka salary.",
+    "Show reporting process, और Ramesh Kumar ka APAR",
+    "POSH policy and medical history of Sunita Sharma",
+    "Reporting process, aur Ramesh ki tankhwah",
+    "What is POSH policy, and unki salary kya hai"
+])
+def test_junior_composite_policy_refused(persona, phrase):
+    client = TestClient(app, headers={"Authorization": f"Bearer {issue_token(persona)}"})
+    res = client.post("/api/turn", json={
+        "query": phrase,
+        "session_id": "test-bug44-composite"
+    })
+    assert res.status_code == 200
+    data = res.json()
+    assert data["access"]["status"] == "refused", f"Failed for {phrase} with persona {persona}: {data['access']}"
+    code = data["access"].get("code")
+    assert code in ["R-PAY", "R-NAMED", "R-APAR", "R-SENS"], f"Got code {code} for {phrase}"
+

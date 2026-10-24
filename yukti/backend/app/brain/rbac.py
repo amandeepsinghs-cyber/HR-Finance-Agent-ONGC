@@ -154,11 +154,8 @@ def is_policy_process_question(question: Optional[str]) -> bool:
 def topic_classes(question: str) -> List[str]:
     """Sensitive topics in the question (word-boundary match; 'apar' never matches 'apart')."""
     q = (question or "").lower()
-    is_pol_proc = is_policy_process_question(question)
     out = []
     for cls, words in (load_policy().get("topic_keywords") or {}).items():
-        if cls == "sensitive" and is_pol_proc:
-            continue
         if any(re.search(r"(?<![a-z])" + re.escape(w) + r"(?![a-z])", q) for w in words):
             out.append(cls)
     return out
@@ -404,8 +401,9 @@ def _enrich_classes_from_question(
     if not q:
         return classes
 
-    if is_policy_process_question(q) and not any(c in ("sensitive", "pay_individual", "pay", "apar", "named") for c in base_classes):
-        return ["policy"]
+    if is_policy_process_question(q):
+        if "policy" not in classes:
+            classes.append("policy")
 
     # M4: If a specific person or row-grain pay target is mentioned in a pay question, always add pay_individual
     # and remove pay_aggregate so individual/named pay is never misclassified as aggregate pay.
@@ -963,7 +961,7 @@ def enforce_contract(
                     had_sens = True
                     for r in tbl.get("rows") or []:
                         if isinstance(r, dict):
-                            masked_values += [str(r[m]) for m in sens_cols if isinstance(r.get(m), str) and len(str(r[m])) > 2]
+                            masked_values += [str(r[m]) for m in sens_cols if r.get(m) is not None and len(str(r[m])) > 2]
                     _strip_columns(tbl, sens_cols)
                     masked_all += sens_cols
 
@@ -990,7 +988,7 @@ def enforce_contract(
                     elif not is_fin_scoped_query:
                         for r in rows:
                             if isinstance(r, dict):
-                                masked_values += [str(r[m]) for m in hr_personal_cols if isinstance(r.get(m), str) and len(str(r[m])) > 2]
+                                masked_values += [str(r[m]) for m in hr_personal_cols if r.get(m) is not None and len(str(r[m])) > 2]
                         _strip_columns(tbl, hr_personal_cols)
                         masked_all += hr_personal_cols
 
@@ -1029,7 +1027,7 @@ def enforce_contract(
                 if fin_cols:
                     for r in tbl.get("rows") or []:
                         if isinstance(r, dict):
-                            masked_values += [str(r[m]) for m in fin_cols if isinstance(r.get(m), str) and len(str(r[m])) > 2]
+                            masked_values += [str(r[m]) for m in fin_cols if r.get(m) is not None and len(str(r[m])) > 2]
                     _strip_columns(tbl, fin_cols)
                     masked_all += fin_cols
             if masked_all:
@@ -1080,7 +1078,7 @@ def enforce_contract(
         if masked:
             for r in tbl.get("rows") or []:
                 if isinstance(r, dict):
-                    masked_values += [str(r[m]) for m in masked if isinstance(r.get(m), str) and len(str(r[m])) > 2]
+                    masked_values += [str(r[m]) for m in masked if r.get(m) is not None and len(str(r[m])) > 2]
             _strip_columns(tbl, masked)
             masked_all += masked
         if access.get("status") != "refused":
@@ -1107,6 +1105,23 @@ def enforce_contract(
         tbl = vis.get("table")
         if isinstance(tbl, dict):
             tbl.setdefault("masking", {"level": "aggregate", "reason": access["reason"], "rule_ref": "D-11", "code": "R-K5"})
+    
+    # Defence in depth: refuse outright if pay/apar/sensitive found for junior
+    if any(column_class(c) in ("pay", "apar", "sensitive") for c in masked_all) and pc == "junior":
+        access["status"] = "refused"
+        access["code"] = "R-PAY" if any(column_class(c) == "pay" for c in masked_all) else "R-SENS"
+        access["reason"] = refusal_text(canon, "pay_individual" if access["code"] == "R-PAY" else "sensitive")
+        # Ensure refusal format
+        vis["type"] = "refusal"
+        vis.pop("chart", None)
+        vis.pop("compare", None)
+        vis.pop("document", None)
+        if isinstance(vis.get("table"), dict):
+            vis["table"]["masking"] = {"level": "refused", "code": access["code"], "reason": access["reason"], "rule_ref": "D-11"}
+        c["spoken_summary"] = access["reason"]
+        c["display_text"] = access["reason"]
+        return c
+
     if masked_all and access.get("status") == "allowed":
         refs = pol.get("rule_refs", {})
         access["status"] = "partial"

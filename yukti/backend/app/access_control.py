@@ -587,13 +587,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
             rule_ref="SPEC-06 §5.1 · D-41",
         )
 
-    from app.brain.rbac import is_policy_process_question
-    if query and is_policy_process_question(query):
-        return AccessDecision(
-            status="allowed",
-            reason="Policy and reporting process inquiry allowed across all personas.",
-            rule_ref="SPEC-06 §4.2",
-        )
+
 
     # 2. Text / Query keyword heuristic for novel queries
     if query:
