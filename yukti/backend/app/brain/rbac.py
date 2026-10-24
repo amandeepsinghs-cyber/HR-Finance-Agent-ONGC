@@ -128,8 +128,9 @@ _POLICY_PROCESS_RE = re.compile(
 _SENSITIVE_CASE_OR_RECORD_RE = re.compile(
     r"(?:"
     r"\b(?:cases?|complaints?\s+(?:filed|registered|pending|against|in\s+fy|count|number|list)|"
-    r"how\s+many|who\s+is|under\s+vigilance|inquiry\s+against|dossier|records?|claims?\s+of|pending)\b"
-    r"|(?:मामले|शिकायतें|कितने|रिकॉर्ड|लंबित)"
+    r"how\s+many|who\s+is|under\s+vigilance|inquiry\s+against|dossier|records?|claims?\s+of|pending|"
+    r"complainants?|accused|respondent|names?|list|who|details\s+of\s+case)\b"
+    r"|(?:मामले|शिकायतें|कितने|रिकॉर्ड|लंबित|शिकायतकर्ता|आरोपी|नाम)"
     r")",
     re.IGNORECASE,
 )

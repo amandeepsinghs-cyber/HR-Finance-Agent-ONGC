@@ -84,6 +84,7 @@ async def query_data(sql_query: str, title: Optional[str] = None) -> Dict[str, A
     Always follow the 5 Query-Craft rules and dataset allow-list.
     """
     from app.auth import get_active_principal
+    from app.brain.rbac import persona_class
     principal = get_active_principal()
     if principal is None:
         return {
@@ -91,6 +92,15 @@ async def query_data(sql_query: str, title: Optional[str] = None) -> Dict[str, A
             "code": "E-AUTH",
             "error": "Authentication error (E-AUTH): no server principal bound for query execution.",
             "retryable": False,
+        }
+        
+    if persona_class(principal.persona) == "junior":
+        return {
+            "status": "refused",
+            "error": "Access restricted. Free-form data queries are not available for your role (D-64).",
+            "sql": sql_query,
+            "chart_kind": "refusal",
+            "code": "R-FUNC"
         }
     return await asyncio.to_thread(
         execute_query_data, 
@@ -241,17 +251,26 @@ def create_yukti_agent(
     else:
         gen_cfg = None
 
+    from app.auth import get_active_principal
+    from app.brain.rbac import persona_class
+    principal = get_active_principal()
+    pc = persona_class(principal.persona) if principal else "junior"
+    
+    # D-64: Juniors get no free-form SQL tool
+    tools = [
+        run_certified_query,
+        search_policy,
+        what_if,
+        draft_document,
+        export_document,
+    ]
+    if pc != "junior":
+        tools.append(query_data)
+
     return Agent(
         name="yukti_ai_agent",
         model=active_model,
         instruction=instruction,
         generate_content_config=gen_cfg,
-        tools=[
-            run_certified_query,
-            query_data,
-            search_policy,
-            what_if,
-            draft_document,
-            export_document,
-        ],
+        tools=tools,
     )

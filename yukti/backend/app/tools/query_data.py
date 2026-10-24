@@ -114,21 +114,35 @@ def query_data(
     # 1. Apply Query-Craft Rules & Project Qualification
     safe_sql = sl.apply_query_craft_rules(sql_query)
 
-    # 1.5 Table-level RBAC Check (R3-B3)
-    from app.semantic.normalize import referenced_tables
-    from app.brain.rbac import decide
-    for t in referenced_tables(safe_sql):
-        t_low = t.lower()
-        if "payroll" in t_low:
-            dc = "pay"
-        elif "apar" in t_low:
-            dc = "apar"
-        elif "medical_claims" in t_low or "posh" in t_low:
-            dc = "sensitive"
-        else:
-            continue
+    # 1.5 Column-level RBAC Check (R4-B1)
+    from app.brain.rbac import decide, column_class
+    try:
+        import sqlglot
+        from sqlglot import exp
+        
+        parsed = sqlglot.parse_one(safe_sql, read="bigquery")
+        cols = [col.name.lower() for col in parsed.find_all(exp.Column) if col.name]
+        
+        classes = set()
+        for c in cols:
+            dc = column_class(c)
+            if dc:
+                classes.add(dc)
+                
+        if not classes:
+            classes.add("general")
             
-        decision = decide(persona=persona, data_classes=[dc])
+        sql_upper = safe_sql.upper()
+        target_func = "MIXED"
+        if "DISC-FIN" in sql_upper or "'FIN'" in sql_upper:
+            if "DISC-HR" in sql_upper or "'HR'" in sql_upper:
+                target_func = "MIXED"
+            else:
+                target_func = "FIN"
+        elif "DISC-HR" in sql_upper or "'HR'" in sql_upper:
+            target_func = "HR"
+            
+        decision = decide(persona=persona, data_classes=list(classes), target_function=target_func)
         if decision.action == "refuse":
             return {
                 "status": "refused",
@@ -144,6 +158,26 @@ def query_data(
                 "chart_spec": None,
                 "chart_kind": "refusal",
                 "code": decision.code
+            }
+    except Exception as e:
+        logger.error(f"sqlglot parsing failed for RBAC check: {e}")
+        # Fail closed if any restricted words are in the raw SQL
+        sql_low = safe_sql.lower()
+        if any(w in sql_low for w in ["pay", "salary", "apar", "posh", "medical", "claim"]):
+            return {
+                "status": "refused",
+                "error": "Access restricted. Query could not be verified for data security.",
+                "sql": safe_sql,
+                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+                "row_count": 0,
+                "rows": [],
+                "columns": [],
+                "insights": None,
+                "display_text": None,
+                "narrative": None,
+                "chart_spec": None,
+                "chart_kind": "refusal",
+                "code": "R-FUNC"
             }
 
     # 2. Strict In-Process Safety Validation
