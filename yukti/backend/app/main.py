@@ -539,7 +539,7 @@ def download_export(export_id: str, principal: Principal = Depends(require_princ
             detail={"type": "error", "message": "Export not found.", "retryable": False},
         )
     root = EXPORTS_DIR.resolve()
-    matches = [p for p in EXPORTS_DIR.glob(f"{export_id}.*") if p.resolve().parent == root and p.suffix.lower() in (".docx", ".xlsx", ".pdf", ".csv")]
+    matches = [p for p in EXPORTS_DIR.glob(f"{export_id}.*") if p.resolve().parent == root and p.suffix.lower() in (".docx", ".xlsx", ".pdf", ".csv", ".eml")]
     if not matches:
         raise HTTPException(
             status_code=404,
@@ -552,11 +552,17 @@ def download_export(export_id: str, principal: Principal = Depends(require_princ
         ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         ".pdf": "application/pdf",
         ".csv": "text/csv",
+        ".eml": "message/rfc822",
     }
     media_type = media_types.get(ext, "application/octet-stream")
+    
+    from app.export_audit import get_artifact_record
+    rec = get_artifact_record(export_id)
+    download_filename = rec.filename if rec else file_path.name
+    
     return FileResponse(
         path=file_path,
-        filename=file_path.name,
+        filename=download_filename,
         media_type=media_type,
     )
 

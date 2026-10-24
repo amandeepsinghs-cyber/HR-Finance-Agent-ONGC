@@ -40,8 +40,31 @@ def test_v19_rbac_matrix_55_cases(v19_runner, persona: str, turn_step: str):
     if turn_step == "T4":
         assert c4["artifacts"]
         assert c4["artifacts"][0]["kind"] == "xlsx"
-        if persona.startswith("E"):
+        
+        from app.config import EXPORTS_DIR
+        import openpyxl
+        
+        export_id = c4["artifacts"][0]["export_id"]
+        filepath = EXPORTS_DIR / f"{export_id}.xlsx"
+        assert filepath.exists()
+        
+        wb = openpyxl.load_workbook(filepath)
+        
+        if persona.startswith("E") or persona == "DIR_FIN":
             assert "_aggregate" in c4["artifacts"][0]["filename"]
+            ws = wb.active
+            headers = [c.value for c in ws[4]]
+            assert "Name" not in headers
+        else:
+            assert "Definition" in wb.sheetnames
+            ws = wb.active
+            headers = [c.value for c in ws[4]]
+            assert headers == ['Name', 'Designation', 'Level', 'Tenure in Delhi (yrs)']
+            assert ws.max_row == 4 + 419
+            # Verify data is not empty (row 5)
+            row5 = [c.value for c in ws[5]]
+            assert any(x is not None for x in row5)
+            
         return
 
     # T5

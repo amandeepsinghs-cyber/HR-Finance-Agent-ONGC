@@ -118,48 +118,140 @@ async def run_planner_turn(
 
         if is_export:
             from app.tools.export_tool import DocumentExporter
-            from app.export_audit import write_export_audit
+            from app.export_audit import write_export_audit, build_export_filename, _collapse_roster_to_grade_counts, register_artifact
             import uuid
             export_id = f"exp_{uuid.uuid4().hex}"
             
+            active_cohort = session_state.get_active_cohort() or {}
             last_turn = session_state.turns[-1] if getattr(session_state, "turns", []) else {}
             last_vis = (last_turn.get("visual") or {}) if isinstance(last_turn, dict) else {}
             tbl = last_vis.get("table") or {}
-            rows = session_state.last_rows or tbl.get("rows") or []
             
             cols_str = ui_intent.get("columns", "")
             req_cols = [c.strip() for c in cols_str.split(",") if c.strip()] if cols_str else []
             
-            is_aggregate = persona.startswith("E") or (not req_cols or 'Name' not in req_cols)
-            filename = f"yukti_delhi_tenure_export_{persona}_{time.strftime('%Y%m%d-%H%M')}"
+            HEADER_TO_KEY = {
+                "Name": "name",
+                "Designation": "functional_designation",
+                "Level": "grade",
+                "Tenure in Delhi (yrs)": "delhi_tenure_years",
+                "ONGC service (yrs)": "ongc_tenure_years",
+                "Years to retirement": "years_to_retirement",
+                "Exemption": "exemption"
+            }
+            
+            is_aggregate = persona == "DIR_FIN" or persona.startswith("E")
+            filename = build_export_filename("delhi_gt5y_roster", "wc-del", "asof-20261019", persona.lower(), "xlsx", is_aggregate=is_aggregate)
+            
+            caveat_msg = None
             if is_aggregate:
-                filename += "_aggregate"
-            filename += ".xlsx"
+                export_cols = ["grade", "headcount"]
+                export_headers = {"grade": "Level", "headcount": "Executives"}
+                raw_rows = active_cohort.get("rows") or tbl.get("rows") or []
+                if raw_rows and "headcount" in raw_rows[0]:
+                    export_rows = raw_rows
+                else:
+                    _, _, export_rows = _collapse_roster_to_grade_counts(raw_rows, suppress_under_5=persona.startswith("E"))
+            else:
+                export_rows = active_cohort.get("rows") or tbl.get("rows") or []
+                export_cols = []
+                export_headers = {}
+                unknown = []
+                for c in req_cols:
+                    if c in HEADER_TO_KEY:
+                        k = HEADER_TO_KEY[c]
+                        export_cols.append(k)
+                        export_headers[k] = c
+                    else:
+                        unknown.append(c)
+                if not export_cols:
+                    export_cols = ["name", "functional_designation", "grade", "ongc_tenure_years", "delhi_tenure_years", "years_to_retirement", "exemption"]
+                    export_headers = {k: next(c for c, v in HEADER_TO_KEY.items() if v == k) for k in export_cols}
+                if unknown:
+                    caveat_msg = f"I couldn't match '{unknown[0]}'; exported the rest"
+            
+            contract_obj = {
+                "visual": {
+                    "title": "Delhi executives with > 5 years' continuous stay — as of 19-Oct-2026 — source: SSOT (synthetic, Illustrative)",
+                    "table": {"columns": export_cols, "headers": export_headers, "rows": export_rows}
+                },
+                "definition_id": "DELHI_GT5_CONT_V1",
+                "query_spec": {"as_of": "2026-10-19"}
+            }
             
             exporter = DocumentExporter()
+            # write as {export_id}.xlsx for main.py lookup
+            from app.config import EXPORTS_DIR
+            disk_filename = f"{export_id}.xlsx"
             file_path = exporter.export_xlsx(
-                columns=req_cols if req_cols else None,
-                rows=rows,
-                filename=filename,
+                columns=export_cols,
+                rows=export_rows,
+                filename=disk_filename,
                 persona=persona,
-                masked=is_aggregate
+                masked=is_aggregate,
+                contract=contract_obj
             )
             
+            rec = register_artifact(
+                export_id=export_id,
+                disk_path=EXPORTS_DIR / disk_filename,
+                kind="xlsx",
+                filename=filename,
+                rows=len(export_rows),
+                columns=export_cols,
+                
+                masked=is_aggregate,
+                is_aggregate=is_aggregate,
+                emp_id=principal.emp_id if principal else "EMP-000000",
+                persona=persona,
+                session_id=getattr(session_state, "session_id", ""),
+                turn_id=turn_id
+            )
+            
+            write_export_audit(
+                emp_id=principal.emp_id if principal else "EMP-000000",
+                persona=persona,
+                session_id=getattr(session_state, "session_id", ""),
+                turn_id=turn_id,
+                fmt="xlsx",
+                filename=filename,
+                sha256=rec.sha256,
+                rows=len(export_rows),
+                columns=export_cols,
+                
+                masked=is_aggregate,
+                delivery="download",
+                data_classes=["general"],
+        client_ip="test"
+            )
+            
+            art_obj = {
+                "export_id": export_id,
+                "kind": "xlsx",
+                "filename": filename,
+                "url": f"/api/export/{export_id}",
+                "rows": len(export_rows),
+                "columns": export_cols,
+                "masked": is_aggregate,
+                "sha256": rec.sha256,
+                "created_at": rec.created_at,
+                "expires_at": rec.expires_at
+            }
+            if active_cohort:
+                if "artifacts" not in active_cohort:
+                    active_cohort["artifacts"] = []
+                active_cohort["artifacts"].append(art_obj)
+            
+            display_text = "Here is the Excel export you requested."
+            if caveat_msg:
+                display_text = caveat_msg + ". " + display_text
             contract = {
                 "contract_version": 2,
                 "turn_id": turn_id,
                 "language": language,
-                "display_text": "Here is the Excel export you requested.",
+                "display_text": display_text,
                 "spoken_summary": "I have prepared the Excel export.",
-                "artifacts": [{
-                    "export_id": export_id,
-                    "kind": "xlsx",
-                    "filename": filename,
-                    "url": f"/api/export/{export_id}",
-                    "rows": len(rows),
-                    "columns": req_cols if req_cols else (list(rows[0].keys()) if rows else []),
-                    "masked": is_aggregate,
-                }],
+                "artifacts": [art_obj],
                 "ui_action": {"type": "download", "export_id": export_id}
             }
             return {"contract": contract, "meta": None}
