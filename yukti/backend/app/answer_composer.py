@@ -108,37 +108,35 @@ def load_refusal_copy() -> Dict[str, Dict[str, Any]]:
     return data.get("codes") or {}
 
 
-def persona_display_info(persona: str) -> Dict[str, Any]:
-    """Return `{display_name, designation, functional_designation, grade, function, wc_id, display_string}` for `persona`."""
+def persona_display_info(persona: Optional[str]) -> Dict[str, Any]:
+    """Return `{display_name, designation, functional_designation, grade, function, wc_id, display_string}` for `persona`.
+
+    Uses a neutral fallback (never a seeded person's name like Pooja Verma) when `persona` is unknown or omitted.
+    """
     from app.access_control import UnknownPersona, normalize_persona
 
     try:
         canon = normalize_persona(persona)
     except UnknownPersona:
-        canon = "E2_HR"
-    return dict(
-        PERSONA_DISPLAY.get(
-            canon,
-            {
-                "persona_id": canon,
-                "emp_id": "EMP-102451",
-                "display_name": "Pooja Verma",
-                "designation": "HR Executive (E2)",
-                "functional_designation": "HR Executive (E2)",
-                "grade": "E2",
-                "function": "HR",
-                "wc_id": "WC-DEL",
-                "work_centre": "Delhi HQ",
-                "display_string": "Pooja Verma, HR Executive (E2)",
-            },
-        )
-    )
+        return {
+            "persona_id": str(persona or "UNKNOWN").strip().upper() or "UNKNOWN",
+            "emp_id": "",
+            "display_name": "Signed-in User",
+            "designation": "Current Role",
+            "functional_designation": "Current Role",
+            "grade": "E2",
+            "function": "HR",
+            "wc_id": "WC-DEL",
+            "work_centre": "Delhi HQ",
+            "display_string": "Signed-in User, Current Role",
+        }
+    return dict(PERSONA_DISPLAY[canon])
 
 
 def render_refusal_copy(
     code: str,
     lang: str = "en",
-    persona: str = "E2_HR",
+    persona: Optional[str] = None,
     *,
     grade_num: Optional[str] = None,
     display_name: Optional[str] = None,
@@ -146,9 +144,14 @@ def render_refusal_copy(
 ) -> Dict[str, Any]:
     """Render SPEC-06 §4.6 copy + alternative for `(code, lang, persona)`.
 
+    Note on R-PAY `{n}`: defaults to the requester's grade (`p_info["grade"]`) so a refusal never
+    discloses a restricted target employee's grade; callers may pass `grade_num` explicitly when
+    the target grade was already in the user's question.
+
     Returns:
         `{code, text, rule_ref, auto_answer, alternative, alternatives}` where `alternative` is
-        `{"label": ..., "question": ...}` (or `None` for `E-AUTH`).
+        `{"label": ..., "question": ...}` (or `None` for `E-AUTH`) and `alternatives` contains
+        only non-duplicate additional chips with `label_hi` and `question_hi` populated.
     """
     codes = load_refusal_copy()
     norm_code = (code or "R-NAMED").strip().upper()
@@ -179,14 +182,26 @@ def render_refusal_copy(
         }
 
     alts_out: List[Dict[str, str]] = []
+    seen_labels = {(alt_out["label"].strip().lower()) for _ in [1] if alt_out}
+    seen_questions = {(alt_out["question"].strip().lower()) for _ in [1] if alt_out}
     for item in entry.get("alternatives") or []:
         if isinstance(item, dict):
-            lbl_tpl = item.get("label_hi" if is_hi and item.get("label_hi") else "label") or ""
-            q_tpl = item.get("question_hi" if is_hi and item.get("question_hi") else "question") or ""
+            lbl_en = (item.get("label") or "").format(display_name=disp, designation=desig, n=n_val, grade_num=n_val)
+            lbl_hi = (item.get("label_hi") or lbl_en).format(display_name=disp, designation=desig, n=n_val, grade_num=n_val)
+            q_en = (item.get("question") or "").format(display_name=disp, designation=desig, n=n_val, grade_num=n_val)
+            q_hi = (item.get("question_hi") or q_en).format(display_name=disp, designation=desig, n=n_val, grade_num=n_val)
+            lbl_cur = lbl_hi if is_hi else lbl_en
+            q_cur = q_hi if is_hi else q_en
+            if lbl_cur.strip().lower() in seen_labels or q_cur.strip().lower() in seen_questions:
+                continue
+            seen_labels.add(lbl_cur.strip().lower())
+            seen_questions.add(q_cur.strip().lower())
             alts_out.append(
                 {
-                    "label": lbl_tpl.format(display_name=disp, designation=desig, n=n_val, grade_num=n_val),
-                    "question": q_tpl.format(display_name=disp, designation=desig, n=n_val, grade_num=n_val),
+                    "label": lbl_cur,
+                    "question": q_cur,
+                    "label_hi": lbl_hi,
+                    "question_hi": q_hi,
                 }
             )
 
@@ -266,7 +281,13 @@ def build_refusal_contract(
         }
         access_status = "refused"
 
-    suggestions = [a["question"] for a in alts[:3]] if alts else ([alt["question"]] if alt else [])
+    suggestions = []
+    if alt:
+        suggestions.append(alt["question"])
+    for a in alts:
+        if a["question"] not in suggestions:
+            suggestions.append(a["question"])
+    suggestions = suggestions[:3]
     contract: Dict[str, Any] = {
         "turn_id": turn_id,
         "language": language if language in _VALID_LANGUAGES else "en",
@@ -300,19 +321,19 @@ def _infer_refusal_code(access: Dict[str, Any]) -> str:
         return str(access["code"])
     rr = str(access.get("rule_ref") or "").upper()
     reason = str(access.get("reason") or "").lower()
-    if "R-ROLE" in rr or "access level" in reason:
+    if "R-ROLE" in rr or re.search(r"\b(access\s+level|change\s+your\s+role)\b", reason):
         return "R-ROLE"
-    if "R-BOARD" in rr or "board" in reason:
+    if "R-BOARD" in rr or "P20" in rr or re.search(r"\b(board\s+agenda|board\s+note|board\s+memoranda|divestment)\b", reason):
         return "R-BOARD"
-    if "R-SENS" in rr or "posh" in reason or "vigilance" in reason or "medical" in reason:
+    if "R-SENS" in rr or "R-POSH" in rr or "R-MED" in rr or re.search(r"\b(posh|vigilance|medical|harassment)\b", reason):
         return "R-SENS"
-    if "R-APAR" in rr or "apar" in reason or "appraisal" in reason:
+    if "R-APAR" in rr or "D3" in rr or re.search(r"\b(apar|appraisal|promotion\s+committee|dpc)\b", reason):
         return "R-APAR"
-    if "R-PAY" in rr or "pay" in reason or "salary" in reason or "compensation" in reason:
+    if "R-PAY" in rr or "D1" in rr or re.search(r"\b(pay|salary|compensation|allowances|ctc|payslip)\b", reason):
         return "R-PAY"
-    if "R-K5" in rr or "below 5" in reason or "too small" in reason:
+    if "R-K5" in rr or re.search(r"\b(below\s+5|too\s+small|under\s+5)\b", reason):
         return "R-K5"
-    if "R-FUNC" in rr or "D-43" in rr or "finance team" in reason or "cross-functional" in reason:
+    if "R-FUNC" in rr or "D-43" in rr or re.search(r"\b(finance\s+team|cross-functional|field-level\s+profitability|delegated\s+powers|bdp)\b", reason):
         return "R-FUNC"
     return "R-NAMED"
 
@@ -373,17 +394,35 @@ def validate_and_repair_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
     if not isinstance(contract.get("access"), dict) or contract["access"].get("status") not in ("allowed", "refused", "partial"):
         contract["access"] = {"status": "allowed"}
 
-    # P2H.2: ensure every refusal carries access.code, access.rule_ref, and access.alternative {question, label}
+    # P2H.2 (M1): ensure every refusal carries SPEC-06 copy, access.code, access.rule_ref, and non-duplicate alternatives
     access = contract["access"]
     if access.get("status") == "refused":
         code = _infer_refusal_code(access)
-        rendered = render_refusal_copy(code, lang=contract.get("language", "en"), persona=contract.get("persona", "E2_HR"))
-        access.setdefault("code", code)
+        rendered = render_refusal_copy(code, lang=contract.get("language", "en"), persona=contract.get("persona"))
+        access["code"] = code
         access.setdefault("rule_ref", rendered["rule_ref"])
+        access["reason"] = rendered["text"]
         if not isinstance(access.get("alternative"), dict) and rendered["alternative"] is not None:
             access["alternative"] = rendered["alternative"]
-        if rendered["alternatives"]:
-            access.setdefault("alternatives", rendered["alternatives"])
+        access["alternatives"] = rendered["alternatives"]
+        # Overwrite legacy refusal headlines / titles that leak rule IDs (BEH-01.60)
+        cur_spoken = str(contract.get("spoken_summary") or "")
+        cur_disp = str(contract.get("display_text") or "")
+        if (
+            not cur_spoken
+            or "cannot share these confidential records" in cur_spoken
+            or "Access restricted under" in cur_disp
+            or "Access denied" in cur_spoken
+        ):
+            contract["spoken_summary"] = rendered["text"]
+            contract["display_text"] = rendered["text"][:600]
+        if isinstance(vis, dict) and vis.get("type") == "refusal":
+            if re.search(r"\([A-Z]\d+\)|Access\s+Restricted\s*\(", str(vis.get("title") or "")):
+                vis["title"] = "Access restricted"
+            vis.setdefault("code", code)
+            vis.setdefault("rule_ref", access["rule_ref"])
+            vis["alternative"] = access.get("alternative")
+            vis["alternatives"] = access.get("alternatives", [])
 
     validator = get_contract_validator()
     try:

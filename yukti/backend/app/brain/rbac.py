@@ -115,11 +115,50 @@ class PolicyDecision:
     self_emp_id: Optional[str] = None
 
 
+_POLICY_PROCESS_RE = re.compile(
+    r"(?:"
+    r"\b(?:posh\s+policy|reporting\s+process|complaint\s+(?:process|procedure)|"
+    r"policy\s+and\s+(?:the\s+)?reporting\s+process|whistle\s*blower\s+policy|"
+    r"what\s+is\s+the\s+(?:posh|vigilance|medical|transfer|leave)\s+policy)\b"
+    r"|(?:posh\s*नीति|नीति\s*और\s*(?:शिकायत|रिपोर्टिंग)\s*प्रक्रिया|शिकायत\s*प्रक्रिया\s*क्या\s*है)"
+    r")",
+    re.IGNORECASE,
+)
+
+_SENSITIVE_CASE_OR_RECORD_RE = re.compile(
+    r"(?:"
+    r"\b(?:cases?|complaints?\s+(?:filed|registered|pending|against|in\s+fy|count|number|list)|"
+    r"how\s+many|who\s+is|under\s+vigilance|inquiry\s+against|dossier|records?|claims?\s+of|pending)\b"
+    r"|(?:मामले|शिकायतें|कितने|रिकॉर्ड|लंबित)"
+    r")",
+    re.IGNORECASE,
+)
+
+
+def is_policy_process_question(question: Optional[str]) -> bool:
+    """Return True when `question` asks about a policy or reporting process (e.g. POSH policy)
+    rather than case records, complaint counts, or individual dossiers (P2H.2 M5 / SPEC-06 §4.6).
+    """
+    if not question:
+        return False
+    q = question.strip()
+    if not _POLICY_PROCESS_RE.search(q):
+        return False
+    if _SENSITIVE_CASE_OR_RECORD_RE.search(q):
+        return False
+    if _EMP_ID_LITERAL_RE.search(q):
+        return False
+    return True
+
+
 def topic_classes(question: str) -> List[str]:
     """Sensitive topics in the question (word-boundary match; 'apar' never matches 'apart')."""
     q = (question or "").lower()
+    is_pol_proc = is_policy_process_question(question)
     out = []
     for cls, words in (load_policy().get("topic_keywords") or {}).items():
+        if cls == "sensitive" and is_pol_proc:
+            continue
         if any(re.search(r"(?<![a-z])" + re.escape(w) + r"(?![a-z])", q) for w in words):
             out.append(cls)
     return out
@@ -128,6 +167,7 @@ def topic_classes(question: str) -> List[str]:
 _EMP_ID_LITERAL_RE = re.compile(r"\b(EMP-\d{4,6})\b", re.IGNORECASE)
 
 _V2_AGG_PAY_RE = re.compile(
+    r"(?:"
     r"\b("
     r"average\s+ctc|avg\.?\s+ctc|mean\s+ctc|median\s+ctc|"
     r"average\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay|ctc)\s+(?:of|for)\s+e[1-9](?:\s+(?:officers|executives|staff|employees))?\b|"
@@ -138,7 +178,10 @@ _V2_AGG_PAY_RE = re.compile(
     r"get\s+on\s+joining|joining\s+(?:basic\s+)?(?:pay|salary|scale)|"
     r"pay\s+(?:scale|band|range|matrix|slab)s?|"
     r"grade[\s\-]*wise\s+(?:average\s+|avg\s+)?(?:ctc|salary|pay)"
-    r")\b",
+    r")\b"
+    r"|(?:e[1-9]\s*(?:अधिकारियों|कर्मचारियों)?\s*का\s*औसत\s*(?:मासिक\s*)?(?:मूल\s*)?(?:वेतन|सैलरी)|"
+    r"औसत\s*(?:मासिक\s*)?(?:मूल\s*)?(?:वेतन|सैलरी))"
+    r")",
     re.IGNORECASE,
 )
 
@@ -190,7 +233,8 @@ def _mentions_individual_or_row_pay_target(question: str) -> bool:
         r"\b(reporting\s+officer|my\s+boss|my\s+manager|my\s+colleague\w*|my\s+team|"
         r"each\s+(?:employee|officer|executive)|every\s+(?:employee|officer|executive)|"
         r"list\s+(?:the\s+)?(?:net\s+pay|gross\s+pay|basic\s+pay|salary|salaries|ctc|pay)|"
-        r"(?:net\s+pay|gross\s+pay|basic\s+pay|salary|salaries|ctc|pay\s+band)\s+of\s+all\b)\b",
+        r"(?:net\s+pay|gross\s+pay|basic\s+pay|salary|salaries|ctc|pay\s+band)\s+of\s+all\b)\b"
+        r"|(?:रिपोर्टिंग\s*अधिकारी|मेरे\s*(?:अधिकारी|सहकर्मी|बॉस|मैनेजर|प्रबंधक))",
         q_low,
     ):
         return True
@@ -234,7 +278,8 @@ def _detect_self_emp_id(
     if re.search(
         r"\b(in\s+my\s+opinion|my\s+(?:team|colleague\w*|peer\w*|subordinate\w*|reporting\s+officer|boss|manager)|"
         r"all\s+(?:e[1-9]\s+)?(?:hr\s+|finance\s+)?(?:officer\w*|executive\w*|employee\w*|staff)|"
-        r"(?:each|every)\s+(?:officer|executive|employee))\b",
+        r"(?:each|every)\s+(?:officer|executive|employee))\b"
+        r"|(?:रिपोर्टिंग\s*अधिकारी|मेरे\s*(?:अधिकारी|सहकर्मी|बॉस|मैनेजर|प्रबंधक|अधीनस्थ)|मेरी\s*टीम|सभी\s*(?:कर्मचारियों|अधिकारियों))",
         q_low,
     ):
         return None
@@ -357,11 +402,17 @@ def _enrich_classes_from_question(
     if not q:
         return classes
 
+    if is_policy_process_question(q) and not any(c in ("sensitive", "pay_individual", "pay", "apar", "named") for c in base_classes):
+        return ["policy"]
+
     # M4: If a specific person or row-grain pay target is mentioned in a pay question, always add pay_individual
     # and remove pay_aggregate so individual/named pay is never misclassified as aggregate pay.
     t_classes = topic_classes(q)
     has_pay_word = "pay" in t_classes or bool(
-        re.search(r"\b(pay\s+(?:scale|band|range|matrix|slab)s?|starting\s+pay|joining\s+pay|basic\s+pay|net\s+pay|gross\s+pay|salary|ctc)\b", q_low)
+        re.search(
+            r"\b(pay\s+(?:scale|band|range|matrix|slab)s?|starting\s+pay|joining\s+pay|basic\s+pay|net\s+pay|gross\s+pay|salary|ctc)\b|(?:वेतन|सैलरी)",
+            q_low,
+        )
     )
     if has_pay_word and _mentions_individual_or_row_pay_target(q):
         classes = [c for c in classes if c != "pay_aggregate"]

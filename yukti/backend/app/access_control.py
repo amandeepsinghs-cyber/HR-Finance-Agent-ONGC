@@ -422,6 +422,7 @@ def normalize_persona(persona: Optional[str]) -> str:
 
 
 _AGGREGATE_PAY_RE = re.compile(
+    r"(?:"
     r"\b("
     r"average\s+ctc|avg\.?\s+ctc|mean\s+ctc|median\s+ctc|"
     r"average\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay|ctc)\s+(?:of|for)\s+e[1-9](?:\s+(?:officers|executives|staff|employees))?\b|"
@@ -432,7 +433,10 @@ _AGGREGATE_PAY_RE = re.compile(
     r"get\s+on\s+joining|joining\s+(?:basic\s+)?(?:pay|salary|scale)|"
     r"pay\s+(?:scale|band|range|matrix|slab)s?|"
     r"grade[\s\-]*wise\s+(?:average\s+|avg\s+)?(?:ctc|salary|pay)"
-    r")\b",
+    r")\b"
+    r"|(?:e[1-9]\s*(?:अधिकारियों|कर्मचारियों)?\s*का\s*औसत\s*(?:मासिक\s*)?(?:मूल\s*)?(?:वेतन|सैलरी)|"
+    r"औसत\s*(?:मासिक\s*)?(?:मूल\s*)?(?:वेतन|सैलरी))"
+    r")",
     re.IGNORECASE,
 )
 
@@ -444,7 +448,7 @@ _SELF_QUERY_RE = re.compile(
     r"leave|el|cl|hpl|balance|posting|postings|tenure|station|transfer|apar|rating|ratings|score|appraisal|"
     r"entitlement|entitlements|advance|advances|hba|car\s+advance|furniture|laptop|medical\s+claim\w*|reimbursement)(?![a-z])"
     r"|(?<![a-z])(?:how\s+long\s+have\s+i\s+been\s+posted|where\s+am\s+i\s+posted)(?![a-z])"
-    r"|(?:मेरा|मेरी|मेरे)\s+(?:\S+\s+){0,2}(?:वेतन|सैलरी|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|पात्रता)"
+    r"|(?:मेरा|मेरी|मेरे|अपना|अपनी|अपने)\s+(?:\S+\s+){0,3}(?:वेतन|सैलरी|वेतन\s*पर्ची|पेस्लिप|payslip|salary|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|apar|मूल्यांकन|पात्रता)"
     r")",
     re.IGNORECASE,
 )
@@ -478,7 +482,8 @@ def is_self_question(question: Optional[str], persona: Optional[str] = None) -> 
     q_low = q.lower()
     if re.search(
         r"\b(reporting\s+officer|in\s+my\s+opinion|my\s+(?:team|colleague\w*|peer\w*|subordinate\w*|boss|manager|department|division|section|unit)|"
-        r"(?:each|every|all)\s+(?:employee\w*|officer\w*|executive\w*|staff))\b",
+        r"(?:each|every|all)\s+(?:employee\w*|officer\w*|executive\w*|staff))\b"
+        r"|(?:रिपोर्टिंग\s*अधिकारी|मेरे\s*(?:अधिकारी|सहकर्मी|बॉस|मैनेजर|प्रबंधक|अधीनस्थ)|मेरी\s*टीम|सभी\s*(?:कर्मचारियों|अधिकारियों))",
         q_low,
     ):
         return False
@@ -523,6 +528,21 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
 
     # 1. Check if entry_id corresponds to a known refusal first (S1)
     root_id = entry_id.split("__")[0] if entry_id else None
+    _REFUSAL_ID_TO_CODE = {
+        "D1": "R-PAY",
+        "D2": "R-NAMED",
+        "D3": "R-APAR",
+        "D4": "R-FUNC",
+        "D5": "R-NAMED",
+        "D6": "R-SENS",
+        "P18": "R-NAMED",
+        "P19": "R-FUNC",
+        "P20": "R-BOARD",
+        "M3": "R-APAR",
+        "M4": "R-FUNC",
+        "R-POSH": "R-SENS",
+        "R-MED": "R-SENS",
+    }
     if root_id and root_id in REFUSAL_DEFINITIONS:
         ref_def = REFUSAL_DEFINITIONS[root_id]
         if normalized_persona == "DIR_FIN" and root_id in ("R-POSH", "R-MED"):
@@ -543,11 +563,12 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                 alternative=ref_def["alternative"],
                 alternative_sql=ref_def["alternative_sql"],
                 refusal_id=root_id,
+                code=_REFUSAL_ID_TO_CODE.get(root_id, "R-NAMED"),
             )
         elif normalized_persona == "CMD":
             return AccessDecision(status="allowed")
 
-    # 2. Check strict self-scope or aggregate-pay relaxation (only when no other-employee/team target is present)
+    # 2. Check strict self-scope, aggregate-pay relaxation, or policy/reporting-process questions
     if query and is_self_question(query, normalized_persona):
         from app.auth import PERSONA_DIRECTORY
 
@@ -566,11 +587,23 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
             rule_ref="SPEC-06 §5.1 · D-41",
         )
 
+    from app.brain.rbac import is_policy_process_question
+    if query and is_policy_process_question(query):
+        return AccessDecision(
+            status="allowed",
+            reason="Policy and reporting process inquiry allowed across all personas.",
+            rule_ref="SPEC-06 §4.2",
+        )
+
     # 2. Text / Query keyword heuristic for novel queries
     if query:
         q_low = query.lower()
         if normalized_persona in JUNIOR_PERSONAS:
-            if "salary of my reporting officer" in q_low or ("salary" in q_low and "reporting officer" in q_low):
+            if (
+                "salary of my reporting officer" in q_low
+                or ("salary" in q_low and "reporting officer" in q_low)
+                or ("रिपोर्टिंग अधिकारी" in q_low and ("वेतन" in q_low or "सैलरी" in q_low))
+            ):
                 d = REFUSAL_DEFINITIONS["D1"]
                 return AccessDecision(
                     status="refused",
@@ -618,6 +651,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                     alternative=d["alternative"],
                     alternative_sql=d["alternative_sql"],
                     refusal_id="D2",
+                    code="R-NAMED",
                 )
             # Check for DPC promotion list
             if "getting promoted" in q_low and "dpc" in q_low:
@@ -629,6 +663,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                     alternative=d["alternative"],
                     alternative_sql=d["alternative_sql"],
                     refusal_id="D3",
+                    code="R-APAR",
                 )
             # Check for field loss / profitability
             if any(k in q_low for k in ["which fields are loss-making", "loss-making fields", "fields lost money", "fields made losses", "profitable and which made losses", "field profitability", "field p&l"]):
@@ -640,6 +675,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                     alternative=d["alternative"],
                     alternative_sql=d["alternative_sql"],
                     refusal_id="D4",
+                    code="R-FUNC",
                 )
             # Check for nominal employee roster
             if "list all employees in delhi with more than 5 years" in q_low:
@@ -675,6 +711,7 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                     alternative=d["alternative"],
                     alternative_sql=d["alternative_sql"],
                     refusal_id="P19",
+                    code="R-FUNC",
                 )
         if normalized_persona == "DIR_HR" or normalized_persona in JUNIOR_PERSONAS:
             if "divesting marginal fields" in q_low or "divestment" in q_low and "marginal fields" in q_low:

@@ -427,7 +427,12 @@ class Planner:
         )
         is_corp_pnl_stmt = bool(
             (
-                re.search(r"\b(p\s*&\s*l|pnl|profit\s+and\s+loss|income\s+statement\w*|financial\s+statement\w*|annual\s+statement\w*|schedule\s+iii)\b", ql_early)
+                re.search(
+                    r"\b(p\s*&\s*l|pnl|profit\s+and\s+loss|income\s+statement\w*|financial\s+statement\w*|"
+                    r"annual\s+statement\w*|schedule\s+iii|published\s+annual\s+report)\b"
+                    r"|(?:आय\s+विवरण|लाभ\s+और\s+हानि|प्रकाशित\s+वार्षिक\s+रिपोर्ट)",
+                    ql_early,
+                )
                 or is_rev_cost_bridge
             )
             and no_sub_entity
@@ -528,7 +533,8 @@ class Planner:
             intent = "data"
             raw = dict(raw, intent="data", metric="pay_scale_min_inr", is_followup=False, dimensions=["grade"], filters=f_list)
         elif (intent != "data" or not raw.get("metric")) and re.search(
-            r"\b(?:average|avg\.?|mean|median)\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay|ctc)\s+(?:of|for|by|across)\s+(?:e[1-9]\b|grade\w*)",
+            r"(?:\b(?:average|avg\.?|mean|median)\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay|ctc)\s+(?:of|for|by|across)\s+(?:e[1-9]\b|grade\w*)"
+            r"|(?:e[1-9]\s*(?:अधिकारियों|कर्मचारियों)?\s*का\s*औसत\s*(?:मासिक\s*)?(?:मूल\s*)?(?:वेतन|सैलरी)))",
             ql_early,
         ):
             g_match = re.search(r"\b(e[1-9])\b", ql_early, re.I)
@@ -537,6 +543,11 @@ class Planner:
                 f_list.append({"field": "grade", "op": "=", "values": [g_match.group(1).upper()]})
             intent = "data"
             raw = dict(raw, intent="data", metric="avg_gross_salary_lakh", is_followup=False, dimensions=["grade"], filters=f_list)
+
+        # P2H.2 (M5): Policy & reporting process questions (e.g. POSH policy) resolve to intent="policy"
+        from app.brain.rbac import is_policy_process_question
+        if is_policy_process_question(question):
+            return Plan(intent="policy", is_followup=False, raw=dict(raw, intent="policy"))
 
         # SPEC-06 §4.5 (M3): possessive first-person ("my", "mera/meri", "मेरा/मेरी") + immediate HR entity -> self_scope=True
         # Never match when "my" modifies a non-self noun ("in my opinion", "my team", "my colleagues", "my reporting officer")
@@ -557,7 +568,7 @@ class Planner:
                 r"leave|el|cl|hpl|balance|posting|postings|station|transfer|apar|rating|ratings|score|appraisal|"
                 r"entitlement|entitlements|advance|advances|hba|car\s+advance|furniture|laptop|medical\s+claim\w*|reimbursement)(?![a-z])"
                 r"|(?<![a-z])(?:how\s+long\s+have\s+i\s+been\s+posted|where\s+am\s+i\s+posted)(?![a-z])"
-                r"|(?:मेरा|मेरी|मेरे)\s+(?:\S+\s+){0,2}(?:वेतन|सैलरी|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|पात्रता)"
+                r"|(?:मेरा|मेरी|मेरे|अपना|अपनी|अपने)\s+(?:\S+\s+){0,3}(?:वेतन|सैलरी|वेतन\s*पर्ची|पेस्लिप|payslip|salary|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|apar|मूल्यांकन|पात्रता)"
                 r")",
                 question,
                 re.I,
@@ -589,7 +600,7 @@ class Planner:
                 r"\b(across\s+(?:different\s+)?levels?|by\s+levels?|level[- ]?wise|across\s+(?:different\s+)?grades?|by\s+grades?|grade[- ]?wise)\b",
                 ql_early,
             )
-            or re.search(r"(अलग-अलग\s+लेवल|लेवल\s+के\s+अनुसार|ग्रेड\s+के\s+अनुसार|अलग-अलग\s+ग्रेड)", question)
+            or re.search(r"(अलग-अलग\s+लेवल|लेवल\s+के\s+अनुसार|ग्रेड\s+के\s+अनुसार|अलग-अलग\s+ग्रेड|ग्रेड-वार|स्तर-वार)", question)
         )
         asks_histogram = bool(re.search(r"\bhistogram\b|हिस्टोग्राम", ql_early))
         asks_gt5_tenure = bool(

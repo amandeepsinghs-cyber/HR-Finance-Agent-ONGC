@@ -489,62 +489,22 @@ class AgentTurnRunner:
         # so restricted personas (e.g. E2_HR / E3_FIN) cannot reach confidential data via shortcuts.
         access_dec = check_access(persona=norm_persona, query=query)
         if access_dec.status == "refused":
-            rule = access_dec.rule_ref or "ONGC Policy Confidentiality"
-            alt = access_dec.alternative or "authorized public pay scale bands"
-            spoken = f"I cannot share these confidential records under {rule}. However, I can share {alt}."
-            display = f"Access restricted under {rule} [1]. Authorized permitted alternative data is provided below [2]."
-
-            # Run alternative query for authorized data
-            alt_rows = []
-            alt_cols = ["grade_id", "designation", "pay_scale_min_inr", "pay_scale_max_inr"]
+            from app.answer_composer import _infer_refusal_code, build_refusal_contract
+            ref_code = access_dec.code or _infer_refusal_code(
+                {"reason": access_dec.reason, "rule_ref": access_dec.rule_ref}
+            )
+            refusal_contract = build_refusal_contract(
+                code=ref_code,
+                persona=norm_persona,
+                turn_id=turn_id,
+                language=det_lang,
+                rule_ref=access_dec.rule_ref,
+                latency_ms=(time.perf_counter() - t0) * 1000,
+            )
             if access_dec.alternative_sql:
-                from app.tools.query_data import query_data as qd
-                res = await asyncio.to_thread(qd, access_dec.alternative_sql, title="Permitted Alternative")
-                if res.get("status") == "success":
-                    alt_rows = res.get("all_rows", res.get("rows", []))
-                    alt_cols = res.get("columns", alt_cols)
-
-            refusal_contract = {
-                "turn_id": turn_id,
-                "language": det_lang,
-                "persona": norm_persona,
-                "spoken_summary": spoken,
-                "display_text": display,
-                "visual": {
-                    "type": "refusal",
-                    "mode": "replace",
-                    "title": f"Access Restricted ({access_dec.refusal_id or 'Confidential'})",
-                    "table": {
-                        "columns": alt_cols,
-                        "rows": alt_rows[:15],
-                    },
-                },
-                "insights": [
-                    f"Confidential data protected under {rule}",
-                    f"Permitted alternative: {alt}",
-                ],
-                "sources": [
-                    {"kind": "policy", "title": rule},
-                    {"kind": "data", "object": "hrfin_silver.dim_grade", "sql": access_dec.alternative_sql or "SELECT * FROM hrfin_silver.dim_grade"},
-                ],
-                "suggestions": [
-                    "What is my own pay scale band?",
-                    "What are the general station tenure norms?",
-                ],
-                "access": {
-                    "status": "refused",
-                    "reason": access_dec.reason,
-                    "rule_ref": access_dec.rule_ref,
-                    "alternative": access_dec.alternative,
-                },
-                "export_options": ["pdf", "sheets"],
-                "status_events": [
-                    "Checked executive persona authorization",
-                    "Access restricted under statutory policy guidelines",
-                    "Loaded authorized public aggregates",
-                ],
-                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
-            }
+                refusal_contract["sources"].append(
+                    {"kind": "data", "object": "hrfin_silver.dim_grade", "sql": access_dec.alternative_sql}
+                )
             self._validate_contract(refusal_contract)
             session_state.record_turn(refusal_contract)
             return refusal_contract

@@ -126,3 +126,22 @@ Individual suite breakdown:
 - `tests/test_degraded_copy.py`: **14 passed**
 - `tests/test_catalog_consistency.py`: **3 passed**
 - `tests/test_auth_tokens.py`: **20 passed**
+
+---
+
+## 5. G4 Round 1 Fixes (Backend — `docs/reviews/P2H.2.md` & Board #113)
+
+| Item | Severity | Fix Implemented | Verification |
+|---|---|---|---|
+| **M1** | Must-fix | Replaced the legacy refusal block in `turn_runner.py:487-510` (`check_access` hook) with `build_refusal_contract()` so `spoken_summary`, `display_text`, and `access.reason` always render SPEC-06 `refusal_copy.yaml` (EN + HI) and `visual.title` is `"Access restricted"` (no `"Access Restricted (D1)"` or rule IDs in title/spoken/display). Also updated `validate_and_repair_contract()` (`answer_composer.py`) to overwrite legacy refusal prose/titles with SPEC-06 copy while preserving `access.code` and `access.rule_ref` for the `"Why?"` disclosure. | `test_m1_legacy_refusal_contract_repaired_to_spec06_without_rule_id_in_title_or_spoken` (EN + HI) & `test_m1_turn_runner_check_access_hook_emits_spec06_refusal` (EN + HI) — **4 / 4 passed** |
+| **M4 (backend)** | Must-fix | Added `question_hi` to every `alternatives[]` item across all 9 codes in `app/brain/refusal_copy.yaml` and `app/semantic/refusal_copy.yaml`. Updated `render_refusal_copy()` (`answer_composer.py`) to select `question_hi` / `label_hi` when `lang == "hi"` and deduplicate `alternatives[]` against primary `alternative` by `(label, question)` so duplicate chips are never emitted. | `test_m4_refusal_copy_yaml_every_alternatives_item_has_question_hi_and_no_duplicates` — **passed** |
+| **M5** | Must-fix | Made `"What is the POSH policy and reporting process?"` / `"POSH नीति और शिकायत प्रक्रिया क्या है?"` classify as `policy` (`allow` across all 11 personas) via `is_policy_process_question()` in `rbac.py`, `access_control.py`, and `planner.py` (while keeping case/record/count queries in `sensitive`). Added Hindi aggregate-pay (`"E{n} अधिकारियों का औसत मासिक मूल वेतन क्या है?"`), Hindi possessive `self`-scope (`"मेरा APAR इतिहास दिखाएँ"`, `"सितंबर की मेरी वेतन पर्ची दिखाएँ"`), and Hindi P&L / Annual Report (`"प्रकाशित वार्षिक रिपोर्ट से कंपनी की स्थिति का सारांश दें"`, `"कंपनी-स्तर का आय विवरण दिखाएँ"`) recognition across `rbac.py`, `access_control.py`, and `planner.py`. | `test_m5_every_chip_question_passes_real_gate_for_all_11_personas_and_both_langs` (`11 personas × 8 R-* codes × 2 langs = 176` parametrised test cases covering all primary + extra chips through both `planner.to_plan -> compiler.compile_spec -> rbac.decide` and `check_access`) — **176 / 176 passed** |
+| **Should-fix #1** | Should-fix | Removed `"E2_HR"` / `"Pooja Verma"` default for unknown/omitted personas in `persona_display_info()` and `render_refusal_copy()` (`answer_composer.py`), using neutral fallback (`"Signed-in User"`, `"Current Role"`). | `test_should_fix_unknown_persona_uses_neutral_fallback_and_word_boundaries` — **passed** |
+| **Should-fix #5** | Should-fix | Documented `R-PAY` `{n}` requester-grade fallback in `answer_composer.py` and `refusal_copy.yaml`. | Verified |
+| **Should-fix #6** | Should-fix | Updated `_infer_refusal_code()` (`answer_composer.py`) to use word-boundary regexes (`\bpay\b`, `\bboard\s+note\b`, etc.) so `"display"` never matches `"pay"` and `"dashboard"` never matches `"board"`. | `test_should_fix_unknown_persona_uses_neutral_fallback_and_word_boundaries` — **passed** |
+| **Should-fix (`ui_control.py`)** | Should-fix | Updated `UI_ACTIONS["persona"]` and `_ALIASES` in `yukti/backend/app/ui_control.py` to list all 11 canonical personas (including `"asha"` -> `"E3_FIN"`). | `test_should_fix_unknown_persona_uses_neutral_fallback_and_word_boundaries` — **passed** |
+
+### Updated Backend Test Counts (G4 r1)
+- `tests/test_refusal_copy.py`: **231 passed** (up from 49)
+- Combined P2H.1 + P2H.2 backend suite (`test_refusal_copy.py`, `test_rbac_policy.py`, `test_persona_question_matrix.py`, `test_self_scope.py`, `test_role_escalation.py`, `test_auth_tokens.py`, `test_personas_v3.py`): **1,267 passed** in 4.14s.
+

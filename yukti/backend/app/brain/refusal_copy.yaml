@@ -20,6 +20,7 @@ codes:
       - label: "Export counts to Excel"
         label_hi: "एक्सेल में निर्यात करें"
         question: "Export counts by grade to Excel"
+        question_hi: "ग्रेड-वार संख्या एक्सेल में निर्यात करें"
 
   R-PAY:
     code: R-PAY
@@ -34,12 +35,10 @@ codes:
       question: "Average monthly basic pay of E{n} officers"
       question_hi: "E{n} अधिकारियों का औसत मासिक मूल वेतन क्या है?"
     alternatives:
-      - label: "Average E{n} pay"
-        label_hi: "E{n} का औसत वेतन"
-        question: "Average monthly basic pay of E{n} officers"
       - label: "My payslip"
         label_hi: "मेरी वेतन पर्ची"
         question: "Show my payslip for September"
+        question_hi: "सितंबर की मेरी वेतन पर्ची दिखाएँ"
 
   R-APAR:
     code: R-APAR
@@ -57,6 +56,7 @@ codes:
       - label: "My APAR"
         label_hi: "मेरा APAR"
         question: "Show my APAR history"
+        question_hi: "मेरा APAR इतिहास दिखाएँ"
 
   R-SENS:
     code: R-SENS
@@ -74,6 +74,7 @@ codes:
       - label: "POSH policy"
         label_hi: "POSH नीति"
         question: "What is the POSH policy and reporting process?"
+        question_hi: "POSH नीति और शिकायत प्रक्रिया क्या है?"
 
   R-FUNC:
     code: R-FUNC
@@ -91,6 +92,7 @@ codes:
       - label: "Company-level totals"
         label_hi: "कंपनी-स्तर के कुल आँकड़े"
         question: "Show the income statement for FY25"
+        question_hi: "FY25 का आय विवरण दिखाएँ"
 
   R-BOARD:
     code: R-BOARD
@@ -108,6 +110,7 @@ codes:
       - label: "AR summary"
         label_hi: "वार्षिक रिपोर्ट सारांश"
         question: "Summarise the published Annual Report position"
+        question_hi: "प्रकाशित वार्षिक रिपोर्ट की स्थिति का सारांश दें"
 
   R-ROLE:
     code: R-ROLE
@@ -125,6 +128,7 @@ codes:
       - label: "What can I ask?"
         label_hi: "मैं क्या पूछ सकता हूँ?"
         question: "What can I ask?"
+        question_hi: "मैं क्या पूछ सकता हूँ?"
 
   R-K5:
     code: R-K5
@@ -142,6 +146,7 @@ codes:
       - label: "All Delhi executives"
         label_hi: "सभी दिल्ली अधिकारी"
         question: "How many employees are in Delhi by level?"
+        question_hi: "दिल्ली में स्तर-वार कितने कर्मचारी हैं?"
 
   E-AUTH:
     code: E-AUTH

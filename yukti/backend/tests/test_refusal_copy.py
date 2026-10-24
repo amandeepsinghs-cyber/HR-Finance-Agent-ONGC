@@ -9,11 +9,12 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.access_control import ALL_PERSONAS_ORDERED
+from app.access_control import ALL_PERSONAS_ORDERED, check_access
 from app.answer_composer import (
     PERSONA_DISPLAY,
     PERSONA_DISPLAY_STRINGS,
     REFUSAL_CODES_9,
+    _infer_refusal_code,
     build_refusal_contract,
     load_refusal_copy,
     persona_display_info,
@@ -21,6 +22,8 @@ from app.answer_composer import (
     validate_and_repair_contract,
 )
 from app.auth import PERSONA_DIRECTORY
+from app.brain import compiler, planner, rbac
+from app.ui_control import UI_ACTIONS, _ALIASES
 
 EXPECTED_COPY = {
     ("R-NAMED", "en"): "I can't share individual names at your access level. Here is the same group as counts by grade (groups under 5 shown as '<5').",
@@ -134,3 +137,154 @@ def test_build_refusal_contract_with_auto_answer_aggregate_visual():
     assert validated["visual"]["table"]["masking"]["level"] == "aggregate"
     assert validated["visual"]["table"]["masking"]["code"] == "R-NAMED"
     assert validated["display_text"].startswith("I can't share individual names at your access level.")
+
+
+@pytest.mark.parametrize("lang,query", [
+    ("en", "What is the salary of my reporting officer?"),
+    ("hi", "मेरे रिपोर्टिंग अधिकारी का वेतन क्या है?"),
+])
+def test_m1_legacy_refusal_contract_repaired_to_spec06_without_rule_id_in_title_or_spoken(lang: str, query: str):
+    """P2H.2 G4 M1: Legacy check_access & validate_and_repair_contract overwrite 'Access Restricted (D1)' and rule-ID prose with SPEC-06 copy."""
+    dec = check_access("E2_HR", query=query)
+    assert dec.status == "refused"
+    assert dec.code == "R-PAY"
+
+    # Also verify that even if a legacy caller passed 'Access Restricted (D1)' into validate_and_repair_contract,
+    # it gets repaired to SPEC-06 copy with no rule ID in title, spoken_summary, or display_text.
+    legacy_payload = {
+        "turn_id": "t-legacy-m1",
+        "persona": "E2_HR",
+        "language": lang,
+        "intent": "refused",
+        "spoken_summary": f"I cannot share these confidential records under {dec.rule_ref}. {dec.reason}",
+        "display_text": f"Refusal under {dec.rule_ref}: {dec.reason}. Safe alternative: {dec.alternative}.",
+        "access": {
+            "status": "refused",
+            "rule_ref": dec.rule_ref,
+            "reason": dec.reason,
+            "safe_alternative": dec.alternative,
+        },
+        "visual": {
+            "type": "refusal",
+            "mode": "replace",
+            "title": f"Access Restricted ({dec.rule_ref})",
+        },
+    }
+    repaired = validate_and_repair_contract(legacy_payload)
+    assert repaired["access"]["code"] == "R-PAY"
+    assert repaired["spoken_summary"] == EXPECTED_COPY[("R-PAY", lang)]
+    assert repaired["display_text"] == EXPECTED_COPY[("R-PAY", lang)]
+    assert repaired["access"]["reason"] == EXPECTED_COPY[("R-PAY", lang)]
+    assert repaired["visual"]["title"] == "Access restricted"
+    assert "D1" not in repaired["visual"]["title"]
+    assert "D1" not in repaired["spoken_summary"]
+    assert "D1" not in repaired["display_text"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("lang,query", [
+    ("en", "What is the salary of my reporting officer?"),
+    ("hi", "मेरे रिपोर्टिंग अधिकारी का वेतन क्या है?"),
+])
+async def test_m1_turn_runner_check_access_hook_emits_spec06_refusal(lang: str, query: str):
+    """P2H.2 G4 M1: AgentTurnRunner.execute_turn check_access refusal hook emits SPEC-06 R-PAY copy in EN and HI with no rule IDs in title/spoken/display."""
+    from app.turn_runner import get_agent_turn_runner
+
+    runner = get_agent_turn_runner()
+    contract = await runner.execute_turn_async(query=query, persona="E2_HR", language=lang, session_id=f"s-m1-{lang}")
+    assert contract["access"]["status"] == "refused"
+    assert contract["access"]["code"] == "R-PAY"
+    assert contract["access"]["rule_ref"]
+    assert contract["spoken_summary"] == EXPECTED_COPY[("R-PAY", lang)]
+    assert contract["display_text"] == EXPECTED_COPY[("R-PAY", lang)]
+    assert contract["visual"]["title"] == "Access restricted"
+    for forbidden in ("Access Restricted (", "I cannot share these confidential records", "(D1)", "(D-10)"):
+        assert forbidden not in contract["spoken_summary"]
+        assert forbidden not in contract["display_text"]
+        assert forbidden not in contract["visual"]["title"]
+
+
+def test_m4_refusal_copy_yaml_every_alternatives_item_has_question_hi_and_no_duplicates():
+    """P2H.2 G4 M4: Every alternatives[] item in refusal_copy.yaml has question_hi, and render_refusal_copy deduplicates alternative vs alternatives."""
+    codes = load_refusal_copy()
+    for code, entry in codes.items():
+        alts = entry.get("alternatives") or []
+        for idx, item in enumerate(alts):
+            assert item.get("label") or item.get("label_en"), f"{code} alternatives[{idx}] missing label"
+            assert item.get("label_hi"), f"{code} alternatives[{idx}] missing label_hi"
+            assert item.get("question"), f"{code} alternatives[{idx}] missing question"
+            assert item.get("question_hi"), f"{code} alternatives[{idx}] missing question_hi"
+
+        for lang in ("en", "hi"):
+            rendered = render_refusal_copy(code=code, lang=lang, persona="E2_HR", grade_num="2")
+            primary = rendered.get("alternative")
+            extra = rendered.get("alternatives") or []
+            if primary:
+                primary_key = (primary.get("label"), primary.get("question"))
+                for ex in extra:
+                    assert (ex.get("label"), ex.get("question")) != primary_key, (
+                        f"Duplicate chip in {code} ({lang}): {ex} matches primary {primary}"
+                    )
+
+
+@pytest.mark.parametrize("persona", list(ALL_PERSONAS_ORDERED))
+@pytest.mark.parametrize("code", [c for c in REFUSAL_CODES_9 if c != "E-AUTH"])
+@pytest.mark.parametrize("lang", ["en", "hi"])
+def test_m5_every_chip_question_passes_real_gate_for_all_11_personas_and_both_langs(
+    persona: str, code: str, lang: str
+):
+    """P2H.2 G4 M5: Every offered chip (primary alternative + extra alternatives, EN & HI) passes planner->compile->decide and check_access with allow|self|aggregate."""
+    rendered = render_refusal_copy(code=code, lang=lang, persona=persona)
+    chips = []
+    if rendered.get("alternative"):
+        chips.append(rendered["alternative"])
+    for ex in rendered.get("alternatives") or []:
+        chips.append(ex)
+    assert chips, f"Expected at least 1 chip for {code} ({lang})"
+
+    for chip in chips:
+        q = chip["question"]
+        assert isinstance(q, str) and q.strip(), f"Empty chip question on {code} ({lang}) for {persona}"
+
+        # 1. Brain gate: planner.to_plan -> compiler.compile_spec -> rbac.decide
+        pl = planner.get_planner().to_plan(q, {}, None)
+        if pl.spec is not None:
+            compiled = compiler.compile_spec(pl.spec)
+            classes = compiled.data_classes
+        elif pl.intent == "policy":
+            classes = ["policy"]
+        else:
+            classes = ["general_hr"]
+        dec = rbac.decide(persona, classes, question=q, spec=pl.spec)
+        assert dec.action in ("allow", "self", "aggregate"), (
+            f"Chip {q!r} ({code}, {lang}) failed rbac.decide for {persona}: "
+            f"action={dec.action}, code={dec.code}, classes={classes}, intent={pl.intent}"
+        )
+
+        # 2. Legacy check_access gate
+        legacy_dec = check_access(persona, query=q)
+        assert legacy_dec.status == "allowed", (
+            f"Chip {q!r} ({code}, {lang}) failed check_access for {persona}: "
+            f"status={legacy_dec.status}, code={legacy_dec.code}, reason={legacy_dec.reason}"
+        )
+
+
+def test_should_fix_unknown_persona_uses_neutral_fallback_and_word_boundaries():
+    """P2H.2 G4 Should-fix #1, #6, and ui_control 11-persona parity."""
+    # Should-fix #1: Unknown persona never defaults to Pooja Verma / E2_HR
+    info = persona_display_info("UNKNOWN_ROLE")
+    assert info["display_name"] != "Pooja Verma"
+    assert "Pooja Verma" not in info["display_string"]
+    r_role = render_refusal_copy("R-ROLE", lang="en", persona="UNKNOWN_ROLE")
+    assert "Pooja Verma" not in r_role["text"]
+
+    # Should-fix #6: _infer_refusal_code uses word boundaries so 'display' != 'pay' and 'dashboard' != 'board'
+    assert _infer_refusal_code({"rule_ref": "", "reason": "Cannot display individual records"}) == "R-NAMED"
+    assert _infer_refusal_code({"rule_ref": "", "reason": "Executive dashboard restricted"}) == "R-NAMED"
+    assert _infer_refusal_code({"rule_ref": "", "reason": "Individual pay is confidential"}) == "R-PAY"
+    assert _infer_refusal_code({"rule_ref": "", "reason": "Board note is restricted"}) == "R-BOARD"
+
+    # ui_control 11-persona parity
+    assert set(ALL_PERSONAS_ORDERED).issubset(set(UI_ACTIONS["persona"]))
+    assert _ALIASES[("persona", "asha")] == ("persona", "E3_FIN")
+
