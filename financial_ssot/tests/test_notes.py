@@ -109,3 +109,45 @@ def test_note_rows_have_lineage(by_vintage):
             assert r["source_doc"] and r["source_page"] and r["source_text_line"] and r["source_text"]
             assert r["source_table"].startswith(("note_", "production_table"))
             assert r["extraction_method"] == "text_parse"
+
+
+# ---------------------------------------------------------------- G4 r2 (B2 + note-statement ties)
+@pytest.fixture(scope="module")
+def all_notes():
+    return nt.run_all()
+
+
+def test_no_value_left_in_any_note_label(all_notes):
+    rows, _, _ = all_notes
+    bad = [(r["report_vintage"], r["source_text_line"], r["raw_label"]) for r in rows
+           if re.search(r"\d[\d,]*\.\s?\d{2}\b", st._NOTE_REF_TXT.sub(" ", r["raw_label"]))]
+    assert not bad, bad[:5]
+
+
+def test_split_digit_cases_flagged_not_wrong(all_notes):
+    rows, issues, _ = all_notes
+    # AR FY18 p.215 DD&A "Total ... 1 21,895.38" and AR FY19 p.300 "Total 1,096,545. 50": no wrong row emitted
+    assert not [r for r in rows if r["report_vintage"] == "AR_FY2017-18" and r["parsed_value"] == 21895.38]
+    split = {(i["report_vintage"], i["page"]) for i in issues if i["check"] == "column_split"}
+    assert ("AR_FY2017-18", 215) in split and ("AR_FY2018-19", 300) in split
+    ties = {(i["report_vintage"], i["statement"]) for i in issues if i["check"] == "statement_tie"}
+    assert ties == {("AR_FY2017-18", "note_36"), ("AR_FY2018-19", "note_30")}
+
+
+def test_dda_note_total_ties_to_pnl_every_other_ar(all_notes):
+    rows, _, located = all_notes
+    for v, found in located.items():
+        if v == "AR_FY2017-18":
+            continue
+        tied = [r for r in rows if r["report_vintage"] == v and r["source_table"] == "note_" + found["dda"][0]
+                and r.get("statement_tie_ok")]
+        assert len({r["period_end"] for r in tied}) == 2, v
+    fy17_rev = [r for r in rows if r["report_vintage"] == "AR_FY2016-17" and r.get("statement_tie_ok")
+                and r["source_table"] == "note_" + located["AR_FY2016-17"]["revenue"][0]]
+    assert any(r["parsed_value"] == 779077.30 for r in fy17_rev)
+
+
+def test_dda_block_subtotal_label(by_vintage):
+    rows, _, _ = by_vintage["AR_FY2025-26"]
+    r = _one(rows, r"note_37$", r"^\[subtotal\] Total Depreciation net of Less", "FY26")
+    assert r["parsed_value"] == 80170.12 and r["subtotal_ok"]

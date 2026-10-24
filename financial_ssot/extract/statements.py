@@ -109,7 +109,30 @@ _VAL3 = re.compile(r"^\(?-?\d{1,3}(?:,\d{2,3})*\.\d{2,3}\)?$|^\(?-?\d+\.\d{2,3}\
 _NOTE_TAIL = re.compile(
     r"\s{2,}(?P<note>\d{1,2}(?:\.\d{1,2})?[A-Z]?(?:\s*(?:&|and|,)\s*\d{1,2}(?:\.\d{1,2})?[A-Z]?)*)\s*$")
 _ROMAN = re.compile(r"^(?P<r>X{0,3}(?:IX|IV|V?I{1,3}|V|X))(?:\.\s+|\s{2,}|\s+(?=[A-Z(]))(?=\S)")
-_FORMULA = re.compile(r"\(\s*([IVX]+(?:\s*[+\-]\s*[IVX]+)+)\s*\)")
+_FORMULA = re.compile(r"\(\s*((?:[IVX]+|[A-E])(?:\s*[+\-]\s*(?:[IVX]+|[A-E]))+)\s*\)")
+_LETTER_REF = re.compile(r"[\"'“‘]\s*([A-E])\s*[\"'”’]\s*$")  # CF section totals: ... activities "A"
+_LABEL_NUM = re.compile(r"\d[\d,]*\.\s?\d{2}\b")
+_NOTE_REF_TXT = re.compile(r"\(?\b(?:refer\s+)?notes?\s*(?:no\.?)?\s*[\d.]+[a-z]?(?:\s*(?:&|and|,)\s*[\d.]+[a-z]?)*\)?", re.I)
+_WRAP_TOTAL = re.compile(r"^(net cash|net increase|net decrease|operating profit before|cash and cash equivalents)", re.I)
+
+
+def _starts_continuation(label: str) -> bool:
+    """A no-value line that continues the previous label: lower-case start that is not a marker."""
+    if re.match(r"^\((?:[A-Z]|[ivx]+|[a-z])\)", label):
+        return False  # "(B) Items ...", "(ii) ...", "(a) ..." open new items
+    return bool(re.match(r"^[a-z]", label) and not _MARKER.match(label)) or bool(re.match(r"^\([a-z]{4,}", label))
+
+
+def _wraps_onto(head: str, label: str) -> bool:
+    """Heading (no values) whose text continues on the next line that carries the values."""
+    if not label or re.match(r"^\(face value", label, re.I):
+        return True
+    if head.rstrip().endswith(":") or _MARKER.match(label) or re.match(r"^[-–]\s", label):
+        return False
+    if _starts_continuation(label):
+        return True
+    return bool(_CONNECT_END.search(head) or _WRAP_TOTAL.match(head)
+                or re.match(r"^[-–]\s", head))
 _END = [
     re.compile(r"^\s*(the\s+)?accompanying notes", re.I),
     re.compile(r"^\s*see accompanying notes", re.I),
@@ -394,13 +417,14 @@ def parse_region(region: list[tuple[int, int, str]], *, doc: str, report_vintage
     pending_head: dict | None = None
     prev_blank = True
     last_heading = "block"
+    less_active = False  # rows under a "Less : Allocated to:" heading are deducted in sums
     for p in parsed:
         if p["blank"]:
-            prev_data, pending_head, prev_blank = None, None, True
+            prev_data, pending_head, prev_blank, less_active = None, None, True, False
             continue
         label, vals = p["label"], p["vals"]
         if not vals:
-            starts_lower = bool(re.match(r"^[a-z(]", label)) and not re.match(r"^(\(?[a-z]{1,4}[\).]|\(\d)", label)
+            starts_lower = _starts_continuation(label)
             if prev_data is not None and not prev_blank and (
                     starts_lower or (_CONNECT_END.search(prev_data["label"]) and _marker_level(label, p["roman"]) >= 5.5)):
                 prev_data["label"] = _clean(prev_data["label"] + " " + label)
@@ -421,14 +445,13 @@ def parse_region(region: list[tuple[int, int, str]], *, doc: str, report_vintage
             stack.append(head)
             items.append({"kind": "heading", **head})
             last_heading = label
+            less_active = bool(re.match(r"^less\b", label, re.I))
             pending_head, prev_data, prev_blank = head, None, False
             continue
 
         # data line
-        if pending_head is not None and not prev_blank and (
-                not label or (re.match(r"^[a-z]", label) and not _MARKER.match(label))
-                or re.match(r"^\(face value", label, re.I)) \
-                and stack and stack[-1] is pending_head:
+        if pending_head is not None and not prev_blank and stack and stack[-1] is pending_head \
+                and _wraps_onto(pending_head["text"], label):
             # heading wrapped onto the value line ("Net cash (used in)/generated" + "by ...")
             stack.pop()
             items = [it for it in items if not (it["kind"] == "heading" and it["line_no"] == pending_head["line_no"])]
@@ -440,6 +463,14 @@ def parse_region(region: list[tuple[int, int, str]], *, doc: str, report_vintage
         while stack and stack[-1]["level"] >= lvl and not (
                 p["indent"] > stack[-1]["indent"] + 1 and stack[-1]["level"] != lvl):
             stack.pop()
+        if _LABEL_NUM.search(_NOTE_REF_TXT.sub(" ", label)):
+            # a printed value was absorbed into the label (extra columns / pdftotext split digits
+            # such as "1 21,895.38" or "1,096,545. 50"): never emit a partial or wrong row
+            issues.append({"report_vintage": report_vintage, "scope": scope, "statement": statement,
+                           "page": p["page"], "line": p["line_no"], "check": "column_split",
+                           "detail": f"value-like token left in label: {p['raw'][:140]}"})
+            prev_data, pending_head, prev_blank = None, None, False
+            continue
         # column mapping -> {year column: [(sub, token)]}
         by_col: dict[int, list[tuple[int, str]]] = {}
         ye = year_edges.get(p["page"]) or stmt_year_edges
@@ -508,6 +539,9 @@ def parse_region(region: list[tuple[int, int, str]], *, doc: str, report_vintage
         item.update({"note": p["note"], "roman": p["roman"], "line_no": p["line_no"], "page": p["page"],
                      "raw": p["raw"], "cells": main_cells, "section": section, "text_extra": [],
                      "is_total": (not label) or bool(_TOTAL.match(label)) or bool(_FORMULA.search(label))})
+        item["is_deduction"] = (not item["is_total"]) and (less_active or bool(re.match(r"^less\b", label, re.I)))
+        if item["is_total"]:
+            less_active = False
         items.append(item)
         prev_data = item if label else None
         pending_head, prev_blank = None, False
@@ -526,13 +560,56 @@ def parse_region(region: list[tuple[int, int, str]], *, doc: str, report_vintage
             items.append({"kind": "data", "label": f"[subtotal] {head_txt}", "unlabelled": False,
                           "note": None, "roman": None, "line_no": p["line_no"], "page": p["page"],
                           "raw": p["raw"], "cells": subtotal_cells, "section": section, "text_extra": [],
-                          "is_total": True, "block_subtotal": True})
+                          "is_total": True, "block_subtotal": True, "is_deduction": False})
             prev_data = item
+            less_active = False
 
     rows = _emit(items, columns, doc=doc, report_vintage=report_vintage, scope=scope, statement=statement,
                  extracted_at=extracted_at, folio_of=folio_of)
     issues.extend(_check_subtotals(rows, report_vintage, scope, statement))
+    _relabel_block_subtotals(rows, [(it["line_no"], it["text"]) for it in items if it["kind"] == "heading"])
     return rows, issues
+
+
+def _relabel_block_subtotals(rows: list[dict], headings: list[tuple[int, str]]) -> None:
+    """Name a printed block subtotal after the block it closes (from its verified components).
+
+    ``[subtotal] <heading>``: sum of the lines under the heading that opens the block
+    (e.g. "Adjustments for:").  ``[subtotal] <first line> net of <Less heading>``: the block
+    starts with a figure and deducts the lines under a "Less" heading (DD&A note: Total
+    Depreciation net of allocation).
+    """
+    by_line: dict[int, list[dict]] = {}
+    for r in rows:
+        if r["notes"] == "unlabelled_block_subtotal":
+            by_line.setdefault(r["source_text_line"], []).append(r)
+    label_of_line = {r["source_text_line"]: r for r in rows}
+    for _, group in by_line.items():
+        ref = next((r for r in group if r["subtotal_ok"] and (r["subtotal_components"] or "").startswith("sum lines")),
+                   None)
+        if ref is None:
+            continue
+        comp_lines = [int(x) for x in ref["subtotal_components"][len("sum lines "):].split(",")]
+        first = min(comp_lines)
+        comps = [label_of_line[ln] for ln in comp_lines if ln in label_of_line]
+        less_heads = [t for ln, t in headings if ln < ref["source_text_line"] and ln > first and re.match(r"^less\b", t, re.I)]
+        if comps and not comps[0]["is_deduction"] and any(c["is_deduction"] for c in comps) and less_heads:
+            label = f"[subtotal] {comps[0]['raw_label']} net of {_clean(less_heads[-1])}"
+        else:
+            # the block opens after the previous printed total; its heading must lie inside it
+            prev_tot = max((r["source_text_line"] for r in rows if r["is_subtotal"]
+                            and r["source_text_line"] < first), default=0)
+            head = [t for ln, t in headings if prev_tot < ln < first]
+            before = [r for r in rows if r["source_text_line"] < first and not r["is_subtotal"]
+                      and r["source_text_line"] > prev_tot]
+            if head:
+                label = f"[subtotal] {_clean(head[-1])}"
+            elif before:
+                label = f"[subtotal] block after {before[-1]['raw_label']}"
+            else:
+                label = "[subtotal] block"
+        for r in group:
+            r["raw_label"] = label
 
 
 def _unit_of(label: str, section: str) -> str | None:
@@ -616,6 +693,7 @@ def _emit(items, columns, *, doc, report_vintage, scope, statement, extracted_at
                 "section_path": it["section"],
                 "line_seq": seq,
                 "is_subtotal": bool(it["is_total"]),
+                "is_deduction": bool(it.get("is_deduction")),
                 "subtotal_ok": None,
                 "subtotal_components": None,
                 "notes": ("unlabelled_block_subtotal" if it.get("block_subtotal") else
@@ -646,6 +724,9 @@ def _check_subtotals(rows: list[dict], report_vintage: str, scope: str, statemen
             m_ref = re.search(r"\(([IVX]+)\)\s*$", lab)
             if m_ref and not r["roman_ref"]:
                 roman_val[m_ref.group(1)] = r["parsed_value"]
+            m_let = _LETTER_REF.search(lab)
+            if m_let:
+                roman_val[m_let.group(1)] = r["parsed_value"]  # CF "A" / "B" / "C" section totals
             if not r["is_subtotal"]:
                 reduced.append(r)
                 continue
@@ -653,7 +734,7 @@ def _check_subtotals(rows: list[dict], report_vintage: str, scope: str, statemen
             fm = _FORMULA.search(lab)
             if fm:
                 expr = re.sub(r"\s+", "", fm.group(1))
-                terms = re.findall(r"([+\-]?)([IVX]+)", expr)
+                terms = re.findall(r"([+\-]?)([IVX]+|[A-E])", expr)
                 if all(t in roman_val for _, t in terms):
                     total = sum((-1 if s == "-" else 1) * roman_val[t] for s, t in terms)
                     ok = abs(total - r["parsed_value"]) <= TOL * len(terms)
@@ -662,8 +743,8 @@ def _check_subtotals(rows: list[dict], report_vintage: str, scope: str, statemen
                 acc = 0.0
                 for j in range(len(reduced) - 1, -1, -1):
                     v = reduced[j]["parsed_value"]
-                    if re.match(r"^(\[subtotal\]\s*)?less\b", reduced[j]["raw_label"], re.I) and v > 0:
-                        v = -v  # "Less : Cash Credit/Bank OD" is printed positive and deducted
+                    if reduced[j].get("is_deduction") and v > 0:
+                        v = -v  # "Less : Cash Credit/Bank OD" / lines under "Less :" are printed positive
                     acc += v
                     cnt = len(reduced) - j
                     if abs(acc - r["parsed_value"]) <= TOL + 0.005 * cnt:
@@ -737,7 +818,7 @@ def cross_checks(rows: list[dict], report_vintage: str, scope: str) -> list[dict
             res["cf_closing_cce"] = cf_close["parsed_value"]
             res["bs_cce"] = bs_cce["parsed_value"]
             if abs(cf_close["parsed_value"] - bs_cce["parsed_value"]) <= TOL:
-                res["cash_tie_ok"], res["cash_tie_method"] = True, "direct"
+                res["cash_tie_ok"], res["tie_basis"], res["tie_overdraft_line"] = True, "direct", None
             else:
                 # The AR's CF cash is net of bank overdraft / cash credit; the printed components
                 # table ("Less: Cash Credit/Bank OD") reconciles it to BS cash.  Both are printed.
@@ -746,11 +827,12 @@ def cross_checks(rows: list[dict], report_vintage: str, scope: str) -> list[dict
                     bs_cce["parsed_value"] - abs(od["parsed_value"]) - cf_close["parsed_value"]) <= TOL
                 if od is not None:
                     res["cf_overdraft"] = abs(od["parsed_value"])
-                    res["cash_tie_method"] = f"net_of_overdraft (line {od['source_text_line']})"
+                    res["tie_basis"] = "net_of_overdraft"  # D-57
+                    res["tie_overdraft_line"] = od["source_text_line"]
         results.append(res)
         for r in rows:
             if r["period_end"] == pe:
-                for f in ("pnl_chain_ok", "bs_identity_ok", "cash_tie_ok"):
+                for f in ("pnl_chain_ok", "bs_identity_ok", "cash_tie_ok", "tie_basis", "tie_overdraft_line"):
                     r[f] = res.get(f)
     return results
 

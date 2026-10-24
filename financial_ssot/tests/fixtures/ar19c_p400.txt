@@ -1,0 +1,53 @@
+1 Details of cash and cash equivalents at the end of the year:
+                                                                                                                (` in million)
+                          Particulars                               Year ended                      Year ended
+                                                                   March 31, 2019                  March 31, 2018
+    Balances with Banks                                                         13,567.82                          8,438.93
+    Cash on Hand                                                                    99.33                             89.19
+    Bank Deposit with original maturity up to 3 month                           27,391.58                         16,592.76
+                                                                                41,058.73                         25,120.88
+    Less :Cash Credit/Bank OD                                                   28,660.11                         25,574.58
+    Cash and cash equivalents at the end of the year                            12,398.62                          (453.71)
+
+2         Reconcilation of liabilities arising from financing activities:
+
+          The table below details change in the Group’s liabilities arising from financing activities, including both cash
+          and non cash changes. Liabilities arising from financing activities are those for which cash flows where, or future
+          cash flows will be, classified in the Groups statement of cash flows as cash flows from financing activities.
+                                                                                                                (` in million)
+    Sl.                                                            As at March     Financing     Non-cash    As at March
+            Particulars
+    No.                                                             31, 2018       cash Flows    changes      31, 2019
+     I      Borrowing - Long Term
+     1      External commercial borrowing (ECB )                       38,596.06    (8,238.33)      883.21        31,240.94
+     2      Loan from Oil Industry Development Board (OIDB)              750.00      8,241.87            -          8,991.87
+     3      Non Convertible Debentures/Bonds                          271,790.60   (37,938.53)        3.82       233,855.89
+     4      Deferred payment liabilities - VAT Loan                      169.24        107.52      (51.20)           225.56
+     5      Working capital loan from banks                                    -        68.18         0.34            68.52
+     6      Deferred payment liabilities - CST                           618.63       (618.63)           -              0.00
+     7      Foreign Currency Term Loan (FCTL)                         225,154.93    17,765.09       189.10       243,109.12
+     8      Rupee Term Loan                                                    -     5,142.50            -          5,142.50
+     9      Long term Borrowings                                       13,169.52    (8,764.80)    4,401.46          8,806.18
+            Other financial liabilities (Non current) - Net
+    10      Derivative Contracts                                        (886.66)      (213.72)    2,798.73          1,698.35
+            Other financial liabilities (Non current) - Interest
+    11      accrued                                                     1,171.50             -      524.09          1,695.59
+            Total                                                     550,533.82   (24,448.85)    8,749.55       534,834.52
+     II     Borrowing - Short Term
+     1      Working capital loan from banks                           132,781.30    39,277.51         7.26       172,066.07
+     2      Foreign currency non repatriable loan (FCNR)/
+            Bonds                                                      19,398.47    31,664.18       511.74        51,574.39
+     3      Commercial Papers                                          14,949.30    56,514.92            -        71,464.22
+     4      Short Term Rupee Loan                                       3,620.00    (3,250.00)           -           370.00
+     5      Short term Borrowings                                      28,894.68   (47,660.54)   32,663.19        13,897.33
+     6      Other financial liabilities                                17,083.33    (6,581.71)   13,831.30        24,332.92
+     7      Foreign currency Terms Loans                               85,876.18   (12,548.79)    4,603.07        77,930.46
+     8      Rupee Term Loans                                          151,117.03   (77,456.59)           -        73,660.44
+            Total                                                     453,720.29   (20,041.02)   51,616.56       485,295.83
+
+
+Signed and dated by the Chairman & Managing Director, the Director (Finance), the Company Secretary and the Auditors of the
+                                      Company at New Delhi as at page no. 391.
+
+
+398

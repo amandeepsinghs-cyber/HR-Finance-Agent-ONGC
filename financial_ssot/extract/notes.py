@@ -142,10 +142,49 @@ def parse_with_issues(text_path, report_vintage, page_map=None, extracted_at=Non
             rows.extend(r)
             # notes: subtotal mismatches are flags for review, not parser failures
             issues.extend(i for i in iss if i["check"] != "header")
+    issues.extend(statement_ties(rows, found, text_path, report_vintage, page_map, extracted_at))
     prod, piss = production_table(text_path, report_vintage, extracted_at, folio_of)
     rows.extend(prod)
     issues.extend(piss)
     return rows, issues, found
+
+
+# statement-critical note totals and the standalone P&L face line they must equal
+STATEMENT_TIES = {
+    "revenue": r"^Revenue from operations$",
+    "other_income": r"^Other income$",
+    "finance_cost": r"^Finance costs?$",
+    "dda": r"^(Depletion|Depreciation), (depreciation|depletion),? amorti[sz]ation",
+}
+
+
+def statement_ties(rows, found, text_path, report_vintage, page_map, extracted_at) -> list[dict]:
+    """Note total = printed P&L line (per period); flags ``statement_tie_ok`` on the note Total rows.
+
+    Contiguous-sum checks cannot rebuild these totals (Less-blocks, nested tables), so the tie to
+    the face statement is their check.  A period with no tying note total is an issue.
+    """
+    pnl = st.parse(text_path, report_vintage, "standalone", ("pnl",), page_map, extracted_at)
+    issues = []
+    for key, rx in STATEMENT_TIES.items():
+        if key not in found:
+            continue
+        table = "note_" + found[key][0]
+        cands = [r for r in rows if r["source_table"] == table and re.match(r"^total\b", r["raw_label"], re.I)]
+        for pe in sorted({r["period_end"] for r in pnl if r["period_type"] == "annual"}):
+            face = next((r for r in pnl if r["period_end"] == pe and re.search(rx, r["raw_label"], re.I)), None)
+            if face is None:
+                continue
+            mine = [r for r in cands if r["period_end"] == pe]
+            for r in mine:
+                r["statement_tie_ok"] = abs(r["parsed_value"] - face["parsed_value"]) <= st.TOL
+                r["statement_tie_line"] = face["source_text_line"]
+            if not any(r["statement_tie_ok"] for r in mine):
+                issues.append({"report_vintage": report_vintage, "scope": "standalone", "statement": table,
+                               "page": found[key][1], "line": None, "check": "statement_tie",
+                               "detail": f"{key} {pe}: no note total equals P&L line {face['source_text_line']} "
+                                         f"({face['raw_value_text']}); note totals {[r['raw_value_text'] for r in mine]}"})
+    return issues
 
 
 _PROD_ROW = re.compile(r"^\s*(Crude Oil|Natural Gas) Production \((MMT|BCM)\)", re.I)

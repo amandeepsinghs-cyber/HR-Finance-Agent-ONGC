@@ -1,0 +1,55 @@
+Consolidated Statement of Cash Flows for the year ended March 31, 2019
+                                                                                                 (` in million)
+      Particulars                                         Year ended                 Year ended
+                                                         March 31, 2019             March 31, 2018
+        CASH FLOW FROM OPERATING
+ A.   ACTIVITIES:
+        Profit for the year                                          338,869.29                   260,679.86
+         Adjustments For:
+       - Income Tax Expense                           208,802.11                   131,395.16
+       - Share of profit of joint ventures and
+      associates                                      (34,282.55)                  (27,018.85)
+       - Exceptional Items                              15,762.16                   (2,740.12)
+       - Depreciation, Depletion, Amortisation &
+         Impairment                                   240,262.32                   230,886.86
+       - Exploratory Well Costs Written off            72,561.65                    58,559.51
+       - Finance cost                                  56,520.54                    49,638.02
+       - Unrealized Foreign Exchange Loss/
+      (Gain)                                             7,932.58                     3,312.66
+       - Other impairment and Write offs                14,404.92                    16,095.35
+       - Excess Provision written back                 (9,167.05)                   (4,333.13)
+       - Provision for decommisioning                           -                            -
+       - Other non cash expenditure written off          (203.45)                        59.11
+       - Interest Income                              (23,629.39)                  (25,812.36)
+       - Fair value loss (net)                             109.29                       951.34
+       - Amortization of Financial Guarantee               318.72                            -
+       - Amortization of Operating leasold land
+      and others                                           23.18                        21.34
+       - Liabilities no longer required written
+      back                                             (3,808.73)                   (2,149.44)
+       - Amortization of Government Grant                  642.50                     (209.64)
+       - Loss/(Profit) on sale of investment                    -                       602.40
+       - Loss/(Profit) on sale of property, plant &
+      equipment                                           (88.51)                       295.27
+       - Dividend Income                              (15,283.71)                  (16,099.95)
+       - Remeasurement of Defined benefit plans        (4,364.15)                     (780.02)
+       - Gain on foreign exchange, forward
+         contract and mark to market                            -    526,512.45              -    412,673.50
+
+      Operating Profit before Working Capital
+      Changes                                                        865,381.74                   673,353.36
+      Adjustments for:-
+      - Receivables                                   (23,269.07)                  (17,436.97)
+      - Loans and Advances                            (63,726.52)                  (18,656.20)
+      - Other Assets                                  (59,868.22)                  (12,606.28)
+      - Inventories                                   (46,698.49)                   (7,510.35)
+      - Trade Payable and Other Liabilities             93,923.18    (99,639.12)     58,752.35       2,542.55
+      Cash generated from Operations                                  765,742.62                   675,895.91
+      Direct Taxes Paid (Net of tax refund)                         (153,258.06)                 (107,974.97)
+      Net Cash generated from Operating
+      Activities 'A'                                                 612,484.56                   567,920.95
+
+
+
+
+396
