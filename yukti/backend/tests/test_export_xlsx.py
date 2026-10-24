@@ -191,3 +191,49 @@ def test_dcf_workbook_sheets_blue_inputs_and_live_formulas(exporter: DocumentExp
     ws_fcff = wb["FCFF"]
     assert str(ws_fcff["B5"].value).startswith("=Assumptions!")
     assert str(ws_fcff["G5"].value).startswith("=F5*(1+Assumptions!")
+
+
+def test_xlsx_formula_injection_escaped_on_cells_headers_titles_and_statement(exporter: DocumentExporter) -> None:
+    """M3: openpyxl must never store user/data strings starting with `= + - @ \\t \\r` as formulas (`data_type='f'`)."""
+    payloads = [
+        '=HYPERLINK("http://evil.example","Click")',
+        "+cmd|' /C calc'!A0",
+        "-2+3",
+        "@SUM(A1:A10)",
+        "\t=1+1",
+        "\r=2+2",
+    ]
+    rows = [{"formula_col": p, "num_col": -425.5} for p in payloads]
+    out_path = exporter.export_xlsx(
+        columns=["formula_col", "num_col"],
+        rows=rows,
+        filename="yukti_formula_guard.xlsx",
+        contract={
+            "visual": {
+                "type": "table",
+                "title": "=EVIL_TITLE()",
+                "table": {
+                    "columns": ["formula_col", "num_col"],
+                    "headers": {"formula_col": "=EVIL_HEADER()", "num_col": "Amount (₹ Cr)"},
+                    "rows": rows,
+                },
+            },
+            "definition_id": "DELHI_GT5_CONT_V1",
+            "definition_meta": {"title": "=DEF_TITLE()", "rule_text": "+DEF_RULE()"},
+        },
+        persona="CMD",
+    )
+    wb = openpyxl.load_workbook(str(out_path), data_only=False)
+    ws = wb[wb.sheetnames[0]]
+    assert ws["A1"].data_type == "s" and str(ws["A1"].value).startswith("'")
+    assert ws["A4"].data_type == "s" and str(ws["A4"].value).startswith("'")
+    for r_idx in range(5, 5 + len(payloads)):
+        c_str = ws.cell(row=r_idx, column=1)
+        assert c_str.data_type == "s", (r_idx, c_str.value, c_str.data_type)
+        assert str(c_str.value).startswith("'")
+        c_num = ws.cell(row=r_idx, column=2)
+        assert c_num.value == pytest.approx(-425.5)
+
+    ws_def = wb["Definition"]
+    assert ws_def["A1"].data_type == "s" and str(ws_def["A1"].value).startswith("'")
+    assert ws_def["B5"].data_type == "s" and str(ws_def["B5"].value).startswith("'")

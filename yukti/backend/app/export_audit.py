@@ -35,10 +35,13 @@ from app.config import EXPORTS_DIR
 logger = logging.getLogger("yukti.export_audit")
 
 NAMING_REGEX = re.compile(
-    r"^yukti_[a-z0-9_\-]+_\d{8}-\d{4}(_aggregate)?\.(xlsx|csv|pdf|png|svg|docx|eml)$"
+    r"^yukti_[a-z0-9_\-]+_\d{8}-\d{4}(_aggregate)?\.(xlsx|csv|pdf|png|svg|docx|eml|zip)$"
 )
 
-DEFAULT_EXPORT_TTL_SECONDS = 24 * 3600  # 24 hours per SPEC-10 §4.10 item 5
+try:
+    DEFAULT_EXPORT_TTL_SECONDS = int(os.getenv("YUKTI_EXPORT_TTL_SECONDS", str(24 * 3600)))
+except ValueError:
+    DEFAULT_EXPORT_TTL_SECONDS = 24 * 3600  # 24 hours per SPEC-10 §4.10 item 5
 
 _HINDI_TRANSLIT: List[Tuple[str, str]] = [
     ("ओएनजीसी", "ongc"),
@@ -135,7 +138,7 @@ def build_export_filename(
     Guaranteed <= 80 chars before extension and matching `NAMING_REGEX`.
     """
     clean_ext = re.sub(r"[^a-z0-9]", "", (ext or "xlsx").lower())
-    if clean_ext not in ("xlsx", "csv", "pdf", "png", "svg", "docx", "eml"):
+    if clean_ext not in ("xlsx", "csv", "pdf", "png", "svg", "docx", "eml", "zip"):
         clean_ext = "xlsx"
 
     ts_struct = time.gmtime(now_ts if now_ts is not None else time.time())
@@ -197,7 +200,11 @@ def filename_from_contract(
             now_ts=now_ts,
         )
 
-    raw_title = title_override or vis.get("title") or c.get("definition_id") or qspec.get("subject") or "report"
+    eff_override = title_override if (title_override and str(title_override).strip().lower() != "yukti_export") else None
+    vis_title = vis.get("title") if (vis.get("title") and str(vis.get("title")).strip().lower() != "yukti_export") else None
+    chart_obj = vis.get("chart") if isinstance(vis.get("chart"), dict) else {}
+    chart_title = chart_obj.get("title") if (chart_obj.get("title") and str(chart_obj.get("title")).strip().lower() != "yukti_export") else None
+    raw_title = eff_override or vis_title or chart_title or c.get("definition_id") or qspec.get("subject") or "report"
     subj = transliterate_or_slug(str(raw_title), default="report", max_len=24)
     if is_aggregate and subj.endswith("_roster"):
         subj = subj[:-7] + "_bylevel"
@@ -241,11 +248,112 @@ def filename_from_contract(
     )
 
 
-def _is_junior_persona(persona: str) -> bool:
-    p = (persona or "").strip().upper()
-    if p in ("CMD", "DIR_HR", "DIR_FIN", "DEMO_ADMIN"):
-        return False
-    return True
+_EXTRA_NAMED_RE = re.compile(
+    r"(^|_)(full_?name|staff_?no|staff_?id|pernr|employee_?id|emp_?no|officer|person|posting|station|"
+    r"mobile|phone|email|pan|aadhaar|dob|birth|father|spouse|address|designation|delhi_tenure)($|_)",
+    re.I,
+)
+_EXTRA_PAY_RE = re.compile(
+    r"(^|_)(salary|pay|ctc|wage|remuneration|emolument|allowance|bonus|prp|increment|hra|ida|cpf|gratuity)($|_)",
+    re.I,
+)
+_EXTRA_APAR_RE = re.compile(r"(^|_)(apar|appraisal|rating|score)($|_)", re.I)
+_EXTRA_SENSITIVE_RE = re.compile(r"(^|_)(vigilance|posh|medical|diagnosis|disciplinary)($|_)", re.I)
+
+_SAFE_JUNIOR_AGG_COLS = {
+    "grade",
+    "level",
+    "grade_id",
+    "headcount",
+    "count",
+    "executives",
+    "employees",
+    "officers",
+    "total",
+    "fy",
+    "fiscal_year",
+    "period",
+    "quarter",
+    "sector",
+    "wc_id",
+    "work_centre",
+    "asset",
+    "basin",
+    "discipline",
+    "discipline_id",
+    "gender",
+    "age_band",
+    "tenure_band",
+    "cadre",
+    "group",
+    "category",
+    "metric",
+    "value",
+    "unit",
+    "share_pct",
+    "pct",
+    "yoy_pct",
+    "revenue_cr",
+    "pat_cr",
+    "pbt_cr",
+    "opex_cr",
+    "capex_cr",
+    "ebitda_cr",
+    "amount_cr",
+    "label",
+    "line_code",
+}
+
+_STMT_FORBIDDEN_TEXT_RE = re.compile(
+    r"\b(person\s*\d*|emp[\-_]?\d+|staff_?no|apar|vigilance|posh|medical_condition)\b"
+    r"|\bperson\b.*\bsalary\b|\bsalary\b.*\b\d{4,}\b",
+    re.I,
+)
+
+
+def _classify_export_column(col: str) -> Optional[str]:
+    """Classifies a column using `rbac.column_class` first, then extended export alias patterns."""
+    cls = column_class(col)
+    if cls:
+        return cls
+    s = str(col or "").strip()
+    if not s:
+        return None
+    if _EXTRA_SENSITIVE_RE.search(s):
+        return "sensitive"
+    if _EXTRA_APAR_RE.search(s):
+        return "apar"
+    if _EXTRA_PAY_RE.search(s):
+        return "pay"
+    if _EXTRA_NAMED_RE.search(s):
+        return "named"
+    return None
+
+
+def _validate_statement_rbac(
+    stmt: Optional[Dict[str, Any]],
+    norm_persona: str,
+    is_client_supplied: bool = False,
+) -> None:
+    """Inspects `visual.statement` to prevent client-injected personal/salary rows (M1 Probe 1c)."""
+    if not stmt or not isinstance(stmt, dict):
+        return
+    if is_client_supplied and norm_persona not in ("CMD", "DIR_HR"):
+        raise TurnOwnershipError(
+            "Client-supplied financial statements require a verified server turn_id for this role."
+        )
+    for sec in (stmt.get("sections") or []):
+        if not isinstance(sec, dict):
+            continue
+        for r in (sec.get("rows") or []):
+            if not isinstance(r, dict):
+                continue
+            lbl = str(r.get("label") or "")
+            code = str(r.get("line_code") or "")
+            if _STMT_FORBIDDEN_TEXT_RE.search(lbl) or _STMT_FORBIDDEN_TEXT_RE.search(code):
+                raise TurnOwnershipError(
+                    "Statement contains personal or individual compensation data outside statement policy."
+                )
 
 
 def _is_hr_roster_table(columns: List[str], rows: List[Dict[str, Any]], contract: Optional[Dict[str, Any]] = None) -> bool:
@@ -253,12 +361,21 @@ def _is_hr_roster_table(columns: List[str], rows: List[Dict[str, Any]], contract
     qspec = c.get("query_spec") if isinstance(c.get("query_spec"), dict) else {}
     if qspec.get("subject") == "workforce" or c.get("definition_id") == "DELHI_GT5_CONT_V1":
         return True
-    col_set = {str(col).lower() for col in (columns or [])}
-    if col_set & {"name", "emp_id", "emp_name", "delhi_tenure_years", "functional_designation"}:
-        return True
+    all_keys = {str(col).lower() for col in (columns or [])}
     if rows and isinstance(rows[0], dict):
-        row_keys = {str(k).lower() for k in rows[0].keys()}
-        if row_keys & {"name", "emp_id", "emp_name", "delhi_tenure_years"}:
+        all_keys |= {str(k).lower() for k in rows[0].keys()}
+    if any(_classify_export_column(k) in ("named", "pay", "apar", "sensitive") for k in all_keys):
+        return True
+    return False
+
+
+def _has_verifiable_grade_key(rows: List[Dict[str, Any]]) -> bool:
+    if not rows:
+        return False
+    for r in rows:
+        if isinstance(r, dict) and any(
+            k in r and r.get(k) not in (None, "") for k in ("grade", "level", "grade_id")
+        ):
             return True
     return False
 
@@ -275,7 +392,7 @@ def _collapse_roster_to_grade_counts(
         g = str(r.get("grade") or r.get("level") or r.get("grade_id") or "Other")
         counts[g] = counts.get(g, 0) + 1
 
-    grade_order = ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "GRP-B", "GRP-C", "GRP-D"]
+    grade_order = ["E0", "E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "GRP-B", "GRP-C", "GRP-D"]
     ordered_grades = [g for g in grade_order if g in counts] + sorted(g for g in counts if g not in grade_order)
     agg_rows: List[Dict[str, Any]] = [{"grade": g, "headcount": counts[g]} for g in ordered_grades]
     if suppress_under_5 and agg_rows:
@@ -289,34 +406,48 @@ def enforce_export_rbac(
     contract: Dict[str, Any],
     persona: str,
     requested_columns: Optional[List[str]] = None,
+    *,
+    is_client_supplied: bool = False,
 ) -> Tuple[Dict[str, Any], bool, bool, List[str], List[str]]:
     """Applies RBAC post-guard (`enforce_contract` + SPEC-07 §4.7 / SPEC-10 §4.10 rules) on a contract copy.
 
     Returns `(masked_contract, masked_bool, is_aggregate_bool, data_classes, dropped_columns)`.
-    - Junior personas (`E1_HR..E4_HR`, `E1_FIN..E4_FIN`): roster tables collapse to aggregate counts by
+    - Junior personas (`persona_class(norm_p) == "junior"`): roster tables collapse to aggregate counts by
       level (with `<5` small-cell suppression), no `name`/`emp_id` column, `is_aggregate=True`, `masked=True`.
+      Client-supplied rows with unverified columns that lack a valid grade/level key are refused (`TurnOwnershipError`).
     - `DIR_FIN` on HR roster (SPEC-07 §4.7 T4): collapses to aggregate counts by level (`is_aggregate=True`, `masked=True`).
     - `CMD` and `DIR_HR`: full named roster allowed (`is_aggregate=False`, `masked=False`).
-    - Any user-requested `columns` are mapped via `COLUMN_SYNONYM_MAP` and intersected with allowed columns;
-      any disallowed/unknown requested columns are returned in `dropped_columns` so the route can name them in `toast`.
+    - Statements are inspected via `_validate_statement_rbac` (rejecting personal/salary rows or client statements for non-CMD/DIR_HR).
     """
     norm_p = (persona or "CMD").strip().upper()
     c = copy.deepcopy(contract or {})
     vis = c.setdefault("visual", {"type": "table", "mode": "replace"})
+    stmt = vis.get("statement") if isinstance(vis.get("statement"), dict) else None
+    _validate_statement_rbac(stmt, norm_p, is_client_supplied=is_client_supplied)
+
     tbl = vis.get("table") if isinstance(vis.get("table"), dict) else None
+    is_junior = persona_class(norm_p) == "junior"
 
     data_classes: List[str] = ["general"]
     if tbl:
         raw_cols = list(tbl.get("columns") or [])
         raw_rows = list(tbl.get("rows") or [])
-        for col in raw_cols:
-            cls = column_class(col)
+        if not raw_cols and raw_rows and isinstance(raw_rows[0], dict):
+            raw_cols = list(raw_rows[0].keys())
+            tbl["columns"] = list(raw_cols)
+        all_col_names = list(raw_cols)
+        for r in raw_rows[:5]:
+            if isinstance(r, dict):
+                for k in r.keys():
+                    if k not in all_col_names:
+                        all_col_names.append(k)
+        for col in all_col_names:
+            cls = _classify_export_column(col)
             if cls and cls not in data_classes:
                 data_classes.append(cls)
-        if _is_hr_roster_table(raw_cols, raw_rows, c) and "named" not in data_classes:
+        if _is_hr_roster_table(all_col_names, raw_rows, c) and "named" not in data_classes:
             data_classes.append("named")
 
-    is_junior = _is_junior_persona(norm_p)
     is_dir_fin_on_hr = norm_p == "DIR_FIN" and tbl is not None and _is_hr_roster_table(
         list(tbl.get("columns") or []), list(tbl.get("rows") or []), c
     )
@@ -325,19 +456,24 @@ def enforce_export_rbac(
     is_aggregate = False
     masked = False
 
-    if tbl is not None and (is_junior or is_dir_fin_on_hr) and _is_hr_roster_table(
-        list(tbl.get("columns") or []), list(tbl.get("rows") or []), c
-    ):
+    if tbl is not None and (is_junior or is_dir_fin_on_hr):
+        raw_cols = list(tbl.get("columns") or [])
         raw_rows = list(tbl.get("rows") or [])
-        # Check if rows are still individual roster rows (have 'name' or 'emp_id' or >1 row per grade)
+        all_keys = {str(k) for k in raw_cols} | {
+            str(k) for r in raw_rows[:10] if isinstance(r, dict) for k in r.keys()
+        }
         has_named = any(
-            column_class(col) in ("named", "pay", "apar", "sensitive")
-            for col in (tbl.get("columns") or [])
-        ) or any(
-            isinstance(r, dict) and any(column_class(k) in ("named", "pay", "apar", "sensitive") for k in r.keys())
-            for r in raw_rows
+            _classify_export_column(k) in ("named", "pay", "apar", "sensitive") for k in all_keys
         )
-        if has_named:
+        has_unverified_client_cols = is_client_supplied and any(
+            str(k).lower() not in _SAFE_JUNIOR_AGG_COLS for k in all_keys
+        )
+
+        if has_named or has_unverified_client_cols or (is_dir_fin_on_hr and _is_hr_roster_table(raw_cols, raw_rows, c)):
+            if not _has_verifiable_grade_key(raw_rows):
+                raise TurnOwnershipError(
+                    f"Client-supplied or unverified columns ({sorted(all_keys)}) cannot be exported by {norm_p} without a verified turn_id."
+                )
             cols, hdrs, agg_rows = _collapse_roster_to_grade_counts(raw_rows, suppress_under_5=is_junior)
             tbl["columns"] = cols
             tbl["headers"] = hdrs
@@ -351,9 +487,24 @@ def enforce_export_rbac(
             c.setdefault("rbac", {})["decision"] = "aggregate"
             is_aggregate = True
             masked = True
+        elif is_client_supplied and is_junior:
+            # Even if client-supplied rows only use safe aggregate columns, never treat client data as unmasked
+            if raw_rows and isinstance(raw_rows[0], dict):
+                tbl["rows"], _ = suppress_small_cells(
+                    raw_rows, list(raw_rows[0].keys()), threshold=5, by_name=False
+                )
+            tbl["masking"] = {
+                "level": "aggregate",
+                "reason": f"Aggregate view (access level: {norm_p})",
+                "rule_ref": "D-11",
+            }
+            c.setdefault("access", {})["status"] = "partial"
+            c.setdefault("rbac", {})["decision"] = "aggregate"
+            is_aggregate = True
+            masked = True
 
-    # Run standard enforce_contract (for junior personas, also enforces small-cell suppression and strips restricted cols)
-    c = enforce_contract(c, "E2_HR" if is_junior else norm_p)
+    # S1: Pass norm_p directly to enforce_contract
+    c = enforce_contract(c, norm_p)
     vis = c.get("visual") or {}
     tbl = vis.get("table") if isinstance(vis.get("table"), dict) else None
 
@@ -484,7 +635,7 @@ def resolve_turn_contract(
     principal_persona: str,
 ) -> Optional[Tuple[Dict[str, Any], str]]:
     """Looks up `turn_id` in `_TURN_STORE` or `SessionManager`.
-    Raises `TurnOwnershipError` if the turn belongs to a different principal (SPEC-10 §4.10 item 1 -> 403).
+    Raises `TurnOwnershipError` if the turn belongs to a different principal `(emp_id, persona)` (SPEC-10 §4.10 item 1 -> 403).
     Returns `(contract, session_id)` or `None` if not found.
     """
     if not turn_id:
@@ -498,7 +649,7 @@ def resolve_turn_contract(
             raise TurnOwnershipError(f"Turn {turn_id} belongs to another principal")
         return copy.deepcopy(entry.contract), entry.session_id
 
-    # Fallback: check SessionManager turns
+    # Fallback: check SessionManager turns — M6: must verify BOTH emp_id and persona, and avoid silent 50-row truncation
     try:
         from app.session_memory import get_session_manager
 
@@ -506,10 +657,27 @@ def resolve_turn_contract(
         for sid, sess in list(sm.sessions.items()):
             for t in reversed(sess.turns):
                 if t.get("turn_id") == turn_id:
+                    t_emp_id = str(t.get("emp_id") or getattr(sess, "emp_id", "") or "")
                     t_persona = str(t.get("persona") or sess.persona or "").upper()
+                    if not t_emp_id or (principal_emp_id and t_emp_id != principal_emp_id):
+                        raise TurnOwnershipError(f"Turn {turn_id} belongs to another principal")
                     if t_persona and principal_persona and t_persona != principal_persona.upper():
                         raise TurnOwnershipError(f"Turn {turn_id} belongs to persona {t_persona}")
-                    return copy.deepcopy(t), sid
+                    c_copy = copy.deepcopy(t)
+                    vis = c_copy.get("visual") if isinstance(c_copy.get("visual"), dict) else {}
+                    tbl = vis.get("table") if isinstance(vis.get("table"), dict) else None
+                    if tbl and isinstance(tbl.get("rows"), list) and len(tbl["rows"]) == 50:
+                        if isinstance(t.get("_full_rows"), list) and len(t["_full_rows"]) > 50:
+                            tbl["rows"] = copy.deepcopy(t["_full_rows"])
+                        elif (
+                            sess.last_rows
+                            and len(sess.last_rows) > 50
+                            and list(sess.last_columns or []) == list(tbl.get("columns") or [])
+                        ):
+                            tbl["rows"] = copy.deepcopy(sess.last_rows)
+                        else:
+                            c_copy["_session_row_cap"] = 50
+                    return c_copy, sid
     except TurnOwnershipError:
         raise
     except Exception as exc:
@@ -538,7 +706,9 @@ def register_artifact(
     ttl_seconds: int = DEFAULT_EXPORT_TTL_SECONDS,
     now_ts: Optional[float] = None,
 ) -> ArtifactRecord:
-    """Computes SHA-256 of `disk_path`, stores `ArtifactRecord` in memory and sidecar JSON, and returns it."""
+    """Computes SHA-256 of `disk_path`, stores `ArtifactRecord` in memory and sidecar JSON, and returns it.
+    M2: sidecar write failure raises OSError so export fails closed (500) rather than creating an unverified file.
+    """
     created_epoch = float(now_ts if now_ts is not None else time.time())
     expires_epoch = created_epoch + float(ttl_seconds)
     created_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(created_epoch))
@@ -567,13 +737,11 @@ def register_artifact(
         created_epoch=created_epoch,
         expires_epoch=expires_epoch,
     )
+    sidecar = _meta_sidecar_path(disk_path.parent, export_id)
+    sidecar.parent.mkdir(parents=True, exist_ok=True)
+    sidecar.write_text(json.dumps(asdict(rec), ensure_ascii=False), encoding="utf-8")
     with _REGISTRY_LOCK:
         _ARTIFACT_STORE[export_id] = rec
-    try:
-        sidecar = _meta_sidecar_path(disk_path.parent, export_id)
-        sidecar.write_text(json.dumps(asdict(rec), ensure_ascii=False), encoding="utf-8")
-    except OSError as exc:
-        logger.warning(f"Failed to write artifact sidecar for {export_id}: {exc}")
     return rec
 
 
@@ -603,12 +771,20 @@ def verify_artifact_access(
     exports_dir: Path = EXPORTS_DIR,
     now_ts: Optional[float] = None,
 ) -> Optional[ArtifactRecord]:
-    """Verifies that `export_id` is not expired and belongs to `(principal_emp_id, principal_persona)`.
+    """Verifies that `export_id` has an active record, is not expired, and belongs to `(principal_emp_id, principal_persona)`.
+    - M2: Fail closed! If `rec is None`, deletes any orphan `exp_<id>.*` files and returns `None` (-> HTTP 404).
     - Raises `TurnOwnershipError` if owned by another principal (-> HTTP 403).
     - Returns `None` if expired (and deletes file + sidecar) so route returns HTTP 404.
     """
     rec = get_artifact_record(export_id, exports_dir=exports_dir)
     if rec is None:
+        try:
+            root = exports_dir.resolve()
+            for orphan in exports_dir.glob(f"{export_id}.*"):
+                if orphan.resolve().parent == root:
+                    orphan.unlink(missing_ok=True)
+        except OSError:
+            pass
         return None
     now = float(now_ts if now_ts is not None else time.time())
     if rec.expires_epoch > 0 and now > rec.expires_epoch:
@@ -628,6 +804,73 @@ def verify_artifact_access(
     ):
         raise TurnOwnershipError(f"Export {export_id} belongs to another principal")
     return rec
+
+
+def sweep_expired_exports(
+    exports_dir: Path = EXPORTS_DIR,
+    ttl_seconds: Optional[int] = None,
+    now_ts: Optional[float] = None,
+) -> int:
+    """M5: Sweeps expired exports and their `.exp_*.meta.json` sidecars using the 24 h `expires_epoch`
+    from each sidecar (or `ttl_seconds` for orphan files without a sidecar).
+    """
+    now = float(now_ts if now_ts is not None else time.time())
+    eff_ttl = float(ttl_seconds if ttl_seconds is not None else DEFAULT_EXPORT_TTL_SECONDS)
+    removed = 0
+    if not exports_dir.exists():
+        return 0
+
+    # 1. Sweep sidecars (.exp_*.meta.json) by expires_epoch
+    for sidecar in list(exports_dir.glob(".*.meta.json")):
+        if not sidecar.is_file():
+            continue
+        expired = False
+        exp_id = ""
+        disk_p: Optional[Path] = None
+        try:
+            data = json.loads(sidecar.read_text(encoding="utf-8"))
+            exp_id = str(data.get("export_id") or "")
+            exp_epoch = float(data.get("expires_epoch") or 0.0)
+            if data.get("disk_path"):
+                disk_p = Path(str(data["disk_path"]))
+            if exp_epoch > 0:
+                expired = now > exp_epoch
+            else:
+                expired = sidecar.stat().st_mtime < (now - eff_ttl)
+        except Exception:
+            expired = True
+
+        if expired:
+            if disk_p and disk_p.exists():
+                disk_p.unlink(missing_ok=True)
+                removed += 1
+            if exp_id:
+                for p in exports_dir.glob(f"{exp_id}.*"):
+                    p.unlink(missing_ok=True)
+                with _REGISTRY_LOCK:
+                    _ARTIFACT_STORE.pop(exp_id, None)
+            sidecar.unlink(missing_ok=True)
+            removed += 1
+
+    # 2. Sweep non-dot files: if it has a valid non-expired sidecar, keep it for the full 24 h TTL;
+    # orphan files without a sidecar cannot be downloaded (M2) and are swept after min(eff_ttl, 3600s).
+    orphan_ttl = min(eff_ttl, 3600.0)
+    for f in list(exports_dir.glob("*")):
+        if not f.is_file() or f.name.startswith("."):
+            continue
+        sidecar = _meta_sidecar_path(exports_dir, f.stem)
+        if sidecar.exists():
+            continue
+        try:
+            if f.stat().st_mtime < (now - orphan_ttl):
+                f.unlink(missing_ok=True)
+                with _REGISTRY_LOCK:
+                    _ARTIFACT_STORE.pop(f.stem, None)
+                removed += 1
+        except OSError:
+            pass
+
+    return removed
 
 
 # ------------------------------------------------------------------ Audit Logger (SPEC-10 §4.10 item 4)

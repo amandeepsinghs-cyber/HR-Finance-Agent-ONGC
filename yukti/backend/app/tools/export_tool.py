@@ -23,6 +23,7 @@ import base64
 import csv
 from email.message import EmailMessage
 from email.utils import formataddr, formatdate
+import html
 import io
 import logging
 from pathlib import Path
@@ -54,6 +55,19 @@ DOCS_TOAST = (
 )
 
 _INVALID_SHEET_CHARS = re.compile(r"[:\\/?*\[\]]")
+_FORMULA_TRIGGER_CHARS = ("=", "+", "-", "@", "\t", "\r")
+
+
+def _safe_cell_text(val: Any) -> Any:
+    """M3/M4: Escapes spreadsheet/CSV formula injection by prefixing a leading apostrophe `'`
+    on any string starting with `=`, `+`, `-`, `@`, `\\t`, or `\\r` (or after leading whitespace).
+    Numeric values (`int`, `float`) stay untouched so negative numbers are preserved.
+    """
+    if not isinstance(val, str) or not val:
+        return val
+    if val[0] in _FORMULA_TRIGGER_CHARS or val.lstrip()[:1] in ("=", "+", "-", "@"):
+        return "'" + val
+    return val
 
 
 def _clean_sheet_title(raw: Optional[str], default: str = "Sheet1") -> str:
@@ -161,9 +175,11 @@ def _add_definition_sheet(wb: openpyxl.Workbook, contract: Dict[str, Any]) -> No
         return
 
     ws = wb.create_sheet(title="Definition")
-    ws["A1"] = dm.get("title") or f"Definition: {def_id}"
+    ws["A1"] = _safe_cell_text(dm.get("title") or f"Definition: {def_id}")
     ws["A1"].font = Font(bold=True, size=14)
-    ws["A2"] = f"Definition ID: {def_id} · As of: {dm.get('as_of', '2026-10-19')} · Basis: {dm.get('basis', 'synthetic (Illustrative)')}"
+    ws["A2"] = _safe_cell_text(
+        f"Definition ID: {def_id} · As of: {dm.get('as_of', '2026-10-19')} · Basis: {dm.get('basis', 'synthetic (Illustrative)')}"
+    )
     ws["A2"].font = Font(italic=True, size=10, color="4B5563")
 
     ws["A4"] = "Field"
@@ -179,7 +195,7 @@ def _add_definition_sheet(wb: openpyxl.Workbook, contract: Dict[str, Any]) -> No
     rule_text = dm.get("rule_text") or (
         "JRTP Rev 4, clause 3.2: rotation after 3–5 years at a station (Illustrative — ONGC JRTP text is not public)."
     )
-    ws.append(["Rule Specification", rule_text, "Illustrative"])
+    ws.append(["Rule Specification", _safe_cell_text(str(rule_text)), "Illustrative"])
 
     citations = dm.get("citations") or [
         {"id": "JRTP-3.2", "label": "JRTP Rev 4, clause 3.2 (Illustrative — synthetic policy clause)", "illustrative": True},
@@ -188,7 +204,13 @@ def _add_definition_sheet(wb: openpyxl.Workbook, contract: Dict[str, Any]) -> No
     for cit in citations:
         if isinstance(cit, dict):
             badge = "Illustrative" if cit.get("illustrative", True) else "Real Judicial Citation"
-            ws.append([f"Citation [{cit.get('id', '')}]", str(cit.get("label") or ""), badge])
+            ws.append(
+                [
+                    _safe_cell_text(f"Citation [{cit.get('id', '')}]"),
+                    _safe_cell_text(str(cit.get("label") or "")),
+                    badge,
+                ]
+            )
 
     _auto_fit_columns(ws, header_row=4)
 
@@ -448,15 +470,15 @@ class DocumentExporter:
         ws.title = _clean_sheet_title(raw_sheet_name, default="ONGC_Data")
 
         # Title block (SPEC-10 §4.1: Row 1 title bold 14, Row 2 As of / Source / Basis, Row 3 blank/banner, Header Row 4)
-        ws["A1"] = doc_title
+        ws["A1"] = _safe_cell_text(doc_title)
         ws["A1"].font = Font(bold=True, size=14)
         meta_str = f"As of {as_of} · Source: {source} · Basis: {basis}"
         if is_aggregate:
             meta_str += f" · Aggregate view (access level: {persona})"
-        ws["A2"] = meta_str
+        ws["A2"] = _safe_cell_text(meta_str)
         ws["A2"].font = Font(size=10, color="4B5563")
         if is_aggregate:
-            ws["A3"] = f"Aggregate view (access level: {persona})"
+            ws["A3"] = _safe_cell_text(f"Aggregate view (access level: {persona})")
             ws["A3"].font = Font(bold=True, size=10, color="7C2D12")
 
         hdr_fill = PatternFill("solid", fgColor="F3F4F6")
@@ -476,7 +498,7 @@ class DocumentExporter:
             unit = str(stmt.get("unit") or "INR_crore")
             headers = ["Line Item (₹ Crore)" if "crore" in unit.lower() else f"Line Item ({unit})"] + periods
             for c_idx, h_text in enumerate(headers, start=1):
-                cell = ws.cell(row=4, column=c_idx, value=h_text)
+                cell = ws.cell(row=4, column=c_idx, value=_safe_cell_text(str(h_text)))
                 cell.font = Font(bold=True, color="111827")
                 cell.fill = hdr_fill
                 cell.border = hdr_border
@@ -495,7 +517,7 @@ class DocumentExporter:
                     kind = str(r.get("kind") or "line").lower()
                     vals = r.get("values") or {}
 
-                    c_label = ws.cell(row=cur_row, column=1, value=label)
+                    c_label = ws.cell(row=cur_row, column=1, value=_safe_cell_text(label))
                     c_label.alignment = Alignment(indent=level, vertical="center")
 
                     is_sub = kind == "subtotal" or "profit before tax" in label.lower() or label.lower().startswith("total ")
@@ -510,7 +532,7 @@ class DocumentExporter:
 
                     for p_idx, p in enumerate(periods, start=2):
                         v = vals.get(p)
-                        c_val = ws.cell(row=cur_row, column=p_idx, value=v)
+                        c_val = ws.cell(row=cur_row, column=p_idx, value=_safe_cell_text(v) if isinstance(v, str) else v)
                         c_val.number_format = "#,##0;(#,##0)"
                         c_val.alignment = Alignment(horizontal="right", vertical="center")
                         if is_tot:
@@ -533,7 +555,7 @@ class DocumentExporter:
             # Footnote rows with source doc + pages and totals_check
             cur_row += 1
             if seen_docs:
-                fn_cell = ws.cell(row=cur_row, column=1, value="Source: " + "; ".join(seen_docs))
+                fn_cell = ws.cell(row=cur_row, column=1, value=_safe_cell_text("Source: " + "; ".join(seen_docs)))
                 fn_cell.font = Font(italic=True, size=9, color="4B5563")
                 cur_row += 1
             tc = stmt.get("totals_check") if isinstance(stmt.get("totals_check"), dict) else None
@@ -542,7 +564,9 @@ class DocumentExporter:
                 tc_cell = ws.cell(
                     row=cur_row,
                     column=1,
-                    value=f"Totals Check ({tc.get('identity', '')}): {tc_status} (delta ₹{tc.get('delta_crore', 0):.2f} Cr)",
+                    value=_safe_cell_text(
+                        f"Totals Check ({tc.get('identity', '')}): {tc_status} (delta ₹{tc.get('delta_crore', 0):.2f} Cr)"
+                    ),
                 )
                 tc_cell.font = Font(italic=True, size=9, color="4B5563")
 
@@ -562,7 +586,7 @@ class DocumentExporter:
 
         for c_idx, col_key in enumerate(eff_cols, start=1):
             hdr_label = str(headers_map.get(col_key) or col_key)
-            cell = ws.cell(row=4, column=c_idx, value=hdr_label)
+            cell = ws.cell(row=4, column=c_idx, value=_safe_cell_text(hdr_label))
             cell.font = Font(bold=True, color="111827")
             cell.fill = hdr_fill
             cell.border = hdr_border
@@ -573,9 +597,11 @@ class DocumentExporter:
         for r in eff_rows:
             for c_idx, col_key in enumerate(eff_cols, start=1):
                 val = r.get(col_key, "") if isinstance(r, dict) else ""
-                # Masked cells stay as masked display text (e.g. "<5")
+                # Masked cells stay as masked display text (e.g. "<5"); M3: escape formula injection
                 if isinstance(val, str):
-                    cell = ws.cell(row=cur_row, column=c_idx, value=val)
+                    safe_txt = _safe_cell_text(val)
+                    cell = ws.cell(row=cur_row, column=c_idx, value=safe_txt)
+                    cell.data_type = "s"
                     cell.number_format = "@"
                 elif isinstance(val, (int, float)) and not isinstance(val, bool):
                     ck_low = col_key.lower()
@@ -587,7 +613,7 @@ class DocumentExporter:
                     cell.number_format = _number_format_for_column(col_key, val)
                     cell.alignment = Alignment(horizontal="right", vertical="center")
                 else:
-                    ws.cell(row=cur_row, column=c_idx, value="" if val is None else val)
+                    ws.cell(row=cur_row, column=c_idx, value="" if val is None else _safe_cell_text(str(val)))
             cur_row += 1
 
         last_data_row = max(4, cur_row - 1)
@@ -619,7 +645,11 @@ class DocumentExporter:
         vis = c.get("visual") if isinstance(c.get("visual"), dict) else {}
         stmt = vis.get("statement") if isinstance(vis.get("statement"), dict) else None
         tbl_spec = vis.get("table") if isinstance(vis.get("table"), dict) else None
-        comp_items = ((vis.get("compare") or {}).get("items") or []) if isinstance(vis.get("compare"), dict) else []
+        comp_items = (
+            ((vis.get("compare") or {}).get("items") or [])
+            if isinstance(vis.get("compare"), dict)
+            else (vis.get("tables") if isinstance(vis.get("tables"), list) else [])
+        )
 
         # Multi-table answers -> zip of UTF-8 BOM CSVs
         if len(comp_items) >= 2 and filename.lower().endswith(".zip"):
@@ -640,7 +670,7 @@ class DocumentExporter:
         if stmt:
             periods = list(stmt.get("periods") or [])
             show_yoy = bool(stmt.get("show_yoy"))
-            hdr_row = ["line_code", "label", "level", "kind"] + periods + (["yoy_pct (%)"] if show_yoy else [])
+            hdr_row = ["line_code", "label", "level", "kind"] + [_safe_cell_text(str(p)) for p in periods] + (["yoy_pct (%)"] if show_yoy else [])
             buf = io.StringIO()
             writer = csv.writer(buf, lineterminator="\r\n", quoting=csv.QUOTE_MINIMAL)
             writer.writerow(hdr_row)
@@ -648,17 +678,17 @@ class DocumentExporter:
                 for r in (sec.get("rows") or []):
                     vals = r.get("values") or {}
                     row_out: List[Any] = [
-                        r.get("line_code") or "",
-                        r.get("label") or "",
+                        _safe_cell_text(str(r.get("line_code") or "")),
+                        _safe_cell_text(str(r.get("label") or "")),
                         int(r.get("level") or 0),
-                        r.get("kind") or "line",
+                        _safe_cell_text(str(r.get("kind") or "line")),
                     ]
                     for p in periods:
                         v = vals.get(p)
-                        row_out.append("" if v is None else v)
+                        row_out.append("" if v is None else (_safe_cell_text(v) if isinstance(v, str) else v))
                     if show_yoy:
                         yoy = r.get("yoy_pct")
-                        row_out.append("" if yoy is None else yoy)
+                        row_out.append("" if yoy is None else (_safe_cell_text(yoy) if isinstance(yoy, str) else yoy))
                     writer.writerow(row_out)
             out_path.write_bytes(buf.getvalue().encode("utf-8-sig"))
             return out_path
@@ -685,7 +715,7 @@ class DocumentExporter:
             ck = col.lower()
             if ("pct" in ck or "percent" in ck or "margin" in ck) and "(%)" not in h and "%" not in h:
                 h = f"{h} (%)"
-            display_headers.append(h)
+            display_headers.append(_safe_cell_text(h))
 
         buf = io.StringIO()
         writer = csv.writer(buf, lineterminator="\r\n", quoting=csv.QUOTE_MINIMAL)
@@ -694,7 +724,12 @@ class DocumentExporter:
             row_vals: List[Any] = []
             for col in columns:
                 v = r.get(col, "") if isinstance(r, dict) else ""
-                row_vals.append("" if v is None else v)
+                if v is None:
+                    row_vals.append("")
+                elif isinstance(v, str):
+                    row_vals.append(_safe_cell_text(v))
+                else:
+                    row_vals.append(v)
             writer.writerow(row_vals)
         return buf.getvalue().encode("utf-8-sig")
 
@@ -987,6 +1022,11 @@ class DocumentExporter:
         )
         body_md = str(edraft.get("body_md") or c.get("display_text") or "Please find the requested cohort review attached.")
 
+        # S3: Reject CR/LF header injection up front with ValueError (mapped to 400 in route)
+        for hdr_name, hdr_val in (("From", from_hdr), ("To", to_hdr), ("Cc", cc_hdr), ("Subject", subject)):
+            if "\r" in str(hdr_val) or "\n" in str(hdr_val):
+                raise ValueError(f"Invalid CR/LF in email header: {hdr_name}")
+
         msg = EmailMessage()
         msg["From"] = from_hdr
         msg["To"] = to_hdr
@@ -1000,13 +1040,14 @@ class DocumentExporter:
         html_body = (
             "<!DOCTYPE html><html><head><meta charset='utf-8'></head><body>"
             + "<div style='font-family: sans-serif; line-height: 1.5;'>"
-            + "<br/>".join(line for line in body_md.splitlines())
+            + "<br/>".join(html.escape(line) for line in body_md.splitlines())
             + "</div></body></html>"
         )
         msg.add_alternative(html_body, subtype="html", charset="utf-8")
 
-        # Ensure xlsx attachment exists
+        # Ensure xlsx attachment exists; S4: clean up temporary auto-generated xlsx after attaching
         xlsx_path = attachment_path
+        cleanup_temp_xlsx = False
         if xlsx_path is None or not xlsx_path.exists():
             auto_xlsx_name = f"{out_path.stem}_attachment.xlsx"
             xlsx_path = self.export_xlsx(
@@ -1016,9 +1057,13 @@ class DocumentExporter:
                 masked=masked,
                 is_aggregate=is_aggregate,
             )
-        att_name = attachment_filename or xlsx_path.name
+            cleanup_temp_xlsx = True
+        att_name = attachment_filename or (f"{out_path.stem}.xlsx" if cleanup_temp_xlsx else xlsx_path.name)
+        xlsx_bytes = xlsx_path.read_bytes()
+        if cleanup_temp_xlsx:
+            xlsx_path.unlink(missing_ok=True)
         msg.add_attachment(
-            xlsx_path.read_bytes(),
+            xlsx_bytes,
             maintype="application",
             subtype="vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             filename=att_name,

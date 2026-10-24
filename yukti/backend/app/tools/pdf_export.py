@@ -336,6 +336,30 @@ def build_pdf_context(
     }
 
 
+class _SafeWeasyPrintURLFetcher(weasyprint.urls.URLFetcher):
+    """S5: Restricts WeasyPrint resource fetching to `data:image/png;base64,...` and bundled font files under `FONTS_DIR`."""
+
+    def __init__(self) -> None:
+        super().__init__(allowed_protocols={"data", "file"}, allow_redirects=False)
+        self._fonts_root = FONTS_DIR.resolve()
+
+    def fetch(self, url: str, headers: Optional[Dict[str, str]] = None) -> Any:
+        from urllib.parse import unquote, urlparse
+
+        u = str(url or "").strip()
+        if u.startswith("data:image/png;base64,"):
+            return super().fetch(u, headers=headers)
+        if u.startswith("file://"):
+            parsed = urlparse(u)
+            target_path = Path(unquote(parsed.path)).resolve()
+            if self._fonts_root in target_path.parents or target_path == self._fonts_root:
+                return super().fetch(u, headers=headers)
+        raise ValueError(f"Blocked external or non-font URL in PDF renderer: {u[:80]}")
+
+
+_SAFE_URL_FETCHER = _SafeWeasyPrintURLFetcher()
+
+
 def render_pdf_to_path(
     out_path: Path,
     contract: Optional[Dict[str, Any]] = None,
@@ -370,5 +394,9 @@ def render_pdf_to_path(
     )
     html_str = template.render(**ctx)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    weasyprint.HTML(string=html_str, base_url=str(BACKEND_ROOT)).write_pdf(str(out_path))
+    weasyprint.HTML(
+        string=html_str,
+        base_url=str(BACKEND_ROOT),
+        url_fetcher=_SAFE_URL_FETCHER,
+    ).write_pdf(str(out_path))
     return out_path

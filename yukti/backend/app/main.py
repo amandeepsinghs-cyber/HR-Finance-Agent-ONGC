@@ -45,6 +45,7 @@ from app.export_audit import (
     register_artifact,
     register_turn_contract,
     resolve_turn_contract,
+    sweep_expired_exports,
     verify_artifact_access,
     write_export_audit,
 )
@@ -194,7 +195,6 @@ class ExportRequest(BaseModel):
     chart_png: Optional[str] = None
     chart_svg: Optional[str] = None
     email_draft: Optional[Dict[str, Any]] = None
-    contract: Optional[Dict[str, Any]] = None
 
 
 class ExportAuditRequest(BaseModel):
@@ -457,6 +457,13 @@ async def execute_voice_turn(req: VoiceTurnRequest, response: Response, principa
         principal=principal,
     )
     _apply_admin_switch(contract, principal, response, query=transcript)
+    register_turn_contract(
+        turn_id=str(contract.get("turn_id") or ""),
+        contract=contract,
+        emp_id=principal.emp_id,
+        persona=principal.persona,
+        session_id=session_id,
+    )
     return {
         "status": "ok",
         "transcript": transcript,
@@ -465,18 +472,15 @@ async def execute_voice_turn(req: VoiceTurnRequest, response: Response, principa
 
 
 try:
-    EXPORT_TTL_SECONDS = int(os.getenv("YUKTI_EXPORT_TTL_SECONDS", "3600"))
+    EXPORT_TTL_SECONDS = int(os.getenv("YUKTI_EXPORT_TTL_SECONDS", str(DEFAULT_EXPORT_TTL_SECONDS)))
 except ValueError:
-    EXPORT_TTL_SECONDS = 3600
+    EXPORT_TTL_SECONDS = DEFAULT_EXPORT_TTL_SECONDS
 
 
 def _sweep_old_exports() -> None:
-    """H1.3a: Cloud Run's filesystem is RAM — delete exports older than the TTL (default 1 h)."""
-    cutoff = time.time() - EXPORT_TTL_SECONDS
+    """M5 / H1.3a: Cloud Run's filesystem is RAM — sweep expired exports and `.exp_*.meta.json` sidecars (24 h TTL)."""
     try:
-        for f in EXPORTS_DIR.glob("*"):
-            if f.is_file() and not f.name.startswith(".") and f.stat().st_mtime < cutoff:
-                f.unlink(missing_ok=True)
+        sweep_expired_exports(exports_dir=EXPORTS_DIR, ttl_seconds=EXPORT_TTL_SECONDS)
     except Exception as exc:  # never fail an export because of housekeeping
         logger.warning(f"export sweep skipped: {exc}")
 
@@ -516,63 +520,90 @@ def create_export(
             detail={"type": "error", "message": f"Unsupported export format: {req.format}", "retryable": False},
         )
 
-    # 2. Resolve source contract for (session, turn_id, principal) — 403 if owned by another principal
+    # 2. Resolve source contract for (session, turn_id, principal) — M1 & M6
     session_id = req.session_id or ""
     base_contract: Optional[Dict[str, Any]] = None
-    if req.turn_id:
-        try:
-            resolved = resolve_turn_contract(req.turn_id, principal.emp_id, principal.persona)
-        except TurnOwnershipError:
-            write_export_audit(
-                emp_id=principal.emp_id,
-                persona=principal.persona,
-                session_id=session_id,
-                turn_id=req.turn_id,
-                fmt=kind,
-                filename="forbidden",
-                sha256="",
-                rows=0,
-                columns=[],
-                data_classes=["restricted"],
-                masked=True,
-                delivery="download",
-                client_ip=request.client.host if request.client else None,
-            )
-            raise HTTPException(
-                status_code=403,
-                detail={"type": "error", "message": "You do not have permission to export another user's turn.", "retryable": False},
-            )
-        if resolved is not None:
-            base_contract, resolved_sid = resolved
-            if not session_id:
-                session_id = resolved_sid
+    is_client_supplied = False
 
-    if base_contract is None:
-        if req.contract and isinstance(req.contract, dict):
-            base_contract = dict(req.contract)
-        else:
-            base_contract = {
-                "turn_id": req.turn_id or "",
-                "persona": principal.persona,
-                "visual": {
-                    "type": "table",
-                    "mode": "replace",
-                    "title": req.title or "Yukti_Export",
-                    "table": {
-                        "columns": list(req.columns or []),
-                        "rows": list(req.rows or []),
-                    },
+    def _refuse_export_403(msg: str, t_id: str = "") -> None:
+        write_export_audit(
+            emp_id=principal.emp_id,
+            persona=principal.persona,
+            session_id=session_id,
+            turn_id=t_id,
+            fmt=kind,
+            filename="forbidden",
+            sha256="",
+            rows=0,
+            columns=[],
+            data_classes=["restricted"],
+            masked=True,
+            delivery="download",
+            client_ip=request.client.host if request.client else None,
+        )
+        raise HTTPException(
+            status_code=403,
+            detail={"type": "error", "message": msg, "retryable": False},
+        )
+
+    if req.turn_id and req.turn_id.strip():
+        clean_tid = req.turn_id.strip()
+        try:
+            resolved = resolve_turn_contract(clean_tid, principal.emp_id, principal.persona)
+        except TurnOwnershipError:
+            _refuse_export_403("You do not have permission to export another user's turn.", clean_tid)
+        if resolved is None:
+            # M1 Probe 1d: unknown turn_id must NEVER fall back to client rows/content
+            _refuse_export_403(f"Turn '{clean_tid}' could not be verified for this principal.", clean_tid)
+        base_contract, resolved_sid = resolved
+        if not session_id:
+            session_id = resolved_sid
+        if base_contract.get("_session_row_cap"):
+            toast_parts.append(
+                f"Export capped at {base_contract['_session_row_cap']} rows from session memory."
+            )
+    else:
+        # M1: turn_id is missing -> client-supplied data is untrusted
+        is_client_supplied = True
+        norm_p = (principal.persona or "").strip().upper()
+        if not req.rows and not req.content and not req.email_draft:
+            _refuse_export_403("Export requires a verified turn_id or policy-compliant payload.")
+        if norm_p not in ("CMD", "DIR_HR"):
+            # Non-CMD/DIR_HR may only export client rows that enforce_export_rbac can verify and collapse
+            if not req.rows or req.content or req.email_draft:
+                _refuse_export_403(
+                    f"Client-supplied content requires a verified turn_id for access level {norm_p}."
+                )
+        base_contract = {
+            "turn_id": "",
+            "persona": principal.persona,
+            "visual": {
+                "type": "table",
+                "mode": "replace",
+                "title": req.title or "Yukti_Export",
+                "table": {
+                    "columns": list(req.columns or []),
+                    "rows": list(req.rows or []),
                 },
-            }
-            if req.email_draft:
-                base_contract["email_draft"] = req.email_draft
+            },
+        }
+        if req.email_draft and norm_p in ("CMD", "DIR_HR"):
+            base_contract["email_draft"] = req.email_draft
 
     # 3. Enforce RBAC & column intersection on contract
-    masked_contract, masked_flag, is_aggregate, data_classes, dropped_cols = enforce_export_rbac(
-        base_contract,
-        principal.persona,
-        requested_columns=req.columns if (req.turn_id or req.contract) else None,
-    )
+    try:
+        masked_contract, masked_flag, is_aggregate, data_classes, dropped_cols = enforce_export_rbac(
+            base_contract,
+            principal.persona,
+            requested_columns=req.columns if not is_client_supplied else None,
+            is_client_supplied=is_client_supplied,
+        )
+    except TurnOwnershipError as exc_rbac:
+        _refuse_export_403(str(exc_rbac), req.turn_id or "")
+
+    if is_client_supplied and "client_supplied" not in data_classes:
+        data_classes.append("client_supplied")
+
     if dropped_cols:
         toast_parts.append(
             f"Dropped restricted or unknown column(s) for {principal.persona}: {', '.join(dropped_cols)}."
@@ -581,11 +612,20 @@ def create_export(
     vis = masked_contract.get("visual") if isinstance(masked_contract.get("visual"), dict) else {}
     stmt = vis.get("statement") if isinstance(vis.get("statement"), dict) else None
     tbl = vis.get("table") if isinstance(vis.get("table"), dict) else {}
+    comp_items = (
+        ((vis.get("compare") or {}).get("items") or [])
+        if isinstance(vis.get("compare"), dict)
+        else (vis.get("tables") if isinstance(vis.get("tables"), list) else [])
+    )
     eff_cols = list(tbl.get("columns") or [])
     eff_rows = list(tbl.get("rows") or [])
     if stmt:
         eff_cols = ["label"] + list(stmt.get("periods") or [])
         eff_rows = [r for sec in (stmt.get("sections") or []) for r in (sec.get("rows") or [])]
+
+    # S7: Multi-table compare on CSV exports as a .zip of UTF-8 BOM CSVs
+    if kind == "csv" and len(comp_items) >= 2:
+        ext = "zip"
 
     title_override = req.title if (req.title and req.title != "Yukti_Export") else None
     canonical_filename = filename_from_contract(
@@ -594,6 +634,13 @@ def create_export(
         persona=principal.persona,
         is_aggregate=is_aggregate,
         title_override=title_override,
+    )
+
+    # M1: Only use req.content when CMD/DIR_HR explicitly exports client markdown without turn_id
+    safe_md = (
+        (req.content or "")
+        if (is_client_supplied and (principal.persona or "").upper() in ("CMD", "DIR_HR"))
+        else str(masked_contract.get("display_text") or "")
     )
 
     try:
@@ -617,7 +664,7 @@ def create_export(
             )
         elif kind == "pdf":
             out_path = exporter.export_pdf(
-                markdown_text=req.content or "",
+                markdown_text=safe_md,
                 filename=disk_name,
                 contract=masked_contract,
                 title=title_override,
@@ -630,23 +677,25 @@ def create_export(
             )
         elif kind == "docx":
             out_path = exporter.export_word(
-                markdown_text=req.content or "",
+                markdown_text=safe_md,
                 filename=disk_name,
                 contract=masked_contract,
                 title=title_override,
                 columns=eff_cols,
                 rows=eff_rows,
                 chart_png=req.chart_png,
-                email_draft=req.email_draft,
+                email_draft=req.email_draft if is_client_supplied else masked_contract.get("email_draft"),
                 persona=principal.persona,
                 masked=masked_flag,
                 is_aggregate=is_aggregate,
             )
         elif kind == "eml":
+            att_canonical = canonical_filename.rsplit(".", 1)[0] + ".xlsx"
             out_path = exporter.export_eml(
-                email_draft=req.email_draft,
+                email_draft=req.email_draft if is_client_supplied else masked_contract.get("email_draft"),
                 filename=disk_name,
                 contract=masked_contract,
+                attachment_filename=att_canonical,
                 persona=principal.persona,
                 masked=masked_flag,
                 is_aggregate=is_aggregate,
@@ -667,7 +716,7 @@ def create_export(
             persona=principal.persona,
             session_id=session_id,
             turn_id=str(req.turn_id or masked_contract.get("turn_id") or ""),
-            ttl_seconds=DEFAULT_EXPORT_TTL_SECONDS,
+            ttl_seconds=EXPORT_TTL_SECONDS,
         )
 
         write_export_audit(
@@ -697,6 +746,17 @@ def create_export(
         return resp_payload
     except HTTPException:
         raise
+    except ValueError as exc_val:
+        if "Invalid CR/LF in email header" in str(exc_val):
+            raise HTTPException(
+                status_code=400,
+                detail={"type": "error", "message": "Invalid characters in email header.", "retryable": False},
+            )
+        logger.exception(f"Export validation failed: {exc_val}")
+        raise HTTPException(
+            status_code=500,
+            detail={"type": "error", "message": "Export failed. Please try again.", "retryable": True},
+        )
     except Exception as exc:
         logger.exception(f"Export creation failed: {exc}")
         raise HTTPException(
@@ -711,28 +771,55 @@ def create_export_audit_event(
     request: Request,
     principal: Principal = Depends(require_principal),
 ) -> Dict[str, Any]:
-    """Audit endpoint for client-side PNG/SVG exports (SPEC-10 §4.4, §5)."""
+    """Audit endpoint for client-side PNG/SVG exports (SPEC-10 §4.4, §5).
+    S8: Verifies turn ownership when `turn_id` is registered and derives `masked` server-side.
+    """
+    from app.brain.rbac import persona_class
+
     fmt = (req.format or "png").lower().strip()
     if fmt not in ("png", "svg"):
         fmt = "png"
-    fname = req.filename or filename_from_contract(
-        {"turn_id": req.turn_id},
+
+    resolved_contract: Optional[Dict[str, Any]] = None
+    session_id = req.session_id or ""
+    if req.turn_id and req.turn_id.strip():
+        try:
+            res = resolve_turn_contract(req.turn_id.strip(), principal.emp_id, principal.persona)
+        except TurnOwnershipError:
+            raise HTTPException(
+                status_code=403,
+                detail={"type": "error", "message": "You do not have permission to audit another user's turn.", "retryable": False},
+            )
+        if res is not None:
+            resolved_contract, resolved_sid = res
+            if not session_id:
+                session_id = resolved_sid
+
+    if resolved_contract is not None:
+        _, server_masked, server_agg, data_classes, _ = enforce_export_rbac(resolved_contract, principal.persona)
+    else:
+        server_masked = bool(req.masked) or (persona_class(principal.persona) == "junior")
+        server_agg = server_masked
+        data_classes = ["general"]
+
+    fname = filename_from_contract(
+        resolved_contract or {"turn_id": req.turn_id},
         ext=fmt,
         persona=principal.persona,
-        is_aggregate=bool(req.masked),
+        is_aggregate=server_agg,
     )
     row = write_export_audit(
         emp_id=principal.emp_id,
         persona=principal.persona,
-        session_id=req.session_id or "",
+        session_id=session_id,
         turn_id=req.turn_id or "",
         fmt=fmt,
         filename=fname,
         sha256="client_rendered",
         rows=int(req.rows or 0),
         columns=list(req.columns or []),
-        data_classes=["general"],
-        masked=bool(req.masked),
+        data_classes=data_classes,
+        masked=server_masked,
         delivery="download",
         client_ip=request.client.host if request.client else None,
     )
@@ -743,7 +830,7 @@ def create_export_audit_event(
 @app.get("/api/download/{export_id}")
 def download_export(export_id: str, principal: Principal = Depends(require_principal)):
     """Downloads an exported file securely from the exports directory only.
-    Enforces creator-principal ownership (403 on mismatch) and 24 h expiry (404 when expired).
+    M2: Fails closed! Requires an active artifact record (404 if missing or expired) and creator-principal match (403 on mismatch).
     """
     # H1.3a: only ids we mint (exp_<32 hex>) are servable; anything else is a 404 (no globbing on user input)
     if not re.fullmatch(r"exp_[0-9a-f]{32}", export_id or ""):
@@ -763,6 +850,12 @@ def download_export(export_id: str, principal: Principal = Depends(require_princ
         raise HTTPException(
             status_code=403,
             detail={"type": "error", "message": "You do not have permission to download another user's export.", "retryable": False},
+        )
+
+    if rec is None:
+        raise HTTPException(
+            status_code=404,
+            detail={"type": "error", "message": f"Export ID '{export_id}' not found or expired.", "retryable": False},
         )
 
     root = EXPORTS_DIR.resolve()
@@ -788,7 +881,7 @@ def download_export(export_id: str, principal: Principal = Depends(require_princ
         ".zip": "application/zip",
     }
     media_type = media_types.get(ext, "application/octet-stream")
-    download_filename = rec.filename if rec and rec.filename else file_path.name
+    download_filename = rec.filename if rec.filename else file_path.name
     return FileResponse(
         path=file_path,
         filename=download_filename,

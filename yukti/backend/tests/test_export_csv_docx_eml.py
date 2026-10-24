@@ -170,3 +170,57 @@ def test_eml_parses_with_x_unsent_utf8_headers_and_xlsx_attachment(exporter: Doc
     # Verify the attached xlsx opens cleanly in openpyxl
     wb = openpyxl.load_workbook(io.BytesIO(att_bytes))
     assert len(wb.sheetnames) >= 1
+
+
+def test_csv_formula_injection_escaped_while_numeric_negatives_preserved(exporter: DocumentExporter) -> None:
+    """M4: String cells starting with `= + - @ \\t \\r` get a leading `'`, while numeric negatives stay raw."""
+    payloads = [
+        '=HYPERLINK("http://evil.example","x")',
+        "+cmd|' /C calc'!A0",
+        "-2+3",
+        "@SUM(A1)",
+        "\t=cmd",
+        "\r=cmd",
+    ]
+    rows = [{"note": p, "delta_cr": -125.75} for p in payloads]
+    csv_path = exporter.export_csv(
+        columns=["note", "delta_cr"],
+        rows=rows,
+        filename="yukti_csv_injection.csv",
+    )
+    parsed = list(csv.reader(io.StringIO(csv_path.read_bytes().decode("utf-8-sig"))))
+    for idx, p in enumerate(payloads, start=1):
+        assert parsed[idx][0] == "'" + p
+        assert parsed[idx][1] == "-125.75"
+
+
+def test_eml_crlf_header_injection_rejected_and_html_body_escaped_and_no_temp_xlsx_left(
+    exporter: DocumentExporter,
+) -> None:
+    """S3 & S4: CR/LF in email headers raises ValueError; `<script>` in body_md is escaped in HTML; temp xlsx cleaned up."""
+    with pytest.raises(ValueError, match="Invalid CR/LF"):
+        exporter.export_eml(
+            email_draft={"to": ["victim@ongc.example\r\nBcc: spy@evil.example"], "subject": "Hi", "body_md": "Body"},
+            filename="bad.eml",
+        )
+
+    eml_path = exporter.export_eml(
+        email_draft={
+            "to": [{"name": "Director (HR)", "email": "hr@ongc.example"}],
+            "subject": "Quarterly Review",
+            "body_md": "Hello <script>alert('xss')</script> world",
+        },
+        filename="exp_clean.eml",
+        attachment_filename="yukti_roster_wc-del_asof-20261019_cmd_20261024-0500.xlsx",
+    )
+    msg = email.message_from_bytes(eml_path.read_bytes(), policy=policy.default)
+    html_part = msg.get_body(preferencelist=("html",))
+    assert html_part is not None
+    html_content = html_part.get_content()
+    assert "<script>" not in html_content
+    assert "&lt;script&gt;" in html_content
+
+    att = next(msg.iter_attachments())
+    assert att.get_filename() == "yukti_roster_wc-del_asof-20261019_cmd_20261024-0500.xlsx"
+    # Temp auto-generated _attachment.xlsx must not remain on disk
+    assert not list(exporter.exports_dir.glob("*_attachment.xlsx"))

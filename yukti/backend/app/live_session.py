@@ -393,6 +393,7 @@ class LiveSessionManager:
                         sc_intent.get("value", ""),
                     )
                 else:
+                    from app.export_audit import register_turn_contract
                     from app.turn_runner import get_agent_turn_runner
                     trun = get_agent_turn_runner()
                     contract = await trun.execute_turn_async(
@@ -401,6 +402,13 @@ class LiveSessionManager:
                         persona=self.persona,
                         principal=self.principal,  # P0.4
                         language=self.language,
+                    )
+                    register_turn_contract(
+                        turn_id=str(contract.get("turn_id") or ""),
+                        contract=contract,
+                        emp_id=self.principal.emp_id if self.principal else "",
+                        persona=self.persona,
+                        session_id=self.session_id,
                     )
                     # Strip internal telemetry keys before sending contract
                     clean_contract = dict(contract)
@@ -526,6 +534,7 @@ class LiveSessionManager:
             canonical_query = f"Show breakdown by {val}"
 
         if canonical_query:
+            from app.export_audit import register_turn_contract
             from app.turn_runner import get_agent_turn_runner
             trun = get_agent_turn_runner()
             contract = await trun.execute_turn_async(
@@ -534,6 +543,13 @@ class LiveSessionManager:
                 persona=self.persona,
                 principal=self.principal,  # P0.4
                 language=self.language,
+            )
+            register_turn_contract(
+                turn_id=str(contract.get("turn_id") or ""),
+                contract=contract,
+                emp_id=self.principal.emp_id if self.principal else "",
+                persona=self.persona,
+                session_id=self.session_id,
             )
             clean_contract = dict(contract)
             for k in ("latency_ms", "from_answer_cache", "generated_sql", "tool_called", "ui_action"):
@@ -1070,6 +1086,7 @@ class LiveSessionManager:
                                         )
                                     else:
                                         try:
+                                            from app.export_audit import register_turn_contract
                                             from app.turn_runner import get_agent_turn_runner
                                             trun = get_agent_turn_runner()
                                             c = await trun.execute_turn_async(
@@ -1078,6 +1095,13 @@ class LiveSessionManager:
                                                 persona=self.persona,
                                                 principal=self.principal,  # P0.4
                                                 language=self.language,
+                                            )
+                                            register_turn_contract(
+                                                turn_id=str(c.get("turn_id") or ""),
+                                                contract=c,
+                                                emp_id=self.principal.emp_id if self.principal else "",
+                                                persona=self.persona,
+                                                session_id=self.session_id,
                                             )
                                             clean_c = dict(c)
                                             ui_act = clean_c.pop("ui_action", None)
@@ -1173,12 +1197,20 @@ class LiveSessionManager:
                 continue
             await self.send_json({"type": "user_transcript", "text": text, "is_final": True})
             try:
+                from app.export_audit import register_turn_contract
                 contract = await trun.execute_turn_async(
                     query=text,
                     session_id=self.session_id,
                     persona=self.persona,
                     principal=self.principal,  # P0.4
                     language=self.language,
+                )
+                register_turn_contract(
+                    turn_id=str(contract.get("turn_id") or ""),
+                    contract=contract,
+                    emp_id=self.principal.emp_id if self.principal else "",
+                    persona=self.persona,
+                    session_id=self.session_id,
                 )
             except Exception as exc:  # keep the socket alive; report the failure to the UI
                 logger.exception(f"[{self.session_id}] Fallback turn failed: {exc}")

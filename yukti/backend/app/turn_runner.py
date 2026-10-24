@@ -298,6 +298,25 @@ class AgentTurnRunner:
             except Exception as e_ins:
                 logger.info(f"legacy insights skipped: {e_ins}")
         self._validate_contract(contract)
+        try:
+            from app.export_audit import register_turn_contract
+
+            emp_id = getattr(principal, "emp_id", "") if principal is not None else ""
+            if not emp_id:
+                emp_id = PERSONA_DIRECTORY.get(persona_eff, {}).get("emp_id", "")
+            sess_st = self.session_manager.get_or_create_session(session_id, persona=persona_eff)
+            sess_st.emp_id = emp_id
+            if sess_st.turns and sess_st.turns[-1].get("turn_id") == contract.get("turn_id"):
+                sess_st.turns[-1]["emp_id"] = emp_id
+            register_turn_contract(
+                turn_id=str(contract.get("turn_id") or ""),
+                contract=contract,
+                emp_id=emp_id,
+                persona=persona_eff,
+                session_id=session_id,
+            )
+        except Exception as e_reg:
+            logger.debug(f"turn export registration skipped: {e_reg}")
         return contract
 
     async def _execute_turn_inner(
