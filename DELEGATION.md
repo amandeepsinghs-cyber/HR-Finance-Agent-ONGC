@@ -138,3 +138,9 @@ sequenceDiagram
 | Defects found at G5 that review missed | Gate file; triggers a review-checklist update |
 
 If the Flash first-pass approval rate drops below 70% in a phase, Opus tightens packets (more examples, smaller scope) before delegating further.
+
+### 6.1 Pool-switch and escalation log (v3.1)
+
+| When (UTC) | Event | From → To | Reason |
+|---|---|---|---|
+| 24-Oct 05:04 | P1.7 two-strike escalation | Flash worker `anchors` (`gemini-3.8-flash-high`) → `anchors2` on **Gemini 3.1 Pro** (`gemini-3.1-pro-high`) | G4 r1 + r2 both CHANGES REQUESTED (hard-coded literals, mis-cited lines, duplicate rows). Rule says escalate to A, but the A cap (3: rbac, bridge-be, finssot) is full and Argon quota is 40%, so it goes to the A-alternate pool. Reviewer stays `reviewer-p17` (Argon) for continuity |
