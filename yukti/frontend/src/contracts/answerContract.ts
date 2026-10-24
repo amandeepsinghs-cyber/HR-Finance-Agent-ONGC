@@ -3,8 +3,6 @@
  * Directly reflects yukti/contracts/answer_contract.schema.json (v1, v2, v3)
  */
 
-export type PersonaType = 'CMD' | 'DIR_HR' | 'DIR_FIN' | 'E2_HR' | 'E3_FIN';
-
 export type PersonaV3Type =
   | 'CMD'
   | 'DIR_HR'
@@ -17,6 +15,8 @@ export type PersonaV3Type =
   | 'E2_FIN'
   | 'E3_FIN'
   | 'E4_FIN';
+
+export type PersonaType = PersonaV3Type;
 
 export type LanguageType = 'en' | 'hi' | 'hi-en';
 
@@ -223,8 +223,8 @@ export interface StatementRow {
   is_total?: boolean;
   is_subtotal?: boolean;
   indent?: number;
-  /** period → value or ordered array; null/absent renders "—" (never 0) */
-  values?: Record<string, number | null> | (number | null)[];
+  /** period → value; null/absent renders "—" (never 0) */
+  values: Record<string, number | null>;
   amount_cr?: number | null;
   prior_cr?: number | null;
   yoy_pct?: number | null;
@@ -237,7 +237,7 @@ export interface StatementSection {
   id?: string;
   label?: string;
   title?: string;
-  rows?: StatementRow[];
+  rows: StatementRow[];
   lines?: StatementRow[];
 }
 
@@ -249,7 +249,7 @@ export interface StatementSpec {
   period?: string;
   prior_period?: string | null;
   /** latest first */
-  periods?: string[];
+  periods: string[];
   period_labels?: Record<string, string>;
   show_yoy?: boolean;
   sections: StatementSection[];
@@ -310,7 +310,7 @@ export interface ActionItem {
   id?: string;
   title: string;
   what_to_do: string;
-  impact?: ActionImpact;
+  impact: ActionImpact;
   quantified_impact?: ActionImpact;
   /** absent for E1–E4 personas ("for discussion", SPEC-08 §7.4) */
   owner?: 'CMD' | 'DIR_FIN' | 'DIR_HR' | string | null;

@@ -354,6 +354,19 @@ class Planner:
         avail = fiscal_years_for_sql(f"FROM {prev_subject.table}") if prev_subject else []
         fy_hint = resolve_fy(question, available=avail or None)
         ql_fast = question.lower()
+        if prev is not None and re.match(
+            r"^\s*(?:then\s+|so\s+|please\s+|ok\s+)?(?:show|give|display)\s+(?:it|that)(?:\s+to\s+me)?\s*[?!.]*$",
+            ql_fast,
+        ):
+            return Plan(
+                intent="data",
+                is_followup=True,
+                spec=prev,
+                patch=SpecPatch(),
+                chart_kind="table",
+                notes=["repeat_prev_spec"],
+                latency_ms=round((time.perf_counter() - t0) * 1000, 1),
+            )
         # R2-M1: single-FY waterfall bridge requests ("Show FY23 P&L as a waterfall", "Show FY23 as a waterfall")
         # resolve deterministically to single-FY pnl_statement with chart_kind="waterfall" without waiting on LLM.
         if (
@@ -394,6 +407,20 @@ class Planner:
         notes: List[str] = []
         chart = raw.get("chart_kind")
         ql_early = question.lower()
+        # BEH-07.30 T3: "then show it to me" / "show it to me" repeats the last data spec in session
+        if prev is not None and re.match(
+            r"^\s*(?:then\s+|so\s+|please\s+|ok\s+)?(?:show|give|display)\s+(?:it|that)(?:\s+to\s+me)?\s*[?!.]*$",
+            ql_early,
+        ):
+            return Plan(
+                intent="data",
+                is_followup=True,
+                spec=prev,
+                patch=SpecPatch(),
+                chart_kind="table",
+                notes=["repeat_prev_spec"],
+                raw=raw,
+            )
         wants_waterfall = bool(
             re.search(r"\b(waterfall|bridge)\b", ql_early)
             or (

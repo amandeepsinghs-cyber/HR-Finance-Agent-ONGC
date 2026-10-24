@@ -3,7 +3,7 @@
   "label": "Annual Report snapshot (fact_financial_statement_line)",
   "note": "P1.10a: runtime snapshot exported from verified fact_snapshot.parquet.",
   "files": {
-    "ongc_10yr_schedule_iii_lines.json": "fa1d85ccfa4183b984dc0f963de0a02739a29b570a0c361fe3c89645485bcf97",
+    "ongc_10yr_schedule_iii_lines.json": "f0e91a8a0e572ea1971fc2f6cedbcf1db2bec743fe93912730a16b8d3df6e3aa",
     "ongc_10yr_balance_sheet_lines.json": "3995527254cf770241430ae9a77c2987b01f738227034ed62e33f500ba0e5fb8",
     "ongc_10yr_cash_flow_lines.json": "cf8ae7f60168ce9858c76c176870fdc7fabb69daa282bab15d0aacbc205b6cdd",
     "ongc_10yr_ratios_lines.json": "f5f49b60bfbc00ac381315097f179abb0ff6afac4eaef69c9af569cf1530a202",

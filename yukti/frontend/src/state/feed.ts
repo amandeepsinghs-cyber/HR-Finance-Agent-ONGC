@@ -22,12 +22,14 @@ export interface Turn {
   specPatch?: SpecPatch;
   /** true for answers that arrived live in this view (drives the newest-answer glow); false for restores */
   fresh?: boolean;
+  /** P5.2 (BEH-07.31, BUG-18): speak_id when this turn is being voiced by Leda */
+  speakId?: string;
 }
 
 export type FeedAction =
-  | { type: 'ask'; id: string; question: string; viaVoice?: boolean; at?: number; specPatch?: SpecPatch }
+  | { type: 'ask'; id: string; question: string; viaVoice?: boolean; at?: number; specPatch?: SpecPatch; speakId?: string }
   | { type: 'question'; id: string; question: string }
-  | { type: 'answer'; contract: AnswerContract; id?: string; question?: string; at?: number; newId?: string }
+  | { type: 'answer'; contract: AnswerContract; id?: string; question?: string; at?: number; newId?: string; speakId?: string }
   | { type: 'fail'; id: string; error: string }
   | { type: 'settle'; id: string; text?: string; at?: number }
   | { type: 'refine'; update: (c: AnswerContract) => AnswerContract; id?: string }
@@ -73,6 +75,9 @@ export function feedReducer(state: Turn[], a: FeedAction): Turn[] {
     case 'answer': {
       let idx = a.id ? state.findIndex((t) => t.id === a.id) : -1;
       if (a.id && idx < 0) return state;
+      if (idx < 0 && a.contract?.turn_id) {
+        idx = state.findIndex((t) => t.contract?.turn_id === a.contract.turn_id || t.id === a.contract.turn_id);
+      }
       if (idx < 0) {
         const last = state[state.length - 1];
         if (last && last.status === 'pending') idx = state.length - 1;
@@ -182,6 +187,7 @@ export function feedReducer(state: Turn[], a: FeedAction): Turn[] {
     case 'fail':
       return state.map((t) => (t.id === a.id ? { ...t, status: 'error', error: a.error } : t));
     case 'settle': {
+      if ((a as any).speakId) return state;
       const t = state.find((x) => x.id === a.id);
       if (!t || t.status !== 'pending') return state;
       const text = (a.text || '').trim();

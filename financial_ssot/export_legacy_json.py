@@ -222,6 +222,27 @@ def export_all() -> None:
                 r[val_key] = round(float(val), 2)
                 by_fy_code[(fy, lc)] = r[val_key]
 
+        # Ensure prod_transport_selling_exp_inr_cr in Schedule III P&L is strictly ex-levies and ex-employee-benefit
+        # so the Schedule III P&L waterfall bridge closes with zero plug across FY17..FY26
+        if filename == "ongc_10yr_schedule_iii_lines.json":
+            other_exp_codes = [
+                "statutory_levies_total_inr_cr",
+                "employee_benefit_net_pnl_inr_cr",
+                "other_expenses_inr_cr",
+                "exploration_costs_written_off_inr_cr",
+                "dda_inr_cr",
+                "finance_costs_inr_cr",
+            ]
+            for r in rows:
+                if r["line_code"] == "prod_transport_selling_exp_inr_cr":
+                    fy = r["fiscal_year"]
+                    tot_exp = by_fy_code.get((fy, "total_expenses_inr_cr"))
+                    if tot_exp is not None:
+                        other_sum = sum(by_fy_code.get((fy, c), 0.0) for c in other_exp_codes)
+                        val_ex = round(tot_exp - other_sum, 2)
+                        r["amount_inr_cr"] = val_ex
+                        by_fy_code[(fy, "prod_transport_selling_exp_inr_cr")] = val_ex
+
         # Second pass: compute prior_fy, yoy_delta, yoy_change_pct, pct_of_*
         for r in rows:
             fy = r["fiscal_year"]

@@ -178,6 +178,19 @@ PLAYBACK_TAIL_S = 0.3
 # state is stale (lost turn_complete, dropped socket) and the gate re-opens so voice can never be locked out.
 GATE_WATCHDOG_S = 8.0
 
+_TRAILING_FUNCTION_WORDS = frozenset({
+    "to", "in", "of", "the", "for", "and", "is", "about", "with", "by", "from", "at", "on",
+    "you", "me", "please", "can", "could", "what", "show", "give", "tell",
+})
+
+
+def _should_hold_partial_utterance(text: str) -> bool:
+    """SPEC-11 §6.3 (BUG-17): A 1–2 word fragment ending in a function word is held/dropped rather than submitted as a turn."""
+    words = [w for w in re.sub(r"[?!.,;:]+$", "", (text or "").strip()).split() if w]
+    if not words or len(words) >= 3:
+        return False
+    return words[-1].lower() in _TRAILING_FUNCTION_WORDS
+
 
 class LiveSessionManager:
     """Manages an active WebSocket bidi-streaming session for Yukti AI using direct genai.Client.aio.live.connect."""
@@ -1205,7 +1218,8 @@ class LiveSessionManager:
                             self._user_is_speaking = False
                             # Safety net: if the user spoke a question (`heard`) and Gemini answered directly
                             # without invoking `ask_yukti` or `control_screen`, run `turn_runner` so the canvas still updates!
-                            if heard and not turn_state["tool_called_in_turn"] and not bg_tool_tasks:
+                            # SPEC-11 §6.3 (BUG-17): never submit a < 3 word partial utterance ending in a function word.
+                            if heard and not _should_hold_partial_utterance(heard) and not turn_state["tool_called_in_turn"] and not bg_tool_tasks:
                                 from app.intents.confirm import resolve_pending_proposal_async
                                 pa_res = await resolve_pending_proposal_async(heard, self.session_state)
                                 if pa_res is not None:

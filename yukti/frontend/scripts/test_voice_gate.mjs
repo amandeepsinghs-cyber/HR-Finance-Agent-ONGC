@@ -15,7 +15,7 @@ const src = readFileSync(join(root, 'src/services/voiceGate.ts'), 'utf8');
 const js = ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } }).outputText;
 const mod = { exports: {} };
 new Function('module', 'exports', js)(mod, mod.exports);
-const { micGateOpen, PLAYBACK_TAIL_MS, BargeInDetector, SpeakTracker } = mod.exports;
+const { micGateOpen, PLAYBACK_TAIL_MS, PARTIAL_UTTERANCE_HOLD_MS, shouldHoldPartialUtterance, BargeInDetector, SpeakTracker } = mod.exports;
 
 let passed = 0;
 const test = (name, fn) => {
@@ -140,6 +140,14 @@ test('normal voice turn: transcripts accepted between user turn and turn_complet
   assert.equal(s.acceptAgentTranscript(), true);
   s.complete(null);
   assert.equal(s.acceptAgentTranscript(), false);
+});
+test('P5.2 (SPEC-11 §6.3, BUG-17): partial utterance hold for < 3 words ending in a function word', () => {
+  assert.equal(PARTIAL_UTTERANCE_HOLD_MS, 1200);
+  assert.equal(shouldHoldPartialUtterance('can you'), true);
+  assert.equal(shouldHoldPartialUtterance('show the'), true);
+  assert.equal(shouldHoldPartialUtterance('for'), true);
+  assert.equal(shouldHoldPartialUtterance('show pat'), false);
+  assert.equal(shouldHoldPartialUtterance('can you show pat'), false);
 });
 
 console.log(`\n${passed} passed`);

@@ -241,7 +241,9 @@ def _check_auth_ok() -> bool:
 @app.get("/health")
 def health() -> Dict[str, Any]:
     from app.answer_cache import get_answer_cache
+    from app.coverage.manifest import get_coverage_manifest
     ac = get_answer_cache()
+    manifest = get_coverage_manifest()
     return {
         "auth_ok": _check_auth_ok(),
         "auth_mode": yauth.auth_mode(),  # P0.1 r2: same normalisation as app.auth
@@ -254,6 +256,8 @@ def health() -> Dict[str, Any]:
         "default_voice": DEFAULT_VOICE,
         "answer_cache": ac.stats(),
         "demo_cache_enabled": YUKTI_DEMO_CACHE,
+        "coverage_generated_at": manifest.generated_at,
+        "snapshot_date": "2026-10-19" if manifest.source == "snapshot" else None,
     }
 
 

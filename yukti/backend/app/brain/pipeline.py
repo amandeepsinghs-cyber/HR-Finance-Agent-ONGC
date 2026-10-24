@@ -511,9 +511,13 @@ async def run_planner_turn(
                 if isinstance(bv, (int, float)) and not isinstance(bv, bool):
                     extra_nums.append(float(bv))
     allowed = allowed_numbers(rows, insights, spec, extra=extra_nums)
-    told = compose_spoken(headline, insights, allowed)
+    told = compose_spoken(headline, insights, allowed, language=language)
     spoken = told["text"]
-    
+
+    # BEH-07.33 T1: Voice ASR normalization notice when 'NYC' was spoken for 'ONGC'
+    if re.search(r"\bnyc\b", query or "", re.I):
+        spoken = "I heard 'NYC' as ONGC. " + spoken
+
     # P2F1-B2: Append context carry-over and bare year notices
     ctx_fy = next((n.split(":", 1)[1] for n in plan.notes if n.startswith("context_fy_inherited:")), None)
     if ctx_fy:
@@ -528,6 +532,15 @@ async def run_planner_turn(
     if bare_year_match:
         yyyy = int(bare_year_match.group(1))
         spoken += f" FY{yyyy-1}-{(yyyy)%100:02d} (year ended 31-Mar-{yyyy})."
+    elif (
+        spec.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios")
+        and re.search(r"(?<![-\d/])\b(201[7-9]|202[0-6])\b(?![-\d/])", query or "")
+        and not re.search(r"\bfy\s*20\d{2}\b", query or "", re.I)
+    ):
+        m_cal = re.search(r"(?<![-\d/])\b(201[7-9]|202[0-6])\b(?![-\d/])", query or "")
+        if m_cal:
+            yyyy = int(m_cal.group(1))
+            spoken += f" Taking {yyyy} as FY {yyyy-1}-{yyyy%100:02d}; say FY{(yyyy+1)%100:02d} for {yyyy}-{(yyyy+1)%100:02d}."
 
     if told["ungrounded"]:
         status.append(f"Narrator: ungrounded numbers removed {told['ungrounded']}")
@@ -685,6 +698,13 @@ async def run_planner_turn(
             {"kind": "note", "text": rule_ins},
             {"kind": "note", "text": cite_ins},
         ] + ins_v2_list[:3]
+
+    if language == "hi":
+        from app.brain.narrator import translate_to_hindi
+        spoken = translate_to_hindi(spoken)
+    elif language == "hi-en":
+        from app.brain.narrator import translate_to_hinglish
+        spoken = translate_to_hinglish(spoken)
 
     contract: Dict[str, Any] = {
         "turn_id": turn_id,

@@ -1814,12 +1814,22 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
 
         env_snap = os.getenv("YUKTI_FIN_SNAPSHOT_PATH")
         snap_path = Path(env_snap) if env_snap else (repo_root / "financial_ssot" / "out" / "fact_snapshot.parquet")
+        if not snap_path.exists():
+            alt_snap = repo_root / "data_bank" / "ssot" / "fin_line_item_fact.parquet"
+            if alt_snap.exists():
+                snap_path = alt_snap
         dim_path = repo_root / "financial_ssot" / "dim_financial_line.csv"
 
         # WACC metrics and templates fallback (from fact_wacc_annual / fact_wacc_input)
         if compiled.metric in ("wacc_pct", "wacc_components", "wacc_build_up", "wacc_change_attribution"):
             wacc_ann_path = repo_root / "financial_ssot" / "out" / "fact_wacc_annual.parquet"
             wacc_inp_path = repo_root / "financial_ssot" / "out" / "fact_wacc_input.parquet"
+            if not wacc_ann_path.exists():
+                for cand in (repo_root.parent / "HR and Finance_ONGC__v3P2F", repo_root.parent / "HR and Finance_ONGC"):
+                    if (cand / "financial_ssot" / "out" / "fact_wacc_annual.parquet").exists():
+                        wacc_ann_path = cand / "financial_ssot" / "out" / "fact_wacc_annual.parquet"
+                        wacc_inp_path = cand / "financial_ssot" / "out" / "fact_wacc_input.parquet"
+                        break
             if not wacc_ann_path.exists():
                 return None
             try:
@@ -2980,7 +2990,11 @@ ORDER BY line_order ASC"""
 
     def _execute_local_financial_fallback(self, *args, **kwargs):
         from app.config import YUKTI_FIN_SSOT_V3
-        return getattr(self, '_v3__execute_local_financial_fallback')(*args, **kwargs) if YUKTI_FIN_SSOT_V3 else getattr(self, '_legacy__execute_local_financial_fallback')(*args, **kwargs)
+        if YUKTI_FIN_SSOT_V3:
+            res = getattr(self, '_v3__execute_local_financial_fallback')(*args, **kwargs)
+            if res is not None:
+                return res
+        return getattr(self, '_legacy__execute_local_financial_fallback')(*args, **kwargs)
 
 def _local_snapshot_date() -> Optional[str]:
     """Date (ISO) of the verified SSOT snapshot used by the local fallback."""

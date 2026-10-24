@@ -431,6 +431,8 @@ _AGGREGATE_PAY_RE = re.compile(
     r"entry[\s\-]+(?:level\s+)?(?:basic\s+)?(?:pay|salary|scale)|"
     r"minimum\s+(?:basic\s+)?(?:pay|scale)|"
     r"get\s+on\s+joining|joining\s+(?:basic\s+)?(?:pay|salary|scale)|"
+    r"pay\s+of\s+an?\s+e[0-9]\s+.*joining|"
+    r"divide\s+this\s+pay|monthly\s+salary\s+breakdown|salary\s+breakdown\s+(?:in\s+hand\s+)?(?:for|of)\s+e[0-9]|"
     r"pay\s+(?:scale|band|range|matrix|slab)s?|"
     r"grade[\s\-]*wise\s+(?:average\s+|avg\s+)?(?:ctc|salary|pay)"
     r")\b"

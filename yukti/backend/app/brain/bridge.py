@@ -494,7 +494,12 @@ def bridge(
             started = True
             continue
         if cls in ("add", "deduct", "signed"):
-            delta = abs(v) if cls == "add" else (-abs(v) if cls == "deduct" else v)
+            if cls == "add":
+                delta = abs(v)
+            elif cls == "deduct":
+                delta = -v if r.get("line_code") in ("PL.INVENTORY_CHANGE", "CHG_INV") else -abs(v)
+            else:
+                delta = v
             running += delta
             if granularity == "standard" and cls == "deduct" and abs(v) < threshold:
                 pending += delta

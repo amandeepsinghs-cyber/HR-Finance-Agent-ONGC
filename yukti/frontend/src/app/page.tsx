@@ -194,7 +194,7 @@ export default function YuktiApp() {
 
     let sid = window.sessionStorage?.getItem('yukti_active_session_id');
     if (sid) {
-      yuktiClient.switchPersonaSession(sid, personaRef.current);
+      yuktiClient.switchPersonaSession(sid, personaRef.current || 'CMD');
     } else {
       sid = yuktiClient.getSessionId();
       try {
@@ -517,6 +517,7 @@ export default function YuktiApp() {
         const id = liveAgentMsgRef.current;
         const idx = id ? prev.findIndex((m) => m.id === id) : -1;
         if (idx >= 0) {
+          if ((prev[idx] as any).contractSettled) return prev;
           const copy = [...prev];
           copy[idx] = { ...prev[idx], text: (prev[idx].text + text).replace(/\s+/g, ' ') };
           return copy;
@@ -553,15 +554,16 @@ export default function YuktiApp() {
       setMessages((prev) => {
         const id = liveAgentMsgRef.current;
         const idx = id ? prev.findIndex((m) => m.id === id) : -1;
-        const patch = { sources: c.sources, accessStatus: c.access?.status, streaming: false };
+        const patch = { sources: c.sources, accessStatus: c.access?.status, streaming: false, contractSettled: true } as any;
+        const authoritativeText = cleanText(c.display_text || c.spoken_summary);
         if (idx >= 0) {
           const copy = [...prev];
-          copy[idx] = { ...prev[idx], ...patch, text: prev[idx].text || cleanText(c.display_text || c.spoken_summary) };
+          copy[idx] = { ...prev[idx], ...patch, text: authoritativeText || prev[idx].text };
           return copy;
         }
         const nid = uid('a_voice');
         liveAgentMsgRef.current = nid;
-        return [...prev, { id: nid, role: 'agent', text: cleanText(c.display_text || c.spoken_summary), timestamp: now(), ...patch }];
+        return [...prev, { id: nid, role: 'agent', text: authoritativeText, timestamp: now(), ...patch }];
       });
     };
 

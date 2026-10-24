@@ -140,4 +140,18 @@ t('reset clears the feed', () => {
   assert.equal(s.length, 0);
 });
 
+t('P5.2 (BEH-07.31, BUG-18): duplicate turn_id updates in place and settle ignores speakId turns', () => {
+  let s: Turn[] = [];
+  s = feedReducer(s, { type: 'answer', contract: C('T1'), newId: 'card1', speakId: 'sp-1' });
+  assert.equal(s.length, 1);
+  // Duplicate answer with same turn_id updates existing card instead of appending a second card
+  s = feedReducer(s, { type: 'answer', contract: C('T1', { display_text: 'Updated T1' }) });
+  assert.equal(s.length, 1);
+  assert.equal(s[0].contract?.display_text, 'Updated T1');
+  // Settle on a turn with speakId does not overwrite the contract
+  s = feedReducer(s, { type: 'settle', id: 'card1', text: 'raw live echo' });
+  assert.equal(s.length, 1);
+  assert.equal(s[0].contract?.display_text, 'Updated T1');
+});
+
 console.log(`feed reducer: ${passed} passed`);

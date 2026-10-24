@@ -171,3 +171,47 @@ export class SpeakTracker {
     return this.active === null && !this.closed;
   }
 }
+
+export const PARTIAL_UTTERANCE_HOLD_MS = 1200;
+
+const TRAILING_FUNCTION_WORDS = new Set([
+  'to',
+  'in',
+  'of',
+  'the',
+  'for',
+  'and',
+  'is',
+  'about',
+  'with',
+  'by',
+  'from',
+  'at',
+  'on',
+  'you',
+  'me',
+  'please',
+  'can',
+  'could',
+  'what',
+  'show',
+  'give',
+  'tell',
+]);
+
+/**
+ * SPEC-11 §6.3 (BUG-17): A 1–2 word voice fragment ending in a function word
+ * ("to", "in", "of", "the", "for", "and", "is", ...) is held for 1.2 s to allow continuation
+ * and never submitted as a standalone turn if no continuation arrives.
+ */
+export function shouldHoldPartialUtterance(text: string): boolean {
+  const words = (text || '')
+    .trim()
+    .replace(/[?!.,;:]+$/g, '')
+    .split(/\s+/)
+    .filter(Boolean);
+  if (words.length === 0 || words.length >= 3) return false;
+  const last = words[words.length - 1].toLowerCase();
+  return TRAILING_FUNCTION_WORDS.has(last);
+}
+
