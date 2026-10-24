@@ -1,0 +1,46 @@
+{
+  "assumptions": {
+    "wacc_pct": 10.0,
+    "g_pct": 4.0,
+    "exit_multiple": 5.0,
+    "shares_cr": 10.0,
+    "market_price": 150.0,
+    "net_debt": 200.0,
+    "investments": 300.0
+  },
+  "forecast": {
+    "fcff": [100.0, 110.0, 120.0, 130.0, 140.0]
+  },
+  "expected": {
+    "pv_fcff": [90.9091, 90.9091, 90.1578, 88.7917, 86.9290],
+    "sum_pv_fcff": 447.6967,
+    "tv_gordon": 2426.6667,
+    "pv_tv": 1506.7691,
+    "ev": 1954.4658,
+    "equity": 2054.4658,
+    "per_share": 205.4466,
+    "upside_pct": 36.96,
+    "exit_tv": 1250.0,
+    "implied_g_pct": -1.079,
+    "grid_9_3": 212.2077,
+    "grid_9_5": 294.8573,
+    "grid_11_3": 160.5526,
+    "grid_11_5": 198.9785,
+    "wacc_fixture": {
+      "rf": 7.0,
+      "beta_raw": 1.2,
+      "erp": 7.0,
+      "kd": 6.0,
+      "t": 25.17,
+      "e": 900.0,
+      "d": 100.0,
+      "beta_adj": 1.134,
+      "ke": 15.40,
+      "kd_after_tax": 4.4898,
+      "wacc": 14.3090,
+      "default_spread": 2.0,
+      "ke_alt": 13.40,
+      "wacc_alt": 12.5090
+    }
+  }
+}
