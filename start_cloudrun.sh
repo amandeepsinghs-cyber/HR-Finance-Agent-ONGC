@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# ---
+# Cloud Run Deployment Flags (P3.2 / SPEC-03):
+# Requires: --no-cpu-throttling --min-instances=1 --session-affinity --timeout=300
+# ---
+
 export GOOGLE_CLOUD_PROJECT="${GOOGLE_CLOUD_PROJECT:-ongc-hr-finance-agent}"
 export TARGET_PROJECT="${TARGET_PROJECT:-ongc-hr-finance-agent}"
 export GOOGLE_GENAI_USE_VERTEXAI="TRUE"

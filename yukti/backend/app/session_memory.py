@@ -43,6 +43,9 @@ class SessionState:
     last_turn_time: float = field(default_factory=time.time)
     # B2.5: QuerySpec history (contract-v2 `query_spec` dicts), newest last; follow-ups patch [-1].
     spec_history: List[Dict[str, Any]] = field(default_factory=list)
+    pending_actions: Dict[str, Any] = field(default_factory=dict)
+    jobs: List[Dict[str, Any]] = field(default_factory=list)
+    last_agent_result: Optional[Dict[str, Any]] = None
 
     def record_turn(
         self,
@@ -277,15 +280,15 @@ class SessionManager:
     def get_or_create(
         self,
         session_id: str,
-        persona: str = "CMD",
-        language: str = "en",
+        persona: Optional[str] = None,
+        language: Optional[str] = None,
     ) -> SessionState:
         if session_id not in self.sessions:
             self._evict()
             self.sessions[session_id] = SessionState(
                 session_id=session_id,
-                persona=persona,
-                language=language,
+                persona=persona or "CMD",
+                language=language or "en",
             )
         else:
             self.sessions[session_id].last_turn_time = time.time()

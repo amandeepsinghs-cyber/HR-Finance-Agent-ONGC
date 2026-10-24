@@ -39,6 +39,7 @@ from app.config import (
 from app.live_session import LiveSessionManager
 from app.tools.export_tool import DocumentExporter
 from app.turn_runner import get_agent_turn_runner
+from app.jobs.api import router as jobs_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("yukti.server")
@@ -56,6 +57,8 @@ app = FastAPI(
     redoc_url=None if _IS_PROD else "/redoc",
     openapi_url=None if _IS_PROD else "/openapi.json",
 )
+
+app.include_router(jobs_router)
 
 # CORS (P0.5, BUG-32): only configured origins (YUKTI_ALLOWED_ORIGINS), never "*" with credentials.
 # The UI normally talks to the backend through its single-origin proxy (server.js), so browsers never preflight.
