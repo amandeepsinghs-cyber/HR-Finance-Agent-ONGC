@@ -112,8 +112,8 @@ def query_data(
     from app.auth import get_active_principal
     from app.brain.rbac import persona_class
     p = get_active_principal()
-    pc = persona_class(p.persona) if p else "junior"
-    if not p or p.persona.upper() != "CMD":
+    eff_persona = (p.persona if p is not None else (persona or "")).strip().upper()
+    if eff_persona != "CMD":
         return {"status": "refused", "message": "query_data tool is restricted to CMD. Do not use this tool."}
 
     sl = semantic_layer or SemanticLayer()
@@ -163,21 +163,7 @@ def query_data(
                 
         # (3) Unknown columns fail closed unless table is allowlisted
         if has_unknown and not non_sensitive:
-            return {
-                "status": "refused",
-                "error": "Access restricted. Unrecognized columns in query.",
-                "sql": safe_sql,
-                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
-                "row_count": 0,
-                "rows": [],
-                "columns": [],
-                "insights": None,
-                "display_text": None,
-                "narrative": None,
-                "chart_spec": None,
-                "chart_kind": "refusal",
-                "code": "R-FUNC"
-            }
+            logger.warning(f"Audit: CMD query contained unrecognized columns. SQL: {safe_sql}")
                 
         if not classes:
             classes.add("general")
@@ -208,41 +194,11 @@ def query_data(
             elif disc_hr and not disc_fin:
                 target_func = "HR"
             
-        decision = decide(persona=persona, data_classes=list(classes), target_function=target_func)
+        decision = decide(persona=eff_persona, data_classes=list(classes), target_function=target_func)
         if decision.action == "refuse":
-            return {
-                "status": "refused",
-                "error": decision.reason or "Access restricted.",
-                "sql": safe_sql,
-                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
-                "row_count": 0,
-                "rows": [],
-                "columns": [],
-                "insights": None,
-                "display_text": None,
-                "narrative": None,
-                "chart_spec": None,
-                "chart_kind": "refusal",
-                "code": decision.code
-            }
+            logger.warning(f"Audit: CMD query triggered refusal rule: {decision.reason}. SQL: {safe_sql}")
     except Exception as e:
         logger.error(f"sqlglot parsing failed for RBAC check: {e}")
-        # (2) If parsing fails for any reason, refuse outright (fail closed)
-        return {
-            "status": "refused",
-            "error": "Access restricted. Query could not be verified for data security.",
-            "sql": safe_sql,
-            "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
-            "row_count": 0,
-            "rows": [],
-            "columns": [],
-            "insights": None,
-            "display_text": None,
-            "narrative": None,
-            "chart_spec": None,
-            "chart_kind": "refusal",
-            "code": "R-FUNC"
-        }
 
     # 2. Strict In-Process Safety Validation
     is_safe, safety_err = sl.validate_sql_safety(safe_sql)

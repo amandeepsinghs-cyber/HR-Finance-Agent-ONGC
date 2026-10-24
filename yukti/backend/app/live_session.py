@@ -394,7 +394,7 @@ class LiveSessionManager:
                     )
                 else:
                     from app.turn_runner import get_agent_turn_runner
-                    trun = get_agent_turn_runner()
+                    trun = get_agent_turn_runner(principal=self.principal)
                     contract = await trun.execute_turn_async(
                         query=query_str,
                         session_id=self.session_id,
@@ -527,7 +527,7 @@ class LiveSessionManager:
 
         if canonical_query:
             from app.turn_runner import get_agent_turn_runner
-            trun = get_agent_turn_runner()
+            trun = get_agent_turn_runner(principal=self.principal)
             contract = await trun.execute_turn_async(
                 query=canonical_query,
                 session_id=self.session_id,
@@ -1071,7 +1071,7 @@ class LiveSessionManager:
                                     else:
                                         try:
                                             from app.turn_runner import get_agent_turn_runner
-                                            trun = get_agent_turn_runner()
+                                            trun = get_agent_turn_runner(principal=self.principal)
                                             c = await trun.execute_turn_async(
                                                 query=heard,
                                                 session_id=self.session_id,
@@ -1142,7 +1142,7 @@ class LiveSessionManager:
     async def _run_fallback_loop(self) -> None:
         """Deterministic fallback loop if Gemini Live is unreachable."""
         from app.turn_runner import get_agent_turn_runner
-        trun = get_agent_turn_runner()
+        trun = get_agent_turn_runner(principal=self.principal)
         # Tell the browser voice is down so the UI doesn't sit in "connecting" with a dead mic.
         with contextlib.suppress(Exception):
             await self.send_json({

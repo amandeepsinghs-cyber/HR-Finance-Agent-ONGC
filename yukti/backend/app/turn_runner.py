@@ -134,11 +134,11 @@ def replace_codes_with_friendly_names(obj: Any) -> Any:
 class AgentTurnRunner:
     """Manages real LLM turn execution using Google ADK."""
 
-    def __init__(self, model_name: Optional[str] = None):
+    def __init__(self, model_name: Optional[str] = None, principal: Optional[Any] = None):
         os.environ["GOOGLE_CLOUD_LOCATION"] = VERTEX_TEXT_LOCATION
         self.model_name = model_name or DEFAULT_TEXT_MODEL
         self.session_service = InMemorySessionService()
-        self.agent = create_yukti_agent(model_name=self.model_name)
+        self.agent = create_yukti_agent(model_name=self.model_name, principal=principal)
         self.runner = Runner(
             agent=self.agent,
             app_name=self.agent.name,
@@ -284,6 +284,11 @@ class AgentTurnRunner:
         else:
             principal = principal_for_persona(persona)
         token = set_active_principal(principal)
+        
+        # Ensure runner is bound to correct agent after principal is set
+        self.agent = create_yukti_agent(model_name=self.model_name, principal=principal)
+        self.runner.agent = self.agent
+
         try:
             contract = await self._execute_turn_inner(
                 query=query, session_id=session_id, persona=persona, language=language,
@@ -2722,14 +2727,14 @@ _GLOBAL_RUNNERS: dict[str, AgentTurnRunner] = {}
 
 
 
-def get_agent_turn_runner(model_name: Optional[str] = None) -> AgentTurnRunner:
+def get_agent_turn_runner(model_name: Optional[str] = None, principal: Optional[Any] = None) -> AgentTurnRunner:
     global _GLOBAL_RUNNERS
     from app.auth import get_active_principal
-    p = get_active_principal()
+    p = principal or get_active_principal()
     key = p.persona if p else "junior"
     if model_name:
         key = f"{key}_{model_name}"
     
     if key not in _GLOBAL_RUNNERS:
-        _GLOBAL_RUNNERS[key] = AgentTurnRunner(model_name=model_name)
+        _GLOBAL_RUNNERS[key] = AgentTurnRunner(model_name=model_name, principal=p)
     return _GLOBAL_RUNNERS[key]

@@ -94,7 +94,7 @@ async def query_data(sql_query: str, title: Optional[str] = None) -> Dict[str, A
             "retryable": False,
         }
         
-    if persona_class(principal.persona) == "junior":
+    if principal.persona.upper() != "CMD":
         return {
             "status": "refused",
             "error": "Access restricted. Free-form data queries are not available for your role (D-64).",
@@ -233,6 +233,7 @@ async def export_document(format: str, title: str, content: str) -> Dict[str, An
 def create_yukti_agent(
     model_name: Optional[str] = None,
     instruction_override: Optional[str] = None,
+    principal: Optional[Any] = None,
 ) -> Agent:
     """Instantiates the Google ADK Agent for Yukti AI with minimal thinking overhead."""
     active_model = model_name or os.getenv("YUKTI_TEXT_MODEL", DEFAULT_TEXT_MODEL)
@@ -253,7 +254,7 @@ def create_yukti_agent(
 
     from app.auth import get_active_principal
     from app.brain.rbac import persona_class
-    principal = get_active_principal()
+    principal = principal or get_active_principal()
     pc = persona_class(principal.persona) if principal else "junior"
     
     # D-64: Juniors get no free-form SQL tool
