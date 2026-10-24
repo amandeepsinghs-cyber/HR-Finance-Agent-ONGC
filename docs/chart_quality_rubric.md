@@ -34,7 +34,8 @@
 | **Scatter / Bubble** | Both axes labelled with units; quadrant or reference lines when meaningful | Bubble size without a legend |
 | **Waterfall** | Start/end totals distinct; increases accent, decreases maroon | Floating bars without connectors |
 | **KPI** | Big tabular number, unit, delta pill (▲/▼ + semantic colour), comparison basis | Delta without basis ("vs FY25") |
-| **Table** | Sticky header, right-aligned tabular numbers, inline bars for the main measure, negative in maroon | Centre-aligned numbers |
+| **Table** | Sticky header, right-aligned tabular numbers, inline bars for the main measure (non-statement tables only), negative in maroon | Centre-aligned numbers; inline bars never on statements |
+| **Financial Statement (`statement`)** | Source line order preserved; level indentation (16 px/level); bold ruled subtotals & double-ruled totals; `(x)` accounting negatives; Indian FY columns latest-first; source + page + basis footnote | Column sorting controls; inline bars; minus signs `-x` in figure cells; truncation/ellipsis on row labels |
 | **Map** | Neutral base map (`chart-map-area`), sequential ramp for magnitude, labelled top locations | Categorical rainbow on a map |
 
 ---
@@ -51,3 +52,30 @@
 - V3 average label overlapping a tick (C3)
 - V4 light donut slices with low contrast (C4)
 - V6 heavy 11-pill type switcher (C8 / U5.8)
+
+---
+
+## Section F: Finance Rubric Additions (F1–F14, SPEC-09 §4.7)
+
+Applies to `statement`, `waterfall`, `combo`, `sensitivity_grid`, `tornado`, and finance tables.
+**9/10 rule:** **9/10 = all ★ criteria pass and ≥ 90% of the rest.**
+
+| ID | Criterion | Measure | Pass |
+|---|---|---|---|
+| F1 ★ | Numbers match SSOT | every displayed value vs `fact_financial_statement_line` at display precision | 0 mismatches |
+| F2 ★ | No fabricated values | every number has lineage (`source.doc/page` or computed-from ids) | 100% |
+| F3 ★ | Waterfall closes | last bar = reported PAT (or closing cash), subtotals = reported | Δ ≤ ₹0.5 cr |
+| F4 ★ | Line order = source order | statement rows vs SSOT `order` | 100% |
+| F5 | Accounting negatives | negatives rendered `(x)` in tables/exports | 100% |
+| F6 | Hierarchy visible | indentation by level; subtotal bold + rule; total double rule | all rows |
+| F7 | Units explicit | unit in header or axis ("₹ crore", "%") | every visual |
+| F8 | FY labelling | Indian FY labels, latest-first in tables, chronological on time axes | 100% |
+| F9 | Tabular figures, right-aligned | computed style | all numeric cells |
+| F10 | Source footnote | doc + pages + basis + as-of present | 100% |
+| F11 | Insight title | title states the finding (contains a number or direction), not "Updated Chart View" | 100% |
+| F12 | Density | ≤ 3 KPI tiles above a statement; statement starts above the fold at 1440×900 | pass |
+| F13 | Contrast | light + dark ≥ 4.5:1 text, ≥ 3:1 graphical | `lint:contrast` OK |
+| F14 | Export fidelity | xlsx/PDF values = screen values; formats per SPEC-10 | 100% |
+
+Scorecards: one per visual type (`statement`, `waterfall`, `combo`, `sensitivity_grid`, `tornado`) in light + dark under `docs/reviews/assets/P4_*`, scored by an independent reviewer (`R`) using [`docs/reviews/P4_scorecard_TEMPLATE.md`](reviews/P4_scorecard_TEMPLATE.md) (no self-scoring by the implementer).
+
