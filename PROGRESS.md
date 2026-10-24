@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:02 UTC · branch `v3/P0-stabilise` @ `c77121b`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:03 UTC · branch `v3/P0-stabilise` @ `62133c0`
 
 > [!IMPORTANT]
-> **Overall: 32% complete (weighted)** — 17/62 steps ✅ done, 7 in flight, 38 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 1 warning(s).
+> **Overall: 32% complete (weighted)** — 18/62 steps ✅ done, 6 in flight, 38 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 1 warning(s).
 
 ## 1. Phase progress
 
@@ -14,7 +14,7 @@
 | **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 3% | 0 | 0 | 0 | 1 | 7 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `█████░░░░░░░░░░░░░░░` 25% | 1 | 1 | 0 | 2 | 5 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `██████░░░░░░░░░░░░░░` 28% | 2 | 0 | 0 | 2 | 5 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -29,7 +29,6 @@
 | P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
 | P4.1 | 🔄 In progress | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Complete build + evidence |
 | P4.2 | 🔄 In progress | `visual.type=statement` contract + presenter emit (multi-FY) | O | Complete build + evidence |
-| P4.9 | 🔍 In review | Orb visible in docked mode + optional edge aura (low priority, V21) | F | Apply review findings / approve |
 
 **Ready to start:**
 
@@ -59,11 +58,11 @@
 | V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ 🟡 🔴 🟡 | P2H.4, P3.5, P4.1, P4.4, P4.5, P4.6, P4.7, P4.8 | 🟡 |
 | V8 | FEAT-001, FEAT-013 | ✅ 🔴 | P5.2 | 🟡 |
 | V11 | FEAT-001, FEAT-002, FEAT-003, FEAT-009 | ✅ 🟡 ✅ 🔴 | P5.1 | 🟡 |
-| V12 | FEAT-004, FEAT-005 | 🟡 ✅ | P4.9 | 🟡 |
+| V12 | FEAT-004, FEAT-005 | 🟡 ✅ |  | 🟡 |
 | V13 | FEAT-006, FEAT-009, FEAT-010, FEAT-011, FEAT-021 | 🟡 🔴 🔴 🟡 🟡 | P1.7, P2H.3, P2H.5, P2H.6, P2H.8, P2F.5, P5.1 | 🟡 |
 | V14 | FEAT-007, FEAT-010, FEAT-011, FEAT-014 | 🟡 🔴 🟡 🔴 | P2F.5, P3.1, P5.4, P5.5, P5.6 | 🟡 |
 | V15 | FEAT-015, FEAT-026 | 🟡 🔴 | P4.1, P4.4, P4.5, P4.8 | 🟡 |
-| V16 | FEAT-016 | 🟡 | P4.9 | 🟡 |
+| V16 | FEAT-016 | 🟡 |  | 🟡 |
 | V17 | FEAT-017, FEAT-031 | 🔴 🔴 | P2H.1, P2H.2 | 🔴 |
 | V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.6, P1.7, P1.10a, P1.10b, P2H.7, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P1.7, P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
@@ -83,7 +82,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-001 Scrollable conversation feed (history) | ✅ | 0/0 |
 | FEAT-002 Multi-turn context & entity carry-over | 🟡 | 0/0 |
 | FEAT-003 Visual presentation audit | ✅ | 0/0 |
-| FEAT-004 Voice orb (Aurora wave) | 🟡 | 0/1 |
+| FEAT-004 Voice orb (Aurora wave) | 🟡 | 1/1 |
 | FEAT-005 Executive UI modernisation | ✅ | 0/0 |
 | FEAT-006 CMD named employee roster | 🟡 | 0/1 |
 | FEAT-007 Answer contract v2 | 🟡 | 0/1 |
@@ -95,7 +94,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-013 Voice pipeline quality (no duplicate turns) | 🔴 | 1/2 |
 | FEAT-014 Eval-gated release & Cloud Run redeploy | 🔴 | 2/5 |
 | FEAT-015 Any-chart re-presentation & chart excellence | 🟡 | 0/0 |
-| FEAT-016 AI aura visual language | 🟡 | 0/1 |
+| FEAT-016 AI aura visual language | 🟡 | 1/1 |
 | FEAT-017 Eleven-persona matrix + function split + `self` scope | 🔴 | 0/2 |
 | FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 3/8 |
 | FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 1/2 |
@@ -134,12 +133,13 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-11 | open | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 r | P2H.4 | P2H.4:⬜ |
 | BUG-12 | open | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 3310 | P2H.4, P5.1 | P2H.4:⬜ P5.1:⬜ |
 | BUG-13 | open | Cloud Run = baseline rev `00001`; `financial_build/` not in the image | P0.9, P5.6 | P0.9:✅ P5.6:⬜ |
-| BUG-35 | in_progress | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | P4.9, P5.6 | P4.9:🔍 P5.6:⬜ |
+| BUG-35 | in_progress | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | P4.9, P5.6 | P4.9:✅ P5.6:⬜ |
 
 ## 7. Recent step commits
 
 | Commit | Date | Message |
 |---|---|---|
+| `785e01d` | 2026-10-24 | P2H.1 (pre-G4): 11 personas, dim_app_user, function-scoped RBAC v2, self scope & junior aggregate pay |
 | `8ae11eb` | 2026-10-24 | P4.9 (G4 r2 fix) M1: restore white rgba() colour strings in VoiceOrb core/feather gradients (regex rename had turned string litera |
 | `d023473` | 2026-10-24 | P4.3 (pre-G4): skip redundant single-section header (screenshot review) |
 | `bf679b7` | 2026-10-24 | P4.3 (pre-G4) + P4.2 TS types: StatementTable renderer (sticky wrapping labels, latest-first FY + unit row, tabular Indian figures |
@@ -154,7 +154,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `d639520` | 2026-10-23 | P1.5 (pre-G4) beta weekly pull: NSE last-trading-day weekly closes ONGC + NIFTY 50, 104 wks 2024-10-25..2026-10-16 (214 req, 0 blo |
 | `1a885ee` | 2026-10-23 | P1.8 (G4 r2 fixes): C1 held-out paraphrase eval (18 Q, LEXICAL_WEIGHT frozen: hybrid 7/18, vector 8/18) + leakage/skew/in-sample d |
 | `7b3047e` | 2026-10-23 | P1.3 (pre-G4): deterministic AR statement parser (BS/P&L/CF, standalone+consolidated, FY17-19 + FY22-26 own ARs; 5,062 rows, 957/9 |
-| `7c0f7f3` | 2026-10-23 | P1.8 (pre-G4): real AR text chunker (8 ARs, 8,712 page-bounded chunks, section/note/keyword tags), text-embedding-005 load to new  |
 
 ## 8. Integrity checks
 
