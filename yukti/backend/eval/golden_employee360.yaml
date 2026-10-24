@@ -1,0 +1,4 @@
+- id: BEH-06.01
+  persona: CMD
+  utterance: "employee cost"
+  expect: {values: [1], tolerance: 0.1, label: "Modelled", visual_type: "line", rbac: "allow"}

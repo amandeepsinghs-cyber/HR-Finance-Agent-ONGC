@@ -1,0 +1,19 @@
+config {
+  type: "view",
+  schema: "hrfin_stage",
+  name: "v_employee_360_fy",
+  description: "FY rolled up view."
+}
+SELECT
+  emp_id,
+  fiscal_year,
+  SUM(cost_total_inr) AS cost_total_fy,
+  SUM(gross_earnings_inr) AS gross_fy,
+  SUM(ctc_annualised_inr) AS ctc_fy,
+  SUM(overtime_hours) AS ot_hours_fy,
+  MAX(is_month_end_active) AS is_month_end_active,
+  COUNT(*) AS months_on_roll,
+  MAX(separated_in_month_flag) AS separated_in_fy,
+  MAX(joined_in_month_flag) AS joined_in_fy
+FROM ${ref("ssot_employee_360")}
+GROUP BY emp_id, fiscal_year

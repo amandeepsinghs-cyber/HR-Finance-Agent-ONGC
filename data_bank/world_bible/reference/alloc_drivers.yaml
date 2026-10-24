@@ -1,0 +1,16 @@
+alloc_drivers:
+- water_produced_m3
+- water_injected_m3
+- water_cut_pct
+- active_producers
+- active_injectors
+- installations_count
+- wells_drilled_dev
+- oil_prod_mt
+- gas_prod_mmscm
+- prod_boe
+- oil_sales_mt
+- gas_sales_mmscm
+- vap_sales_kt
+- headcount_direct
+- employee_cost_total

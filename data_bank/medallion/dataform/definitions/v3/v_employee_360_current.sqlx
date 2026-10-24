@@ -1,0 +1,9 @@
+config {
+  type: "view",
+  schema: "hrfin_stage",
+  name: "v_employee_360_current",
+  description: "Latest month view."
+}
+SELECT * FROM ${ref("ssot_employee_360")}
+WHERE month_start = (SELECT MAX(month_start) FROM ${ref("ssot_employee_360")} WHERE month_start <= DATE_TRUNC(CURRENT_DATE(), MONTH))
+  AND is_month_end_active

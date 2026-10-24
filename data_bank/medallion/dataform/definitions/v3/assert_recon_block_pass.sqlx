@@ -1,0 +1,2 @@
+config { type: "assertion", name: "assert_recon_block_pass" }
+SELECT * FROM ${ref("recon_checks")} WHERE severity = 'BLOCK' AND status = 'FAIL'

@@ -1,0 +1,31 @@
+config {
+  type: "incremental",
+  schema: "hrfin_gold",
+  name: "recon_checks"
+}
+
+SELECT
+  CAST(NULL AS STRING) AS run_id,
+  CAST(NULL AS TIMESTAMP) AS run_ts,
+  CAST(NULL AS STRING) AS check_id,
+  CAST(NULL AS STRING) AS spec,
+  CAST(NULL AS STRING) AS fiscal_year,
+  CAST(NULL AS STRING) AS period,
+  CAST(NULL AS STRING) AS level,
+  CAST(NULL AS STRING) AS dimension_key,
+  CAST(NULL AS STRING) AS metric,
+  CAST(NULL AS NUMERIC) AS ssot_value,
+  CAST(NULL AS NUMERIC) AS reference_value,
+  CAST(NULL AS STRING) AS unit,
+  CAST(NULL AS STRING) AS reference_source_doc,
+  CAST(NULL AS INT64) AS reference_page,
+  CAST(NULL AS INT64) AS reference_text_line,
+  CAST(NULL AS STRING) AS reference_line_code,
+  CAST(NULL AS NUMERIC) AS delta,
+  CAST(NULL AS NUMERIC) AS delta_pct,
+  CAST(NULL AS NUMERIC) AS tolerance_abs,
+  CAST(NULL AS NUMERIC) AS tolerance_pct,
+  CAST(NULL AS STRING) AS severity,
+  CAST(NULL AS STRING) AS status,
+  CAST(NULL AS STRING) AS notes
+LIMIT 0

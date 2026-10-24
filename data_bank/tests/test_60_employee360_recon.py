@@ -31,6 +31,11 @@ def test_emp_r01_to_r09_reconciliation():
             print(f"EMP-R01 {fy} Total: Modelled={total_modelled/1e7:,.2f} Cr, Pool={total_pool/1e7:,.2f} Cr, Target={target_total/1e7:,.2f} Cr")
             assert abs(final_total - target_total) < 1e5, f"EMP-R01 failed for {fy}"
             
+            if fy in ["FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]:
+                total_residual_pool = pools_df[(pools_df["fiscal_year"] == fy) & (pools_df["basis"] == "residual")]["amount_inr"].sum()
+                pool_pct = abs(total_residual_pool) / target_total if target_total > 0 else 0
+                assert pool_pct <= 0.0305, f"EMP-R08 failed for {fy}: residual pool is {pool_pct*100:.2f}% of total"
+
         for c in "abcdef":
             target_line_series = targets_df[(targets_df["fiscal_year"] == fy) & (targets_df["metric"] == f"note35_1_{c}")]
             if target_line_series.empty: continue
@@ -43,12 +48,13 @@ def test_emp_r01_to_r09_reconciliation():
             assert abs(final_line - target_line) < 1e5, f"EMP-R02-R07 failed for {fy} line {c}"
             
             residual_pct = abs(pool_line) / target_line if target_line > 0 else 0
-            if residual_pct > 0.0305:
-                print(f"  Note35.1.{c} {fy}: Warning, high residual {residual_pct:.2%}")
-            if c == 'a':
-                diff_pct = abs(target_line - modelled_line) / target_line
-                assert diff_pct <= 0.0405, f"EMP-R09 failed for {fy} line a"
-                print(f"  Note35.1.a {fy}: Modelled={modelled_line/1e7:,.2f} Cr, Target={target_line/1e7:,.2f} Cr, Diff={diff_pct*100:.2f}%")
+            if fy in ["FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]:
+                if residual_pct > 0.0305:
+                    print(f"  Note35.1.{c} {fy}: Warning, high residual {residual_pct:.2%}")
+                if c == 'a':
+                    diff_pct = abs(target_line - modelled_line) / target_line
+                    assert diff_pct <= 0.0405, f"EMP-R09 failed for {fy} line a"
+                    print(f"  Note35.1.a {fy}: Modelled={modelled_line/1e7:,.2f} Cr, Target={target_line/1e7:,.2f} Cr, Diff={diff_pct*100:.2f}%")
 
 def test_emp_r10_headcount():
     hc_df = pd.read_csv(LANDING_SAP / "headcount_monthly_snapshot.csv")

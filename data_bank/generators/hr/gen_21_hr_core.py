@@ -832,6 +832,8 @@ general_pool_wcs = [w["wc_id"] for w in WORK_CENTRES if w.get("onshore_offshore"
 other_exec_males = [s for s in active_specs if s.get("cadre") == "executive" and s.get("gender") == "Male" and (s.get("current_wc_id") or s.get("wc_id")) in general_pool_wcs]
 other_exec_females = [s for s in active_specs if s.get("cadre") == "executive" and s.get("gender") == "Female" and (s.get("current_wc_id") or s.get("wc_id")) in general_pool_wcs]
 other_non_males = [s for s in active_specs if s.get("cadre") == "non_executive" and s.get("gender") == "Male" and (s.get("current_wc_id") or s.get("wc_id")) in general_pool_wcs]
+grade_val_ne = {"GRP-D":1, "GRP-C":2, "GRP-B":3, "GRP-A":4}
+other_non_males.sort(key=lambda x: grade_val_ne.get(x.get("grade_id", "GRP-A"), 99))
 other_non_females = [s for s in active_specs if s.get("cadre") == "non_executive" and s.get("gender") == "Female" and (s.get("current_wc_id") or s.get("wc_id")) in general_pool_wcs]
 
 if exec_diff_fem > 0:
@@ -913,21 +915,36 @@ print(f"PwD calibrated: {tot_pwd} total ({exec_pwd} exec / {non_pwd} non-exec)."
 print("Calibrating executive grade hierarchy and discipline clusters from work centre type shares...")
 
 unassigned_execs = [s for s in active_specs if s.get("cadre") == "executive" and not s.get("is_persona")]
-grade_pool = (
-    ["E9"] * 49 +
-    ["E8"] * 239 +
-    ["E7"] * 851 +
-    ["E6"] * 1195 +
-    ["E5"] * 2195 +
-    ["E4"] * 2665 +
-    ["E3"] * 2920 +
-    ["E2"] * 2280 +
-    ["E1"] * 1382
-)
-random.shuffle(grade_pool)
+f_execs = [s for s in unassigned_execs if s["gender"] == "Female"]
+m_execs = [s for s in unassigned_execs if s["gender"] == "Male"]
 
-for s in unassigned_execs:
-    s["current_grade_id"] = grade_pool.pop()
+f_grades = []
+m_grades = []
+remaining_grades = {"E1":1382, "E2":2280, "E3":2920, "E4":2665, "E5":2195, "E6":1195, "E7":851, "E8":239, "E9":49}
+f_target = {"E1": 740, "E2": 320, "E3": 140, "E4": 80, "E5": 50, "E6": 30, "E7": 17, "E8": 0, "E9": 0}
+
+for g in ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"]:
+    take_f = min(f_target[g], len(f_execs) - len(f_grades))
+    f_grades.extend([g] * take_f)
+    remaining_grades[g] -= take_f
+
+for g in ["E1", "E2", "E3", "E4"]:
+    if len(f_grades) < len(f_execs):
+        take_f = min(remaining_grades[g], len(f_execs) - len(f_grades))
+        f_grades.extend([g] * take_f)
+        remaining_grades[g] -= take_f
+
+for g, count in remaining_grades.items():
+    m_grades.extend([g] * count)
+
+import random
+random.shuffle(f_grades)
+random.shuffle(m_grades)
+
+for s, g in zip(f_execs, f_grades):
+    s["current_grade_id"] = g
+for s, g in zip(m_execs, m_grades):
+    s["current_grade_id"] = g
 
 tot_e7_plus = sum(1 for s in active_specs if s.get("current_grade_id") in ["E7", "E8", "E9", "DIR", "CMD"])
 assert tot_e7_plus == 1142, f"E7+ strength mismatch: {tot_e7_plus}"
@@ -1013,8 +1030,10 @@ for s in non_persona_specs[target_o50:-target_u30]:
     if s["dob"] < datetime.date(1976, 4, 1) or s["dob"] > datetime.date(1996, 3, 31):
         s["dob"] = datetime.date(1976, 4, 1) + datetime.timedelta(days=random.randint(0, 7200))
 
+
 for s in active_specs:
     s["age_band"] = get_age_band((FY26_END - s["dob"]).days / 365.25)
+
 
 tot_act = len(active_specs)
 u30_c = sum(1 for s in active_specs if s["dob"] > datetime.date(1996, 3, 31))

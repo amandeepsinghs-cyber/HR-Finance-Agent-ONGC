@@ -1,0 +1,289 @@
+cost_objects:
+- object_id: FLD-MHN
+  object_name: Mumbai High North
+  object_type: field
+  segment: Offshore
+- object_id: FLD-MHS
+  object_name: Mumbai High South
+  object_type: field
+  segment: Offshore
+- object_id: FLD-HEE
+  object_name: Heera
+  object_type: field
+  segment: Offshore
+- object_id: FLD-NEE
+  object_name: Neelam
+  object_type: field
+  segment: Offshore
+- object_id: FLD-RAT
+  object_name: Ratna & R-Series
+  object_type: field
+  segment: Offshore
+- object_id: FLD-MUK
+  object_name: Mukta
+  object_type: field
+  segment: Offshore
+- object_id: FLD-PAN
+  object_name: Panna
+  object_type: field
+  segment: Offshore
+- object_id: FLD-BAS
+  object_name: Bassein
+  object_type: field
+  segment: Offshore
+- object_id: FLD-DAM
+  object_name: Daman
+  object_type: field
+  segment: Offshore
+- object_id: FLD-B17
+  object_name: B-173A / B-Series Clusters
+  object_type: field
+  segment: Offshore
+- object_id: FLD-D1
+  object_name: D-1 Field
+  object_type: field
+  segment: Offshore
+- object_id: FLD-CS1
+  object_name: C-Series Clusters
+  object_type: field
+  segment: Offshore
+- object_id: FLD-GAN
+  object_name: Gandhar
+  object_type: field
+  segment: Onshore
+- object_id: FLD-ANK
+  object_name: Ankleshwar
+  object_type: field
+  segment: Onshore
+- object_id: FLD-KOS
+  object_name: Kosamba
+  object_type: field
+  segment: Onshore
+- object_id: FLD-MOT
+  object_name: Motwan
+  object_type: field
+  segment: Onshore
+- object_id: FLD-KAL
+  object_name: Kalol
+  object_type: field
+  segment: Onshore
+- object_id: FLD-NAW
+  object_name: Nawagam
+  object_type: field
+  segment: Onshore
+- object_id: FLD-SND
+  object_name: Sanand
+  object_type: field
+  segment: Onshore
+- object_id: FLD-JHL
+  object_name: Jhalora
+  object_type: field
+  segment: Onshore
+- object_id: FLD-VIR
+  object_name: Viraj
+  object_type: field
+  segment: Onshore
+- object_id: FLD-SNT
+  object_name: Santhal
+  object_type: field
+  segment: Onshore
+- object_id: FLD-BAL
+  object_name: Balol
+  object_type: field
+  segment: Onshore
+- object_id: FLD-LAN
+  object_name: Lanwa
+  object_type: field
+  segment: Onshore
+- object_id: FLD-JOT
+  object_name: Jotana
+  object_type: field
+  segment: Onshore
+- object_id: FLD-SOB
+  object_name: Sobhasan
+  object_type: field
+  segment: Onshore
+- object_id: FLD-LIN
+  object_name: Linch
+  object_type: field
+  segment: Onshore
+- object_id: FLD-BEC
+  object_name: Bechraji
+  object_type: field
+  segment: Onshore
+- object_id: FLD-NAN
+  object_name: Nandej
+  object_type: field
+  segment: Onshore
+- object_id: FLD-CAM
+  object_name: Cambay
+  object_type: field
+  segment: Onshore
+- object_id: FLD-KAT
+  object_name: Kathana
+  object_type: field
+  segment: Onshore
+- object_id: FLD-GEL
+  object_name: Geleki
+  object_type: field
+  segment: Onshore
+- object_id: FLD-LAK
+  object_name: Lakwa
+  object_type: field
+  segment: Onshore
+- object_id: FLD-RDS
+  object_name: Rudrasagar
+  object_type: field
+  segment: Onshore
+- object_id: FLD-CHA
+  object_name: Charali
+  object_type: field
+  segment: Onshore
+- object_id: FLD-BOR
+  object_name: Borholla
+  object_type: field
+  segment: Onshore
+- object_id: FLD-CHP
+  object_name: Champang
+  object_type: field
+  segment: Onshore
+- object_id: FLD-KHO
+  object_name: Khoraghat
+  object_type: field
+  segment: Onshore
+- object_id: FLD-ROK
+  object_name: Rokhia
+  object_type: field
+  segment: Onshore
+- object_id: FLD-AGT
+  object_name: Agartala Dome
+  object_type: field
+  segment: Onshore
+- object_id: FLD-KON
+  object_name: Konaban
+  object_type: field
+  segment: Onshore
+- object_id: FLD-BAR
+  object_name: Baramura
+  object_type: field
+  segment: Onshore
+- object_id: FLD-PAS
+  object_name: Pasarlapudi
+  object_type: field
+  segment: Onshore
+- object_id: FLD-TAT
+  object_name: Tatipaka
+  object_type: field
+  segment: Onshore
+- object_id: FLD-MOR
+  object_name: Mori
+  object_type: field
+  segment: Onshore
+- object_id: FLD-KES
+  object_name: Kesanapalli
+  object_type: field
+  segment: Onshore
+- object_id: FLD-KG982
+  object_name: KG-DWN-98/2 Cluster-II
+  object_type: field
+  segment: Offshore
+- object_id: FLD-NAR
+  object_name: Narimanam
+  object_type: field
+  segment: Onshore
+- object_id: FLD-KUT
+  object_name: Kuthalam
+  object_type: field
+  segment: Onshore
+- object_id: FLD-ADI
+  object_name: Adiyakkamangalam
+  object_type: field
+  segment: Onshore
+- object_id: FLD-BAG
+  object_name: Baghewala
+  object_type: field
+  segment: Onshore
+- object_id: FLD-BOK
+  object_name: CBM Bokaro
+  object_type: field
+  segment: Onshore
+- object_id: FLD-JHA
+  object_name: Jharia CBM
+  object_type: field
+  segment: Onshore
+- object_id: JV-RJ-ON-90/1
+  object_name: RJ-ON-90/1 (JV)
+  object_type: jv_share
+  segment: Onshore
+- object_id: JV-RAVVA
+  object_name: Ravva (JV)
+  object_type: jv_share
+  segment: Offshore
+- object_id: JV-CB-OS/2
+  object_name: CB-OS/2 (JV)
+  object_type: jv_share
+  segment: Offshore
+- object_id: JV-OTHER
+  object_name: Other JV
+  object_type: jv_share
+  segment: Offshore
+- object_id: WC-URN
+  object_name: Uran Plant
+  object_type: plant
+  segment: Offshore
+- object_id: WC-HAZ
+  object_name: Hazira Plant
+  object_type: plant
+  segment: Offshore
+- object_id: WC-DAH
+  object_name: Dahej C2-C3 Plant
+  object_type: plant
+  segment: Onshore
+- object_id: EXP-WOB
+  object_name: EXP WOB
+  object_type: exploration
+  segment: Unallocated
+- object_id: EXP-KGB
+  object_name: EXP KGB
+  object_type: exploration
+  segment: Unallocated
+- object_id: EXP-MBA
+  object_name: EXP MBA
+  object_type: exploration
+  segment: Unallocated
+- object_id: EXP-CAB
+  object_name: EXP CAB
+  object_type: exploration
+  segment: Unallocated
+- object_id: EXP-AAB
+  object_name: EXP AAB
+  object_type: exploration
+  segment: Unallocated
+- object_id: EXP-RAJ
+  object_name: EXP RAJ
+  object_type: exploration
+  segment: Unallocated
+- object_id: EXP-CAU
+  object_name: EXP CAU
+  object_type: exploration
+  segment: Unallocated
+- object_id: EXP-ANDAMAN
+  object_name: EXP ANDAMAN
+  object_type: exploration
+  segment: Unallocated
+- object_id: EXP-OTHER
+  object_name: EXP OTHER
+  object_type: exploration
+  segment: Unallocated
+- object_id: CO-HQ
+  object_name: Corporate HQ
+  object_type: hq
+  segment: Unallocated
+- object_id: CO-FIN
+  object_name: Finance Cost
+  object_type: company_nonop
+  segment: Unallocated
+- object_id: CO-TREASURY
+  object_name: Treasury
+  object_type: company_nonop
+  segment: Unallocated

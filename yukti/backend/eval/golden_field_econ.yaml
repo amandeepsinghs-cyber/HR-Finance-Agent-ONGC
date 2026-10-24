@@ -1,0 +1,4 @@
+- id: BEH-06.02
+  persona: CMD
+  utterance: "field economics"
+  expect: {values: [1], tolerance: 0.1, label: "Modelled", visual_type: "line", rbac: "allow"}

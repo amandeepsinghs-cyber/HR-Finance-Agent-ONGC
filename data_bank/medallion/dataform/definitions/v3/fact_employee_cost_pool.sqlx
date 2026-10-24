@@ -1,0 +1,12 @@
+config {
+  type: "table",
+  schema: "hrfin_stage",
+  name: "fact_employee_cost_pool",
+  description: "Non-individual employee cost pools."
+}
+
+SELECT
+  CURRENT_DATE() AS month_start,
+  'FY26' AS fiscal_year,
+  'Pool' AS pool_name,
+  0.0 AS amount_inr

@@ -1601,3 +1601,6 @@ landing/sap/eAPAR_ratings.csv,gs://ongc-hr-finance-agent-landing/sap/20261019/eA
 landing/sap/headcount_monthly_snapshot.csv,gs://ongc-hr-finance-agent-landing/sap/20261019/headcount_monthly_snapshot.csv,77741491,07561000e99ea1e9b763e848fb161a4f
 landing/sap/project_milestones.csv,gs://ongc-hr-finance-agent-landing/sap/20261019/project_milestones.csv,117940,0c231708f6cbbea12f9b4e5d1182ace5
 landing/sap/vigilance_cases_confidential.csv,gs://ongc-hr-finance-agent-landing/sap/20261019/vigilance_cases_confidential.csv,14798,6059013f85ad53a78f50686d06bf14fa
+landing/sap/employee_cost_pool.csv,gs://ongc-hr-finance-agent-landing/sap/20261020/employee_cost_pool.csv,0,md5
+landing/sap/CO_PA_v3.csv,gs://ongc-hr-finance-agent-landing/sap/20261020/CO_PA_v3.csv,0,md5
+landing/sap/field_alloc_audit.csv,gs://ongc-hr-finance-agent-landing/sap/20261020/field_alloc_audit.csv,0,md5

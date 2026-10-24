@@ -1,0 +1,8 @@
+config {
+  type: "view",
+  schema: "hrfin_stage",
+  name: "v_employee_pay_component_long",
+  description: "Unpivoted components."
+}
+SELECT emp_id, month_start, 'basic_pay_inr' AS component_code, 'basic' AS component_group, basic_pay_inr AS amount_inr
+FROM ${ref("ssot_employee_360")}

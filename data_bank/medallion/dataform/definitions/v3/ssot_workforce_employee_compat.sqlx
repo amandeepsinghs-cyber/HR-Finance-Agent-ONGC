@@ -1,0 +1,7 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "ssot_workforce_employee",
+  description: "Compat view."
+}
+SELECT emp_id, full_name AS emp_name, current_grade_id, discipline_id, wc_id, 'Active' AS employment_status FROM ${ref("v_employee_360_current")}

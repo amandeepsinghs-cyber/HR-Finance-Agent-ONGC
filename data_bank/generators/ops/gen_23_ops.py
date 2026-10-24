@@ -232,11 +232,9 @@ def load_and_derive_field_reference_attributes(fields_ref: list) -> dict:
 
         b_params = BASIN_PARAMS.get(basin_name_raw, DEFAULT_BASIN_PARAMS)
 
-        # 1. Operatorship: derived from notes / contract vintage attribute class
-        is_jv = ("joint venture" in notes) or (
-            b_params["has_jv_sector"] and (dy in [1979, 1981]) and (maturity == "mature") and (hc == "both")
-        )
-        op_type = "joint_venture" if is_jv else "operated"
+        # 1. Operatorship: All nomination fields are operated in v3
+        op_type = "operated"
+
 
         # 2. In-place volumes based on geological class and discovery era
         if terrain == "offshore":
@@ -341,6 +339,32 @@ def load_and_derive_field_reference_attributes(fields_ref: list) -> dict:
             "active_injection_wells_count": int(wells_inj),
             "base_water_cut_pct": round(base_wc, 2),
             "decline_rate_annual": round(decline, 4),
+        }
+
+    # Add JV-share Cost Objects
+    jv_blocks = [
+        {"id": "JV-RJ-ON-90/1", "basin": "Jodhpur (Rajasthan) Basin", "terrain": "onshore", "hc": "oil"},
+        {"id": "JV-RAVVA", "basin": "KG-PG Basin", "terrain": "shallow_offshore", "hc": "both"},
+        {"id": "JV-CB-OS/2", "basin": "Western Offshore Basin", "terrain": "shallow_offshore", "hc": "oil"},
+        {"id": "JV-OTHER", "basin": "Western Offshore Basin", "terrain": "shallow_offshore", "hc": "both"},
+    ]
+    for jv in jv_blocks:
+        derived[jv["id"]] = {
+            "field_id": jv["id"],
+            "name": jv["id"],
+            "asset_wc_id": "WC-JV",
+            "basin": jv["basin"],
+            "operatorship": "joint_venture",
+            "terrain": jv["terrain"],
+            "maturity": "mature",
+            "hydrocarbon": jv["hc"],
+            "discovery_year": 1990,
+            "in_place_oil_mmt": 20.0,
+            "in_place_gas_bcm": 15.0 if jv["hc"] == "both" else 0.0,
+            "active_wells_count": 20,
+            "active_injection_wells_count": 5,
+            "base_water_cut_pct": 50.0,
+            "decline_rate_annual": 0.05,
         }
 
     derived_yaml_path = DERIVED_DIR / "2.3_field_attributes.yaml"
@@ -676,6 +700,11 @@ def generate_production_monthly(fields_derived: dict) -> pd.DataFrame:
             internal = 0.0
             util_pct = 100.0
 
+        prod_basis = "ONGC" if op_type == "operated" else "JV_SHARE"
+        # We will add pre-scaled oil_sales_mt and vap_sales_kt just to have columns, they will be scaled at FY level below.
+        oil_sales_mt = oil_mt * 0.95
+        vap_sales_kt = 0.0
+
         prod_id = f"PRD-{m_str.replace('-', '')}-{fid}"
 
         final_records.append({
@@ -685,13 +714,16 @@ def generate_production_monthly(fields_derived: dict) -> pd.DataFrame:
             "field_id": fid,
             "asset_wc_id": wc,
             "operatorship": op_type,
+            "prod_basis": prod_basis,
             "oil_production_mt": oil_mt,
             "gas_production_mmscm": gas_mmscm,
             "condensate_production_mt": cond_mt,
             "total_production_boe": boe,
             "water_cut_pct": wc_pct,
             "water_produced_m3": water_m3,
+            "oil_sales_mt": oil_sales_mt,
             "gas_sales_mmscm": sales,
+            "vap_sales_kt": vap_sales_kt,
             "gas_flared_mmscm": flared,
             "gas_internal_consumption_mmscm": internal,
             "gas_utilisation_pct": util_pct,
@@ -702,6 +734,48 @@ def generate_production_monthly(fields_derived: dict) -> pd.DataFrame:
         })
 
     df_out = pd.DataFrame(final_records)
+
+    # Scale sales to match AR quantity sold targets
+    # For FY26: 18.79 MMT crude, 15.491 BCM gas, 2,468 kT VAP
+    qty_sold_targets = {
+        "FY17": {"crude": 20.3, "gas": 17.5, "vap": 3200},
+        "FY18": {"crude": 21.0, "gas": 18.2, "vap": 3100},
+        "FY19": {"crude": 19.8, "gas": 19.1, "vap": 3000},
+        "FY20": {"crude": 19.0, "gas": 18.5, "vap": 2900},
+        "FY21": {"crude": 18.2, "gas": 17.0, "vap": 2800},
+        "FY22": {"crude": 18.3, "gas": 16.5, "vap": 2700},
+        "FY23": {"crude": 18.5, "gas": 16.2, "vap": 2600},
+        "FY24": {"crude": 18.1, "gas": 15.8, "vap": 2500},
+        "FY25": {"crude": 18.0, "gas": 15.6, "vap": 2400},
+        "FY26": {"crude": 18.79, "gas": 15.491, "vap": 2468},
+    }
+    for fy, tgt in qty_sold_targets.items():
+        m_fy = df_out["fiscal_year"] == fy
+        if not m_fy.any(): continue
+        
+        sum_oil = df_out.loc[m_fy, "oil_sales_mt"].sum()
+        if sum_oil > 0:
+            scale_oil = (tgt["crude"] * 1e6) / sum_oil
+            df_out.loc[m_fy, "oil_sales_mt"] = distribute_largest_remainder(df_out.loc[m_fy, "oil_sales_mt"] * scale_oil, tgt["crude"] * 1e6, decimals=2)
+            
+        sum_gas = df_out.loc[m_fy, "gas_sales_mmscm"].sum()
+        if sum_gas > 0:
+            scale_gas = (tgt["gas"] * 1000) / sum_gas
+            df_out.loc[m_fy, "gas_sales_mmscm"] = distribute_largest_remainder(df_out.loc[m_fy, "gas_sales_mmscm"] * scale_gas, tgt["gas"] * 1000, decimals=4)
+        
+        # Bridge identity
+        df_out.loc[m_fy, "gas_internal_consumption_mmscm"] = (
+            df_out.loc[m_fy, "gas_production_mmscm"] 
+            - df_out.loc[m_fy, "gas_sales_mmscm"] 
+            - df_out.loc[m_fy, "gas_flared_mmscm"]
+        ).clip(lower=0.0)
+
+            
+        # Distribute VAP sales mostly to offshore plants, but we don't have plants in gen_23_ops.py.
+        # Wait, the spec says "VAP kt are attributed to plants."
+        # The plants are generated in alloc_field_economics.py?
+        # Let's just output vap_sales_kt as 0 here, and handle it in alloc_field_economics.py!
+
 
     csv_path = LANDING_DB / "production_monthly.csv"
     df_out.to_csv(csv_path, index=False)

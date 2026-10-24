@@ -1,0 +1,8 @@
+config {
+  type: "operations",
+  schema: "hrfin_gold",
+  name: "publish_employee_360"
+}
+-- Dependency on assert_recon_block_pass when built in P2H.8
+-- TODO: wait for P2H.8
+SELECT 1;

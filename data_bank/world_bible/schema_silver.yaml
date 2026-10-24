@@ -6619,3 +6619,26 @@ tables:
   - access_decision
   questions_served:
   - M5
+- table_name: employee_360
+  spec_id: EMP360
+  description: Comprehensive 360-degree view of employee costs.
+  grain: One row per employee per month
+  primary_key:
+  - emp_id
+  - month
+  columns:
+  - name: emp_id
+    type: STRING
+    nullable: false
+    description: Employee ID
+- table_name: field_econ
+  spec_id: FLDECON
+  description: Field economics.
+  grain: One row per field
+  primary_key:
+  - field_id
+  columns:
+  - name: field_id
+    type: STRING
+    nullable: false
+    description: Field ID
