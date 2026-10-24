@@ -1,7 +1,7 @@
-# Yukti v3 Numeric Golden Eval Report — `v3-golden-1792848921`
+# Yukti v3 Numeric Golden Eval Report — `v3-golden-1792849300`
 
-- **Git SHA:** `371e64e1c603d9b0108066e76d613ba43c115d49`
-- **Timestamp (UTC):** `2026-10-24T13:35:22Z`
+- **Git SHA:** `94519a7aeaa13554aa0b138912d2e8cc94e5968c`
+- **Timestamp (UTC):** `2026-10-24T13:41:41Z`
 - **Answer Cache:** `YUKTI_ANSWER_CACHE=0` (fresh session per case/chain)
 - **Total Assertions Passed:** `263/263` (`100.0%`)
 
