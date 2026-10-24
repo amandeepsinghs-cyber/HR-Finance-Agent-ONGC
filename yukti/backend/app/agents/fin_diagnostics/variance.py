@@ -7,7 +7,6 @@ SPEC-08 §6.1, §6.5 and packet P2F.4.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-import math
 from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 
@@ -117,6 +116,8 @@ COST_LINE_PREFIXES = (
     "PL.DDA",
     "PL.FIN_COST",
     "EXP.",
+    "N36.",
+    "N37.",
 )
 
 # Core 10 drivers in the PBT bridge
@@ -182,13 +183,15 @@ def _lookup_row(
     sub = df
     if "scope" in sub.columns:
         sub = sub[sub["scope"] == scope]
+    if "period_type" in sub.columns:
+        sub = sub[sub["period_type"] == "annual"]
     if "verified" in sub.columns:
         sub = sub[sub["verified"] == True]
     if "is_latest_vintage" in sub.columns:
         sub = sub[sub["is_latest_vintage"] == True]
 
     fy_col = "fiscal_year" if "fiscal_year" in sub.columns else ("fy" if "fy" in sub.columns else None)
-    if fy_col:
+    if fy_col and not sub.empty:
         sub = sub[sub[fy_col].astype(str).str.upper() == fy.upper()]
 
     lc_col = "line_code" if "line_code" in sub.columns else None
@@ -199,9 +202,13 @@ def _lookup_row(
         match = sub[sub[lc_col] == lc]
         if not match.empty:
             row = match.iloc[0]
-            val_col = "value_inr_cr" if "value_inr_cr" in row else ("value" if "value" in row else None)
-            if val_col and pd.notna(row[val_col]):
-                val = float(row[val_col])
+            val: Optional[float] = None
+            for col in ("value_inr_cr", "value", "value_native"):
+                if col in row and pd.notna(row[col]):
+                    val = float(row[col])
+                    break
+
+            if val is not None:
                 src_doc = str(row.get("source_doc", "")).strip() if pd.notna(row.get("source_doc")) else ""
                 src_page = (
                     str(row.get("source_page_label", row.get("source_page", ""))).strip()
@@ -240,27 +247,46 @@ def attribute(
     if norm_code == "PL.PBT":
         return pbt_bridge(df, fy_to, fy_from, scope).rows
 
+    if norm_code == "PL.PAT":
+        bridge = pbt_bridge(df, fy_to, fy_from, scope)
+        rows_pat = list(bridge.rows)
+        t_to, l_t_to = _lookup_row(df, "PL.TAX", fy_to, scope)
+        t_from, l_t_from = _lookup_row(df, "PL.TAX", fy_from, scope)
+        if t_to is not None and t_from is not None:
+            tax_delta = round(round(t_to, 1) - round(t_from, 1), 1)
+            pbt_imp = round(-tax_delta, 1)
+            rows_pat.append(VarianceRow(
+                fy_from=fy_from, fy_to=fy_to, scope=scope, line_code="PL.TAX",
+                delta_inr_cr=tax_delta, component="sub_line", impact_inr_cr=tax_delta,
+                impact_on_pbt_inr_cr=pbt_imp, method="M-TAX", inputs=[l_t_from, l_t_to],
+                coverage="full",
+            ))
+        rows_pat.sort(key=lambda r: (-abs(r.impact_on_pbt_inr_cr), r.line_code, r.component))
+        for idx, r in enumerate(rows_pat, 1):
+            r.rank = idx
+        return rows_pat
+
     # Look up base values for line_code
     val_to, lineage_to = _lookup_row(df, [line_code, norm_code], fy_to, scope)
     val_from, lineage_from = _lookup_row(df, [line_code, norm_code], fy_from, scope)
 
     if val_to is None or val_from is None:
-        # Check if line_code can be synthesized from child lines (e.g. PL.OTHER_INCOME or LEVY.TOTAL)
+        # Check if line_code can be synthesized from child lines (e.g. PL.OTHER_INCOME)
         if norm_code == "PL.OTHER_INCOME":
             d_to, l_d_to = _lookup_row(df, "PL.DIVIDEND_INCOME_10YR", fy_to, scope)
             o_to, l_o_to = _lookup_row(df, "PL.OTHER_NON_OP_INCOME_10YR", fy_to, scope)
             d_from, l_d_from = _lookup_row(df, "PL.DIVIDEND_INCOME_10YR", fy_from, scope)
             o_from, l_o_from = _lookup_row(df, "PL.OTHER_NON_OP_INCOME_10YR", fy_from, scope)
             if all(v is not None for v in [d_to, o_to, d_from, o_from]):
-                val_to = d_to + o_to
-                val_from = d_from + o_from
+                val_to = round(d_to, 1) + round(o_to, 1)
+                val_from = round(d_from, 1) + round(o_from, 1)
                 lineage_to = {"line_code": "PL.OTHER_INCOME", "fy": fy_to, "value": val_to, "source": "derived"}
                 lineage_from = {"line_code": "PL.OTHER_INCOME", "fy": fy_from, "value": val_from, "source": "derived"}
 
     if val_to is None or val_from is None:
         return []
 
-    delta = round(val_to - val_from, 1)
+    delta = round(round(val_to, 1) - round(val_from, 1), 1)
     base_inputs = [i for i in [lineage_from, lineage_to] if i]
     is_cost = _is_cost_line(norm_code)
     cost_factor = -1.0 if is_cost else 1.0
@@ -285,13 +311,10 @@ def attribute(
         fx_from, l_fx_from = _lookup_row(df, "FX.USD_INR", fy_from, scope)
 
         if all(v is not None for v in [q_to, q_from, p_to, p_from, fx_to, fx_from]):
-            # M-REV-PVF
-            delta_q = q_to - q_from
-            delta_p = p_to - p_from
-            delta_fx = fx_to - fx_from
-            vol_imp = round(delta_q * p_from * fx_from, 1)
-            price_imp = round(q_to * delta_p * fx_from, 1)
-            fx_imp = round(q_to * p_to * delta_fx, 1)
+            # M-REV-PVF: ensure sum equals delta identically
+            vol_imp = round((q_to - q_from) * p_from * fx_from, 1)
+            price_imp = round(q_to * (p_to - p_from) * fx_from, 1)
+            fx_imp = round(delta - vol_imp - price_imp, 1)
             inputs = base_inputs + [l_q_from, l_q_to, l_p_from, l_p_to, l_fx_from, l_fx_to]
 
             rows.append(VarianceRow(
@@ -354,7 +377,7 @@ def attribute(
             c_to, l_c_to = _lookup_row(df, c_code, fy_to, scope)
             c_from, l_c_from = _lookup_row(df, c_code, fy_from, scope)
             if c_to is not None and c_from is not None:
-                c_delta = round(c_to - c_from, 1)
+                c_delta = round(round(c_to, 1) - round(c_from, 1), 1)
                 sub_sum += c_delta
                 rows.append(VarianceRow(
                     fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=c_code,
@@ -379,9 +402,8 @@ def attribute(
         b_from, l_b_from = _lookup_row(df, base_code, fy_from, scope)
         if b_to is not None and b_from is not None and b_from > 0 and b_to > 0:
             rate_from = val_from / b_from
-            rate_to = val_to / b_to
             base_imp = round((b_to - b_from) * rate_from, 1)
-            rate_imp = round((rate_to - rate_from) * b_to, 1)
+            rate_imp = round(delta - base_imp, 1)  # closes exactly to delta
             inputs = base_inputs + [l_b_from, l_b_to]
             rows.append(VarianceRow(
                 fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=line_code,
@@ -409,7 +431,7 @@ def attribute(
             c_to, l_c_to = _lookup_row(df, c_code, fy_to, scope)
             c_from, l_c_from = _lookup_row(df, c_code, fy_from, scope)
             if c_to is not None and c_from is not None:
-                c_delta = round(c_to - c_from, 1)
+                c_delta = round(round(c_to, 1) - round(c_from, 1), 1)
                 sub_sum += c_delta
                 rows.append(VarianceRow(
                     fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=c_code,
@@ -434,7 +456,7 @@ def attribute(
             c_to, l_c_to = _lookup_row(df, c_code, fy_to, scope)
             c_from, l_c_from = _lookup_row(df, c_code, fy_from, scope)
             if c_to is not None and c_from is not None:
-                c_delta = round(c_to - c_from, 1)
+                c_delta = round(round(c_to, 1) - round(c_from, 1), 1)
                 sub_sum += c_delta
                 rows.append(VarianceRow(
                     fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=c_code,
@@ -459,7 +481,7 @@ def attribute(
             c_to, l_c_to = _lookup_row(df, c_code, fy_to, scope)
             c_from, l_c_from = _lookup_row(df, c_code, fy_from, scope)
             if c_to is not None and c_from is not None:
-                c_delta = round(c_to - c_from, 1)
+                c_delta = round(round(c_to, 1) - round(c_from, 1), 1)
                 sub_sum += c_delta
                 rows.append(VarianceRow(
                     fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=c_code,
@@ -476,7 +498,86 @@ def attribute(
                 inputs=base_inputs, coverage="partial",
             ))
 
-    # 9. One-off lines
+    # 9. DD&A (Note 37 components: Depletion, Depr ROU, Amort, Impairment)
+    elif norm_code == "PL.DDA":
+        note37_children = [
+            ("N37.DEPLETION", "Depletion"),
+            ("N37.DEPR_ROU", "Depreciation of Right-of-Use Assets"),
+            ("N37.AMORT", "Amortisation of Intangibles"),
+            ("N37.IMPAIR", "Impairment of Property, Plant & Equipment"),
+        ]
+        found_children = False
+        sub_sum = 0.0
+        for c_code, _ in note37_children:
+            c_to, l_c_to = _lookup_row(df, c_code, fy_to, scope)
+            c_from, l_c_from = _lookup_row(df, c_code, fy_from, scope)
+            if c_to is not None and c_from is not None:
+                found_children = True
+                c_delta = round(round(c_to, 1) - round(c_from, 1), 1)
+                sub_sum += c_delta
+                rows.append(VarianceRow(
+                    fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=c_code,
+                    delta_inr_cr=c_delta, component="sub_line", impact_inr_cr=c_delta,
+                    impact_on_pbt_inr_cr=round(-c_delta, 1), method="M-SUB",
+                    inputs=[l_c_from, l_c_to], coverage="full",
+                ))
+        if found_children:
+            residual = round(delta - sub_sum, 1)
+            if abs(residual) > 0.05:
+                rows.append(VarianceRow(
+                    fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=line_code,
+                    delta_inr_cr=delta, component="other_unexplained", impact_inr_cr=residual,
+                    impact_on_pbt_inr_cr=round(-residual, 1), method="other_unexplained",
+                    inputs=base_inputs, coverage="partial",
+                ))
+        else:
+            rows.append(VarianceRow(
+                fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=line_code,
+                delta_inr_cr=delta, component="sub_line", impact_inr_cr=delta,
+                impact_on_pbt_inr_cr=round(-delta, 1), method="M-SUB",
+                inputs=base_inputs, coverage="full",
+            ))
+
+    # 10. Finance Costs (Note 36 components: Unwind Decom, Unwind Lease, Interest)
+    elif norm_code == "PL.FIN_COST":
+        note36_children = [
+            ("N36.UNWIND_DECOM", "Decommissioning unwinding"),
+            ("N36.UNWIND_LEASE", "Lease interest unwinding"),
+            ("N36.BORROW_INT", "Borrowing interest expense"),
+        ]
+        found_children = False
+        sub_sum = 0.0
+        for c_code, _ in note36_children:
+            c_to, l_c_to = _lookup_row(df, c_code, fy_to, scope)
+            c_from, l_c_from = _lookup_row(df, c_code, fy_from, scope)
+            if c_to is not None and c_from is not None:
+                found_children = True
+                c_delta = round(round(c_to, 1) - round(c_from, 1), 1)
+                sub_sum += c_delta
+                rows.append(VarianceRow(
+                    fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=c_code,
+                    delta_inr_cr=c_delta, component="sub_line", impact_inr_cr=c_delta,
+                    impact_on_pbt_inr_cr=round(-c_delta, 1), method="M-SUB",
+                    inputs=[l_c_from, l_c_to], coverage="full",
+                ))
+        if found_children:
+            residual = round(delta - sub_sum, 1)
+            if abs(residual) > 0.05:
+                rows.append(VarianceRow(
+                    fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=line_code,
+                    delta_inr_cr=delta, component="other_unexplained", impact_inr_cr=residual,
+                    impact_on_pbt_inr_cr=round(-residual, 1), method="other_unexplained",
+                    inputs=base_inputs, coverage="partial",
+                ))
+        else:
+            rows.append(VarianceRow(
+                fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=line_code,
+                delta_inr_cr=delta, component="sub_line", impact_inr_cr=delta,
+                impact_on_pbt_inr_cr=round(-delta, 1), method="M-SUB",
+                inputs=base_inputs, coverage="full",
+            ))
+
+    # 11. One-off lines
     elif norm_code in (
         "PL.PROVISIONS_WRITEOFF",
         "PL.EXCHANGE_LOSS_10YR",
@@ -490,15 +591,14 @@ def attribute(
             impact_on_pbt_inr_cr=pbt_imp, method="M-ONEOFF", inputs=base_inputs, coverage="full",
         ))
 
-    # 10. Operating Expenses (M-UNIT if boe available, else degrade)
+    # 12. Operating Expenses (M-UNIT if boe available, else degrade)
     elif norm_code == "PL.OPEX_10YR":
         boe_to, l_boe_to = _lookup_row(df, ["PROD.TOTAL_BOE", "QTY.TOTAL_BOE"], fy_to, scope)
         boe_from, l_boe_from = _lookup_row(df, ["PROD.TOTAL_BOE", "QTY.TOTAL_BOE"], fy_from, scope)
         if boe_to is not None and boe_from is not None and boe_from > 0 and boe_to > 0:
             unit_from = val_from / boe_from
-            unit_to = val_to / boe_to
             act_imp = round((boe_to - boe_from) * unit_from, 1)
-            unit_imp = round((unit_to - unit_from) * boe_to, 1)
+            unit_imp = round(delta - act_imp, 1)  # closes exactly to delta
             inputs = base_inputs + [l_boe_from, l_boe_to]
             rows.append(VarianceRow(
                 fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=line_code,
@@ -518,17 +618,15 @@ def attribute(
                 inputs=base_inputs, coverage="partial",
             ))
 
-    # 11. Tax (M-TAX)
+    # 13. Tax (M-TAX)
     elif norm_code == "PL.TAX":
         pbt_to, l_pbt_to = _lookup_row(df, "PL.PBT", fy_to, scope)
         pbt_from, l_pbt_from = _lookup_row(df, "PL.PBT", fy_from, scope)
         if pbt_to is not None and pbt_from is not None and pbt_from > 0 and pbt_to > 0:
             t_from = val_from / pbt_from
-            t_to = val_to / pbt_to
             delta_pbt = pbt_to - pbt_from
-            delta_t = t_to - t_from
             base_imp = round(delta_pbt * t_from, 1)
-            rate_imp = round(delta_t * pbt_to, 1)
+            rate_imp = round(delta - base_imp, 1)  # closes exactly to delta
             inputs = base_inputs + [l_pbt_from, l_pbt_to]
             rows.append(VarianceRow(
                 fy_from=fy_from, fy_to=fy_to, scope=scope, line_code=line_code,
@@ -548,7 +646,7 @@ def attribute(
                 inputs=base_inputs, coverage="partial",
             ))
 
-    # 12. Default fallback
+    # 14. Default fallback
     else:
         pbt_imp = round(cost_factor * delta, 1)
         rows.append(VarianceRow(
@@ -584,8 +682,8 @@ def pbt_bridge(
     if pbt_to is None or pbt_from is None:
         raise BridgeDoesNotClose(f"Missing PL.PBT in {fy_from} or {fy_to}")
 
-    start_pbt = float(pbt_from)
-    end_pbt = float(pbt_to)
+    start_pbt = round(float(pbt_from), 1)
+    end_pbt = round(float(pbt_to), 1)
     delta_pbt = round(end_pbt - start_pbt, 1)
 
     bridge_rows: List[VarianceRow] = []
@@ -594,15 +692,15 @@ def pbt_bridge(
         v_to, l_to = _lookup_row(df, aliases, fy_to, scope)
         v_from, l_from = _lookup_row(df, aliases, fy_from, scope)
 
-        # Fallback for PL.OTHER_INCOME if not explicitly present as a single line
-        if (v_to is None or v_from is None) and canonical_code == "PL.OTHER_INCOME":
+        # Prefer 10-year summary children for PL.OTHER_INCOME if available (fixes P2F4-B2)
+        if canonical_code == "PL.OTHER_INCOME":
             d_to, l_d_to = _lookup_row(df, "PL.DIVIDEND_INCOME_10YR", fy_to, scope)
             o_to, l_o_to = _lookup_row(df, "PL.OTHER_NON_OP_INCOME_10YR", fy_to, scope)
             d_from, l_d_from = _lookup_row(df, "PL.DIVIDEND_INCOME_10YR", fy_from, scope)
             o_from, l_o_from = _lookup_row(df, "PL.OTHER_NON_OP_INCOME_10YR", fy_from, scope)
             if all(x is not None for x in [d_to, o_to, d_from, o_from]):
-                v_to = d_to + o_to
-                v_from = d_from + o_from
+                v_to = round(d_to, 1) + round(o_to, 1)
+                v_from = round(d_from, 1) + round(o_from, 1)
                 l_to = {"line_code": canonical_code, "fy": fy_to, "value": v_to, "source": "derived"}
                 l_from = {"line_code": canonical_code, "fy": fy_from, "value": v_from, "source": "derived"}
 
@@ -627,7 +725,8 @@ def pbt_bridge(
                 l_from = {"line_code": canonical_code, "fy": fy_from, "value": v_from, "source": "derived"}
 
         if v_to is not None and v_from is not None:
-            line_delta = round(v_to - v_from, 1)
+            # Compute 1-dp bridge delta: round(round(v_to, 1) - round(v_from, 1), 1)
+            line_delta = round(round(v_to, 1) - round(v_from, 1), 1)
             is_cost = _is_cost_line(canonical_code)
             pbt_impact = round(-line_delta if is_cost else line_delta, 1)
             inputs = [i for i in [l_from, l_to] if i]
@@ -652,9 +751,12 @@ def pbt_bridge(
     # Also check for exceptional items
     exc_to, l_exc_to = _lookup_row(df, "PL.EXCEPTIONAL", fy_to, scope)
     exc_from, l_exc_from = _lookup_row(df, "PL.EXCEPTIONAL", fy_from, scope)
-    if exc_to is not None and exc_from is not None:
-        exc_delta = round(exc_to - exc_from, 1)
+    if exc_to is not None or exc_from is not None:
+        e_to = round(float(exc_to or 0.0), 1)
+        e_from = round(float(exc_from or 0.0), 1)
+        exc_delta = round(e_to - e_from, 1)
         if abs(exc_delta) > 0.05:
+            inputs = [i for i in [l_exc_from, l_exc_to] if i]
             bridge_rows.append(VarianceRow(
                 fy_from=fy_from,
                 fy_to=fy_to,
@@ -665,7 +767,7 @@ def pbt_bridge(
                 impact_inr_cr=exc_delta,
                 impact_on_pbt_inr_cr=exc_delta,
                 method="M-BRIDGE",
-                inputs=[l_exc_from, l_exc_to],
+                inputs=inputs,
                 coverage="full",
             ))
 

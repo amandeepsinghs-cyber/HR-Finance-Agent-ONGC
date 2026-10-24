@@ -841,11 +841,54 @@ ORDER BY fiscal_year ASC"""
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
+        from app.config import v3_field_enabled
         if is_multi_fy:
             lo = p.from_ or "FY17"
             hi = p.to or "FY26"
             if hi > "FY26":
                 hi = "FY26"
+            
+            if v3_field_enabled("statement"):
+                sql = f"""SELECT
+  display_order AS line_order,
+  line_code,
+  display_name,
+  display_name AS line_item,
+  level,
+  line_kind,
+  section,
+  COALESCE(ar_note_ref_typical, schedule3_ref, '') AS note_ref,
+  fiscal_year,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS value_inr_cr,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS amount_cr,
+  is_restated,
+  footnote_marker,
+  REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  source_page_label,
+  source_system
+FROM {_q(_V_TREND_LATEST)}
+WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND source_table = 'standalone_pnl'
+ORDER BY display_order ASC, fiscal_year DESC"""
+                return CompiledQuery(
+                    sql=sql,
+                    subject="corporate",
+                    metric="pnl_statement",
+                    metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
+                    unit="inr_cr",
+                    source="template:pnl_statement",
+                    tables=[_V_TREND_LATEST],
+                    dims=[],
+                    value_columns=["value_inr_cr"],
+                    notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
+                    effective_period={"from": lo, "to": hi},
+                    grain="aggregate",
+                    data_classes=["general"],
+                    aggregation="ratio" # flow handled in presenter
+                )
+
             sql = f"""SELECT
   fiscal_year,
   MAX(IF(scope = 'standalone' AND line_code = 'PL.REV_OPS', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS revenue_from_ops_cr,
@@ -962,11 +1005,54 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
+        from app.config import v3_field_enabled
         if is_multi_fy:
             lo = p.from_ or "FY17"
             hi = p.to or "FY26"
             if hi > "FY26":
                 hi = "FY26"
+            
+            if v3_field_enabled("statement"):
+                sql = f"""SELECT
+  display_order AS line_order,
+  line_code,
+  display_name,
+  display_name AS line_item,
+  level,
+  line_kind,
+  section,
+  COALESCE(ar_note_ref_typical, schedule3_ref, '') AS note_ref,
+  fiscal_year,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS value_inr_cr,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS amount_cr,
+  is_restated,
+  footnote_marker,
+  REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  source_page_label,
+  source_system
+FROM {_q(_V_TREND_LATEST)}
+WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND source_table = 'standalone_pnl'
+ORDER BY display_order ASC, fiscal_year DESC"""
+                return CompiledQuery(
+                    sql=sql,
+                    subject="corporate",
+                    metric="pnl_statement",
+                    metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
+                    unit="inr_cr",
+                    source="template:pnl_statement",
+                    tables=[_V_TREND_LATEST],
+                    dims=[],
+                    value_columns=["value_inr_cr"],
+                    notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
+                    effective_period={"from": lo, "to": hi},
+                    grain="aggregate",
+                    data_classes=["general"],
+                    aggregation="ratio" # flow handled in presenter
+                )
+
             sql = f"""SELECT
   fiscal_year,
   MAX(IF(scope = 'standalone' AND line_code = 'BS.TOTAL_ASSETS', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS total_assets_cr,
@@ -1078,11 +1164,54 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
+        from app.config import v3_field_enabled
         if is_multi_fy:
             lo = p.from_ or "FY17"
             hi = p.to or "FY26"
             if hi > "FY26":
                 hi = "FY26"
+            
+            if v3_field_enabled("statement"):
+                sql = f"""SELECT
+  display_order AS line_order,
+  line_code,
+  display_name,
+  display_name AS line_item,
+  level,
+  line_kind,
+  section,
+  COALESCE(ar_note_ref_typical, schedule3_ref, '') AS note_ref,
+  fiscal_year,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS value_inr_cr,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS amount_cr,
+  is_restated,
+  footnote_marker,
+  REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  source_page_label,
+  source_system
+FROM {_q(_V_TREND_LATEST)}
+WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND source_table = 'standalone_pnl'
+ORDER BY display_order ASC, fiscal_year DESC"""
+                return CompiledQuery(
+                    sql=sql,
+                    subject="corporate",
+                    metric="pnl_statement",
+                    metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
+                    unit="inr_cr",
+                    source="template:pnl_statement",
+                    tables=[_V_TREND_LATEST],
+                    dims=[],
+                    value_columns=["value_inr_cr"],
+                    notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
+                    effective_period={"from": lo, "to": hi},
+                    grain="aggregate",
+                    data_classes=["general"],
+                    aggregation="ratio" # flow handled in presenter
+                )
+
             sql = f"""SELECT
   fiscal_year,
   MAX(IF(scope = 'standalone' AND line_code = 'CF.CFO', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS operating_cash_flow_cr,
@@ -1190,11 +1319,54 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
+        from app.config import v3_field_enabled
         if is_multi_fy:
             lo = p.from_ or "FY17"
             hi = p.to or "FY26"
             if hi > "FY26":
                 hi = "FY26"
+            
+            if v3_field_enabled("statement"):
+                sql = f"""SELECT
+  display_order AS line_order,
+  line_code,
+  display_name,
+  display_name AS line_item,
+  level,
+  line_kind,
+  section,
+  COALESCE(ar_note_ref_typical, schedule3_ref, '') AS note_ref,
+  fiscal_year,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS value_inr_cr,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS amount_cr,
+  is_restated,
+  footnote_marker,
+  REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  source_page_label,
+  source_system
+FROM {_q(_V_TREND_LATEST)}
+WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND source_table = 'standalone_pnl'
+ORDER BY display_order ASC, fiscal_year DESC"""
+                return CompiledQuery(
+                    sql=sql,
+                    subject="corporate",
+                    metric="pnl_statement",
+                    metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
+                    unit="inr_cr",
+                    source="template:pnl_statement",
+                    tables=[_V_TREND_LATEST],
+                    dims=[],
+                    value_columns=["value_inr_cr"],
+                    notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
+                    effective_period={"from": lo, "to": hi},
+                    grain="aggregate",
+                    data_classes=["general"],
+                    aggregation="ratio" # flow handled in presenter
+                )
+
             sql = f"""SELECT
   fiscal_year,
   MAX(IF(scope = 'standalone' AND line_code = 'RATIO.PBIDT_MARGIN_PCT', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS ebitda_margin_pct,
@@ -1517,9 +1689,9 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                             "tax_expense_cr": _lv("standalone", f_yr, "PL.TAX"),
                             "standalone_pat_cr": _lv("standalone", f_yr, "PL.PAT"),
                             "consolidated_pat_cr": _lv("consolidated", f_yr, "PL.PAT"),
-                            "is_restated": bool(p_rec["is_restated"]) if p_rec is not None else False,
-                            "source_doc": _norm_doc(p_rec["source_doc"]) if p_rec is not None else None,
-                            "source_page_label": _norm_str(p_rec["source_page_label"]) if p_rec is not None else None,
+                            "is_restated": bool(p_rec.get("is_restated")) if p_rec is not None else False,
+                            "source_doc": _norm_doc(p_rec.get("source_doc")) if p_rec is not None else None,
+                            "source_page_label": _norm_str(p_rec.get("source_page_label")) if p_rec is not None else None,
                         })
                     elif compiled.metric == "balance_sheet":
                         p_rec = lkp.get(("standalone", f_yr, "BS.TOTAL_ASSETS"))
@@ -1536,9 +1708,9 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                             "total_debt_cr": _lv("standalone", f_yr, "BS.BORROW_TOTAL_10YR"),
                             "abandonment_provision_cr": _lv("standalone", f_yr, "BS.PROV_NC"),
                             "total_liabilities_cr": _lv("standalone", f_yr, "BS.LIAB.TOTAL"),
-                            "is_restated": bool(p_rec["is_restated"]) if p_rec is not None else False,
-                            "source_doc": _norm_doc(p_rec["source_doc"]) if p_rec is not None else None,
-                            "source_page_label": _norm_str(p_rec["source_page_label"]) if p_rec is not None else None,
+                            "is_restated": bool(p_rec.get("is_restated")) if p_rec is not None else False,
+                            "source_doc": _norm_doc(p_rec.get("source_doc")) if p_rec is not None else None,
+                            "source_page_label": _norm_str(p_rec.get("source_page_label")) if p_rec is not None else None,
                         })
                     elif compiled.metric == "cash_flow_statement":
                         p_rec = lkp.get(("standalone", f_yr, "CF.CFO"))
@@ -1553,9 +1725,9 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                             "free_cash_flow_cr": round(cfo_v - abs(capex_v or 0.0), 2) if cfo_v is not None else None,
                             "net_cash_change_cr": _lv("standalone", f_yr, "CF.NET_CHANGE_CCE"),
                             "closing_cash_cr": _lv("standalone", f_yr, "CF.CCE_CLOSE"),
-                            "is_restated": bool(p_rec["is_restated"]) if p_rec is not None else False,
-                            "source_doc": _norm_doc(p_rec["source_doc"]) if p_rec is not None else None,
-                            "source_page_label": _norm_str(p_rec["source_page_label"]) if p_rec is not None else None,
+                            "is_restated": bool(p_rec.get("is_restated")) if p_rec is not None else False,
+                            "source_doc": _norm_doc(p_rec.get("source_doc")) if p_rec is not None else None,
+                            "source_page_label": _norm_str(p_rec.get("source_page_label")) if p_rec is not None else None,
                         })
                     elif compiled.metric == "financial_ratios":
                         p_rec = lkp.get(("standalone", f_yr, "RATIO.ROCE"))
@@ -1569,9 +1741,9 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                             "current_ratio": _lv("standalone", f_yr, "RATIO.CURRENT"),
                             "eps_basic_inr": _lv("standalone", f_yr, "PL.EPS_BASIC") or _lv("standalone", f_yr, "RATIO.EPS"),
                             "dividend_per_share_inr": _lv("standalone", f_yr, "RATIO.DPS"),
-                            "is_restated": bool(p_rec["is_restated"]) if p_rec is not None else False,
-                            "source_doc": _norm_doc(p_rec["source_doc"]) if p_rec is not None else None,
-                            "source_page_label": _norm_str(p_rec["source_page_label"]) if p_rec is not None else None,
+                            "is_restated": bool(p_rec.get("is_restated")) if p_rec is not None else False,
+                            "source_doc": _norm_doc(p_rec.get("source_doc")) if p_rec is not None else None,
+                            "source_page_label": _norm_str(p_rec.get("source_page_label")) if p_rec is not None else None,
                         })
                 if rows:
                     return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
@@ -1697,11 +1869,54 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
+        from app.config import v3_field_enabled
         if is_multi_fy:
             lo = p.from_ or "FY17"
             hi = p.to or "FY26"
             if hi > "FY26":
                 hi = "FY26"
+            
+            if v3_field_enabled("statement"):
+                sql = f"""SELECT
+  display_order AS line_order,
+  line_code,
+  display_name,
+  display_name AS line_item,
+  level,
+  line_kind,
+  section,
+  COALESCE(ar_note_ref_typical, schedule3_ref, '') AS note_ref,
+  fiscal_year,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS value_inr_cr,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS amount_cr,
+  is_restated,
+  footnote_marker,
+  REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  source_page_label,
+  source_system
+FROM {_q(_V_TREND_LATEST)}
+WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND source_table = 'standalone_pnl'
+ORDER BY display_order ASC, fiscal_year DESC"""
+                return CompiledQuery(
+                    sql=sql,
+                    subject="corporate",
+                    metric="pnl_statement",
+                    metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
+                    unit="inr_cr",
+                    source="template:pnl_statement",
+                    tables=[_V_TREND_LATEST],
+                    dims=[],
+                    value_columns=["value_inr_cr"],
+                    notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
+                    effective_period={"from": lo, "to": hi},
+                    grain="aggregate",
+                    data_classes=["general"],
+                    aggregation="ratio" # flow handled in presenter
+                )
+
             sql = f"""SELECT
   fiscal_year,
   ROUND(gross_revenue_inr_cr, 0) AS revenue_from_ops_cr,
@@ -1782,11 +1997,54 @@ ORDER BY line_order ASC"""
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
+        from app.config import v3_field_enabled
         if is_multi_fy:
             lo = p.from_ or "FY17"
             hi = p.to or "FY26"
             if hi > "FY26":
                 hi = "FY26"
+            
+            if v3_field_enabled("statement"):
+                sql = f"""SELECT
+  display_order AS line_order,
+  line_code,
+  display_name,
+  display_name AS line_item,
+  level,
+  line_kind,
+  section,
+  COALESCE(ar_note_ref_typical, schedule3_ref, '') AS note_ref,
+  fiscal_year,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS value_inr_cr,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS amount_cr,
+  is_restated,
+  footnote_marker,
+  REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  source_page_label,
+  source_system
+FROM {_q(_V_TREND_LATEST)}
+WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND source_table = 'standalone_pnl'
+ORDER BY display_order ASC, fiscal_year DESC"""
+                return CompiledQuery(
+                    sql=sql,
+                    subject="corporate",
+                    metric="pnl_statement",
+                    metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
+                    unit="inr_cr",
+                    source="template:pnl_statement",
+                    tables=[_V_TREND_LATEST],
+                    dims=[],
+                    value_columns=["value_inr_cr"],
+                    notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
+                    effective_period={"from": lo, "to": hi},
+                    grain="aggregate",
+                    data_classes=["general"],
+                    aggregation="ratio" # flow handled in presenter
+                )
+
             sql = f"""SELECT
   fiscal_year,
   ROUND(total_assets_inr_cr, 0) AS total_assets_cr,
@@ -1861,11 +2119,54 @@ ORDER BY line_order ASC"""
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
+        from app.config import v3_field_enabled
         if is_multi_fy:
             lo = p.from_ or "FY17"
             hi = p.to or "FY26"
             if hi > "FY26":
                 hi = "FY26"
+            
+            if v3_field_enabled("statement"):
+                sql = f"""SELECT
+  display_order AS line_order,
+  line_code,
+  display_name,
+  display_name AS line_item,
+  level,
+  line_kind,
+  section,
+  COALESCE(ar_note_ref_typical, schedule3_ref, '') AS note_ref,
+  fiscal_year,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS value_inr_cr,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS amount_cr,
+  is_restated,
+  footnote_marker,
+  REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  source_page_label,
+  source_system
+FROM {_q(_V_TREND_LATEST)}
+WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND source_table = 'standalone_pnl'
+ORDER BY display_order ASC, fiscal_year DESC"""
+                return CompiledQuery(
+                    sql=sql,
+                    subject="corporate",
+                    metric="pnl_statement",
+                    metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
+                    unit="inr_cr",
+                    source="template:pnl_statement",
+                    tables=[_V_TREND_LATEST],
+                    dims=[],
+                    value_columns=["value_inr_cr"],
+                    notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
+                    effective_period={"from": lo, "to": hi},
+                    grain="aggregate",
+                    data_classes=["general"],
+                    aggregation="ratio" # flow handled in presenter
+                )
+
             sql = f"""SELECT
   fiscal_year,
   ROUND(operating_cash_flow_inr_cr, 0) AS operating_cash_flow_cr,
@@ -1936,11 +2237,54 @@ ORDER BY line_order ASC"""
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
+        from app.config import v3_field_enabled
         if is_multi_fy:
             lo = p.from_ or "FY17"
             hi = p.to or "FY26"
             if hi > "FY26":
                 hi = "FY26"
+            
+            if v3_field_enabled("statement"):
+                sql = f"""SELECT
+  display_order AS line_order,
+  line_code,
+  display_name,
+  display_name AS line_item,
+  level,
+  line_kind,
+  section,
+  COALESCE(ar_note_ref_typical, schedule3_ref, '') AS note_ref,
+  fiscal_year,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS value_inr_cr,
+  ROUND(COALESCE(value_inr_cr, value), 2) AS amount_cr,
+  is_restated,
+  footnote_marker,
+  REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  source_page_label,
+  source_system
+FROM {_q(_V_TREND_LATEST)}
+WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND source_table = 'standalone_pnl'
+ORDER BY display_order ASC, fiscal_year DESC"""
+                return CompiledQuery(
+                    sql=sql,
+                    subject="corporate",
+                    metric="pnl_statement",
+                    metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
+                    unit="inr_cr",
+                    source="template:pnl_statement",
+                    tables=[_V_TREND_LATEST],
+                    dims=[],
+                    value_columns=["value_inr_cr"],
+                    notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
+                    effective_period={"from": lo, "to": hi},
+                    grain="aggregate",
+                    data_classes=["general"],
+                    aggregation="ratio" # flow handled in presenter
+                )
+
             sql = f"""SELECT
   fiscal_year,
   ROUND(ebitda_margin_pct, 1) AS ebitda_margin_pct,

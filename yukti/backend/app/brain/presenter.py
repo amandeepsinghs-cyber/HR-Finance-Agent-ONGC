@@ -12,6 +12,7 @@ from app.brain.compiler import CompiledQuery, QueryResult
 from app.brain.query_spec import QuerySpec
 from app.semantic.entities import get_entities
 from app.tools.chart_rules import build_chart_spec, select_chart_kind
+from app.brain.statement_builder import build_statement_spec, v3_field_enabled
 
 UNIT_WORDS = {"employees": "employees", "posts": "posts", "workers": "contract workers", "inr_cr": "₹ crore",
               "inr_lakh": "₹ lakh", "usd_per_boe": "$/BOE", "inr_per_boe": "₹/BOE", "pct": "%", "years": "years", "hours": "hours",
@@ -157,6 +158,31 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             if c in by_code_map and by_code_map[c]:
                 return by_code_map[c]
         return {}
+
+
+    if compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement") and v3_field_enabled("statement"):
+        kind_map = {"pnl_statement": "pnl", "balance_sheet": "balance_sheet", "cash_flow_statement": "cash_flow"}
+        st_kind = kind_map[compiled.metric]
+        fys = sorted(list({str(r["fiscal_year"]) for r in rows if "fiscal_year" in r}), reverse=True)
+        if not fys and compiled.effective_period and "fy" in compiled.effective_period:
+            fys = [compiled.effective_period["fy"]]
+        
+        scope_str = "standalone" # default
+        for f in spec.filters:
+            if f.field == "scope":
+                scope_str = f.value[0] if isinstance(f.value, list) else f.value
+        
+        st_spec = build_statement_spec(
+            statement=st_kind,
+            rows=rows,
+            periods=fys if fys else None,
+            scope=scope_str,
+            title=title,
+            unit=compiled.unit
+        )
+        vis["type"] = "statement"
+        vis["statement"] = st_spec
+        return vis
 
     if compiled.metric == "pnl_statement" and dims and dims[0] == "line_item":
         # Single-FY Schedule III Statement of Profit & Loss (verified SSOT)

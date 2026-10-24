@@ -887,6 +887,53 @@
         }
       }
     },
+    "clarify": {
+      "type": "object",
+      "required": [
+        "question",
+        "options",
+        "slot"
+      ],
+      "properties": {
+        "slot": {
+          "enum": [
+            "fiscal_period",
+            "statement",
+            "scope",
+            "entity"
+          ]
+        },
+        "question": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "value"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "spoken": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "pending_spec": {
+          "$ref": "#/$defs/query_spec"
+        }
+      }
+    },
     "drilldown": {
       "type": "object",
       "required": [

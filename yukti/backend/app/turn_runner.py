@@ -344,6 +344,49 @@ class AgentTurnRunner:
         if is_role_switch_request(query) or (_sc_probe and _sc_probe.get("command") == "set_persona"):
             return self._role_switch_contract(query, session_state, norm_persona, principal, turn_id, det_lang, t0)
 
+        # P2F.1: Year clarification resolution
+        from app.config import v3_field_enabled
+        if v3_field_enabled("clarify") or os.getenv("YUKTI_CLARIFY_TEST", "0") == "1":
+            q_clean = query.strip().lower().rstrip("?!.")
+            last_turn = session_state.turns[-1] if getattr(session_state, "turns", None) else {}
+            clarify = last_turn.get("contract", {}).get("clarify") if last_turn else None
+            if clarify and clarify.get("slot") == "fiscal_period":
+                pending_spec = clarify.get("pending_spec")
+                if pending_spec:
+                    from app.semantic.normalize import resolve_fy, last_complete_fy, fy_of, fy_label, ANCHOR_DATE
+                    fy_resolved = resolve_fy(query)
+                    if not fy_resolved:
+                        from app.brain.coverage import get_financial_coverage_fys
+                        avail = get_financial_coverage_fys()
+                        latest = avail[-1] if avail else last_complete_fy()
+                        prev = avail[-2] if len(avail) >= 2 else fy_label(fy_of(ANCHOR_DATE) - 2)
+                        y5 = avail[-5] if len(avail) >= 5 else fy_label(fy_of(ANCHOR_DATE) - 5)
+                        y10 = avail[-10] if len(avail) >= 10 else fy_label(fy_of(ANCHOR_DATE) - 10)
+                        
+                        if any(x in q_clean for x in ["five years", "5 saal", "last 5"]):
+                            fy_resolved = {"from": y5, "to": latest}
+                        elif any(x in q_clean for x in ["ten years", "decade", "10 saal"]):
+                            fy_resolved = {"from": y10, "to": latest}
+                        elif any(x in q_clean for x in ["present year", "this year", "current", "latest", "is saal"]):
+                            fy_resolved = {"fy": latest}
+                        elif any(x in q_clean for x in ["last year", "previous year", "pichhle saal"]):
+                            fy_resolved = {"fy": prev}
+                        elif ".." in q_clean:
+                            parts = q_clean.split("..")
+                            fy_resolved = {"from": parts[0].strip().upper(), "to": parts[1].strip().upper()}
+                    if fy_resolved:
+                        if fy_resolved.get("fy"):
+                            pending_spec["period"] = {"fy": fy_resolved["fy"]}
+                        elif fy_resolved.get("from") and fy_resolved.get("to"):
+                            pending_spec["period"] = {"from": fy_resolved["from"], "to": fy_resolved["to"]}
+                        from app.brain.query_spec import QuerySpec
+                        spec_override = QuerySpec.from_contract(pending_spec)
+                        if planner_enabled():
+                            from app.brain.pipeline import run_planner_turn
+                            planned = await run_planner_turn(query, session_state, norm_persona, turn_id, det_lang, t0, spec_override=spec_override)
+                            if planned:
+                                return self._finalize_planner_contract(planned, session_state, query, t0)
+
         requested_chart_kind = extract_requested_chart_kind(query) or voice_override
 
         # 0. Conversational / Greeting / Capability Fast-Path (Warm Chief-of-Staff Persona)
