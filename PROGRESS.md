@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 06:19 UTC · branch `v3/P0-stabilise` @ `fbe523c`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 06:53 UTC · branch `v3/P0-stabilise` @ `87b8cca`
 
 > [!IMPORTANT]
-> **Overall: 47% complete (weighted)** — 26/62 steps ✅ done, 9 in flight, 27 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 12 warning(s).
+> **Overall: 48% complete (weighted)** — 27/62 steps ✅ done, 8 in flight, 27 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 18 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `██████████████░░░░░░` 71% | 7 | 1 | 0 | 3 | 1 | 0 | 12 |
+| **P1** | Real finance SSOT | `███████████████░░░░░` 77% | 8 | 1 | 0 | 2 | 1 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `██████░░░░░░░░░░░░░░` 28% | 1 | 1 | 0 | 2 | 4 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `█░░░░░░░░░░░░░░░░░░░` 4% | 0 | 0 | 0 | 1 | 5 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
@@ -25,7 +25,6 @@
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.10a | 🔍 In review | Compiler on verified rows + honest provenance (`YUKTI_FIN_SSOT_V3`) | O | Apply review findings / approve |
-| P1.10b | 🔄 In progress | Retire LLM-authored artefacts (`build_10yr_financials.py`, generated corpus, governance CSV) | F | Complete build + evidence |
 | P1.11 | 🔄 In progress | Finance golden set (P1 gate) + V20 chain (P2F gate) | F + FL | Complete build + evidence |
 | P2H.2 | 🔄 In progress | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Complete build + evidence |
 | P2H.3 | 🔍 In review | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | Apply review findings / approve |
@@ -67,7 +66,7 @@
 | V15 | FEAT-015, FEAT-026 | 🟡 🔴 | P4.5, P4.8 | 🟡 |
 | V16 | FEAT-016 | 🟡 |  | 🟡 |
 | V17 | FEAT-017, FEAT-031 | 🔴 🔴 | P2H.2 | 🔴 |
-| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.10a, P1.10b, P2H.7, P2H.8 | 🔴 |
+| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.10a, P2H.7, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
 | V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5, P2F.6 | 🔴 |
 | V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.5, P4.8 | 🟡 |
@@ -99,7 +98,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-015 Any-chart re-presentation & chart excellence | 🟡 | 0/0 |
 | FEAT-016 AI aura visual language | 🟡 | 1/1 |
 | FEAT-017 Eleven-persona matrix + function split + `self` scope | 🔴 | 1/2 |
-| FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 5/8 |
+| FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 6/8 |
 | FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 1/2 |
 | FEAT-020 Knowledge RAG over real AR text | 🔴 | 1/1 |
 | FEAT-021 Employee-360 enterprise table (realistic, reconciled) | 🟡 | 1/4 |
@@ -118,15 +117,15 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 6 · 🟠 in progress 6 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 29 total — 🔴 open 13 · 🟠 in progress 10 · ↩ regressed 0 · ✅ closed 6
+- **Important:** 31 total — 🔴 open 15 · 🟠 in progress 10 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
 
 | Bug | Status | Symptom | Closing step(s) | Step status |
 |---|---|---|---|---|
-| BUG-02 | open | BS/CF/ratios wrong (FY24 total assets 4,22,820 vs AR 4,46,021; FY25 CFO 63,180 vs 73,010;  | P0.3, P1.10b, P1.2 | P0.3:✅ P1.10b:🔄 P1.2:✅ |
-| BUG-03 | open | Same metric, three values (FY17 royalty 7,635 / 8,548 / AR 11,575) | P1.10b, P1.6 | P1.10b:🔄 P1.6:✅ |
+| BUG-02 | open | BS/CF/ratios wrong (FY24 total assets 4,22,820 vs AR 4,46,021; FY25 CFO 63,180 vs 73,010;  | P0.3, P1.10b, P1.2 | P0.3:✅ P1.10b:✅ P1.2:✅ |
+| BUG-03 | open | Same metric, three values (FY17 royalty 7,635 / 8,548 / AR 11,575) | P1.10b, P1.6 | P1.10b:✅ P1.6:✅ |
 | BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:🔍 P1.11:🔄 P5.1:⬜ P5.3:⬜ |
 | BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:🔄 |
 | BUG-07 | in_progress | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:✅ |
@@ -142,6 +141,13 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `e772869` | 2026-10-24 | P2H.2 (G4 r3 security fix): Fixed POSH policy topic classification, D-61 secondary suppression label, and tool-level table access  |
+| `15a0e8c` | 2026-10-24 | P1.11 (pre-G4) golden runner + P1 run: 21/117 |
+| `f400a3a` | 2026-10-24 | P1.10b (G4 r2 fixes): Remove archived files from Dockerfile and update landing CSV |
+| `9d52268` | 2026-10-24 | P1.10a (G4 r3 fixes): Fix insight function calls, SQL literals, and add acceptance tests |
+| `7508d87` | 2026-10-24 | P2H.2 (G4 r2 security fix): Block composite policy+named/sensitive questions and add defence-in-depth |
+| `c8c0cbe` | 2026-10-24 | P2H.5 (pre-G4): Employee-360 synthetic generator regeneration and evidence |
+| `6413d9f` | 2026-10-24 | P2H.2 (G4 r1c security fix): Fix M8/BUG-44 Hindi individual pay/APAR leak |
 | `d904f39` | 2026-10-24 | P1.10a (pre-G4): switch compiler & fallback to verified SSOT, honest provenance, and P1.6 R2-m1..m6 follow-ups |
 | `b23b178` | 2026-10-24 | P2H.2 (G4 r1b fixes): M6 (Hindi refusal fallback fixed via validate_and_repair_contract unconditionally rewriting legacy visual.no |
 | `7bfa44d` | 2026-10-24 | P2F.1 (pre-G4) frontend: ClarifySpec type (SPEC-08 §3.2) + clarify chips on text cards (latest card only; chip sends option value  |
@@ -150,16 +156,15 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `45a4016` | 2026-10-24 | P2H.2 (G4 r1 fixes) frontend: M2 blocking first-visit sign-in (no default identity, no data/ws call before a pick), M3 no CMD fall |
 | `8a387b6` | 2026-10-24 | P2H.3 (pre-G4): V19 turns 1-3 ordered levels, DELHI_GT5_CONT_V1 rule, 7-col roster & cohort store (FEAT-032/033; closes BUG-34) |
 | `5cb8a0f` | 2026-10-24 | P4.5 B2 (pre-G4) frontend: bubble (x·y·sqrt-size, size legend, ≤50 labels), sunburst (Σ-conserving tree, per-fill label contrast), |
-| `c51caf8` | 2026-10-24 | P4.5 B1 (G4 note): define isFinanceVisual before handleExport and list it in the export-listener deps |
-| `70a5a94` | 2026-10-24 | P1.6 (G4 r2 fixes): add footnote_marker for is_fallback_vintage in serving views and BQ table creation audit |
-| `b62c8a8` | 2026-10-24 | P4.6 (G4 r2 fixes): client-supplied RBAC, fail-closed download, formula injection escaping, 24h TTL sweep, voice/live turn registr |
-| `2c3c42e` | 2026-10-24 | P1.6 (G4 r2 fixes): non-tautological gates V07-V12, open conflicts, unique views, SPEC-01 schema & staging loader |
-| `ddcdbd4` | 2026-10-24 | P4.5 B1 (pre-G4) frontend: sensitivity_grid + tornado typed visuals (SPEC-09 §5 types), ECharts builders (exact ₹ cells, diverging |
-| `0a9387e` | 2026-10-24 | P2H.2 frontend: portal PersonaPicker to <body> (TopBar backdrop-blur clipped the modal); E2E report + screenshots (8 scenarios) wi |
-| `186f6d6` | 2026-10-24 | P1.11 (pre-G4) golden YAML: 61 cases (39 P1, 22 P2F) + V20 chain (6 steps) |
 
 ## 8. Integrity checks
 
+- ⚠️ BUG-02 is still open although all its steps (P0.3, P1.10b, P1.2) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-02 is still open although all its steps (P0.3, P1.10b, P1.2) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-02 is still open although all its steps (P0.3, P1.10b, P1.2) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-03 is still open although all its steps (P1.10b, P1.6) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-02 is still open although all its steps (P0.3, P1.10b, P1.2) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-03 is still open although all its steps (P1.10b, P1.6) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-07 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-27 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-28 is still in_progress although all its steps (P2H.1) are ✅ — close it in BUG_REGISTER.md.
