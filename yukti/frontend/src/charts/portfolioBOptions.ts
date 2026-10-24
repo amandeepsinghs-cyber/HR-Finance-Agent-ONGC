@@ -8,7 +8,7 @@ import * as echarts from 'echarts';
 import type { ChartPlan } from './plan';
 import { ChartTokens, px, tooltipBase, tooltipCard, anim, alpha, labelOn } from './theme';
 import { mixHex } from './financeOptions';
-import { fmtValue, humanizeKey, humanizeValue, toNumber } from './format';
+import { fmtValue, humanizeKey, humanizeValue, parseUnit, toNumber } from './format';
 
 type Opt = echarts.EChartsOption;
 
@@ -44,7 +44,7 @@ export function bubbleSize(v: number, max: number): number {
   return 8 + 40 * Math.sqrt(v / max);
 }
 
-export function bubbleOption(plan: ChartPlan, t: ChartTokens, data: Record<string, any>[], spec: { x?: string; y?: string; value?: string }): Opt {
+export function bubbleOption(plan: ChartPlan, t: ChartTokens, data: Record<string, any>[], spec: { x?: string; y?: string; value?: string; unit?: string }): Opt {
   const { x, y, size } = bubbleKeys(plan, spec);
   const maxSize = Math.max(0, ...data.map((r) => toNumber(r[size]) ?? 0));
   const label = plan.dimKey;
@@ -97,9 +97,9 @@ export function bubbleOption(plan: ChartPlan, t: ChartTokens, data: Record<strin
       formatter: (p: any) => {
         const r = data[p.dataIndex];
         return tooltipCard(t, humanizeValue(r[label]), [
-          [humanizeKey(x), String(fmtValue(toNumber(r[x]) ?? 0, plan.unit))],
-          [humanizeKey(y), String(fmtValue(toNumber(r[y]) ?? 0, plan.unit))],
-          [humanizeKey(size), String(fmtValue(toNumber(r[size]) ?? 0, plan.unit))],
+          [humanizeKey(x), String(fmtValue(toNumber(r[x]) ?? 0, parseUnit(undefined, x)))],
+          [humanizeKey(y), String(fmtValue(toNumber(r[y]) ?? 0, parseUnit(undefined, y)))],
+          [humanizeKey(size), String(fmtValue(toNumber(r[size]) ?? 0, parseUnit(spec?.unit, size)))],
         ]);
       },
     },

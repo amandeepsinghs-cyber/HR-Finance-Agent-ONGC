@@ -156,7 +156,9 @@ export function planChart(spec: ChartSpec): ChartPlan {
   } else if ((kind as string) === 'sunburst' && textKeys.length >= 2 && metricKeys.length >= 1) {
     form = 'sunburst';
   } else if ((kind as string) === 'bubble' && metricKeys.length >= 3) {
-    seriesKeys = metricKeys.slice(0, 3); // x, y, size (spec.x / spec.y / spec.value reorder below)
+    const picked = [spec.x, spec.y, spec.value].filter((k): k is string => !!k && metricKeys.includes(k));
+    const rest = metricKeys.filter((k) => !picked.includes(k));
+    seriesKeys = [...picked, ...rest].slice(0, Math.max(3, metricKeys.length));
     form = 'bubble';
   } else if (kind === 'gauge' && data.length === 1) {
     form = hasTarget ? 'gauge' : 'kpi';

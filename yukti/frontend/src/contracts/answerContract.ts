@@ -15,6 +15,7 @@ export type VisualType =
   | 'statement'
   | 'sensitivity_grid'
   | 'tornado'
+  | 'dcf_model'
   | 'actions'
   | 'kpi'
   | 'clause'
@@ -255,6 +256,79 @@ export interface ActionsSpec {
   delegation_table: DelegationRow[];
 }
 
+// ---------- P4.5 (SPEC-02 §9.1, SPEC-09 §5): DCF valuation composite ----------
+export interface DcfBridgeRow {
+  label: string;
+  value_inr_cr: number;
+  type?: 'delta' | 'total';
+  source?: string;
+}
+
+export interface DcfPerShare {
+  intrinsic_inr: number;
+  market_inr: number;
+  market_date?: string;
+  upside_pct: number;
+  /** Verdict text comes from the contract only — never hardcoded in the UI */
+  verdict: string;
+}
+
+export interface DcfTerminalSummary {
+  method: 'gordon' | 'exit_multiple';
+  g_pct: number;
+  tv_inr_cr: number;
+  pv_tv_inr_cr: number;
+  exit_multiple?: number;
+  tv_exit_inr_cr?: number;
+  implied_g_pct?: number;
+  implied_multiple?: number;
+  warning?: string | null;
+}
+
+export interface DcfWaccBuild {
+  rf_used_pct: number;
+  beta_adj: number;
+  erp_total_pct: number;
+  ke_pct: number;
+  kd_pretax_pct?: number;
+  kd_used_pct: number;
+  tax_rate_pct: number;
+  weight_equity: number;
+  weight_debt?: number;
+  wacc_pct: number;
+}
+
+export interface DcfForecastSpec {
+  years: string[];
+  lines: {
+    revenue?: number[];
+    ebit?: number[];
+    fcff: number[];
+    discount_factor: number[];
+    pv_fcff: number[];
+  };
+}
+
+export interface DcfModelSpec {
+  run_id: string;
+  engine_version?: string;
+  as_of: string;
+  scope?: string;
+  per_share: DcfPerShare;
+  wacc_build: DcfWaccBuild;
+  forecast: DcfForecastSpec;
+  terminal: DcfTerminalSummary;
+  bridge: DcfBridgeRow[];
+  sensitivity_grid: SensitivityGridSpec;
+  tornado: TornadoSpec;
+  /** Optional pre-formatted StatementSpecs if provided by presenter */
+  fcff_statement?: StatementSpec;
+  wacc_statement?: StatementSpec;
+  provenance_label?: string;
+  /** Required caption from contract: "Illustrative valuation, not investment advice." */
+  disclaimer: string;
+}
+
 // ---------- P2F.1: year / slot clarification (SPEC-08 §3.2) ----------
 export interface ClarifyOption {
   label: string; // "FY26 (latest)"
@@ -285,6 +359,8 @@ export interface VisualContainer {
   tornado?: TornadoSpec;
   /** P4.5 B2: SPEC-08 §7.3 (type = 'actions') */
   actions?: ActionsSpec;
+  /** P4.5: SPEC-02 §9.1 / SPEC-09 §5 (type = 'dcf_model') */
+  dcf_model?: DcfModelSpec;
   /** v2 (U2.1): side-by-side comparison when mode = 'compare' */
   compare?: CompareSpec;
   /** UI-only (U5.7): the answer's original rows, kept so repeated re-plots never drift */

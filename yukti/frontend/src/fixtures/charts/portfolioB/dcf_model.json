@@ -1,0 +1,231 @@
+{
+ "type": "dcf_model",
+ "mode": "replace",
+ "title": "Illustrative fixture: DCF valuation model (SPEC-02 §10 synthetic fixture)",
+ "dcf_model": {
+  "run_id": "dcf_fixture_spec02_s10",
+  "engine_version": "dcf-v1.0.0-fixture",
+  "as_of": "2026-10-23",
+  "scope": "standalone_sotp",
+  "provenance_label": "illustrative",
+  "disclaimer": "Illustrative valuation, not investment advice.",
+  "per_share": {
+   "intrinsic_inr": 205.45,
+   "market_inr": 150.0,
+   "market_date": "2026-10-22",
+   "upside_pct": 36.96,
+   "verdict": "undervalued"
+  },
+  "wacc_build": {
+   "rf_used_pct": 7.0,
+   "beta_adj": 1.13,
+   "erp_total_pct": 7.0,
+   "ke_pct": 14.94,
+   "kd_pretax_pct": 6.0,
+   "tax_rate_pct": 25.17,
+   "kd_used_pct": 4.49,
+   "weight_equity": 90.0,
+   "weight_debt": 10.0,
+   "wacc_pct": 10.0
+  },
+  "forecast": {
+   "years": [
+    "FY27E",
+    "FY28E",
+    "FY29E",
+    "FY30E",
+    "FY31E"
+   ],
+   "lines": {
+    "revenue": [
+     500.0,
+     540.0,
+     580.0,
+     620.0,
+     660.0
+    ],
+    "ebit": [
+     160.0,
+     175.0,
+     190.0,
+     205.0,
+     220.0
+    ],
+    "fcff": [
+     100.0,
+     110.0,
+     120.0,
+     130.0,
+     140.0
+    ],
+    "discount_factor": [
+     0.9091,
+     0.8264,
+     0.7513,
+     0.683,
+     0.6209
+    ],
+    "pv_fcff": [
+     90.91,
+     90.91,
+     90.16,
+     88.79,
+     86.93
+    ]
+   }
+  },
+  "terminal": {
+   "method": "gordon",
+   "g_pct": 4.0,
+   "tv_inr_cr": 2426.67,
+   "pv_tv_inr_cr": 1506.77,
+   "exit_multiple": 5.0,
+   "tv_exit_inr_cr": 1250.0,
+   "implied_g_pct": -1.08,
+   "implied_multiple": 9.71,
+   "warning": null
+  },
+  "bridge": [
+   {
+    "label": "PV of explicit FCFF",
+    "value_inr_cr": 447.7,
+    "type": "delta",
+    "source": "SPEC-02 §10 synthetic fixture"
+   },
+   {
+    "label": "PV of terminal value",
+    "value_inr_cr": 1506.77,
+    "type": "delta",
+    "source": "SPEC-02 §10 synthetic fixture"
+   },
+   {
+    "label": "Enterprise value",
+    "value_inr_cr": 1954.47,
+    "type": "total",
+    "source": "SPEC-02 §10 synthetic fixture"
+   },
+   {
+    "label": "Investments (listed + unlisted)",
+    "value_inr_cr": 300.0,
+    "type": "delta",
+    "source": "SPEC-02 §10 synthetic fixture"
+   },
+   {
+    "label": "Less: Net debt & lease liabilities",
+    "value_inr_cr": -200.0,
+    "type": "delta",
+    "source": "SPEC-02 §10 synthetic fixture"
+   },
+   {
+    "label": "Equity value",
+    "value_inr_cr": 2054.47,
+    "type": "total",
+    "source": "SPEC-02 §10 synthetic fixture"
+   }
+  ],
+  "sensitivity_grid": {
+   "row_input": {
+    "name": "WACC",
+    "unit": "%",
+    "values": [
+     4.5,
+     5.0,
+     5.5,
+     6.0,
+     6.5,
+     7.0,
+     7.5,
+     8.0,
+     8.5
+    ]
+   },
+   "col_input": {
+    "name": "Terminal g",
+    "unit": "%",
+    "values": [
+     1.0,
+     1.5,
+     2.0,
+     2.5,
+     3.0,
+     3.5,
+     4.0,
+     4.5,
+     5.0
+    ]
+   },
+   "output": {
+    "name": "Value per share",
+    "unit": "INR"
+   },
+   "cells": [
+    [144.3, 169.2, 204.0, 256.2, 343.3, 517.5, null, null, null],
+    [126.2, 145.0, 170.0, 205.0, 257.5, 345.0, 520.0, null, null],
+    [112.2, 126.9, 145.7, 170.8, 206.0, 258.8, 346.7, 522.5, null],
+    [101.0, 112.8, 127.5, 146.4, 171.7, 207.0, 260.0, 348.3, 525.0],
+    [91.8, 101.5, 113.3, 128.1, 147.1, 172.5, 208.0, 261.2, 350.0],
+    [84.2, 92.3, 102.0, 113.9, 128.8, 147.9, 173.3, 209.0, 262.5],
+    [77.8, 84.6, 92.7, 102.5, 114.4, 129.4, 148.6, 174.2, 210.0],
+    [72.3, 78.2, 85.0, 93.2, 103.0, 115.0, 130.0, 149.3, 175.0],
+    [67.5, 72.6, 78.5, 85.4, 93.6, 103.5, 115.6, 130.6, 150.0]
+   ],
+   "base": {
+    "row_idx": 4,
+    "col_idx": 4
+   },
+   "source": "Illustrative UI test fixture, not ONGC data"
+  },
+  "tornado": {
+   "output": {
+    "name": "Value per share",
+    "unit": "INR",
+    "base": 205.45
+   },
+   "source": "Illustrative UI test fixture, not ONGC data",
+   "bars": [
+    {
+     "driver": "brent",
+     "low_input": "-$10/bbl",
+     "high_input": "+$10/bbl",
+     "low_inr": 165.0,
+     "high_inr": 246.0
+    },
+    {
+     "driver": "wacc",
+     "low_input": "-1pp",
+     "high_input": "+1pp",
+     "low_inr": 250.0,
+     "high_inr": 175.0
+    },
+    {
+     "driver": "terminal_g",
+     "low_input": "-1pp",
+     "high_input": "+1pp",
+     "low_inr": 182.0,
+     "high_inr": 238.0
+    },
+    {
+     "driver": "opex_boe",
+     "low_input": "-15%",
+     "high_input": "+15%",
+     "low_inr": 223.0,
+     "high_inr": 188.0
+    },
+    {
+     "driver": "capex",
+     "low_input": "-20%",
+     "high_input": "+20%",
+     "low_inr": 218.0,
+     "high_inr": 193.0
+    },
+    {
+     "driver": "production",
+     "low_input": "-10%",
+     "high_input": "+10%",
+     "low_inr": 184.0,
+     "high_inr": 227.0
+    }
+   ]
+  }
+ }
+}

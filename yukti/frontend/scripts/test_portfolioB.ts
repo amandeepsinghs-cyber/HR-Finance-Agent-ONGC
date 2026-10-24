@@ -107,9 +107,11 @@ import bubbleFx from '../src/fixtures/charts/portfolioB/bubble.json';
 import sunFx from '../src/fixtures/charts/portfolioB/sunburst.json';
 import sankeyFx from '../src/fixtures/charts/portfolioB/sankey.json';
 import actionsFx from '../src/fixtures/charts/portfolioB/actions.json';
+import dcfFx from '../src/fixtures/charts/portfolioB/dcf_model.json';
 import { planChart } from '../src/charts/plan';
 import { bubbleOption, bubbleKeys, bubbleSize, sunburstTree, sankeyLinks, sankeyBalance, sankeyOption } from '../src/charts/portfolioBOptions';
 import { impactText } from '../src/components/renderers/ActionsCard';
+import { buildFcffStatement, buildWaccStatement, buildBridgeChartSpec } from '../src/components/renderers/DcfModelCard';
 
 console.log('portfolio B2');
 ok('bubble: x/y/size from spec, sqrt size scale, size legend, labels ≤ 50', () => {
@@ -154,6 +156,26 @@ ok('actions: impact text is a labelled range; owner hidden when absent (junior v
 });
 ok('B2 fixtures labelled illustrative', () => {
   for (const fx of [bubbleFx, sunFx, sankeyFx, actionsFx]) assert.match((fx as any).source_note, /Illustrative/);
+});
+ok('dcf_model: FCFF & WACC statements, EV→Equity bridge waterfall, and contract disclaimer/verdict (SPEC-02 §9.1/§10)', () => {
+  const d = (dcfFx as any).dcf_model;
+  assert.equal(d.disclaimer, 'Illustrative valuation, not investment advice.');
+  assert.equal(d.per_share.verdict, 'undervalued');
+  assert.equal(d.provenance_label, 'illustrative');
+  const fcff = buildFcffStatement(d);
+  assert.equal(fcff.periods.length, 5);
+  const pvRow = fcff.sections[0].rows.find((r) => r.line_code === 'DCF.PV_FCFF')!;
+  assert.equal(pvRow.kind, 'total');
+  assert.equal(pvRow.values.FY27E, 90.91);
+  const wacc = buildWaccStatement(d);
+  const waccTotal = wacc.sections[0].rows.find((r) => r.line_code === 'WACC.TOTAL')!;
+  assert.equal(waccTotal.values[d.as_of], 10.0);
+  const bridge = buildBridgeChartSpec(d);
+  assert.equal(bridge.kind, 'waterfall');
+  assert.equal(bridge.data.length, 6);
+  assert.equal(bridge.data[2].type, 'total');
+  assert.equal(bridge.data[5].type, 'total');
+  assert.equal(bridge.data[5].value, 2054.47);
 });
 
 console.log(`\n${n} passed`);
