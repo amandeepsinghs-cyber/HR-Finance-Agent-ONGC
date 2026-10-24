@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:57 UTC · branch `v3/P0-stabilise` @ `ef9d88d`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:02 UTC · branch `v3/P0-stabilise` @ `c77121b`
 
 > [!IMPORTANT]
-> **Overall: 31% complete (weighted)** — 16/62 steps ✅ done, 8 in flight, 38 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 32% complete (weighted)** — 17/62 steps ✅ done, 7 in flight, 38 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 1 warning(s).
 
 ## 1. Phase progress
 
@@ -14,7 +14,7 @@
 | **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 3% | 0 | 0 | 0 | 1 | 7 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `███░░░░░░░░░░░░░░░░░` 17% | 0 | 0 | 2 | 2 | 5 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `█████░░░░░░░░░░░░░░░` 25% | 1 | 1 | 0 | 2 | 5 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -29,8 +29,7 @@
 | P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
 | P4.1 | 🔄 In progress | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Complete build + evidence |
 | P4.2 | 🔄 In progress | `visual.type=statement` contract + presenter emit (multi-FY) | O | Complete build + evidence |
-| P4.3 | 🔨 Built (pre-G4) | `StatementTable` renderer | F | Run G4 review → docs/reviews/<step>.md |
-| P4.9 | 🔨 Built (pre-G4) | Orb visible in docked mode + optional edge aura (low priority, V21) | F | Run G4 review → docs/reviews/<step>.md |
+| P4.9 | 🔍 In review | Orb visible in docked mode + optional edge aura (low priority, V21) | F | Apply review findings / approve |
 
 **Ready to start:**
 
@@ -69,7 +68,7 @@
 | V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.6, P1.7, P1.10a, P1.10b, P2H.7, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P1.7, P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
 | V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5, P2F.6 | 🔴 |
-| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.1, P4.2, P4.3, P4.4, P4.5 … | 🟡 |
+| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.1, P4.2, P4.4, P4.5, P4.6 … | 🟡 |
 | V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1, P1.9, P3.1, P3.2, P3.3, P3.4, P3.4b, P3.5 … | ⛔ |
 | V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P1.7, P1.10a, P2H.5, P2H.6, P2H.7, P2H.8 | 🟡 |
 
@@ -105,7 +104,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-022 Field economics-360 reconciled to company AR totals | 🔴 | 0/3 |
 | FEAT-023 V19 transfer workflow: Excel intent + Email agent | 🔴 | 0/2 |
 | FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ⛔ | 0/7 |
-| FEAT-025 Financial statement table visual | 🟡 | 0/4 |
+| FEAT-025 Financial statement table visual | 🟡 | 1/4 |
 | FEAT-026 Chart portfolio completion + correct waterfall | 🔴 | 0/4 |
 | FEAT-027 Export suite | 🟡 | 0/4 |
 | FEAT-028 Coordinator + agent registry + jobs + permission UX | ⛔ | 0/6 |
@@ -117,7 +116,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 9 · 🟠 in progress 3 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 26 total — 🔴 open 19 · 🟠 in progress 1 · ↩ regressed 0 · ✅ closed 6
+- **Important:** 26 total — 🔴 open 17 · 🟠 in progress 3 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
@@ -135,12 +134,14 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-11 | open | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 r | P2H.4 | P2H.4:⬜ |
 | BUG-12 | open | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 3310 | P2H.4, P5.1 | P2H.4:⬜ P5.1:⬜ |
 | BUG-13 | open | Cloud Run = baseline rev `00001`; `financial_build/` not in the image | P0.9, P5.6 | P0.9:✅ P5.6:⬜ |
-| BUG-35 | in_progress | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | P4.9, P5.6 | P4.9:🔨 P5.6:⬜ |
+| BUG-35 | in_progress | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | P4.9, P5.6 | P4.9:🔍 P5.6:⬜ |
 
 ## 7. Recent step commits
 
 | Commit | Date | Message |
 |---|---|---|
+| `8ae11eb` | 2026-10-24 | P4.9 (G4 r2 fix) M1: restore white rgba() colour strings in VoiceOrb core/feather gradients (regex rename had turned string litera |
+| `d023473` | 2026-10-24 | P4.3 (pre-G4): skip redundant single-section header (screenshot review) |
 | `bf679b7` | 2026-10-24 | P4.3 (pre-G4) + P4.2 TS types: StatementTable renderer (sticky wrapping labels, latest-first FY + unit row, tabular Indian figures |
 | `b2c0eeb` | 2026-10-24 | P1.7 (pre-G4): anchor tables from real ARs (segment, production, reserves, hr_aggregates, realisation) |
 | `3fe4973` | 2026-10-24 | P4.1 (pre-G4) backend: signed P&L bridge, kind precedence, re-plot & false-success fix |
@@ -154,12 +155,10 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `1a885ee` | 2026-10-23 | P1.8 (G4 r2 fixes): C1 held-out paraphrase eval (18 Q, LEXICAL_WEIGHT frozen: hybrid 7/18, vector 8/18) + leakage/skew/in-sample d |
 | `7b3047e` | 2026-10-23 | P1.3 (pre-G4): deterministic AR statement parser (BS/P&L/CF, standalone+consolidated, FY17-19 + FY22-26 own ARs; 5,062 rows, 957/9 |
 | `7c0f7f3` | 2026-10-23 | P1.8 (pre-G4): real AR text chunker (8 ARs, 8,712 page-bounded chunks, section/note/keyword tags), text-embedding-005 load to new  |
-| `02d41b2` | 2026-10-23 | P1.5 (pre-G4): Yahoo loader (offline JSON parse, polite fetcher, exit 3 on 429) + D-45 provider chain Yahoo->NSE archive->manual s |
-| `fa3abb4` | 2026-10-23 | P1.4 (G4 r2 fixes): flag FY23 S C&CE filing defect (cf_cce_filing_defect, no line code) + test; PaidUp -> OTH.PAID_UP_CAPITAL; Seg |
 
 ## 8. Integrity checks
 
-✅ No inconsistencies between checklist, bug register, feature list, packets, reviews and git.
+- ⚠️ BUG-38 is still in_progress although all its steps (P4.3) are ✅ — close it in BUG_REGISTER.md.
 
 ---
 **How this stays current:** every step completion = (1) update the step's Status in `UPGRADE_CHECKLIST.md` (⬜ → 🔨 Built → 🔍 In review → ✅ Done only with a `docs/reviews/<step>.md` APPROVE), (2) close the linked bugs in `BUG_REGISTER.md`, (3) run `python3 scripts/progress/build_progress.py` (regenerate) and `--check` (validate), (4) commit all three files together. The optional git hook (`scripts/progress/install_hook.sh`) blocks commits when `--check` fails.
