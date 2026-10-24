@@ -207,6 +207,79 @@ def bridge_error_copy(err: BridgeError, lang: str = "en") -> str:
     return f"I can't build a reliable bridge from these lines ({err.reason}). Here is the statement table."
 
 
+_KIND_FRIENDLY_EN: Dict[str, str] = {
+    "pie": "pie chart",
+    "donut": "donut chart",
+    "histogram": "histogram distribution",
+    "hbar": "horizontal ranked bar chart",
+    "bar": "vertical bar chart",
+    "stacked_bar": "stacked bar chart",
+    "line": "line trend chart",
+    "area": "area chart",
+    "scatter": "scatter plot",
+    "treemap": "hierarchical treemap",
+    "heatmap": "heatmap matrix",
+    "waterfall": "waterfall bridge chart",
+    "table": "data table",
+}
+
+_KIND_FRIENDLY_HI: Dict[str, str] = {
+    "pie": "पाई चार्ट",
+    "donut": "डोनट चार्ट",
+    "histogram": "हिस्टोग्राम",
+    "hbar": "क्षैतिज बार चार्ट",
+    "bar": "कॉलम चार्ट",
+    "line": "रेखा चार्ट",
+    "waterfall": "वॉटरफॉल चार्ट",
+    "table": "डेटा तालिका",
+}
+
+
+def no_visual_copy(kind: str, lang: str = "en") -> str:
+    """Honest refusal copy when there is no visual on screen to re-plot (from bridge_copy.yaml)."""
+    errors_cfg = _load_copy_cfg().get("errors") or {}
+    entry = errors_cfg.get("no_visual") or {}
+    lang_key = "hi" if lang == "hi" else ("hi_en" if lang == "hi-en" else "en")
+    tmpl = entry.get(lang_key) or entry.get("en")
+    if tmpl:
+        return tmpl.format(kind=kind)
+    if lang == "hi":
+        return f"स्क्रीन पर अभी कोई डेटा उपलब्ध नहीं है जिसे {kind} में बदला जा सके। कृपया पहले कोई डेटा प्रश्न पूछें।"
+    return (
+        f"There is no chartable dataset on screen yet to re-plot as a {kind}. "
+        "Ask a data question first, and then I can switch the chart view."
+    )
+
+
+def replot_success_copy(kind: str, lang: str = "en") -> str:
+    """Confirmation copy when a re-plot visual has been produced (from bridge_copy.yaml)."""
+    success_cfg = _load_copy_cfg().get("success") or {}
+    entry = success_cfg.get("replot") or {}
+    lang_key = "hi" if lang == "hi" else ("hi_en" if lang == "hi-en" else "en")
+    en_label = _KIND_FRIENDLY_EN.get(kind, f"{kind} view")
+    kind_label = _KIND_FRIENDLY_HI.get(kind, en_label) if lang == "hi" else en_label
+    tmpl = entry.get(lang_key) or entry.get("en")
+    if tmpl:
+        return tmpl.format(kind_label=kind_label)
+    if lang == "hi":
+        return f"मैंने वर्तमान डेटा को स्क्रीन पर {kind_label} के रूप में प्रदर्शित कर दिया है।"
+    return f"I've replotted the current data as a {kind_label} on screen."
+
+
+def which_year_copy(periods: Sequence[str], lang: str = "en") -> str:
+    """Clarification copy when a waterfall bridge is requested on a multi-period statement (BEH-04.12)."""
+    errors_cfg = _load_copy_cfg().get("errors") or {}
+    entry = errors_cfg.get("which_year") or {}
+    lang_key = "hi" if lang == "hi" else ("hi_en" if lang == "hi-en" else "en")
+    periods_str = ", ".join(str(p) for p in periods if p) or "FY26, FY25"
+    tmpl = entry.get(lang_key) or entry.get("en")
+    if tmpl:
+        return tmpl.format(periods=periods_str)
+    if lang == "hi":
+        return f"आप किस वित्तीय वर्ष का वॉटरफॉल ब्रिज देखना चाहेंगे? कृपया वर्ष चुनें ({periods_str})।"
+    return f"Which year would you like to see as a waterfall bridge? Please pick a year ({periods_str})."
+
+
 def bridge_chart_rows(res: BridgeOk) -> List[Dict[str, Any]]:
     """Convert `BridgeOk.bars` to typed chart rows understood by `waterfallOption`."""
     rows: List[Dict[str, Any]] = []
@@ -245,7 +318,7 @@ def _extract_rows_and_period(
 
         periods = statement_or_rows.get("periods")
         eff_period = period
-        if eff_period is None and isinstance(periods, list) and periods:
+        if eff_period is None and isinstance(periods, list) and len(periods) == 1:
             eff_period = str(periods[0])
 
         sections = statement_or_rows.get("sections")
@@ -271,7 +344,7 @@ def _extract_rows_and_period(
         eff_period = period
         if eff_period is None:
             for r in rows_list:
-                if isinstance(r.get("values"), dict) and r["values"]:
+                if isinstance(r.get("values"), dict) and len(r["values"]) == 1:
                     eff_period = str(next(iter(r["values"].keys())))
                     break
                 if r.get("fiscal_year"):
@@ -287,7 +360,7 @@ def _value_of(line: Dict[str, Any], period: Optional[str]) -> Optional[float]:
     if isinstance(vals, dict):
         if period is not None and period in vals:
             v = vals[period]
-        elif period is None and vals:
+        elif period is None and len(vals) == 1:
             v = next(iter(vals.values()))
         else:
             v = None
@@ -376,7 +449,7 @@ def bridge(
     bars: List[BridgeBar] = [
         BridgeBar(
             label=_label_of(start_r),
-            value=_round2(start_v),
+            value=float(start_v),
             type="total",
             line_code=start_r.get("line_code"),
         )
@@ -437,12 +510,11 @@ def bridge(
                     code="subtotal_mismatch",
                     reason=f"lines do not add up to reported subtotal {name}{code_str}: off by ₹{_round2(diff)} cr",
                 )
-            residual = _round2(diff)
             running = v  # re-anchor on the reported figure to prevent rounding drift
             bars.append(
                 BridgeBar(
                     label=_label_of(r),
-                    value=_round2(v),
+                    value=float(v),
                     type="total",
                     line_code=r.get("line_code"),
                 )
@@ -453,7 +525,7 @@ def bridge(
                     period=eff_period or "",
                     unit="₹ Cr",
                     bars=bars,
-                    residual=residual,
+                    residual=0.0,
                 )
 
     return BridgeError(

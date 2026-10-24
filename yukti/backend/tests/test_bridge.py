@@ -358,3 +358,330 @@ def test_single_value_kpi_waterfall_refusal_no_false_switch(utterance: str, expe
     assert any("Ankleshwar" in s for s in contract.get("suggestions", [])), (
         f"Expected Ankleshwar revenue trend suggestion chip, got {contract.get('suggestions')}"
     )
+
+
+# ---------------------------------------------------------------------------
+# 6. G4 r2 regressions: M1, M2 (BEH-04.12), M3, S3, S4
+# ---------------------------------------------------------------------------
+def test_m1_multi_row_non_kpi_visual_not_hijacked_into_unsigned_waterfall(monkeypatch: pytest.MonkeyPatch) -> None:
+    """M1: With a 4-asset bar chart on screen, a new single-metric waterfall query must NOT hijack
+    set_chart_kind to re-plot the 4-asset bar chart as an unsigned waterfall, and an explicit
+    'Show this as a waterfall' on the 4-asset bar chart must refuse honestly without a false switch.
+    """
+    sm = get_session_manager()
+    session_id = "test-m1-four-asset-bar"
+    st = sm.get_or_create(session_id, persona="CMD", language="en")
+    asset_rows = [
+        {"asset": "Mumbai High", "revenue_cr": 48210.0},
+        {"asset": "Neelam Heera", "revenue_cr": 18420.0},
+        {"asset": "Bassein & Satellite", "revenue_cr": 22150.0},
+        {"asset": "Mehsana", "revenue_cr": 6420.0},
+    ]
+    bar_vis = {
+        "type": "chart",
+        "mode": "replace",
+        "title": "FY26 Revenue by Asset",
+        "chart": {
+            "kind": "bar",
+            "title": "FY26 Revenue by Asset",
+            "x": "asset",
+            "y": "revenue_cr",
+            "data": asset_rows,
+        },
+        "table": {"columns": ["asset", "revenue_cr"], "rows": asset_rows},
+    }
+    st.record_turn(
+        {
+            "turn_id": "turn-001",
+            "language": "en",
+            "persona": "CMD",
+            "spoken_summary": "Here is FY26 revenue across the top 4 assets.",
+            "display_text": "Here is FY26 revenue across the top 4 assets.",
+            "visual": bar_vis,
+            "insights": ["Mumbai High leads at ₹48,210 Cr"],
+            "sources": [{"kind": "data", "object": "hrfin_gold"}],
+            "suggestions": [],
+            "access": {"status": "allowed"},
+            "export_options": ["pdf"],
+            "status_events": [],
+        },
+        user_query="Show FY26 revenue by asset",
+        all_rows=asset_rows,
+    )
+
+    runner = AgentTurnRunner.__new__(AgentTurnRunner)
+    runner.session_manager = sm
+
+    # (a) "Show this as a waterfall" on an untyped 4-asset bar chart must refuse honestly (no unsigned waterfall)
+    replot_res = asyncio.run(
+        runner._execute_turn_inner(
+            query="Show this as a waterfall",
+            session_id=session_id,
+            persona="CMD",
+            language="en",
+        )
+    )
+    assert not FALSE_SUCCESS_RE.search(replot_res["spoken_summary"])
+    assert "ui_action" not in replot_res
+    assert replot_res["visual"]["chart"]["kind"] == "bar"
+
+    # (b) "Show the Ankleshwar total revenue as a waterfall chart" with a 4-asset bar chart on screen
+    # must NOT enter set_chart_kind and re-plot the 4-asset rows; it must proceed to the planner pipeline.
+    routed_to_planner: List[str] = []
+
+    async def _fake_planner_turn(query: str, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+        routed_to_planner.append(query)
+        b_err = single_value_error()
+        return {
+            "contract": {
+                "turn_id": "turn-002",
+                "language": "en",
+                "persona": "CMD",
+                "spoken_summary": b_err.message("en"),
+                "display_text": b_err.message("en"),
+                "visual": {
+                    "type": "kpi",
+                    "mode": "replace",
+                    "title": "Ankleshwar Asset: FY26 Gross Revenue",
+                    "kpis": [{"label": "Gross Revenue (FY26)", "value": 3098.48, "unit": "₹ crore"}],
+                },
+                "insights": ["Ankleshwar FY26 revenue: ₹3,098.48 Cr"],
+                "sources": [{"kind": "data", "object": "hrfin_gold"}],
+                "suggestions": [],
+                "access": {"status": "allowed"},
+                "export_options": ["pdf"],
+                "status_events": ["Planner handled new data question"],
+            },
+            "meta": None,
+        }
+
+    monkeypatch.setattr("app.turn_runner.planner_enabled", lambda: True)
+    monkeypatch.setattr("app.turn_runner.run_planner_turn", _fake_planner_turn)
+
+    new_q_res = asyncio.run(
+        runner._execute_turn_inner(
+            query="Show the Ankleshwar total revenue as a waterfall chart",
+            session_id=session_id,
+            persona="CMD",
+            language="en",
+        )
+    )
+    assert len(routed_to_planner) == 1, "New data question must be routed to the planner, not hijacked by set_chart_kind"
+    assert "ui_action" not in new_q_res
+    assert not FALSE_SUCCESS_RE.search(new_q_res["spoken_summary"])
+
+
+def test_m2_multi_period_statement_and_multi_fy_pnl_which_year_and_selected_period() -> None:
+    """M2 (BEH-04.12): Multi-period statement or multi-FY P&L trend asks 'Which year?' with FY chips
+    when no year is specified, bridges the exact requested FY when specified, and never builds an
+    unsigned waterfall from wide multi-year rows.
+    """
+    sm = get_session_manager()
+    pnl_fx = _load_pnl_fixture()
+    runner = AgentTurnRunner.__new__(AgentTurnRunner)
+    runner.session_manager = sm
+
+    # (a) Multi-period statement visual (FY26..FY22) -> "Show this as a waterfall" -> asks "Which year?"
+    st_multi = sm.get_or_create("test-m2-multi-period-stmt", persona="CMD", language="en")
+    st_multi.record_turn(
+        {
+            "turn_id": "turn-001",
+            "language": "en",
+            "persona": "CMD",
+            "spoken_summary": "5-year P&L statement is on screen.",
+            "display_text": "5-year P&L statement is on screen.",
+            "visual": {
+                "type": "statement",
+                "mode": "replace",
+                "title": "Statement of Profit and Loss (Standalone) · FY22–FY26",
+                "statement": pnl_fx,
+            },
+            "insights": [],
+            "sources": [{"kind": "data", "object": "hrfin_gold"}],
+            "suggestions": [],
+            "access": {"status": "allowed"},
+            "export_options": ["pdf"],
+            "status_events": [],
+        },
+        user_query="Show the income statement for FY22 to FY26",
+    )
+
+    res_which = asyncio.run(
+        runner._execute_turn_inner(
+            query="Show this as a waterfall",
+            session_id="test-m2-multi-period-stmt",
+            persona="CMD",
+            language="en",
+        )
+    )
+    assert "which year" in res_which["spoken_summary"].lower()
+    assert "ui_action" not in res_which
+    assert res_which["visual"]["type"] == "statement"
+    assert any("FY26" in s for s in res_which.get("suggestions", []))
+    assert any("FY24" in s for s in res_which.get("suggestions", []))
+
+    # (b) Explicit period selection ("Show FY24 as a waterfall") bridges FY24 specifically (PAT = ₹40,525.96 cr)
+    res_fy24 = asyncio.run(
+        runner._execute_turn_inner(
+            query="Show FY24 as a waterfall",
+            session_id="test-m2-multi-period-stmt",
+            persona="CMD",
+            language="en",
+        )
+    )
+    assert res_fy24["visual"]["type"] == "chart"
+    chart_fy24 = res_fy24["visual"]["chart"]
+    assert chart_fy24["kind"] == "waterfall"
+    assert chart_fy24["title"] == "FY24: ₹138,402 cr revenue to ₹40,526 cr PAT"
+    assert abs(chart_fy24["data"][-1]["amount_cr"] - 40525.96) <= 0.5
+
+    # (c) Wide multi-year P&L trend table (no line_code) -> "Show this as a waterfall" -> asks "Which year?"
+    st_wide = sm.get_or_create("test-m2-wide-pnl-trend", persona="CMD", language="en")
+    wide_rows = [
+        {"fiscal_year": "FY26", "revenue_from_ops_cr": 132508.14, "ebitda_cr": 62140.0, "pbt_cr": 43247.02, "pat_cr": 32894.02},
+        {"fiscal_year": "FY25", "revenue_from_ops_cr": 137846.29, "ebitda_cr": 66740.0, "pbt_cr": 46760.0, "pat_cr": 35610.32},
+        {"fiscal_year": "FY24", "revenue_from_ops_cr": 138402.13, "ebitda_cr": 70248.0, "pbt_cr": 53658.0, "pat_cr": 40525.96},
+    ]
+    wide_cols = list(wide_rows[0].keys())
+    st_wide.record_turn(
+        {
+            "turn_id": "turn-001",
+            "language": "en",
+            "persona": "CMD",
+            "spoken_summary": "Here is the 3-year P&L trend.",
+            "display_text": "Here is the 3-year P&L trend.",
+            "visual": {
+                "type": "table",
+                "mode": "replace",
+                "title": "P&L Multi-Year Summary",
+                "table": {"columns": wide_cols, "rows": wide_rows},
+            },
+            "insights": [],
+            "sources": [{"kind": "data", "object": "hrfin_gold"}],
+            "suggestions": [],
+            "access": {"status": "allowed"},
+            "export_options": ["pdf"],
+            "status_events": [],
+        },
+        user_query="Show multi-year P&L trend",
+        all_rows=wide_rows,
+    )
+    res_wide = asyncio.run(
+        runner._execute_turn_inner(
+            query="Show this as a waterfall",
+            session_id="test-m2-wide-pnl-trend",
+            persona="CMD",
+            language="en",
+        )
+    )
+    assert "which year" in res_wide["spoken_summary"].lower()
+    assert not FALSE_SUCCESS_RE.search(res_wide["spoken_summary"])
+    assert "ui_action" not in res_wide
+    assert res_wide["visual"]["type"] == "table"
+
+
+def test_m3_presenter_bridge_error_keeps_table_and_emits_honest_note() -> None:
+    """M3: When statement lines fail reconciliation (e.g. subtotal mismatch), build_visual(chart_kind='waterfall')
+    must keep vis['type'] == 'table', leave vis['chart'] unset, and attach the BridgeError copy in vis['note'].
+    """
+    from app.brain.compiler import get_compiler
+
+    corrupt_fx = json.loads((BRIDGE_FIXTURES_DIR / "error_subtotal_mismatch.json").read_text(encoding="utf-8"))
+    corrupt_fy = str((corrupt_fx.get("periods") or ["FY26"])[0])
+    corrupt_rows = [
+        {
+            "line_code": r["line_code"],
+            "line_item": r["label"],
+            "note_ref": "",
+            "amount_cr": r["values"][corrupt_fy],
+            "prior_fy_cr": None,
+            "yoy_delta_cr": None,
+            "yoy_change_pct": None,
+            "pct_of_revenue": None,
+        }
+        for r in _rows_of(corrupt_fx)
+    ]
+    cols = list(corrupt_rows[0].keys())
+    spec = QuerySpec(domain="finance", metric="pnl_statement", dimensions=["line_item"], period=Period(fy=corrupt_fy))
+    compiled = get_compiler().compile(spec)
+
+    for requested_kind in ("waterfall", "bar"):
+        vis = build_visual(
+            spec=spec,
+            compiled=compiled,
+            columns=cols,
+            rows=corrupt_rows,
+            chart_kind=requested_kind,
+            title="ONGC Statement of Profit & Loss · FY25",
+            subtitle="FY25",
+            mode="replace",
+        )
+        assert vis["type"] == "table", f"Expected table fallback on BridgeError for {requested_kind}, got {vis['type']}"
+        assert "chart" not in vis, "vis['chart'] must be unset on BridgeError"
+        assert vis.get("bridge_error", {}).get("code") == "subtotal_mismatch"
+        assert "can't build a reliable bridge" in str(vis.get("note") or "").lower()
+
+
+def test_s4_cash_flow_statement_replot_as_waterfall_preserves_typed_cf_bridge() -> None:
+    """S4: Re-plotting a Cash Flow statement (which has line_code in table.columns and a typed CF waterfall
+    in vis['chart']) as a waterfall must display the typed CF waterfall, not fail with missing_start.
+    """
+    from app.brain.compiler import get_compiler
+
+    cf_rows = [
+        {"line_code": "pbt_inr_cr", "line_item": "Profit Before Tax", "note_ref": "Ind-AS 7", "section": "Operating", "amount_cr": 43247.02, "prior_fy_cr": 46760.0, "yoy_delta_cr": -3512.98, "pct_of_ocf": 72.3},
+        {"line_code": "non_cash_adjustments_cf_inr_cr", "line_item": "Non-Cash Adjustments", "note_ref": "Ind-AS 7", "section": "Operating", "amount_cr": 27352.98, "prior_fy_cr": 28140.0, "yoy_delta_cr": -787.02, "pct_of_ocf": 45.7},
+        {"line_code": "working_capital_change_cf_inr_cr", "line_item": "Working Capital Changes", "note_ref": "Ind-AS 7", "section": "Operating", "amount_cr": -940.0, "prior_fy_cr": -1240.0, "yoy_delta_cr": 300.0, "pct_of_ocf": -1.6},
+        {"line_code": "income_tax_paid_cf_inr_cr", "line_item": "Income Taxes Paid", "note_ref": "Note 37", "section": "Operating", "amount_cr": 9820.0, "prior_fy_cr": 10480.0, "yoy_delta_cr": -660.0, "pct_of_ocf": 16.4},
+        {"line_code": "operating_cash_flow_inr_cr", "line_item": "Operating Cash Flow", "note_ref": "Ind-AS 7", "section": "Subtotal", "amount_cr": 59840.0, "prior_fy_cr": 63180.0, "yoy_delta_cr": -3340.0, "pct_of_ocf": 100.0},
+        {"line_code": "investing_cash_flow_inr_cr", "line_item": "Investing Cash Flow", "note_ref": "Ind-AS 7", "section": "Subtotal", "amount_cr": -35188.0, "prior_fy_cr": -51917.0, "yoy_delta_cr": 16729.0, "pct_of_ocf": -58.8},
+        {"line_code": "financing_cash_flow_inr_cr", "line_item": "Financing Cash Flow", "note_ref": "Ind-AS 7", "section": "Subtotal", "amount_cr": -21612.0, "prior_fy_cr": -19183.0, "yoy_delta_cr": -2429.0, "pct_of_ocf": -36.1},
+        {"line_code": "net_cash_change_inr_cr", "line_item": "Net Cash Change", "note_ref": "Ind-AS 7", "section": "Subtotal", "amount_cr": 3040.0, "prior_fy_cr": -7920.0, "yoy_delta_cr": 10960.0, "pct_of_ocf": 5.1},
+    ]
+    spec = QuerySpec(domain="finance", metric="cash_flow_statement", dimensions=["line_item"], period=Period(fy="FY26"))
+    compiled = get_compiler().compile(spec)
+    vis = build_visual(
+        spec=spec,
+        compiled=compiled,
+        columns=list(cf_rows[0].keys()),
+        rows=cf_rows,
+        chart_kind=None,
+        title="ONGC Cash Flow Statement · FY26",
+        subtitle="FY26",
+        mode="replace",
+    )
+    assert vis["type"] == "table"
+
+    sm = get_session_manager()
+    st = sm.get_or_create("test-s4-cf-waterfall", persona="CMD", language="en")
+    st.record_turn(
+        {
+            "turn_id": "turn-001",
+            "language": "en",
+            "persona": "CMD",
+            "spoken_summary": "FY26 Cash Flow Statement is on screen.",
+            "display_text": "FY26 Cash Flow Statement is on screen.",
+            "visual": vis,
+            "insights": [],
+            "sources": [{"kind": "data", "object": "hrfin_gold"}],
+            "suggestions": [],
+            "access": {"status": "allowed"},
+            "export_options": ["pdf"],
+            "status_events": [],
+        },
+        user_query="Show FY26 cash flow statement",
+        all_rows=cf_rows,
+    )
+    runner = AgentTurnRunner.__new__(AgentTurnRunner)
+    runner.session_manager = sm
+    res = asyncio.run(
+        runner._execute_turn_inner(
+            query="Show this as a waterfall chart",
+            session_id="test-s4-cf-waterfall",
+            persona="CMD",
+            language="en",
+        )
+    )
+    assert res["visual"]["type"] == "chart"
+    assert res["visual"]["chart"]["kind"] == "waterfall"
+    assert len(res["visual"]["chart"]["data"]) == 7

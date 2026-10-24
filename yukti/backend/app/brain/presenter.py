@@ -193,14 +193,29 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
         from app.brain.bridge import BridgeOk, bridge, bridge_chart_rows
 
         b_res = bridge(rows, period=fy)
-        ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "waterfall"
-        if ck == "waterfall" and isinstance(b_res, BridgeOk):
-            vis["chart"] = b_res.to_chart_spec(title=title)
+        if isinstance(b_res, BridgeOk):
+            ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "waterfall"
+            if ck == "waterfall":
+                vis["chart"] = b_res.to_chart_spec()
+            else:
+                wf_rows = bridge_chart_rows(b_res)
+                vis["chart"] = build_chart_spec(
+                    kind=ck,
+                    columns=["step", "amount_cr"],
+                    rows=wf_rows,
+                    title=b_res.default_title(),
+                    unit="₹ Cr",
+                )
+            # Table-First rule: default to structured statement table unless a chart (e.g., waterfall) was explicitly requested
+            vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
         else:
-            wf_rows = bridge_chart_rows(b_res) if isinstance(b_res, BridgeOk) else []
-            vis["chart"] = build_chart_spec(kind=ck, columns=["step", "amount_cr"], rows=wf_rows, title=title, unit="₹ Cr")
-        # Table-First rule: default to structured statement table unless a chart (e.g., waterfall) was explicitly requested
-        vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
+            # M3 (SPEC-09 §4.3 step 6): on BridgeError, keep statement table, leave vis["chart"] unset, attach BridgeError copy
+            vis.pop("chart", None)
+            vis["type"] = "table"
+            if chart_kind and chart_kind not in ("kpi", "table"):
+                vis["note"] = b_res.message("en")
+                vis["note_hi"] = b_res.message("hi")
+                vis["bridge_error"] = {"code": b_res.code, "reason": b_res.reason}
         return vis
 
     if compiled.metric == "balance_sheet" and dims and dims[0] == "line_item":

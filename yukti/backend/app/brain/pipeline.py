@@ -228,6 +228,11 @@ async def run_planner_turn(
         )
         spoken = clarify_prompt + spoken
     notes = list(compiled.notes) + [f"Not applied: {d}" for d in compiled.dropped]
+    if visual.get("note") or visual.get("bridge_error"):
+        note_text = str(visual.get("note_hi" if language == "hi" else "note") or visual.get("note") or "").strip()
+        if note_text:
+            spoken = note_text
+            notes = [note_text] + notes
 
     contract: Dict[str, Any] = {
         "turn_id": turn_id,

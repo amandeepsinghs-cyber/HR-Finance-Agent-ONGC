@@ -36,6 +36,11 @@ errors:
     hi: "स्क्रीन पर अभी कोई डेटा उपलब्ध नहीं है जिसे {kind} में बदला जा सके। कृपया पहले कोई डेटा प्रश्न पूछें।"
     hi_en: "Screen par abhi koi data nahi hai jise {kind} mein re-plot kiya ja sake."
 
+  which_year:
+    en: "Which year would you like to see as a waterfall bridge? A P&L bridge shows one fiscal year at a time — please pick a year below ({periods})."
+    hi: "आप किस वित्तीय वर्ष का वॉटरफॉल ब्रिज देखना चाहेंगे? P&L वॉटरफॉल ब्रिज एक बार में एक ही वित्तीय वर्ष दिखाता है — कृपया नीचे से वर्ष चुनें ({periods})।"
+    hi_en: "Aap kis fiscal year ka waterfall bridge dekhna chahenge? Please niche se year select karein ({periods})."
+
 success:
   bridge:
     en: "Here is the {period} P&L waterfall bridge from ₹{rev} crore revenue to ₹{pat} crore PAT."
