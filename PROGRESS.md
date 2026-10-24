@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 14:46 UTC · branch `v3/P0-stabilise` @ `f604c85`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 16:05 UTC · branch `v3/P0-stabilise` @ `dc05c3d`
 
 > [!IMPORTANT]
-> **Overall: 95% complete (weighted)** — 58/62 steps ✅ done, 3 in flight, 1 to do, 0 blocked. **2 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 96% complete (weighted)** — 59/62 steps ✅ done, 2 in flight, 1 to do, 0 blocked. **2 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
@@ -11,7 +11,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `███████████████████░` 94% | 11 | 0 | 0 | 1 | 0 | 0 | 12 |
-| **P2H** | HR: personas, V19, Employee-360 | `████████████████░░░░` 81% | 6 | 0 | 0 | 2 | 0 | 0 | 8 |
+| **P2H** | HR: personas, V19, Employee-360 | `██████████████████░░` 91% | 7 | 0 | 0 | 1 | 0 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `████████████████████` 100% | 6 | 0 | 0 | 0 | 0 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `████████████████████` 100% | 10 | 0 | 0 | 0 | 0 | 0 | 10 |
 | **P4** | Visual 9/10 + exports (V21) | `████████████████████` 100% | 9 | 0 | 0 | 0 | 0 | 0 | 9 |
@@ -24,7 +24,6 @@
 | Step | Status | Task | Owner | Next action |
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
-| P2H.7 | 🔄 In progress | Field Economics-360: production recalibration, RAS allocation engine, Dataform | O | Complete build + evidence |
 | P2H.8 | 🔄 In progress | Reconciliation gates: `recon_checks` (30 EMP-R + 17 FLD-R), assertions, offline tests, golden eval | O→F (O: recon rules/SQL + BLOCK assertion; F: tests) | Complete build + evidence |
 
 **Ready to start:**
@@ -61,12 +60,12 @@
 | V15 | FEAT-015, FEAT-026 | 🟡 🔴 |  | 🟡 |
 | V16 | FEAT-016 | 🟡 |  | 🟡 |
 | V17 | FEAT-017, FEAT-031 | 🔴 🔴 |  | 🔴 |
-| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P2H.7, P2H.8 | 🔴 |
+| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P2H.8 | 🟡 |
 | V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1 | 🔴 |
 | V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 |  | 🟡 |
 | V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1 | ⛔ |
-| V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P2H.7, P2H.8 | 🟡 |
+| V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P2H.8 | 🟡 |
 
 _Not mapped to a feature (process / question-bank / naming verbatims, tracked in UPGRADE_CHECKLIST Part A and docs/question_bank.md): V1, V4, V5, V9, V10._
 
@@ -97,7 +96,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 1/2 |
 | FEAT-020 Knowledge RAG over real AR text | 🔴 | 1/1 |
 | FEAT-021 Employee-360 enterprise table (realistic, reconciled) | 🟡 | 3/4 |
-| FEAT-022 Field economics-360 reconciled to company AR totals | 🔴 | 1/3 |
+| FEAT-022 Field economics-360 reconciled to company AR totals | 🔴 | 2/3 |
 | FEAT-023 V19 transfer workflow: Excel intent + Email agent | 🔴 | 2/2 |
 | FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ⛔ | 7/7 |
 | FEAT-025 Financial statement table visual | 🟡 | 4/4 |
