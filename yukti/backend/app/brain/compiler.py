@@ -797,7 +797,7 @@ ORDER BY fiscal_year ASC"""
         if fy not in available:
             fy = "FY26"
         prev_fy = f"FY{int(fy[2:]) - 1:02d}"
-        vintage = f"AR_FY{2000 + int(fy[2:]) - 1}-{fy[2:]}"
+        vintage = f"AR_{fy}"
         sql = f"""WITH cur AS (
   SELECT *
   FROM {_q(_V_AS_REPORTED)}
@@ -913,7 +913,7 @@ ORDER BY fiscal_year ASC"""
         if fy not in available:
             fy = "FY26"
         prev_fy = f"FY{int(fy[2:]) - 1:02d}"
-        vintage = f"AR_FY{2000 + int(fy[2:]) - 1}-{fy[2:]}"
+        vintage = f"AR_{fy}"
         sql = f"""WITH cur AS (
   SELECT *
   FROM {_q(_V_AS_REPORTED)}
@@ -1025,7 +1025,7 @@ ORDER BY fiscal_year ASC"""
         if fy not in available:
             fy = "FY26"
         prev_fy = f"FY{int(fy[2:]) - 1:02d}"
-        vintage = f"AR_FY{2000 + int(fy[2:]) - 1}-{fy[2:]}"
+        vintage = f"AR_{fy}"
         sql = f"""WITH cur AS (
   SELECT *
   FROM {_q(_V_AS_REPORTED)}
@@ -1127,7 +1127,7 @@ ORDER BY fiscal_year ASC"""
                     "ebitda_margin_pct", "pat_margin_pct", "roce_pct", "roe_pct",
                     "debt_to_equity_ratio", "current_ratio", "eps_basic_inr", "dividend_per_share_inr",
                 ],
-                notes=[f"Derived from AR · Financial Ratios ({lo}–{hi})"],
+                notes=[f"Verified · Annual Report · Financial Ratios ({lo}–{hi})"],
                 effective_period={"from": lo, "to": hi},
                 grain="aggregate",
                 data_classes=["general"],
@@ -1137,16 +1137,16 @@ ORDER BY fiscal_year ASC"""
         if fy not in available:
             fy = "FY26"
         prev_fy = f"FY{int(fy[2:]) - 1:02d}"
-        vintage = f"AR_FY{2000 + int(fy[2:]) - 1}-{fy[2:]}"
+        vintage = f"AR_{fy}"
         sql = f"""WITH cur AS (
   SELECT *
   FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'ratio' AND fiscal_year = {_lit(fy)} AND scope = 'standalone' AND verified = TRUE AND report_vintage = {_lit(vintage)}
+  WHERE statement = 'ratio' AND fiscal_year = {_lit(fy)} AND scope = 'standalone' AND verified = TRUE AND is_latest_vintage = TRUE
 ),
 prv AS (
   SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
   FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'ratio' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND verified = TRUE AND report_vintage = {_lit(vintage)}
+  WHERE statement = 'ratio' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND verified = TRUE AND is_latest_vintage = TRUE
 )
 SELECT
   cur.display_order AS line_order,
@@ -1181,7 +1181,7 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
             tables=[_V_AS_REPORTED],
             dims=[("line_item", "line_item")],
             value_columns=["value", "prior_fy_value", "yoy_delta"],
-            notes=[f"Derived from AR · {fy}"],
+            notes=[f"Verified · Annual Report · {fy}"],
             effective_period={"fy": fy},
             grain="aggregate",
             data_classes=["general"],
@@ -1293,7 +1293,7 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                 return round(float(v), 2) if (v is not None and pd.notna(v)) else None
 
             def _as_rep_df() -> pd.DataFrame:
-                return vdf[(vdf["is_own_vintage"] == True) | (vdf["is_fallback_vintage"] == True)].copy()  # noqa: E712
+                return vdf[(vdf["is_own_vintage"] == True) | (vdf["is_fallback_vintage"] == True) | ((vdf["statement"] == "ratio") & (vdf["is_latest_vintage"] == True))].copy()  # noqa: E712
 
             def _latest_df() -> pd.DataFrame:
                 return vdf[vdf["is_latest_vintage"] == True].copy()  # noqa: E712
@@ -1312,13 +1312,16 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
             if compiled.metric in stmt_map and fy:
                 st_name, base_code, pct_col = stmt_map[compiled.metric]
                 adf = _as_rep_df()
-                cur_df = adf[(adf["statement"] == st_name) & (adf["fiscal_year"] == fy) & (adf["scope"] == "standalone") & (adf["is_own_vintage"] == True) & (adf["source_table"] == "standalone_" + st_name)].copy() if st_name != "ratio" else adf[(adf["statement"] == st_name) & (adf["fiscal_year"] == fy) & (adf["scope"] == "standalone") & (adf["report_vintage"] == "AR_" + fy)].copy()
+                cur_df = adf[(adf["statement"] == st_name) & (adf["fiscal_year"] == fy) & (adf["scope"] == "standalone") & (adf["is_own_vintage"] == True) & (adf["source_table"] == "standalone_" + st_name)].copy() if st_name != "ratio" else adf[(adf["statement"] == st_name) & (adf["fiscal_year"] == fy) & (adf["scope"] == "standalone") & (adf["is_latest_vintage"] == True)].copy()
                 if cur_df.empty:
                     return None
                 cur_df = cur_df.sort_values(["display_order", "line_order"])
                 prev_fy = f"FY{int(fy[2:]) - 1:02d}"
-                prv_df = adf[(adf["statement"] == st_name) & (adf["fiscal_year"] == prev_fy) & (adf["scope"] == "standalone") & (adf["report_vintage"] == "AR_" + fy)]
+                prv_df = vdf[(vdf["statement"] == st_name) & (vdf["fiscal_year"] == prev_fy) & (vdf["scope"] == "standalone") & (vdf["report_vintage"] == "AR_" + fy)] if st_name != "ratio" else vdf[(vdf["statement"] == st_name) & (vdf["fiscal_year"] == prev_fy) & (vdf["scope"] == "standalone") & (vdf["is_latest_vintage"] == True)]
                 prv_map = {str(r["line_code"]): _val_num(r) for _, r in prv_df.iterrows()}
+                if compiled.metric == "balance_sheet":
+                    print("DEBUG prv_df length:", len(prv_df))
+                    print("DEBUG prv_map BS.TOTAL_ASSETS:", prv_map.get("BS.TOTAL_ASSETS"))
                 base_val = None
                 if base_code:
                     b_rows = cur_df[cur_df["line_code"] == base_code]

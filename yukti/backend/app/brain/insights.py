@@ -98,6 +98,8 @@ def share_of_total(ctx: InsightContext) -> Optional[Insight]:
     """Largest category's share of an additive total (e.g. 'Finance & Accounts is 23.6% of 419')."""
     if not ctx.dim or ctx.unit not in ADDITIVE_UNITS:
         return None
+    if ctx.dim in ("fy", "fiscal_year"):
+        return None
     agg = aggregate_by_dim(ctx)
     total = sum(agg.values())
     if len(agg) < 2 or total <= 0:
@@ -296,6 +298,8 @@ def outliers(ctx: InsightContext) -> Optional[Insight]:
 
 def concentration(ctx: InsightContext) -> Optional[Insight]:
     if not ctx.dim or not ctx.value_col or ctx.unit not in ADDITIVE_UNITS:
+        return None
+    if ctx.dim in ("fy", "fiscal_year"):
         return None
     agg = aggregate_by_dim(ctx)
     if len(agg) < 4:

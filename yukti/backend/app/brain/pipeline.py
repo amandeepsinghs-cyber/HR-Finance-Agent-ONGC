@@ -329,9 +329,7 @@ async def run_planner_turn(
         contract["provenance"] = prov_obj
         notes = [snapshot_caveat] + notes
     elif is_fin_ssot:
-        if compiled.metric in _DERIVED_RATIO_METRICS:
-            prov_label = "derived_ar"
-        elif fin_sys == "xbrl":
+        if fin_sys == "xbrl":
             prov_label = "verified_xbrl"
         else:
             prov_label = "verified_ar"
@@ -341,8 +339,10 @@ async def run_planner_turn(
             "page_label": fin_page,
             "detail": f"Verified SSOT ({fin_doc or 'ONGC AR'}" + (f" {fin_page})" if fin_page else ")"),
         }
-        if prov_label == "derived_ar":
+        if prov_label == "verified_ar":
             prov_obj["badge"] = "AR-printed"
+        elif prov_label == "derived_ar":
+            prov_obj["badge"] = "Derived"
         contract["provenance"] = prov_obj
     if notes:
         contract["caveat"] = "; ".join(notes)[:300]

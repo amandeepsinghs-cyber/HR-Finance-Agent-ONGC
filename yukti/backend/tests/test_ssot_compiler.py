@@ -162,7 +162,7 @@ FINANCE_CASES: List[Dict[str, Any]] = [
         "expected": {None: 39.82},
         "extra_cols": {"roce_incl_exc_pct": 33.84},
         "tol": 0.05,
-        "provenance": "derived_ar",
+        "provenance": "verified_ar",
     },
     {
         "id": "F16",
@@ -180,7 +180,7 @@ FINANCE_CASES: List[Dict[str, Any]] = [
             "FY26": 22.46,
         },
         "tol": 0.05,
-        "provenance": "derived_ar",
+        "provenance": "verified_ar",
     },
     {
         "id": "F17",
@@ -256,7 +256,7 @@ FINANCE_CASES: List[Dict[str, Any]] = [
         "col": "debt_to_equity_ratio",
         "expected": {None: 0.02},
         "tol": 0.01,
-        "provenance": "derived_ar",
+        "provenance": "verified_ar",
     },
     {
         "id": "F24",
@@ -490,8 +490,8 @@ def test_pipeline_provenance_and_no_ebitda_synthesis(monkeypatch: pytest.MonkeyP
     )
     assert r_f15 is not None
     c_f15 = r_f15["contract"]
-    assert c_f15["provenance"]["label"] == "derived_ar"
-    assert c_f15["provenance"]["badge"] == "Derived from AR"
+    assert c_f15["provenance"]["label"] == "verified_ar"
+    assert c_f15["provenance"]["badge"] == "AR-printed"
 
     # 2) Local snapshot provenance and caveat
     monkeypatch.setenv("YUKTI_FORCE_BQ_FAIL", "1")
