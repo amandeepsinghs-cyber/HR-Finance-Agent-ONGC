@@ -282,12 +282,13 @@ def build_refusal_contract(
         access_status = "refused"
 
     suggestions = []
-    if alt:
-        suggestions.append(alt["question"])
-    for a in alts:
-        if a["question"] not in suggestions:
-            suggestions.append(a["question"])
-    suggestions = suggestions[:3]
+    if access_status != "refused":
+        if alt:
+            suggestions.append(alt["question"])
+        for a in alts:
+            if a["question"] not in suggestions:
+                suggestions.append(a["question"])
+        suggestions = suggestions[:3]
     contract: Dict[str, Any] = {
         "turn_id": turn_id,
         "language": language if language in _VALID_LANGUAGES else "en",
@@ -405,21 +406,22 @@ def validate_and_repair_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
         if not isinstance(access.get("alternative"), dict) and rendered["alternative"] is not None:
             access["alternative"] = rendered["alternative"]
         access["alternatives"] = rendered["alternatives"]
-        # Overwrite legacy refusal headlines / titles that leak rule IDs (BEH-01.60)
-        cur_spoken = str(contract.get("spoken_summary") or "")
-        cur_disp = str(contract.get("display_text") or "")
-        if (
-            not cur_spoken
-            or "cannot share these confidential records" in cur_spoken
-            or "Access restricted under" in cur_disp
-            or "Access denied" in cur_spoken
-        ):
-            contract["spoken_summary"] = rendered["text"]
-            contract["display_text"] = rendered["text"][:600]
-        if isinstance(vis, dict) and vis.get("type") == "refusal":
+        
+        # Overwrite refusal headlines / titles that leak rule IDs (BEH-01.60) or miss standard translation
+        contract["spoken_summary"] = rendered["text"]
+        contract["display_text"] = rendered["text"][:600]
+        contract["suggestions"] = []
+        
+        if isinstance(vis, dict):
+            vis["type"] = "refusal"
             if re.search(r"\([A-Z]\d+\)|Access\s+Restricted\s*\(", str(vis.get("title") or "")):
                 vis["title"] = "Access restricted"
+            elif not vis.get("title") or vis.get("type") == "none":
+                vis["title"] = "Access restricted"
             vis.setdefault("code", code)
+            vis.setdefault("rule_ref", rendered["rule_ref"])
+            vis.setdefault("alternative", rendered["alternative"])
+            vis.setdefault("alternatives", rendered["alternatives"])
             vis.setdefault("rule_ref", access["rule_ref"])
             vis["alternative"] = access.get("alternative")
             vis["alternatives"] = access.get("alternatives", [])

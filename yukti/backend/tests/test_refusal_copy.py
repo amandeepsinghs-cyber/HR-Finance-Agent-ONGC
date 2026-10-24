@@ -288,3 +288,27 @@ def test_should_fix_unknown_persona_uses_neutral_fallback_and_word_boundaries():
     assert set(ALL_PERSONAS_ORDERED).issubset(set(UI_ACTIONS["persona"]))
     assert _ALIASES[("persona", "asha")] == ("persona", "E3_FIN")
 
+
+@pytest.mark.asyncio
+async def test_m6_m7_full_turn_refusal_suggestions_and_hindi():
+    """P2H.2 G4 M6, M7: Legacy LLM path returns refusal in EN with visual none.
+    validate_and_repair_contract forces it to HI refusal visual and suggestions = [] (M7)."""
+    from app.answer_composer import validate_and_repair_contract
+    # Simulate LLM returning a legacy refusal with English text and visual: none, but language: hi
+    contract = {
+        "turn_id": "t1",
+        "language": "hi",
+        "persona": "E2_HR",
+        "spoken_summary": "Individual pay is confidential. I can show the average pay for that grade, or your own payslip.",
+        "visual": {"type": "none", "mode": "replace"},
+        "suggestions": ["Show breakdown by discipline", "What are the relevant policy rules?"],
+        "access": {
+            "status": "refused",
+            "reason": "Individual pay is confidential. I can show the average pay for that grade, or your own payslip.",
+            "rule_ref": "SPEC-06 §4.6"
+        }
+    }
+    repaired = validate_and_repair_contract(contract)
+    assert repaired["visual"]["type"] == "refusal"
+    assert "किसी व्यक्ति का वेतन गोपनीय है" in repaired["spoken_summary"]
+    assert repaired["suggestions"] == []
