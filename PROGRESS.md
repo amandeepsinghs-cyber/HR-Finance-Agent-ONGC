@@ -1,6 +1,6 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:55 UTC · branch `v3/P0-stabilise` @ `33935f4`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:57 UTC · branch `v3/P0-stabilise` @ `ef9d88d`
 
 > [!IMPORTANT]
 > **Overall: 31% complete (weighted)** — 16/62 steps ✅ done, 8 in flight, 38 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
@@ -14,7 +14,7 @@
 | **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 3% | 0 | 0 | 0 | 1 | 7 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `████░░░░░░░░░░░░░░░░` 22% | 0 | 1 | 2 | 1 | 5 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `███░░░░░░░░░░░░░░░░░` 17% | 0 | 0 | 2 | 2 | 5 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -27,7 +27,7 @@
 | P1.6 | 🔄 In progress | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; | O (+F gates, FL evidence) | Complete build + evidence |
 | P1.7 | 🔍 In review | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | Apply review findings / approve |
 | P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
-| P4.1 | 🔍 In review | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Apply review findings / approve |
+| P4.1 | 🔄 In progress | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Complete build + evidence |
 | P4.2 | 🔄 In progress | `visual.type=statement` contract + presenter emit (multi-FY) | O | Complete build + evidence |
 | P4.3 | 🔨 Built (pre-G4) | `StatementTable` renderer | F | Run G4 review → docs/reviews/<step>.md |
 | P4.9 | 🔨 Built (pre-G4) | Orb visible in docked mode + optional edge aura (low priority, V21) | F | Run G4 review → docs/reviews/<step>.md |
@@ -129,8 +129,8 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:⬜ P1.11:⬜ P5.1:⬜ P5.3:⬜ |
 | BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:⬜ |
 | BUG-07 | open | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:🔄 |
-| BUG-08 | open | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:🔍 |
-| BUG-09 | open | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:🔍 |
+| BUG-08 | open | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:🔄 |
+| BUG-09 | open | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:🔄 |
 | BUG-10 | open | "Can you export this as an Excel file" not understood | P2H.4 | P2H.4:⬜ |
 | BUG-11 | open | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 r | P2H.4 | P2H.4:⬜ |
 | BUG-12 | open | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 3310 | P2H.4, P5.1 | P2H.4:⬜ P5.1:⬜ |
