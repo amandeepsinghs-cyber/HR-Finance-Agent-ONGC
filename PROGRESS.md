@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:51 UTC · branch `v3/P0-stabilise` @ `1a56582`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 05:14 UTC · branch `v3/P0-stabilise` @ `3bf6858`
 
 > [!IMPORTANT]
-> **Overall: 38% complete (weighted)** — 22/62 steps ✅ done, 4 in flight, 36 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 8 warning(s).
+> **Overall: 40% complete (weighted)** — 22/62 steps ✅ done, 8 in flight, 32 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 8 warning(s).
 
 ## 1. Phase progress
 
@@ -11,10 +11,10 @@
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `██████████░░░░░░░░░░` 52% | 5 | 1 | 0 | 2 | 4 | 0 | 12 |
-| **P2H** | HR: personas, V19, Employee-360 | `███░░░░░░░░░░░░░░░░░` 16% | 1 | 0 | 0 | 1 | 6 | 0 | 8 |
+| **P2H** | HR: personas, V19, Employee-360 | `████░░░░░░░░░░░░░░░░` 22% | 1 | 0 | 0 | 3 | 4 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `███████████░░░░░░░░░` 56% | 5 | 0 | 0 | 0 | 4 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `█████████████░░░░░░░` 64% | 5 | 0 | 1 | 1 | 2 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -27,13 +27,15 @@
 | P1.6 | 🔍 In review | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; | O (+F gates, FL evidence) | Apply review findings / approve |
 | P1.7 | 🔄 In progress | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | Complete build + evidence |
 | P2H.2 | 🔄 In progress | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Complete build + evidence |
+| P2H.3 | 🔄 In progress | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | Complete build + evidence |
+| P2H.5 | 🔄 In progress | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | Complete build + evidence |
+| P4.6 | 🔄 In progress | Export backend: formatted xlsx, CSV, PDF (WeasyPrint + Noto), docx, honest Sheets/Docs, audit, naming | O→F | Complete build + evidence |
+| P4.7 | 🔨 Built (pre-G4) | Export frontend: menu, PNG/SVG, intents for all formats EN/HI, toasts | F | Run G4 review → docs/reviews/<step>.md |
 
 **Ready to start:**
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
-| P2H.3 | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | P2H.1 |
-| P2H.5 | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | P2H.1 |
 | P4.5 | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions | F | P4.4 |
 
 ## 3. Sponsor action items
@@ -115,7 +117,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 6 · 🟠 in progress 6 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 26 total — 🔴 open 13 · 🟠 in progress 7 · ↩ regressed 0 · ✅ closed 6
+- **Important:** 28 total — 🔴 open 15 · 🟠 in progress 7 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
@@ -139,6 +141,12 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `a4047ff` | 2026-10-24 | P4.7 evidence |
+| `65531be` | 2026-10-24 | P4.7 (pre-G4) frontend: ExportMenu (8 SPEC-10 items; PNG/SVG chart-only), client PNG ≥1600px + SVG with title/unit/source, §4.9 fi |
+| `328b6f5` | 2026-10-24 | P1.7 (G4 r3 fixes): R2-1 to R2-4 fixes |
+| `c55cafc` | 2026-10-24 | P4.6 (pre-G4) backend: xlsx formats & DCF/Definition sheets, UTF-8 BOM CSV, WeasyPrint+Noto PDF, docx, eml, honest Sheets/Docs, au |
+| `8d707d7` | 2026-10-24 | P1.7 (G4 r2 fixes): deterministic text parsing, S1 total assets, R1 dynamic ten-year reads, sold basis FY13-FY26 |
+| `26430be` | 2026-10-24 | P2H.3 (pre-G4) frontend: column kind + x_order=explicit (E1→E9→GRP order kept), one-time chart note + footnote, roster column_labe |
 | `0e84527` | 2026-10-24 | P4.2 (G4 r2 follow-up) frontend: add sensitivity_grid/tornado VisualType stubs mirroring backend _VALID_VISUAL_TYPES |
 | `a34a2a0` | 2026-10-24 | P2H.1 (G4 r3 fix): align check_access aggregate-pay regex with rbac._V2_AGG_PAY_RE (R2-M1, BUG-28) and update test_rbac_live R-NAM |
 | `c651a99` | 2026-10-24 | P4.2 (G4 r2 fixes) backend: preserve 4 KPIs with flag off, fix catalog scan docstring, wire CF-BS cash tie, fix fixture source key |
@@ -148,12 +156,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `0ddbe7f` | 2026-10-24 | P2H.1 (G4 r2 fixes): bind Principal in agent tool, remove EMP-102451 defaults, compiler-enforced self/pay_aggregate, D-43 director |
 | `cb0a01b` | 2026-10-24 | P4.4 (G4 r2 fixes) frontend: M1 gauge/bullet keep the row + target, M2 box re-plot keeps records grouped by category (+ repeated-d |
 | `02742aa` | 2026-10-24 | P4.4 (pre-G4) frontend: combo dual-axis, 100% stacked, heatmap, box plot (client quartiles + outliers), gauge (target only) render |
-| `3d39d40` | 2026-10-24 | P4.1 (G4 r3 fix) backend: route FY-specific waterfall chips from multi-year trend to planner single-FY bridge + R2-S1..S4 |
-| `dde5194` | 2026-10-24 | P2H.2 (pre-G4) frontend part 2: RefusalRenderer (backend refusal copy line, alternative chips that ask the permitted question, Why |
-| `9645676` | 2026-10-24 | P2H.2 (pre-G4) backend: refusal_copy.yaml (9 codes EN/HI), answer_composer 11-persona display & refusal contract |
-| `e4993d6` | 2026-10-24 | P4.1 (frontend): render backend visual.note / note_hi (BridgeError copy) in the answer card |
-| `7c87812` | 2026-10-24 | P4.1 (G4 r2 fixes) backend: fix M1 shortcut guard, M2 multi-FY which-year & period pass-through, M3 presenter BridgeError fallback |
-| `7105556` | 2026-10-24 | P2H.2 (pre-G4) frontend part 1: 11-persona directory (src/personas.ts, fictional identities per D-60), PersonaPicker 'Sign in as…' |
 
 ## 8. Integrity checks
 
