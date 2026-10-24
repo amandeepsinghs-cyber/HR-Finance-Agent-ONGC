@@ -37,6 +37,8 @@ def build_insight_context(spec: QuerySpec, compiled: CompiledQuery, rows: List[D
     # Prefer the first dimension with >= 2 distinct values in rows so filtered multi-dim queries
     # (e.g. single asset across multiple FYs) compute insights across the varying dimension.
     chosen_dim = dims[0] if dims else None
+    if chosen_dim == "fiscal_year":
+        chosen_dim = None
     if rows and len(dims) > 1:
         for d in dims:
             if len({r.get(d) for r in rows if r.get(d) is not None}) >= 2:
@@ -51,6 +53,12 @@ def build_insight_context(spec: QuerySpec, compiled: CompiledQuery, rows: List[D
         subject=compiled.subject, grain=compiled.grain, scope=scope,
         polarity=getattr(metric, "polarity", None) if metric else None,
     )
+    # B3: Never add up statement lines or flow values across years.
+    if compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios"):
+        ctx.dim = None
+        if (compiled.effective_period or {}).get("fy"):
+            ctx.value_col = None
+
     if prev_rows is not None:
         fy = (compiled.effective_period or {}).get("fy")
         ctx.prev_rows = prev_rows
@@ -74,27 +82,27 @@ def build_insight_context(spec: QuerySpec, compiled: CompiledQuery, rows: List[D
     if compiled.metric == "pnl_statement" and rows:
         fy = (compiled.effective_period or {}).get("fy")
         if fy and "line_item" in rows[0]:
-            ctx.dim, ctx.value_col, ctx.unit = None, "amount_cr", "inr_cr"
+            ctx.dim, ctx.value_col, ctx.unit = None, None, "inr_cr"
             ctx.extra_insights = _pnl_statement_insights(rows, fy, query)
         else:
             ctx.dim, ctx.value_col, ctx.unit = "fiscal_year", "standalone_pat_cr", "inr_cr"
-            ctx.extra_insights = _pnl_multi_year_insights(rows, query)
+
     elif compiled.metric == "balance_sheet" and rows:
         fy = (compiled.effective_period or {}).get("fy")
         if fy and "line_item" in rows[0]:
-            ctx.dim, ctx.value_col, ctx.unit = None, "amount_cr", "inr_cr"
+            ctx.dim, ctx.value_col, ctx.unit = None, None, "inr_cr"
             ctx.extra_insights = _balance_sheet_insights(rows, fy, query)
         else:
             ctx.dim, ctx.value_col, ctx.unit = "fiscal_year", "total_assets_cr", "inr_cr"
-            ctx.extra_insights = _bs_multi_year_insights(rows, query)
+
     elif compiled.metric == "cash_flow_statement" and rows:
         fy = (compiled.effective_period or {}).get("fy")
         if fy and "line_item" in rows[0]:
-            ctx.dim, ctx.value_col, ctx.unit = None, "amount_cr", "inr_cr"
+            ctx.dim, ctx.value_col, ctx.unit = None, None, "inr_cr"
             ctx.extra_insights = _cash_flow_insights(rows, fy, query)
         else:
             ctx.dim, ctx.value_col, ctx.unit = "fiscal_year", "operating_cash_flow_cr", "inr_cr"
-            ctx.extra_insights = _cf_multi_year_insights(rows, query)
+
     elif compiled.metric == "financial_ratios" and rows:
         fy = (compiled.effective_period or {}).get("fy")
         if fy and "line_item" in rows[0]:
@@ -102,7 +110,7 @@ def build_insight_context(spec: QuerySpec, compiled: CompiledQuery, rows: List[D
             ctx.extra_insights = _financial_ratios_insights(rows, fy, query)
         else:
             ctx.dim, ctx.value_col, ctx.unit = "fiscal_year", "roce_pct", "pct"
-            ctx.extra_insights = _ratios_multi_year_insights(rows, query)
+
     elif compiled.subject in ("corporate", "field_finance", "subsidiary_finance", "capex") and rows:
         ctx.extra_insights = _corporate_causal_insights(compiled, rows, query)
     return ctx
@@ -120,26 +128,14 @@ def _extract_nums(text: str) -> List[float]:
 
 
 def _lookup_line_context(fy: str, line_code: str) -> Dict[str, Any]:
-    from pathlib import Path
-    import json
-    try:
-        ctx_path = Path(__file__).resolve().parents[4] / "financial_build" / "data" / "ssot_financial_line_context.json"
-        if not ctx_path.exists():
-            return {}
-        rows = json.loads(ctx_path.read_text())
-        for r in rows:
-            if r.get("fy") == fy and r.get("line_code") == line_code:
-                return r
-    except Exception:
-        pass
     return {}
 
 
 def _search_financial_rag(query: str, fy: Optional[str], metric: str) -> Optional[str]:
-    """Hybrid deterministic + semantic tag retrieval over financial_notes_corpus.jsonl and ssot_financial_line_context.json."""
-    from pathlib import Path
-    import json
+    """Hybrid deterministic + semantic tag retrieval over the verified SSOT."""
     import re
+    from pathlib import Path
+    
     if not query:
         return None
     ql = query.lower()
@@ -151,388 +147,39 @@ def _search_financial_rag(query: str, fy: Optional[str], metric: str) -> Optiona
     ))
     if not is_causal_or_action:
         return None
+
     try:
-        corpus_path = Path(__file__).resolve().parents[4] / "financial_build" / "data" / "financial_notes_corpus.jsonl"
-        if not corpus_path.exists():
-            return None
+        snapshot_path = Path(__file__).resolve().parents[4] / "financial_ssot" / "out" / "fact_snapshot.parquet"
+        if not snapshot_path.exists():
+            return "Insight unavailable offline."
+        
+        import sys
+        sys.path.append(str(Path(__file__).resolve().parents[4] / "financial_ssot" / ".venv" / "lib" / "python3.12" / "site-packages"))
+        import pandas as pd
+        df = pd.read_parquet(snapshot_path)
+        if fy:
+            df = df[df["fiscal_year"] == fy]
+        
+        notes = df["restatement_note"].dropna().tolist() + df["notes"].dropna().tolist()
         q_tokens = set(re.findall(r"[a-z0-9_]{3,}", ql)) - {"the", "and", "for", "from", "what", "why", "how", "did", "was", "were", "ongc", "show", "tell"}
-        best_score = 0.0
-        best_chunk = None
-        for line in corpus_path.read_text().splitlines():
-            if not line.strip():
+        
+        best_note = None
+        best_score = 0
+        for n in set(notes):
+            if not n or n.lower() == "none" or "restated in" in n:
                 continue
-            c = json.loads(line)
-            score = 0.0
-            cfy = str(c.get("fiscal_year") or "")
-            if fy and cfy == fy:
-                score += 4.0
-            elif cfy == "ALL":
-                score += 2.5
-            tags = {str(t).lower() for t in (c.get("causal_tags") or [])}
-            title_l = str(c.get("title") or "").lower()
-            content_l = str(c.get("content") or "").lower()
-            for tok in q_tokens:
-                if tok in tags:
-                    score += 5.0
-                if tok in title_l:
-                    score += 3.0
-                if tok in content_l:
-                    score += 1.0
-            if re.search(r"\b(action\w*|recommend\w*|interven\w*|director\s+finance|finance\s+director|improv\w*|turnaround)\b", ql):
-                if c.get("chunk_id") == "FIN-DIRECTOR-FINANCE-ACTION-PLAYBOOK-FY26-FY27" or "Action" in str(c.get("section_type")):
-                    score += 8.0
+            nl = n.lower()
+            score = sum(1 for t in q_tokens if t in nl)
             if score > best_score:
                 best_score = score
-                best_chunk = c
-        if best_chunk and best_score >= 5.0:
-            return f"{best_chunk['title']} ({best_chunk['note_ref']}): {best_chunk['content']}"
-    except Exception:
-        pass
-    return None
+                best_note = n
+                
+        if best_note and best_score > 0:
+            return f"Note: {best_note}"
+        return "Insight unavailable offline."
+    except Exception as e:
+        return "Insight unavailable offline."
 
-
-def _pick_ic(by_code: Dict[str, Dict[str, Any]], *codes: str) -> Dict[str, Any]:
-    for c in codes:
-        if c in by_code and by_code[c]:
-            return by_code[c]
-    return {}
-
-
-def _pnl_statement_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
-    from app.brain.insights import Insight, fmt
-    by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-    rev = _pick_ic(by_code, "PL.REV_OPS", "gross_revenue_inr_cr")
-    ti = _pick_ic(by_code, "PL.TOTAL_INCOME", "total_income_inr_cr", "PL.REV_OPS", "gross_revenue_inr_cr")
-    te = _pick_ic(by_code, "PL.TOTAL_EXP", "total_expenses_inr_cr")
-    lev = _pick_ic(by_code, "LEVY.TOTAL", "statutory_levies_total_inr_cr")
-    saed = _pick_ic(by_code, "LEVY.OTHER_SAED", "saed_windfall_tax_inr_cr")
-    exp_wo = _pick_ic(by_code, "PL.EXPL_WRITEOFF", "exploration_costs_written_off_inr_cr")
-    dda = _pick_ic(by_code, "PL.DDA", "dda_inr_cr")
-    pbt = _pick_ic(by_code, "PL.PBT", "pbt_inr_cr")
-    tax = _pick_ic(by_code, "PL.TAX", "tax_expense_total_inr_cr")
-    pat = _pick_ic(by_code, "PL.PAT", "pat_inr_cr")
-
-    out: List[Insight] = []
-    if rev and pat:
-        rv = float(rev.get("amount_cr") or 0)
-        tiv = float(ti.get("amount_cr") or rv)
-        tev = float(te.get("amount_cr") or 0)
-        pbtv_h = float(pbt.get("amount_cr") or 0)
-        pv = float(pat.get("amount_cr") or 0)
-        pyoy = float(pat.get("yoy_change_pct") or 0)
-        txt = (
-            f"Schedule III {fy} Summary: Revenue from Operations {fmt(rv, 'inr_cr')}, "
-            f"Total Income {fmt(tiv, 'inr_cr')}, Total Expenses {fmt(tev, 'inr_cr')}, "
-            f"Profit Before Tax {fmt(pbtv_h, 'inr_cr')}, and Standalone PAT {fmt(pv, 'inr_cr')} ({pyoy:+.1f}% YoY)."
-        )
-        out.append(Insight(kind="headline", type="headline", value=pv, unit="inr_cr", ref="Profit for the Year (PAT)",
-                           text=txt, facts=[rv, tiv, tev, pbtv_h, pv, abs(pyoy), pyoy] + _extract_nums(txt), priority=1))
-    rag_txt = _search_financial_rag(query, fy, "pnl_statement")
-    ctx_row = _lookup_line_context(fy, "pnl_statement")
-    driver = str(ctx_row.get("what_happened_summary") or pat.get("driver_note") or rev.get("driver_note") or "").strip()
-    action = str(ctx_row.get("director_finance_action") or "").strip()
-    if rag_txt:
-        out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                           text=rag_txt, facts=_extract_nums(rag_txt), priority=2))
-    elif driver:
-        txt = f"Context ({fy}, unverified snapshot): {driver}" + (f" | Director (Finance) Action: {action}" if action else "")
-        out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                           text=txt, facts=_extract_nums(txt), priority=2))
-    if lev:
-        lv = float(lev.get("amount_cr") or 0)
-        lyoy = float(lev.get("yoy_change_pct") or 0)
-        sv = float(saed.get("amount_cr") or 0)
-        txt = (
-            f"Statutory Levies: Total levies were {fmt(lv, 'inr_cr')} ({lyoy:+.1f}% YoY; "
-            f"SAED/other levies {fmt(sv, 'inr_cr')})."
-        )
-        out.append(Insight(kind="trend", type="pnl_levies", value=lv, unit="inr_cr", ref="Statutory Levies",
-                           text=txt, facts=[lv, abs(lyoy), lyoy, sv] + _extract_nums(txt), priority=3))
-    if exp_wo and dda and pbt and tax:
-        ew = float(exp_wo.get("amount_cr") or 0)
-        dv = float(dda.get("amount_cr") or 0)
-        pbtv = float(pbt.get("amount_cr") or 0)
-        txv = float(tax.get("amount_cr") or 0)
-        txt = (
-            f"Key Expense Drivers: Exploration costs written off were {fmt(ew, 'inr_cr')}, "
-            f"DD&A was {fmt(dv, 'inr_cr')}, yielding PBT of {fmt(pbtv, 'inr_cr')} and Tax Expense of {fmt(txv, 'inr_cr')}."
-        )
-        out.append(Insight(kind="comparison", type="pnl_drivers", value=pbtv, unit="inr_cr", ref="Profit Before Tax (PBT)",
-                           text=txt, facts=[ew, dv, pbtv, txv] + _extract_nums(txt), priority=4))
-    return out
-
-
-def _pnl_multi_year_insights(rows: List[Dict[str, Any]], query: str = ""):
-    from app.brain.insights import Insight, fmt
-    if len(rows) < 2:
-        return []
-    first, last = rows[0], rows[-1]
-    peak_rev = max(rows, key=lambda r: float(r.get("revenue_from_ops_cr") or 0))
-    peak_pat = max(rows, key=lambda r: float(r.get("standalone_pat_cr") or 0))
-    txt1 = (
-        f"10-Year Trajectory ({first.get('fiscal_year')}–{last.get('fiscal_year')}): "
-        f"Revenue grew from {fmt(float(first.get('revenue_from_ops_cr') or 0), 'inr_cr')} to {fmt(float(last.get('revenue_from_ops_cr') or 0), 'inr_cr')} "
-        f"(peaking at {fmt(float(peak_rev.get('revenue_from_ops_cr') or 0), 'inr_cr')} in {peak_rev.get('fiscal_year')}); "
-        f"Standalone PAT rose from {fmt(float(first.get('standalone_pat_cr') or 0), 'inr_cr')} to {fmt(float(last.get('standalone_pat_cr') or 0), 'inr_cr')} "
-        f"(record {fmt(float(peak_pat.get('standalone_pat_cr') or 0), 'inr_cr')} in {peak_pat.get('fiscal_year')})."
-    )
-    rag_txt = _search_financial_rag(query, None, "pnl_statement")
-    txt2 = rag_txt or (
-        "Historical Causal Highlights: FY20 PAT dipped to ₹13,464 cr on ₹4,899 cr COVID crude impairment; "
-        "FY22 PAT surged to ₹40,306 cr on ₹7,178 cr impairment reversal and Section 115BAA deferred tax credit (-₹8,846 cr); "
-        "SAED windfall tax peaked at ₹10,964 cr in FY23 before abolition in Dec 2024 (₹0 cr in FY26)."
-    )
-    txt3 = (
-        "Director (Finance) Action: Reallocate ₹4,200 cr infill capex to New Well Gas ($7.80/MMBtu, +20% premium over APM) "
-        "and transition 12 high-water-cut mature clusters to PEC contracts (-₹620 cr/yr opex)."
-    )
-    return [
-        Insight(kind="headline", type="headline", value=float(last.get("standalone_pat_cr") or 0), unit="inr_cr",
-                ref=str(last.get("fiscal_year")), text=txt1, facts=_extract_nums(txt1), priority=1),
-        Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                text=txt2, facts=_extract_nums(txt2), priority=2),
-        Insight(kind="note", type="action", value=None, unit="", ref=None,
-                text=txt3, facts=_extract_nums(txt3), priority=3),
-    ]
-
-
-def _bs_multi_year_insights(rows: List[Dict[str, Any]], query: str = ""):
-    from app.brain.insights import Insight, fmt
-    if len(rows) < 2:
-        return []
-    first, last = rows[0], rows[-1]
-    txt1 = (
-        f"Balance Sheet Trajectory ({first.get('fiscal_year')}–{last.get('fiscal_year')}): "
-        f"Total Assets nearly doubled from {fmt(float(first.get('total_assets_cr') or 0), 'inr_cr')} to {fmt(float(last.get('total_assets_cr') or 0), 'inr_cr')}, "
-        f"while Standalone Net Worth expanded from {fmt(float(first.get('net_worth_cr') or 0), 'inr_cr')} to {fmt(float(last.get('net_worth_cr') or 0), 'inr_cr')}."
-    )
-    rag_txt = _search_financial_rag(query, None, "balance_sheet")
-    txt2 = rag_txt or (
-        "10-Year Balance Sheet Milestones: FY18 borrowings rose to ₹25,592 cr to fund the ₹36,915 cr HPCL (51.11%) buyout before being repaid to ₹7,850 cr in FY26; "
-        "FY25–FY26 Non-Current Investments reached ₹1,19,840 cr following the ₹18,365 cr OPaL CCD-to-equity conversion (95.69% stake) and KG-DWN-98/2 CWIP capitalization."
-    )
-    return [
-        Insight(kind="headline", type="headline", value=float(last.get("total_assets_cr") or 0), unit="inr_cr",
-                ref=str(last.get("fiscal_year")), text=txt1, facts=_extract_nums(txt1), priority=1),
-        Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                text=txt2, facts=_extract_nums(txt2), priority=2),
-    ]
-
-
-def _cf_multi_year_insights(rows: List[Dict[str, Any]], query: str = ""):
-    from app.brain.insights import Insight, fmt
-    if len(rows) < 2:
-        return []
-    first, last = rows[0], rows[-1]
-    tot_ocf = sum(float(r.get("operating_cash_flow_cr") or 0) for r in rows)
-    tot_fcf = sum(float(r.get("free_cash_flow_cr") or 0) for r in rows)
-    txt1 = (
-        f"Cash Flow Trajectory ({first.get('fiscal_year')}–{last.get('fiscal_year')}): "
-        f"Cumulative Operating Cash Flow was {fmt(tot_ocf, 'inr_cr')} and cumulative Free Cash Flow was {fmt(tot_fcf, 'inr_cr')}, "
-        f"with {last.get('fiscal_year')} OCF at {fmt(float(last.get('operating_cash_flow_cr') or 0), 'inr_cr')} and FCF at {fmt(float(last.get('free_cash_flow_cr') or 0), 'inr_cr')}."
-    )
-    rag_txt = _search_financial_rag(query, None, "cash_flow_statement")
-    txt2 = rag_txt or (
-        "10-Year Capital Allocation: ONGC self-funded ₹3,00,137 cr of upstream E&P capex, the ₹36,915 cr HPCL buyout (FY18), "
-        "the ₹4,022 cr share buyback (FY19), and the ₹18,365 cr OPaL recapitalization (FY25) while building ₹33,500 cr in Cash & Bank balances by FY26."
-    )
-    return [
-        Insight(kind="headline", type="headline", value=tot_ocf, unit="inr_cr",
-                ref=str(last.get("fiscal_year")), text=txt1, facts=_extract_nums(txt1), priority=1),
-        Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                text=txt2, facts=_extract_nums(txt2), priority=2),
-    ]
-
-
-def _ratios_multi_year_insights(rows: List[Dict[str, Any]], query: str = ""):
-    from app.brain.insights import Insight
-    if len(rows) < 2:
-        return []
-    first, last = rows[0], rows[-1]
-    txt1 = (
-        f"10-Year Ratios ({first.get('fiscal_year')}–{last.get('fiscal_year')}): "
-        f"Standalone ROCE moved from {first.get('roce_pct')}% to {last.get('roce_pct')}% "
-        f"(peaking during FY22–FY24 oil recovery) with Debt-to-Equity maintained between 0.00x and 0.13x."
-    )
-    rag_txt = _search_financial_rag(query, None, "financial_ratios")
-    txt2 = rag_txt or (
-        "Director (Finance) Credit & Efficiency Summary: ONGC sustained an average EBITDA margin of 49.4% and >1.0x 2P Reserve Replacement Ratio across all 10 years."
-    )
-    return [
-        Insight(kind="headline", type="headline", value=float(last.get("roce_pct") or 0), unit="pct",
-                ref=str(last.get("fiscal_year")), text=txt1, facts=_extract_nums(txt1), priority=1),
-        Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                text=txt2, facts=_extract_nums(txt2), priority=2),
-    ]
-
-
-def _balance_sheet_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
-    from app.brain.insights import Insight, fmt
-    by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-    ta = _pick_ic(by_code, "BS.TOTAL_ASSETS", "total_assets_inr_cr")
-    nca = _pick_ic(by_code, "BS.ASSETS.NON_CURRENT.TOTAL", "non_current_assets_inr_cr")
-    oga = _pick_ic(by_code, "BS.OG_ASSETS", "oil_and_gas_assets_inr_cr")
-    cwip = _pick_ic(by_code, "BS.WIP_TOTAL_10YR", "BS.CWIP_OG", "cwip_inr_cr")
-    inv = _pick_ic(by_code, "BS.INVESTMENTS_SUB_JV", "BS.INVESTMENTS_NC_10YR", "investments_subsidiaries_jv_inr_cr")
-    nw = _pick_ic(by_code, "BS.EQUITY.TOTAL", "net_worth_inr_cr")
-    ltd = _pick_ic(by_code, "BS.BORROW_NC", "BS.BORROW_TOTAL_10YR", "long_term_debt_inr_cr")
-    aro = _pick_ic(by_code, "BS.PROV_NC", "abandonment_provision_inr_cr")
-    cash = _pick_ic(by_code, "BS.CCE", "cash_and_bank_inr_cr")
-
-    out: List[Insight] = []
-    if ta and nw:
-        tav = float(ta.get("amount_cr") or 0)
-        nwv = float(nw.get("amount_cr") or 0)
-        ncav = float(nca.get("amount_cr") or 0)
-        txt = (
-            f"Schedule III {fy} Balance Sheet: Total Assets of {fmt(tav, 'inr_cr')} "
-            f"(Non-Current Assets {fmt(ncav, 'inr_cr')}), funded by Standalone Net Worth of {fmt(nwv, 'inr_cr')}."
-        )
-        out.append(Insight(kind="headline", type="headline", value=tav, unit="inr_cr", ref="TOTAL ASSETS (I + II)",
-                           text=txt, facts=[tav, nwv, ncav] + _extract_nums(txt), priority=1))
-    rag_txt = _search_financial_rag(query, fy, "balance_sheet")
-    ctx_row = _lookup_line_context(fy, "balance_sheet")
-    driver = str(ctx_row.get("what_happened_summary") or ta.get("driver_note") or nw.get("driver_note") or "").strip()
-    action = str(ctx_row.get("director_finance_action") or "").strip()
-    if rag_txt:
-        out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                           text=rag_txt, facts=_extract_nums(rag_txt), priority=2))
-    elif driver:
-        txt = f"Balance sheet context ({fy}, unverified snapshot): {driver}" + (f" | Director (Finance) Action: {action}" if action else "")
-        out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                           text=txt, facts=_extract_nums(txt), priority=2))
-    if oga and cwip and inv:
-        ogav = float(oga.get("amount_cr") or 0)
-        cwv = float(cwip.get("amount_cr") or 0)
-        invv = float(inv.get("amount_cr") or 0)
-        txt = (
-            f"Notes 5–10 (Asset Composition): Oil & Gas Producing Properties Net Block is {fmt(ogav, 'inr_cr')}, "
-            f"Capital Work-in-Progress (CWIP) is {fmt(cwv, 'inr_cr')}, and Subsidiary/JV Investments (HPCL, OVL, MRPL, OPaL) are {fmt(invv, 'inr_cr')}."
-        )
-        out.append(Insight(kind="comparison", type="bs_assets", value=ogav, unit="inr_cr", ref="Oil & Gas Assets",
-                           text=txt, facts=[ogav, cwv, invv] + _extract_nums(txt), priority=3))
-    if ltd and aro and cash:
-        ltdv = float(ltd.get("amount_cr") or 0)
-        arov = float(aro.get("amount_cr") or 0)
-        cv = float(cash.get("amount_cr") or 0)
-        txt = (
-            f"Notes 15–22 (Liquidity & Obligations): Cash & Bank Balances stand at {fmt(cv, 'inr_cr')} against "
-            f"Long-Term Borrowings of {fmt(ltdv, 'inr_cr')} and Non-Current Provisions of {fmt(arov, 'inr_cr')}."
-        )
-        out.append(Insight(kind="trend", type="bs_liab", value=cv, unit="inr_cr", ref="Cash and Cash Equivalents",
-                           text=txt, facts=[ltdv, arov, cv] + _extract_nums(txt), priority=4))
-    return out
-
-
-def _cash_flow_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
-    from app.brain.insights import Insight, fmt
-    by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-    ocf = _pick_ic(by_code, "CF.CFO", "operating_cash_flow_inr_cr")
-    icf = _pick_ic(by_code, "CF.CFI", "investing_cash_flow_inr_cr")
-    fcf_act = _pick_ic(by_code, "CF.CFF", "financing_cash_flow_inr_cr")
-    fcf = _pick_ic(by_code, "free_cash_flow_inr_cr", "CF.CFO")
-    div_p = _pick_ic(by_code, "CF.FIN_DIV_PAID", "dividend_paid_cf_inr_cr")
-    cls_c = _pick_ic(by_code, "CF.CCE_CLOSE", "closing_cash_inr_cr")
-
-    out: List[Insight] = []
-    if ocf:
-        ocfv = float(ocf.get("amount_cr") or 0)
-        clsv = float(cls_c.get("amount_cr") or 0)
-        txt = (
-            f"Ind-AS 7 {fy} Cash Flow Summary: Net Cash from Operating Activities (OCF) was {fmt(ocfv, 'inr_cr')}, "
-            f"with Closing Cash & Cash Equivalents of {fmt(clsv, 'inr_cr')}."
-        )
-        out.append(Insight(kind="headline", type="headline", value=ocfv, unit="inr_cr", ref="Net Cash from Operating Activities (OCF)",
-                           text=txt, facts=[ocfv, clsv] + _extract_nums(txt), priority=1))
-    rag_txt = _search_financial_rag(query, fy, "cash_flow_statement")
-    ctx_row = _lookup_line_context(fy, "cash_flow_statement")
-    driver = str(ctx_row.get("what_happened_summary") or ocf.get("driver_note") or "").strip()
-    action = str(ctx_row.get("director_finance_action") or "").strip()
-    if rag_txt:
-        out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                           text=rag_txt, facts=_extract_nums(rag_txt), priority=2))
-    elif driver:
-        txt = f"Cash flow context ({fy}, unverified snapshot): {driver}" + (f" | Director (Finance) Action: {action}" if action else "")
-        out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                           text=txt, facts=_extract_nums(txt), priority=2))
-    if icf and fcf_act and div_p:
-        icfv = float(icf.get("amount_cr") or 0)
-        ffv = float(fcf_act.get("amount_cr") or 0)
-        dpv = float(div_p.get("amount_cr") or 0)
-        txt = (
-            f"Capital Allocation ({fy}): Net Cash Used in Investing Activities was {fmt(icfv, 'inr_cr')} "
-            f"and Net Cash Used in Financing Activities was {fmt(ffv, 'inr_cr')} (including Dividends Paid of {fmt(dpv, 'inr_cr')})."
-        )
-        out.append(Insight(kind="comparison", type="cf_alloc", value=float(fcf.get("amount_cr") or 0) if fcf else 0.0, unit="inr_cr", ref="Capital Allocation",
-                           text=txt, facts=[icfv, ffv, dpv, abs(icfv), abs(ffv), abs(dpv)] + _extract_nums(txt), priority=3))
-    return out
-
-
-def _financial_ratios_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
-    from app.brain.insights import Insight
-    by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-    ebm = _pick_ic(by_code, "RATIO.PBIDT_MARGIN_PCT", "ebitda_margin_pct").get("value")
-    pm = _pick_ic(by_code, "RATIO.PAT_MARGIN_PCT", "pat_margin_pct").get("value")
-    roce = _pick_ic(by_code, "RATIO.ROCE", "standalone_roce_pct").get("value")
-    roe = _pick_ic(by_code, "RATIO.ROE_INCL_EXC", "roe_pct").get("value")
-    de = _pick_ic(by_code, "RATIO.DEBT_EQUITY", "debt_to_equity_ratio").get("value")
-    icr = _pick_ic(by_code, "interest_coverage_ratio", "RATIO.CURRENT").get("value")
-    eps = _pick_ic(by_code, "PL.EPS_BASIC", "RATIO.EPS", "eps_basic_inr").get("value")
-    dps = _pick_ic(by_code, "RATIO.DPS", "dividend_per_share_inr").get("value")
-    txt1 = (
-        f"Profitability & Returns ({fy}): PBIDT Margin {ebm}%, Net PAT Margin {pm}%, "
-        f"Standalone ROCE {roce}%, and Return on Equity (ROE) {roe}%."
-    )
-    txt2 = (
-        f"Solvency & Per-Share ({fy}): Debt-to-Equity ratio is {de}x; "
-        f"Basic EPS is ₹{eps}/share and Dividend Per Share is ₹{dps}/share."
-    )
-    out = [
-        Insight(kind="headline", type="headline", value=float(ebm or 0), unit="pct", ref="PBIDT Margin (%)",
-                text=txt1, facts=_extract_nums(txt1), priority=1),
-    ]
-    rag_txt = _search_financial_rag(query, fy, "financial_ratios")
-    ctx_row = _lookup_line_context(fy, "financial_ratios")
-    action = str(ctx_row.get("director_finance_action") or "").strip()
-    if rag_txt:
-        out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                           text=rag_txt, facts=_extract_nums(rag_txt), priority=2))
-    elif action:
-        txt3 = f"Director (Finance) Action ({fy}): {action}"
-        out.append(Insight(kind="note", type="causal_rag", value=None, unit="", ref=None,
-                           text=txt3, facts=_extract_nums(txt3), priority=2))
-    out.append(
-        Insight(kind="comparison", type="ratio_solv", value=float(de or 0), unit="ratio", ref="Debt-to-Equity Ratio (x)",
-                text=txt2, facts=_extract_nums(txt2), priority=3)
-    )
-    return out
-
-
-def _corporate_causal_insights(compiled: CompiledQuery, rows: List[Dict[str, Any]], query: str = ""):
-    from app.brain.insights import Insight
-    try:
-        fy = (compiled.effective_period or {}).get("fy") or "FY26"
-        rag_txt = _search_financial_rag(query, fy, compiled.metric)
-        if rag_txt:
-            return [Insight(kind="note", type="causal_rag", value=None, unit="", ref=fy,
-                            text=rag_txt, facts=_extract_nums(rag_txt), priority=2)]
-        ctx_row = _lookup_line_context(fy, compiled.metric)
-        if not ctx_row:
-            is_bs_metric = any(
-                k in compiled.metric
-                for k in ("asset", "cwip", "investment", "receivable", "inventory", "cash_and_bank", "equity", "net_worth", "debt", "lease", "abandonment", "liabilit")
-            )
-            ctx_row = _lookup_line_context(fy, "balance_sheet" if is_bs_metric else "pnl_statement")
-        if ctx_row:
-            summary = ctx_row.get("what_happened_summary", "")
-            hist = ctx_row.get("historical_10yr_context", "")
-            action = ctx_row.get("director_finance_action", "")
-            txt = f"Context ({fy}, unverified snapshot): {summary} 10-Yr Context: {hist} Director (Finance) Action: {action}"
-            return [Insight(kind="note", type="causal_rag", value=None, unit="", ref=fy,
-                            text=txt, facts=_extract_nums(txt), priority=2)]
-    except Exception:
-        pass
-    return []
 
 
 def _under_investment(rows: List[Dict[str, Any]]):
@@ -616,3 +263,62 @@ def table_insights(columns: List[str], rows: List[Any], max_n: int = 4):
     ctx = InsightContext(metric=val, metric_label=val.replace("_", " ").title(), unit=unit, dim=chosen_dim,
                          value_col=val, rows=norm_rows, n_total=len(norm_rows))
     return compute_insights(ctx, max_n=max_n)
+
+
+def _pnl_statement_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
+    from app.brain.insights import Insight, fmt
+    # R2-B1: computed from verified rows only
+    vrows = [r for r in rows if r.get("verified", True) is not False]
+    by_code = {str(r.get("line_code")): r for r in vrows if r.get("line_code")}
+    rev = by_code.get("PL.REV_OPS", {})
+    pat = by_code.get("PL.PAT", {})
+    
+    out: List[Insight] = []
+    if rev and pat:
+        rv = float(rev.get("amount_cr") or rev.get("value_inr_cr") or 0)
+        pv = float(pat.get("amount_cr") or pat.get("value_inr_cr") or 0)
+        pyoy = float(pat.get("yoy_change_pct") or 0)
+        txt = (
+            f"Schedule III {fy} Summary: Revenue from Operations {fmt(rv, 'inr_cr')}, "
+            f"Standalone PAT {fmt(pv, 'inr_cr')} ({pyoy:+.1f}% YoY)."
+        )
+        out.append(Insight(kind="headline", type="headline", value=pv, unit="inr_cr", ref="Standalone PAT",
+                           text=txt, facts=[rv, pv, abs(pyoy), pyoy] + _extract_nums(txt), priority=1))
+    return out
+
+def _balance_sheet_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
+    from app.brain.insights import Insight, fmt
+    vrows = [r for r in rows if r.get("verified", True) is not False]
+    by_code = {str(r.get("line_code")): r for r in vrows if r.get("line_code")}
+    ta = by_code.get("BS.TOTAL_ASSETS", {})
+    te = by_code.get("BS.TOTAL_EQUITY", {})
+    
+    out: List[Insight] = []
+    if ta and te:
+        tav = float(ta.get("amount_cr") or ta.get("value_inr_cr") or 0)
+        tev = float(te.get("amount_cr") or te.get("value_inr_cr") or 0)
+        txt = f"{fy} Balance Sheet: Total Assets {fmt(tav, 'inr_cr')} and Total Equity {fmt(tev, 'inr_cr')}."
+        out.append(Insight(kind="headline", type="headline", value=tav, unit="inr_cr", ref="Total Assets",
+                           text=txt, facts=[tav, tev] + _extract_nums(txt), priority=1))
+    return out
+
+def _cash_flow_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
+    from app.brain.insights import Insight, fmt
+    vrows = [r for r in rows if r.get("verified", True) is not False]
+    by_code = {str(r.get("line_code")): r for r in vrows if r.get("line_code")}
+    cfo = by_code.get("CF.CFO", {})
+    
+    out: List[Insight] = []
+    if cfo:
+        cfov = float(cfo.get("amount_cr") or cfo.get("value_inr_cr") or 0)
+        txt = f"{fy} Cash Flow: Operating Cash Flow {fmt(cfov, 'inr_cr')}."
+        out.append(Insight(kind="headline", type="headline", value=cfov, unit="inr_cr", ref="CFO",
+                           text=txt, facts=[cfov] + _extract_nums(txt), priority=1))
+    return out
+
+def _financial_ratios_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
+    from app.brain.insights import Insight, fmt
+    return []
+
+def _corporate_causal_insights(compiled: Any, rows: List[Dict[str, Any]], query: str = ""):
+    return []

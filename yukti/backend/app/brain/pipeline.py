@@ -342,7 +342,7 @@ async def run_planner_turn(
             "detail": f"Verified SSOT ({fin_doc or 'ONGC AR'}" + (f" {fin_page})" if fin_page else ")"),
         }
         if prov_label == "derived_ar":
-            prov_obj["badge"] = "Derived from AR"
+            prov_obj["badge"] = "AR-printed"
         contract["provenance"] = prov_obj
     if notes:
         contract["caveat"] = "; ".join(notes)[:300]

@@ -83,7 +83,7 @@ class PolicySearchEngine:
                     })
         from pathlib import Path
         import json
-        fin_corpus = Path(__file__).resolve().parents[3] / "financial_build" / "data" / "financial_notes_corpus.jsonl"
+        fin_corpus = Path(__file__).resolve().parents[3] / "financial_ssot" / "out" / "doc_chunks_ar.jsonl"
         if fin_corpus.exists():
             with open(fin_corpus, "r", encoding="utf-8") as f:
                 for line in f:
@@ -92,12 +92,12 @@ class PolicySearchEngine:
                     c = json.loads(line)
                     items.append({
                         "doc_id": f"ONGC Annual Report ({c.get('fiscal_year', 'FY17–FY26')})",
-                        "clause_ref": c.get("note_ref", "Schedule III"),
-                        "clause_title": c.get("title", ""),
-                        "clause_text": c.get("content", ""),
-                        "maps_to_question_ids": ",".join(c.get("causal_tags", [])),
-                        "source_basis": c.get("yahoo_finance_equivalent", "Schedule III P&L"),
-                        "provenance": "illustrative",  # P0.7: generated financial_build notes, not AR text
+                        "clause_ref": str(c.get("note_no") or "AR"),
+                        "clause_title": c.get("heading") or "",
+                        "clause_text": c.get("text") or "",
+                        "maps_to_question_ids": ",".join(c.get("line_codes") or []),
+                        "source_basis": c.get("source_doc") or "AR",
+                        "provenance": "real",
                     })
         self._local_index = items
         return items

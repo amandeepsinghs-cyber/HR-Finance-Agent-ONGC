@@ -37,6 +37,7 @@ FALLBACK_VOICE = "Aoede"
 YUKTI_RESULT_CACHE = os.getenv("YUKTI_RESULT_CACHE", "1") in ("1", "true", "yes")
 
 # Full-answer Demo cache flag: OFF by default (backup switch)
+YUKTI_FIN_SSOT_V3 = os.getenv("YUKTI_FIN_SSOT_V3", "1") in ("1", "true", "yes")
 YUKTI_DEMO_CACHE = os.getenv("YUKTI_DEMO_CACHE", "0") in ("1", "true", "yes")
 
 # BigQuery Datasets
