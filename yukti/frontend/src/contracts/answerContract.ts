@@ -239,6 +239,19 @@ export interface AccessControl {
 
 export type ExportOption = 'sheets' | 'docs' | 'word' | 'pdf' | 'xlsx';
 
+// ---------- P2F.1: year / slot clarification (SPEC-08 §3.2) ----------
+export interface ClarifyOption {
+  label: string; // "FY26 (latest)"
+  value: string; // "FY26" | "FY22..FY26" — sent back as the reply
+  spoken?: string;
+}
+export interface ClarifySpec {
+  slot: 'fiscal_period' | 'statement' | 'scope' | 'entity';
+  question: string;
+  options: ClarifyOption[];
+  pending_spec?: Record<string, unknown>;
+}
+
 export interface AnswerContract {
   turn_id: string;
   language: LanguageType;
@@ -255,6 +268,8 @@ export interface AnswerContract {
   status_events?: string[];
   /** P0.3 (SPEC-11 §7.1, additive): where the answer's data really came from. */
   provenance?: { label: string; detail?: string; snapshot_date?: string | null };
+  /** P2F.1 (SPEC-08 §3.2, ledger row `clarify`): ask one question with 2–6 options before answering */
+  clarify?: ClarifySpec;
   /** P0.3: data path of a planner answer; `sql` is null when no SQL ran (local snapshot). */
   status?: { source: 'bigquery' | 'local_snapshot' | string; sql?: string | null };
   /** v2 (U2.1); absent = 1. All v2 fields are optional. */

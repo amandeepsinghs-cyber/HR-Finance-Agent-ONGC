@@ -68,6 +68,12 @@ def evaluate(
     Returns:
         The result of the evaluated expression (float, bool, or int).
     """
+    if not expr_str or not expr_str.strip():
+        raise ExprError("Empty expression string")
+
+    if "_VAR_" in expr_str:
+        raise ExprError("Internal identifier prefix '_VAR_' is forbidden in expressions")
+
     if context is None:
         context = {}
 
@@ -184,6 +190,9 @@ def evaluate(
                 raise ExprError(f"Unsupported boolean operator: {type(node.op).__name__}")
 
         elif isinstance(node, ast.Call):
+            if node.keywords:
+                raise ExprError("Keyword arguments are not allowed in expressions")
+
             if not isinstance(node.func, ast.Name):
                 raise ExprError("Function call must be a simple identifier, not an attribute or complex expression")
 
@@ -194,18 +203,22 @@ def evaluate(
             # Standard math functions
             if func_name == "abs":
                 if len(node.args) != 1:
-                    raise ExprError("abs() takes exactly 1 argument")
+                    raise ExprError(f"abs() takes exactly 1 argument ({len(node.args)} given)")
                 return abs(_eval_ast(node.args[0], eval_fy))
             elif func_name == "min":
-                if not node.args:
+                if len(node.args) < 1:
                     raise ExprError("min() requires at least 1 argument")
                 return min(_eval_ast(a, eval_fy) for a in node.args)
             elif func_name == "max":
-                if not node.args:
+                if len(node.args) < 1:
                     raise ExprError("max() requires at least 1 argument")
                 return max(_eval_ast(a, eval_fy) for a in node.args)
 
             # Historical / window functions
+            if func_name in ("prior", "yoy", "avg5", "median5"):
+                if len(node.args) != 1:
+                    raise ExprError(f"{func_name}() takes exactly 1 argument ({len(node.args)} given)")
+
             target_fy = eval_fy or current_fy
             if not target_fy or not history_fn:
                 # Fallback: if caller passed direct key in context

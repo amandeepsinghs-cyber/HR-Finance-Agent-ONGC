@@ -314,3 +314,59 @@ def test_determinism(df_full_suite: pd.DataFrame):
     r1 = generate_actions(df_full_suite, "FY26", persona="CMD", levers_path=FULL_LEVERS_YAML)
     r2 = generate_actions(df_full_suite, "FY26", persona="CMD", levers_path=FULL_LEVERS_YAML)
     assert r1 == r2
+
+
+def test_p2f6_b1_b2_fact_snapshot_real_data():
+    """Assert real fact_snapshot.parquet compatibility (P2F6-B1, P2F6-B2)."""
+    parquet_path = _backend_dir.parent.parent / "financial_ssot" / "out" / "fact_snapshot.parquet"
+    if not parquet_path.exists():
+        pytest.skip(f"Parquet {parquet_path} not found")
+
+    df = pd.read_parquet(parquet_path)
+    res = generate_actions(df, "FY26", persona="CMD", levers_path=FULL_LEVERS_YAML)
+    by_id = {item["lever_id"]: item for item in res["items"]}
+
+    # P2F6-B1: L02 triggers on real parquet with debtor days 32 back to 29 and ~1,089.1 cr impact
+    assert "L02" in by_id
+    l02 = by_id["L02"]
+    assert "32" in l02["what_to_do"] and "29" in l02["what_to_do"]
+    assert l02["impact"]["mid"] == pytest.approx(1089.1, abs=1.0)
+
+    # P2F6-B1: L03 triggers with synthesized PROD.TOTAL_BOE (40.5 MMBOE)
+    assert "L03" in by_id
+    assert "40.5" in by_id["L03"]["what_to_do"]
+
+    # P2F6-B2: Multi-year evidence assertions
+    # L06 uses avg5 -> evidence must include all 5 years
+    l06 = by_id["L06"]
+    l06_evidence_fys = {e["ref"].split()[1] for e in l06["evidence"] if e["type"] == "data"}
+    assert {"FY22", "FY23", "FY24", "FY25", "FY26"}.issubset(l06_evidence_fys)
+
+    # L02 uses prior -> evidence must include FY25 and FY26
+    l02_evidence_fys = {e["ref"].split()[1] for e in l02["evidence"] if e["type"] == "data"}
+    assert {"FY25", "FY26"}.issubset(l02_evidence_fys)
+
+
+def test_p2f6_b3_expr_call_and_arity_guards():
+    """Assert expr.py keyword args, arity guards, _VAR_ check, and package exports (P2F6-B3)."""
+    from app.agents.fin_diagnostics import ExprError, evaluate, generate_actions as gen_act
+
+    assert ExprError is not None
+    assert evaluate is not None
+    assert gen_act is not None
+
+    # Keyword arguments forbidden
+    with pytest.raises(ExprError, match="Keyword arguments"):
+        evaluate("abs(x=1)")
+
+    # Arity check on prior()
+    with pytest.raises(ExprError, match="takes exactly 1 argument"):
+        evaluate("prior()")
+
+    # Arity check on yoy()
+    with pytest.raises(ExprError, match="takes exactly 1 argument"):
+        evaluate("yoy()")
+
+    # Internal _VAR_ prefix forbidden
+    with pytest.raises(ExprError, match="_VAR_"):
+        evaluate("_VAR_0_ + 1")

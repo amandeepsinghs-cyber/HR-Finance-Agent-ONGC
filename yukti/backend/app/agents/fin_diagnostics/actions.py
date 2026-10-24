@@ -21,7 +21,7 @@ LEVER_VAR_ALIASES: Dict[str, List[str]] = {
     "OPEX.PROVISIONS": ["OPEX.PROVISIONS", "PL.PROVISIONS_WRITEOFF", "PL.PROVISIONS"],
     "EXPL.WELLS": ["EXPL.WELLS", "PL.EXPL_WELL"],
     "PL.OPEX": ["PL.OPEX", "PL.OPEX_10YR", "EXP.OPERATING"],
-    "RATIO.DEBTOR_DAYS": ["RATIO.DEBTOR_DAYS", "DEBTOR_DAYS"],
+    "RATIO.DEBTOR_DAYS": ["RATIO.DEBTOR_DAYS", "RATIO.DEBTORS_TURNOVER_DAYS", "DEBTOR_DAYS"],
     "BS.INVENTORIES": ["BS.INVENTORIES", "BS.INVENTORY"],
     "PL.REV_OPS": ["PL.REV_OPS", "REV_OPS"],
     "PROD.TOTAL_BOE": ["PROD.TOTAL_BOE", "QTY.TOTAL_BOE"],
@@ -63,6 +63,8 @@ def _lookup_cell(
     sub = df
     if "scope" in sub.columns:
         sub = sub[sub["scope"] == scope]
+    if "period_type" in sub.columns:
+        sub = sub[sub["period_type"] == "annual"]
     if "verified" in sub.columns:
         sub = sub[sub["verified"] == True]
     if "is_latest_vintage" in sub.columns:
@@ -80,9 +82,12 @@ def _lookup_cell(
         match = sub[sub[lc_col] == lc]
         if not match.empty:
             row = match.iloc[0]
-            val_col = "value_inr_cr" if "value_inr_cr" in row else ("value" if "value" in row else None)
-            if val_col and pd.notna(row[val_col]):
-                val = float(row[val_col])
+            val = None
+            for col in ("value_inr_cr", "value", "value_native"):
+                if col in row and pd.notna(row[col]):
+                    val = float(row[col])
+                    break
+            if val is not None:
                 doc = str(row.get("source_doc", "")).strip() if pd.notna(row.get("source_doc")) else ""
                 page_raw = str(row.get("source_page_label", row.get("source_page", ""))).strip()
                 page = page_raw if page_raw.startswith("p.") else (f"p.{page_raw}" if page_raw else "")
@@ -94,6 +99,65 @@ def _lookup_cell(
                     "val": val,
                 }
                 return val, lineage
+
+    # Composite fallback syntheses when direct aliases are absent
+    if var_name in ("BS.CWIP_TOTAL", "BS.CWIP"):
+        cwip_components = ["BS.CWIP_DEV_WELLS", "BS.CWIP_OG_FACILITIES", "BS.CWIP_OTHER"]
+        cwip_vals = []
+        doc = ""
+        page = ""
+        for c_lc in cwip_components:
+            match_c = sub[sub[lc_col] == c_lc]
+            if not match_c.empty:
+                r_c = match_c.iloc[0]
+                for col in ("value_inr_cr", "value", "value_native"):
+                    if col in r_c and pd.notna(r_c[col]):
+                        cwip_vals.append(float(r_c[col]))
+                        if not doc and pd.notna(r_c.get("source_doc")):
+                            doc = str(r_c["source_doc"]).strip()
+                        if not page:
+                            page_raw = str(r_c.get("source_page_label", r_c.get("source_page", ""))).strip()
+                            page = page_raw if page_raw.startswith("p.") else (f"p.{page_raw}" if page_raw else "")
+                        break
+        if cwip_vals:
+            val = round(sum(cwip_vals), 1)
+            lineage = {
+                "doc": doc,
+                "page": page,
+                "line_code": var_name,
+                "fy": fy,
+                "val": val,
+            }
+            return val, lineage
+
+    if var_name in ("PROD.TOTAL_BOE", "QTY.TOTAL_BOE"):
+        prod_lines = ["PROD.CRUDE_ONGC", "PROD.GAS_ONGC", "PROD.CRUDE_JV", "PROD.GAS_JV"]
+        prod_vals = []
+        doc = ""
+        page = ""
+        for p_lc in prod_lines:
+            match_p = sub[sub[lc_col] == p_lc]
+            if not match_p.empty:
+                r_p = match_p.iloc[0]
+                for col in ("value_inr_cr", "value", "value_native"):
+                    if col in r_p and pd.notna(r_p[col]):
+                        prod_vals.append(float(r_p[col]))
+                        if not doc and pd.notna(r_p.get("source_doc")):
+                            doc = str(r_p["source_doc"]).strip()
+                        if not page:
+                            page_raw = str(r_p.get("source_page_label", r_p.get("source_page", ""))).strip()
+                            page = page_raw if page_raw.startswith("p.") else (f"p.{page_raw}" if page_raw else "")
+                        break
+        if prod_vals:
+            val = round(sum(prod_vals), 3)
+            lineage = {
+                "doc": doc,
+                "page": page,
+                "line_code": var_name,
+                "fy": fy,
+                "val": val,
+            }
+            return val, lineage
 
     return None, None
 
@@ -119,6 +183,7 @@ def generate_actions(
     persona: str,
     levers_path: str | Path,
     ar_evidence_fn: Optional[Callable[[str, str], List[Any]]] = None,
+    prior_fy: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Evaluate lever library against verified SSOT rows and return SPEC-08 §7.3 payload."""
     if not isinstance(df, pd.DataFrame):
@@ -242,21 +307,32 @@ def generate_actions(
         evidence: List[Dict[str, str]] = []
         prior_y = _prev_fy(fy)
 
-        for inp in lever_inputs:
-            # Current year data evidence
-            if (inp, fy) in lineage_map:
-                lin = lineage_map[(inp, fy)]
-                evidence.append({
-                    "type": "data",
-                    "ref": f"{inp} {fy} = {_format_indian_num(lin['val'])} ({lin['doc']} {lin['page']})".strip(),
-                })
-            # Prior year data evidence if prior was evaluated
-            if (inp, prior_y) in lineage_map and "prior" in (trigger_expr + impact_spec.get("mid_expr", "")):
-                lin = lineage_map[(inp, prior_y)]
-                evidence.append({
-                    "type": "data",
-                    "ref": f"{inp} {prior_y} = {_format_indian_num(lin['val'])} ({lin['doc']} {lin['page']})".strip(),
-                })
+        all_expr_text = " ".join([
+            trigger_expr,
+            impact_spec.get("low_expr", ""),
+            impact_spec.get("mid_expr", ""),
+            impact_spec.get("high_expr", ""),
+            lever.get("what_to_do_template", ""),
+            lever.get("ask_template", ""),
+        ])
+
+        used_years = [fy]
+        if prior_y and ("prior" in all_expr_text or "yoy" in all_expr_text):
+            if prior_y not in used_years:
+                used_years.append(prior_y)
+        if "avg5" in all_expr_text or "median5" in all_expr_text:
+            for y in window_fys:
+                if y not in used_years:
+                    used_years.append(y)
+
+        for y in used_years:
+            for inp in lever_inputs:
+                if (inp, y) in lineage_map:
+                    lin = lineage_map[(inp, y)]
+                    evidence.append({
+                        "type": "data",
+                        "ref": f"{inp} {y} = {_format_indian_num(lin['val'])} ({lin['doc']} {lin['page']})".strip(),
+                    })
 
         # Inject AR evidence if available
         if ar_evidence_fn:

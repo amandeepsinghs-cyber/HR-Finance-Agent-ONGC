@@ -220,3 +220,16 @@ def test_line_aliases(df_fy25_fy26: pd.DataFrame):
     r_exch1 = attribute(df_fy25_fy26, "PL.EXCHANGE_LOSS", "FY26")
     r_exch2 = attribute(df_fy25_fy26, "PL.EXCHANGE_LOSS_10YR", "FY26")
     assert r_exch1[0].delta_inr_cr == r_exch2[0].delta_inr_cr
+
+
+def test_fact_snapshot_parquet_historical_bridges():
+    """Assert PBT bridges close (error <= 0.10) for all historical years FY18..FY26 on fact_snapshot.parquet."""
+    parquet_path = _backend_dir.parent.parent / "financial_ssot" / "out" / "fact_snapshot.parquet"
+    if not parquet_path.exists():
+        pytest.skip(f"Parquet file {parquet_path} not found")
+
+    df = pd.read_parquet(parquet_path)
+    for fy_to in [f"FY{y}" for y in range(18, 27)]:
+        bridge = pbt_bridge(df, fy_to=fy_to)
+        assert bridge.closure_error <= 0.10, f"Bridge for {fy_to} failed closure: error={bridge.closure_error}"
+        assert len(bridge.rows) >= 10
