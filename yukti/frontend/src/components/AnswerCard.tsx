@@ -21,6 +21,7 @@ import { SourceChipsModal } from './SourceChipsModal';
 import { RosterTable } from './renderers/RosterTable';
 import { CompareRenderer } from './renderers/CompareRenderer';
 import { SensitivityGrid, Tornado } from './renderers/FinanceVisuals';
+import { ActionsCard } from './renderers/ActionsCard';
 import { replot, profile, ReplotResult, ReplotKind } from '@/charts/compat';
 import { normalizeRows } from '@/charts/normalize';
 import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
@@ -414,7 +415,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   }, [isLatest, isGreeting, effectiveVisualType, isFinanceVisual, exportDisabled, refused, contract]);
 
   const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map' || isFinanceVisual);
-  const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table' || displayVisualType === 'statement';
+  const selfFramed = effectiveVisualType === 'actions' || effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table' || displayVisualType === 'statement';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
 
   // Wide tables (> 7 columns) take the full width; takeaways stack below (no horizontal clipping).
@@ -554,6 +555,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
               {effectiveVisualType === 'sensitivity_grid' && effVisual?.sensitivity_grid && <SensitivityGrid spec={effVisual.sensitivity_grid} isDark={isDark} />}
               {effectiveVisualType === 'tornado' && effVisual?.tornado && <Tornado spec={effVisual.tornado} isDark={isDark} />}
+              {effectiveVisualType === 'actions' && effVisual?.actions && <ActionsCard actions={effVisual.actions} />}
             </section>
 
             {insights.length > 0 && !refused && (

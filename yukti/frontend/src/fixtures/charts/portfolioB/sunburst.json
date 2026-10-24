@@ -1,0 +1,37 @@
+{
+ "type": "chart",
+ "mode": "replace",
+ "title": "Illustrative fixture: revenue by segment and product",
+ "chart": {
+  "kind": "sunburst",
+  "unit": "\u20b9 Cr",
+  "data": [
+   {
+    "segment": "Segment X",
+    "product": "Product 1",
+    "revenue_cr": 420
+   },
+   {
+    "segment": "Segment X",
+    "product": "Product 2",
+    "revenue_cr": 180
+   },
+   {
+    "segment": "Segment Y",
+    "product": "Product 3",
+    "revenue_cr": 260
+   },
+   {
+    "segment": "Segment Y",
+    "product": "Product 4",
+    "revenue_cr": 90
+   },
+   {
+    "segment": "Segment Y",
+    "product": "Product 5",
+    "revenue_cr": 50
+   }
+  ]
+ },
+ "source_note": "Illustrative UI test fixture, not ONGC data"
+}

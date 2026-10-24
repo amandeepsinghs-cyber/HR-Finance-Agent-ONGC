@@ -1,0 +1,51 @@
+{
+ "type": "chart",
+ "mode": "replace",
+ "title": "Illustrative fixture: assets by cost, margin and output",
+ "chart": {
+  "kind": "bubble",
+  "x": "lifting_cost_usd_boe",
+  "y": "ebitda_margin_pct",
+  "value": "output_mmtoe",
+  "unit": "",
+  "data": [
+   {
+    "asset": "Asset A",
+    "lifting_cost_usd_boe": 9.5,
+    "ebitda_margin_pct": 48,
+    "output_mmtoe": 6.2
+   },
+   {
+    "asset": "Asset B",
+    "lifting_cost_usd_boe": 12.1,
+    "ebitda_margin_pct": 41,
+    "output_mmtoe": 3.8
+   },
+   {
+    "asset": "Asset C",
+    "lifting_cost_usd_boe": 15.4,
+    "ebitda_margin_pct": 33,
+    "output_mmtoe": 2.1
+   },
+   {
+    "asset": "Asset D",
+    "lifting_cost_usd_boe": 7.9,
+    "ebitda_margin_pct": 55,
+    "output_mmtoe": 8.9
+   },
+   {
+    "asset": "Asset E",
+    "lifting_cost_usd_boe": 18.2,
+    "ebitda_margin_pct": 22,
+    "output_mmtoe": 1.2
+   },
+   {
+    "asset": "Asset F",
+    "lifting_cost_usd_boe": 11.0,
+    "ebitda_margin_pct": 44,
+    "output_mmtoe": 4.5
+   }
+  ]
+ },
+ "source_note": "Illustrative UI test fixture, not ONGC data"
+}

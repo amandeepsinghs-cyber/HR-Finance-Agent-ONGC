@@ -15,6 +15,7 @@ export type VisualType =
   | 'statement'
   | 'sensitivity_grid'
   | 'tornado'
+  | 'actions'
   | 'kpi'
   | 'clause'
   | 'document'
@@ -44,6 +45,9 @@ export type ChartKind =
   | 'gauge'
   | 'funnel'
   | 'scatter'
+  | 'bubble' // P4.5 B2: x · y · size
+  | 'sunburst' // P4.5 B2: hierarchy (text levels → value)
+  | 'sankey' // P4.5 B2: flows {source, target, value}
   | 'kpi'
   | 'table'
   | 'map';
@@ -216,6 +220,41 @@ export interface TornadoSpec {
   source?: string;
 }
 
+// ---------- P4.5 B2: SPEC-08 §7.3 top-5 actions (field list owned by SPEC-08) ----------
+export interface ActionImpact {
+  low?: number;
+  mid?: number;
+  high?: number;
+  unit?: 'INR_cr';
+  kind?: 'one_off' | 'annual';
+  label?: 'Modelled estimate';
+}
+export interface ActionItem {
+  rank: number;
+  lever_id: string;
+  title: string;
+  what_to_do: string;
+  impact: ActionImpact;
+  /** absent for E1–E4 personas ("for discussion", SPEC-08 §7.4) */
+  owner?: 'CMD' | 'DIR_FIN' | 'DIR_HR';
+  horizon_days?: 30 | 90 | 180;
+  kpi: string;
+  evidence: { type: 'data' | 'ar'; ref: string }[];
+  confidence?: number;
+}
+export interface DelegationRow {
+  owner?: string;
+  ask: string;
+  by_when?: string;
+  kpi?: string;
+  evidence?: string;
+}
+export interface ActionsSpec {
+  fy: string;
+  items: ActionItem[];
+  delegation_table: DelegationRow[];
+}
+
 export interface VisualContainer {
   type: VisualType;
   mode: VisualMode;
@@ -231,6 +270,8 @@ export interface VisualContainer {
   /** P4.5: typed finance visuals (type = 'sensitivity_grid' | 'tornado') */
   sensitivity_grid?: SensitivityGridSpec;
   tornado?: TornadoSpec;
+  /** P4.5 B2: SPEC-08 §7.3 (type = 'actions') */
+  actions?: ActionsSpec;
   /** v2 (U2.1): side-by-side comparison when mode = 'compare' */
   compare?: CompareSpec;
   /** UI-only (U5.7): the answer's original rows, kept so repeated re-plots never drift */

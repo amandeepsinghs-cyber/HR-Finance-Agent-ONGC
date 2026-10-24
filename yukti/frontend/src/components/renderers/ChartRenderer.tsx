@@ -3,6 +3,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChartSpec, KpiTile } from '@/contracts/answerContract';
 import { planChart, ChartPlan, Row } from '@/charts/plan';
+import { bubbleOption, sunburstOption, sankeyOption } from '@/charts/portfolioBOptions';
+import { isTextKey } from '@/charts/plan';
 import { getTokens, ChartTokens } from '@/charts/theme';
 import { EChart } from '@/charts/EChart';
 import {
@@ -199,10 +201,19 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = fal
         return boxOption(plan, t, data);
       case 'gauge':
         return gaugeOption(plan, t, data);
+      // P4.5 B2
+      case 'bubble':
+        return bubbleOption(plan, t, data, spec);
+      case 'sunburst': {
+        const keys = Object.keys(data[0] || {});
+        return sunburstOption(plan, t, data, keys.filter((k) => isTextKey(data, k) && !/status|type|unit/i.test(k)));
+      }
+      case 'sankey':
+        return sankeyOption(plan, t, data);
       default:
         return null;
     }
-  }, [plan, t, spec.data]);
+  }, [plan, t, spec]);
 
   if (!plan.rows.length) {
     return <div className="h-full grid place-items-center text-[var(--ink-2)]">No data returned for this view.</div>;

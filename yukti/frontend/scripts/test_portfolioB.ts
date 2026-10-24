@@ -102,4 +102,58 @@ ok('fixtures are labelled illustrative (truth rule D-35)', () => {
   assert.match(T.source, /Illustrative/);
 });
 
+// ---------------------------------------------------------------- B2
+import bubbleFx from '../src/fixtures/charts/portfolioB/bubble.json';
+import sunFx from '../src/fixtures/charts/portfolioB/sunburst.json';
+import sankeyFx from '../src/fixtures/charts/portfolioB/sankey.json';
+import actionsFx from '../src/fixtures/charts/portfolioB/actions.json';
+import { planChart } from '../src/charts/plan';
+import { bubbleOption, bubbleKeys, bubbleSize, sunburstTree, sankeyLinks, sankeyBalance, sankeyOption } from '../src/charts/portfolioBOptions';
+import { impactText } from '../src/components/renderers/ActionsCard';
+
+console.log('portfolio B2');
+ok('bubble: x/y/size from spec, sqrt size scale, size legend, labels ≤ 50', () => {
+  const spec = (bubbleFx as any).chart;
+  const plan = planChart(spec);
+  assert.equal(plan.form, 'bubble');
+  assert.deepEqual(bubbleKeys(plan, spec), { x: 'lifting_cost_usd_boe', y: 'ebitda_margin_pct', size: 'output_mmtoe' });
+  assert.equal(bubbleSize(8.9, 8.9), 48);
+  assert.ok(bubbleSize(2.2, 8.9) < bubbleSize(8.9, 8.9) / 1.5);
+  const opt: any = bubbleOption(plan, getTokens(false), spec.data, spec);
+  assert.match(opt.graphic[0].style.text, /Bubble size = Output/);
+  assert.equal(opt.series[0].label.show, true);
+});
+ok('sunburst: parents = Σ children (conservation), levels from text columns', () => {
+  const spec = (sunFx as any).chart;
+  assert.equal(planChart(spec).form, 'sunburst');
+  const tree = sunburstTree(spec.data, ['segment', 'product'], 'revenue_cr');
+  for (const n of tree) assert.equal(n.value, (n.children || []).reduce((s, c) => s + c.value, 0));
+  assert.equal(tree.reduce((s, n) => s + n.value, 0), spec.data.reduce((s: number, r: any) => s + r.revenue_cr, 0));
+});
+ok('sankey: in = out for every pass-through node; links positive', () => {
+  const spec = (sankeyFx as any).chart;
+  const plan = planChart(spec);
+  assert.equal(plan.form, 'sankey');
+  const links = sankeyLinks(spec.data, plan.valueKey);
+  assert.equal(links.length, 5);
+  const bal = sankeyBalance(links);
+  assert.equal(bal.maxPassThroughGap, 0);
+  assert.deepEqual(bal.nodes['Domestic sales'], { in: 500, out: 500 });
+  const opt: any = sankeyOption(plan, getTokens(true), spec.data);
+  assert.equal(opt.series[0].data.length, 6);
+});
+ok('sankey conservation detects an imbalance', () => {
+  const bal = sankeyBalance([{ source: 'A', target: 'B', value: 10 }, { source: 'B', target: 'C', value: 7 }]);
+  assert.equal(bal.maxPassThroughGap, 3);
+});
+ok('actions: impact text is a labelled range; owner hidden when absent (junior variant)', () => {
+  const a = (actionsFx as any).actions;
+  assert.equal(impactText(a.items[1].impact), '₹300 cr – ₹560 cr (mid ₹420 cr) a year');
+  assert.equal(impactText({ low: 40, mid: 60, high: 90, kind: 'one_off' }), '₹40 cr – ₹90 cr (mid ₹60 cr) one-off');
+  for (const it of a.items) assert.equal(it.impact.label, 'Modelled estimate');
+});
+ok('B2 fixtures labelled illustrative', () => {
+  for (const fx of [bubbleFx, sunFx, sankeyFx, actionsFx]) assert.match((fx as any).source_note, /Illustrative/);
+});
+
 console.log(`\n${n} passed`);

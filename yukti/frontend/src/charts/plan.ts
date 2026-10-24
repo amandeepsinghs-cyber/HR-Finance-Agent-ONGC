@@ -27,6 +27,9 @@ export type ChartForm =
   | 'heatmap' // P4.4: category × category × measure
   | 'box' // P4.4: quartiles per group
   | 'gauge' // P4.4: single value vs target band
+  | 'bubble' // P4.5 B2: x · y · size (+ label)
+  | 'sunburst' // P4.5 B2: text levels → value
+  | 'sankey' // P4.5 B2: source → target flows
   | 'kpi';
 
 export interface Row {
@@ -73,7 +76,7 @@ function numericKeys(data: Record<string, any>[]): string[] {
   });
 }
 
-function isTextKey(data: Record<string, any>[], k?: string): k is string {
+export function isTextKey(data: Record<string, any>[], k?: string): k is string {
   if (!k || !data.length || !(k in data[0])) return false;
   return data.some((r) => r[k] !== null && r[k] !== undefined && toNumber(r[k]) === null);
 }
@@ -147,7 +150,15 @@ export function planChart(spec: ChartSpec): ChartPlan {
   let dim2Key: string | undefined;
   let lineKey: string | undefined;
 
-  if (kind === 'gauge' && data.length === 1) {
+  const lower = keys.map((k) => k.toLowerCase());
+  if ((kind as string) === 'sankey' && ['source', 'target'].every((k) => lower.includes(k)) && metricKeys.length >= 1) {
+    form = 'sankey';
+  } else if ((kind as string) === 'sunburst' && textKeys.length >= 2 && metricKeys.length >= 1) {
+    form = 'sunburst';
+  } else if ((kind as string) === 'bubble' && metricKeys.length >= 3) {
+    seriesKeys = metricKeys.slice(0, 3); // x, y, size (spec.x / spec.y / spec.value reorder below)
+    form = 'bubble';
+  } else if (kind === 'gauge' && data.length === 1) {
     form = hasTarget ? 'gauge' : 'kpi';
   } else if (kind === 'combo' && metricKeys.length >= 2) {
     lineKey = metricKeys.find(isPctKey) || metricKeys[1];
