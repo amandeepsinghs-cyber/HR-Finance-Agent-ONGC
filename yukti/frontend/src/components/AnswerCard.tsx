@@ -14,6 +14,7 @@ import { PERSONA_DIRECTORY } from '@/personas';
 import { KpiRenderer } from './renderers/KpiRenderer';
 import { ClauseRenderer } from './renderers/ClauseRenderer';
 import { DocumentRenderer } from './renderers/DocumentRenderer';
+import { EmailDraftRenderer } from './renderers/EmailDraftRenderer';
 import { MapRenderer } from './renderers/MapRenderer';
 import { RefusalRenderer } from './renderers/RefusalRenderer';
 import { SourceChipsModal } from './SourceChipsModal';
@@ -71,6 +72,8 @@ function eyebrowFor(c: AnswerContract): string {
       return 'Policy';
     case 'document':
       return 'Draft document';
+    case 'email_draft':
+      return 'Email draft';
     case 'map':
       return 'Across India';
     case 'table':
@@ -169,7 +172,9 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   const lastKeyRef = useRef<string>('');
 
   const visual = contract.visual;
-  const isGreeting = !visual || visual.type === 'none';
+  const emailDraftSpec = visual?.email_draft || contract.email_draft;
+  const hasArtifacts = Array.isArray(contract.artifacts) && contract.artifacts.length > 0;
+  const isGreeting = (!visual || visual.type === 'none') && !emailDraftSpec && !hasArtifacts;
   const refused = contract.access?.status === 'refused' || visual?.type === 'refusal';
 
   // Reset manual toolbar overrides whenever a new turn or voice/chat re-plot arrives
@@ -270,7 +275,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   };
 
   const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map');
-  const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
+  const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'email_draft' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
 
   // Wide tables (> 7 columns) take the full width; takeaways stack below (no horizontal clipping).
@@ -411,9 +416,29 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               {effectiveVisualType === 'table' && effectiveTableSpec && !isRoster && <TableRenderer table={effectiveTableSpec} isDark={isDark} />}
               {effectiveVisualType === 'clause' && visual?.clause && <ClauseRenderer clause={visual.clause} isDark={isDark} />}
               {effectiveVisualType === 'document' && visual?.document && <DocumentRenderer document={visual.document} isDark={isDark} />}
+              {(effectiveVisualType === 'email_draft' || (!!emailDraftSpec && effectiveVisualType === 'none')) && emailDraftSpec && (
+                <EmailDraftRenderer draft={emailDraftSpec} artifacts={contract.artifacts} isDark={isDark} />
+              )}
               {effectiveVisualType === 'map' && visual?.map && <MapRenderer mapSpec={visual.map} isDark={isDark} />}
               {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} language={(contract as any).language} onAsk={onAsk ? (q) => onAsk(q) : undefined} onViewAlternative={onNavigateToAlternative} />}
               {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
+              {hasArtifacts && effectiveVisualType !== 'email_draft' && (
+                <div className="mt-3 flex flex-wrap items-center gap-2" data-testid="turn-artifacts">
+                  {contract.artifacts!.map((art) => (
+                    <a
+                      key={art.export_id}
+                      href={art.url || `/api/export/${encodeURIComponent(art.export_id)}`}
+                      download={art.filename}
+                      data-testid="artifact-download-link"
+                      className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[var(--radius-sm)] border border-[var(--hairline)] bg-[var(--card)] hover:bg-[var(--surface)] text-label font-medium text-[var(--accent-deep)] dark:text-[var(--accent-soft)] shadow-xs transition-colors"
+                    >
+                      <Download className="w-4 h-4 shrink-0" aria-hidden />
+                      <span>{art.filename}</span>
+                      {typeof art.rows === 'number' && <span className="text-[var(--ink-3)]">({art.rows} rows)</span>}
+                    </a>
+                  ))}
+                </div>
+              )}
             </section>
 
             {insights.length > 0 && !refused && (

@@ -248,7 +248,7 @@ def test_v19_t1_three_phrasings_ordered_column_chart(v19_runner, phrasing):
     assert "More than 5 years in Delhi" in dd_labels
 
 
-def test_v19_turns_1_to_3_and_cohort_lifecycle_cmd(v19_runner):
+def test_v19_turns_1_to_5_and_cohort_lifecycle_cmd(v19_runner):
     """SPEC-07 AC-1..3 & §4.6 C-1..C-8: full T1 -> T2 -> T2b -> T3 -> replot -> restore chain for CMD."""
     sid = "v19-chain-cmd"
     p_cmd = principal_for_persona("CMD")

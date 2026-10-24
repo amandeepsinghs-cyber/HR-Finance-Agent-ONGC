@@ -11,7 +11,9 @@ and `{"type": "action", "kind": "ui_control", ...}`).
 
 from __future__ import annotations
 
+import json
 import re
+from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
 # Single source of truth for what the agent is allowed to do to the Yukti screen.
@@ -305,6 +307,55 @@ def detect_ui_control_intent(query: str) -> Optional[Dict[str, str]]:
     # 4. Export
     if any(p in q for p in ["export to pdf", "download pdf", "export pdf", "save as pdf"]):
         return {"action": "export", "value": "pdf"}
+    
+    # Load shared patterns from export_intent.json
+    try:
+        intent_path = Path(__file__).parent.parent.parent / "contracts" / "intents" / "export_intent.json"
+        with open(intent_path, encoding="utf-8") as f:
+            export_intent_data = json.load(f)
+            patterns = export_intent_data.get("patterns", [])
+            neg_patterns = export_intent_data.get("negative_guard_patterns", [])
+            pos_utterances = export_intent_data.get("positive_utterances", [])
+            col_syns = export_intent_data.get("column_synonyms", {})
+
+            has_file_fmt = bool(
+                re.search(
+                    r"\b(excel|xlsx|xls|spreadsheet|sheets?|workbook|csv|pdf|word|docx|doc|png|svg)\b|(एक्सेल|स्प्रेडशीट|शीट|पीडीएफ|वर्ड|सीएसवी)",
+                    q,
+                    re.I,
+                )
+            )
+            is_neg = any(re.search(np, q, re.I) for np in neg_patterns) and not has_file_fmt
+            is_export = False
+            if not is_neg and has_file_fmt:
+                is_export = any(re.search(pat, q, re.I) for pat in patterns)
+                if not is_export:
+                    for pu in pos_utterances:
+                        pu_clean = pu.lower().strip("?!. ")
+                        if q == pu_clean:
+                            is_export = True
+                            break
+
+            if is_export:
+                # Extract columns based on synonym map in the order mentioned by the user
+                matched_with_pos = []
+                for canonical, synonyms in col_syns.items():
+                    best_pos = None
+                    for s_syn in sorted(synonyms, key=len, reverse=True):
+                        m_syn = re.search(rf"(?<!\w){re.escape(s_syn.lower())}(?!\w)", q)
+                        if m_syn:
+                            if best_pos is None or m_syn.start() < best_pos:
+                                best_pos = m_syn.start()
+                    if best_pos is not None:
+                        matched_with_pos.append((best_pos, canonical))
+                matched_with_pos.sort(key=lambda x: x[0])
+                matched_cols = [c for _, c in matched_with_pos]
+                fmt = "pdf" if re.search(r"\bpdf\b|पीडीएफ", q, re.I) else "xlsx"
+                return {"action": "export", "value": fmt, "columns": ",".join(matched_cols)}
+    except Exception as e:
+        import logging
+        logging.warning(f"Failed to load export_intent.json: {e}")
+        
     if any(p in q for p in ["export to excel", "export to sheets", "download excel", "export xlsx"]):
         return {"action": "export", "value": "xlsx"}
 
@@ -341,7 +392,7 @@ def detect_ui_control_intent(query: str) -> Optional[Dict[str, str]]:
     return None
 
 
-def run(action: str, value: str = "") -> Dict[str, Any]:
+def run(action: str, value: str = "", columns: str = "") -> Dict[str, Any]:
     """Validate and package a UI command for the frontend."""
     cmd, err = validate(action, value)
     if err:

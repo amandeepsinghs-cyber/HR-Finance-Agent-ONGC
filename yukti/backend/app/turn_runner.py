@@ -390,6 +390,10 @@ class AgentTurnRunner:
             query = SCREEN_CANONICAL_QUERIES[sc_intent["value"]]
             q_clean = query.strip().lower().rstrip("?!.")
             sc_intent = None
+        elif sc_intent and sc_intent.get("command") == "export":
+            # P2H.4 (SPEC-07 §4.4): route export intents through run_planner_turn so the active cohort
+            # is exported to .xlsx with column honouring, RBAC masking, and contract.artifacts[].
+            sc_intent = None
 
         if sc_intent:
             cmd = sc_intent["command"]
@@ -1273,7 +1277,6 @@ class AgentTurnRunner:
             "generate draft",
             "board note",
             "parliament reply",
-            "transfer proposal",
         ]
         if any(t in q_clean for t in draft_triggers):
             from app.tools.query_data import query_data as qd
@@ -1303,8 +1306,6 @@ class AgentTurnRunner:
             doc_type_req = "board_note"
             if any(w in q_clean for w in ["parliament", "rajya sabha", "lok sabha"]):
                 doc_type_req = "parliament_reply"
-            elif any(w in q_clean for w in ["transfer", "agt", "redeployment"]):
-                doc_type_req = "transfer_proposal"
 
             from app.tools.draft_document import DocumentDraftingEngine
             doc_res = await asyncio.to_thread(

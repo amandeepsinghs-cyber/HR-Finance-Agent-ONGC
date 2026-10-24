@@ -102,33 +102,8 @@ The Board is requested to approve:
 **ANSWER:**  
 (b) The Corporation has initiated the following measures:
 1. **Special Recruitment Drives:** 15 executive vacancies are currently notified under dedicated Special Recruitment Drives for SC/ST/OBC categories.
-2. **Rotational Transfer Redeployment:** 146 mid-level executive engineers (E3–E5) are being redeployed from corporate headquarters (Delhi/Dehradun) to field installations under the Annual General Transfer (AGT) cycle.
+2. **Rotational Transfer Redeployment:** Mid-level executive engineers (E3–E5) are being redeployed from corporate headquarters (Delhi/Dehradun) to field installations under the Annual General Transfer (AGT) cycle.
 3. **Graduate Trainee Inductions:** Fresh Graduate Trainees in core technical disciplines selected through GATE are currently undergoing foundational training with mandatory initial postings in North-East operational assets.
-"""
-    },
-    "transfer_proposal": {
-        "title": "Annual General Transfer (AGT) Executive Redeployment Proposal FY27",
-        "doc_type": "transfer_proposal",
-        "template_id": "template_annual_general_transfer_proposal.xlsx",
-        "default_markdown": """# ONGC CORPORATE HUMAN RESOURCES
-## ANNUAL GENERAL TRANSFER (AGT) PROPOSAL — FY27
-**Prepared pursuant to JRTP Rev 4 Guidelines (Clauses 3.0, 4.0, 7.0 & 9.0)**
-
-### Executive Overview
-- **Total Executives Evaluated:** 14,210 nationwide.
-- **Overdue Station Tenure (>5 Years):** 642 executives (including 419 in Delhi Corporate HQ).
-- **Pre-Retirement Exemptions (Within 3 Years of Superannuation):** 17 in Delhi, 54 nationwide.
-- **Approved Exemption Tags in SAP:** 1 officer in Delhi.
-- **Net Outstation Transfer Recommendations:** 401 executives from Delhi Corporate HQ to Operational Assets.
-
-### Proposed Redeployment Quota
-| Discipline | Relocating from Delhi/Dehradun | Destination: Tripura Asset | Destination: Assam Asset | Destination: Western Offshore |
-|---|---|---|---|---|
-| Production (DISC-PRD) | 48 | 20 | 12 | 16 |
-| Drilling (DISC-DRL) | 36 | 18 | 8 | 10 |
-| Materials Management (DISC-MM) | 28 | 12 | 6 | 10 |
-| Finance & Accounts (DISC-FIN) | 34 | 14 | 8 | 12 |
-| Total Relocations | **146** | **64** | **34** | **48** |
 """
     }
 }
@@ -174,8 +149,6 @@ class DocumentDraftingEngine:
         key = "board_note"
         if any(w in dt or w in q_l for w in ["parliament", "rajya sabha", "lok sabha", "unstarred", "x7"]):
             key = "parliament_reply"
-        elif any(w in dt or w in q_l for w in ["transfer", "agt", "redeployment", "rotation order", "h10"]):
-            key = "transfer_proposal"
 
         base = DOCUMENT_TEMPLATES.get(key, DOCUMENT_TEMPLATES["board_note"])
         markdown = base["default_markdown"]

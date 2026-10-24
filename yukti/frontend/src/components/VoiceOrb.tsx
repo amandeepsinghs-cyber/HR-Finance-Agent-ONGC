@@ -9,6 +9,7 @@
  */
 import React, { useEffect, useRef } from 'react';
 import { VoiceAudioEngine } from '@/services/audioAnalyser';
+import { CLOUDS_DARK, CLOUDS_LIGHT, tint } from '@/design/orbPalette';
 
 export type OrbState = 'idle' | 'listening' | 'thinking' | 'speaking';
 
@@ -26,36 +27,7 @@ interface VoiceOrbProps {
   pressed?: boolean;
 }
 
-type RGB = [number, number, number];
-const rgba = (c: RGB, a: number) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${Math.max(0, Math.min(1, a))})`;
 
-interface CloudSpec {
-  color: RGB;
-  orbitX: number;
-  orbitY: number;
-  speedX: number;
-  speedY: number;
-  phase: number;
-  radiusMul: number;
-  alphaMul: number;
-}
-
-// Airy, luminous Siri / Google AI aura hues — positioned around a luminous white core so colors stay pure and never mix into gray
-const CLOUDS_LIGHT: CloudSpec[] = [
-  { color: [59, 130, 246], orbitX: 0.17, orbitY: 0.16, speedX: 0.75, speedY: 0.92, phase: 0.0, radiusMul: 0.27, alphaMul: 0.52 },   // Sky Cobalt Blue
-  { color: [139, 92, 246], orbitX: 0.17, orbitY: 0.17, speedX: -0.82, speedY: 0.68, phase: 1.57, radiusMul: 0.26, alphaMul: 0.48 },  // Feathery Violet
-  { color: [244, 63, 94], orbitX: 0.16, orbitY: 0.16, speedX: 0.64, speedY: -0.88, phase: 3.14, radiusMul: 0.26, alphaMul: 0.46 },   // Soft Rose Coral
-  { color: [6, 182, 212], orbitX: 0.17, orbitY: 0.15, speedX: -0.7, speedY: -0.78, phase: 4.71, radiusMul: 0.27, alphaMul: 0.48 },   // Luminous Aqua Cyan
-  { color: [251, 191, 36], orbitX: 0.14, orbitY: 0.14, speedX: 0.88, speedY: 0.58, phase: 2.35, radiusMul: 0.23, alphaMul: 0.38 },   // Warm Gold Light
-];
-
-const CLOUDS_DARK: CloudSpec[] = [
-  { color: [96, 165, 250], orbitX: 0.17, orbitY: 0.16, speedX: 0.75, speedY: 0.92, phase: 0.0, radiusMul: 0.27, alphaMul: 0.55 },
-  { color: [167, 139, 250], orbitX: 0.17, orbitY: 0.17, speedX: -0.82, speedY: 0.68, phase: 1.57, radiusMul: 0.26, alphaMul: 0.50 },
-  { color: [251, 113, 133], orbitX: 0.16, orbitY: 0.16, speedX: 0.64, speedY: -0.88, phase: 3.14, radiusMul: 0.26, alphaMul: 0.48 },
-  { color: [34, 211, 238], orbitX: 0.17, orbitY: 0.15, speedX: -0.7, speedY: -0.78, phase: 4.71, radiusMul: 0.27, alphaMul: 0.50 },
-  { color: [251, 191, 36], orbitX: 0.14, orbitY: 0.14, speedX: 0.88, speedY: 0.58, phase: 2.35, radiusMul: 0.23, alphaMul: 0.40 },
-];
 
 export const VoiceOrb: React.FC<VoiceOrbProps> = ({
   state = 'idle',
@@ -131,9 +103,9 @@ export const VoiceOrb: React.FC<VoiceOrbProps> = ({
       const breathe = 0.5 + 0.5 * Math.sin(phase * 0.85);
       const outerR = W * (0.45 + 0.03 * breathe + smoothLevel * 0.04);
       const amb = ctx.createRadialGradient(cx, cy, 0, cx, cy, outerR);
-      amb.addColorStop(0, rgba(clouds[0].color, (isDark ? 0.18 : 0.14) + smoothLevel * 0.12));
-      amb.addColorStop(0.55, rgba(clouds[1].color, (isDark ? 0.1 : 0.08) + smoothLevel * 0.08));
-      amb.addColorStop(1, rgba(clouds[0].color, 0));
+      amb.addColorStop(0, tint(clouds[0].color, (isDark ? 0.18 : 0.14) + smoothLevel * 0.12));
+      amb.addColorStop(0.55, tint(clouds[1].color, (isDark ? 0.1 : 0.08) + smoothLevel * 0.08));
+      amb.addColorStop(1, tint(clouds[0].color, 0));
       ctx.fillStyle = amb;
       ctx.fillRect(0, 0, W, H);
 
@@ -153,10 +125,10 @@ export const VoiceOrb: React.FC<VoiceOrbProps> = ({
         const alpha = Math.min(0.82, c.alphaMul * (1 + smoothLevel * 0.35 + (s === 'listening' ? 0.1 : 0)));
 
         const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-        g.addColorStop(0, rgba(c.color, alpha));
-        g.addColorStop(0.38, rgba(c.color, alpha * 0.68));
-        g.addColorStop(0.72, rgba(c.color, alpha * 0.22));
-        g.addColorStop(1, rgba(c.color, 0));
+        g.addColorStop(0, tint(c.color, alpha));
+        g.addColorStop(0.38, tint(c.color, alpha * 0.68));
+        g.addColorStop(0.72, tint(c.color, alpha * 0.22));
+        g.addColorStop(1, tint(c.color, 0));
 
         ctx.fillStyle = g;
         ctx.beginPath();

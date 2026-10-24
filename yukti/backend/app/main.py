@@ -178,6 +178,10 @@ class ExportRequest(BaseModel):
     content: Optional[str] = None
     columns: Optional[List[str]] = None
     rows: Optional[List[Dict[str, Any]]] = None
+    email_draft: Optional[Dict[str, Any]] = None
+    masked: Optional[bool] = False
+    session_id: Optional[str] = None
+    turn_id: Optional[str] = None
 
 
 # P0.1 (BUG-01): ADC health, cached for 60 s so /health polling never hammers the token endpoint.
@@ -467,8 +471,46 @@ def create_export(req: ExportRequest, principal: Principal = Depends(require_pri
             return {"export_id": export_id, "filename": filename, "format": "pdf"}
         elif "xlsx" in fmt or "sheets" in fmt:
             filename = f"{clean_title}.xlsx"
-            exporter.export_xlsx(columns=req.columns or [], rows=req.rows or [], filename=f"{export_id}.xlsx")
+            if req.masked:
+                filename = f"{clean_title}_aggregate.xlsx"
+            exporter.export_xlsx(columns=req.columns or [], rows=req.rows or [], filename=f"{export_id}.xlsx", masked=req.masked)
+            
+            from app.export_audit import write_export_audit
+            write_export_audit(
+                emp_id=principal.emp_id,
+                persona=principal.persona,
+                session_id=req.session_id or "",
+                turn_id=req.turn_id or "",
+                fmt="xlsx",
+                filename=filename,
+                sha256="dummy",
+                rows=len(req.rows or []),
+                columns=req.columns or [],
+                data_classes=[],
+                masked=req.masked or False,
+                delivery="download"
+            )
             return {"export_id": export_id, "filename": filename, "format": "xlsx"}
+        elif "eml" in fmt or "email" in fmt:
+            filename = f"{clean_title}.eml"
+            exporter.export_eml(email_draft=req.email_draft, filename=f"{export_id}.eml", masked=req.masked)
+            
+            from app.export_audit import write_export_audit
+            write_export_audit(
+                emp_id=principal.emp_id,
+                persona=principal.persona,
+                session_id=req.session_id or "",
+                turn_id=req.turn_id or "",
+                fmt="eml",
+                filename=filename,
+                sha256="dummy",
+                rows=0,
+                columns=[],
+                data_classes=[],
+                masked=req.masked or False,
+                delivery="download"
+            )
+            return {"export_id": export_id, "filename": filename, "format": "eml"}
         elif "docs" in fmt:
             filename = f"{clean_title}.docx"
             res = exporter.export_google_docs(title=clean_title, markdown_text=req.content or "", file_id=export_id)

@@ -95,7 +95,7 @@ _VALID_PERSONAS = set(PERSONA_DISPLAY.keys()) or {
     "E3_FIN",
     "E4_FIN",
 }
-_VALID_VISUAL_TYPES = {"kpi", "chart", "table", "clause", "document", "map", "refusal", "none"}
+_VALID_VISUAL_TYPES = {"kpi", "chart", "table", "clause", "document", "email_draft", "map", "refusal", "none"}
 _VALID_VISUAL_MODES = {"replace", "refine", "compare", "restore"}
 
 

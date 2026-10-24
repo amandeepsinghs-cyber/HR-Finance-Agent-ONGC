@@ -60,6 +60,7 @@
             "kpi",
             "clause",
             "document",
+            "email_draft",
             "map",
             "refusal",
             "none"
@@ -255,6 +256,9 @@
               "type": "integer"
             }
           }
+        },
+        "email_draft": {
+          "$ref": "#/$defs/email_draft_spec"
         },
         "map": {
           "type": "object",
@@ -548,10 +552,31 @@
       "type": "string",
       "description": "data note shown inside Sources (caveats, assumptions)"
     },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      },
+      "description": "P2H.4 / P4.6 (SPEC-10 §5): exported files attached to this turn"
+    },
+    "email_draft": {
+      "$ref": "#/$defs/email_draft_spec",
+      "description": "P2H.4 (SPEC-07 §4.5): top-level mirror of visual.email_draft when visual.type='email_draft'"
+    },
     "ui_action": {
       "type": "object",
-      "description": "optional screen command bundled with the answer (e.g. chart_kind)",
+      "description": "optional screen command bundled with the answer (e.g. chart_kind, download)",
       "properties": {
+        "type": {
+          "enum": [
+            "chart_kind",
+            "panel_mode",
+            "theme",
+            "download",
+            "export",
+            "set_persona"
+          ]
+        },
         "action": {
           "type": "string"
         },
@@ -560,11 +585,165 @@
         },
         "value": {
           "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "export_id": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
         }
       }
     }
   },
   "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": [
+        "export_id",
+        "kind",
+        "filename",
+        "url"
+      ],
+      "properties": {
+        "export_id": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "xlsx",
+            "csv",
+            "pdf",
+            "png",
+            "svg",
+            "docx",
+            "eml"
+          ]
+        },
+        "filename": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "integer"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "masked": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      }
+    },
+    "email_draft_spec": {
+      "type": "object",
+      "required": [
+        "to",
+        "subject",
+        "body_md"
+      ],
+      "properties": {
+        "to": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "email"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "cc": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "from": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            }
+          }
+        },
+        "subject": {
+          "type": "string"
+        },
+        "body_md": {
+          "type": "string"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/artifact"
+              }
+            ]
+          }
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "editable": {
+          "type": "boolean"
+        },
+        "footer": {
+          "type": "string"
+        }
+      }
+    },
     "chart_spec": {
       "type": "object",
       "description": "Small declarative spec; the UI maps it to ECharts. No code from the model.",

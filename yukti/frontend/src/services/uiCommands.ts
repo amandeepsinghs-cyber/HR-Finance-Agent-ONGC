@@ -13,6 +13,7 @@
  */
 
 import { useEffect } from 'react';
+import exportIntentSpec from '../../../contracts/intents/export_intent.json';
 
 export const UI_ACTIONS = {
   theme: ['light', 'dark'] as const,
@@ -59,7 +60,11 @@ export const UI_ACTIONS = {
 
 export type UiAction = keyof typeof UI_ACTIONS;
 export type UiCommand = {
-  [K in UiAction]: { action: K; value: (typeof UI_ACTIONS)[K][number] | string };
+  [K in UiAction]: {
+    action: K;
+    value: (typeof UI_ACTIONS)[K][number] | string;
+    columns?: string[];
+  };
 }[UiAction];
 
 const EVENT = 'yukti:ui';
@@ -164,6 +169,75 @@ export function isSmallTalk(text: string): boolean {
   return false;
 }
 
+const EXPORT_PATTERNS: RegExp[] = ((exportIntentSpec as { patterns?: string[] }).patterns || []).map(
+  (p) => new RegExp(p, 'i'),
+);
+const EXPORT_NEG_PATTERNS: RegExp[] = (
+  (exportIntentSpec as { negative_guard_patterns?: string[] }).negative_guard_patterns || []
+).map((p) => new RegExp(p, 'i'));
+const EXPORT_POS_SET = new Set(
+  ((exportIntentSpec as { positive_utterances?: string[] }).positive_utterances || []).map((u) =>
+    u.toLowerCase().replace(/[?.!]+$/g, '').trim(),
+  ),
+);
+const EXPORT_COL_SYNONYMS: Record<string, string[]> =
+  (exportIntentSpec as { column_synonyms?: Record<string, string[]> }).column_synonyms || {};
+
+const FILE_FORMAT_RE =
+  /\b(excel|xlsx|xls|spreadsheet|sheets?|workbook|csv|pdf|word|docx|doc|png|svg)\b|(एक्सेल|स्प्रेडशीट|शीट|पीडीएफ|वर्ड|सीएसवी)/i;
+
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Shared SPEC-07 §4.4 export intent detector (loads `yukti/contracts/intents/export_intent.json`).
+ * Returns `{ action: 'export', value, columns }` when `raw` is an export command, or `null` otherwise.
+ */
+export function detectExportIntent(
+  raw: string,
+): { action: 'export'; value: 'pdf' | 'xlsx' | 'docx' | 'sheets' | 'docs'; columns: string[] } | null {
+  const q = (raw || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[?.!]+$/g, '')
+    .trim();
+  if (!q) return null;
+
+  const hasFileFormat = FILE_FORMAT_RE.test(q);
+  if (!hasFileFormat) return null;
+
+  const isNeg = EXPORT_NEG_PATTERNS.some((re) => re.test(q)) && !hasFileFormat;
+  if (isNeg) return null;
+
+  const matchedPattern = EXPORT_PATTERNS.some((re) => re.test(q)) || EXPORT_POS_SET.has(q);
+  if (!matchedPattern) return null;
+
+  const matchedWithPos: Array<{ pos: number; canonical: string }> = [];
+  for (const [canonical, synonyms] of Object.entries(EXPORT_COL_SYNONYMS)) {
+    let bestPos: number | null = null;
+    const sortedSyns = [...synonyms].sort((a, b) => b.length - a.length);
+    for (const syn of sortedSyns) {
+      const re = new RegExp(`(?<!\\w)${escapeRegExp(syn.toLowerCase())}(?!\\w)`, 'i');
+      const m = re.exec(q);
+      if (m && (bestPos === null || m.index < bestPos)) {
+        bestPos = m.index;
+      }
+    }
+    if (bestPos !== null) {
+      matchedWithPos.push({ pos: bestPos, canonical });
+    }
+  }
+  matchedWithPos.sort((a, b) => a.pos - b.pos);
+  const columns = matchedWithPos.map((x) => x.canonical);
+
+  let value: 'pdf' | 'xlsx' | 'docx' | 'sheets' | 'docs' = 'xlsx';
+  if (/\bpdf\b|पीडीएफ/i.test(q)) value = 'pdf';
+  else if (/\b(docx|word)\b|वर्ड/i.test(q)) value = 'docx';
+
+  return { action: 'export', value, columns };
+}
+
 const QUESTION_WORDS =
   /\b(why|how\s+many|how\s+much|what\s+is|what\s+are|who\s+is|when\s+did|explain|calculate|compare|predict|forecast|simulate|kitne|kya\s+hai|kyun)\b/i;
 const COMMAND_START =
@@ -244,12 +318,12 @@ function matchClause(raw: string): UiCommand | null {
     return { action: 'chart_kind', value: 'waterfall' };
   }
 
-  // Export
-  if (/\b(export\s+(to\s+)?pdf|download\s+pdf|save\s+as\s+pdf)\b/.test(s)) {
-    return { action: 'export', value: 'pdf' };
-  }
-  if (/\b(export\s+(to\s+)?(excel|xlsx|sheets)|download\s+(excel|xlsx))\b/.test(s)) {
-    return { action: 'export', value: 'xlsx' };
+  // Export (shared SPEC-07 §4.4 patterns from export_intent.json)
+  const exp = detectExportIntent(s);
+  if (exp) {
+    return exp.columns.length > 0
+      ? { action: 'export', value: exp.value, columns: exp.columns }
+      : { action: 'export', value: exp.value };
   }
 
   // Persona: P0.4 (BUG-06, SPEC-06 §4.4) — never switched from typed/spoken text. Such requests go to the
@@ -278,6 +352,15 @@ function matchClause(raw: string): UiCommand | null {
 export function parseUiCommands(text: string): UiCommand[] | null {
   const cleaned = text.trim().replace(/[?.!]+$/g, '');
   if (!cleaned) return null;
+  // Whole-utterance export check first (export requests often list column names separated by commas / "and")
+  const wholeExport = detectExportIntent(cleaned);
+  if (wholeExport) {
+    return [
+      wholeExport.columns.length > 0
+        ? { action: 'export', value: wholeExport.value, columns: wholeExport.columns }
+        : { action: 'export', value: wholeExport.value },
+    ];
+  }
   const parts = cleaned
     .split(/\s*(?:,|\band\s+then\b|\bthen\b|\band\b|\baur\b|और)\s*/i)
     .map((p) => p.trim())

@@ -18,7 +18,7 @@ export type PersonaType =
 
 export type LanguageType = 'en' | 'hi' | 'hi-en';
 
-export type VisualType = 'chart' | 'table' | 'kpi' | 'clause' | 'document' | 'map' | 'refusal' | 'none';
+export type VisualType = 'chart' | 'table' | 'kpi' | 'clause' | 'document' | 'email_draft' | 'map' | 'refusal' | 'none';
 
 export type VisualMode = 'replace' | 'refine' | 'compare' | 'restore';
 
@@ -133,6 +133,37 @@ export interface DocumentSpec {
   version?: number;
 }
 
+export interface EmailRecipient {
+  name: string;
+  email: string;
+  role?: string;
+}
+
+export interface ArtifactSpec {
+  export_id: string;
+  kind: 'xlsx' | 'csv' | 'pdf' | 'png' | 'svg' | 'docx' | 'eml';
+  filename: string;
+  url: string;
+  rows?: number;
+  columns?: string[];
+  masked?: boolean;
+  created_at?: string;
+  expires_at?: string;
+  sha256?: string;
+}
+
+export interface EmailDraftSpec {
+  to: EmailRecipient[];
+  cc?: EmailRecipient[];
+  from?: EmailRecipient;
+  subject: string;
+  body_md: string;
+  attachments?: (string | ArtifactSpec)[];
+  citations?: string[];
+  editable?: boolean;
+  footer?: string;
+}
+
 export interface MapPoint {
   wc_id?: string;
   name: string;
@@ -169,6 +200,7 @@ export interface VisualContainer {
   kpis?: KpiTile[];
   clause?: ClauseSpec;
   document?: DocumentSpec;
+  email_draft?: EmailDraftSpec;
   map?: MapSpec;
   /** P2H.2: refusal metadata mirrored on the visual */
   code?: string;
@@ -310,6 +342,20 @@ export interface AnswerContract {
   drilldowns?: Drilldown[];
   context_chips?: ContextChip[];
   query_spec?: QuerySpec;
-  /** optional screen command bundled with the answer (e.g. chart_kind) */
-  ui_action?: { action?: string; command?: string; value?: string };
+  definition_id?: string | null;
+  /** P2H.4 / P4.6 (SPEC-10 §5): exported files attached to this turn */
+  artifacts?: ArtifactSpec[];
+  /** P2H.4 (SPEC-07 §4.5): top-level mirror of visual.email_draft */
+  email_draft?: EmailDraftSpec;
+  /** optional screen command bundled with the answer (e.g. chart_kind, download) */
+  ui_action?: {
+    type?: 'chart_kind' | 'panel_mode' | 'theme' | 'download' | 'export' | 'set_persona' | string;
+    action?: string;
+    command?: string;
+    value?: string;
+    url?: string;
+    filename?: string;
+    export_id?: string;
+    format?: string;
+  };
 }

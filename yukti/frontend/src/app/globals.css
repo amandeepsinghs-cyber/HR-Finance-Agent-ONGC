@@ -468,3 +468,34 @@
   .yk-aura-ring::before,
   .yk-aura-ring::after { animation: none; }
 }
+
+/* P4.9 (SPEC-09 §4.9): optional viewport-edge AI aura, keyed to the voice state; enabled only with ?aura=1. */
+.yk-edge-aura {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  border-radius: 0;
+  box-shadow:
+    inset 0 0 0 6px color-mix(in srgb, var(--aura-blue) 22%, transparent),
+    inset 0 0 28px 6px color-mix(in srgb, var(--aura-violet) 18%, transparent);
+  animation: yk-edge-aura-breathe 2.8s ease-in-out infinite;
+}
+.yk-edge-aura[data-state='thinking'] {
+  box-shadow:
+    inset 0 0 0 6px color-mix(in srgb, var(--aura-yellow) 22%, transparent),
+    inset 0 0 28px 6px color-mix(in srgb, var(--aura-red) 14%, transparent);
+  animation-duration: 1.6s;
+}
+.yk-edge-aura[data-state='speaking'] {
+  box-shadow:
+    inset 0 0 0 6px color-mix(in srgb, var(--aura-green) 20%, transparent),
+    inset 0 0 28px 6px color-mix(in srgb, var(--aura-blue) 18%, transparent);
+}
+@keyframes yk-edge-aura-breathe {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .yk-edge-aura { animation: none; opacity: 0.85; }
+}

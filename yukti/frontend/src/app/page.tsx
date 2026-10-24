@@ -389,8 +389,19 @@ export default function YuktiApp() {
     [],
   );
 
-  const handleUiAction = useCallback((action?: { action?: string; command?: string; value?: string }) => {
-    if (!action || (!action.command && !action.action)) return;
+  const handleUiAction = useCallback((action?: { type?: string; action?: string; command?: string; value?: string; export_id?: string; url?: string; filename?: string }) => {
+    if (!action) return;
+    if (action.type === 'download' && (action.export_id || action.url)) {
+      const href = action.url || `/api/export/${encodeURIComponent(action.export_id || '')}`;
+      const a = document.createElement('a');
+      a.href = href;
+      if (action.filename) a.download = action.filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      return;
+    }
+    if (!action.command && !action.action) return;
     const cmd = (action.command || action.action || '').toLowerCase();
     const val = (action.value || '').trim();
     if (cmd === 'set_theme' || cmd === 'theme') {

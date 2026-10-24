@@ -137,10 +137,10 @@ export const TopBar: React.FC<TopBarProps> = ({
         />
         <div className="min-w-0 flex flex-col justify-center leading-tight space-y-0.5">
           <div className="flex items-baseline gap-1.5 flex-wrap leading-none">
-            <span className="font-display font-bold text-[1.35rem] xl:text-[1.5rem] tracking-[-0.02em] text-[#a31d18] dark:text-[#f87171] leading-none">
+            <span className="font-display font-bold text-[1.35rem] xl:text-[1.5rem] tracking-[-0.02em] text-[var(--brand-red)] leading-none">
               Yukti AI Agent ,
             </span>
-            <span className="text-[0.88rem] xl:text-[0.95rem] font-semibold tracking-[0.01em] text-[#8b1812] dark:text-[#fca5a5] whitespace-nowrap leading-none">
+            <span className="text-[0.88rem] xl:text-[0.95rem] font-semibold tracking-[0.01em] text-[var(--brand-red-deep)] whitespace-nowrap leading-none">
               HR and Finance
             </span>
           </div>

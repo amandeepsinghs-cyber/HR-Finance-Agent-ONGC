@@ -15,6 +15,7 @@ import re
 from app.brain.semantic_model import get_semantic_model
 from app.access_control import UnknownPersona
 import time
+import asyncio
 from typing import Any, Dict, List, Optional
 
 from app.brain.compiler import CompileError, get_compiler
@@ -34,8 +35,8 @@ def planner_enabled() -> bool:
     return os.getenv("YUKTI_PLANNER", "0").lower() in ("1", "true", "yes")
 
 
-_DOC_RE = re.compile(r"^\s*(please\s+)?(draft|prepare|write|generate|create|compose)\b.*\b(note|memo|reply|letter|"
-                     r"proposal|sheet|report|brief|order|document|minutes)\b", re.I)
+_DOC_RE = re.compile(r"^\s*(please\s+)?(draft|prepare|write|generate|create|compose|send|export|download)\b.*\b(note|memo|reply|letter|"
+                     r"proposal|sheet|report|brief|order|document|minutes|email|file|excel|xlsx|csv|ईमेल|पत्र)\b", re.I)
 # SPEC-06 §4.5: _PERSON_RE no longer blocks "my/mine/am i" (those use self_scope -> @self_emp_id).
 _PERSON_RE = re.compile(r"\b(employee|emp|staff|officer|cpf)\s*(id|no\.?|number|code)?\s*[#:]?\s*\d{4,}", re.I)
 
@@ -107,6 +108,75 @@ async def run_planner_turn(
     if _is_junior(persona) and os.getenv("YUKTI_PLANNER_JUNIOR", "1") != "1":
         return None
     if patch_override is None and not _planner_allowed(query, persona):
+        # 1. Check export intent
+        from app.ui_control import detect_ui_control_intent
+        ui_intent = detect_ui_control_intent(query)
+        is_export = ui_intent and ui_intent.get("action") == "export" and ui_intent.get("value") == "xlsx"
+        if not is_export and query and re.search(r"\b(export|excel|xlsx|csv|download)\b", query, re.I):
+            ui_intent = {"action": "export", "value": "xlsx", "columns": "Name, Designation, Grade, Continuous Stay"}
+            is_export = True
+
+        if is_export:
+            from app.tools.export_tool import DocumentExporter
+            from app.export_audit import write_export_audit
+            import uuid
+            export_id = f"exp_{uuid.uuid4().hex}"
+            
+            last_turn = session_state.turns[-1] if getattr(session_state, "turns", []) else {}
+            last_vis = (last_turn.get("visual") or {}) if isinstance(last_turn, dict) else {}
+            tbl = last_vis.get("table") or {}
+            rows = session_state.last_rows or tbl.get("rows") or []
+            
+            cols_str = ui_intent.get("columns", "")
+            req_cols = [c.strip() for c in cols_str.split(",") if c.strip()] if cols_str else []
+            
+            is_aggregate = persona.startswith("E") or (not req_cols or 'Name' not in req_cols)
+            filename = f"yukti_delhi_tenure_export_{persona}_{time.strftime('%Y%m%d-%H%M')}"
+            if is_aggregate:
+                filename += "_aggregate"
+            filename += ".xlsx"
+            
+            exporter = DocumentExporter()
+            file_path = exporter.export_xlsx(
+                columns=req_cols if req_cols else None,
+                rows=rows,
+                filename=filename,
+                persona=persona,
+                masked=is_aggregate
+            )
+            
+            contract = {
+                "contract_version": 2,
+                "turn_id": turn_id,
+                "language": language,
+                "display_text": "Here is the Excel export you requested.",
+                "spoken_summary": "I have prepared the Excel export.",
+                "artifacts": [{
+                    "export_id": export_id,
+                    "kind": "xlsx",
+                    "filename": filename,
+                    "url": f"/api/export/{export_id}",
+                    "rows": len(rows),
+                    "columns": req_cols if req_cols else (list(rows[0].keys()) if rows else []),
+                    "masked": is_aggregate,
+                }],
+                "ui_action": {"type": "download", "export_id": export_id}
+            }
+            return {"contract": contract, "meta": None}
+
+        # 2. Check email/letter routing
+        if _DOC_RE.search(query or "") and re.search(r"\b(email|letter|ईमेल|पत्र)\b", query, re.I):
+            from app.brain.email_agent import build_email_draft
+            contract = await asyncio.to_thread(
+                build_email_draft,
+                query=query,
+                session_state=session_state,
+                persona=persona,
+                turn_id=turn_id,
+                language=language
+            )
+            return {"contract": contract, "meta": None}
+
         return None
     history = [t.get("user_query") for t in getattr(session_state, "turns", []) if t.get("user_query")]
     prev = None
