@@ -64,9 +64,9 @@
 | P1.7 | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | 018, 021, 022 | SPEC-01 §10 | — | Each row cites doc + page; totals = AR | [P1.7](docs/delegation/packets/v3/P1.7_anchor_tables.md) | ✅ |
 | P1.8 | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | 020 | SPEC-01 §8 | 16 (part) | 0 generated chunks; page refs verified; safe parameterised retriever (retrieval quality target moved to P2F.5, D-58) | [P1.8](docs/delegation/packets/v3/P1.8_ar_text_chunks_vector.md) | ✅ |
 | P1.9 | WACC inputs + `fact_wacc_annual` (manual RBI seed CSV with lineage; Rf = raw INR 10-yr G-sec at FY-end) | F (+O load, human RBI seed) | 024, 029 | SPEC-02 §3 | 15 | Every input has source + date; re-run gives identical `wacc_pct` (±0.001pp); W1–W4 pass; SPEC-02 §10 fixture WACC 14.3090% | [P1.9](docs/delegation/packets/v3/P1.9_wacc_inputs.md) | ⬜ |
-| P1.10a | Compiler on verified rows + honest provenance (`YUKTI_FIN_SSOT_V3`) | O | 018, 032 | SPEC-01 §7 | 02, 05 | "balance sheet for 2024" → total assets ₹4,46,021 cr with AR FY24 page cite | [P1.10a](docs/delegation/packets/v3/P1.10a_compiler_switch_verified_rows.md) | 🔍 |
+| P1.10a | Compiler on verified rows + honest provenance (`YUKTI_FIN_SSOT_V3`) | O | 018, 032 | SPEC-01 §7 | 02, 05 | "balance sheet for 2024" → total assets ₹4,46,021 cr with AR FY24 page cite | [P1.10a](docs/delegation/packets/v3/P1.10a_compiler_switch_verified_rows.md) | ✅ |
 | P1.10b | Retire LLM-authored artefacts (`build_10yr_financials.py`, generated corpus, governance CSV) | F | 018 | SPEC-01 §11 | 02, 03 | No code path reads retired files | [P1.10b](docs/delegation/packets/v3/P1.10b_retire_legacy_financials.md) | ✅ |
-| P1.11 | Finance golden set (P1 gate) + V20 chain (P2F gate) | F + FL | 030 | SPEC-11 §8, BEH-03 | 05 | 100% exact on the P1 build | [P1.11](docs/delegation/packets/v3/P1.11_finance_golden_set_and_v20_chain.md) | 🔄 |
+| P1.11 | Finance golden set (P1 gate) + V20 chain (P2F gate) | F + FL | 030 | SPEC-11 §8, BEH-03 | 05 | 100% exact on the P1 build | [P1.11](docs/delegation/packets/v3/P1.11_finance_golden_set_and_v20_chain.md) | ✅ |
 
 ### Phase P2H — HR: Personas, V19, Employee-360, Field Economics · *gate: 11-persona matrix 100%; recon 100%; BEH-02/06 pass*
 
@@ -115,10 +115,10 @@
 | P4.2 | `visual.type=statement` contract + presenter emit (multi-FY) | O | 025 | SPEC-09 §4.1 | — | Fixture validates; values = SSOT | [P4.2](docs/delegation/packets/v3/P4.2.md) | ✅ |
 | P4.3 | `StatementTable` renderer | F | 025 | SPEC-09 §4.2 | 38, 39 | Rubric ≥ 9/10 light + dark; line labels never truncated (wrap) at 1366/1920 px + big screen; no artificial numbering (AR names, hierarchy by indent) | [P4.3](docs/delegation/packets/v3/P4.3.md) | ✅ |
 | P4.4 | Portfolio batch A: combo dual-axis, 100% stacked, heatmap, box, gauge, scatter fix; compat matrix | F | 026 | SPEC-09 §4.5–4.6 | 23 | Every kind renders from a fixture | [P4.4](docs/delegation/packets/v3/P4.4.md) | ✅ |
-| P4.5 | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions` composites | F | 026 | SPEC-09 §4.5, §5 | — | Every kind renders from a fixture | [P4.5](docs/delegation/packets/v3/P4.5.md) | 🔄 |
+| P4.5 | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions` composites | F | 026 | SPEC-09 §4.5, §5 | — | Every kind renders from a fixture | [P4.5](docs/delegation/packets/v3/P4.5.md) | ✅ |
 | P4.6 | Export backend: formatted xlsx, CSV, PDF (WeasyPrint + Noto), docx, honest Sheets/Docs, audit, naming | O→F | 027 | SPEC-10 | 24, 25 | pdftotext shows ₹ + Devanagari; 4+ formats per card | [P4.6](docs/delegation/packets/v3/P4.6.md) | ✅ |
 | P4.7 | Export frontend: menu, PNG/SVG, intents for all formats EN/HI, toasts | F | 027 | SPEC-10 §4.4, §4.7–4.8 | 25 | BEH-04 export scenarios | [P4.7](docs/delegation/packets/v3/P4.7.md) | ✅ |
-| P4.8 | Finance rubric F1–F14 + scorecards | F→O | 025, 026 | SPEC-09 §4.7 | 34 | Scorecards ≥ 9/10 | [P4.8](docs/delegation/packets/v3/P4.8.md) | ⬜ |
+| P4.8 | Finance rubric F1–F14 + scorecards | F→O | 025, 026 | SPEC-09 §4.7 | 34 | Scorecards ≥ 9/10 | [P4.8](docs/delegation/packets/v3/P4.8.md) | ✅ |
 | P4.9 | Orb visible in docked mode + optional edge aura (low priority, V21) | F | 004, 016 | SPEC-09 §4.9 | — | Visible in non-idle states; ≥ 55 fps | [P4.9](docs/delegation/packets/v3/P4.9.md) | ✅ |
 
 ### Phase P5 — One Brain, Eval & Redeploy · *gate: golden ≥ 95% exact; Cloud Run green* · packets written at P5 start
