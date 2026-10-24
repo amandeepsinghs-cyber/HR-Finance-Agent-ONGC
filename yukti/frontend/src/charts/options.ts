@@ -478,7 +478,8 @@ export function waterfallOption(plan: ChartPlan, t: ChartTokens): Opt {
             {
               type: 'text',
               style: {
-                text: fmtValue(s.v, unit, { sign: s.kind !== 'total' }),
+                // P4.1 (SPEC-09 §4.3): accounting labels — deductions read "(₹x Cr)", additions "+₹x Cr", totals plain
+                text: s.kind === 'total' ? fmtValue(s.v, unit) : s.v < 0 ? `(${fmtValue(Math.abs(s.v), unit)})` : fmtValue(s.v, unit, { sign: true }),
                 x: a[0],
                 y: s.end >= s.start ? top - px(t, 8) : top + h + px(t, 8),
                 textAlign: 'center',

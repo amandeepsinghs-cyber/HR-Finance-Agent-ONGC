@@ -13,6 +13,7 @@
  */
 
 import { useEffect } from 'react';
+import { resolveKind } from '@/charts/kindPrecedence';
 
 export const UI_ACTIONS = {
   theme: ['light', 'dark'] as const,
@@ -242,6 +243,17 @@ function matchClause(raw: string): UiCommand | null {
   }
   if (/^(show|view|plot|draw|switch|make)\s+(this\s+|it\s+)?(as\s+|to\s+|in\s+)?(a\s+)?waterfall(\s+chart|\s+plot|\s+view)?$/.test(s)) {
     return { action: 'chart_kind', value: 'waterfall' };
+  }
+
+  // P4.1 (BUG-22, SPEC-09 §4.4): generic re-plot of the CURRENT visual — "can you express it as a waterfall",
+  // "convert this to a line chart", "इसे वॉटरफॉल में दिखाओ". Requires a pronoun (it/this/that/इसे) so data questions
+  // ("show revenue as a line chart for 5 years") still go to the backend. The kind comes from the shared precedence.
+  if (
+    /^(can\s+you\s+|could\s+you\s+|please\s+)*(show|view|plot|draw|switch|make|express|display|convert|change|turn|present|redraw)\s+(this|it|that)\b/.test(s) ||
+    /^(इसे|इसको|यह)\s.*(दिखाओ|दिखाइए|बनाओ)$/.test(s)
+  ) {
+    const k = resolveKind(s);
+    if (k && (UI_ACTIONS.chart_kind as readonly string[]).includes(k)) return { action: 'chart_kind', value: k as (typeof UI_ACTIONS.chart_kind)[number] };
   }
 
   // Export

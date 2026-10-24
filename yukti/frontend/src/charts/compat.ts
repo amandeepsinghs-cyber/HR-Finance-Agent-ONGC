@@ -11,6 +11,7 @@ import type { ChartKind, ChartSpec, VisualContainer } from '@/contracts/answerCo
 import { normalizeRows } from './normalize';
 import { planChart } from './plan';
 import { humanizeKey, toNumber } from './format';
+import { bridge, bridgeChartRows, bridgeClassOf, bridgeErrorCopy, singleValueError, type StatementLine } from './bridge';
 
 export type ReplotKind = ChartKind | 'table';
 
@@ -119,35 +120,37 @@ export function profile(visual?: VisualContainer): DataProfile {
   return { rows, columns, dimKey, measures, primary, shape, hasNegative, hasTarget, ordinal, groupable, n, people: namesLike };
 }
 
-/** Build a financial P&L waterfall bridge or pivoted metric rows when a single-entity row has multiple measures. */
-function pivotSingleRow(row: Record<string, any>, measures: string[], requested: ReplotKind): { rows: Record<string, any>[]; x: string; y: string } {
-  const revKey = measures.find((k) => /revenue/i.test(k));
-  const ebitdaKey = measures.find((k) => /ebitda/i.test(k));
-  const pbtKey = measures.find((k) => /\bpbt\b|profit/i.test(k));
-  if (requested === 'waterfall' && revKey && pbtKey) {
-    const rev = toNumber(row[revKey]) ?? 0;
-    const pbt = toNumber(row[pbtKey]) ?? 0;
-    const ebitda = ebitdaKey ? (toNumber(row[ebitdaKey]) ?? Math.round((rev + pbt) / 2)) : Math.round(rev * 0.68);
-    const opex = Number((ebitda - rev).toFixed(2));
-    const dda = Number((pbt - ebitda).toFixed(2));
-    return {
-      x: 'step',
-      y: 'amount_cr',
-      rows: [
-        { step: 'Gross Revenue', amount_cr: rev, type: 'base' },
-        { step: 'OPEX & Levies', amount_cr: opex, type: 'loss' },
-        { step: 'EBITDA', amount_cr: ebitda, type: 'total' },
-        { step: 'DD&A', amount_cr: dda, type: 'loss' },
-        { step: 'PBT (Net)', amount_cr: pbt, type: 'total' },
-      ],
-    };
-  }
+/**
+ * Pivot a single-entity row with several measures into metric rows (one bar / slice per measure).
+ * P4.1 (BUG-09): no P&L synthesis here any more — a waterfall is built only by `bridge.ts` from real statement
+ * lines; a single row can never be bridged (see `replot`).
+ */
+function pivotSingleRow(row: Record<string, any>, measures: string[]): { rows: Record<string, any>[]; x: string; y: string } {
   const pivoted = measures.map((m) => ({
     metric: humanizeKey(m),
     value: toNumber(row[m]) ?? 0,
   }));
   return { x: 'metric', y: 'value', rows: pivoted };
 }
+
+/** Statement lines behind a visual: the P4.2 `statement` visual, or legacy statement table rows carrying `line_code`. */
+function statementLines(v: VisualContainer): { rows: StatementLine[]; period?: string } | null {
+  const st = (v as any).statement as { sections?: { rows?: StatementLine[] }[]; periods?: string[] } | undefined;
+  if (st?.sections?.length) {
+    return { rows: st.sections.flatMap((s) => s.rows || []), period: st.periods?.[0] };
+  }
+  const rows = (v.table?.rows as Record<string, any>[] | undefined) || [];
+  const coded = rows.filter((r) => r && typeof r === 'object' && typeof r.line_code === 'string');
+  if (coded.length >= 3 && coded.some((r) => bridgeClassOf(r.line_code))) {
+    return { rows: coded.map((r) => ({ line_code: r.line_code, label: r.line_item ?? r.label, amount_cr: toNumber(r.amount_cr) })) };
+  }
+  return null;
+}
+
+const hasTypedRows = (data: unknown) =>
+  Array.isArray(data) && data.length > 0 && data.every((r: any) => r && typeof r.type === 'string' && /total|delta|base|start|end|loss|gain/i.test(r.type));
+
+const currentKindOf = (v: VisualContainer) => (v.type === 'chart' ? v.chart?.kind : undefined);
 
 /** Compatibility of every kind for a profile: honors all requested chart types via native or smart transform. */
 export function compatibility(p: DataProfile, kind: ReplotKind): { status: ReplotResult['status']; alternative?: ReplotKind; note?: string } {
@@ -209,6 +212,33 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
   const p0 = profile(base);
   const p = opts.metric && p0.measures.includes(opts.metric) ? { ...p0, primary: opts.metric, hasNegative: p0.rows.some((r) => (toNumber(r[opts.metric!]) ?? 0) < 0) } : p0;
   const source = (base as any).source || { columns: p.columns, rows: p.rows };
+  // P4.1 (BUG-08/09, SPEC-09 §4.3): waterfall = signed bridge from real statement lines, never a re-chart of raw rows.
+  if (requested === 'waterfall' && !opts.metric) {
+    // (a) the answer already carries a typed bridge (backend presenter) → keep it, never rebuild from table rows
+    if (base.chart?.kind === 'waterfall' && hasTypedRows(base.chart.data)) {
+      return { requested, applied: 'waterfall', status: 'native', visual: { ...base, type: 'chart', mode: 'refine' } as VisualContainer };
+    }
+    // (b) statement lines → bridge.ts (same algorithm + classes JSON as backend bridge.py)
+    const st = statementLines(base);
+    if (st) {
+      const res = bridge(st.rows, st.period);
+      if (res.ok) {
+        const data = bridgeChartRows(res);
+        const chart: ChartSpec = { ...(base.chart || {}), kind: 'waterfall', data, x: 'step', y: 'amount_cr', category: 'step', value: 'amount_cr', unit: '₹ Cr', sort: 'none' } as ChartSpec;
+        return { requested, applied: 'waterfall', status: 'transform', visual: { ...base, source, type: 'chart', mode: 'refine', chart } as VisualContainer };
+      }
+      return { requested, applied: 'table', status: 'alternative', note: bridgeErrorCopy(res), visual: { ...base, source, type: 'table', mode: 'refine' } as VisualContainer };
+    }
+    // (c) a single value can never be a bridge (BEH-04.13 / BEH-07.34): keep the visual, say why
+    if (p.shape === 'single') {
+      return { requested, applied: (base.type === 'chart' ? base.chart?.kind : 'table') as ReplotKind, status: 'alternative', note: bridgeErrorCopy(singleValueError()), visual: base };
+    }
+    // (d) other data: a waterfall only makes sense for typed rows; otherwise fall through to the generic path
+  }
+  // Same kind requested again and the chart data already exists → return the base chart unchanged.
+  if (!opts.metric && base.type === 'chart' && requested === currentKindOf(base) && Array.isArray(base.chart?.data) && base.chart!.data!.length) {
+    return { requested, applied: requested, status: 'native', note: (base as any).replot_note, visual: base };
+  }
   // Coming FROM a histogram of raw values: part-of-whole / bar views reuse exactly those bins ("slices = bins").
   const currentKind = base.type === 'chart' ? base.chart?.kind : undefined;
   if (!opts.metric && (requested === currentKind || (requested === 'table' && base.type === 'table') ) && (base as any).source) {
@@ -258,7 +288,7 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
   let chartUnit = unit;
 
   if (p.shape === 'single' && p.rows[0] && p.measures.length >= 1) {
-    const piv = pivotSingleRow(p.rows[0], p.measures, applied);
+    const piv = pivotSingleRow(p.rows[0], p.measures);
     data = piv.rows;
     x = piv.x;
     y = piv.y;

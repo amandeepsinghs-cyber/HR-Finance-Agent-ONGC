@@ -6,7 +6,7 @@
     "tokens": "node scripts/gen_tokens.mjs",
     "predev": "npm run tokens",
     "dev": "node server.js --dev",
-    "prebuild": "npm run tokens",
+    "prebuild": "npm run contracts && npm run tokens",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "lint": "next lint",
@@ -20,7 +20,9 @@
     "test:voice": "node scripts/voice_e2e_test.js",
     "test:visual": "node scripts/visual_capture.js",
     "test:unit": "npx --yes tsx scripts/test_feed.ts",
-    "test:voice-gate": "node scripts/test_voice_gate.mjs"
+    "test:voice-gate": "node scripts/test_voice_gate.mjs",
+    "contracts": "node scripts/sync_contracts.mjs",
+    "test:bridge": "node scripts/sync_contracts.mjs --check && node scripts/test_bridge.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
