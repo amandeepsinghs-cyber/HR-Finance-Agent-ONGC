@@ -7,7 +7,20 @@ export type PersonaType = 'CMD' | 'DIR_HR' | 'DIR_FIN' | 'E2_HR' | 'E3_FIN';
 
 export type LanguageType = 'en' | 'hi' | 'hi-en';
 
-export type VisualType = 'chart' | 'table' | 'statement' | 'kpi' | 'clause' | 'document' | 'map' | 'refusal' | 'none';
+// 'sensitivity_grid' and 'tornado' are reserved stubs for the P4.5 DCF sensitivity visuals
+// (mirrors backend answer_composer._VALID_VISUAL_TYPES); renderers land in P4.5.
+export type VisualType =
+  | 'chart'
+  | 'table'
+  | 'statement'
+  | 'sensitivity_grid'
+  | 'tornado'
+  | 'kpi'
+  | 'clause'
+  | 'document'
+  | 'map'
+  | 'refusal'
+  | 'none';
 
 export type VisualMode = 'replace' | 'refine' | 'compare' | 'restore';
 
