@@ -230,9 +230,12 @@ async def run_planner_turn(
         )
         spoken = clarify_prompt + spoken
     notes = list(compiled.notes) + [f"Not applied: {d}" for d in compiled.dropped]
+    is_legacy = any("ssot_corporate_annual_360" in t for t in compiled.tables)
     is_fin_ssot = (
-        compiled.subject == "corporate"
-        or compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios")
+        not is_legacy and (
+            compiled.subject == "corporate"
+            or compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios")
+        )
     )
     fin_doc: Optional[str] = None
     fin_page: Optional[str] = None
@@ -328,9 +331,20 @@ async def run_planner_turn(
             prov_obj["page_label"] = fin_page
         contract["provenance"] = prov_obj
         notes = [snapshot_caveat] + notes
+    elif is_legacy:
+        contract["provenance"] = {
+            "label": "legacy_unverified",
+            "doc": None,
+            "page_label": None,
+            "detail": "Unverified legacy metric; pending rebuild from verified lines.",
+            "badge": "Unverified (legacy)"
+        }
     elif is_fin_ssot:
+        is_derived = any("Derived from AR" in n for n in compiled.notes) or compiled.metric in _DERIVED_RATIO_METRICS
         if fin_sys == "xbrl":
             prov_label = "verified_xbrl"
+        elif is_derived:
+            prov_label = "derived_ar"
         else:
             prov_label = "verified_ar"
         prov_obj = {

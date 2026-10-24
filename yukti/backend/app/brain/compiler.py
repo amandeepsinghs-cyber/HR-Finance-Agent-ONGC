@@ -48,6 +48,7 @@ _V_TREND_LATEST = f"{_GOLD_DS}.v_fin_trend_latest"
 _T_FACT_FIN = f"{_GOLD_DS}.fact_financial_statement_line"
 
 CORP_METRIC_TO_SSOT: Dict[str, Tuple[str, str]] = {
+    "exchequer_contribution_cr": ("standalone", "OTH.EXCHEQUER"),
     "corporate_revenue_cr": ("standalone", "PL.REV_OPS"),
     "crude_oil_revenue_cr": ("standalone", "REV.CRUDE"),
     "natural_gas_revenue_cr": ("standalone", "REV.GAS"),
@@ -343,6 +344,9 @@ class Compiler:
         grain = "row" if (spec.grain == "row" or subject.row_only) else "aggregate"
 
         from app.config import YUKTI_FIN_SSOT_V3
+        if YUKTI_FIN_SSOT_V3 and subject.name == "corporate" and grain != "row" and metric.name in ["ebitda_corporate_cr", "revenue_per_employee_cr"] and not filters:
+            return self._compile_derived_corporate(subject, metric, spec, dims, notes, dropped)
+
         if YUKTI_FIN_SSOT_V3 and subject.name == "corporate" and grain != "row" and metric.name in CORP_METRIC_TO_SSOT and not filters:
             return self._compile_corporate_ssot(subject, metric, spec, dims, notes, dropped)
 
@@ -598,6 +602,84 @@ FROM hc ORDER BY headcount_change DESC"""
                              notes=[f"Headcount 31-Mar-{m0[:4]} vs 31-Mar-{m1[:4]} (monthly snapshots)"],
                              effective_period={"from": lo, "to": hi}, grain="aggregate", data_classes=["general"])
 
+
+    def _compile_derived_corporate(self, subject: SubjectDef, metric: FieldDef, spec: QuerySpec, dims: List[Tuple[str, str]], notes: List[str], dropped: List[str]) -> Optional[CompiledQuery]:
+        fy_where = "TRUE"
+        eff_period = {}
+        if spec.period:
+            if spec.period.fy:
+                fy_where = f"fiscal_year = '{spec.period.fy}'"
+                eff_period = {"fy": spec.period.fy}
+            elif spec.period.from_ or spec.period.to:
+                lo = spec.period.from_ or "FY17"
+                hi = spec.period.to or "FY26"
+                fy_where = f"fiscal_year BETWEEN '{lo}' AND '{hi}'"
+                eff_period = {"from": lo, "to": hi}
+        elif "fy" not in [d[0] for d in dims]:
+            fy = "FY24"
+            fy_where = f"fiscal_year = '{fy}'"
+            eff_period = {"fy": fy}
+
+        dim_out = dims if dims else [("fy", "fiscal_year")]
+        
+        if metric.name == "ebitda_corporate_cr":
+            sql = f"""WITH cur AS (
+  SELECT fiscal_year,
+         MAX(IF(line_code = 'PL.PBT', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS pbt,
+         MAX(IF(line_code = 'PL.FIN_COST', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS fin_cost,
+         MAX(IF(line_code = 'PL.DDA', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS dda,
+         MAX(IF(line_code = 'PL.OTHER_INCOME', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS other_inc
+  FROM {_q(_V_TREND_LATEST)}
+  WHERE {fy_where} AND verified = TRUE AND scope = 'standalone'
+  GROUP BY fiscal_year
+)
+SELECT fiscal_year, 
+       pbt, fin_cost, dda, other_inc,
+       ROUND(pbt + COALESCE(fin_cost, 0) + COALESCE(dda, 0) - COALESCE(other_inc, 0), 2) AS ebitda_corporate_cr
+FROM cur
+ORDER BY fiscal_year ASC"""
+            notes.append("Derived from AR: EBITDA = PBT + Finance Cost + DD&A - Other Income")
+            
+        elif metric.name == "revenue_per_employee_cr":
+            sql = f"""WITH rev AS (
+  SELECT fiscal_year, MAX(ROUND(COALESCE(value_inr_cr, value), 2)) AS rev_ops
+  FROM {_q(_V_TREND_LATEST)}
+  WHERE {fy_where} AND verified = TRUE AND scope = 'standalone' AND line_code = 'PL.REV_OPS'
+  GROUP BY fiscal_year
+),
+hc AS (
+  SELECT 'FY' || RIGHT(CAST(fiscal_year AS STRING), 2) AS fy, SUM(headcount) AS headcount
+  FROM {_q('hrfin_silver.headcount_snapshot')}
+  WHERE month = 3
+  GROUP BY fiscal_year
+)
+SELECT r.fiscal_year, r.rev_ops, h.headcount,
+       ROUND(r.rev_ops / NULLIF(h.headcount, 0), 3) AS revenue_per_employee_cr
+FROM rev r
+LEFT JOIN hc h ON r.fiscal_year = h.fy
+ORDER BY r.fiscal_year ASC"""
+            notes.append("Derived from AR: Revenue per employee = Revenue from Operations / March headcount")
+        else:
+            return None
+
+        return CompiledQuery(
+            sql=sql,
+            subject="corporate",
+            metric=metric.name,
+            metric_label=metric.label,
+            unit=metric.unit,
+            source="generated",
+            tables=[_V_TREND_LATEST, "hrfin_silver.headcount_snapshot"] if metric.name == "revenue_per_employee_cr" else [_V_TREND_LATEST],
+            dims=dim_out,
+            value_columns=[metric.name],
+            notes=notes,
+            dropped=dropped,
+            effective_period=eff_period,
+            grain="aggregate",
+            data_classes=[metric.data_class],
+            aggregation=metric.aggregation,
+        )
+
     def _compile_corporate_ssot(
         self, subject: SubjectDef, metric: Any, spec: QuerySpec,
         dims: List[str], notes: List[str], dropped: List[str]
@@ -805,8 +887,8 @@ ORDER BY fiscal_year ASC"""
 ),
 prv AS (
   SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
-  FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'pnl' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND verified = TRUE AND report_vintage = {_lit(vintage)}
+  FROM {_q(_T_FACT_FIN)}
+  WHERE statement = 'pnl' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND report_vintage = {_lit(vintage)}
 ),
 base AS (
   SELECT MAX(IF(line_code = 'PL.REV_OPS', COALESCE(value_inr_cr, value), NULL)) AS base_val FROM cur
@@ -921,8 +1003,8 @@ ORDER BY fiscal_year ASC"""
 ),
 prv AS (
   SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
-  FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'balance_sheet' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND verified = TRUE AND report_vintage = {_lit(vintage)}
+  FROM {_q(_T_FACT_FIN)}
+  WHERE statement = 'balance_sheet' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND report_vintage = {_lit(vintage)}
 ),
 base AS (
   SELECT MAX(IF(line_code = 'BS.TOTAL_ASSETS', COALESCE(value_inr_cr, value), NULL)) AS base_val FROM cur
@@ -1033,8 +1115,8 @@ ORDER BY fiscal_year ASC"""
 ),
 prv AS (
   SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
-  FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'cash_flow' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND verified = TRUE AND report_vintage = {_lit(vintage)}
+  FROM {_q(_T_FACT_FIN)}
+  WHERE statement = 'cash_flow' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND report_vintage = {_lit(vintage)}
 ),
 base AS (
   SELECT MAX(IF(line_code = 'CF.CFO', COALESCE(value_inr_cr, value), NULL)) AS base_val FROM cur
@@ -1140,13 +1222,13 @@ ORDER BY fiscal_year ASC"""
         vintage = f"AR_{fy}"
         sql = f"""WITH cur AS (
   SELECT *
-  FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'ratio' AND fiscal_year = {_lit(fy)} AND scope = 'standalone' AND verified = TRUE AND is_latest_vintage = TRUE
+  FROM {_q(_V_TREND_LATEST)}
+  WHERE statement = 'ratio' AND fiscal_year = {_lit(fy)} AND scope = 'standalone'
 ),
 prv AS (
   SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
-  FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'ratio' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND verified = TRUE AND is_latest_vintage = TRUE
+  FROM {_q(_V_TREND_LATEST)}
+  WHERE statement = 'ratio' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone'
 )
 SELECT
   cur.display_order AS line_order,
@@ -1319,9 +1401,6 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                 prev_fy = f"FY{int(fy[2:]) - 1:02d}"
                 prv_df = vdf[(vdf["statement"] == st_name) & (vdf["fiscal_year"] == prev_fy) & (vdf["scope"] == "standalone") & (vdf["report_vintage"] == "AR_" + fy)] if st_name != "ratio" else vdf[(vdf["statement"] == st_name) & (vdf["fiscal_year"] == prev_fy) & (vdf["scope"] == "standalone") & (vdf["is_latest_vintage"] == True)]
                 prv_map = {str(r["line_code"]): _val_num(r) for _, r in prv_df.iterrows()}
-                if compiled.metric == "balance_sheet":
-                    print("DEBUG prv_df length:", len(prv_df))
-                    print("DEBUG prv_map BS.TOTAL_ASSETS:", prv_map.get("BS.TOTAL_ASSETS"))
                 base_val = None
                 if base_code:
                     b_rows = cur_df[cur_df["line_code"] == base_code]
@@ -1419,7 +1498,6 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                             "source_doc": _norm_doc(p_rec["source_doc"]) if p_rec is not None else None,
                             "source_page_label": _norm_str(p_rec["source_page_label"]) if p_rec is not None else None,
                         })
-                    elif compiled.metric == "balance_sheet":
                         p_rec = lkp.get(("standalone", f_yr, "BS.TOTAL_ASSETS"))
                         rows.append({
                             "fiscal_year": f_yr,
