@@ -3,6 +3,25 @@
 **Purpose:** cut token cost without lowering quality. **Opus** (the lead model, `Model: inherit`) handles design, risky logic, integration and reviews. **Flash** models handle well-specified grunt work. **Every Flash output is reviewed separately** before it counts as done.
 > **v3 update (23-Oct-2026):** roles, decision rule and the review loop below are unchanged. The **authoritative owner per step is now the Owner column of the v3 [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md)** (phases P0–P5), and the v3 task packets live in [`docs/delegation/packets/v3/`](docs/delegation/packets/v3/). §4 below lists v2 phase ownership and is kept for history. New for v3: financial-extraction rules, reconciliation logic, contract v3 and the DCF engine design are **O-only** (high risk). Parsers, loaders, generators and renderers that follow a packet are **F**. Downloads, test runs, `recon_checks` runs and golden-eval runs are **FL**. The v2 version is archived in [`docs/archive/v2_2026-10-22/DELEGATION.md`](docs/archive/v2_2026-10-22/DELEGATION.md).
 
+> [!IMPORTANT]
+> **v3.1 update (24-Oct-2026, sponsor request after the 23-Oct quota stop): this section overrides §1–§4 wherever they conflict.**
+> **What went wrong:** the plan said "Flash for well-specified work", but in practice every helper agent (~25 implementers and reviewers on 23-Oct) was launched with the lead's own model (`self`/`inherit` = Opus). All the work therefore drew from one Opus quota, which ran out at 10:31 UTC and stopped 3 agents mid-task. The routing rule existed on paper but was never enforced.
+>
+> **v3.1 roles and model pins (enforced at launch; every launch states its model explicitly):**
+>
+> | Code | Role | Model (exact pin) | Owns | Never |
+> |---|---|---|---|---|
+> | **L** | **Lead (me)** | Claude Opus (this conversation) | **All frontend tasks, built by L directly (sponsor rule)**: React/Next.js, charts, statement table, exports UI, permission UX, persona picker UI, voice/orb UI. Also: integration, merges, tracking (checklist/bug register/PROGRESS), sponsor communication, decisions, packet writing | Delegating frontend work; long backend implementation runs |
+> | **A** | **Backend lead implementer** | **Gemini 4 Argon (High)**, `gemini-launch-candidate-high` | All former **O** backend/data tasks: extraction rules, reconciliation logic, BigQuery loads, contract schema (backend side), planner/coordinator, DCF engine, RBAC/security backend, agents, voice backend. Also **G4 reviews of F/FL work** | Frontend code |
+> | **F** | **Implementer** | **Gemini 3.8 Flash (High)**, `gemini-3.8-flash-high` | Packet-driven parsers, loaders, generators, tests, fixtures, Dataform files, docs updates | Contract/RBAC/SQL-safety design, frontend |
+> | **FL** | **Runner** | **Gemini 3.5 Flash Lite**, `gemini-3.5-flash-lite` | Test runs, eval/golden runs, `recon_checks` runs, downloads, evidence collection, BigQuery SELECT spot checks | Editing source |
+> | **R** | **Independent reviewer (G4)** | Different model from the builder: **F/FL work → Argon**; **A work → Opus Medium** (`opus-5.5-medium`, fresh context, read-only) for security/RBAC/contract/finance-truth steps, otherwise **Argon (Medium)** in a fresh context; **L frontend work → Argon (High)** | Every step (BUILD §4.2) | Reviewing its own output |
+> | **S** | **Sponsor** | Human | G5, decisions, re-auth, deploy go-ahead | — |
+>
+> **Checklist owner mapping (until rows are re-labelled):** `O` on a backend/data step = **A** · `O` on a frontend step = **L** · `F` = F · `FL` = FL · `O→F` = A spec/skeleton → F completes (backend) or L (frontend). **Frontend steps owned by L:** P2H.2 (UI), P3.6a, P3.6b (frontend part), P4.1 (TS side), P4.2 (TS types + renderer wiring), P4.3, P4.4, P4.5, P4.7, P4.8, P4.9, plus the frontend parts of P2F.1 (clarify chips) and P2H.4 (export/email UI).
+>
+> **Quota rules:** (1) Opus is used only by L and by Opus-Medium reviews of high-risk A steps (≈ 1 in 4 reviews). (2) Parallelism cap: at most 3 concurrent A agents and 4 concurrent F/FL agents. (3) Every launch states its model in the launch call and in the packet header (`Executor model:`). (4) If a pool runs low (swarm `models` shows quota < 20%), switch waiting workers to the next pool (A ↔ Gemini 3.1 Pro; F ↔ Gemini Flash Next) rather than stalling; log the switch in §6. (5) Agents in flight on 24-Oct (P1.3 and P1.5 fix-ups, started on Opus before v3.1) finish on Opus; nothing new is launched on `self`.
+
 **Linked:** [`BUILD.md`](BUILD.md) §4 (five gates) · [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md) (Owner column) · [Task packet template](docs/delegation/TASK_PACKET_TEMPLATE.md) · [Review template](docs/reviews/REVIEW_TEMPLATE.md)
 
 ---

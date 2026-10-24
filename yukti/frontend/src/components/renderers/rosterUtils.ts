@@ -1,4 +1,5 @@
 import { TableSpec, RowAction } from '@/contracts/answerContract';
+import { PERSONA_DIRECTORY, personaRank } from '@/personas';
 import { humanizeValue, toNumber, fmtNum } from '@/charts/format';
 
 export interface NormalizedRow extends Record<string, any> {
@@ -11,13 +12,8 @@ export interface FilterableColumn {
   options: string[];
 }
 
-export const ROLE_RANK: Record<string, number> = {
-  E2_HR: 1,
-  E3_FIN: 1,
-  DIR_HR: 2,
-  DIR_FIN: 2,
-  CMD: 3,
-};
+// P2H.2: ranks for all 11 personas (junior 1 · director 2 · CMD 3); unknown → 0
+export const ROLE_RANK: Record<string, number> = Object.fromEntries(PERSONA_DIRECTORY.map((p) => [p.id, personaRank(p.id)]));
 
 export function isActionAllowed(action: RowAction, persona?: string): boolean {
   if (!action.min_role) return true;
@@ -32,6 +28,32 @@ export function isActionAllowed(action: RowAction, persona?: string): boolean {
       ? ROLE_RANK[persona]
       : 0;
   return userRank >= requiredRank;
+}
+
+// P2H.3 (SPEC-07 §4.1/§4.3): level order E1…E9, then non-executive cadres GRP-B/C/D; unknown last.
+export function gradeRank(v: any): number {
+  const s = String(v ?? '').trim().toUpperCase();
+  const e = /^E(\d+)$/.exec(s);
+  if (e) return parseInt(e[1], 10);
+  const g = /^GRP-([A-Z])$/.exec(s);
+  if (g) return 100 + g[1].charCodeAt(0);
+  return 1000;
+}
+
+export function isLevelColumn(col: string): boolean {
+  return /^(grade|level|current_grade_id)$/i.test(col);
+}
+
+/** Tenure-style durations in years (1 dp, numeric even when values arrive as strings). */
+export function isYearsColumn(col: string): boolean {
+  return col === 'continuous_stay_years' || /_years$|^years_to_/i.test(col);
+}
+
+/** P2H.3: header text — backend `column_labels` first, then the humanised key. */
+export function columnLabel(col: string, labels?: Record<string, string>, humanize?: (k: string) => string): string {
+  const l = labels?.[col];
+  if (l && l.trim()) return l;
+  return humanize ? humanize(col) : col;
 }
 
 export function getColumnWidth(col: string): string {
@@ -51,6 +73,14 @@ export function getColumnWidth(col: string): string {
       return '13.5rem';
     case 'continuous_stay_years':
       return '9rem';
+    case 'functional_designation':
+      return '13rem';
+    case 'ongc_tenure_years':
+    case 'delhi_tenure_years':
+    case 'years_to_retirement':
+      return '9.5rem';
+    case 'exemption':
+      return '10rem';
     case 'posted_since':
       return '8rem';
     default:
@@ -100,6 +130,13 @@ export function formatRosterCell(
       return { text: `${n.toFixed(1)} yrs`, isMasked: false, numeric: true };
     }
   }
+  if (isYearsColumn(column)) {
+    // P2H.3: header already carries "(yrs)", so the cell is the bare 1-dp number
+    const n = toNumber(value);
+    if (n !== null) {
+      return { text: n.toFixed(1), isMasked: false, numeric: true };
+    }
+  }
   const n = toNumber(value);
   if (n !== null && !/(^|_)(id|code|year|fy)$/i.test(column)) {
     return { text: fmtNum(n), isMasked: false, numeric: true };
@@ -110,7 +147,7 @@ export function formatRosterCell(
 export function detectNumericColumns(columns: string[], rows: NormalizedRow[]): Set<string> {
   const set = new Set<string>();
   for (const col of columns) {
-    if (col === 'continuous_stay_years') {
+    if (isYearsColumn(col)) {
       set.add(col);
       continue;
     }
@@ -162,7 +199,9 @@ export function discoverFilterableColumns(
     }
     if (unique.size >= 2 && unique.size <= 20) {
       const sortedOptions = Array.from(unique).sort((a, b) =>
-        a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+        isLevelColumn(col)
+          ? gradeRank(a) - gradeRank(b) || a.localeCompare(b)
+          : a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
       );
       result.push({ col, options: sortedOptions });
     }
@@ -217,6 +256,13 @@ export function filterAndSortRows(
 
   const isNumeric = numericCols.has(sortCol);
   const dirMultiplier = sortDir === 'asc' ? 1 : -1;
+
+  if (isLevelColumn(sortCol)) {
+    // P2H.3: levels sort by grade_level_order (E2 < E10, executives before GRP-B/C/D), not alphabetically
+    return filtered
+      .slice()
+      .sort((a, b) => (gradeRank(a[sortCol]) - gradeRank(b[sortCol])) * dirMultiplier || a.__originalIndex - b.__originalIndex);
+  }
 
   return filtered.slice().sort((a, b) => {
     const valA = a[sortCol];

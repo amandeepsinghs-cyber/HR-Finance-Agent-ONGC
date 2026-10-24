@@ -3,7 +3,7 @@
 **Opened:** 23-Oct-2026 (deep diagnosis) · **Owner:** Opus lead · **Process:** a bug closes only when its checklist step passes G4 with a regression test (BUILD §4.2) · **Sources:** feedback/feedback1–4.md, current_refinements.md, diagnosis reports A–E (`yukti_deep_diagnosis.md` §3)
 
 > [!IMPORTANT]
-> **BLUF:** 40 bugs logged (6 closed): **14 Blockers, 25 Important, 1 Cosmetic group**. The three that hurt the CMD demo most are **BUG-02** (wrong balance-sheet and cash-flow numbers labelled "Audited"), **BUG-06** (an E-level user can escalate to CMD by voice) and **BUG-08** (the waterfall chart is mathematically wrong).
+> **BLUF:** 41 bugs logged (6 closed): **14 Blockers, 26 Important, 1 Cosmetic group**. The three that hurt the CMD demo most are **BUG-02** (wrong balance-sheet and cash-flow numbers labelled "Audited"), **BUG-06** (an E-level user can escalate to CMD by voice) and **BUG-08** (the waterfall chart is mathematically wrong).
 
 **Status legend:** 🔴 Open · 🟠 Fix in progress (uncommitted WIP in `wip/pre-v3-snapshot`, unverified) · ✅ Closed (G4 + test) · ↩ Regressed
 
@@ -33,8 +33,8 @@
 | BUG-14 | 🔴 | "Show income statement" silently shows FY26 | No period clarification (`pipeline.py`; `normalize.py:6` default) | Clarify chips | P2F.1 | 024 |
 | BUG-15 | 🔴 | WACC questions → error, or the P&L | No WACC data/metric; `planner.py:~466-480` fin_kw guard | `fact_wacc_annual` + metric | P1.9, P2F.3 | 024 |
 | BUG-16 | 🔴 | "Why" and actions are canned (1 action per statement-year) | Keyword retrieval over 129 generated chunks `insight_context.py:138-233`; `build_and_load_financial_rag.py` | Variance engine + AR chunks + action generator | P1.8, P2F.4–P2F.5 | 020, 024 |
-| BUG-17 | 🟠 | Duplicate/fragment bubbles in voice mode (feedback4) | Local barge-in hears Leda's echo; `live_session.py:803-804` clears `_is_speak_only`; stale `turn_complete` `:930-931` | `speak_id` gating; suppress barge-in during speak | P0.10, P5.2 | 013 |
-| BUG-18 | 🔴 | Contract text + Live transcript concatenated in one bubble (feedback2/3) | `page.tsx:397-446` | One source of truth per turn | P0.10, P5.2 | 013 |
+| BUG-17 | ✅ | Duplicate/fragment bubbles in voice mode (feedback4) | Local barge-in hears Leda's echo; `live_session.py:803-804` clears `_is_speak_only`; stale `turn_complete` `:930-931` | `speak_id` gating; suppress barge-in during speak | P0.10 | 013 |
+| BUG-18 | ✅ | Contract text + Live transcript concatenated in one bubble (feedback2/3) | `page.tsx:397-446` | One source of truth per turn | P0.10 | 013 |
 | BUG-19 | 🔴 | English narration for Hindi questions; Hindi re-voicing appended | Narrator English-only; Live model re-voices | Translate `spoken_summary`; speak verbatim | P5.2 | 030 |
 | BUG-20 | ✅ | `resolve_fy("FY 2024-25")` → FY24–FY25 range (2 tests red) | Uncommitted change `semantic/normalize.py` | Treat `YYYY-YY` as a single FY | P0.2 | 030 |
 | BUG-21 | 🔴 | "Why did revenue fall in FY23" hijacked into the Mumbai High vs Bassein FY26 comparison | Broad regex `turn_runner.py:2161-2165` before the planner | Remove | P5.1 | 030 |
@@ -55,6 +55,7 @@
 | BUG-38 | 🔴 | Balance-sheet output: line-item text is cut off and unreadable (sponsor, 23-Oct live test) | Generic `TableRenderer` truncates the first column (fixed widths / ellipsis; no wrap; inline bar column steals width) | `StatementTable`: first column wraps (never truncated), min width ≥ 40% of the card, sticky, tooltip not required; test at 1366 px, 1920 px and big screen | P4.3 | 025 |
 | BUG-39 | 🔴 | Artificial numbering on balance-sheet items ("A1.", "A2.", "I.") not wanted (sponsor) | Invented `line_name` prefixes in `financial_build/scripts/build_10yr_financials.py` (e.g. "A1. Oil & Gas Producing Properties") | Show the AR line names as reported (`line_name_as_reported`), with hierarchy expressed by indentation only; strip legacy prefixes in the snapshot path now | P1.6, P4.3 | 025 |
 | BUG-40 | 🔴 | Yukti's voice "breaks a bit" (choppy playback) after the P0.10 fix; sponsor unsure if it's network (23-Oct live test) | To diagnose: network jitter vs. playback scheduling (no jitter buffer / chunk underruns in `audioAnalyser.ts`) vs. CPU on the demo laptop | Measure chunk inter-arrival + underrun counts; add a ~150–250 ms adaptive jitter buffer; test on wired vs. Wi-Fi | P5.2 | 013 |
+| BUG-41 | 🔴 | Talk-over (voice) interruption is disabled by default (`VOICE_BARGE_IN=false`): a level-based detector cannot reliably separate Yukti's echo from the user's voice (G4 P0.10 r2: slow swells with lag still fire) | Laptop-speaker echo survives browser AEC; detector only sees mic level | Re-enable only with an echo-aware approach: AEC reference/far-end signal, Live server VAD with headset detection, or a push-to-talk hold; tap/Space/Esc/Stop interrupt meanwhile | P5.2 | 013 |
 
 ## Cosmetic
 

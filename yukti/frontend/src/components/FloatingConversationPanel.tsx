@@ -409,7 +409,10 @@ export const FloatingConversationPanel: React.FC<Props> = ({
           {!collapsed && (
             <>
               {/* Replicate the TopBar Listening aura ring + animated 5-bar LevelMeter at the bottom panel (made bigger: 2.75rem / 44px) */}
-              {isMicActive || orbState !== 'idle' ? (
+              {orbState !== 'idle' ? (
+                /* P4.9 (SPEC-09 §4.9, V12/V16): the Siri-like orb is visible in docked + fullscreen whenever Yukti is
+                   listening, thinking or speaking — not only when the panel is minimised. Same control + testids as
+                   the mic button: tap stops Yukti / toggles the mic (P0.10 Stop control). */
                 <button
                   type="button"
                   onClick={onToggleMic}
@@ -417,16 +420,34 @@ export const FloatingConversationPanel: React.FC<Props> = ({
                   aria-pressed={isMicActive}
                   aria-label={orbState === 'speaking' ? 'Stop Yukti speaking' : isMicActive ? 'Stop listening' : 'Start talking'}
                   title={orbState === 'speaking' ? 'Stop Yukti and talk (or press Space)' : isMicActive ? 'Listening — click to stop' : 'Talk to Yukti (or press Space)'}
-                  data-aura={orbState === 'thinking' ? 'thinking' : 'listening'}
+                  data-orb-state={orbState}
+                  className="relative shrink-0 w-12 h-12 rounded-full grid place-items-center cursor-pointer transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+                >
+                  <VoiceOrb state={orbState} isDark={isDark} size={48} audioEngine={audioEngine} interactive={false} label={`Yukti is ${orbState}`} />
+                  {orbState === 'speaking' && (
+                    <span className="absolute inset-0 grid place-items-center pointer-events-none" aria-hidden>
+                      <span className="w-5 h-5 rounded-full grid place-items-center bg-[var(--card)] border border-[var(--hairline)] shadow-sm text-[var(--ink)]">
+                        <Square className="w-2.5 h-2.5 fill-current" data-testid="stop-speaking" />
+                      </span>
+                    </span>
+                  )}
+                </button>
+              ) : isMicActive ? (
+                <button
+                  type="button"
+                  onClick={onToggleMic}
+                  data-testid="mic-button"
+                  aria-pressed={isMicActive}
+                  aria-label="Stop listening"
+                  title="Listening — click to stop"
+                  data-aura="listening"
                   className="yk-aura-ring rounded-full w-11 h-11 shrink-0 cursor-pointer transition-transform hover:scale-105 active:scale-95"
                 >
                   <span
-                    className={`yk-aura-surface rounded-full w-full h-full grid place-items-center bg-[var(--card)] border border-[var(--hairline)] shadow-sm ${
-                      orbState === 'thinking' ? 'text-ongc-amber' : 'text-[var(--accent)]'
-                    }`}
+                    className="yk-aura-surface rounded-full w-full h-full grid place-items-center bg-[var(--card)] border border-[var(--hairline)] shadow-sm text-[var(--accent)]"
                   >
-                    {/* P0.10: while Yukti speaks this button is the Stop control */}
-                    {orbState === 'speaking' ? <Square className="w-4 h-4 fill-current" data-testid="stop-speaking" /> : <LevelMeter level={micLevel} active size="lg" />}
+                    {/* mic open but Yukti idle: live input level (the orb branch above covers listening/thinking/speaking) */}
+                    <LevelMeter level={micLevel} active size="lg" />
                   </span>
                 </button>
               ) : (
@@ -435,7 +456,7 @@ export const FloatingConversationPanel: React.FC<Props> = ({
                   onClick={onToggleMic}
                   data-testid="mic-button"
                   aria-pressed={isMicActive}
-                  className="shrink-0 w-[2.65rem] h-[2.65rem] rounded-full flex items-center justify-center transition-all font-medium text-[0.84rem] bg-[#fdf2f2] text-[#a31d18] border border-[#f1d2d0] hover:bg-[#fae5e5] dark:bg-[#2a1515] dark:text-[#f87171] dark:border-[#4a2222] shadow-sm"
+                  className="shrink-0 w-[2.65rem] h-[2.65rem] rounded-full flex items-center justify-center transition-all font-medium text-[0.84rem] bg-[var(--mic-bg)] text-[var(--brand-red)] border border-[var(--mic-border)] hover:bg-[var(--mic-bg-hover)] shadow-sm"
                   title="Talk to Yukti (or press Space)"
                 >
                   <Mic className="w-[1.12rem] h-[1.12rem]" />

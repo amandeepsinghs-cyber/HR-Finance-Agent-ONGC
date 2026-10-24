@@ -26,19 +26,28 @@ export function micGateOpen(g: GateInput): boolean {
 }
 
 /**
- * Voice barge-in detector: fires only for ~0.4 s (cumulative, leaky) of speech clearly louder than the echo of
- * Yukti's own playback. Levels are the engine's raw mic level (sqrt-compressed RMS, 0..1) and the playback
- * analyser level (0..1). The threshold is the highest of:
- *  - an absolute floor (`absMin`, above the old 0.5 trigger that fired on echo),
- *  - the learned echo floor + `margin` (EMA of mic level heard during playback while below the threshold, so the
- *    user's speech never inflates it),
- *  - a playback-correlated term (`playBase + playGain * outputLevel`): louder playback, higher bar.
+ * Voice barge-in detector (P0.10 r2, G4 MF-1). Fires only for NEAR-CONTINUOUS speech clearly louder than the echo
+ * of Yukti's own playback:
+ *  - a sliding window of the last `windowMs` (0.5 s) of ticks must be full,
+ *  - >= `minLoudFrac` (85 %) of the ticks in it are above the threshold,
+ *  - no quiet dip inside the window is longer than `maxDipMs` (100 ms),
+ *  - duty-cycle guard: the loud stretch that ends now (dips <= `maxDipMs` tolerated) must itself be
+ *    >= `minLoudFrac` x `windowMs` long, so an on/off (syllabic echo) pattern whose loud runs are shorter than
+ *    that can never fire, whatever its duty cycle,
+ *  - echo-correlation guard: if the mic level tracks the playback level (Pearson r >= `maxEchoCorr` over the
+ *    window, with real variation in both), it is echo, not a person talking over Yukti.
+ * Threshold = max(absMin, learned echo floor + margin, playBase + playGain * playbackLevel). Levels are the
+ * engine's raw mic level (sqrt-compressed RMS, 0..1) and the playback analyser level (0..1).
  */
 export class BargeInDetector {
   private echoFloor: number;
-  private loudMs = 0;
+  private ticks: { mic: number; out: number; loud: boolean }[] = [];
+  private loudRunMs = 0;
   constructor(
-    private readonly sustainMs = 400,
+    private readonly windowMs = 500,
+    private readonly minLoudFrac = 0.85,
+    private readonly maxDipMs = 100,
+    private readonly maxEchoCorr = 0.8,
     private readonly absMin = 0.6,
     private readonly margin = 0.25,
     private readonly playBase = 0.45,
@@ -52,28 +61,62 @@ export class BargeInDetector {
     return Math.min(0.98, Math.max(this.absMin, this.echoFloor + this.margin, this.playBase + this.playGain * outputLevel));
   }
 
-  /** Feed one tick. Returns true exactly when a barge-in should fire. */
+  /** Feed one tick (every `dtMs`). Returns true exactly when a barge-in should fire. */
   update(micLevel: number, outputLevel: number, playing: boolean, dtMs: number): boolean {
     if (!playing) {
-      this.loudMs = 0;
+      this.reset();
       return false;
     }
-    const thr = this.threshold(outputLevel);
-    if (micLevel > thr) {
-      this.loudMs += dtMs;
-    } else {
-      this.echoFloor = this.echoFloor * 0.9 + micLevel * 0.1;
-      this.loudMs = Math.max(0, this.loudMs - dtMs / 2); // leaky: short dips between syllables don't reset
+    const loud = micLevel > this.threshold(outputLevel);
+    if (!loud) this.echoFloor = this.echoFloor * 0.9 + micLevel * 0.1; // learn only from sub-threshold ticks
+    const n = Math.max(1, Math.round(this.windowMs / dtMs));
+    this.ticks.push({ mic: micLevel, out: outputLevel, loud });
+    if (this.ticks.length > n) this.ticks.shift();
+    // length of the loud stretch ending now, tolerating dips up to maxDipMs
+    let dipMs = 0;
+    if (loud) this.loudRunMs += dtMs;
+    else {
+      // look back: count the current dip
+      for (let i = this.ticks.length - 1; i >= 0 && !this.ticks[i].loud; i--) dipMs += dtMs;
+      if (dipMs > this.maxDipMs) this.loudRunMs = 0;
     }
-    if (this.loudMs >= this.sustainMs) {
-      this.loudMs = 0;
-      return true;
+    if (this.ticks.length < n) return false;
+    const loudN = this.ticks.filter((t) => t.loud).length;
+    if (loudN / n < this.minLoudFrac) return false;
+    // no dip longer than maxDipMs inside the window
+    let run = 0;
+    for (const t of this.ticks) {
+      run = t.loud ? 0 : run + dtMs;
+      if (run > this.maxDipMs) return false;
     }
-    return false;
+    if (this.loudRunMs < this.windowMs * this.minLoudFrac) return false; // duty-cycle guard
+    if (this.echoCorrelated()) return false;
+    this.reset();
+    return true;
+  }
+
+  /** Pearson correlation of mic vs playback level over the window (only when both actually vary). */
+  private echoCorrelated(): boolean {
+    const xs = this.ticks.map((t) => t.out);
+    const ys = this.ticks.map((t) => t.mic);
+    const mean = (a: number[]) => a.reduce((p, c) => p + c, 0) / a.length;
+    const mx = mean(xs);
+    const my = mean(ys);
+    let sxy = 0;
+    let sxx = 0;
+    let syy = 0;
+    for (let i = 0; i < xs.length; i++) {
+      sxy += (xs[i] - mx) * (ys[i] - my);
+      sxx += (xs[i] - mx) ** 2;
+      syy += (ys[i] - my) ** 2;
+    }
+    if (sxx < 1e-4 || syy < 1e-4) return false; // no variation: correlation undefined, other guards decide
+    return sxy / Math.sqrt(sxx * syy) >= this.maxEchoCorr;
   }
 
   reset(): void {
-    this.loudMs = 0;
+    this.ticks = [];
+    this.loudRunMs = 0;
   }
 
   getEchoFloor(): number {
@@ -115,6 +158,12 @@ export class SpeakTracker {
 
   /** A new user turn (voice transcript) re-opens agent transcripts. */
   userTurn(): void {
+    this.closed = false;
+  }
+
+  /** WS closed / errored (P0.10 r2 MF-2): forget any speak; the next user turn starts clean. */
+  reset(): void {
+    this.active = null;
     this.closed = false;
   }
 

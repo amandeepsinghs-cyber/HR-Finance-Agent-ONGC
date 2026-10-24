@@ -16,6 +16,7 @@ IAP assertion. The request body, WebSocket query string and voice/text commands 
 from __future__ import annotations
 
 import base64
+from contextvars import ContextVar, Token
 import hashlib
 import hmac
 import json
@@ -29,6 +30,7 @@ import time
 from dataclasses import asdict, dataclass
 from typing import Any, Dict, List, Optional
 import uuid
+import yaml
 
 from fastapi import HTTPException, Request
 
@@ -37,15 +39,34 @@ logger = logging.getLogger("yukti.auth")
 COOKIE_NAME = "yk_session"
 TOKEN_TTL_S = 8 * 3600
 
-# P0 persona set = the 5 existing personas + DEMO_ADMIN (P2H.1 extends to 11 via dim_app_user).
-# emp_ids are demo placeholders until dim_app_user lands (P2H.1); display data mirrors the UI picker.
-PERSONA_DIRECTORY: Dict[str, Dict[str, str]] = {
-    "CMD": {"emp_id": "DEMO-CMD", "display_name": "Arun", "designation": "Chairman & CEO", "function": "BOARD", "grade": "BOARD"},
-    "DIR_HR": {"emp_id": "DEMO-DIR-HR", "display_name": "Director (HR)", "designation": "Director (HR)", "function": "HR", "grade": "BOARD"},
-    "DIR_FIN": {"emp_id": "DEMO-DIR-FIN", "display_name": "Director (Finance)", "designation": "Director (Finance)", "function": "FIN", "grade": "BOARD"},
-    "E2_HR": {"emp_id": "DEMO-E2-HR", "display_name": "Pooja Verma", "designation": "Assistant Manager, HR", "function": "HR", "grade": "E2"},
-    "E3_FIN": {"emp_id": "DEMO-E3-FIN", "display_name": "Rajesh Kulkarni", "designation": "Deputy Manager, Finance", "function": "FIN", "grade": "E3"},
-}
+
+def _load_persona_directory() -> Dict[str, Dict[str, Any]]:
+    """P2H.1 (SPEC-06 §4.1 / D-41 / D-60 / S9): load the 11 canonical personas strictly from app_users.yaml."""
+    from app.access_control import VALID_PERSONAS
+
+    yaml_path = Path(__file__).resolve().parent / "brain" / "app_users.yaml"
+    if not yaml_path.exists():
+        raise RuntimeError(f"app_users.yaml not found at {yaml_path}; required for 11-persona identity directory")
+    raw = yaml.safe_load(yaml_path.read_text(encoding="utf-8")) or {}
+    personas = raw.get("personas") or {}
+    if set(personas.keys()) != set(VALID_PERSONAS) or len(personas) != 11:
+        raise RuntimeError(
+            f"app_users.yaml must define all 11 canonical personas {sorted(VALID_PERSONAS)}, got {sorted(personas.keys())}"
+        )
+    out: Dict[str, Dict[str, Any]] = {}
+    for pid, info in personas.items():
+        desig = info.get("functional_designation") or info.get("designation") or ""
+        out[pid] = {
+            **info,
+            "designation": desig,
+            "functional_designation": desig,
+            "wc_id": info.get("wc_id", "WC-DEL"),
+            "work_centre": info.get("work_centre", "Delhi HQ"),
+        }
+    return out
+
+
+PERSONA_DIRECTORY: Dict[str, Dict[str, Any]] = _load_persona_directory()
 ADMIN_PERSONA_ID = "DEMO_ADMIN"
 ADMIN_DEFAULT_ACTING_PERSONA = "CMD"
 
@@ -66,11 +87,54 @@ class Principal:
     demo: bool = True
     jti: str = ""
     exp: int = 0
+    wc_id: str = "WC-DEL"
+    work_centre: str = "Delhi HQ"
+    functional_designation: str = ""
 
     def public(self) -> Dict[str, Any]:
         d = asdict(self)
         d.pop("jti", None)
+        if not d.get("functional_designation"):
+            d["functional_designation"] = self.designation
         return d
+
+
+# Per-turn server-side Principal contextvar so agent tool wrappers (run_certified_query, etc.)
+# always bind the authenticated Principal (M1 / SPEC-06 §4.5) and fail closed when absent.
+_ACTIVE_PRINCIPAL: ContextVar[Optional[Principal]] = ContextVar("yukti_active_principal", default=None)
+
+
+def set_active_principal(principal: Optional[Principal]) -> Token:
+    return _ACTIVE_PRINCIPAL.set(principal)
+
+
+def reset_active_principal(token: Token) -> None:
+    _ACTIVE_PRINCIPAL.reset(token)
+
+
+def get_active_principal() -> Optional[Principal]:
+    return _ACTIVE_PRINCIPAL.get()
+
+
+def principal_for_persona(persona: str) -> Principal:
+    """Build a server-side Principal for a canonical persona (raises UnknownPersona on unknown/empty)."""
+    from app.access_control import normalize_persona
+
+    canon = normalize_persona(persona)
+    info = PERSONA_DIRECTORY[canon]
+    return Principal(
+        emp_id=str(info["emp_id"]),
+        persona=canon,
+        function=str(info["function"]),
+        grade=str(info["grade"]),
+        display_name=str(info["display_name"]),
+        designation=str(info["designation"]),
+        is_admin=False,
+        demo=True,
+        wc_id=str(info.get("wc_id", "WC-DEL")),
+        work_centre=str(info.get("work_centre", "Delhi HQ")),
+        functional_designation=str(info.get("functional_designation") or info["designation"]),
+    )
 
 
 # ------------------------------------------------------------------ signing key
@@ -264,6 +328,9 @@ def verify_token(token: str, now: Optional[int] = None) -> Principal:
         demo=bool(claims.get("demo", True)),
         jti=str(claims.get("jti") or ""),
         exp=exp,
+        wc_id=str(info.get("wc_id", "WC-DEL")),
+        work_centre=str(info.get("work_centre", "Delhi HQ")),
+        functional_designation=str(info.get("functional_designation") or info["designation"]),
     )
 
 
@@ -328,10 +395,36 @@ def set_session_cookie(response: Any, token: str) -> None:
 
 
 def personas_public() -> List[Dict[str, Any]]:
-    out = [{"id": pid, "display_name": v["display_name"], "designation": v["designation"],
-            "function": v["function"], "grade": v["grade"]} for pid, v in PERSONA_DIRECTORY.items()]
-    out.append({"id": ADMIN_PERSONA_ID, "display_name": "Demo presenter", "designation": "Presenter (admin)",
-                "function": "ADMIN", "grade": "-", "requires_passphrase": True})
+    out = [
+        {
+            "id": pid,
+            "persona_id": pid,
+            "emp_id": v["emp_id"],
+            "display_name": v["display_name"],
+            "designation": v["designation"],
+            "functional_designation": v.get("functional_designation", v["designation"]),
+            "function": v["function"],
+            "grade": v["grade"],
+            "wc_id": v.get("wc_id", "WC-DEL"),
+            "work_centre": v.get("work_centre", "Delhi HQ"),
+        }
+        for pid, v in PERSONA_DIRECTORY.items()
+    ]
+    out.append(
+        {
+            "id": ADMIN_PERSONA_ID,
+            "persona_id": ADMIN_PERSONA_ID,
+            "emp_id": "EMP-000001",
+            "display_name": "Demo presenter",
+            "designation": "Presenter (admin)",
+            "functional_designation": "Presenter (admin)",
+            "function": "ADMIN",
+            "grade": "-",
+            "wc_id": "WC-DEL",
+            "work_centre": "Delhi HQ",
+            "requires_passphrase": True,
+        }
+    )
     return out
 
 
@@ -375,12 +468,20 @@ def is_role_switch_request(query: str) -> bool:
 
 
 def requested_persona(query: str) -> Optional[str]:
-    """Best-effort target persona for an admin switch ("switch role to E3_FIN" -> E3_FIN)."""
+    """Best-effort target persona for an admin switch ("switch role to E3_FIN" -> E3_FIN) across all 11 personas."""
     q = (query or "").lower()
     table = [
-        (r"\b(e3[\s_-]?fin|rajesh)\b", "E3_FIN"), (r"\b(e2[\s_-]?hr|pooja)\b", "E2_HR"),
-        (r"\b(dir(ector)?[\s_-]*(\()?(fin|finance)|cfo)\b", "DIR_FIN"), (r"\b(dir(ector)?[\s_-]*(\()?hr)\b", "DIR_HR"),
-        (r"\b(cmd|chairman|ceo)\b", "CMD"),
+        (r"\b(e1[\s_-]?hr|hr[\s_-]?e1|dinesh\s+deshmukh)\b", "E1_HR"),
+        (r"\b(e2[\s_-]?hr|hr[\s_-]?e2|pooja\s+verma|pooja)\b", "E2_HR"),
+        (r"\b(e3[\s_-]?hr|hr[\s_-]?e3|pooja\s+pillai)\b", "E3_HR"),
+        (r"\b(e4[\s_-]?hr|hr[\s_-]?e4|aarti\s+saikia)\b", "E4_HR"),
+        (r"\b(e1[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e1|ajay\s+deshmukh)\b", "E1_FIN"),
+        (r"\b(e2[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e2|praveen\s+nair)\b", "E2_FIN"),
+        (r"\b(e3[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e3|asha\s+mishra|rajesh\s+kulkarni|rajesh)\b", "E3_FIN"),
+        (r"\b(e4[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e4|santosh\s+banerjee)\b", "E4_FIN"),
+        (r"\b(dir(ector)?[\s_-]*(\()?(fin|finance)|finance\s+director|cfo|vivek\s+rao)\b", "DIR_FIN"),
+        (r"\b(dir(ector)?[\s_-]*(\()?hr|hr\s+director|director\s+human\s+resources|manish\s+deshpande)\b", "DIR_HR"),
+        (r"\b(cmd|c\.m\.d|chairman|ceo|arun\s+mehra)\b", "CMD"),
     ]
     for pat, pid in table:
         if re.search(pat, q):

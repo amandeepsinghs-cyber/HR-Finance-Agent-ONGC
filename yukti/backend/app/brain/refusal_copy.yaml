@@ -1,0 +1,159 @@
+# SPEC-06 §4.6 / BEH-01.60–.64 / P2H.2: Refusal & Masking UX Copy (EN + HI)
+# Pattern: acknowledge -> one-line reason (no jargon, no rule IDs in headline) -> allowed alternative (auto-answer or chip).
+# Rule ID goes in the "Why?" disclosure (`rule_ref`). Never "Access denied". Same language as the question.
+
+version: 1
+codes:
+  R-NAMED:
+    code: R-NAMED
+    trigger: "junior asks for names"
+    rule_ref: "D-11"
+    auto_answer: true
+    en: "I can't share individual names at your access level. Here is the same group as counts by grade (groups under 5 shown as '<5')."
+    hi: "आपके एक्सेस स्तर पर व्यक्तिगत नाम साझा नहीं किए जा सकते। यही समूह ग्रेड-वार संख्या में दिखा रही हूँ (5 से कम को '<5' लिखा है)।"
+    alternative:
+      label: "Counts by grade"
+      label_hi: "ग्रेड-वार संख्या"
+      question: "Show counts by grade"
+      question_hi: "ग्रेड-वार संख्या दिखाएँ"
+    alternatives:
+      - label: "Export counts to Excel"
+        label_hi: "एक्सेल में निर्यात करें"
+        question: "Export counts by grade to Excel"
+        question_hi: "ग्रेड-वार संख्या एक्सेल में निर्यात करें"
+
+  R-PAY:
+    code: R-PAY
+    trigger: "junior asks another person's pay"
+    rule_ref: "D-11"
+    auto_answer: false
+    en: "Individual pay is confidential. I can show the average pay for that grade, or your own payslip."
+    hi: "किसी व्यक्ति का वेतन गोपनीय है। मैं उस ग्रेड का औसत वेतन या आपकी अपनी वेतन पर्ची दिखा सकती हूँ।"
+    alternative:
+      label: "Average E{n} pay"
+      label_hi: "E{n} का औसत वेतन"
+      question: "Average monthly basic pay of E{n} officers"
+      question_hi: "E{n} अधिकारियों का औसत मासिक मूल वेतन क्या है?"
+    alternatives:
+      - label: "My payslip"
+        label_hi: "मेरी वेतन पर्ची"
+        question: "Show my payslip for September"
+        question_hi: "सितंबर की मेरी वेतन पर्ची दिखाएँ"
+
+  R-APAR:
+    code: R-APAR
+    trigger: "junior asks APAR of others"
+    rule_ref: "D-11"
+    auto_answer: false
+    en: "Appraisal ratings are confidential. I can show your own APAR history."
+    hi: "मूल्यांकन रेटिंग गोपनीय हैं। मैं आपका अपना APAR इतिहास दिखा सकती हूँ।"
+    alternative:
+      label: "My APAR"
+      label_hi: "मेरा APAR"
+      question: "Show my APAR history"
+      question_hi: "मेरा APAR इतिहास दिखाएँ"
+    alternatives:
+      - label: "My APAR"
+        label_hi: "मेरा APAR"
+        question: "Show my APAR history"
+        question_hi: "मेरा APAR इतिहास दिखाएँ"
+
+  R-SENS:
+    code: R-SENS
+    trigger: "vigilance/POSH/medical"
+    rule_ref: "D-11"
+    auto_answer: false
+    en: "Case records like these are restricted to the CMD and Director (HR). I can explain the policy and the reporting process."
+    hi: "ऐसे मामलों के रिकॉर्ड केवल CMD और निदेशक (मानव संसाधन) देख सकते हैं। मैं नीति और शिकायत प्रक्रिया बता सकती हूँ।"
+    alternative:
+      label: "POSH policy"
+      label_hi: "POSH नीति"
+      question: "What is the POSH policy and reporting process?"
+      question_hi: "POSH नीति और शिकायत प्रक्रिया क्या है?"
+    alternatives:
+      - label: "POSH policy"
+        label_hi: "POSH नीति"
+        question: "What is the POSH policy and reporting process?"
+        question_hi: "POSH नीति और शिकायत प्रक्रिया क्या है?"
+
+  R-FUNC:
+    code: R-FUNC
+    trigger: "out-of-function microdata (e.g. E_HR -> GL lines)"
+    rule_ref: "D-43"
+    auto_answer: true
+    en: "Ledger-level finance data is available to the Finance team. Here are the company-level totals instead."
+    hi: "लेजर-स्तर का वित्त डेटा वित्त टीम के लिए है। इसके बजाय कंपनी-स्तर के कुल आँकड़े दिखा रही हूँ।"
+    alternative:
+      label: "Company-level totals"
+      label_hi: "कंपनी-स्तर के कुल आँकड़े"
+      question: "Show the income statement for FY25"
+      question_hi: "FY25 का आय विवरण दिखाएँ"
+    alternatives:
+      - label: "Company-level totals"
+        label_hi: "कंपनी-स्तर के कुल आँकड़े"
+        question: "Show the income statement for FY25"
+        question_hi: "FY25 का आय विवरण दिखाएँ"
+
+  R-BOARD:
+    code: R-BOARD
+    trigger: "board_confidential"
+    rule_ref: "D-43"
+    auto_answer: false
+    en: "That Board note is restricted. I can summarise the published Annual Report position."
+    hi: "वह बोर्ड नोट प्रतिबंधित है। मैं प्रकाशित वार्षिक रिपोर्ट की स्थिति बता सकती हूँ।"
+    alternative:
+      label: "AR summary"
+      label_hi: "वार्षिक रिपोर्ट सारांश"
+      question: "Summarise the published Annual Report position"
+      question_hi: "प्रकाशित वार्षिक रिपोर्ट की स्थिति का सारांश दें"
+    alternatives:
+      - label: "AR summary"
+        label_hi: "वार्षिक रिपोर्ट सारांश"
+        question: "Summarise the published Annual Report position"
+        question_hi: "प्रकाशित वार्षिक रिपोर्ट की स्थिति का सारांश दें"
+
+  R-ROLE:
+    code: R-ROLE
+    trigger: "non-admin role switch"
+    rule_ref: "SPEC-06 §4.4 R-ROLE"
+    auto_answer: false
+    en: "I can't change your access level from a conversation. You're signed in as {display_name}, {designation}."
+    hi: "बातचीत से आपका एक्सेस स्तर नहीं बदला जा सकता। आप {display_name}, {designation} के रूप में साइन-इन हैं।"
+    alternative:
+      label: "What can I ask?"
+      label_hi: "मैं क्या पूछ सकता हूँ?"
+      question: "What can I ask?"
+      question_hi: "मैं क्या पूछ सकता हूँ?"
+    alternatives:
+      - label: "What can I ask?"
+        label_hi: "मैं क्या पूछ सकता हूँ?"
+        question: "What can I ask?"
+        question_hi: "मैं क्या पूछ सकता हूँ?"
+
+  R-K5:
+    code: R-K5
+    trigger: "every cell < 5 after AGG"
+    rule_ref: "D-11"
+    auto_answer: false
+    en: "This group is too small to show without identifying people. Try a wider filter, e.g. all Delhi executives."
+    hi: "यह समूह इतना छोटा है कि संख्या दिखाने से लोग पहचाने जा सकते हैं। कृपया दायरा बढ़ाएँ।"
+    alternative:
+      label: "All Delhi executives"
+      label_hi: "सभी दिल्ली अधिकारी"
+      question: "How many employees are in Delhi by level?"
+      question_hi: "दिल्ली में स्तर-वार कितने कर्मचारी हैं?"
+    alternatives:
+      - label: "All Delhi executives"
+        label_hi: "सभी दिल्ली अधिकारी"
+        question: "How many employees are in Delhi by level?"
+        question_hi: "दिल्ली में स्तर-वार कितने कर्मचारी हैं?"
+
+  E-AUTH:
+    code: E-AUTH
+    trigger: "backend auth/data outage (BUG-33)"
+    rule_ref: "BUG-33"
+    auto_answer: false
+    en: "I can't reach the data service right now. Nothing is wrong with your question; please try again in a minute."
+    hi: "अभी डेटा सेवा से संपर्क नहीं हो पा रहा। कृपया एक मिनट बाद फिर पूछें।"
+    alternative: null
+    alternatives: []

@@ -1,3 +1,4 @@
+import { isJunior } from '@/personas';
 import { AnswerContract, PersonaType } from '@/contracts/answerContract';
 import { FIXTURES, FixtureMeta } from '@/fixtures';
 import { V2_FIXTURES } from '@/fixtures/v2';
@@ -9,7 +10,7 @@ export function routeQueryToFixture(
   const q = query.toLowerCase().trim();
 
   // Role-based refusal check
-  if ((currentPersona === 'E2_HR' || currentPersona === 'E3_FIN') && 
+  if (isJunior(currentPersona) && 
       (q.includes('mumbai') || q.includes('transfer list') || q.includes('confidential') || q.includes('draft transfer'))) {
     const f = FIXTURES.find(x => x.id === 'd2_refusal')!;
     return { fixture: f, contract: f.data };
@@ -22,7 +23,7 @@ export function routeQueryToFixture(
   };
   const hrPeople = /(executive|officer|employee|people|staff)/.test(q);
   const wantsNames = hrPeople && /\b(names?|list|who are|roster|which officers|show me the people)\b/.test(q);
-  if (wantsNames && (currentPersona === 'E2_HR' || currentPersona === 'E3_FIN')) { const r = v2('v2_roster_aggregate_e2'); if (r) return r; }
+  if (wantsNames && isJunior(currentPersona)) { const r = v2('v2_roster_aggregate_e2'); if (r) return r; }
   if (wantsNames && currentPersona === 'DIR_FIN') { const r = v2('v2_roster_partial_dirfin'); if (r) return r; }
   if (wantsNames && /(all.?india|8 years|eight years|2,?000|everyone)/.test(q)) { const r = v2('v2_roster_2000'); if (r) return r; }
   if (wantsNames && /delhi/.test(q)) { const r = v2('v2_roster_419'); if (r) return r; }

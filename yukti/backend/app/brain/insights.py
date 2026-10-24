@@ -377,10 +377,10 @@ def policy_flags(ctx: InsightContext) -> Optional[Insight]:
 
     n = len(ctx.rows)
     due = sum(1 for r in ctx.rows if _is_ge_5(r.get("station_tenure_years")))
-    exempt = sum(1 for r in ctx.rows if _is_exempt(r.get("retiring_within_3yr")))
+    exempt = sum(1 for r in ctx.rows if r.get("is_superannuation_exempt") or str(r.get("exemption", "")).lower() not in ("none", ""))
 
-    text = f"{due} of {n} are past the 5-year rotation norm; {exempt} are within 3 years of superannuation (exempt)."
-    facts = [float(due), float(n), 5.0, float(exempt), 3.0]
+    text = f"{due} of {n} are past the 5-year rotation norm; {exempt} are within 2 years of superannuation (exempt)."
+    facts = [float(due), float(n), 5.0, float(exempt), 2.0]
     return Insight(
         kind="risk",
         type="policy_flag",

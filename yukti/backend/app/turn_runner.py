@@ -20,6 +20,7 @@ from google.genai import types
 from app.access_control import check_access, normalize_persona
 from app.agent import create_yukti_agent
 from app.answer_composer import detect_language, get_contract_validator, validate_and_repair_contract
+from app.brain.semantic_model import get_semantic_model
 from app.brain.pipeline import planner_enabled, run_planner_turn
 from app.config import DEFAULT_TEXT_MODEL, GCP_PROJECT, VERTEX_TEXT_LOCATION
 from app.router import get_semantic_router
@@ -112,10 +113,10 @@ def make_clean_title_and_subtitle(
                 sub += " | Station Category C"
             if ents.wc_notes.get(target_wc):
                 sub += f" | {ents.wc_notes[target_wc]}"
-            return f"{label}: Executives with ≥5 Years' Continuous Stay", f"{sub} | As of 19-Oct-2026"
+            return f"{label}: Executives with ≥5 Years' Continuous Stay", f"{sub} | {get_semantic_model().anchor_date}"
 
     clean = re.sub(r"^(How many|What is the|What are the|Which|Please show|Tell me about)\s+", "", query, flags=re.IGNORECASE).strip().rstrip("?")
-    return clean[:65].capitalize(), "ONGC enterprise records (demo data) | As of 19-Oct-2026"
+    return clean[:65].capitalize(), f"ONGC enterprise records (demo data) | {get_semantic_model().anchor_date}"
 
 
 def make_clean_title(query: str) -> str:
@@ -134,11 +135,11 @@ def replace_codes_with_friendly_names(obj: Any) -> Any:
 class AgentTurnRunner:
     """Manages real LLM turn execution using Google ADK."""
 
-    def __init__(self, model_name: Optional[str] = None):
+    def __init__(self, model_name: Optional[str] = None, principal: Optional[Any] = None):
         os.environ["GOOGLE_CLOUD_LOCATION"] = VERTEX_TEXT_LOCATION
         self.model_name = model_name or DEFAULT_TEXT_MODEL
         self.session_service = InMemorySessionService()
-        self.agent = create_yukti_agent(model_name=self.model_name)
+        self.agent = create_yukti_agent(model_name=self.model_name, principal=principal)
         self.runner = Runner(
             agent=self.agent,
             app_name=self.agent.name,
@@ -188,7 +189,15 @@ class AgentTurnRunner:
                                                         "designation": norm_persona, "function": "", "grade": ""})
             who = Principal(emp_id=info["emp_id"], persona=norm_persona, function=info["function"], grade=info["grade"],
                             display_name=info["display_name"], designation=info["designation"])
-        text = r_role_text(who, det_lang)
+        from app.answer_composer import render_refusal_copy
+        rc_role = render_refusal_copy(
+            "R-ROLE",
+            lang=det_lang,
+            persona=norm_persona,
+            display_name=who.display_name,
+            designation=who.designation,
+        )
+        text = rc_role["text"]
         audit("role_switch_denied", who, turn_id=turn_id, decision="refused", rule_ref="SPEC-06 §4.4 R-ROLE",
               query=query, requested=target)
         contract = {
@@ -197,8 +206,14 @@ class AgentTurnRunner:
             "visual": {"type": "none", "mode": "replace"},
             "insights": [], "sources": [{"kind": "policy", "title": "SPEC-06 §4.4 (R-ROLE)"}],
             "suggestions": ["What can I ask?"],
-            "access": {"status": "refused", "reason": "Access level cannot be changed from a conversation.",
-                       "rule_ref": "SPEC-06 §4.4 R-ROLE"},
+            "access": {
+                "status": "refused",
+                "code": "R-ROLE",
+                "reason": "Access level cannot be changed from a conversation.",
+                "rule_ref": "SPEC-06 §4.4 R-ROLE",
+                "alternative": rc_role["alternative"],
+                "alternatives": rc_role["alternatives"],
+            },
             "export_options": [], "status_events": ["Role change from conversation refused (R-ROLE)"],
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
         }
@@ -263,13 +278,26 @@ class AgentTurnRunner:
         P0.4: when `principal` (app.auth.Principal, from the signed session token) is given, its persona
         is the only persona used; nothing in the query or the contract can change it (admins excepted).
         """
+        from app.auth import principal_for_persona, reset_active_principal, set_active_principal
+
         if principal is not None:
             persona = principal.persona
-        contract = await self._execute_turn_inner(
-            query=query, session_id=session_id, persona=persona, language=language,
-            voice_override=voice_override, history=history, ui_context=ui_context,
-            spec_patch=spec_patch, base_spec=base_spec, principal=principal,
-        )
+        else:
+            principal = principal_for_persona(persona)
+        token = set_active_principal(principal)
+        
+        # Ensure runner is bound to correct agent after principal is set
+        self.agent = create_yukti_agent(model_name=self.model_name, principal=principal)
+        self.runner.agent = self.agent
+
+        try:
+            contract = await self._execute_turn_inner(
+                query=query, session_id=session_id, persona=persona, language=language,
+                voice_override=voice_override, history=history, ui_context=ui_context,
+                spec_patch=spec_patch, base_spec=base_spec, principal=principal,
+            )
+        finally:
+            reset_active_principal(token)
         from app.brain.rbac import enforce_contract, persona_class
         req_persona = normalize_persona(persona)
         # P0.4 (BUG-06): the persona is never taken from the contract (that let a free-text "switch role"
@@ -282,7 +310,11 @@ class AgentTurnRunner:
             persona_eff = req_persona
             contract["persona"] = req_persona
         contract = enforce_contract(contract, persona_eff)
-        if persona_class(persona_eff) == "junior" or (contract.get("access") or {}).get("status") != "allowed":
+        if (
+            persona_class(persona_eff) == "junior"
+            or persona_eff == "DIR_FIN"
+            or (contract.get("access") or {}).get("status") != "allowed"
+        ):
             self._sync_session_after_enforce(session_id, contract)
         # B4: legacy-path data answers also carry deterministic insights (computed from the table
         # actually shown, after RBAC masking) so every data answer has insights_v2.
@@ -329,9 +361,10 @@ class AgentTurnRunner:
             session_id=session_id,
             persona=norm_persona,
             language=det_lang,
+            emp_id=getattr(principal, "emp_id", None),
         )
         session_state.hydrate_from_client_history(history=history, ui_context=ui_context)
-        session_state.persona = norm_persona  # P0.4: the session persona always follows the signed principal
+        session_state.ensure_principal(norm_persona, getattr(principal, "emp_id", None))  # P0.4 / SPEC-07 §4.6 C-8
 
         turn_index = len(session_state.turns) + 1
         turn_id = f"turn-{session_id}-{turn_index:03d}"
@@ -402,6 +435,10 @@ class AgentTurnRunner:
             query = SCREEN_CANONICAL_QUERIES[sc_intent["value"]]
             q_clean = query.strip().lower().rstrip("?!.")
             sc_intent = None
+        elif sc_intent and sc_intent.get("command") == "export":
+            # P2H.4 (SPEC-07 §4.4): route export intents through run_planner_turn so the active cohort
+            # is exported to .xlsx with column honouring, RBAC masking, and contract.artifacts[].
+            sc_intent = None
 
         if sc_intent:
             cmd = sc_intent["command"]
@@ -462,7 +499,19 @@ class AgentTurnRunner:
             elif cmd == "export":
                 spoken_sc = f"Exporting the current view to {val.upper()}."
             elif cmd == "navigate_history":
-                spoken_sc = "Restored the previous visual on screen."
+                restored = session_state.restore_cohort(query)
+                if restored and isinstance(restored.get("visual"), dict):
+                    last_vis = dict(restored["visual"])
+                    last_vis["mode"] = "restore"
+                    spoken_sc = (
+                        f"Restored the parent cohort ({restored.get('cohort_id', 'C0')}: "
+                        f"{restored.get('row_count', 0):,} employees) on screen."
+                    )
+                else:
+                    if len(session_state.visual_history) >= 2:
+                        last_vis = dict(session_state.visual_history[-2])
+                    last_vis["mode"] = "restore"
+                    spoken_sc = "Restored the previous visual on screen."
             else:
                 spoken_sc = f"Applied screen command {cmd}."
 
@@ -540,62 +589,22 @@ class AgentTurnRunner:
         # so restricted personas (e.g. E2_HR / E3_FIN) cannot reach confidential data via shortcuts.
         access_dec = check_access(persona=norm_persona, query=query)
         if access_dec.status == "refused":
-            rule = access_dec.rule_ref or "ONGC Policy Confidentiality"
-            alt = access_dec.alternative or "authorized public pay scale bands"
-            spoken = f"I cannot share these confidential records under {rule}. However, I can share {alt}."
-            display = f"Access restricted under {rule} [1]. Authorized permitted alternative data is provided below [2]."
-
-            # Run alternative query for authorized data
-            alt_rows = []
-            alt_cols = ["grade_id", "designation", "pay_scale_min_inr", "pay_scale_max_inr"]
+            from app.answer_composer import _infer_refusal_code, build_refusal_contract
+            ref_code = access_dec.code or _infer_refusal_code(
+                {"reason": access_dec.reason, "rule_ref": access_dec.rule_ref}
+            )
+            refusal_contract = build_refusal_contract(
+                code=ref_code,
+                persona=norm_persona,
+                turn_id=turn_id,
+                language=det_lang,
+                rule_ref=access_dec.rule_ref,
+                latency_ms=(time.perf_counter() - t0) * 1000,
+            )
             if access_dec.alternative_sql:
-                from app.tools.query_data import query_data as qd
-                res = await asyncio.to_thread(qd, access_dec.alternative_sql, title="Permitted Alternative")
-                if res.get("status") == "success":
-                    alt_rows = res.get("all_rows", res.get("rows", []))
-                    alt_cols = res.get("columns", alt_cols)
-
-            refusal_contract = {
-                "turn_id": turn_id,
-                "language": det_lang,
-                "persona": norm_persona,
-                "spoken_summary": spoken,
-                "display_text": display,
-                "visual": {
-                    "type": "refusal",
-                    "mode": "replace",
-                    "title": f"Access Restricted ({access_dec.refusal_id or 'Confidential'})",
-                    "table": {
-                        "columns": alt_cols,
-                        "rows": alt_rows[:15],
-                    },
-                },
-                "insights": [
-                    f"Confidential data protected under {rule}",
-                    f"Permitted alternative: {alt}",
-                ],
-                "sources": [
-                    {"kind": "policy", "title": rule},
-                    {"kind": "data", "object": "hrfin_silver.dim_grade", "sql": access_dec.alternative_sql or "SELECT * FROM hrfin_silver.dim_grade"},
-                ],
-                "suggestions": [
-                    "What is my own pay scale band?",
-                    "What are the general station tenure norms?",
-                ],
-                "access": {
-                    "status": "refused",
-                    "reason": access_dec.reason,
-                    "rule_ref": access_dec.rule_ref,
-                    "alternative": access_dec.alternative,
-                },
-                "export_options": ["pdf", "sheets"],
-                "status_events": [
-                    "Checked executive persona authorization",
-                    "Access restricted under statutory policy guidelines",
-                    "Loaded authorized public aggregates",
-                ],
-                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
-            }
+                refusal_contract["sources"].append(
+                    {"kind": "data", "object": "hrfin_silver.dim_grade", "sql": access_dec.alternative_sql}
+                )
             self._validate_contract(refusal_contract)
             session_state.record_turn(refusal_contract)
             return refusal_contract
@@ -761,7 +770,7 @@ class AgentTurnRunner:
                     patch_obj, base_obj = None, None
             try:
                 planned = await run_planner_turn(query, session_state, norm_persona, turn_id, det_lang, t0,
-                                                 patch_override=patch_obj, base_spec=base_obj)
+                                                 patch_override=patch_obj, base_spec=base_obj, principal=principal)
                 if planned is not None:
                     return self._finalize_planner_contract(planned, session_state, query, t0)
             except Exception as e_plan:  # the planner must never take a turn down (G4 B2 F-4)
@@ -843,13 +852,13 @@ class AgentTurnRunner:
                     session_state.record_turn(disc_contract, user_query=query, all_rows=rows)
                     return disc_contract
 
-            min_stay = int(active_params.get("min_stay_months", 60))
+            min_stay = int(active_params.get("min_stay_days", 1826))
             sql_disc = (
-                f"SELECT d.name AS discipline, SUM(s.total_executives) AS executives_ge_5yr, "
-                f"SUM(s.non_exempt_due_transfer) AS due_for_transfer "
-                f"FROM `{GCP_PROJECT}.hrfin_gold.agg_headcount_tenure_summary` s "
+                f"SELECT d.name AS discipline, COUNT(DISTINCT s.emp_id) AS executives_ge_5yr, "
+                f"COUNT(DISTINCT IF(DATE_DIFF(s.retirement_date, DATE '{get_semantic_model().anchor_date}', DAY) > 2 * 365.25 AND (s.exemption_tag IS NULL OR s.exemption_tag = 'None'), s.emp_id, NULL)) AS due_for_transfer "
+                f"FROM `{GCP_PROJECT}.hrfin_gold.v_continuous_stay` s "
                 f"LEFT JOIN `{GCP_PROJECT}.hrfin_silver.dim_discipline` d ON s.discipline_id = d.discipline_id "
-                f"WHERE s.wc_id = '{active_wc}' AND s.continuous_stay_months >= {min_stay} AND s.grade_id LIKE 'E%' "
+                f"WHERE s.wc_id = '{active_wc}' AND DATE_DIFF(DATE '{get_semantic_model().anchor_date}', s.continuous_from_date, DAY) > {min_stay} AND s.grade_id LIKE 'E%' "
                 f"GROUP BY 1 ORDER BY 2 DESC"
             )
             res = await asyncio.to_thread(qd, sql_disc, title="Executive Tenure Breakdown by Discipline")
@@ -879,7 +888,7 @@ class AgentTurnRunner:
                         "type": "table" if chart_k == "table" else "chart",
                         "mode": "refine",
                         "title": title_disc,
-                        "subtitle": f"Work Centre: {city_lbl} | Breakdown by Discipline | As of 19-Oct-2026",
+                        "subtitle": f"Work Centre: {city_lbl} | Breakdown by Discipline | {get_semantic_model().anchor_date}",
                         "chart": chart_spec,
                         "table": {"columns": cols, "rows": rows[:20]},
                     },
@@ -964,9 +973,17 @@ class AgentTurnRunner:
             "year", "yr", "saal", "month", "mahine", "stay", "tenure", "continuous", "rotation", "transfer", "due",
             "exempt", "cluster", "vacanc", "vacant", "retire", "superannuat", "dpc", "promot", "resign", "attrition",
             "women", "female", "gender", "sc", "st", "obc", "pwd", "contract", "apprentice", "training", "overtime",
-            "salary", "pay", "medical", "leave", "boe", "production", "added headcount", "c11", "histogram", "distribution",
+            "salary", "pay", "medical", "leave", "boe", "production", "added headcount", "c11",
+            "age histogram", "age distribution", "employee ages", "ages in",
         ]
         if not planner_on and any(t in q_clean for t in hc_triggers) and not any(ex in q_clean for ex in hc_exclusions):
+            if any(k in q_clean for k in ["level", "levels", "across levels", "across different levels", "by level", "by grade", "स्तर", "ग्रेड"]):
+                planned_lvl = await run_planner_turn(
+                    query, session_state, norm_persona, turn_id, det_lang, t0, principal=principal
+                )
+                if planned_lvl is not None:
+                    return self._finalize_planner_contract(planned_lvl, session_state, query, t0)
+
             from app.tools.query_data import query_data as qd
 
             matched_wc = get_entities().resolve_wc(q_clean)
@@ -978,7 +995,7 @@ class AgentTurnRunner:
                     f"COUNT(*) AS employees "
                     f"FROM `{GCP_PROJECT}.hrfin_gold.ssot_workforce_employee` "
                     f"WHERE active_headcount = 1 AND wc_id = '{matched_wc}' "
-                    f"GROUP BY 1, 2 ORDER BY 3 DESC"
+                    f"GROUP BY 1, 2 ORDER BY MIN(grade_level_order) ASC, grade_id ASC"
                 )
                 sql_posts = (
                     f"SELECT sanctioned_strength_fy26 AS sanctioned_posts, "
@@ -1026,7 +1043,7 @@ class AgentTurnRunner:
                     session_state.active_query_state = {
                         "certified_id": "C1",
                         "topic": "workforce_headcount",
-                        "params": {"wc_id": matched_wc, "min_stay_months": 60},
+                        "params": {"wc_id": matched_wc, "min_stay_days": 1826},
                         "sql": sql_hc,
                     }
                     session_state.active_entities["wc_id"] = matched_wc
@@ -1041,7 +1058,7 @@ class AgentTurnRunner:
                             "type": "table" if chart_k == "table" else "chart",
                             "mode": "replace",
                             "title": title_hc,
-                            "subtitle": f"Work Centre: {wc_label} | Active Regular Rolls: {total_emp:,} | Sanctioned: {sanctioned:,} | As of 19-Oct-2026",
+                            "subtitle": f"Work Centre: {wc_label} | Active Regular Rolls: {total_emp:,} | Sanctioned: {sanctioned:,} | {get_semantic_model().anchor_date}",
                             "kpis": kpis,
                             "chart": chart_spec,
                             "table": {"columns": cols_hc, "rows": rows_hc[:20]},
@@ -1108,7 +1125,7 @@ class AgentTurnRunner:
                             "type": "table" if chart_k == "table" else "chart",
                             "mode": "replace",
                             "title": title_all,
-                            "subtitle": f"Company-Wide Active Regular Workforce: {total_emp:,} across {len(rows_all)} Work Centres | As of 19-Oct-2026",
+                            "subtitle": f"Company-Wide Active Regular Workforce: {total_emp:,} across {len(rows_all)} Work Centres | {get_semantic_model().anchor_date}",
                             "kpis": [
                                 {"label": "Total Active Workforce", "value": total_emp, "unit": "employees", "delta": f"{len(rows_all)} work centres"},
                                 {"label": "Executives", "value": exec_emp, "unit": "officers", "delta": f"{round(exec_emp * 100.0 / max(1, total_emp), 1)}% of rolls"},
@@ -1248,8 +1265,8 @@ class AgentTurnRunner:
                 metric_label = "Years"
                 val_col = "employees"
                 source_obj = "hrfin_gold.ssot_workforce_employee"
-            else:
-                # Default to Employee Age Distribution Histogram
+            elif any(k in q_clean for k in ["age", "ages", "आयु", "उम्र"]):
+                # Explicit Employee Age Distribution Histogram (never a silent default for level questions: BEH-02.30)
                 sql_hist = (
                     f"SELECT "
                     f"CONCAT(CAST(CAST(FLOOR(age_years / 5) * 5 AS INT64) AS STRING), '–', CAST(CAST(FLOOR(age_years / 5) * 5 + 4 AS INT64) AS STRING), ' yrs') AS bucket, "
@@ -1265,9 +1282,11 @@ class AgentTurnRunner:
                 metric_label = "Age (Years)"
                 val_col = "employees"
                 source_obj = "hrfin_gold.ssot_workforce_employee"
+            else:
+                sql_hist = None
 
-            res_hist = await asyncio.to_thread(qd, sql_hist, title=hist_title)
-            rows_hist = res_hist.get("all_rows") or res_hist.get("rows", [])
+            res_hist = await asyncio.to_thread(qd, sql_hist, title=hist_title) if sql_hist else {}
+            rows_hist = (res_hist.get("all_rows") or res_hist.get("rows", [])) if sql_hist else []
             if rows_hist:
                 total_n = sum(int(float(r.get(val_col, 0) or 0)) for r in rows_hist)
                 weighted_sum = sum(float(r.get("avg_metric", 0) or 0) * float(r.get(val_col, 0) or 0) for r in rows_hist)
@@ -1348,7 +1367,6 @@ class AgentTurnRunner:
             "generate draft",
             "board note",
             "parliament reply",
-            "transfer proposal",
         ]
         if any(t in q_clean for t in draft_triggers):
             from app.tools.query_data import query_data as qd
@@ -1378,8 +1396,6 @@ class AgentTurnRunner:
             doc_type_req = "board_note"
             if any(w in q_clean for w in ["parliament", "rajya sabha", "lok sabha"]):
                 doc_type_req = "parliament_reply"
-            elif any(w in q_clean for w in ["transfer", "agt", "redeployment"]):
-                doc_type_req = "transfer_proposal"
 
             from app.tools.draft_document import DocumentDraftingEngine
             doc_res = await asyncio.to_thread(
@@ -1942,6 +1958,19 @@ class AgentTurnRunner:
         tbl = vis.get("table") or {}
         st.last_rows = list(tbl.get("rows") or [])[:2000]
         st.last_columns = list(tbl.get("columns") or [])
+        active_cohort = st.get_active_cohort()
+        if active_cohort is not None and active_cohort.get("turn_id") == contract.get("turn_id"):
+            acc = contract.get("access") or {}
+            if acc.get("status") == "refused":
+                st.cohorts = [c for c in st.cohorts if c.get("turn_id") != contract.get("turn_id")]
+                st.active_cohort_id = st.cohorts[-1]["cohort_id"] if st.cohorts else None
+            else:
+                mask_lvl = (tbl.get("masking") or {}).get("level") if isinstance(tbl.get("masking"), dict) else None
+                active_cohort["rows"] = list(tbl.get("rows") or [])[:2000]
+                active_cohort["columns"] = list(tbl.get("columns") or [])
+                if mask_lvl == "aggregate":
+                    active_cohort["rbac_decision"] = "aggregate"
+                active_cohort["visual"] = dict(vis)
 
     async def _maybe_salary_breakdown_turn(
         self,
@@ -2507,8 +2536,8 @@ class AgentTurnRunner:
             top = "Sabse zyada " + " aur ".join(f"{ents.friendly(k)} ({v})" for k, v in ranked) + " mein hain. "
         if tot is None:
             return "Jawab screen par hai. Details screen par hain."
-        if resp.get("query_id") == "C1" and params.get("min_stay_months"):
-            years = round(int(params["min_stay_months"]) / 12)
+        if resp.get("query_id") == "C1" and params.get("min_stay_days"):
+            years = round(int(params["min_stay_days"]) / 12)
             lead = f"{place or 'Is work centre'} mein {years} saal se zyada {tot} executives hain. "
         else:
             lead = (f"{place}: " if place else "") + f"kul {tot} records mile. "
@@ -2786,13 +2815,18 @@ class AgentTurnRunner:
 
 
 # Global Turn Runner Singleton
-_GLOBAL_RUNNER: Optional[AgentTurnRunner] = None
+_GLOBAL_RUNNERS: dict[str, AgentTurnRunner] = {}
 
 
-def get_agent_turn_runner(model_name: Optional[str] = None) -> AgentTurnRunner:
-    global _GLOBAL_RUNNER
+
+def get_agent_turn_runner(model_name: Optional[str] = None, principal: Optional[Any] = None) -> AgentTurnRunner:
+    global _GLOBAL_RUNNERS
+    from app.auth import get_active_principal
+    p = principal or get_active_principal()
+    key = p.persona if p else "junior"
     if model_name:
-        return AgentTurnRunner(model_name=model_name)
-    if _GLOBAL_RUNNER is None:
-        _GLOBAL_RUNNER = AgentTurnRunner()
-    return _GLOBAL_RUNNER
+        key = f"{key}_{model_name}"
+    
+    if key not in _GLOBAL_RUNNERS:
+        _GLOBAL_RUNNERS[key] = AgentTurnRunner(model_name=model_name, principal=p)
+    return _GLOBAL_RUNNERS[key]

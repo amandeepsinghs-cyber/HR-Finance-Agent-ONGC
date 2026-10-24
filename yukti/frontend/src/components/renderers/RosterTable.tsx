@@ -13,6 +13,7 @@ import {
   FileText,
   X,
   Filter,
+  Columns3,
 } from 'lucide-react';
 import clsx from 'clsx';
 import {
@@ -23,8 +24,12 @@ import {
   formatRosterCell,
   isActionAllowed,
   getColumnWidth,
+  columnLabel,
   NormalizedRow,
 } from './rosterUtils';
+
+// P2H.3 (SPEC-07 §4.3): only these personas may reveal backend-hidden columns (emp_id, discipline)
+const COLUMN_PICKER_PERSONAS = new Set(['CMD', 'DIR_HR']);
 
 export interface RosterTableProps {
   table: TableSpec;
@@ -44,7 +49,21 @@ export const RosterTable: React.FC<RosterTableProps> = ({
   onExport,
   height = 'min(62vh, 44rem)',
 }) => {
-  const columns = useMemo(() => table?.columns || [], [table?.columns]);
+  const allColumns = useMemo(() => table?.columns || [], [table?.columns]);
+  const labels = table?.column_labels;
+  const label = useCallback((col: string) => columnLabel(col, labels, humanizeKey), [labels]);
+  const hiddenByDefault = useMemo(
+    () => (table?.hidden_columns || []).filter((c) => allColumns.includes(c)),
+    [table?.hidden_columns, allColumns]
+  );
+  const canPickColumns = !!persona && COLUMN_PICKER_PERSONAS.has(persona) && hiddenByDefault.length > 0;
+  const [revealed, setRevealed] = useState<Set<string>>(new Set());
+  const [pickerOpen, setPickerOpen] = useState(false);
+  // Visible columns keep the backend order; hidden ones appear only when revealed (CMD / DIR_HR).
+  const columns = useMemo(
+    () => allColumns.filter((c) => !hiddenByDefault.includes(c) || (canPickColumns && revealed.has(c))),
+    [allColumns, hiddenByDefault, canPickColumns, revealed]
+  );
   const rawRows = useMemo(() => table?.rows || [], [table?.rows]);
   const masking = table?.masking;
   const isAggregateOrRefused = masking?.level === 'aggregate' || masking?.level === 'refused';
@@ -65,8 +84,15 @@ export const RosterTable: React.FC<RosterTableProps> = ({
   // States
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<Record<string, string>>({});
-  const [sortCol, setSortCol] = useState<string | null>(null);
-  const [sortDir, setSortDir] = useState<'asc' | 'desc' | null>(null);
+  // P2H.3: initial sort from the backend (e.g. Tenure in Delhi, descending)
+  const defaultSortKey = table?.default_sort && allColumns.includes(table.default_sort.key) ? table.default_sort.key : null;
+  const defaultSortDir = defaultSortKey ? table!.default_sort!.dir : null;
+  const [sortCol, setSortCol] = useState<string | null>(defaultSortKey);
+  const [sortDir, setSortDir] = useState<'asc' | 'desc' | null>(defaultSortDir);
+  useEffect(() => {
+    setSortCol(defaultSortKey);
+    setSortDir(defaultSortDir);
+  }, [defaultSortKey, defaultSortDir]);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
 
   // Filter & sort
@@ -301,14 +327,14 @@ export const RosterTable: React.FC<RosterTableProps> = ({
           {filterableCols.map(({ col, options }) => (
             <div key={col} className="flex items-center gap-1.5">
               <label htmlFor={`filter-${col}`} className="text-label text-[var(--ink-2)] font-medium">
-                {humanizeKey(col)}:
+                {label(col)}:
               </label>
               <select
                 id={`filter-${col}`}
                 data-testid={`roster-filter-${col}`}
                 value={filters[col] || ''}
                 onChange={(e) => setFilters((prev) => ({ ...prev, [col]: e.target.value }))}
-                aria-label={`Filter by ${humanizeKey(col)}`}
+                aria-label={`Filter by ${label(col)}`}
                 className="px-2.5 py-1.5 rounded-pill border border-[var(--hairline)] bg-[var(--surface)] text-label text-[var(--ink)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] cursor-pointer"
               >
                 <option value="">All</option>
@@ -324,6 +350,48 @@ export const RosterTable: React.FC<RosterTableProps> = ({
 
         {/* Count & Export */}
         <div className="flex items-center gap-3 shrink-0">
+          {canPickColumns && (
+            <div className="relative">
+              <button
+                type="button"
+                data-testid="roster-column-picker"
+                aria-haspopup="true"
+                aria-expanded={pickerOpen}
+                onClick={() => setPickerOpen((o) => !o)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-pill text-label font-medium bg-[var(--surface)] border border-[var(--hairline)] text-[var(--ink)] hover:bg-[var(--surface-2)] transition-colors"
+              >
+                <Columns3 className="w-3.5 h-3.5" />
+                <span>Columns</span>
+              </button>
+              {pickerOpen && (
+                <div
+                  role="menu"
+                  data-testid="roster-column-menu"
+                  className="absolute right-0 top-full mt-1.5 z-30 min-w-[12rem] rounded-card border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--card-shadow)] p-2"
+                >
+                  {hiddenByDefault.map((c) => (
+                    <label key={c} className="flex items-center gap-2 px-2 py-1.5 rounded text-label text-[var(--ink)] hover:bg-[var(--surface)] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        data-testid={`roster-column-toggle-${c}`}
+                        checked={revealed.has(c)}
+                        onChange={() =>
+                          setRevealed((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(c)) next.delete(c);
+                            else next.add(c);
+                            return next;
+                          })
+                        }
+                        className="rounded border-[var(--hairline)] text-[var(--accent)] w-4 h-4"
+                      />
+                      <span>{label(c)}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
           <span data-testid="roster-count" className="text-label text-[var(--ink-2)] font-medium">
             Showing {filteredRows.length} of {totalCount}
           </span>
@@ -388,8 +456,8 @@ export const RosterTable: React.FC<RosterTableProps> = ({
                     : 'descending'
                   : 'none';
                 const buttonAriaLabel = isMaskedCol
-                  ? `Sort by ${humanizeKey(col)} — hidden by policy: ${lockTitle}`
-                  : `Sort by ${humanizeKey(col)}`;
+                  ? `Sort by ${label(col)} — hidden by policy: ${lockTitle}`
+                  : `Sort by ${label(col)}`;
 
                 return (
                   <th
@@ -410,7 +478,7 @@ export const RosterTable: React.FC<RosterTableProps> = ({
                       )}
                       aria-label={buttonAriaLabel}
                     >
-                      <span>{humanizeKey(col)}</span>
+                      <span className="truncate">{label(col)}</span>
                       {isMaskedCol && (
                         <span
                           title={lockTitle}
@@ -529,6 +597,12 @@ export const RosterTable: React.FC<RosterTableProps> = ({
           </div>
         )}
       </div>
+
+      {table?.as_of && (
+        <div data-testid="roster-as-of" className="px-4 py-2 border-t border-[var(--hairline)] text-caption text-[var(--ink-3)]">
+          Data as of {table.as_of}
+        </div>
+      )}
 
       {/* Sticky Bottom Action Bar when >= 1 row selected */}
       {selectedCount > 0 && !isAggregateOrRefused && (

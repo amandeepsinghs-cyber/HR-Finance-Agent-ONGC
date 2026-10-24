@@ -1,0 +1,12 @@
+persona_id,emp_id,display_name,grade,function,discipline_id,wc_id,work_centre,functional_designation,tier,is_admin,synthetic,has_pay_fy26,has_leave_el,has_posting,has_apar,ok_pay,ok_leave,ok_posting,ok_apar,pay_fy26_months,leave_el_rows,leave_cl_rows,leave_hpl_rows,posting_rows,apar_rows
+CMD,EMP-000001,Arun Mehra,CMD,EXEC,DISC-PRD,WC-DEL,Delhi HQ,Chairman & Managing Director,cmd,False,True,True,True,True,True,True,True,True,True,12,8,8,4,5,5
+DIR_HR,EMP-000002,Manish Deshpande,DIR,HR,DISC-HR,WC-DEL,Delhi HQ,Director (HR),director,False,True,True,True,True,True,True,True,True,True,12,8,8,4,5,5
+DIR_FIN,EMP-000003,Vivek Rao,DIR,FIN,DISC-FIN,WC-DEL,Delhi HQ,Director (Finance),director,False,True,True,True,True,True,True,True,True,True,12,8,8,4,5,5
+E1_HR,EMP-100151,Dinesh Deshmukh,E1,HR,DISC-HR,WC-DEL,Delhi HQ,HR Officer (E1),junior,False,True,True,True,True,True,True,True,True,True,12,8,8,4,3,5
+E2_HR,EMP-102451,Pooja Verma,E2,HR,DISC-HR,WC-DEL,Delhi HQ,HR Executive (E2),junior,False,True,True,True,True,True,True,True,True,True,12,1,0,0,1,5
+E3_HR,EMP-100144,Pooja Pillai,E3,HR,DISC-HR,WC-DEL,Delhi HQ,Senior HR Executive (E3),junior,False,True,True,True,True,True,True,True,True,True,12,8,8,4,9,5
+E4_HR,EMP-100178,Aarti Saikia,E4,HR,DISC-HR,WC-DEL,Delhi HQ,Dy. Manager HR (E4),junior,False,True,True,True,True,True,True,True,True,True,12,8,8,4,5,5
+E1_FIN,EMP-100150,Ajay Deshmukh,E1,FIN,DISC-FIN,WC-DEL,Delhi HQ,Accounts Officer (E1),junior,False,True,True,True,True,True,True,True,True,True,12,8,8,4,3,5
+E2_FIN,EMP-100152,Praveen Nair,E2,FIN,DISC-FIN,WC-DEL,Delhi HQ,Finance Executive (E2),junior,False,True,True,True,True,True,True,True,True,True,12,8,8,4,8,5
+E3_FIN,EMP-100146,Asha Mishra,E3,FIN,DISC-FIN,WC-DEL,Delhi HQ,Finance Officer (E3),junior,False,True,True,True,True,True,True,True,True,True,12,8,8,4,8,5
+E4_FIN,EMP-100145,Santosh Banerjee,E4,FIN,DISC-FIN,WC-DEL,Delhi HQ,Dy. Manager Finance (E4),junior,False,True,True,True,True,True,True,True,True,True,12,8,8,4,6,5

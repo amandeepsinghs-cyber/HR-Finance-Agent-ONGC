@@ -23,31 +23,72 @@ CERTIFIED_PATH = Path(__file__).resolve().parent.parent.parent / "certified" / "
 
 # Load certified query index into memory
 _CERTIFIED_INDEX: Dict[str, Dict[str, Any]] = {}
+_CERTIFIED_ROOT_QUERIES: List[Dict[str, Any]] = []
 
 
 def _get_certified_index() -> Dict[str, Dict[str, Any]]:
-    global _CERTIFIED_INDEX
+    global _CERTIFIED_INDEX, _CERTIFIED_ROOT_QUERIES
     if not _CERTIFIED_INDEX:
         if CERTIFIED_PATH.exists():
             with open(CERTIFIED_PATH, "r", encoding="utf-8") as f:
-                data = yaml.safe_load(f)
-                for q in data.get("queries", []):
+                data = yaml.safe_load(f) or {}
+                root_queries = list(data.get("queries", []))
+                _CERTIFIED_ROOT_QUERIES = root_queries
+                for q in root_queries:
                     _CERTIFIED_INDEX[q["id"].upper()] = q
+                    _CERTIFIED_INDEX[q["id"]] = q
+                for sq in data.get("self_queries", []):
+                    _CERTIFIED_INDEX[sq["id"].upper()] = sq
+                    _CERTIFIED_INDEX[sq["id"]] = sq
         else:
             logger.warning(f"Certified library not found at {CERTIFIED_PATH}")
     return _CERTIFIED_INDEX
 
 
 def get_certified_entry(query_id: str) -> Optional[Dict[str, Any]]:
-    """Retrieves metadata for a certified query."""
+    """Retrieves metadata for a certified query (including self_queries)."""
     index = _get_certified_index()
-    return index.get(query_id.strip().upper())
+    cleaned = (query_id or "").strip()
+    return index.get(cleaned) or index.get(cleaned.upper())
+
+
+def resolve_self_emp_id(persona: Optional[str] = None, self_emp_id: Optional[str] = None) -> str:
+    """Resolve `@self_emp_id` strictly from server-side Principal / PERSONA_DIRECTORY (never free text, no fallback).
+
+    P2H.1 G4 r2 (M2 / S5):
+    - No default persona (`persona=None` without an active Principal raises `UnknownPersona`).
+    - Unknown or empty persona raises `UnknownPersona` (never coerced to E2_HR).
+    - No hardcoded fallback emp_id literal anywhere.
+    """
+    from app.access_control import UnknownPersona, normalize_persona
+    from app.auth import PERSONA_DIRECTORY, get_active_principal
+
+    canon: Optional[str] = None
+    if persona is not None:
+        canon = normalize_persona(persona)
+    if self_emp_id is not None:
+        cleaned_emp = str(self_emp_id).strip()
+        if not re.match(r"^EMP-\d{6}$", cleaned_emp):
+            raise UnknownPersona(f"invalid self_emp_id {self_emp_id!r}")
+        return cleaned_emp
+    if canon is None:
+        active = get_active_principal()
+        if active is not None:
+            canon = normalize_persona(active.persona)
+            if active.emp_id and re.match(r"^EMP-\d{6}$", str(active.emp_id).strip()):
+                return str(active.emp_id).strip()
+        else:
+            raise UnknownPersona("missing persona or server principal for self-scoped query")
+    entry = PERSONA_DIRECTORY.get(canon)
+    if not entry or not entry.get("emp_id"):
+        raise UnknownPersona(f"persona {canon!r} has no emp_id in PERSONA_DIRECTORY")
+    return str(entry["emp_id"])
 
 
 def list_certified_queries() -> List[Dict[str, Any]]:
-    """Lists all available certified queries."""
-    index = _get_certified_index()
-    return list(index.values())
+    """Lists all 89 root certified queries (excluding self_queries catalog entries)."""
+    _get_certified_index()
+    return list(_CERTIFIED_ROOT_QUERIES)
 
 
 def _convert_row_value(val: Any) -> Any:
@@ -61,20 +102,35 @@ def _convert_row_value(val: Any) -> Any:
 def run_certified_query(
     query_id: str,
     params: Optional[Dict[str, Any]] = None,
-    persona: str = "CMD",
+    persona: Optional[str] = None,
+    self_emp_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Executes a certified parameterized query from the verified query library.
 
     Args:
-        query_id: The certified query ID (e.g. 'C1', 'C6', 'C12', 'X7').
-        params: Optional key-value dictionary overriding default parameters (e.g.
-          {'wc_id': 'WC-MUM', 'min_stay_months': 36, 'fiscal_year': 'FY26'}).
+        query_id: The certified query ID (e.g. 'C1', 'C6', 'E1', 'my_payslip').
+        params: Optional key-value dictionary overriding default parameters.
+        persona: Active server-verified persona (no default to CMD; bound from active Principal if omitted).
+        self_emp_id: Optional explicit Principal.emp_id from server session.
 
     Returns:
         Structured response with rows, row_count, columns, deterministic_summary,
         visual metadata, and certified provenance.
     """
     t0 = time.perf_counter()
+    from app.access_control import normalize_persona
+    from app.auth import get_active_principal
+
+    canon_persona: Optional[str] = None
+    if persona is not None:
+        canon_persona = normalize_persona(persona)
+    else:
+        active = get_active_principal()
+        if active is not None:
+            canon_persona = normalize_persona(active.persona)
+            if self_emp_id is None:
+                self_emp_id = active.emp_id
+
     entry = get_certified_entry(query_id)
     if not entry:
         return {
@@ -83,7 +139,10 @@ def run_certified_query(
             "retryable": False,
         }
 
-    user_params = params or {}
+    user_params = dict(params or {})
+    # Never allow caller/LLM free-text params to override @self_emp_id
+    user_params.pop("self_emp_id", None)
+
     merged_params = {}
     param_defs = entry.get("params", {})
 
@@ -99,6 +158,12 @@ def run_certified_query(
         if k not in merged_params:
             merged_params[k] = v
 
+    # P2H.1 (SPEC-06 §5.3 / M1 / M2): always bind @self_emp_id strictly from server-side Principal/persona.
+    # Fails closed (raises UnknownPersona) when no valid persona/principal is bound.
+    raw_sql = entry["parameterized_sql"]
+    if "@self_emp_id" in raw_sql or "self_emp_id" in param_defs:
+        merged_params["self_emp_id"] = resolve_self_emp_id(persona=canon_persona, self_emp_id=self_emp_id)
+
     # H1.2: Validate parameter names and values against injection patterns before execution or caching
     _UNSAFE_PARAM_RE = re.compile(
         r"(?:;|--|/\*|\*/|['\"`\x00\r\n]|\b(?:UNION|SELECT|DROP|DELETE|UPDATE|INSERT|ALTER|CREATE|TRUNCATE|EXEC|EXECUTE|INFORMATION_SCHEMA|EXTERNAL_QUERY)\b)",
@@ -111,9 +176,10 @@ def run_certified_query(
             if len(p_val) > 120 or _UNSAFE_PARAM_RE.search(p_val):
                 return {"type": "error", "error": f"Rejected unsafe parameter value for '{p_name}'.", "retryable": False}
 
-    # Check cache
+    # Check cache (keyed by canon_persona or PUBLIC for non-self unit tests; never defaults to CMD)
+    cache_persona = canon_persona or "PUBLIC"
     cache = get_tool_cache()
-    cached_res = cache.get_sql(sql=f"CERTIFIED:{entry['id']}:{merged_params}", persona=persona)
+    cached_res = cache.get_sql(sql=f"CERTIFIED:{entry['id']}:{merged_params}", persona=cache_persona)
     if cached_res:
         cached_res["latency_ms"] = round((time.perf_counter() - t0) * 1000, 1)
         cached_res["status_events"] = ["Using recently verified data"]
@@ -271,7 +337,7 @@ def run_certified_query(
         }
 
         # Cache result
-        cache.set_sql(sql=f"CERTIFIED:{entry['id']}:{merged_params}", persona=persona, value=result)
+        cache.set_sql(sql=f"CERTIFIED:{entry['id']}:{merged_params}", persona=cache_persona, value=result)
         return result
 
     except Exception as e:
@@ -333,11 +399,18 @@ def run_certified_query(
 async def execute_certified_query_async(
     query_id: str,
     params: Optional[Dict[str, Any]] = None,
-    persona: str = "CMD",
+    persona: Optional[str] = None,
+    self_emp_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Non-blocking async wrapper for run_certified_query (H1.1)."""
     import asyncio
-    return await asyncio.to_thread(run_certified_query, query_id=query_id, params=params, persona=persona)
+    return await asyncio.to_thread(
+        run_certified_query,
+        query_id=query_id,
+        params=params,
+        persona=persona,
+        self_emp_id=self_emp_id,
+    )
 
 
 run_certified_query_async = execute_certified_query_async

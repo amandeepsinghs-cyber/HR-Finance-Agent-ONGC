@@ -5,7 +5,7 @@
 > [!IMPORTANT]
 > **BLUF:** 62 v3 steps across P0–P5 (incl. hotfix P0.10); live counts in [`PROGRESS.md`](PROGRESS.md). Step IDs match the packet files in `docs/delegation/packets/v3/` one-to-one (**51 packets**; indexes: `_INDEX_P0_P2H1-4_P4.md`, `_INDEX_P1_P2F_P3.md`, `_INDEX_P2H5-8.md`). Critical path: **P0 → P1 (real finance SSOT) → P2F → P3 (DCF)**. P2H (personas, V19, Employee-360) and P4 (visuals) run in parallel after P0. Every data step needs numeric acceptance (BUILD §4.3).
 
-**Legend (step lifecycle):** ⬜ To do → 🔄 In progress → 🔨 Built (committed, pre-G4) → 🔍 In review → ✅ Done (only with a `docs/reviews/<step>.md` APPROVE) · ⛔ Blocked · **Owner:** O = Opus lead · F = Flash (needs a packet) · FL = Flash-lite runner · S = Sponsor · `O→F` = Opus spec/skeleton, Flash completes
+**Owners (v3.1, D-59):** `O` = **A** (Gemini 4 Argon) on backend/data steps, **L** (lead, Opus) on frontend steps; see [`DELEGATION.md`](DELEGATION.md) v3.1. **Legend (step lifecycle):** ⬜ To do → 🔄 In progress → 🔨 Built (committed, pre-G4) → 🔍 In review → ✅ Done (only with a `docs/reviews/<step>.md` APPROVE) · ⛔ Blocked · **Owner:** O = Opus lead · F = Flash (needs a packet) · FL = Flash-lite runner · S = Sponsor · `O→F` = Opus spec/skeleton, Flash completes
 
 > [!TIP]
 > **Live dashboard:** [`PROGRESS.md`](PROGRESS.md) is generated from this file + `BUG_REGISTER.md` + feature list + packets + reviews + git. **Update rule (every completion):** change the Status cell here → close linked bugs in `BUG_REGISTER.md` → run `python3 scripts/progress/build_progress.py` (regenerate) + `--check` (validate) → commit all three together.
@@ -49,20 +49,20 @@
 | P0.7 | "Illustrative" labels on synthetic clauses (JRTP Rev 4, R16) | F | 032 | SPEC-07 §4.2, SPEC-11 | 31 | Every synthetic clause answer shows the Illustrative badge (D-35) | [P0.7](docs/delegation/packets/v3/P0.7.md) | ✅ |
 | P0.8 | v3 doc set (feature list, BUILD, checklist, bug register, SPEC-01…11, BEH-01…07, 51 packets) | O | — | all | — | G4 doc review approve + sponsor confirm | — | ✅ |
 | P0.9 | Packaging: data-in-image vs BigQuery-only; Dockerfile fix | F | 014 | SPEC-11 | 13 (part) | Container smoke: finance answer works or shows an honest degraded badge | [P0.9](docs/delegation/packets/v3/P0.9.md) | ✅ |
-| P0.10 | **Hotfix (sponsor-requested 23-Oct):** voice self-interruption. Half-duplex mic gate while Yukti speaks (browser + backend, +300 ms tail); deliberate interrupt (orb/Stop/Space; voice barge-in needs sustained louder speech ~0.4 s); lower Live start-of-speech sensitivity; `speak_id` gating so an interrupt never clears speak-only; no orphan/duplicate bubbles | O | 013 | SPEC-11 §6.3, BEH-07 | 17, 18 | Live test on the laptop with speakers: 5/5 answers play to the end without self-interrupt; tap-to-stop works 5/5; no duplicate/fragment bubbles in 5 voice + 5 typed turns; unit tests for the gate | (inline: this row) | 🔍 |
+| P0.10 | **Hotfix (sponsor-requested 23-Oct):** voice self-interruption. Half-duplex mic gate while Yukti speaks (browser + backend, +300 ms tail); deliberate interrupt (orb/Stop/Space; voice barge-in needs sustained louder speech ~0.4 s); lower Live start-of-speech sensitivity; `speak_id` gating so an interrupt never clears speak-only; no orphan/duplicate bubbles | O | 013 | SPEC-11 §6.3, BEH-07 | 17, 18 | Live test on the laptop with speakers: 5/5 answers play to the end without self-interrupt; tap-to-stop works 5/5; no duplicate/fragment bubbles in 5 voice + 5 typed turns; unit tests for the gate | (inline: this row) | ✅ |
 
 ### Phase P1 — Real Finance SSOT & Public Data · *gate: 100% AR subtotals ±₹0.05 cr; finance golden set 100%*
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
 | P1.1 | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | 018, 019 | SPEC-01 | — | **23-Oct:** ARs FY16–FY19 (text) ✅, FY20 image-only; 12 NSE XBRL ✅; Damodaran ✅; **Yahoo HTTP 429 (retry pending)**; **RBI FY-end yields need a manual download** (Handbook Table 178). See `knowledge/public_sources/MANIFEST_v3_acquisition.md` | — | 🔄 |
-| P1.2 | AR 10-yr table parser (FY13–FY26) | F | 018 | SPEC-01 §4.2 | 02 | Cross-AR overlaps agree or flagged restated; 60-line spot set = AR | [P1.2](docs/delegation/packets/v3/P1.2_ar_10yr_table_parser.md) | ⬜ |
-| P1.3 | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | 018 | SPEC-01 §4.3 | 02 | Every AR subtotal reproduced; A = E + L vs AR totals; cash ties | [P1.3](docs/delegation/packets/v3/P1.3_ar_full_statement_extraction.md) | ⬜ |
-| P1.4 | NSE XBRL parser | F | 018 | SPEC-01 §4.4 | — | XBRL vs AR agreement report; FY18/FY19 revenue & PAT exact | [P1.4](docs/delegation/packets/v3/P1.4_xbrl_parser.md) | ⬜ |
-| P1.5 | Yahoo loader + market provider chain (optional, retryable) | F | 019 | SPEC-01 §9.1 | — | FY26 consolidated = AR ±₹1 cr when Yahoo reachable; fallback chain works | [P1.5](docs/delegation/packets/v3/P1.5_yahoo_loader.md) | ⬜ |
+| P1.2 | AR 10-yr table parser (FY13–FY26) | F | 018 | SPEC-01 §4.2 | 02 | Cross-AR overlaps agree or flagged restated; 60-line spot set = AR | [P1.2](docs/delegation/packets/v3/P1.2_ar_10yr_table_parser.md) | ✅ |
+| P1.3 | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | 018 | SPEC-01 §4.3 | 02 | Every AR subtotal reproduced; A = E + L vs AR totals; cash ties | [P1.3](docs/delegation/packets/v3/P1.3_ar_full_statement_extraction.md) | 🔄 |
+| P1.4 | NSE XBRL parser | F | 018 | SPEC-01 §4.4 | — | XBRL vs AR agreement report; FY18/FY19 revenue & PAT exact | [P1.4](docs/delegation/packets/v3/P1.4_xbrl_parser.md) | ✅ |
+| P1.5 | Yahoo loader + market provider chain (optional, retryable) | F | 019 | SPEC-01 §9.1 | — | FY26 consolidated = AR ±₹1 cr when Yahoo reachable; fallback chain works | [P1.5](docs/delegation/packets/v3/P1.5_yahoo_loader.md) | 🔄 |
 | P1.6 | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; as-reported + restated vintages) | O (+F gates, FL evidence) | 018 | SPEC-01 §5–§6 | 03 | 0 plug lines; 100% reported lines `verified=TRUE`; gate report | [P1.6](docs/delegation/packets/v3/P1.6_fact_tables_bq_load_and_gates.md) | ⬜ |
 | P1.7 | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | 018, 021, 022 | SPEC-01 §10 | — | Each row cites doc + page; totals = AR | [P1.7](docs/delegation/packets/v3/P1.7_anchor_tables.md) | ⬜ |
-| P1.8 | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | 020 | SPEC-01 §8 | 16 (part) | 0 generated chunks; hit@5 ≥ 80% on a 30-Q set | [P1.8](docs/delegation/packets/v3/P1.8_ar_text_chunks_vector.md) | ⬜ |
+| P1.8 | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | 020 | SPEC-01 §8 | 16 (part) | 0 generated chunks; page refs verified; safe parameterised retriever (retrieval quality target moved to P2F.5, D-58) | [P1.8](docs/delegation/packets/v3/P1.8_ar_text_chunks_vector.md) | 🔍 |
 | P1.9 | WACC inputs + `fact_wacc_annual` (manual RBI seed CSV with lineage; Rf = raw INR 10-yr G-sec at FY-end) | F (+O load, human RBI seed) | 024, 029 | SPEC-02 §3 | 15 | Every input has source + date; re-run gives identical `wacc_pct` (±0.001pp); W1–W4 pass; SPEC-02 §10 fixture WACC 14.3090% | [P1.9](docs/delegation/packets/v3/P1.9_wacc_inputs.md) | ⬜ |
 | P1.10a | Compiler on verified rows + honest provenance (`YUKTI_FIN_SSOT_V3`) | O | 018, 032 | SPEC-01 §7 | 02, 05 | "balance sheet for 2024" → total assets ₹4,46,021 cr with AR FY24 page cite | [P1.10a](docs/delegation/packets/v3/P1.10a_compiler_switch_verified_rows.md) | ⬜ |
 | P1.10b | Retire LLM-authored artefacts (`build_10yr_financials.py`, generated corpus, governance CSV) | F | 018 | SPEC-01 §11 | 02, 03 | No code path reads retired files | [P1.10b](docs/delegation/packets/v3/P1.10b_retire_legacy_financials.md) | ⬜ |
@@ -89,7 +89,7 @@
 | P2F.2 | Multi-year statement payload (4–10 FY columns) | O | 024, 025 | SPEC-08 §4 | — | Every cell = SSOT ± ₹0.05 cr | [P2F.2](docs/delegation/packets/v3/P2F.2_multiyear_statement.md) | ⬜ |
 | P2F.3 | WACC metric + chart + driver attribution | O (Shapley → F optional) | 024 | SPEC-02 §5 | 15 | Chart = `fact_wacc_annual` ± 0.01pp, 10 points | [P2F.3](docs/delegation/packets/v3/P2F.3_wacc_metric_chart.md) | ⬜ |
 | P2F.4 | Variance-attribution engine (pure module + fixtures) | F | 024 | SPEC-08 §6.1 | 16 | Σ attribution = Δ; FY23→FY24 fixture | [P2F.4](docs/delegation/packets/v3/P2F.4_variance_attribution_engine.md) | ⬜ |
-| P2F.5 | Grounded "why" + non-circular grounding | O | 024, 011 | SPEC-08 §6.2–6.3 | 16 | 0 uncited causal claims in BEH-03 | [P2F.5](docs/delegation/packets/v3/P2F.5_grounded_why.md) | ⬜ |
+| P2F.5 | Grounded "why" + non-circular grounding | O | 024, 011 | SPEC-08 §6.2–6.3 | 16 | 0 uncited causal claims in BEH-03; held-out retrieval hit@5 ≥ 0.80 (±1 page) on ≥ 30 hand-checked Qs (D-58) | [P2F.5](docs/delegation/packets/v3/P2F.5_grounded_why.md) | ⬜ |
 | P2F.6 | Top-5 actions + delegation table | O→F | 024 | SPEC-08 §7, BEH-03 | — | 5 actions, each with ₹ impact, owner, cite | [P2F.6](docs/delegation/packets/v3/P2F.6_top5_action_generator.md) | ⬜ |
 
 ### Phase P3 — Coordinator, Agents & DCF (V22) · *starts after P1 (D-39) · gate: BEH-05 by voice + text*
@@ -142,7 +142,7 @@ See `docs/DECISIONS.md` → Open decisions.
 
 | ID | Action | Needed by | Status |
 |---|---|---|---|
-| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) | P0.1 | ✅ Done 23-Oct |
+| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) — expires daily | P0.1, P1.6+ | ⬜ **Expired again 24-Oct** (needed for BigQuery steps + live app) |
 | SA-2 | Approve v3 doc set + OD-7…OD-18 | P0.8 | ✅ Done 23-Oct (D-43…D-54) |
 | SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ⬜ Pending |
 | SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |
@@ -154,5 +154,5 @@ See `docs/DECISIONS.md` → Open decisions.
 
 | Phase | G5 date | Sponsor | Notes |
 |---|---|---|---|
-| **P0 Stabilise (incl. hotfix P0.10)** | 2026-10-23 09:52 UTC | Amandeep Saini ("I am signing off") | Live-tested by sponsor: voice no longer self-interrupts; residuals logged (BUG-38/39 → P4.3, BUG-40 → P5.2). Merge to `main` + tag `v3-P0` after the P0.10 G4 verdict |
+| **P0 Stabilise (incl. hotfix P0.10)** | 2026-10-23 09:52 UTC | Amandeep Saini ("I am signing off") | Live-tested by sponsor: voice no longer self-interrupts; residuals logged (BUG-38/39 → P4.3, BUG-40 → P5.2). P0.10 G4 approved (r2, voice barge-in off → BUG-41); merged to `main` + tagged `v3-P0` |
 | v3 docs (P0.8) | 2026-10-23 | Amandeep Saini ("I approve") | G4 approved (2 rounds); OD-7…OD-18 accepted as D-43…D-54 |

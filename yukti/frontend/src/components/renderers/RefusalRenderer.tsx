@@ -1,82 +1,110 @@
 'use client';
 
-import React from 'react';
-import { AccessControl } from '@/contracts/answerContract';
-import { ShieldAlert, FileText, ArrowRight, Lock } from 'lucide-react';
+/**
+ * RefusalRenderer (P2H.2, SPEC-06 §4.6). Polite, policy-correct refusal: the first line is the backend's
+ * refusal copy (by code + language, from refusal_copy.yaml), then the permitted alternative(s) as chips that ask
+ * the allowed question, and a "Why?" disclosure with the rule reference. Tokens only, light + dark.
+ */
+import React, { useState } from 'react';
+import type { AccessControl, RefusalAlternative } from '@/contracts/answerContract';
+import { ShieldAlert, ArrowRight, ChevronDown } from 'lucide-react';
 
 interface RefusalRendererProps {
   access: AccessControl;
   isDark?: boolean;
+  /** conversation language: Hindi chips ask the Hindi question */
+  language?: string;
+  /** ask the permitted alternative question (chip click) */
+  onAsk?: (question: string) => void;
+  /** legacy: navigate to a precomputed alternative visual */
   onViewAlternative?: () => void;
 }
 
-export const RefusalRenderer: React.FC<RefusalRendererProps> = ({
-  access,
-  isDark = false,
-  onViewAlternative,
-}) => {
+/**
+ * Chips for the permitted alternatives. G4 M4: de-duplicated by visible label AND question (the backend may send
+ * both `alternative` and `alternatives`), and in Hindi the chip asks `question_hi` so the conversation stays Hindi.
+ */
+export function alternativesOf(access: AccessControl, lang?: string): RefusalAlternative[] {
+  const raw: RefusalAlternative[] = [];
+  const a = access.alternative;
+  if (a && typeof a === 'object' && (a as RefusalAlternative).question) raw.push(a as RefusalAlternative);
+  if (typeof a === 'string' && a.trim()) raw.push({ label: a, question: a });
+  raw.push(...(access.alternatives || []));
+  const hi = lang === 'hi';
+  const out: RefusalAlternative[] = [];
+  const seen = new Set<string>();
+  for (const x of raw) {
+    const label = (hi && x.label_hi) || x.label || x.question;
+    const question = (hi && x.question_hi) || x.question;
+    const kl = label.trim().toLowerCase();
+    const kq = question.trim().toLowerCase();
+    if (!question.trim() || seen.has(kl) || seen.has(kq)) continue;
+    seen.add(kl);
+    seen.add(kq);
+    out.push({ ...x, label, question });
+  }
+  return out.slice(0, 3);
+}
+
+export const RefusalRenderer: React.FC<RefusalRendererProps> = ({ access, language, onAsk, onViewAlternative }) => {
+  const [why, setWhy] = useState(false);
+  const alts = alternativesOf(access, language);
   return (
     <div
       data-testid="refusal-card"
-      className={`rounded-2xl border p-6 md:p-8 flex flex-col space-y-6 transition-all duration-300 relative overflow-hidden shadow-sm ${
-        isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
-      }`}
+      data-code={access.code || ''}
+      className="rounded-[var(--radius-lg)] border border-[var(--hairline)] bg-[var(--card)] p-5 md:p-6 flex flex-col gap-4"
     >
-      {/* Top Banner Alert */}
-      <div className="flex items-start gap-4">
-        <div className="p-3.5 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
-          <ShieldAlert className="w-8 h-8" />
+      <div className="flex items-start gap-3.5">
+        <div className="p-2.5 rounded-[var(--radius-md)] bg-[var(--maroon-pale)] text-[var(--maroon)] shrink-0">
+          <ShieldAlert className="w-6 h-6" />
         </div>
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-900/50">
-            <Lock className="w-3 h-3" />
-            <span>Access Restricted under Role Policy</span>
-          </div>
-          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-            Confidential Deliberative Record
-          </h3>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            {access.reason ||
-              'Unapproved draft transfer proposals and placement notes are non-final deliberative records exempt from disclosure prior to official notification by Director (HR).'}
+        <div className="min-w-0 space-y-1">
+          <div className="text-label uppercase tracking-[0.08em] text-[var(--maroon)]">Not available for your role</div>
+          <p className="text-[0.98rem] leading-relaxed text-[var(--ink)]" data-testid="refusal-line">
+            {access.reason || 'This information is restricted for your role.'}
           </p>
         </div>
       </div>
 
-      {/* Justification Box */}
-      <div
-        className={`p-4 rounded-xl border flex flex-col space-y-2 text-xs md:text-sm ${
-          isDark
-            ? 'bg-zinc-800/40 border-zinc-700 text-zinc-300'
-            : 'bg-zinc-50 border-zinc-200 text-zinc-700'
-        }`}
-      >
-        <div className="font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-          <FileText className="w-4 h-4 text-ongc-maroon" />
-          <span>Policy & Statutory Justification:</span>
-        </div>
-        <div className="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 p-2.5 rounded-lg text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
-          {access.rule_ref || 'ONGC JRTP Clause 11.0 & RTI Act Section 8(1)(i)'}
-        </div>
-      </div>
-
-      {/* Permitted Alternative Box */}
-      {access.alternative && (
-        <div className="p-5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="text-xs font-bold uppercase tracking-wider text-accent">
-              Permitted Alternative Available
-            </div>
-            <div className="text-sm text-zinc-700 dark:text-zinc-300">
-              {access.alternative}
-            </div>
+      {alts.length > 0 && (
+        <div className="flex flex-col gap-2" data-testid="refusal-alternatives">
+          <div className="text-label text-[var(--ink-2)]">You can ask instead</div>
+          <div className="flex flex-wrap gap-2">
+            {alts.map((alt) => (
+              <button
+                key={alt.question}
+                type="button"
+                data-testid="refusal-alternative"
+                onClick={() => (onAsk ? onAsk(alt.question) : onViewAlternative?.())}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-pill border border-[var(--hairline)] bg-[var(--surface)] text-label text-[var(--ink)] hover:bg-[var(--accent-pale)] transition-colors"
+              >
+                <span>{alt.label || alt.question}</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[var(--accent)]" />
+              </button>
+            ))}
           </div>
+        </div>
+      )}
+
+      {access.rule_ref && (
+        <div>
           <button
-            onClick={onViewAlternative}
-            className="px-4 py-2 rounded-xl bg-accent text-white text-xs font-semibold hover:bg-accent-dark transition-all flex items-center justify-center gap-1.5 shrink-0 shadow-sm"
+            type="button"
+            aria-expanded={why}
+            onClick={() => setWhy((w) => !w)}
+            className="inline-flex items-center gap-1 text-caption text-[var(--ink-2)] hover:text-[var(--ink)]"
+            data-testid="refusal-why"
           >
-            <span>View Station Norms</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            Why?
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${why ? 'rotate-180' : ''}`} />
           </button>
+          {why && (
+            <div className="mt-1.5 text-caption text-[var(--ink-2)]" data-testid="refusal-rule">
+              Policy reference: <span className="font-mono">{access.rule_ref}</span>
+              {access.code ? <span> · code {access.code}</span> : null}
+            </div>
+          )}
         </div>
       )}
     </div>

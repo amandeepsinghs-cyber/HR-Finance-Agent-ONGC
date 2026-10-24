@@ -151,9 +151,37 @@ const SmallMultiples: React.FC<{ plan: ChartPlan; spec: ChartSpec; t: ChartToken
   );
 };
 
+/** P2H.3 (SPEC-07 §4.1): a chart `note` is shown once per browser session per distinct text. */
+const NOTE_KEY = 'yukti.seenChartNotes';
+function noteAlreadySeen(note: string): boolean {
+  try {
+    const seen: string[] = JSON.parse(sessionStorage.getItem(NOTE_KEY) || '[]');
+    return seen.includes(note);
+  } catch {
+    return false;
+  }
+}
+function markNoteSeen(note: string): void {
+  try {
+    const seen: string[] = JSON.parse(sessionStorage.getItem(NOTE_KEY) || '[]');
+    if (!seen.includes(note)) sessionStorage.setItem(NOTE_KEY, JSON.stringify([...seen, note].slice(-50)));
+  } catch {
+    /* storage unavailable: show the note every time (harmless) */
+  }
+}
+function useOneTimeNote(note?: string): string | null {
+  // Decided once per mounted card, so the note stays visible on re-render of the card that first showed it.
+  const [show] = useState(() => !!note && typeof window !== 'undefined' && !noteAlreadySeen(note));
+  useEffect(() => {
+    if (show && note) markNoteSeen(note);
+  }, [show, note]);
+  return show && note ? note : null;
+}
+
 export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = false }) => {
   const t = useChartTokens(isDark);
   const plan = useMemo(() => planChart(spec), [spec]);
+  const note = useOneTimeNote(spec.note);
 
   const option = useMemo(() => {
     const data = (spec.data || []) as Record<string, any>[];
@@ -202,17 +230,37 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = fal
     return <KpiRenderer kpis={kpis} isDark={isDark} hero />;
   }
 
+  const body =
+    plan.form === 'donut' ? (
+      <DonutWithLegend plan={plan} t={t} isPie={false} />
+    ) : plan.form === 'pie' ? (
+      <DonutWithLegend plan={plan} t={t} isPie={true} />
+    ) : plan.form === 'multiples' ? (
+      <SmallMultiples plan={plan} spec={spec} t={t} />
+    ) : option ? (
+      <EChart option={option} testId={`chart-${plan.form}`} />
+    ) : null;
+
+  if (!note && !spec.footnote) {
+    return (
+      <div className="w-full h-full" data-chart-form={plan.form}>
+        {body}
+      </div>
+    );
+  }
   return (
-    <div className="w-full h-full" data-chart-form={plan.form}>
-      {plan.form === 'donut' ? (
-        <DonutWithLegend plan={plan} t={t} isPie={false} />
-      ) : plan.form === 'pie' ? (
-        <DonutWithLegend plan={plan} t={t} isPie={true} />
-      ) : plan.form === 'multiples' ? (
-        <SmallMultiples plan={plan} spec={spec} t={t} />
-      ) : option ? (
-        <EChart option={option} testId={`chart-${plan.form}`} />
-      ) : null}
+    <div className="w-full h-full flex flex-col" data-chart-form={plan.form}>
+      {note && (
+        <p data-testid="chart-note" className="shrink-0 mb-2 text-label text-[var(--ink-2)]">
+          {note}
+        </p>
+      )}
+      <div className="flex-1 min-h-0">{body}</div>
+      {spec.footnote && (
+        <p data-testid="chart-footnote" className="shrink-0 mt-2 text-caption text-[var(--ink-3)]">
+          {spec.footnote}
+        </p>
+      )}
     </div>
   );
 };

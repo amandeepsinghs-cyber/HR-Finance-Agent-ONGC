@@ -45,7 +45,7 @@ CORE OPERATIONAL BEHAVIORS:
 
 3. MANDATORY TOOL USAGE FOR ONGC DATA & METRICS:
    - You MUST call a tool (`run_certified_query`, `query_data`, `search_policy`, `what_if`, or `draft_document`) for EVERY user question inquiring about ONGC data, metrics, headcount, policies, finances, or operations.
-   - When the user inquiry matches a certified metric or question (e.g. C1 Delhi stay, C6 loss-making fields, C12 lifting cost, vacancies, capex), call `run_certified_query(query_id, params)` to execute the verified certified template, supplying parameter overrides as requested (e.g. wc_id, fiscal_year, min_stay_months).
+   - When the user inquiry matches a certified metric or question (e.g. C1 Delhi stay, C6 loss-making fields, C12 lifting cost, vacancies, capex), call `run_certified_query(query_id, params)` to execute the verified certified template, supplying parameter overrides as requested (e.g. wc_id, fiscal_year, min_stay_days).
    - Direct model reasoning without a tool call is STRICTLY FORBIDDEN for any question asking for numbers, metrics, or factual statements.
    - Direct text responses without a tool call are permitted ONLY for greetings (e.g. "hello", "good morning"), conversational pleasantries, and meta questions.
    - TOOL SELECTION RULES:
@@ -83,7 +83,31 @@ async def query_data(sql_query: str, title: Optional[str] = None) -> Dict[str, A
 
     Always follow the 5 Query-Craft rules and dataset allow-list.
     """
-    return await asyncio.to_thread(execute_query_data, sql_query=sql_query, title=title)
+    from app.auth import get_active_principal
+    from app.brain.rbac import persona_class
+    principal = get_active_principal()
+    if principal is None:
+        return {
+            "type": "error",
+            "code": "E-AUTH",
+            "error": "Authentication error (E-AUTH): no server principal bound for query execution.",
+            "retryable": False,
+        }
+        
+    if principal.persona.upper() != "CMD":
+        return {
+            "status": "refused",
+            "error": "Access restricted. Free-form data queries are not available for your role (D-64).",
+            "sql": sql_query,
+            "chart_kind": "refusal",
+            "code": "R-FUNC"
+        }
+    return await asyncio.to_thread(
+        execute_query_data, 
+        sql_query=sql_query, 
+        title=title, 
+        persona=principal.persona
+    )
 
 
 async def run_certified_query(
@@ -91,13 +115,13 @@ async def run_certified_query(
     params: Optional[Dict[str, Any]] = None,
     wc_id: Optional[str] = None,
     fiscal_year: Optional[str] = None,
-    min_stay_months: Optional[int] = None,
+    min_stay_days: Optional[int] = None,
     min_grade: Optional[str] = None,
     field_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Executes a certified parameterized query template from the verified query library.
     ALWAYS prefer calling `run_certified_query` first before `query_data` for standard questions:
-    - 'C1': Executives with >= N months continuous stay at a work centre (wc_id='WC-DEL'|'WC-MUM'|'WC-DDN'|'WC-AHM'|'WC-MEH'|'WC-ASM'|'WC-TRI', min_stay_months=60, min_grade='E5')
+    - 'C1': Executives with >= N months continuous stay at a work centre (wc_id='WC-DEL'|'WC-MUM'|'WC-DDN'|'WC-AHM'|'WC-MEH'|'WC-ASM'|'WC-TRI', min_stay_days=1826, min_grade='E5')
     - 'C6': Field profitability and loss-making fields (fiscal_year='FY26'|'FY25')
     - 'C10': MoU performance scorecard vs targets
     - 'C11': Assets that added headcount vs production growth
@@ -111,13 +135,29 @@ async def run_certified_query(
         merged["wc_id"] = wc_id
     if fiscal_year:
         merged["fiscal_year"] = fiscal_year
-    if min_stay_months is not None:
-        merged["min_stay_months"] = min_stay_months
+    if min_stay_days is not None:
+        merged["min_stay_days"] = min_stay_days
     if min_grade:
         merged["min_grade"] = min_grade
     if field_id:
         merged["field_id"] = field_id
-    return await asyncio.to_thread(execute_certified_query, query_id=query_id, params=merged or None)
+    from app.auth import get_active_principal
+
+    principal = get_active_principal()
+    if principal is None:
+        return {
+            "type": "error",
+            "code": "E-AUTH",
+            "error": "Authentication error (E-AUTH): no server principal bound for certified query execution.",
+            "retryable": False,
+        }
+    return await asyncio.to_thread(
+        execute_certified_query,
+        query_id=query_id,
+        params=merged or None,
+        persona=principal.persona,
+        self_emp_id=principal.emp_id,
+    )
 
 
 async def search_policy(query: str) -> Dict[str, Any]:
@@ -193,6 +233,7 @@ async def export_document(format: str, title: str, content: str) -> Dict[str, An
 def create_yukti_agent(
     model_name: Optional[str] = None,
     instruction_override: Optional[str] = None,
+    principal: Optional[Any] = None,
 ) -> Agent:
     """Instantiates the Google ADK Agent for Yukti AI with minimal thinking overhead."""
     active_model = model_name or os.getenv("YUKTI_TEXT_MODEL", DEFAULT_TEXT_MODEL)
@@ -211,17 +252,26 @@ def create_yukti_agent(
     else:
         gen_cfg = None
 
+    from app.auth import get_active_principal
+    from app.brain.rbac import persona_class
+    principal = principal or get_active_principal()
+    pc = persona_class(principal.persona) if principal else "junior"
+    
+    # D-64: Juniors get no free-form SQL tool
+    tools = [
+        run_certified_query,
+        search_policy,
+        what_if,
+        draft_document,
+        export_document,
+    ]
+    if principal and principal.persona.upper() == "CMD":
+        tools.append(query_data)
+
     return Agent(
         name="yukti_ai_agent",
         model=active_model,
         instruction=instruction,
         generate_content_config=gen_cfg,
-        tools=[
-            run_certified_query,
-            query_data,
-            search_policy,
-            what_if,
-            draft_document,
-            export_document,
-        ],
+        tools=tools,
     )

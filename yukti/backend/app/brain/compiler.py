@@ -11,13 +11,16 @@ import asyncio
 import datetime
 from dataclasses import dataclass, field
 from decimal import Decimal
+from functools import lru_cache
 import logging
 import os
+from pathlib import Path
 import re
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
 from google.cloud import bigquery
+import yaml
 
 from app.brain.query_spec import Filter, Period, QuerySpec
 from app.brain.semantic_model import FieldDef, SemanticModel, SubjectDef, TemplateDef, get_semantic_model
@@ -128,6 +131,13 @@ CORP_METRIC_TO_SSOT: Dict[str, Tuple[str, str]] = {
     "dividend_per_share_inr": ("standalone", "RATIO.DPS"),
 }
 
+GRADE_LEVEL_ORDER: Dict[str, int] = {
+    "E1": 1, "E2": 2, "E3": 3, "E4": 4, "E5": 5, "E6": 6, "E7": 7, "E8": 8, "E9": 9,
+    "GRP-B": 10, "GRP-C": 11, "GRP-D": 12,
+}
+EXEC_GRADES: Tuple[str, ...] = ("E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9")
+ALL_CADRE_GRADES: Tuple[str, ...] = ("E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "GRP-B", "GRP-C", "GRP-D")
+
 
 class CompileError(ValueError):
     """The spec cannot be expressed on the semantic model (caller falls back to the legacy path)."""
@@ -151,6 +161,33 @@ class CompiledQuery:
     grain: str = "aggregate"
     data_classes: List[str] = field(default_factory=list)
     aggregation: str = "count"          # metric aggregation: only count/sum results may be added up
+    params: List[Any] = field(default_factory=list)
+    self_emp_id: Optional[str] = None
+    definition_id: Optional[str] = None
+    all_cadres: bool = False
+    station_wc_id: Optional[str] = None
+
+
+DEFINITIONS_PATH = Path(__file__).resolve().parent.parent / "semantic" / "definitions.yaml"
+
+
+@lru_cache(maxsize=1)
+def get_definitions() -> Dict[str, Dict[str, Any]]:
+    """Load canonical semantic definitions (`DELHI_GT5_CONT_V1`, `STATION_GT5_CONT_V1`) from `definitions.yaml`."""
+    if not DEFINITIONS_PATH.exists():
+        return {}
+    text = DEFINITIONS_PATH.read_text(encoding="utf-8")
+    anchor = get_semantic_model().anchor_date
+    d = datetime.date.fromisoformat(anchor)
+    text = text.replace("{anchor_date}", anchor).replace("{anchor_date_fmt}", d.strftime("%d-%b-%Y"))
+    raw = yaml.safe_load(text) or {}
+    return dict(raw.get("definitions") or {})
+
+
+def get_definition(definition_id: Optional[str]) -> Optional[Dict[str, Any]]:
+    if not definition_id:
+        return None
+    return get_definitions().get(definition_id)
 
 
 @dataclass
@@ -294,7 +331,7 @@ class Compiler:
         return out
 
     # ------------------------------------------------------------ compile
-    def compile(self, spec: QuerySpec, cell_count: bool = False) -> CompiledQuery:
+    def compile(self, spec: QuerySpec, cell_count: bool = False, self_emp_id: Optional[str] = None) -> CompiledQuery:
         """`cell_count=True` adds `COUNT(*) AS _n` per group on employee-grain subjects, so junior
         aggregates of averages/ratios can be suppressed when a cell holds < 5 people (D-11)."""
         if spec.metric == "capex_actual_cr" and not spec.filters and not spec.dimensions:
@@ -308,10 +345,11 @@ class Compiler:
             raise CompileError(f"unknown metric {spec.metric}")
         notes: List[str] = []
         dropped: List[str] = []
+        bq_params: List[Any] = []
 
         # Map fields that do not exist on this subject via declared fallbacks (field -> asset ...).
         def map_field(name: str) -> Optional[str]:
-            if name in subject.fields or name == "region":
+            if name in subject.fields or name == "region" or name == "emp_id":
                 return name
             if name in WC_ATTRIBUTE_FIELDS and ("wc" in subject.fields or "asset" in subject.fields):
                 return name  # expanded to a work-centre list by _expand_regions
@@ -319,7 +357,11 @@ class Compiler:
             return fb if fb in subject.fields else None
 
         filters: List[Filter] = []
+        has_self_filter = False
         for f in spec.filters:
+            if f.field == "emp_id" and str(f.value) == "@self_emp_id":
+                has_self_filter = True
+                continue
             mf = map_field(f.field)
             if f.field == "fy":
                 continue  # periods are expressed through spec.period
@@ -392,19 +434,86 @@ class Compiler:
             if period.fy and period.fy < current_fy():
                 notes.append("Workforce data is a current snapshot (19-Oct-2026)")
 
+        is_self = bool(spec.self_scope or has_self_filter)
+
+        # SPEC-07 §4.2 (P2H.3): Canonical 5-year station-tenure cohort expansion (`DELHI_GT5_CONT_V1` / `STATION_GT5_CONT_V1`)
+        definition_id: Optional[str] = None
+        all_cadres: bool = False
+        station_wc_id: Optional[str] = None
+        wc_eq = next((f for f in filters if f.field == "wc" and f.op == "=" and not isinstance(f.value, list)), None)
+        if wc_eq is not None:
+            station_wc_id = str(wc_eq.value)
+
+        has_all_cadres_filter = any(
+            (f.field == "cadre" and str(f.value).lower() in ("all", "all_cadres"))
+            or (
+                f.field == "grade"
+                and isinstance(f.value, list)
+                and any(str(x).upper() in ("GRP-B", "GRP-C", "GRP-D") for x in f.value)
+            )
+            for f in filters
+        )
+        if has_all_cadres_filter:
+            all_cadres = True
+            filters = [f for f in filters if not (f.field == "cadre" and str(f.value).lower() in ("all", "all_cadres"))]
+
+        if subject.name == "workforce" and not is_self:
+            gt5_idx: Optional[int] = None
+            for idx, f in enumerate(filters):
+                if f.field in ("station_tenure_years", "delhi_tenure_years") and f.op in (">=", ">"):
+                    try:
+                        val_f = float(f.value if not isinstance(f.value, list) else f.value[0])
+                        if abs(val_f - 5.0) < 1e-6:
+                            gt5_idx = idx
+                            break
+                    except Exception:
+                        pass
+            if gt5_idx is not None:
+                definition_id = "DELHI_GT5_CONT_V1" if station_wc_id == "WC-DEL" else "STATION_GT5_CONT_V1"
+                defn = get_definition(definition_id) or {}
+                min_days = int(defn.get("min_days_exclusive", 1826))
+                as_of_str = str(defn.get("as_of", ANCHOR_DATE.isoformat()))
+                stay_col = str(defn.get("stay_start_column", "continuous_from_date"))
+                # Remove the coarse station_tenure_years filter and expand to the canonical > 1826 day predicate
+                filters = [f for i, f in enumerate(filters) if i != gt5_idx]
+                where.append(f"DATE_DIFF(DATE '{as_of_str}', {stay_col}, DAY) > {min_days}")
+                has_explicit_grade = any(f.field == "grade" for f in filters)
+                if not has_explicit_grade:
+                    grades_list = (
+                        defn.get("grades_all_cadres", ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "GRP-B", "GRP-C", "GRP-D"])
+                        if all_cadres
+                        else defn.get("grades_executives", ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"])
+                    )
+                    # Remove redundant cadre='executive' filter when canonical grade list is applied
+                    filters = [f for f in filters if f.field != "cadre"]
+                    where.append(f"current_grade_id IN ({', '.join(_lit(g) for g in grades_list)})")
+
         for f in filters:
             where.append(self._filter_sql(subject, f, col_override))
 
+        if is_self:
+            where.append("emp_id = @self_emp_id")
+            if self_emp_id:
+                bq_params.append(bigquery.ScalarQueryParameter("self_emp_id", "STRING", str(self_emp_id)))
+
         ents_cols: Dict[str, str] = {}
-        data_classes = {metric.data_class}
+        data_classes = {"self"} if is_self else {metric.data_class}
         if grain == "row":
             cols = []
             for rc in subject.row_columns:
-                cols.append(f"{rc['expr']} AS {rc['as']}")
-                data_classes.add(rc.get("data_class", "general"))
+                expr = rc["expr"]
+                if definition_id and rc["as"] in ("delhi_tenure_years", "station_tenure_years"):
+                    expr = f"ROUND(DATE_DIFF(DATE '{self.model.anchor_date}', continuous_from_date, DAY) / 365.25, 1)"
+                cols.append(f"{expr} AS {rc['as']}")
+                if not is_self:
+                    data_classes.add(rc.get("data_class", "general"))
             row_aliases = {rc["as"] for rc in subject.row_columns}
             sort = spec.sort.model_dump() if (spec.sort and spec.sort.by in row_aliases) else (subject.row_sort or None)
-            order = f" ORDER BY {sort['by']} {sort.get('dir', 'desc').upper()}" if sort else ""
+            if sort:
+                tie_breaker = ", emp_id ASC" if "emp_id" in row_aliases and sort["by"] != "emp_id" else ""
+                order = f" ORDER BY {sort['by']} {sort.get('dir', 'desc').upper()}{tie_breaker}"
+            else:
+                order = ""
             limit = min(spec.limit or ROW_LIMIT_DEFAULT, ROW_LIMIT_DEFAULT)  # bounded (G4 B2 F-12)
             cols.append("COUNT(*) OVER () AS _total_rows")  # exact match count even when rows are capped
             sql = (f"SELECT {', '.join(cols)} FROM {_q(table)}"
@@ -412,7 +521,9 @@ class Compiler:
             return CompiledQuery(sql=sql, subject=subject.name, metric=metric.name, metric_label=metric.label,
                                  unit=metric.unit, source="generated", tables=[table], notes=notes, dropped=dropped,
                                  effective_period=eff_period, grain="row", value_columns=[],
-                                 data_classes=sorted(data_classes), aggregation=metric.aggregation)
+                                 data_classes=sorted(data_classes), aggregation=metric.aggregation,
+                                 params=bq_params, self_emp_id=self_emp_id, definition_id=definition_id,
+                                 all_cadres=all_cadres, station_wc_id=station_wc_id)
 
         select: List[str] = []
         group: List[str] = []
@@ -454,9 +565,22 @@ class Compiler:
             if len(metrics) == 1 and metric.name in ("pat_cr", "pbt_corporate_cr", "ebitda_corporate_cr", "corporate_revenue_cr"):
                 base_fam = ["corporate_revenue_cr", "ebitda_corporate_cr", "pbt_corporate_cr", "pat_cr", "consolidated_pat_cr"]
                 metrics = [metric.name] + [m for m in base_fam if m != metric.name and m in subject.metrics]
+        has_person_filter = any(f.field in ("emp_id", "name", "emp_name") for f in filters)
+        allowed_pay_dims = {"grade", "discipline", "wc", "asset", "fy", "sector", "region"}
         for mn in metrics:
             select.append(f"{subject.metrics[mn].expr} AS {mn}")
-            data_classes.add(subject.metrics[mn].data_class)
+            if not is_self:
+                dc = subject.metrics[mn].data_class
+                if dc in ("pay", "pay_aggregate", "pay_individual"):
+                    if grain == "aggregate" and not has_person_filter and set(dims) <= allowed_pay_dims:
+                        data_classes.add("pay_aggregate")
+                        data_classes.discard("pay")
+                    else:
+                        data_classes.add("pay_individual")
+                        data_classes.discard("pay")
+                        data_classes.discard("pay_aggregate")
+                else:
+                    data_classes.add(dc)
         if cell_count and subject.name in CELL_COUNT_SUBJECTS:
             select.append("COUNT(*) AS _n")
         sql = f"SELECT {', '.join(select)} FROM {_q(table)}"
@@ -471,6 +595,8 @@ class Compiler:
                 sql += f" ORDER BY {spec.sort.by} {spec.sort.dir.upper()}"
             elif dims and dims[0] == "fy":
                 sql += " ORDER BY fiscal_year ASC"
+            elif dims == ["grade"] and "grade_level_order" in subject.fields:
+                sql += " ORDER BY MIN(grade_level_order) ASC, grade ASC"
             else:
                 sql += f" ORDER BY {metric.name} DESC"
             sql += f" LIMIT {int(min(spec.limit or 1000, 1000))}"
@@ -478,7 +604,8 @@ class Compiler:
                              unit=metric.unit, source="generated", tables=[table], dims=dim_out,
                              entity_columns=ents_cols, value_columns=metrics, notes=notes, dropped=dropped,
                              effective_period=eff_period, grain="aggregate", data_classes=sorted(data_classes),
-                             aggregation=metric.aggregation)
+                             aggregation=metric.aggregation, params=bq_params, self_emp_id=self_emp_id,
+                             definition_id=definition_id, all_cadres=all_cadres, station_wc_id=station_wc_id)
 
     def _compile_asof(self, subject: SubjectDef, spec: QuerySpec, filters: List[Filter], dims: List[str],
                       fy: str, notes: List[str], dropped: List[str]) -> CompiledQuery:
@@ -528,6 +655,8 @@ class Compiler:
                              data_classes=["general"])
 
     def _compile_template(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        if t.name == "pay_scale_min_inr":
+            return self._compile_pay_scale(t, spec)
         if t.name == "headcount_change":
             return self._compile_headcount_change(t, spec)
         if t.name == "pnl_statement":
@@ -744,6 +873,39 @@ ORDER BY fiscal_year ASC"""
             effective_period={"from": fy_from, "to": fy_to, "fy": fy_to},
             grain="aggregate",
             data_classes=["general"],
+        )
+
+    def _compile_pay_scale(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        where = ["LOWER(cadre) = 'executive'"]
+        f = spec.filter_on("grade")
+        if f:
+            codes = [self._entity_code("grade", v) for v in (f.value if isinstance(f.value, list) else [f.value])]
+            where.append(f"grade_id IN ({', '.join(_lit(c) for c in codes)})")
+        sql = f"""SELECT
+  grade_id AS grade,
+  designation,
+  pay_scale_min_inr,
+  pay_scale_max_inr,
+  typical_residency_years
+FROM {_q('hrfin_silver.dim_grade')}
+WHERE {' AND '.join(where)}
+ORDER BY level_order ASC"""
+        return CompiledQuery(
+            sql=sql,
+            subject="workforce",
+            metric="pay_scale_min_inr",
+            metric_label=t.label,
+            unit="inr",
+            source=f"template:{t.name}",
+            tables=["hrfin_silver.dim_grade"],
+            dims=[("grade", "grade")],
+            entity_columns={"grade": "grade"},
+            value_columns=["pay_scale_min_inr", "pay_scale_max_inr"],
+            notes=["Official DPE / ONGC executive pay scale bands (hrfin_silver.dim_grade)"],
+            effective_period={"fy": "FY26"},
+            grain="aggregate",
+            data_classes=["policy", "pay_aggregate"],
+            aggregation="min",
         )
 
     def _compile_headcount_change(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
@@ -1632,49 +1794,6 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
             data_classes=["general"],
             aggregation="avg",
         )
-
-    # ------------------------------------------------------------ execute
-    @property
-    def client(self) -> bigquery.Client:
-        if self._client is None:
-            from app.config import BQ_LOCATION
-            self._client = bigquery.Client(project=GCP_PROJECT, location=BQ_LOCATION)
-        return self._client
-
-    def _validate(self, sql: str) -> None:
-        from app.tools.semantic_layer import SemanticLayer
-        ok, err = SemanticLayer().validate_sql_safety(sql)
-        if not ok:
-            raise CompileError(f"unsafe SQL rejected: {err}")
-
-    def dry_run(self, sql: str) -> int:
-        self._validate(sql)
-        cfg = bigquery.QueryJobConfig(dry_run=True, use_query_cache=False, labels=JOB_LABELS)
-        job = self.client.query(sql, job_config=cfg)
-        b = job.total_bytes_processed or 0
-        if b > MAX_BYTES_BILLED:
-            raise CompileError(f"query would scan {b} bytes (cap {MAX_BYTES_BILLED})")
-        return b
-
-    def _run_sync(self, sql: str) -> QueryResult:
-        t0 = time.perf_counter()
-        dry = self.dry_run(sql)
-        cfg = bigquery.QueryJobConfig(labels=JOB_LABELS, maximum_bytes_billed=MAX_BYTES_BILLED)
-        job = self.client.query(sql, job_config=cfg)
-        res = job.result()
-        cols = [f.name for f in res.schema] if res.schema else []
-        rows: List[Dict[str, Any]] = []
-        for r in res:
-            d = {}
-            for k, v in dict(r).items():
-                if isinstance(v, Decimal):
-                    v = float(v)
-                elif hasattr(v, "isoformat"):
-                    v = v.isoformat()
-                d[k] = v
-            rows.append(d)
-        return QueryResult(columns=cols, rows=rows, total_bytes=job.total_bytes_processed or 0,
-                           latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=dry)
 
     def _v3__execute_local_financial_fallback(self, compiled: CompiledQuery) -> Optional[QueryResult]:
         """Deterministic local snapshot fallback from verified fact_snapshot.parquet when BigQuery is unavailable."""
@@ -2641,6 +2760,58 @@ ORDER BY line_order ASC"""
             data_classes=["general"],
             aggregation="avg",
         )
+    # ------------------------------------------------------------ execute
+    @property
+    def client(self) -> bigquery.Client:
+        if self._client is None:
+            from app.config import BQ_LOCATION
+            self._client = bigquery.Client(project=GCP_PROJECT, location=BQ_LOCATION)
+        return self._client
+
+    def _validate(self, sql: str) -> None:
+        from app.tools.semantic_layer import SemanticLayer
+        ok, err = SemanticLayer().validate_sql_safety(sql)
+        if not ok:
+            raise CompileError(f"unsafe SQL rejected: {err}")
+
+    def dry_run(self, sql: str, params: Optional[List[Any]] = None) -> int:
+        self._validate(sql)
+        cfg = bigquery.QueryJobConfig(
+            dry_run=True,
+            use_query_cache=False,
+            labels=JOB_LABELS,
+            query_parameters=list(params or []),
+        )
+        job = self.client.query(sql, job_config=cfg)
+        b = job.total_bytes_processed or 0
+        if b > MAX_BYTES_BILLED:
+            raise CompileError(f"query would scan {b} bytes (cap {MAX_BYTES_BILLED})")
+        return b
+
+    def _run_sync(self, sql: str, params: Optional[List[Any]] = None) -> QueryResult:
+        t0 = time.perf_counter()
+        dry = self.dry_run(sql, params=params)
+        cfg = bigquery.QueryJobConfig(
+            labels=JOB_LABELS,
+            maximum_bytes_billed=MAX_BYTES_BILLED,
+            query_parameters=list(params or []),
+        )
+        job = self.client.query(sql, job_config=cfg)
+        res = job.result()
+        cols = [f.name for f in res.schema] if res.schema else []
+        rows: List[Dict[str, Any]] = []
+        for r in res:
+            d = {}
+            for k, v in dict(r).items():
+                if isinstance(v, Decimal):
+                    v = float(v)
+                elif hasattr(v, "isoformat"):
+                    v = v.isoformat()
+                d[k] = v
+            rows.append(d)
+        return QueryResult(columns=cols, rows=rows, total_bytes=job.total_bytes_processed or 0,
+                           latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=dry)
+
     def _legacy__execute_local_financial_fallback(self, compiled: CompiledQuery) -> Optional[QueryResult]:
         """Deterministic local JSON fallback for 3-statements, ratios, and corporate 360 when BigQuery ADC expires."""
         import json
@@ -2781,6 +2952,24 @@ ORDER BY line_order ASC"""
         from app.config import YUKTI_FIN_SSOT_V3
         return getattr(self, '_v3__compile_balance_sheet')(*args, **kwargs) if YUKTI_FIN_SSOT_V3 else getattr(self, '_legacy__compile_balance_sheet')(*args, **kwargs)
 
+    async def execute(self, compiled: CompiledQuery) -> QueryResult:
+        """Dry-run + execute off the event loop (asyncio.to_thread), with local SSOT fallback on auth/network error."""
+        try:
+            if os.getenv("YUKTI_FORCE_BQ_FAIL", "0") in ("1", "true", "yes"):  # BEH-07.22 forced-failure test flag
+                raise ConnectionError("forced BigQuery failure (YUKTI_FORCE_BQ_FAIL=1)")
+            if compiled.params:
+                return await asyncio.to_thread(self._run_sync, compiled.sql, compiled.params)
+            return await asyncio.to_thread(self._run_sync, compiled.sql)
+        except Exception as e:
+            fb = self._execute_local_financial_fallback(compiled)
+            if fb is not None:
+                # P0.3 (BUG-04): the fallback is no longer silent; callers label it "local_snapshot".
+                logger.warning(f"BigQuery unavailable ({type(e).__name__}); serving {compiled.metric} from local snapshot")
+                fb.source = "local_snapshot"
+                fb.snapshot_date = _local_snapshot_date()
+                return fb
+            raise e
+
     def _compile_cash_flow_statement(self, *args, **kwargs):
         from app.config import YUKTI_FIN_SSOT_V3
         return getattr(self, '_v3__compile_cash_flow_statement')(*args, **kwargs) if YUKTI_FIN_SSOT_V3 else getattr(self, '_legacy__compile_cash_flow_statement')(*args, **kwargs)
@@ -2859,3 +3048,15 @@ def get_compiler() -> Compiler:
     if _COMPILER is None:
         _COMPILER = Compiler()
     return _COMPILER
+
+
+def compile_spec(
+    spec: QuerySpec,
+    project: Optional[str] = None,
+    *,
+    self_emp_id: Optional[str] = None,
+    cell_count: bool = False,
+) -> CompiledQuery:
+    """Compile a `QuerySpec` into a `CompiledQuery` (with `@self_emp_id` parameter binding when `self_scope=True`)."""
+    return get_compiler().compile(spec, cell_count=cell_count, self_emp_id=self_emp_id)
+

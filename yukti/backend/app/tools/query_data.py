@@ -109,10 +109,96 @@ def query_data(
         Dict with status, row_count, columns, rows, chart_spec, deterministic summary, and metadata.
     """
     t0 = time.perf_counter()
+    from app.auth import get_active_principal
+    from app.brain.rbac import persona_class
+    p = get_active_principal()
+    eff_persona = (p.persona if p is not None else (persona or "")).strip().upper()
+    if eff_persona != "CMD":
+        return {"status": "refused", "message": "query_data tool is restricted to CMD. Do not use this tool."}
+
     sl = semantic_layer or SemanticLayer()
 
     # 1. Apply Query-Craft Rules & Project Qualification
     safe_sql = sl.apply_query_craft_rules(sql_query)
+
+    # 1.5 Column-level RBAC Check (R4-B1)
+    from app.brain.rbac import decide, column_class
+    from app.semantic.normalize import referenced_tables, load_catalog
+    
+    try:
+        import sqlglot
+        from sqlglot import exp
+        
+        parsed = sqlglot.parse_one(safe_sql, read="bigquery")
+        cols = [col.name.lower() for col in parsed.find_all(exp.Column) if col.name]
+        
+        cat = load_catalog()
+        known_catalog_cols = set()
+        for t_def in cat.get("tables", {}).values():
+            known_catalog_cols.update(c.lower() for c in t_def.get("columns", {}).keys())
+            
+        classes = set()
+        tables = [t.lower() for t in referenced_tables(safe_sql)]
+        
+        NON_SENSITIVE_TABLES = set()
+        for prefix in ("hrfin_gold.", "hrfin_silver."):
+            NON_SENSITIVE_TABLES.update(prefix + t for t in (
+                "dim_work_centre", "dim_grade", "dim_discipline",
+                "dim_app_user", "dim_function", "dim_cadre",
+                "dim_designation", "calendar"
+            ))
+        # default dataset fallback
+        tables_full = [t if "." in t else f"hrfin_gold.{t}" for t in tables]
+        non_sensitive = all(t in NON_SENSITIVE_TABLES for t in tables_full) if tables_full else False
+        
+        has_unknown = False
+        for c in cols:
+            dc = column_class(c)
+            if dc:
+                classes.add(dc)
+            elif c in known_catalog_cols:
+                classes.add("general")
+            else:
+                has_unknown = True
+                
+        # (3) Unknown columns fail closed unless table is allowlisted
+        if has_unknown and not non_sensitive:
+            logger.warning(f"Audit: CMD query contained unrecognized columns. SQL: {safe_sql}")
+                
+        if not classes:
+            classes.add("general")
+            
+        # Extract target_function from WHERE filter on discipline
+        target_func = "MIXED"
+        where = parsed.find(exp.Where)
+        if where:
+            disc_fin = False
+            disc_hr = False
+            for eq in where.find_all(exp.EQ):
+                if isinstance(eq.left, exp.Column) and "disc" in eq.left.name.lower():
+                    val = str(eq.right).upper()
+                    if "FIN" in val:
+                        disc_fin = True
+                    if "HR" in val:
+                        disc_hr = True
+            for in_expr in where.find_all(exp.In):
+                if isinstance(in_expr.this, exp.Column) and "disc" in in_expr.this.name.lower():
+                    for v in in_expr.expressions:
+                        val = str(v).upper()
+                        if "FIN" in val:
+                            disc_fin = True
+                        if "HR" in val:
+                            disc_hr = True
+            if disc_fin and not disc_hr:
+                target_func = "FIN"
+            elif disc_hr and not disc_fin:
+                target_func = "HR"
+            
+        decision = decide(persona=eff_persona, data_classes=list(classes), target_function=target_func)
+        if decision.action == "refuse":
+            logger.warning(f"Audit: CMD query triggered refusal rule: {decision.reason}. SQL: {safe_sql}")
+    except Exception as e:
+        logger.error(f"sqlglot parsing failed for RBAC check: {e}")
 
     # 2. Strict In-Process Safety Validation
     is_safe, safety_err = sl.validate_sql_safety(safe_sql)

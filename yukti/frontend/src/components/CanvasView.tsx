@@ -1,5 +1,7 @@
 'use client';
 
+import { altQuestion } from '@/personas';
+import { PERSONA_DIRECTORY } from '@/personas';
 import React, { useEffect, useState } from 'react';
 import { VoiceOrb, OrbState } from './VoiceOrb';
 import { VoiceAudioEngine } from '@/services/audioAnalyser';
@@ -66,9 +68,10 @@ const STARTERS: Record<string, Starter[]> = {
     { icon: TrendingUp, tag: 'Finance · Public', title: 'ONGC FY26 revenue and profit', q: 'What were ONGC revenue and profit in FY26?' },
   ],
 };
-STARTERS.E3_FIN = STARTERS.E2_HR;
+// P2H.2: E1–E4 in HR and Finance share the junior starters (aggregate / self-service asks, D-11)
+for (const id of ['E1_HR', 'E3_HR', 'E4_HR', 'E1_FIN', 'E2_FIN', 'E3_FIN', 'E4_FIN']) STARTERS[id] = STARTERS.E2_HR;
 
-const ADDRESS: Record<string, string> = { CMD: 'Arun', DIR_HR: 'Director', DIR_FIN: 'Director', E2_HR: 'Pooja', E3_FIN: 'Rajesh' };
+const ADDRESS: Record<string, string> = Object.fromEntries(PERSONA_DIRECTORY.map((p) => [p.id, p.address]));
 
 function greetingWord(): string {
   const h = new Date().getHours();
@@ -85,9 +88,10 @@ const Greeting: React.FC<{
   messages?: ChatMessage[];
   liveInterimText?: string;
   persona?: string;
-}> = ({ onSelect, onTalk, isMicActive, orbState = 'idle', isDark = false, audioEngine, messages = [], liveInterimText, persona = 'CMD' }) => {
+}> = ({ onSelect, onTalk, isMicActive, orbState = 'idle', isDark = false, audioEngine, messages = [], liveInterimText, persona }) => {
   const lastTurn = messages[messages.length - 1];
-  const starters = STARTERS[persona] || STARTERS.CMD;
+  // P2H.2 G4 M3: unknown / not-signed-in persona gets no starter questions (never the CMD set)
+  const starters = (persona && STARTERS[persona]) || [];
   // Time-aware greeting computed on the client after mount (server render may run in UTC).
   const [hello, setHello] = useState('Hello');
   useEffect(() => setHello(greetingWord()), []);
@@ -103,13 +107,13 @@ const Greeting: React.FC<{
     window.addEventListener('resize', fit);
     return () => window.removeEventListener('resize', fit);
   }, []);
-  const name = ADDRESS[persona] || 'Arun';
+  const name = (persona && ADDRESS[persona]) || ''; // M3: no CMD name for an unknown persona
 
   return (
     <div className="relative flex-1 flex flex-col items-center justify-between text-center px-6 pt-4 pb-32 w-full min-h-[calc(100vh-14.5rem)]" data-testid="greeting">
       <div className="relative my-auto flex flex-col items-center max-w-[60rem] w-full">
         <h1 className="text-display font-display text-[var(--ink)]">
-          {hello}, {name}
+          {name ? `${hello}, ${name}` : hello}
         </h1>
         <p className="mt-2 text-body text-[var(--ink-2)]">I&apos;m Yukti, your HR &amp; Finance agent. Ask by voice or type below.</p>
 
@@ -195,7 +199,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
           isLatest
           onAsk={onAsk}
           onReplot={onReplot ? (v) => onReplot(latest.id, v) : undefined}
-          onNavigateToAlternative={() => onNavigateToAlternative?.(latest.contract?.access?.alternative)}
+          onNavigateToAlternative={() => onNavigateToAlternative?.(altQuestion(latest.contract?.access?.alternative))}
         />
       ) : null}
     </div>

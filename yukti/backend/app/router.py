@@ -135,13 +135,13 @@ class SemanticRouter:
                 extracted["fiscal_year"] = fy["fy"]
 
         # 3. Resolve Minimum Stay Duration (months or years)
-        if "min_stay_months" in param_defs:
+        if "min_stay_days" in param_defs:
             yr_match = re.search(r"\b(\d+)\s*(?:years?|yrs?|saal)\b", q_lower)
             mo_match = re.search(r"\b(\d+)\s*(?:months?|mahine)\b", q_lower)
             if mo_match:
-                extracted["min_stay_months"] = int(mo_match.group(1))
+                extracted["min_stay_days"] = int(mo_match.group(1))
             elif yr_match:
-                extracted["min_stay_months"] = int(yr_match.group(1)) * 12
+                extracted["min_stay_days"] = int(yr_match.group(1)) * 12
 
         # 4. Resolve Executive Grade Threshold
         if "min_grade" in param_defs:

@@ -71,7 +71,7 @@ app.add_middleware(
 )
 
 # Singletons
-turn_runner = get_agent_turn_runner()
+
 demo_cache = get_demo_cache()
 exporter = DocumentExporter()
 
@@ -181,6 +181,10 @@ class ExportRequest(BaseModel):
     content: Optional[str] = None
     columns: Optional[List[str]] = None
     rows: Optional[List[Dict[str, Any]]] = None
+    email_draft: Optional[Dict[str, Any]] = None
+    masked: Optional[bool] = False
+    session_id: Optional[str] = None
+    turn_id: Optional[str] = None
 
 
 # P0.1 (BUG-01): ADC health, cached for 60 s so /health polling never hammers the token endpoint.
@@ -353,7 +357,7 @@ async def execute_turn(req: TurnRequest, response: Response, principal: Principa
 
     # 2. Standard Real Agent Path: Google ADK Runner + Gemini
     try:
-        contract = await turn_runner.execute_turn_async(
+        contract = await get_agent_turn_runner(principal=principal).execute_turn_async(
             query=req.query,
             session_id=session_id,
             persona=persona,
@@ -418,7 +422,7 @@ async def execute_voice_turn(req: VoiceTurnRequest, response: Response, principa
     if not transcript:
         return {"status": "silence", "transcript": ""}
 
-    contract = await turn_runner.execute_turn_async(
+    contract = await get_agent_turn_runner(principal=principal).execute_turn_async(
         query=transcript,
         session_id=session_id,
         persona=persona,
@@ -470,8 +474,46 @@ def create_export(req: ExportRequest, principal: Principal = Depends(require_pri
             return {"export_id": export_id, "filename": filename, "format": "pdf"}
         elif "xlsx" in fmt or "sheets" in fmt:
             filename = f"{clean_title}.xlsx"
-            exporter.export_xlsx(columns=req.columns or [], rows=req.rows or [], filename=f"{export_id}.xlsx")
+            if req.masked:
+                filename = f"{clean_title}_aggregate.xlsx"
+            exporter.export_xlsx(columns=req.columns or [], rows=req.rows or [], filename=f"{export_id}.xlsx", masked=req.masked)
+            
+            from app.export_audit import write_export_audit
+            write_export_audit(
+                emp_id=principal.emp_id,
+                persona=principal.persona,
+                session_id=req.session_id or "",
+                turn_id=req.turn_id or "",
+                fmt="xlsx",
+                filename=filename,
+                sha256="dummy",
+                rows=len(req.rows or []),
+                columns=req.columns or [],
+                data_classes=[],
+                masked=req.masked or False,
+                delivery="download"
+            )
             return {"export_id": export_id, "filename": filename, "format": "xlsx"}
+        elif "eml" in fmt or "email" in fmt:
+            filename = f"{clean_title}.eml"
+            exporter.export_eml(email_draft=req.email_draft, filename=f"{export_id}.eml", masked=req.masked)
+            
+            from app.export_audit import write_export_audit
+            write_export_audit(
+                emp_id=principal.emp_id,
+                persona=principal.persona,
+                session_id=req.session_id or "",
+                turn_id=req.turn_id or "",
+                fmt="eml",
+                filename=filename,
+                sha256="dummy",
+                rows=0,
+                columns=[],
+                data_classes=[],
+                masked=req.masked or False,
+                delivery="download"
+            )
+            return {"export_id": export_id, "filename": filename, "format": "eml"}
         elif "docs" in fmt:
             filename = f"{clean_title}.docx"
             res = exporter.export_google_docs(title=clean_title, markdown_text=req.content or "", file_id=export_id)
@@ -500,7 +542,7 @@ def download_export(export_id: str, principal: Principal = Depends(require_princ
             detail={"type": "error", "message": "Export not found.", "retryable": False},
         )
     root = EXPORTS_DIR.resolve()
-    matches = [p for p in EXPORTS_DIR.glob(f"{export_id}.*") if p.resolve().parent == root and p.suffix.lower() in (".docx", ".xlsx", ".pdf", ".csv")]
+    matches = [p for p in EXPORTS_DIR.glob(f"{export_id}.*") if p.resolve().parent == root and p.suffix.lower() in (".docx", ".xlsx", ".pdf", ".csv", ".eml")]
     if not matches:
         raise HTTPException(
             status_code=404,
@@ -513,11 +555,17 @@ def download_export(export_id: str, principal: Principal = Depends(require_princ
         ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         ".pdf": "application/pdf",
         ".csv": "text/csv",
+        ".eml": "message/rfc822",
     }
     media_type = media_types.get(ext, "application/octet-stream")
+    
+    from app.export_audit import get_artifact_record
+    rec = get_artifact_record(export_id)
+    download_filename = rec.filename if rec else file_path.name
+    
     return FileResponse(
         path=file_path,
-        filename=file_path.name,
+        filename=download_filename,
         media_type=media_type,
     )
 

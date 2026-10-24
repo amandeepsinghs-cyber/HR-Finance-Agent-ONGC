@@ -174,6 +174,9 @@ def detect_screen_control_intent(query: str) -> Optional[Dict[str, str]]:
 
 # P0.10: keep the mic gate closed this long after the estimated end of playback (room echo tail).
 PLAYBACK_TAIL_S = 0.3
+# P0.10 r2 (G4 MF-2): if Live sends nothing for this long while the gate is closed for "generating"/"speak", the
+# state is stale (lost turn_complete, dropped socket) and the gate re-opens so voice can never be locked out.
+GATE_WATCHDOG_S = 8.0
 
 
 class LiveSessionManager:
@@ -222,6 +225,9 @@ class LiveSessionManager:
         # P0.10 (BUG-17/18): id of the `speak` turn currently being synthesised (None when no speak is running).
         # Only that speak's own turn_complete (or a server `interrupted`) ends it; a browser `interrupt` never does.
         self._speak_id: Optional[str] = None
+        # P0.10 r2 (S-3): pending speak ids in send order (Live may queue a second speak behind the first)
+        self._speak_queue: List[str] = []
+        self._last_server_event = time.perf_counter()
         # P0.10: half-duplex mic gate. Mic frames are dropped while Yukti is generating/speaking, unless the user
         # deliberately barged in (`interrupt`), which re-opens the gate until the reply ends.
         self._barge_in_open = False
@@ -484,7 +490,7 @@ class LiveSessionManager:
                         )
                     else:
                         from app.turn_runner import get_agent_turn_runner
-                        trun = get_agent_turn_runner()
+                        trun = get_agent_turn_runner(principal=self.principal)
                         contract = await trun.execute_turn_async(
                             query=query_str,
                             session_id=self.session_id,
@@ -536,13 +542,31 @@ class LiveSessionManager:
         })
         return result
 
+    def _reset_gate_state(self) -> None:
+        """P0.10 r2 (MF-2): a new Live stream (first connect, GoAway, reconnect after an error) starts clean."""
+        self._generating = False
+        self._is_speak_only = False
+        self._speak_id = None
+        self._speak_queue = []
+        self._barge_in_open = False
+        self._suppress_audio = False
+        self._playback_until = 0.0
+        self._last_server_event = time.perf_counter()
+
     def _mic_gate_open(self) -> bool:
         """P0.10 half-duplex gate: forward mic frames only when Yukti is not generating/speaking, or after a
         deliberate barge-in (`interrupt`). Echo of Yukti's own voice therefore never reaches Live's VAD."""
         if self._barge_in_open:
             return True
         if self._generating or self._is_speak_only:
-            return False
+            if time.perf_counter() - self._last_server_event <= GATE_WATCHDOG_S:
+                return False
+            # MF-2 watchdog: no server event for > 8 s while "generating/speaking" -> stale state, re-open
+            logger.warning(f"[{self.session_id}] Mic gate watchdog: no Live event for {GATE_WATCHDOG_S:.0f} s; clearing stale gate state")
+            self._generating = False
+            self._is_speak_only = False
+            self._speak_id = None
+            self._speak_queue = []
         return time.perf_counter() >= self._playback_until + PLAYBACK_TAIL_S
 
     def _r_role_text(self) -> str:
@@ -599,7 +623,7 @@ class LiveSessionManager:
 
         if canonical_query:
             from app.turn_runner import get_agent_turn_runner
-            trun = get_agent_turn_runner()
+            trun = get_agent_turn_runner(principal=self.principal)
             contract = await trun.execute_turn_async(
                 query=canonical_query,
                 session_id=self.session_id,
@@ -797,6 +821,7 @@ class LiveSessionManager:
 
     async def _run_bidi_stream(self, session: Any) -> str:
         """Pumps messages between browser WebSocket and Gemini Live session."""
+        self._reset_gate_state()  # P0.10 r2 MF-2: nothing from a previous (dropped) stream may keep the gate shut
         turn_state = {
             "tool_called_in_turn": False,
             "t_first_audio_ms": None,
@@ -871,6 +896,8 @@ class LiveSessionManager:
                     speak_text = (msg.get("text") or "").strip()
                     if speak_text:
                         self._speak_id = str(msg.get("speak_id") or f"spk-{int(time.time() * 1000)}")  # P0.10
+                        self._speak_queue.append(self._speak_id)
+                        self._last_server_event = time.perf_counter()  # watchdog counts from the request
                         self._barge_in_open = False
                         logger.info(f"[{self.session_id}] Rx speak request {self._speak_id} (len={len(speak_text)}): {speak_text[:80]}")
                         self.t_turn_start = time.perf_counter()
@@ -898,6 +925,7 @@ class LiveSessionManager:
                         continue
                     self._is_speak_only = False
                     self._speak_id = None  # a new typed Live turn supersedes any speak
+                    self._speak_queue = []
                     self.t_turn_start = time.perf_counter()
                     turn_state["tool_called_in_turn"] = False
                     turn_state["t_first_audio_ms"] = None
@@ -1034,6 +1062,7 @@ class LiveSessionManager:
                     async for response in session.receive():
                         got_any = True
                         t_event = time.perf_counter()
+                        self._last_server_event = t_event  # P0.10 r2 MF-2 watchdog
 
                         # 1. Session Resumption Handle Update
                         sru = getattr(response, "session_resumption_update", None)
@@ -1066,9 +1095,10 @@ class LiveSessionManager:
                             self._barge_in_open = False  # gate is open anyway now (not generating)
                             self._playback_until = 0.0  # the browser stops playback on `interrupted`
                             ended_speak = self._speak_id
-                            if self._is_speak_only:  # the server cut the speak turn: it is over
+                            if self._is_speak_only:  # the server cut the speak turn(s): over
                                 self._is_speak_only = False
                                 self._speak_id = None
+                                self._speak_queue = []
                             await self.send_json({"type": "interrupted", "speak_id": ended_speak})
 
                         it = getattr(sc, "input_transcription", None)
@@ -1094,6 +1124,10 @@ class LiveSessionManager:
 
                         mt = getattr(sc, "model_turn", None)
                         if mt is not None:
+                            if not self._generating:
+                                # P0.10 r2 MF-3: a NEW reply starts: an earlier `interrupt` (mic start, typed turn,
+                                # late tap) must not leave the backend gate open for this reply's generation
+                                self._barge_in_open = False
                             self._generating = True
                             for part in mt.parts or []:
                                 if getattr(part, "text", None) and not self._is_speak_only:
@@ -1128,9 +1162,10 @@ class LiveSessionManager:
                             heard = "".join(self.state.pop("heard", [])).strip()
 
                             if self._is_speak_only:
-                                done_speak = self._speak_id
-                                self._is_speak_only = False
-                                self._speak_id = None
+                                # S-3: completions arrive in send order; report the oldest pending speak
+                                done_speak = self._speak_queue.pop(0) if self._speak_queue else self._speak_id
+                                self._is_speak_only = bool(self._speak_queue)
+                                self._speak_id = self._speak_queue[-1] if self._speak_queue else None
                                 self._user_is_speaking = False
                                 logger.info(
                                     f"[{self.session_id}] Speak {done_speak} completed (audio_bytes={turn_state['total_audio_bytes']}, first_audio_ms={turn_state['t_first_audio_ms']})"
@@ -1185,7 +1220,7 @@ class LiveSessionManager:
                                         else:
                                             try:
                                                 from app.turn_runner import get_agent_turn_runner
-                                                trun = get_agent_turn_runner()
+                                                trun = get_agent_turn_runner(principal=self.principal)
                                                 c = await trun.execute_turn_async(
                                                     query=heard,
                                                     session_id=self.session_id,
@@ -1258,7 +1293,7 @@ class LiveSessionManager:
         """Deterministic fallback loop if Gemini Live is unreachable."""
         from app.turn_runner import get_agent_turn_runner
         from app.intents.confirm import resolve_pending_proposal_async
-        trun = get_agent_turn_runner()
+        trun = get_agent_turn_runner(principal=self.principal)
         # Tell the browser voice is down so the UI doesn't sit in "connecting" with a dead mic.
         with contextlib.suppress(Exception):
             await self.send_json({

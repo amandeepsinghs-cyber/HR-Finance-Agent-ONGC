@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useReducer, useRef, useState } from 'rea
 import { PersonaType, AnswerContract, SpecPatch } from '@/contracts/answerContract';
 import { TopBar } from '@/components/TopBar';
 import { PersonaBanner } from '@/components/PersonaBanner';
+import { PersonaPicker } from '@/components/PersonaPicker';
 import { AuthBanner } from '@/components/AuthBanner';
 import { CanvasView } from '@/components/CanvasView';
 import { feedReducer, applyChartKind, latestAnswered, isReplotOf, rehydrateJobsForSession, Turn } from '@/state/feed';
@@ -22,7 +23,10 @@ type Backend = 'checking' | 'online' | 'offline';
 
 // P0.10: adaptive voice barge-in during playback (sustained speech clearly louder than the echo; see voiceGate.ts).
 // Tap / Space / Stop always interrupt regardless.
-const VOICE_BARGE_IN = true;
+// G4 r2 (BUG-41): OFF by default — a continuous loud echo >= ~0.45 s at constant playback level is indistinguishable
+// from speech for a level-based detector. Re-enable only after a sponsor live test (see BUG-41).
+const VOICE_BARGE_IN = false;
+const GATED_RING_FRAMES = 17; // P0.10 r2 S-1: 17 × 30 ms worklet frames ≈ 0.5 s
 type Lang = 'en' | 'hi' | 'hi-en';
 
 const STARTERS = [
@@ -94,7 +98,9 @@ function isGreetingContract(c: AnswerContract): boolean {
 export default function YuktiApp() {
   const [isDark, setIsDark] = useState(false);
   const [language, setLanguage] = useState<Lang>('en');
-  const [persona, setPersona] = useState<PersonaType>('CMD');
+  // P2H.2 G4 M2: no default identity. null = not signed in → blocking persona picker; no data call until a pick.
+  const [persona, setPersona] = useState<PersonaType | null>(null);
+  const [signInRequired, setSignInRequired] = useState(false);
   const [isLiveMode, setIsLiveMode] = useState(true);
   const [backend, setBackend] = useState<Backend>('checking');
   const [isDebug, setIsDebug] = useState(false);
@@ -119,7 +125,7 @@ export default function YuktiApp() {
   const engineRef = useRef<VoiceAudioEngine | null>(null);
   const micActiveRef = useRef(false);
   const liveRef = useRef(true);
-  const personaRef = useRef<PersonaType>('CMD');
+  const personaRef = useRef<PersonaType | null>(null);
   const langRef = useRef<Lang>('en');
   const messagesRef = useRef<ChatMessage[]>([]);
   const contractRef = useRef<AnswerContract>(GREETING);
@@ -153,7 +159,9 @@ export default function YuktiApp() {
   const bargeOpenRef = useRef(false); // a deliberate interrupt re-opened the gate for this reply
   const bargeDetectorRef = useRef(new BargeInDetector());
   const speakTrackerRef = useRef(new SpeakTracker()); // P0.10: speak_id gating for Live transcripts (BUG-17/18)
-  const gatedRingRef = useRef<ArrayBuffer[]>([]); // P0.10: last ~0.6 s of gated mic frames (flushed on a voice barge-in)
+  // P0.10: gated mic frames held for a voice barge-in. Worklet frames are 30 ms, so 17 frames ≈ 0.5 s = the detector's
+  // sustain window (r2 S-1: was 6 frames = 180 ms); larger would start to include pre-speech echo.
+  const gatedRingRef = useRef<ArrayBuffer[]>([]);
 
   useEffect(() => {
     micActiveRef.current = isMicActive;
@@ -256,17 +264,24 @@ export default function YuktiApp() {
     // so Gemini Live is already warm & connected before the user clicks the mic/orb.
     // P0.4: resume the signed session if there is one (server decides the persona), else sign in as the default.
     void (async () => {
-      const existing = await fetchSessionPersona();
-      const p = existing || (await startSession(personaRef.current)) || personaRef.current;
-      if (p !== personaRef.current) {
-        personaRef.current = p;
-        setPersona(p);
+      // P2H.2 G4 M2 (BEH-01.01): resume a signed session if there is one; otherwise ask who you are. Never sign
+      // anyone in by default, and do not open /ws/live until there is a signed principal.
+      const existing = personaRef.current || (await fetchSessionPersona());
+      if (!existing) {
+        setSignInRequired(true);
+        return;
       }
-      void yuktiClient.connect({ persona: p, language: langRef.current, voice: 'Leda' });
+      if (existing !== personaRef.current) {
+        personaRef.current = existing;
+        setPersona(existing);
+      }
+      void yuktiClient.connect({ persona: existing, language: langRef.current, voice: 'Leda' });
     })();
     const id = setInterval(checkBackend, 15000);
     // P0.4: tokens live 8 h; re-sign the current persona every 2 h so a long demo never hits a 401
-    const renew = setInterval(() => void startSession(personaRef.current), 2 * 3600 * 1000);
+    const renew = setInterval(() => {
+      if (personaRef.current) void startSession(personaRef.current); // no-op while not signed in
+    }, 2 * 3600 * 1000);
     return () => {
       clearInterval(id);
       clearInterval(renew);
@@ -279,8 +294,10 @@ export default function YuktiApp() {
   const handlePersonaChange = useCallback((p: PersonaType, opts?: { signIn?: boolean }) => {
     const prevPersona = personaRef.current;
     if (p === prevPersona) return;
+    const firstSignIn = !prevPersona;
+    setSignInRequired(false);
     // Save current profile's conversation state
-    personaStoreRef.current[prevPersona] = {
+    if (prevPersona) personaStoreRef.current[prevPersona] = {
       turns: turnsRef.current,
       messages: messagesRef.current,
       sessionId: yuktiClient.getSessionId(),
@@ -309,7 +326,19 @@ export default function YuktiApp() {
     // P0.4: the TopBar picker is the demo "Sign in as…": it starts a new signed session for that persona
     // (the only way to change persona; typed/spoken requests are refused by the backend).
     if (opts?.signIn === false) yuktiClient.switchPersonaSession(nextSessionId, p);
-    else void startSession(p).then(() => yuktiClient.switchPersonaSession(nextSessionId, p));
+    else
+      void startSession(p).then((signed) => {
+        if (!signed) {
+          // the server refused the sign-in: back to the picker, nothing is shown under an unsigned identity
+          personaRef.current = null;
+          setPersona(null);
+          setSignInRequired(true);
+          return;
+        }
+        yuktiClient.switchPersonaSession(nextSessionId, p);
+        // first sign-in: /ws/live was never opened, so open it now that there is a signed principal
+        if (firstSignIn && liveRef.current) void yuktiClient.connect({ persona: p, language: langRef.current, voice: 'Leda' });
+      });
     setOrbState(micActiveRef.current ? 'listening' : 'idle');
   }, []);
 
@@ -387,8 +416,19 @@ export default function YuktiApp() {
     [],
   );
 
-  const handleUiAction = useCallback((action?: { action?: string; command?: string; value?: string }) => {
-    if (!action || (!action.command && !action.action)) return;
+  const handleUiAction = useCallback((action?: { type?: string; action?: string; command?: string; value?: string; export_id?: string; url?: string; filename?: string }) => {
+    if (!action) return;
+    if (action.type === 'download' && (action.export_id || action.url)) {
+      const href = action.url || `/api/export/${encodeURIComponent(action.export_id || '')}`;
+      const a = document.createElement('a');
+      a.href = href;
+      if (action.filename) a.download = action.filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      return;
+    }
+    if (!action.command && !action.action) return;
     const cmd = (action.command || action.action || '').toLowerCase();
     const val = (action.value || '').trim();
     if (cmd === 'set_theme' || cmd === 'theme') {
@@ -449,6 +489,12 @@ export default function YuktiApp() {
     };
     const onState = (s: WsState) => {
       setWsState(s);
+      if (s === 'closed' || s === 'error') {
+        // P0.10 r2 MF-2: a dropped socket must not leave a speak "active" (all transcripts dropped) or the gate open
+        speakTrackerRef.current.reset();
+        bargeOpenRef.current = false;
+        gatedRingRef.current = [];
+      }
       if ((s === 'closed' || s === 'error') && voiceTurnRef.current) settleVoiceTurn('fail', 'The voice connection dropped before Yukti answered. Please ask again.');
     };
 
@@ -640,11 +686,11 @@ export default function YuktiApp() {
         telemetryRef.current.lastVoiceAt = performance.now();
       }
       // P0.10 (BUG-17): the old raw-level trigger (> 0.5 for 200 ms) fired on Yukti's own echo. Voice barge-in now
-      // needs ~0.4 s of speech clearly louder than the adaptive echo floor (BargeInDetector); tap/Space/Stop always work.
+      // needs ~0.5 s of near-continuous speech clearly louder than the echo (BargeInDetector); tap/Space/Stop always work.
       if (VOICE_BARGE_IN && bargeDetectorRef.current.update(lv, eng.getOutputLevel(), eng.isAudioPlaying(), 50)) {
         const held = gatedRingRef.current;
         interruptNowRef.current();
-        // the start of the user's sentence was gated: send the last ~0.6 s so Live hears the whole utterance
+        // the start of the user's sentence was gated: send the held-back ~0.5 s (GATED_RING_FRAMES) so Live hears the whole utterance
         if (liveRef.current) held.forEach((c) => yuktiClient.sendAudioChunk(c));
       }
     }, 50);
@@ -656,6 +702,10 @@ export default function YuktiApp() {
   const startMic = useCallback(async (deviceId?: string): Promise<boolean> => {
     const eng = engineRef.current;
     if (!eng) return false;
+    if (!personaRef.current) {
+      setSignInRequired(true); // P2H.2 G4 M2: voice needs a signed principal too
+      return false;
+    }
     if (micStartingRef.current) return false; // U3.5: ignore rapid double-clicks while a start is in flight
     micStartingRef.current = true;
     try {
@@ -697,7 +747,7 @@ export default function YuktiApp() {
       else if (!open) {
         const ring = gatedRingRef.current;
         ring.push(chunk);
-        if (ring.length > 6) ring.shift();
+        if (ring.length > GATED_RING_FRAMES) ring.shift();
       }
     }, deviceId);
     if (!res.ok) {
@@ -727,7 +777,7 @@ export default function YuktiApp() {
       }
     );
 
-    if (liveRef.current) {
+    if (liveRef.current && personaRef.current) {
       void yuktiClient.connect({ persona: personaRef.current, language: langRef.current, voice: 'Leda' });
     }
     setIsMicActive(true);
@@ -812,6 +862,11 @@ export default function YuktiApp() {
     async (queryText: string, specPatch?: SpecPatch) => {
       const text = queryText.trim();
       if (!text) return;
+      // P2H.2 G4 M2: no question goes anywhere until someone has signed in
+      if (!personaRef.current) {
+        setSignInRequired(true);
+        return;
+      }
       engineRef.current?.unlock();
       engineRef.current?.stopPlayback(true);
       if (liveRef.current) yuktiClient.sendInterrupt();
@@ -882,7 +937,7 @@ export default function YuktiApp() {
             });
             c = await yuktiClient.executeTurnRest(
               text,
-              personaRef.current,
+              personaRef.current || '',
               langRef.current,
               2,
               ac.signal,
@@ -895,7 +950,7 @@ export default function YuktiApp() {
           setBackend('online');
         } else {
           await new Promise((r) => setTimeout(r, 450));
-          c = routeQueryToFixture(text, personaRef.current).contract;
+          c = routeQueryToFixture(text, personaRef.current || undefined).contract;
         }
         if (epoch !== sessionEpochRef.current) return; // "New conversation" happened meanwhile
         applyContract(c, text, tid, epoch);
@@ -914,7 +969,7 @@ export default function YuktiApp() {
           engineRef.current?.acceptIncoming();
           if (liveRef.current) {
             void yuktiClient
-              .connect({ persona: personaRef.current, language: langRef.current, voice: 'Leda' })
+              .connect({ persona: personaRef.current || '', language: langRef.current, voice: 'Leda' })
               .then((ok) => {
                 if (ok) yuktiClient.sendSpeak(spokenText, speakTrackerRef.current.begin()); // P0.10 speak_id
               });
@@ -1033,7 +1088,7 @@ export default function YuktiApp() {
     setSlow(false);
     setLiveInterimText('');
     const newSid = yuktiClient.resetSession();
-    delete personaStoreRef.current[personaRef.current];
+    if (personaRef.current) delete personaStoreRef.current[personaRef.current];
     void newSid;
     setOrbState(micActiveRef.current ? 'listening' : 'idle');
   }, []);
@@ -1059,6 +1114,8 @@ export default function YuktiApp() {
         demo={!isLiveMode ? { index: Math.max(0, fixtureIndex), total: FIXTURES.length, onPrev: () => loadFixture(Math.max(0, fixtureIndex - 1)), onNext: () => loadFixture(fixtureIndex + 1) } : undefined}
         micLevel={micLevel}
       />
+      {/* P2H.2 G4 M2 (BEH-01.01): first visit → blocking sign-in; nothing loads under a default identity */}
+      <PersonaPicker open={signInRequired} required current={null} onClose={() => undefined} onPick={(id) => handlePersonaChange(id)} />
 
       {/* Banners live in normal flow so nothing ever overlaps them */}
       <div className="relative z-20">
@@ -1094,7 +1151,7 @@ export default function YuktiApp() {
       </div>
 
       <div className="relative min-h-0 min-w-0 overflow-hidden">
-        <PersonaBanner persona={persona} />
+        {persona && <PersonaBanner persona={persona} />}
         {/* U2.7: the scroll area ends above the floating ask bar / orb (reserved band), so the bar never covers
             the active card; the band height follows the panel mode. */}
         <main
@@ -1122,7 +1179,7 @@ export default function YuktiApp() {
             audioEngine={engineRef.current || undefined}
             messages={messages}
             liveInterimText={liveInterimText}
-            persona={persona}
+            persona={persona ?? undefined}
           />
         </main>
 

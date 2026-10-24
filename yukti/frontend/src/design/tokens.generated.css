@@ -65,6 +65,11 @@
   --aura-ring-blue: #2563EB;
   --aura-ring-violet: #7C3AED;
   --aura-halo-opacity: 0.45;
+  --brand-red: #A31D18;
+  --brand-red-deep: #8B1812;
+  --mic-bg: #FDF2F2;
+  --mic-bg-hover: #FAE5E5;
+  --mic-border: #F1D2D0;
   --chart-cat-1: #3186FF;
   --chart-cat-2: #B97800;
   --chart-cat-3: #4B31E3;
@@ -166,6 +171,11 @@
   --aura-ring-blue: #3B82F6;
   --aura-ring-violet: #8B5CF6;
   --aura-halo-opacity: 0.5;
+  --brand-red: #F87171;
+  --brand-red-deep: #FCA5A5;
+  --mic-bg: #2A1515;
+  --mic-bg-hover: #3A1C1C;
+  --mic-border: #4A2222;
   --chart-cat-1: #418CF5;
   --chart-cat-2: #F2B54A;
   --chart-cat-3: #8B7BFF;

@@ -13,10 +13,11 @@ queries:
   - executives
   - posted
   - office
-  intent_description: 419 executives have been in the Delhi office (WC-DEL) continuously for 5 years or more as of 19-Oct-2026.
-  parameterized_sql: "-- Answer Key SQL: C1\n-- Question: How many executives have been posted in the Delhi office for 5 years\
-    \ or more? Break down by grade and discipline.\n-- Type: data\n-- Semantic audit 2026-10-20: aligned with H10/X10 rotation\
-    \ rule. Due = current continuous stay >= 60 months at\n-- 2026-10-19 (v_continuous_stay), minus officers retiring within\
+  intent_description: 419 executives have been in the Delhi office (WC-DEL) continuously for more than 5.0 years as of 19-Oct-2026 (DELHI_GT5_CONT_V1).
+  definition_id: DELHI_GT5_CONT_V1
+  parameterized_sql: "-- Answer Key SQL: C1 (definition_id: DELHI_GT5_CONT_V1)\n-- Question: How many executives have been posted in the Delhi office for 5 years\
+    \ or more? Break down by grade and discipline.\n-- Type: data\n-- Semantic audit 2026-10-20 / SPEC-07 DELHI_GT5_CONT_V1: aligned with H10/X10 rotation\
+    \ rule. Due = current continuous stay > 1826 days (> 5.0 years) at\n-- 2026-10-19 (v_continuous_stay), minus officers retiring within\
     \ 3 x 365.25 days (JRTP 7.1 practice), minus officers\n-- whose current posting carries a valid exemption tag (literal\
     \ 'None' = no exemption; valid_until >= 2026-10-19 or NULL).\n\nWITH cur_exempt AS (\n    SELECT emp_id, LOGICAL_OR(\n\
     \        LOWER(IFNULL(exemption_tag, 'none')) NOT IN ('none', '')\n        AND (exemption_valid_until IS NULL OR exemption_valid_until\
@@ -24,8 +25,8 @@ queries:
     \ emp_id\n),\nbase AS (\n    SELECT v.grade_id, v.discipline_id, v.emp_id,\n           DATE_DIFF(v.retirement_date, DATE\
     \ '2026-10-19', DAY) <= 3 * 365.25 AS retiring_3yr,\n           IFNULL(x.has_valid_exemption, FALSE) AS has_valid_exemption\n\
     \    FROM `ongc-hr-finance-agent.hrfin_gold.v_continuous_stay` v\n    LEFT JOIN cur_exempt x ON x.emp_id = v.emp_id\n\
-    \    WHERE v.is_current_stay = TRUE\n      AND v.wc_id = @wc_id\n      AND v.grade_id LIKE 'E%'\n      AND v.continuous_stay_months\
-    \ >= @min_stay_months\n)\nSELECT\n    grade_id,\n    discipline_id,\n    COUNT(DISTINCT emp_id) AS delhi_executives_ge_5yr,\n\
+    \    WHERE v.is_current_stay = TRUE\n      AND v.wc_id = @wc_id\n      AND v.grade_id LIKE 'E%'\n      AND DATE_DIFF(DATE '2026-10-19', v.continuous_from_date, DAY)\
+    \ > IF(@min_stay_months = 60, 1826, CAST(ROUND(@min_stay_months * 30.4375) AS INT64))\n)\nSELECT\n    grade_id,\n    discipline_id,\n    COUNT(DISTINCT emp_id) AS delhi_executives_ge_5yr,\n\
     \    COUNT(DISTINCT IF(retiring_3yr, emp_id, NULL)) AS exempt_retiring_3yr,\n    COUNT(DISTINCT IF(NOT retiring_3yr AND\
     \ has_valid_exemption, emp_id, NULL)) AS exempt_valid_tag,\n    COUNT(DISTINCT IF(NOT retiring_3yr AND NOT has_valid_exemption,\
     \ emp_id, NULL)) AS non_exempt_due_transfer\nFROM base\nGROUP BY grade_id, discipline_id\nORDER BY grade_id, discipline_id;"
@@ -88,7 +89,7 @@ queries:
     \ hard or remote stations (NE, offshore) are short of people to receive them?\n-- Type: data\n-- Semantic audit 2026-10-20:\
     \ previous SQL only counted in-position executives at four hand-picked NE work\n-- centres (WC-ASM/JOR/TRI/SIL) - it identified\
     \ neither who is overdue nor any shortfall. Now two sections:\n--   section 'overdue_pool'      : executives overdue under\
-    \ JRTP Clause 3.2 (>= 60 months continuous stay at the\n--                                 current work centre, hrfin_gold.v_continuous_stay)\
+    \ JRTP Clause 3.2 (> 1826 days continuous stay at the\n--                                 current work centre, hrfin_gold.v_continuous_stay)\
     \ excluding the Clause 7\n--                                 3-year pre-retirement protection, by current work centre\
     \ (top 10 sources);\n--   section 'receiving_station' : hard/remote stations (hard_station_cat 'C', NE sector or offshore)\
     \ with an\n--                                 executive vacancy vs FY26 sanctioned posts (sanctioned_posts, E-grades).\n\
@@ -586,7 +587,7 @@ queries:
     \ AS estimated_cta_outlay_cr, i.e. an assumed\n-- Rs 3.25 lakh per officer), summed sanctioned/in-position strength over\
     \ ALL grades for four hand-picked\n-- assets, and never allocated the 200 officers. Now a parameterised scenario:\n--\
     \   * movers: 200 E3-E5 executives (scenario parameter from the question) from WC-DEL + WC-DDN; the source\n--     pool\
-    \ size and how many of them are already overdue for rotation (>= 60 months, outside the 3-year\n--     pre-retirement\
+    \ size and how many of them are already overdue for rotation (> 1826 days, outside the 3-year\n--     pre-retirement\
     \ protection) are shown;\n--   * one-time cost: average actual total transfer cost (transfer grant + CTA + baggage) of\
     \ E3-E5\n--     rotation / hard-station postings in FY24-FY26 from posting_history, x officers allocated;\n--   * recurring\
     \ cost: Special Hard Station Allowance = 10% of basic pay (JRTP Clause 6.3) for officers\n--     placed in Category-C\
@@ -1101,7 +1102,7 @@ queries:
     -- Type: document\n-- Semantic audit 2026-10-20: old SQL counted ALL employees (incl. non-executives, exempt and age 57+)\
     \ with >=36 months per WC, and\n-- the legacy document prose reported the 46-row count as '{eligible_officers_count}'.\n\
     -- Semantic audit 2026-10-20 (rev 2, coordinator): 'due' redefined per JRTP 3.1/3.2 and C1/MET-HR-011 as continuous stay\
-    \ >= 60\n-- months (hrfin_gold.v_continuous_stay) with no valid exemption and not within 3 yrs of superannuation; 3-5\
+    \ > 1826\n-- days (hrfin_gold.v_continuous_stay) with no valid exemption and not within 3 yrs of superannuation; 3-5\
     \ yr stays shown\n-- separately as eligible_3_to_5y; stays starting exactly 2020-07-01 (left-censored posting history)\
     \ counted per WC.\nWITH stay AS (\n    -- current continuous stay per hrfin_gold.v_continuous_stay (same source as C1\
     \ / MET-HR-011)\n    SELECT v.emp_id, v.wc_id, v.grade_id, v.discipline_id, v.retirement_date,\n           v.continuous_from_date,\
@@ -1112,7 +1113,7 @@ queries:
     \ = 'executive'\n      AND LOWER(e.employment_status) = 'active'\n),\never_hard AS (\n    SELECT p.emp_id, LOGICAL_OR(LOWER(w.hard_station_cat)\
     \ = 'c') AS served_cat_c\n    FROM posting_history p JOIN dim_work_centre w ON w.wc_id = p.wc_id\n    GROUP BY p.emp_id\n\
     ),\nrotation AS (\n    -- JRTP 3.1/3.2: 3 yrs is the MINIMUM; rotation normally after 3-5 yrs -> 'due' = continuous stay\
-    \ >= 60 months (C1 rule).\n    -- Protected: within 3 yrs of superannuation (JRTP 7.1, C1 rule: retirement_date - 2026-10-19\
+    \ > 1826 days (C1 rule).\n    -- Protected: within 3 yrs of superannuation (JRTP 7.1, C1 rule: retirement_date - 2026-10-19\
     \ <= 3*365.25 days)\n    -- or a recorded exemption still valid on 2026-10-19.\n    SELECT s.*, IFNULL(h.served_cat_c,\
     \ FALSE) AS served_cat_c,\n           DATE_DIFF(s.retirement_date, DATE '2026-10-19', DAY) <= 3 * 365.25 AS retiring_3y,\n\
     \           s.exemption_tag IS NOT NULL AND IFNULL(s.exemption_valid_until, DATE '9999-12-31') >= DATE '2026-10-19' AS\
@@ -1614,12 +1615,16 @@ queries:
   parameterized_sql: "-- Answer Key SQL: E1\n-- Question: What is my leave balance, and how many earned leave days can I encash?\n\
     -- Type: data\n-- Semantic audit 2026-10-20: Latest ledger row per leave type (no hard-coded FY), plus in-service encashment\
     \ per Leave Rules 4.3 (up to 30 days, retain 30) next to the ledger field.\n\nWITH latest AS (\n    SELECT fiscal_year,\
-    \ leave_type, closing_balance_days, encashable_balance_days\n    FROM leave_ledger\n    WHERE emp_id = 'EMP-102451'\n\
+    \ leave_type, closing_balance_days, encashable_balance_days\n    FROM leave_ledger\n    WHERE emp_id = @self_emp_id\n\
     \    QUALIFY ROW_NUMBER() OVER (PARTITION BY leave_type ORDER BY fiscal_year DESC, to_date DESC) = 1\n)\nSELECT\n    fiscal_year,\n\
     \    leave_type,\n    closing_balance_days,\n    encashable_balance_days AS encashable_days_per_ledger,\n    IF(LOWER(leave_type)\
     \ = 'earned_leave_el', LEAST(30, GREATEST(closing_balance_days - 30, 0)), NULL) AS in_service_encashable_per_rule_4_3\n\
     FROM latest\nORDER BY leave_type;"
-  params: {}
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
   visual_kind: table
   provenance:
     source_file: data_bank/answer_key/sql/E1.sql
@@ -1639,16 +1644,20 @@ queries:
     end of the JRTP 3–5 year rotation window '
   parameterized_sql: "-- Answer Key SQL: E2\n-- Question: When am I due for transfer, and what is the rotation policy for\
     \ my grade?\n-- Type: policy_plus_data\n-- Semantic audit 2026-10-20: Old SQL listed the posting only. Now applies JRTP\
-    \ 3.0 (rotation window 36-60 months) and 9.1 (AGT effective by 1 July) to the current posting (is_current_posting).\n\n\
+    \ 3.0 (rotation window 3-5 years) and 9.1 (AGT effective by 1 July) to the current posting (is_current_posting).\n\n\
     SELECT\n    p.emp_id,\n    p.wc_id,\n    w.name AS work_centre,\n    w.cluster_id,\n    p.grade_id,\n    p.from_date AS\
     \ station_since,\n    DATE_DIFF(DATE '2026-10-19', p.from_date, MONTH) AS tenure_months,\n    DATE_ADD(p.from_date, INTERVAL\
     \ 36 MONTH) AS rotation_window_opens,\n    DATE_ADD(p.from_date, INTERVAL 60 MONTH) AS rotation_window_closes,\n    CASE\n\
     \        WHEN DATE_DIFF(DATE '2026-10-19', p.from_date, MONTH) > 60 THEN 'beyond 5-year window - due in next AGT'\n  \
     \      WHEN DATE_DIFF(DATE '2026-10-19', p.from_date, MONTH) >= 36 THEN 'within 3-5 year window - eligible'\n        ELSE\
     \ 'not yet eligible (under 3 years)'\n    END AS rotation_status,\n    DATE '2027-07-01' AS next_agt_effective_by,\n \
-    \   p.exemption_tag\nFROM posting_history p\nJOIN dim_work_centre w ON p.wc_id = w.wc_id\nWHERE p.emp_id = 'EMP-102451'\n\
+    \   p.exemption_tag\nFROM posting_history p\nJOIN dim_work_centre w ON p.wc_id = w.wc_id\nWHERE p.emp_id = @self_emp_id\n\
     \  AND p.is_current_posting = TRUE;"
-  params: {}
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
   visual_kind: table
   provenance:
     source_file: data_bank/answer_key/sql/E2.sql
@@ -1670,8 +1679,12 @@ queries:
     -- Semantic audit 2026-10-20: Added claim type, patient, submission/settlement dates and claimed amount so status can\
     \ be stated; ordered by recency.\n\nSELECT\n    claim_id,\n    claim_type,\n    patient_relationship,\n    submission_date,\n\
     \    claim_status,\n    claimed_amount_inr,\n    approved_amount_inr,\n    settlement_date\nFROM medical_claims\nWHERE\
-    \ emp_id = 'EMP-102451'\nORDER BY submission_date DESC;"
-  params: {}
+    \ emp_id = @self_emp_id\nORDER BY submission_date DESC;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
   visual_kind: table
   provenance:
     source_file: data_bank/answer_key/sql/E3.sql
@@ -1740,12 +1753,16 @@ queries:
     -- Semantic audit 2026-10-20: Old SQL listed all 36 FY27 programmes without checking eligibility or whether they are still\
     \ ahead of 2026-10-19.\n-- Semantic audit 2026-10-20: Now filters to the employee's grade and experience prerequisite\
     \ and flags still_open / discipline_listed.\n\nWITH me AS (\n    SELECT current_grade_id AS grade_id, discipline_id, total_tenure_years\n\
-    \    FROM employee_master\n    WHERE emp_id = 'EMP-102451'\n)\nSELECT\n    t.programme_id,\n    t.programme_name,\n  \
+    \    FROM employee_master\n    WHERE emp_id = @self_emp_id\n)\nSELECT\n    t.programme_id,\n    t.programme_name,\n  \
     \  t.institute,\n    t.location_city,\n    LOWER(t.category) AS category,\n    t.start_date,\n    t.duration_days,\n \
     \   t.prerequisite_experience_years,\n    t.start_date >= DATE '2026-10-19' AS still_open,\n    me.discipline_id IN UNNEST(t.eligible_disciplines)\
     \ AS discipline_listed\nFROM training_calendar t\nCROSS JOIN me\nWHERE t.fiscal_year = 'FY27'\n  AND me.grade_id IN UNNEST(t.eligible_grades)\n\
     \  AND t.prerequisite_experience_years <= me.total_tenure_years\nORDER BY t.start_date;"
-  params: {}
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
   visual_kind: table
   provenance:
     source_file: data_bank/answer_key/sql/E6.sql
@@ -1820,7 +1837,7 @@ queries:
   parameterized_sql: "-- Answer Key SQL: D2\n-- Question: Show me the draft transfer list for Mumbai.\n-- Type: refusal\n\
     -- Semantic audit 2026-10-20: Column renamed: old mumbai_executives_due_rotation was a >=36-month count (eligible pool,\
     \ not 'due') -> mumbai_executives_ge_3yr.\n-- Semantic audit 2026-10-20: Added due_rotation on the company rule used by\
-    \ C1/C2/H10/X10: >=60 months, minus retiring within 3x365.25 days of 2026-10-19, minus valid current-posting exemption.\n\
+    \ C1/C2/H10/X10: > 1826 days, minus retiring within 3x365.25 days of 2026-10-19, minus valid current-posting exemption.\n\
     \nWITH stay AS (\n    SELECT\n        v.emp_id, v.grade_id, v.discipline_id, v.continuous_stay_months,\n        DATE_DIFF(v.retirement_date,\
     \ DATE '2026-10-19', DAY) <= 3 * 365.25 AS retiring_within_3yr,\n        (p.exemption_tag IS NOT NULL AND LOWER(p.exemption_tag)\
     \ != 'none'\n         AND (p.exemption_valid_until IS NULL OR p.exemption_valid_until >= DATE '2026-10-19')) AS has_valid_exemption\n\
@@ -3484,7 +3501,7 @@ queries:
   parameterized_sql: "-- Answer Key SQL: X10\n-- Question: *Unprompted:* \"3 projects slipped this week; 42 rotation cases\
     \ overdue; Field X lifting cost up 12%.\"\n-- Type: data\n-- Semantic audit 2026-10-20: Each alert component is now computed\
     \ from its proper source: (1) open capital projects behind schedule\n-- (project grain, not milestone rows); (2) executives\
-    \ past the JRTP cl.3.2 5-year rotation window at their current\n-- station per hrfin_gold.v_continuous_stay (>=60 months),\
+    \ past the JRTP cl.3.2 5-year rotation window at their current\n-- station per hrfin_gold.v_continuous_stay (> 1826 days),\
     \ excluding valid exemption tags and officers within 3 years of\n-- superannuation (same rule as C1/H10) (old: anyone\
     \ incl. non-executives with >=36 months -> 20,488); (3) largest field-level YoY change in\n-- lifting cost FY26 vs FY25\
     \ on line_type='field' (old: AVG over all line types and years = 68,922,047 USD/BOE).\n-- GAP: no weekly project or cost\
@@ -3547,3 +3564,158 @@ queries:
     source_file: data_bank/answer_key/sql/X10.sql
     sha256: 8f998c3dd063b608ba3d7189a22babdca912e6fd7fb84ab8b2b7ec3bb7eddff2
     gold_objects: hrfin_silver, hrfin_gold
+self_queries:
+- id: my_payslip
+  group: self
+  data_class: self
+  canonical_question: Show my latest payslip and monthly pay breakdown.
+  intent_keywords:
+  - my
+  - payslip
+  - pay
+  - salary
+  - monthly
+  parameterized_sql: "SELECT payroll_id, emp_id, pay_period, fiscal_year, wc_id, grade_id, discipline_id,\n  basic_pay_inr,\
+    \ da_inr, hra_inr, cafeteria_allowances_inr, mining_offshore_allowance_inr,\n  prp_inr, gross_salary_inr, income_tax_tds_inr,\
+    \ net_salary_inr\nFROM payroll_monthly\nWHERE emp_id = @self_emp_id\nORDER BY pay_period DESC\nLIMIT 12;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_pay_components_fy
+  group: self
+  data_class: self
+  canonical_question: Show my YTD and fiscal-year pay components breakdown.
+  intent_keywords:
+  - my
+  - pay
+  - components
+  - ytd
+  - ctc
+  parameterized_sql: "SELECT emp_id, fiscal_year,\n  SUM(basic_pay_inr) AS basic_pay_inr,\n  SUM(da_inr) AS da_inr,\n  SUM(hra_inr)\
+    \ AS hra_inr,\n  SUM(cafeteria_allowances_inr) AS cafeteria_allowances_inr,\n  SUM(prp_inr) AS prp_inr,\n  SUM(gross_salary_inr)\
+    \ AS gross_salary_inr,\n  SUM(net_salary_inr) AS net_salary_inr\nFROM payroll_monthly\nWHERE emp_id = @self_emp_id\nGROUP\
+    \ BY emp_id, fiscal_year\nORDER BY fiscal_year DESC;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_leave_balance
+  group: self
+  data_class: self
+  canonical_question: What is my current EL, CL, and HPL leave balance?
+  intent_keywords:
+  - my
+  - leave
+  - balance
+  - el
+  - cl
+  - hpl
+  parameterized_sql: "WITH latest AS (\n  SELECT emp_id, fiscal_year, leave_type, closing_balance_days, encashable_balance_days\n\
+    \  FROM leave_ledger\n  WHERE emp_id = @self_emp_id\n  QUALIFY ROW_NUMBER() OVER (PARTITION BY leave_type ORDER BY fiscal_year\
+    \ DESC, to_date DESC) = 1\n)\nSELECT emp_id, fiscal_year, leave_type, closing_balance_days,\n  encashable_balance_days\
+    \ AS encashable_days_per_ledger,\n  IF(LOWER(leave_type) IN ('el', 'earned_leave_el'), LEAST(30, GREATEST(closing_balance_days\
+    \ - 30, 0)), NULL) AS in_service_encashable_per_rule_4_3\nFROM latest\nORDER BY leave_type;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_leave_ledger
+  group: self
+  data_class: self
+  canonical_question: Show my leave ledger and transaction history.
+  intent_keywords:
+  - my
+  - leave
+  - ledger
+  - history
+  parameterized_sql: "SELECT emp_id, fiscal_year, leave_type, transaction_type, from_date, to_date, days,\n  closing_balance_days,\
+    \ encashable_balance_days\nFROM leave_ledger\nWHERE emp_id = @self_emp_id\nORDER BY fiscal_year DESC, to_date DESC\nLIMIT\
+    \ 24;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_postings
+  group: self
+  data_class: self
+  canonical_question: Show my posting history across work centres.
+  intent_keywords:
+  - my
+  - posting
+  - history
+  - transfer
+  parameterized_sql: "SELECT p.posting_id, p.emp_id, p.wc_id, w.name AS work_centre, p.grade_id, p.designation,\n  p.from_date,\
+    \ p.to_date, p.tenure_months, p.is_current_posting, p.exemption_tag\nFROM posting_history p\nLEFT JOIN dim_work_centre\
+    \ w ON p.wc_id = w.wc_id\nWHERE p.emp_id = @self_emp_id\nORDER BY p.from_date DESC;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_station_tenure
+  group: self
+  data_class: self
+  canonical_question: What is my current station tenure and rotation eligibility?
+  intent_keywords:
+  - my
+  - station
+  - tenure
+  - rotation
+  parameterized_sql: "SELECT p.emp_id, p.wc_id, w.name AS work_centre, w.cluster_id, p.grade_id,\n  p.from_date AS station_since,\n\
+    \  DATE_DIFF(DATE '2026-10-19', p.from_date, MONTH) AS tenure_months,\n  ROUND(DATE_DIFF(DATE '2026-10-19', p.from_date,\
+    \ DAY) / 365.25, 2) AS continuous_stay_years,\n  p.exemption_tag\nFROM posting_history p\nJOIN dim_work_centre w ON p.wc_id\
+    \ = w.wc_id\nWHERE p.emp_id = @self_emp_id\n  AND p.is_current_posting = TRUE;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_apar
+  group: self
+  data_class: self
+  canonical_question: Show my APAR ratings and performance scores.
+  intent_keywords:
+  - my
+  - apar
+  - rating
+  - score
+  - appraisal
+  parameterized_sql: "SELECT apar_id, emp_id, fiscal_year, wc_id, grade_id, discipline_id,\n  numerical_score, final_rating,\
+    \ benchmark_score, is_dpc_eligible\nFROM apar_ratings\nWHERE emp_id = @self_emp_id\nORDER BY fiscal_year DESC\nLIMIT 5;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+- id: my_entitlements
+  group: self
+  data_class: self
+  canonical_question: What are my house building, car advance, and grade entitlements?
+  intent_keywords:
+  - my
+  - entitlement
+  - advance
+  - hba
+  - car
+  parameterized_sql: "SELECT e.emp_id, e.name, e.current_grade_id AS grade_id, g.designation,\n  g.pay_scale_min_inr, g.pay_scale_max_inr,\
+    \ g.typical_residency_years\nFROM employee_master e\nJOIN dim_grade g ON e.current_grade_id = g.grade_id\nWHERE e.emp_id\
+    \ = @self_emp_id;"
+  params:
+    self_emp_id:
+      type: STRING
+      default: null
+      description: Caller's own employee ID bound from server-side Principal.emp_id
+  visual_kind: table
+

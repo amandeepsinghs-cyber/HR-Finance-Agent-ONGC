@@ -181,3 +181,76 @@ async def test_normal_voice_turn_transcripts_still_flow():
     await h.server(sc(output_transcription=NS(text="Delhi has 692 executives.", finished=True)))
     assert [m["text"] for m in h.of_type("agent_transcript")] == ["Delhi has 692 executives."]
     await h.stop()
+
+
+# ---------------------------------------------------------------- P0.10 r2 (G4 MF-2, MF-3, S-3)
+@pytest.mark.asyncio
+async def test_new_stream_resets_stale_gate_state():
+    """MF-2: a reconnect mid-reply/mid-speak must not leave the gate shut forever."""
+    h = Harness()
+    m = h.mgr
+    m._generating, m._is_speak_only, m._speak_id, m._speak_queue = True, True, "OLD", ["OLD"]
+    m._barge_in_open, m._playback_until = True, ls.time.perf_counter() + 60
+    await h.start()
+    assert (m._generating, m._is_speak_only, m._speak_id, m._speak_queue, m._barge_in_open) == (False, False, None, [], False)
+    assert m._playback_until == 0.0 and m._mic_gate_open() is True
+    await h.browser(bytes=_pcm())
+    assert len(h.live.audio_in) == 1
+    await h.stop()
+
+
+def test_gate_watchdog_reopens_after_8s_without_server_events():
+    """MF-2: no Live event for > 8 s while 'generating' or 'speaking' -> stale, gate re-opens."""
+    m = Harness().mgr
+    m._generating, m._is_speak_only, m._speak_queue = True, True, ["S9"]
+    m._last_server_event = ls.time.perf_counter() - 1.0
+    assert m._mic_gate_open() is False                      # recent event: still closed
+    m._last_server_event = ls.time.perf_counter() - (ls.GATE_WATCHDOG_S + 0.5)
+    assert m._mic_gate_open() is True                       # stale: re-opened
+    assert (m._generating, m._is_speak_only, m._speak_queue) == (False, False, [])
+
+
+@pytest.mark.asyncio
+async def test_new_reply_closes_a_leftover_barge_in():
+    """MF-3: an `interrupt` sent while idle (mic start, typed turn, late tap) must not keep the backend gate open
+    through the NEXT reply's generation."""
+    h = Harness()
+    await h.start()
+    await h.browser(type="interrupt")                       # e.g. mic start: browser always sends interrupt
+    assert h.mgr._barge_in_open is True
+    await h.server(audio_turn())                            # the next reply starts
+    assert h.mgr._barge_in_open is False
+    await h.browser(bytes=_pcm())
+    assert h.live.audio_in == [], "echo during the new reply must be gated"
+    await h.stop()
+
+
+@pytest.mark.asyncio
+async def test_barge_in_during_generation_survives_further_model_parts():
+    h = Harness()
+    await h.start()
+    await h.server(audio_turn())                            # Yukti is generating
+    await h.browser(type="interrupt")                       # user taps Stop mid-reply
+    await h.server(audio_turn())                            # more parts of the SAME reply arrive
+    assert h.mgr._barge_in_open is True
+    await h.browser(bytes=_pcm())
+    assert len(h.live.audio_in) == 1                        # the user's speech goes through
+    await h.stop()
+
+
+@pytest.mark.asyncio
+async def test_two_queued_speaks_complete_in_order():
+    """S-3: a second speak no longer overwrites the first one's id."""
+    h = Harness()
+    await h.start()
+    await h.browser(type="speak", text="First answer.", speak_id="A")
+    await h.browser(type="speak", text="Second answer.", speak_id="B")
+    await h.server(audio_turn())
+    await h.server(sc(turn_complete=True))
+    assert h.of_type("turn_complete")[-1]["speak_id"] == "A"
+    assert h.mgr._is_speak_only is True and h.mgr._speak_id == "B"
+    await h.server(audio_turn())
+    await h.server(sc(turn_complete=True))
+    assert h.of_type("turn_complete")[-1]["speak_id"] == "B"
+    assert h.mgr._is_speak_only is False and h.mgr._speak_id is None
+    await h.stop()

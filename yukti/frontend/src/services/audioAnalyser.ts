@@ -56,6 +56,9 @@ export class VoiceAudioEngine {
   private recordedMimeType: string = 'audio/webm';
   private isMuted = false;
   private synthSpeaking = false;
+  // P0.10 r2 (S-2): watchdogs so a missing onend/onended can never leave the mic gate closed forever
+  private synthDeadlineMs = 0; // performance.now() after which a "speaking" synth is treated as finished
+  private playEndWallMs = 0; // wall-clock estimate of when the last scheduled PCM chunk finishes
 
   // Playback
   private playCtx: AudioContext | null = null;
@@ -121,6 +124,7 @@ export class VoiceAudioEngine {
       if (preferred) u.voice = preferred;
       u.onstart = () => {
         this.synthSpeaking = true;
+        this.synthDeadlineMs = performance.now() + (text.length / 12 + 3) * 1000; // ~12 chars/s + 3 s slack
         this.onPlaybackStarted?.();
       };
       u.onend = () => {
@@ -620,6 +624,7 @@ export class VoiceAudioEngine {
     const t = Math.max(this.nextPlayTime, ctx.currentTime + 0.05);
     src.start(t);
     this.nextPlayTime = t + buf.duration;
+    this.playEndWallMs = performance.now() + (this.nextPlayTime - ctx.currentTime) * 1000;
     this.activeSources.add(src);
     if (wasIdle) this.onPlaybackStarted?.();
     src.onended = () => {
@@ -652,7 +657,11 @@ export class VoiceAudioEngine {
   }
 
   public isAudioPlaying(): boolean {
-    return this.activeSources.size > 0 || this.synthSpeaking;
+    const now = performance.now();
+    if (this.synthSpeaking && this.synthDeadlineMs && now > this.synthDeadlineMs) this.synthSpeaking = false; // S-2
+    // S-2: a suspended/stalled context never fires onended; past the scheduled end + 1 s it is not "playing"
+    const pcmPlaying = this.activeSources.size > 0 && !(this.playEndWallMs && now > this.playEndWallMs + 1000);
+    return pcmPlaying || this.synthSpeaking;
   }
 
   /** Release every audio resource (U3.5): stop mic + playback and close the 24 kHz playback context. */

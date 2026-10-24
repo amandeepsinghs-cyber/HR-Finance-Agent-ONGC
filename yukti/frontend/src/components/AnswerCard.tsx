@@ -10,9 +10,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AnswerContract, ChartKind, ChartSpec, DcfModelSpec, JobSpec, SensitivityGridSpec, SourceCitation, TornadoSpec } from '@/contracts/answerContract';
 import { ChartRenderer } from './renderers/ChartRenderer';
 import { TableRenderer } from './renderers/TableRenderer';
+import { PERSONA_DIRECTORY } from '@/personas';
 import { KpiRenderer } from './renderers/KpiRenderer';
 import { ClauseRenderer } from './renderers/ClauseRenderer';
 import { DocumentRenderer } from './renderers/DocumentRenderer';
+import { EmailDraftRenderer } from './renderers/EmailDraftRenderer';
 import { MapRenderer } from './renderers/MapRenderer';
 import { RefusalRenderer } from './renderers/RefusalRenderer';
 import { SourceChipsModal } from './SourceChipsModal';
@@ -58,7 +60,7 @@ const MORE_KINDS: { id: ChartKind; label: string }[] = [
   { id: 'stacked_bar', label: 'Stacked bar' },
   { id: 'bullet', label: 'Bullet (vs target)' },
 ];
-const ROLE_SHORT: Record<string, string> = { CMD: 'CMD', DIR_HR: 'Director HR', DIR_FIN: 'Director Finance', E2_HR: 'E2 · HR', E3_FIN: 'E3 · Finance' };
+const ROLE_SHORT: Record<string, string> = Object.fromEntries(PERSONA_DIRECTORY.map((p) => [p.id, p.short]));
 
 function eyebrowFor(c: AnswerContract): string {
   const v = c.visual;
@@ -72,6 +74,8 @@ function eyebrowFor(c: AnswerContract): string {
       return 'Policy';
     case 'document':
       return 'Draft document';
+    case 'email_draft':
+      return 'Email draft';
     case 'map':
       return 'Across India';
     case 'table':
@@ -400,7 +404,9 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   const lastKeyRef = useRef<string>('');
 
   const visual = contract.visual;
-  const isGreeting = !visual || visual.type === 'none';
+  const emailDraftSpec = visual?.email_draft || contract.email_draft;
+  const hasArtifacts = Array.isArray(contract.artifacts) && contract.artifacts.length > 0;
+  const isGreeting = (!visual || visual.type === 'none') && !emailDraftSpec && !hasArtifacts;
   const refused = contract.access?.status === 'refused' || visual?.type === 'refusal';
 
   // Reset manual toolbar overrides whenever a new turn or voice/chat re-plot arrives
@@ -501,7 +507,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   };
 
   const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map');
-  const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
+  const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'email_draft' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table';
   const kpis = (visual?.kpis || []).filter((k) => k && (toNumber(k.value) !== null || typeof k.value === 'string'));
 
   // Wide tables (> 7 columns) take the full width; takeaways stack below (no horizontal clipping).
@@ -527,7 +533,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   // v2 contracts carry explicit context chips; v1 answers derive them from the title / unit / period.
   const contextChips = (contract.context_chips?.length
     ? contract.context_chips.filter((c) => c.kind !== 'source').map((c) => c.label)
-    : [ROLE_SHORT[persona || contract.persona || 'CMD'] || 'CMD', subject, population, fyMatch ? fyMatch[0].toUpperCase().replace(/\s/, '') : '']
+    : [ROLE_SHORT[persona || contract.persona || ''] || '', subject, population, fyMatch ? fyMatch[0].toUpperCase().replace(/\s/, '') : ''] // M3: no CMD fallback
   ).filter((x, i, arr) => x && arr.indexOf(x) === i);
   const firstSource = sources[0];
   // P0.3 (BUG-04, SPEC-11 §7.2): answers served from the local JSON snapshot carry an explicit badge.
@@ -642,8 +648,11 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               {effectiveVisualType === 'table' && effectiveTableSpec && !isRoster && <TableRenderer table={effectiveTableSpec} isDark={isDark} />}
               {effectiveVisualType === 'clause' && visual?.clause && <ClauseRenderer clause={visual.clause} isDark={isDark} />}
               {effectiveVisualType === 'document' && visual?.document && <DocumentRenderer document={visual.document} isDark={isDark} />}
+              {(effectiveVisualType === 'email_draft' || (!!emailDraftSpec && effectiveVisualType === 'none')) && emailDraftSpec && (
+                <EmailDraftRenderer draft={emailDraftSpec} artifacts={contract.artifacts} isDark={isDark} />
+              )}
               {effectiveVisualType === 'map' && visual?.map && <MapRenderer mapSpec={visual.map} isDark={isDark} />}
-              {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} onViewAlternative={onNavigateToAlternative} />}
+              {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} language={(contract as any).language} onAsk={onAsk ? (q) => onAsk(q) : undefined} onViewAlternative={onNavigateToAlternative} />}
               {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
               {effectiveVisualType === 'dcf_model' && visual?.dcf_model && <InlineDcfModelView model={visual.dcf_model} contract={contract} />}
               {effectiveVisualType === 'sensitivity_grid' && visual?.sensitivity_grid && <InlineSensitivityGrid grid={visual.sensitivity_grid} />}
@@ -662,6 +671,23 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
                   sessionId={getActiveSessionId()}
                   onJobCompleted={dispatchJobCompleted}
                 />
+              )}
+              {hasArtifacts && effectiveVisualType !== 'email_draft' && (
+                <div className="mt-3 flex flex-wrap items-center gap-2" data-testid="turn-artifacts">
+                  {contract.artifacts!.map((art) => (
+                    <a
+                      key={art.export_id}
+                      href={art.url || `/api/export/${encodeURIComponent(art.export_id)}`}
+                      download={art.filename}
+                      data-testid="artifact-download-link"
+                      className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[var(--radius-sm)] border border-[var(--hairline)] bg-[var(--card)] hover:bg-[var(--surface)] text-label font-medium text-[var(--accent-deep)] dark:text-[var(--accent-soft)] shadow-xs transition-colors"
+                    >
+                      <Download className="w-4 h-4 shrink-0" aria-hidden />
+                      <span>{art.filename}</span>
+                      {typeof art.rows === 'number' && <span className="text-[var(--ink-3)]">({art.rows} rows)</span>}
+                    </a>
+                  ))}
+                </div>
               )}
             </section>
 
