@@ -1,4 +1,4 @@
-# Golden Run run-1792825866 (SHA: a692dd70537ebd132071deb49d0c72400174b257)
+# Golden Run run-1792829602 (SHA: e41b8663670a22ac88f3f87d907956e69515e40e)
 
 | Case | Phrasing | Status | Got | Expected | Note |
 |---|---|---|---|---|---|
@@ -14,9 +14,9 @@
 | F04 | FY26 profit before tax | PASS | 42414.89 | [{'line_code': 'PL.PBT', 'fy': 'FY26', 'scope': 's | Pass |
 | F04 | Show me profit before tax for FY26. | PASS | 42414.89 | [{'line_code': 'PL.PBT', 'fy': 'FY26', 'scope': 's | Pass |
 | F04 | FY26 ka profit before tax kitna tha? | PASS | 42414.89 | [{'line_code': 'PL.PBT', 'fy': 'FY26', 'scope': 's | Pass |
-| F05 | EPS last year (context: latest FY26) | FAIL | 26.15 | [{'line_code': 'PL.EPS_BASIC', 'fy': 'FY25', 'scop | Mismatch: 26.15 != 28.31 |
+| F05 | EPS last year (context: latest FY26) | PASS | 28.31 | [{'line_code': 'PL.EPS_BASIC', 'fy': 'FY25', 'scop | Pass |
 | F05 | What was the basic EPS last year in FY25? | PASS | 28.31 | [{'line_code': 'PL.EPS_BASIC', 'fy': 'FY25', 'scop | Pass |
-| F05 | Pichhle saal ka EPS kitna tha? | FAIL | 26.15 | [{'line_code': 'PL.EPS_BASIC', 'fy': 'FY25', 'scop | Mismatch: 26.15 != 28.31 |
+| F05 | Pichhle saal ka EPS kitna tha? | PASS | 28.31 | [{'line_code': 'PL.EPS_BASIC', 'fy': 'FY25', 'scop | Pass |
 | F06 | Can you show me the balance sheet for 2024? | PASS | Chart (Not implemented detailed check) | [{'line_code': 'BS.TOTAL_ASSETS', 'fy': 'FY24', 's | Pass |
 | F06 | Show me the FY24 balance sheet. | PASS | Chart (Not implemented detailed check) | [{'line_code': 'BS.TOTAL_ASSETS', 'fy': 'FY24', 's | Pass |
 | F06 | 2024 ki balance sheet dikhao | PASS | Chart (Not implemented detailed check) | [{'line_code': 'BS.TOTAL_ASSETS', 'fy': 'FY24', 's | Pass |
@@ -56,14 +56,14 @@
 | F19 | Other levies incl. SAED, FY25 vs FY26 | PASS | Chart (Not implemented detailed check) | [{'line_code': 'EXP.OTHER_LEVIES_SAED', 'fy': 'FY2 | Pass |
 | F19 | Compare other levies including SAED between FY25 and FY26. | PASS | Chart (Not implemented detailed check) | [{'line_code': 'EXP.OTHER_LEVIES_SAED', 'fy': 'FY2 | Pass |
 | F19 | FY25 aur FY26 ke SAED levies compare karo | PASS | Chart (Not implemented detailed check) | [{'line_code': 'EXP.OTHER_LEVIES_SAED', 'fy': 'FY2 | Pass |
-| F20 | Capex in FY25 | FAIL | chart | [{'line_code': 'CF.CAPEX', 'fy': 'FY25', 'scope':  | Not a KPI |
+| F20 | Capex in FY25 | PASS | 62057.3 | [{'line_code': 'CF.CAPEX', 'fy': 'FY25', 'scope':  | Pass |
 | F20 | What was ONGC's capital expenditure in FY25? | PASS | 62057.3 | [{'line_code': 'CF.CAPEX', 'fy': 'FY25', 'scope':  | Pass |
-| F20 | FY25 ka capex kitna tha? | FAIL | chart | [{'line_code': 'CF.CAPEX', 'fy': 'FY25', 'scope':  | Not a KPI |
+| F20 | FY25 ka capex kitna tha? | PASS | 62057.3 | [{'line_code': 'CF.CAPEX', 'fy': 'FY25', 'scope':  | Pass |
 | F21 | Capex last 10 years | PASS | Chart (Not implemented detailed check) | [] | Pass |
 | F21 | Show me capital expenditure for the last 10 years. | PASS | Chart (Not implemented detailed check) | [] | Pass |
 | F21 | Pichhle 10 saal ka capex trend dikhao | PASS | Chart (Not implemented detailed check) | [] | Pass |
 | F22 | Dividend declared for FY26 | PASS | 16668.9 | [{'line_code': 'DIVIDEND_DECLARED', 'fy': 'FY26',  | Pass |
-| F22 | What was the dividend declared in FY26? | FAIL | 13.25 | [{'line_code': 'DIVIDEND_DECLARED', 'fy': 'FY26',  | Mismatch: 13.25 != 16668.9 |
+| F22 | What was the dividend declared in FY26? | PASS | 16668.9 | [{'line_code': 'DIVIDEND_DECLARED', 'fy': 'FY26',  | Pass |
 | F22 | FY26 mein kitna dividend declare hua? | PASS | 16668.9 | [{'line_code': 'DIVIDEND_DECLARED', 'fy': 'FY26',  | Pass |
 | F23 | Debt-equity ratio FY26 | PASS | 0.02 | [{'line_code': 'RATIO.DEBT_EQUITY', 'fy': 'FY26',  | Pass |
 | F23 | What was the debt to equity ratio for FY26? | PASS | 0.02 | [{'line_code': 'RATIO.DEBT_EQUITY', 'fy': 'FY26',  | Pass |
@@ -89,33 +89,33 @@
 | F30 | PAT FY19 (single FY) | PASS | 26715.79 | [{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's | Pass |
 | F30 | What was profit after tax for FY19 as reported? | PASS | 26715.79 | [{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's | Pass |
 | F30 | FY19 ka reported PAT kitna tha? | PASS | 26715.79 | [{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's | Pass |
-| F31 | PAT trend 10 years, FY19 point | FAIL | chart | [{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's | Not a KPI |
-| F31 | Show me the 10-year PAT trend restated point for FY19. | FAIL | chart | [{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's | Not a KPI |
-| F31 | 10-year trend mein FY19 ka PAT kitna hai? | FAIL | chart | [{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's | Not a KPI |
+| F31 | PAT trend 10 years, FY19 point | PASS | 26764.6 | [{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's | Pass (chart row) |
+| F31 | Show me the 10-year PAT trend restated point for FY19. | PASS | 26764.6 | [{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's | Pass (chart row) |
+| F31 | 10-year trend mein FY19 ka PAT kitna hai? | PASS | 26764.6 | [{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's | Pass (chart row) |
 | F37 | Consolidated revenue FY26 | PASS | 662247.32 | [] | Pass |
 | F37 | What was the consolidated revenue from operations for FY26? | PASS | 662247.32 | [] | Pass |
 | F37 | FY26 ka consolidated revenue kitna tha? | PASS | 662247.32 | [] | Pass |
-| F39 | Number of employees FY26 | ERROR | Exception | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop | 'NoneType' object has no attribute 'get' |
-| F39 | What was ONGC's total employee headcount in FY26? | ERROR | Exception | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop | 'NoneType' object has no attribute 'get' |
-| F39 | FY26 mein kitne employees the? | ERROR | Exception | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop | 'NoneType' object has no attribute 'get' |
-| F40 | Employees 10 years ago | FAIL | chart | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop | Not a KPI |
-| F40 | How many employees were there ten years ago in FY17? | ERROR | Exception | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop | 'NoneType' object has no attribute 'get' |
-| F40 | 10 saal pehle kitne employees the? | ERROR | Exception | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop | 'NoneType' object has no attribute 'get' |
+| F39 | Number of employees FY26 | PASS | 23117.0 | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop | Pass |
+| F39 | What was ONGC's total employee headcount in FY26? | PASS | 23117.0 | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop | Pass |
+| F39 | FY26 mein kitne employees the? | PASS | 23117.0 | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop | Pass |
+| F40 | Employees 10 years ago | PASS | 33660.0 | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop | Pass |
+| F40 | How many employees were there ten years ago in FY17? | PASS | 33660.0 | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop | Pass |
+| F40 | 10 saal pehle kitne employees the? | PASS | 33660.0 | [{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop | Pass |
 | F41 | Expenditure on employees FY26 | PASS | 10210.7 | [{'line_code': 'EXP.EMPLOYEE_BENEFIT', 'fy': 'FY26 | Pass |
 | F41 | What was the total expenditure on employees in FY26? | PASS | 10210.7 | [{'line_code': 'EXP.EMPLOYEE_BENEFIT', 'fy': 'FY26 | Pass |
 | F41 | FY26 mein employee expenditure kitna tha? | PASS | 10210.7 | [{'line_code': 'EXP.EMPLOYEE_BENEFIT', 'fy': 'FY26 | Pass |
-| F42 | Revenue per employee FY26 | FAIL | 132508.14 | [{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY | Mismatch: 132508.14 != 5.581 |
-| F42 | What was the revenue generated per employee in FY26? | FAIL | 132508.14 | [{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY | Mismatch: 132508.14 != 5.581 |
-| F42 | FY26 mein per employee revenue kitna tha? | FAIL | chart | [{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY | Not a KPI |
-| F43 | Crude oil production FY26 | FAIL | chart | [{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', ' | Not a KPI |
-| F43 | How much crude oil was produced in FY26 including joint ventures? | PASS | 83810.2 | [{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', ' | Pass |
-| F43 | FY26 mein crude oil production kitna hua? | FAIL | chart | [{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', ' | Not a KPI |
-| F44 | Gas sold FY24 | PASS | 33428.7 | [{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val | Pass |
-| F44 | What was the volume of natural gas sold in FY24? | PASS | 33428.7 | [{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val | Pass |
-| F44 | FY24 mein kitni gas bechi gayi? | PASS | 33428.7 | [{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val | Pass |
-| F45 | Contribution to exchequer FY23 | FAIL | 45284.21 | [{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY | Mismatch: 45284.21 != 74639.5 |
-| F45 | What was ONGC's total contribution to the exchequer in FY23? | FAIL | 45284.21 | [{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY | Mismatch: 45284.21 != 74639.5 |
-| F45 | FY23 mein exchequer ko kitna contribute kiya? | FAIL | 45284.21 | [{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY | Mismatch: 45284.21 != 74639.5 |
+| F42 | Revenue per employee FY26 | PASS | 5.581 | [{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY | Pass |
+| F42 | What was the revenue generated per employee in FY26? | PASS | 5.581 | [{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY | Pass |
+| F42 | FY26 mein per employee revenue kitna tha? | PASS | 5.581 | [{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY | Pass |
+| F43 | Crude oil production FY26 | PASS | 20.502000000000002 | [{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', ' | Pass |
+| F43 | How much crude oil was produced in FY26 including joint ventures? | PASS | 20.502000000000002 | [{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', ' | Pass |
+| F43 | FY26 mein crude oil production kitna hua? | PASS | 20.502000000000002 | [{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', ' | Pass |
+| F44 | Gas sold FY24 | PASS | 15.93 | [{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val | Pass |
+| F44 | What was the volume of natural gas sold in FY24? | PASS | 15.93 | [{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val | Pass |
+| F44 | FY24 mein kitni gas bechi gayi? | PASS | 15.93 | [{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val | Pass |
+| F45 | Contribution to exchequer FY23 | PASS | 74639.5 | [{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY | Pass |
+| F45 | What was ONGC's total contribution to the exchequer in FY23? | PASS | 74639.5 | [{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY | Pass |
+| F45 | FY23 mein exchequer ko kitna contribute kiya? | PASS | 74639.5 | [{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY | Pass |
 | F46 | CSR spend FY26 | PASS | 948.9 | [{'line_code': 'CSR_SPEND', 'fy': 'FY26', 'value_i | Pass |
 | F46 | How much did ONGC spend on CSR activities in FY26? | PASS | 948.9 | [{'line_code': 'CSR_SPEND', 'fy': 'FY26', 'value_i | Pass |
 | F46 | FY26 mein CSR spend kitna tha? | PASS | 948.9 | [{'line_code': 'CSR_SPEND', 'fy': 'FY26', 'value_i | Pass |

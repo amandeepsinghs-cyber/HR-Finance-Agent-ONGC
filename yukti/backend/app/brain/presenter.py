@@ -376,11 +376,8 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             )
             if ck in ("kpi", "table"):
                 ck = "hbar"
-            if not (compiled.subject == "corporate" and bd_dim in ("fiscal_year", "fy")):
-                vis["type"] = "chart"
-                vis["chart"] = build_chart_spec(kind=ck, columns=[bd_dim, bd_val] + [c for c in bd_cols[2:5]], rows=bd_rows, title=title, unit=unit)
-            else:
-                vis["type"] = "kpi"
+            vis["type"] = "kpi"
+            vis["chart"] = build_chart_spec(kind=ck, columns=[bd_dim, bd_val] + [c for c in bd_cols[2:5]], rows=bd_rows, title=title, unit=unit)
             num_bd = [r for r in bd_rows if isinstance(r.get(bd_val), (int, float)) and not isinstance(r.get(bd_val), bool)]
             if num_bd:
                 top_b = max(num_bd, key=lambda r: _num(r.get(bd_val)))

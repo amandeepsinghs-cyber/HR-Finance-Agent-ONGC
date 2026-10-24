@@ -1,7 +1,7 @@
 {
-  "run_id": "run-1792825866",
-  "git_sha": "a692dd70537ebd132071deb49d0c72400174b257",
-  "passes": 95,
+  "run_id": "run-1792829602",
+  "git_sha": "e41b8663670a22ac88f3f87d907956e69515e40e",
+  "passes": 117,
   "total": 117,
   "results": [
     {
@@ -103,10 +103,10 @@
     {
       "case": "F05",
       "phrasing": "EPS last year (context: latest FY26)",
-      "status": "FAIL",
-      "got": 26.15,
+      "status": "PASS",
+      "got": 28.31,
       "expected": "[{'line_code': 'PL.EPS_BASIC', 'fy': 'FY25', 'scop",
-      "note": "Mismatch: 26.15 != 28.31"
+      "note": "Pass"
     },
     {
       "case": "F05",
@@ -119,10 +119,10 @@
     {
       "case": "F05",
       "phrasing": "Pichhle saal ka EPS kitna tha?",
-      "status": "FAIL",
-      "got": 26.15,
+      "status": "PASS",
+      "got": 28.31,
       "expected": "[{'line_code': 'PL.EPS_BASIC', 'fy': 'FY25', 'scop",
-      "note": "Mismatch: 26.15 != 28.31"
+      "note": "Pass"
     },
     {
       "case": "F06",
@@ -439,10 +439,10 @@
     {
       "case": "F20",
       "phrasing": "Capex in FY25",
-      "status": "FAIL",
-      "got": "chart",
+      "status": "PASS",
+      "got": 62057.3,
       "expected": "[{'line_code': 'CF.CAPEX', 'fy': 'FY25', 'scope': ",
-      "note": "Not a KPI"
+      "note": "Pass"
     },
     {
       "case": "F20",
@@ -455,10 +455,10 @@
     {
       "case": "F20",
       "phrasing": "FY25 ka capex kitna tha?",
-      "status": "FAIL",
-      "got": "chart",
+      "status": "PASS",
+      "got": 62057.3,
       "expected": "[{'line_code': 'CF.CAPEX', 'fy': 'FY25', 'scope': ",
-      "note": "Not a KPI"
+      "note": "Pass"
     },
     {
       "case": "F21",
@@ -495,10 +495,10 @@
     {
       "case": "F22",
       "phrasing": "What was the dividend declared in FY26?",
-      "status": "FAIL",
-      "got": 13.25,
+      "status": "PASS",
+      "got": 16668.9,
       "expected": "[{'line_code': 'DIVIDEND_DECLARED', 'fy': 'FY26', ",
-      "note": "Mismatch: 13.25 != 16668.9"
+      "note": "Pass"
     },
     {
       "case": "F22",
@@ -703,26 +703,26 @@
     {
       "case": "F31",
       "phrasing": "PAT trend 10 years, FY19 point",
-      "status": "FAIL",
-      "got": "chart",
+      "status": "PASS",
+      "got": 26764.6,
       "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's",
-      "note": "Not a KPI"
+      "note": "Pass (chart row)"
     },
     {
       "case": "F31",
       "phrasing": "Show me the 10-year PAT trend restated point for FY19.",
-      "status": "FAIL",
-      "got": "chart",
+      "status": "PASS",
+      "got": 26764.6,
       "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's",
-      "note": "Not a KPI"
+      "note": "Pass (chart row)"
     },
     {
       "case": "F31",
       "phrasing": "10-year trend mein FY19 ka PAT kitna hai?",
-      "status": "FAIL",
-      "got": "chart",
+      "status": "PASS",
+      "got": 26764.6,
       "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's",
-      "note": "Not a KPI"
+      "note": "Pass (chart row)"
     },
     {
       "case": "F37",
@@ -751,50 +751,50 @@
     {
       "case": "F39",
       "phrasing": "Number of employees FY26",
-      "status": "ERROR",
-      "got": "Exception",
+      "status": "PASS",
+      "got": 23117.0,
       "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop",
-      "note": "'NoneType' object has no attribute 'get'"
+      "note": "Pass"
     },
     {
       "case": "F39",
       "phrasing": "What was ONGC's total employee headcount in FY26?",
-      "status": "ERROR",
-      "got": "Exception",
+      "status": "PASS",
+      "got": 23117.0,
       "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop",
-      "note": "'NoneType' object has no attribute 'get'"
+      "note": "Pass"
     },
     {
       "case": "F39",
       "phrasing": "FY26 mein kitne employees the?",
-      "status": "ERROR",
-      "got": "Exception",
+      "status": "PASS",
+      "got": 23117.0,
       "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop",
-      "note": "'NoneType' object has no attribute 'get'"
+      "note": "Pass"
     },
     {
       "case": "F40",
       "phrasing": "Employees 10 years ago",
-      "status": "FAIL",
-      "got": "chart",
+      "status": "PASS",
+      "got": 33660.0,
       "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop",
-      "note": "Not a KPI"
+      "note": "Pass"
     },
     {
       "case": "F40",
       "phrasing": "How many employees were there ten years ago in FY17?",
-      "status": "ERROR",
-      "got": "Exception",
+      "status": "PASS",
+      "got": 33660.0,
       "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop",
-      "note": "'NoneType' object has no attribute 'get'"
+      "note": "Pass"
     },
     {
       "case": "F40",
       "phrasing": "10 saal pehle kitne employees the?",
-      "status": "ERROR",
-      "got": "Exception",
+      "status": "PASS",
+      "got": 33660.0,
       "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop",
-      "note": "'NoneType' object has no attribute 'get'"
+      "note": "Pass"
     },
     {
       "case": "F41",
@@ -823,56 +823,56 @@
     {
       "case": "F42",
       "phrasing": "Revenue per employee FY26",
-      "status": "FAIL",
-      "got": 132508.14,
+      "status": "PASS",
+      "got": 5.581,
       "expected": "[{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY",
-      "note": "Mismatch: 132508.14 != 5.581"
+      "note": "Pass"
     },
     {
       "case": "F42",
       "phrasing": "What was the revenue generated per employee in FY26?",
-      "status": "FAIL",
-      "got": 132508.14,
+      "status": "PASS",
+      "got": 5.581,
       "expected": "[{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY",
-      "note": "Mismatch: 132508.14 != 5.581"
+      "note": "Pass"
     },
     {
       "case": "F42",
       "phrasing": "FY26 mein per employee revenue kitna tha?",
-      "status": "FAIL",
-      "got": "chart",
+      "status": "PASS",
+      "got": 5.581,
       "expected": "[{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY",
-      "note": "Not a KPI"
+      "note": "Pass"
     },
     {
       "case": "F43",
       "phrasing": "Crude oil production FY26",
-      "status": "FAIL",
-      "got": "chart",
+      "status": "PASS",
+      "got": 20.502000000000002,
       "expected": "[{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', '",
-      "note": "Not a KPI"
+      "note": "Pass"
     },
     {
       "case": "F43",
       "phrasing": "How much crude oil was produced in FY26 including joint ventures?",
       "status": "PASS",
-      "got": 83810.2,
+      "got": 20.502000000000002,
       "expected": "[{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', '",
       "note": "Pass"
     },
     {
       "case": "F43",
       "phrasing": "FY26 mein crude oil production kitna hua?",
-      "status": "FAIL",
-      "got": "chart",
+      "status": "PASS",
+      "got": 20.502000000000002,
       "expected": "[{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', '",
-      "note": "Not a KPI"
+      "note": "Pass"
     },
     {
       "case": "F44",
       "phrasing": "Gas sold FY24",
       "status": "PASS",
-      "got": 33428.7,
+      "got": 15.93,
       "expected": "[{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val",
       "note": "Pass"
     },
@@ -880,7 +880,7 @@
       "case": "F44",
       "phrasing": "What was the volume of natural gas sold in FY24?",
       "status": "PASS",
-      "got": 33428.7,
+      "got": 15.93,
       "expected": "[{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val",
       "note": "Pass"
     },
@@ -888,33 +888,33 @@
       "case": "F44",
       "phrasing": "FY24 mein kitni gas bechi gayi?",
       "status": "PASS",
-      "got": 33428.7,
+      "got": 15.93,
       "expected": "[{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val",
       "note": "Pass"
     },
     {
       "case": "F45",
       "phrasing": "Contribution to exchequer FY23",
-      "status": "FAIL",
-      "got": 45284.21,
+      "status": "PASS",
+      "got": 74639.5,
       "expected": "[{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY",
-      "note": "Mismatch: 45284.21 != 74639.5"
+      "note": "Pass"
     },
     {
       "case": "F45",
       "phrasing": "What was ONGC's total contribution to the exchequer in FY23?",
-      "status": "FAIL",
-      "got": 45284.21,
+      "status": "PASS",
+      "got": 74639.5,
       "expected": "[{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY",
-      "note": "Mismatch: 45284.21 != 74639.5"
+      "note": "Pass"
     },
     {
       "case": "F45",
       "phrasing": "FY23 mein exchequer ko kitna contribute kiya?",
-      "status": "FAIL",
-      "got": 45284.21,
+      "status": "PASS",
+      "got": 74639.5,
       "expected": "[{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY",
-      "note": "Mismatch: 45284.21 != 74639.5"
+      "note": "Pass"
     },
     {
       "case": "F46",

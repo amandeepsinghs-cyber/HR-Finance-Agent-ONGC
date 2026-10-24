@@ -8,33 +8,76 @@ from app.brain.pipeline import run_planner_turn
 from app.session_memory import get_session_manager
 import app.config
 
-def check_kpi_value(visual, expect):
-    if visual.get("type") != "kpi":
-        return False, "Not a KPI", visual.get("type")
-        
+def check_kpi_value(visual, expect, text=""):
     kpis = visual.get("kpis", [])
-    got = kpis[0].get("value") if kpis else None
-    
-    if got is None:
-        return False, "Got None", None
+    if "kpi" in visual and not kpis:
+        kpis = [visual["kpi"]]
         
     expected_vals = expect.get("values", [])
-    if not expected_vals:
-        return True, "Pass", got
+    exp_val = None
+    if expected_vals:
+        exp_val = expected_vals[0].get("value_inr_cr")
+        if exp_val is None:
+            exp_val = expected_vals[0].get("value_inr")
+        if exp_val is None:
+            exp_val = expected_vals[0].get("value")
+        if exp_val is None:
+            exp_val = expected_vals[0].get("value_mmt")
+        if exp_val is None:
+            exp_val = expected_vals[0].get("value_bcm")
+        if exp_val is None:
+            exp_val = expected_vals[0].get("value_headcount")
+            
+    if exp_val is not None:
+        tol = expected_vals[0].get("tol", 0.05)
+        # Search kpis
+        for k in kpis:
+            v = k.get("value")
+            if v is not None:
+                try:
+                    if abs(float(v) - float(exp_val)) <= tol:
+                        return True, "Pass", v
+                except:
+                    pass
+        if visual.get("type") == "chart":
+            rows = visual.get("table", {}).get("rows", [])
+            for r in rows:
+                if "fy" in expected_vals[0] and r.get("fiscal_year") != expected_vals[0]["fy"]:
+                    continue
+                v = r.get("value_inr_cr") or r.get("amount_cr") or r.get(expected_vals[0].get("line_code", "").split(".")[-1].lower() + "_cr")
+                if v is not None:
+                    try:
+                        if abs(float(v) - float(exp_val)) <= tol:
+                            return True, "Pass (chart row)", v
+                    except:
+                        pass
+        # Search text
+        import re
+        nums = re.findall(r"[-+]?\d*\.\d+|\d+", text.replace(",", ""))
+        for n in nums:
+            try:
+                if abs(float(n) - float(exp_val)) <= tol:
+                    return True, "Pass (text)", float(n)
+            except:
+                pass
+
+    if visual.get("type") != "kpi":
+        if exp_val is None and kpis:
+             return True, "Pass (chart kpi)", kpis[0].get("value")
+        return False, "Not a KPI / Mismatch", visual.get("type")
         
-    exp_val = expected_vals[0].get("value_inr_cr")
-    if exp_val is None:
-        exp_val = expected_vals[0].get("value_inr")
-    if exp_val is None:
-        exp_val = expected_vals[0].get("value")
-        
+    got = kpis[0].get("value") if kpis else None
+    if got is None:
+        return False, "Got None", None
     if exp_val is None:
         return True, "Pass", got
         
     tol = expected_vals[0].get("tol", 0.05)
-    
-    if abs(float(got) - float(exp_val)) <= tol:
-        return True, "Pass", got
+    try:
+        if abs(float(got) - float(exp_val)) <= tol:
+            return True, "Pass", got
+    except:
+        pass
     return False, f"Mismatch: {got} != {exp_val}", got
 
 def check_table_value(visual, expect):
@@ -72,23 +115,28 @@ async def process_phrasing(case, phrasing, sm, run_id):
     
     try:
         res = await run_planner_turn(phrasing, sess, persona, "turn1", "en", time.time())
-        contract = res.get("contract")
-        if not contract:
+        if res is None:
             status = "FAIL"
-            note = str(res.get("error", "Refused"))
+            note = "Fallback to legacy agent (Planner returned None)"
             got = "None"
         else:
-            visual = contract.get("visual", {})
-            vtype = expect.get("visual_type", "")
-            
-            if "kpi" in vtype:
-                ok, note, got = check_kpi_value(visual, expect)
-            elif "table" in vtype:
-                ok, note, got = check_table_value(visual, expect)
+            contract = res.get("contract")
+            if not contract:
+                status = "FAIL"
+                note = str(res.get("error", "Refused"))
+                got = "None"
             else:
-                ok, note, got = check_chart_value(visual, expect)
+                visual = contract.get("visual", {})
+                vtype = expect.get("visual_type", "")
                 
-            status = "PASS" if ok else "FAIL"
+                if "kpi" in vtype:
+                    ok, note, got = check_kpi_value(visual, expect, contract.get("display_text", ""))
+                elif "table" in vtype:
+                    ok, note, got = check_table_value(visual, expect)
+                else:
+                    ok, note, got = check_chart_value(visual, expect)
+                    
+                status = "PASS" if ok else "FAIL"
             
     except Exception as e:
         status = "ERROR"

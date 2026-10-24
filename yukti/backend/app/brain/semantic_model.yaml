@@ -14,7 +14,7 @@ subjects:
     domain: hr
     table: hrfin_gold.ssot_workforce_employee
     base_filter: "employment_status = 'Active'"
-    description: "One row per active employee (snapshot 19-Oct-2026): headcount, tenure, station stay, retirement, demographics."
+    description: "One row per active employee (snapshot 19-Oct-2026): headcount, tenure, station stay, retirement, demographics. DO NOT use for past FY historical headcount."
     period: snapshot            # past FY => compiled against v_continuous_stay as of 31-Mar of that FY (station tenure only)
     fields:
       wc: {column: wc_id, kind: "entity:wc", label: work_centre}
@@ -176,7 +176,7 @@ subjects:
       capex_head: {column: capex_head, kind: categorical}
     dimension_fallbacks: {field: asset, wc: asset}
     metrics:
-      capex_actual_cr: {expr: "ROUND(SUM(actual_spend_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Capex spent (₹ cr)"}
+      capex_actual_cr: {expr: "ROUND(SUM(actual_spend_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Project/Asset Capex spent (₹ cr)"}
       capex_be_cr: {expr: "ROUND(SUM(budget_estimate_be_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Capex BE (₹ cr)"}
       capex_re_cr: {expr: "ROUND(SUM(revised_estimate_re_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Capex RE (₹ cr)"}
       capex_vs_re_pct: {expr: "ROUND(100 * SUM(actual_spend_inr_cr) / NULLIF(SUM(revised_estimate_re_inr_cr), 0), 1)", aggregation: ratio, unit: pct, label: "Capex utilisation vs RE"}
@@ -202,7 +202,7 @@ subjects:
   corporate:
     domain: finance
     table: hrfin_gold.ssot_corporate_annual_360
-    description: "Company-level annual Schedule III 3-Statement financials (P&L, Balance Sheet, Cash Flow, Financial Ratios), Annual Report consolidated lines, realisations and KPIs, one row per FY (FY17–FY26)."
+    description: "Company-level annual Schedule III 3-Statement financials (P&L, Balance Sheet, Cash Flow, Financial Ratios), Annual Report consolidated lines, realisations and KPIs, one row per FY (FY17–FY26). Includes historical total employee headcount."
     period: fiscal_year
     default_fy: FY26
     fields:
@@ -211,6 +211,8 @@ subjects:
       corporate_revenue_cr: {expr: "ROUND(SUM(gross_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Revenue from operations (₹ cr)", polarity: higher}
       crude_oil_revenue_cr: {expr: "ROUND(SUM(crude_oil_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Crude oil revenue (₹ cr)", polarity: higher}
       natural_gas_revenue_cr: {expr: "ROUND(SUM(natural_gas_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Natural gas revenue (₹ cr)", polarity: higher}
+      crude_oil_production_mmt: {expr: "ROUND(SUM(crude_oil_production_mmt), 3)", aggregation: sum, unit: mmt, label: "Crude oil production (MMT)", polarity: higher}
+      natural_gas_sold_bcm: {expr: "ROUND(SUM(natural_gas_sold_bcm), 3)", aggregation: sum, unit: bcm, label: "Natural gas sold (BCM)", polarity: higher}
       vap_revenue_cr: {expr: "ROUND(SUM(vap_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Value-added products revenue (₹ cr)", polarity: higher}
       offshore_revenue_cr: {expr: "ROUND(SUM(offshore_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Offshore revenue (₹ cr)", polarity: higher}
       onshore_revenue_cr: {expr: "ROUND(SUM(onshore_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Onshore revenue (₹ cr)", polarity: higher}
@@ -229,6 +231,7 @@ subjects:
       survey_costs_written_off_cr: {expr: "ROUND(SUM(survey_costs_written_off_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Survey costs written off (₹ cr)", polarity: lower}
       exploratory_wells_written_off_cr: {expr: "ROUND(SUM(exploratory_wells_written_off_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Exploratory dry wells written off (₹ cr)", polarity: lower}
       ebitda_corporate_cr: {expr: "ROUND(SUM(ebitda_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Standalone EBITDA (₹ cr)", polarity: higher}
+      employee_headcount: {expr: "ROUND(SUM(employee_headcount), 0)", aggregation: sum, unit: employees, label: "Total employee headcount"}
       ebitda_margin_corporate_pct: {expr: "ROUND(AVG(ebitda_margin_pct), 1)", aggregation: avg, unit: pct, label: "Standalone EBITDA margin (%)", polarity: higher}
       dda_cr: {expr: "ROUND(SUM(dda_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Depreciation, depletion & impairment — DD&A (₹ cr)", polarity: lower}
       finance_costs_cr: {expr: "ROUND(SUM(finance_costs_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Finance costs (₹ cr)", polarity: lower}
@@ -275,14 +278,15 @@ subjects:
       net_working_capital_cr: {expr: "ROUND(SUM(net_working_capital_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Net working capital (₹ cr)", polarity: higher}
       capital_employed_cr: {expr: "ROUND(SUM(capital_employed_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Capital employed (₹ cr)", polarity: higher}
       # --- Cash Flow Metrics (Ind-AS 7) ---
-      total_capex_cr: {expr: "ROUND(SUM(total_capex_spent_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Capex spent (₹ cr)"}
+      total_capex_cr: {expr: "ROUND(SUM(total_capex_spent_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total ONGC Capital Expenditure — Capex (₹ cr)"}
       operating_cash_flow_cr: {expr: "ROUND(SUM(operating_cash_flow_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Operating cash flow — OCF (₹ cr)", polarity: higher}
       investing_cash_flow_cr: {expr: "ROUND(SUM(investing_cash_flow_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Net cash used in investing activities (₹ cr)"}
       financing_cash_flow_cr: {expr: "ROUND(SUM(financing_cash_flow_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Net cash used in financing activities (₹ cr)"}
       net_cash_change_cr: {expr: "ROUND(SUM(net_cash_change_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Net change in cash & cash equivalents (₹ cr)", polarity: higher}
       free_cash_flow_cr: {expr: "ROUND(SUM(free_cash_flow_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Free cash flow — FCF (₹ cr)", polarity: higher}
-      dividend_payout_cr: {expr: "ROUND(SUM(total_dividend_payout_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Dividend payout (₹ cr)"}
+      dividend_payout_cr: {expr: "ROUND(SUM(total_dividend_payout_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Dividend declared & payout (₹ cr)"}
       csr_spend_cr: {expr: "ROUND(SUM(csr_disbursed_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "CSR spend (₹ cr)"}
+      exchequer_contribution_cr: {expr: "ROUND(SUM(exchequer_contribution_cr), 2)", aggregation: sum, unit: inr_cr, label: "Contribution to exchequer (₹ cr)"}
       # --- Financial Ratios & Per-Share Metrics ---
       roce_pct: {expr: "ROUND(AVG(standalone_roce_pct), 1)", aggregation: avg, unit: pct, label: "ROCE standalone (%)", polarity: higher}
       consolidated_roce_pct: {expr: "ROUND(AVG(consolidated_roce_pct), 1)", aggregation: avg, unit: pct, label: "ROCE consolidated (%)", polarity: higher}
@@ -294,11 +298,13 @@ subjects:
       current_ratio: {expr: "ROUND(AVG(current_ratio), 2)", aggregation: avg, unit: ratio, label: "Current ratio (x)", polarity: higher}
       quick_ratio: {expr: "ROUND(AVG(quick_ratio), 2)", aggregation: avg, unit: ratio, label: "Quick ratio (x)", polarity: higher}
       receivable_days: {expr: "ROUND(AVG(receivable_days), 1)", aggregation: avg, unit: ratio, label: "Trade receivable days — DSO (days)", polarity: lower}
+      revenue_per_employee_cr: {expr: "ROUND(AVG(revenue_per_employee_cr), 2)", aggregation: avg, unit: ratio, label: "Revenue per employee (₹ cr)", polarity: higher}
       eps_basic_inr: {expr: "ROUND(AVG(eps_basic_inr), 2)", aggregation: avg, unit: ratio, label: "Basic EPS (₹/share)", polarity: higher}
       book_value_per_share_inr: {expr: "ROUND(AVG(book_value_per_share_inr), 2)", aggregation: avg, unit: ratio, label: "Book value per share (₹/share)", polarity: higher}
       dividend_per_share_inr: {expr: "ROUND(AVG(dividend_per_share_inr), 2)", aggregation: avg, unit: ratio, label: "Dividend per share (₹/share)", polarity: higher}
       crude_realisation_usd_bbl: {expr: "ROUND(AVG(crude_realisation_usd_bbl), 2)", aggregation: avg, unit: usd_per_boe, label: "Crude oil realisation ($/bbl)", polarity: higher}
       gas_realisation_usd_mmbtu: {expr: "ROUND(AVG(gas_realisation_usd_mmbtu), 2)", aggregation: avg, unit: usd_per_boe, label: "Natural gas realisation ($/MMBtu)", polarity: higher}
+    companions: [[dividend_payout_cr, dividend_per_share_inr]]
 
   subsidiaries:
     domain: finance

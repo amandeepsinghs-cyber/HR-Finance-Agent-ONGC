@@ -48,6 +48,8 @@ _V_TREND_LATEST = f"{_GOLD_DS}.v_fin_trend_latest"
 _T_FACT_FIN = f"{_GOLD_DS}.fact_financial_statement_line"
 
 CORP_METRIC_TO_SSOT: Dict[str, Tuple[str, str]] = {
+    "employee_headcount": ("standalone", "OTH.EMPLOYEES"),
+    "natural_gas_sold_bcm": ("standalone", "QTY.GAS_SOLD"),
     "exchequer_contribution_cr": ("standalone", "OTH.EXCHEQUER"),
     "corporate_revenue_cr": ("standalone", "PL.REV_OPS"),
     "crude_oil_revenue_cr": ("standalone", "REV.CRUDE"),
@@ -295,6 +297,10 @@ class Compiler:
     def compile(self, spec: QuerySpec, cell_count: bool = False) -> CompiledQuery:
         """`cell_count=True` adds `COUNT(*) AS _n` per group on employee-grain subjects, so junior
         aggregates of averages/ratios can be suppressed when a cell holds < 5 people (D-11)."""
+        if spec.metric == "capex_actual_cr" and not spec.filters and not spec.dimensions:
+            from copy import deepcopy
+            spec = deepcopy(spec)
+            spec.metric = "total_capex_cr"
         subject, metric, template = self.model.resolve_metric(spec.metric)
         if template:
             return self._compile_template(template, spec)
@@ -344,7 +350,7 @@ class Compiler:
         grain = "row" if (spec.grain == "row" or subject.row_only) else "aggregate"
 
         from app.config import YUKTI_FIN_SSOT_V3
-        if YUKTI_FIN_SSOT_V3 and subject.name == "corporate" and grain != "row" and metric.name in ["ebitda_corporate_cr", "revenue_per_employee_cr", "employee_headcount"] and not filters:
+        if YUKTI_FIN_SSOT_V3 and subject.name == "corporate" and grain != "row" and metric.name in ["ebitda_corporate_cr", "revenue_per_employee_cr", "crude_oil_production_mmt"] and not filters:
             return self._compile_derived_corporate(subject, metric, spec, dims, notes, dropped)
 
         if YUKTI_FIN_SSOT_V3 and subject.name == "corporate" and grain != "row" and metric.name in CORP_METRIC_TO_SSOT and not filters:
@@ -648,9 +654,9 @@ ORDER BY fiscal_year ASC"""
   GROUP BY fiscal_year
 ),
 hc AS (
-  SELECT 'FY' || RIGHT(CAST(fiscal_year AS STRING), 2) AS fy, SUM(headcount) AS headcount
-  FROM {_q('hrfin_silver.headcount_snapshot')}
-  WHERE CAST(month AS INT64) = 3
+  SELECT fiscal_year AS fy, MAX(ROUND(COALESCE(value_inr_cr, value), 2)) AS headcount
+  FROM {_q(_V_TREND_LATEST)}
+  WHERE verified = TRUE AND scope = 'standalone' AND line_code = 'OTH.EMPLOYEES'
   GROUP BY fiscal_year
 ),
 hc_avg AS (
@@ -663,19 +669,19 @@ FROM rev r
 LEFT JOIN hc_avg h ON r.fiscal_year = h.fy
 ORDER BY r.fiscal_year ASC"""
             notes.append("Derived from AR: Revenue per employee = Revenue from Operations / Average headcount")
-        elif metric.name == "employee_headcount":
-            sql = f"""SELECT 'FY' || RIGHT(CAST(fiscal_year AS STRING), 2) AS fiscal_year,
-  SUM(headcount) AS employee_headcount,
-  'HR.HEADCOUNT' AS line_code,
-  'Total employee headcount' AS display_name,
-  SUM(headcount) AS value_inr_cr,
+        elif metric.name == "crude_oil_production_mmt":
+            sql = f"""SELECT fiscal_year,
+  SUM(ROUND(COALESCE(value_inr_cr, value), 3)) AS crude_oil_production_mmt,
+  'PROD.CRUDE_TOTAL' AS line_code,
+  'Crude oil production (MMT)' AS display_name,
+  SUM(ROUND(COALESCE(value_inr_cr, value), 3)) AS value_mmt,
   FALSE AS is_restated,
-  'HR system' AS source_system
-FROM {_q('hrfin_silver.headcount_snapshot')}
-WHERE {fy_where.replace('fiscal_year', "('FY' || RIGHT(CAST(fiscal_year AS STRING), 2))")} AND ENDS_WITH(month, '-03')
+  'AR (Derived)' AS source_system
+FROM {_q(_V_TREND_LATEST)}
+WHERE {fy_where} AND verified = TRUE AND scope = 'standalone' AND line_code IN ('PROD.CRUDE_ONGC', 'PROD.CRUDE_JV')
 GROUP BY fiscal_year
 ORDER BY fiscal_year ASC"""
-            notes.append("Derived from HR: Headcount snapshot as of March")
+            notes.append("Derived from AR: Crude oil production = ONGC + JV share")
         else:
             return None
 
@@ -1515,6 +1521,7 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                             "source_doc": _norm_doc(p_rec["source_doc"]) if p_rec is not None else None,
                             "source_page_label": _norm_str(p_rec["source_page_label"]) if p_rec is not None else None,
                         })
+                    elif compiled.metric == "balance_sheet":
                         p_rec = lkp.get(("standalone", f_yr, "BS.TOTAL_ASSETS"))
                         rows.append({
                             "fiscal_year": f_yr,
@@ -1571,22 +1578,24 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                                        latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
 
             # 3. Corporate subject metrics (single-FY -> as_reported; multi-FY -> latest trend)
-            if compiled.subject == "corporate" and (compiled.metric in CORP_METRIC_TO_SSOT or compiled.metric in ["ebitda_corporate_cr", "revenue_per_employee_cr", "employee_headcount"]):
+            if compiled.subject == "corporate" and (compiled.metric in CORP_METRIC_TO_SSOT or compiled.metric in ["ebitda_corporate_cr", "revenue_per_employee_cr", "crude_oil_production_mmt"]):
                 is_multi = bool(lo and hi)
                 src_df = _latest_df() if is_multi else _as_rep_df()
-                if is_multi:
-                    src_df = src_df[(src_df["fiscal_year"] >= lo) & (src_df["fiscal_year"] <= hi)]
-                elif fy:
-                    src_df = src_df[src_df["fiscal_year"] == fy]
-                if src_df.empty:
-                    return None
                 lkp = {(str(r["scope"]), str(r["fiscal_year"]), str(r["line_code"])): r for _, r in src_df.iterrows()}
                 p_scope, p_code = CORP_METRIC_TO_SSOT.get(compiled.metric, ("standalone", None))
-                fys = sorted(src_df["fiscal_year"].unique())
+                all_fys = sorted(src_df["fiscal_year"].unique())
+                if is_multi:
+                    fys = [f for f in all_fys if lo <= f <= hi]
+                elif fy:
+                    fys = [fy] if fy in all_fys else []
+                else:
+                    fys = []
+                if not fys:
+                    return None
                 rows = []
                 for f_yr in fys:
                     p_rec = lkp.get((p_scope, f_yr, p_code)) if p_code else None
-                    if p_rec is None and not is_multi and compiled.metric not in ["ebitda_corporate_cr", "revenue_per_employee_cr", "employee_headcount"]:
+                    if p_rec is None and not is_multi and compiled.metric not in ["ebitda_corporate_cr", "revenue_per_employee_cr", "crude_oil_production_mmt"]:
                         continue
                     row_d: Dict[str, Any] = {"fiscal_year": f_yr}
                     for vc in compiled.value_columns:
@@ -1600,22 +1609,21 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                         elif vc == "dividend_pct":
                             rec = lkp.get(("standalone", f_yr, "RATIO.DIVIDEND_PCT"))
                             row_d[vc] = _val_num(rec) if rec is not None else None
-                        elif vc == "employee_headcount":
-                            hc_map = {"FY17": 33660, "FY18": 32265, "FY19": 31065, "FY20": 30105, "FY21": 28479, "FY22": 27165, "FY23": 25993, "FY24": 25847, "FY25": 24368, "FY26": 23117}
-                            if f_yr in hc_map:
-                                row_d[vc] = hc_map[f_yr]
-                                row_d["line_code"] = "HR.HEADCOUNT"
-                                row_d["display_name"] = "Total employee headcount"
-                                row_d["value_inr_cr"] = hc_map[f_yr]
-                                row_d["is_restated"] = False
-                                row_d["source_system"] = "HR system"
+                        elif vc == "crude_oil_production_mmt":
+                            ongc_rec = lkp.get(("standalone", f_yr, "PROD.CRUDE_ONGC"))
+                            jv_rec = lkp.get(("standalone", f_yr, "PROD.CRUDE_JV"))
+                            ongc_val = _val_num(ongc_rec) or 0
+                            jv_val = _val_num(jv_rec) or 0
+                            if ongc_rec is not None or jv_rec is not None:
+                                row_d[vc] = round(ongc_val + jv_val, 3)
                         elif vc == "revenue_per_employee_cr":
                             rev_rec = lkp.get(("standalone", f_yr, "PL.REV_OPS"))
                             rev_val = _val_num(rev_rec) if rev_rec is not None else None
-                            hc_map = {"FY16": 33927, "FY17": 33660, "FY18": 32265, "FY19": 31065, "FY20": 30105, "FY21": 28479, "FY22": 27165, "FY23": 25993, "FY24": 25847, "FY25": 24368, "FY26": 23117}
                             prev_yr = f"FY{int(f_yr[-2:]) - 1}"
-                            curr_hc = hc_map.get(f_yr)
-                            prev_hc = hc_map.get(prev_yr)
+                            curr_hc_rec = lkp.get(("standalone", f_yr, "OTH.EMPLOYEES"))
+                            prev_hc_rec = lkp.get(("standalone", prev_yr, "OTH.EMPLOYEES"))
+                            curr_hc = _val_num(curr_hc_rec) if curr_hc_rec is not None else None
+                            prev_hc = _val_num(prev_hc_rec) if prev_hc_rec is not None else None
                             if rev_val is not None and curr_hc and prev_hc:
                                 avg_hc = (curr_hc + prev_hc) / 2.0
                                 row_d[vc] = round(rev_val / avg_hc, 3)

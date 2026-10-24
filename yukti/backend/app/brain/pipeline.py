@@ -261,12 +261,7 @@ async def run_planner_turn(
             if fn not in notes:
                 notes.append(fn)
 
-    _DERIVED_RATIO_METRICS = {
-        "roce_pct", "consolidated_roce_pct", "roe_pct", "roa_pct",
-        "debt_to_equity_ratio", "net_debt_to_ebitda_ratio", "interest_coverage_ratio",
-        "current_ratio", "quick_ratio", "receivable_days",
-        "ebitda_margin_corporate_pct", "pat_margin_corporate_pct", "financial_ratios",
-    }
+    _DERIVED_RATIO_METRICS = set()
     if is_local_snapshot:
         if is_fin_ssot:
             src_entry: Dict[str, Any] = {

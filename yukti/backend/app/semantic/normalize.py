@@ -2,10 +2,8 @@
 
 1. **Fiscal-year resolver** (decision D-30): the demo anchor date is 19-Oct-2026, so
    the current FY is FY27 (Apr-2026 .. Mar-2027, in progress).
-   - "this year" / "current year" / "is saal" -> FY27 when the table has FY27 rows,
-     otherwise the latest available FY (FY26 for most tables).
-   - "last year" / "previous year" / "pichle saal" / "last fiscal" -> FY26
-     (the last complete FY). "year before last" -> FY25.
+   - "this year" / "current year" / "is saal" / "latest" -> FY26 (the latest complete FY).
+   - "last year" / "previous year" / "pichle saal" / "last fiscal" -> FY25 (the year before the latest complete FY26). "year before last" -> FY24.
    - "last N years" -> the N complete FYs ending FY26 (e.g. 5 -> FY22..FY26).
    - Explicit "FY25", "FY 2024-25", "2024-25", "FY2025" -> FY25.
 2. **Case-insensitive categorical filters:** generated SQL often writes a filter
@@ -60,6 +58,8 @@ def resolve_fy(text: str, available: Optional[Iterable[str]] = None,
     Returns None when the text has no time reference.
     """
     t = (text or "").lower()
+    # Strip planner contexts in parentheses (e.g. "(context: latest FY26)") so they don't override the actual question intent.
+    t = re.sub(r"\(context:[^)]+\)", "", t)
     cur = fy_of(anchor)
     last = cur - 1
     avail = sorted({a.upper() for a in available}) if available else []
@@ -97,6 +97,8 @@ def resolve_fy(text: str, available: Optional[Iterable[str]] = None,
     m = re.search(r"\b(?:(?:over|in|during) the (?:last|past)|last|past|previous|pichle|pichhle)\s+(\d+|[a-z]+)\s+(?:fiscal\s+)?(?:years?|yrs?|saal|varsh)\b", t)
     if not m:
         m = re.search(r"\b(\d+|ten|five|three)\s*[- ]\s*(?:fiscal\s+)?(?:year|yr)s?\b", t)
+        if m and re.search(r"\b(?:ago|pehle)\b", t[m.end():]):
+            m = None
         # P0.2: "posted over 5 years", "more than 5 years", "for 5 years" describe tenure, not a reporting window
         if m and re.search(r"\b(?:over|more\s+than|for|at\s+least|upto|up\s+to)\s*$|>\s*$", t[:m.start()]):
             m = None
@@ -106,15 +108,18 @@ def resolve_fy(text: str, available: Optional[Iterable[str]] = None,
         if n and 2 <= n <= 15:
             return {"from": fy_label(last - n + 1), "to": fy_label(last), "n_years": n}
 
+    if re.search(r"\b(?:10|ten)\s+(?:years\s+ago|saal\s+pehle)\b", t):
+        return {"fy": fy_label(last - 10 + 1)} # FY17
+
     # Bare 4-digit calendar/fiscal year ("Profit and loss statement of ONGC. 2026", "in 2025")
     m = re.search(r"(?<![-\d])\b(201[7-9]|202[0-7])\b(?![-\d])", t)
     if m:
         return {"fy": fy_label(int(m.group(1)))}
 
     if re.search(r"\byear before last\b|\bpichle se pichle saal\b", t):
-        return {"fy": fy_label(last - 1)}
+        return {"fy": fy_label(last - 2)}
     if re.search(r"\b(last|previous|prior)\s+(fiscal\s+|financial\s+)?year\b|\blast fy\b|\bpichle saal\b|\bpichhle saal\b|\bpichla saal\b|\bगत वर्ष\b|\bपिछले साल\b", t):
-        return {"fy": fy_label(last)}
+        return {"fy": fy_label(last - 1)}
     if re.search(r"\b(next|coming)\s+(fiscal\s+|financial\s+)?year\b|\bagle saal\b", t):
         return {"fy": fy_label(cur + 1)}
     if re.search(r"\b(this|current|present)\s+(fiscal\s+|financial\s+)?year\b|\bthis fy\b|\bcurrent fy\b|\bis saal\b|\bयह साल\b|\bइस साल\b|\bytd\b|\byear[- ]to[- ]date\b", t):
