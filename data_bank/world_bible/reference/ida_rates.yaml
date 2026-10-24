@@ -1,0 +1,221 @@
+# SPEC-04 §5.2 dim_ida_rate (quarterly IDA rates for 2007 and 2017 CPSE pay scales)
+# Formula (real, DPE OM 3-Oct-2018): IDA % = (avg AICPI-IW(2001=100) of quarter ref months - 277.33) / 277.33 * 100
+ida_rates:
+  # Apr-Dec 2016 (2007 pay scales)
+  - effective_date: "2016-04-01"
+    scale_version: "2007"
+    ida_pct: 112.5
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (2007 scales Apr-Jun 2016 illustrative)"
+  - effective_date: "2016-07-01"
+    scale_version: "2007"
+    ida_pct: 116.4
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (2007 scales Jul-Sep 2016 illustrative)"
+  - effective_date: "2016-10-01"
+    scale_version: "2007"
+    ida_pct: 119.5
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (2007 scales Oct-Dec 2016 illustrative)"
+
+  # 2017 3rd PRC pay scales (from 01-Jan-2017)
+  - effective_date: "2017-01-01"
+    scale_version: "2017"
+    ida_pct: 0.0
+    status: "real"
+    source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt:352-362 (Annex III(B))"
+  - effective_date: "2017-04-01"
+    scale_version: "2017"
+    ida_pct: -1.1
+    status: "real"
+    source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt:352-362 (Annex III(B))"
+  - effective_date: "2017-07-01"
+    scale_version: "2017"
+    ida_pct: -0.2
+    status: "real"
+    source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt:352-362 (Annex III(B))"
+  - effective_date: "2017-10-01"
+    scale_version: "2017"
+    ida_pct: 0.4
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Oct-2017 illustrative)"
+  - effective_date: "2018-01-01"
+    scale_version: "2017"
+    ida_pct: 2.0
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jan-2018 illustrative)"
+  - effective_date: "2018-04-01"
+    scale_version: "2017"
+    ida_pct: 3.4
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Apr-2018 illustrative)"
+  - effective_date: "2018-07-01"
+    scale_version: "2017"
+    ida_pct: 5.2
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jul-2018 illustrative)"
+  - effective_date: "2018-10-01"
+    scale_version: "2017"
+    ida_pct: 7.3
+    status: "real"
+    source_doc: "dpe_om_03oct2018_ida_revised_rates_2017_scales.txt"
+  - effective_date: "2019-01-01"
+    scale_version: "2017"
+    ida_pct: 8.6
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jan-2019 illustrative)"
+  - effective_date: "2019-04-01"
+    scale_version: "2017"
+    ida_pct: 9.4
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Apr-2019 illustrative)"
+  - effective_date: "2019-07-01"
+    scale_version: "2017"
+    ida_pct: 10.7
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jul-2019 illustrative)"
+  - effective_date: "2019-10-01"
+    scale_version: "2017"
+    ida_pct: 12.8
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Oct-2019 illustrative)"
+  - effective_date: "2020-01-01"
+    scale_version: "2017"
+    ida_pct: 15.6
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jan-2020 illustrative)"
+  - effective_date: "2020-04-01"
+    scale_version: "2017"
+    ida_pct: 17.2
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Apr-2020 illustrative)"
+  - effective_date: "2020-07-01"
+    scale_version: "2017"
+    ida_pct: 17.2
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jul-2020 freeze assumption illustrative)"
+  - effective_date: "2020-10-01"
+    scale_version: "2017"
+    ida_pct: 17.2
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Oct-2020 freeze assumption illustrative)"
+  - effective_date: "2021-01-01"
+    scale_version: "2017"
+    ida_pct: 17.2
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jan-2021 freeze assumption illustrative)"
+  - effective_date: "2021-04-01"
+    scale_version: "2017"
+    ida_pct: 17.2
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Apr-2021 freeze assumption illustrative)"
+  - effective_date: "2021-07-01"
+    scale_version: "2017"
+    ida_pct: 26.6
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jul-2021 illustrative)"
+  - effective_date: "2021-10-01"
+    scale_version: "2017"
+    ida_pct: 29.0
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Oct-2021 illustrative)"
+  - effective_date: "2022-01-01"
+    scale_version: "2017"
+    ida_pct: 31.5
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jan-2022 illustrative)"
+  - effective_date: "2022-04-01"
+    scale_version: "2017"
+    ida_pct: 32.7
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Apr-2022 illustrative)"
+  - effective_date: "2022-07-01"
+    scale_version: "2017"
+    ida_pct: 34.9
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jul-2022 illustrative)"
+  - effective_date: "2022-10-01"
+    scale_version: "2017"
+    ida_pct: 36.6
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Oct-2022 illustrative)"
+  - effective_date: "2023-01-01"
+    scale_version: "2017"
+    ida_pct: 37.2
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jan-2023 illustrative)"
+  - effective_date: "2023-04-01"
+    scale_version: "2017"
+    ida_pct: 38.0
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Apr-2023 illustrative)"
+  - effective_date: "2023-07-01"
+    scale_version: "2017"
+    ida_pct: 39.6
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jul-2023 illustrative)"
+  - effective_date: "2023-10-01"
+    scale_version: "2017"
+    ida_pct: 42.1
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Oct-2023 illustrative)"
+  - effective_date: "2024-01-01"
+    scale_version: "2017"
+    ida_pct: 43.9
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jan-2024 illustrative)"
+  - effective_date: "2024-04-01"
+    scale_version: "2017"
+    ida_pct: 44.4
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Apr-2024 illustrative)"
+  - effective_date: "2024-07-01"
+    scale_version: "2017"
+    ida_pct: 45.0
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jul-2024 illustrative)"
+  - effective_date: "2024-10-01"
+    scale_version: "2017"
+    ida_pct: 47.6
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Oct-2024 illustrative)"
+  - effective_date: "2025-01-01"
+    scale_version: "2017"
+    ida_pct: 49.3
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jan-2025 illustrative)"
+  - effective_date: "2025-04-01"
+    scale_version: "2017"
+    ida_pct: 49.0
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Apr-2025 illustrative)"
+  - effective_date: "2025-07-01"
+    scale_version: "2017"
+    ida_pct: 50.1
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jul-2025 illustrative)"
+  - effective_date: "2025-10-01"
+    scale_version: "2017"
+    ida_pct: 52.0
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Oct-2025 illustrative)"
+  - effective_date: "2026-01-01"
+    scale_version: "2017"
+    ida_pct: 53.2
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jan-2026 illustrative)"
+  - effective_date: "2026-04-01"
+    scale_version: "2017"
+    ida_pct: 53.6
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Apr-2026 illustrative)"
+  - effective_date: "2026-07-01"
+    scale_version: "2017"
+    ida_pct: 54.8
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Jul-2026 illustrative)"
+  - effective_date: "2026-10-01"
+    scale_version: "2017"
+    ida_pct: 56.3
+    status: "illustrative"
+    source_doc: "SPEC-04 §5.2 (Oct-2026 illustrative)"

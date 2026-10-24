@@ -26,6 +26,20 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUT_CSV = REPO_ROOT / "data_bank" / "landing" / "sap" / "dim_app_user.csv"
 DEFAULT_OUT_YAML = REPO_ROOT / "yukti" / "backend" / "app" / "brain" / "app_users.yaml"
+WORK_CENTRES_YAML = REPO_ROOT / "data_bank" / "world_bible" / "reference" / "work_centres.yaml"
+
+
+def load_hq_work_centre() -> tuple[str, str]:
+    """Resolve corporate HQ work centre ID and name from reference data (Rule 5a compliant)."""
+    with WORK_CENTRES_YAML.open("r", encoding="utf-8") as f:
+        wcs = yaml.safe_load(f)["work_centres"]
+    for wc in wcs:
+        if wc.get("is_corporate_hq") and wc.get("director_owner") == "Chairman":
+            return str(wc["wc_id"]), str(wc["name"])
+    raise RuntimeError("Could not locate corporate HQ work centre in work_centres.yaml")
+
+
+HQ_WC_ID, HQ_WC_NAME = load_hq_work_centre()
 
 CANONICAL_PERSONA_ORDER: list[str] = [
     "CMD",
@@ -50,8 +64,8 @@ SENIOR_OVERRIDES: dict[str, dict[str, str]] = {
         "grade": "CMD",
         "function": "EXEC",
         "discipline_id": "DISC-PRD",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
+        "wc_id": HQ_WC_ID,
+        "work_centre": HQ_WC_NAME,
         "functional_designation": "Chairman & Managing Director",
         "tier": "cmd",
     },
@@ -61,8 +75,8 @@ SENIOR_OVERRIDES: dict[str, dict[str, str]] = {
         "grade": "DIR",
         "function": "HR",
         "discipline_id": "DISC-HR",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
+        "wc_id": HQ_WC_ID,
+        "work_centre": HQ_WC_NAME,
         "functional_designation": "Director (HR)",
         "tier": "director",
     },
@@ -72,8 +86,8 @@ SENIOR_OVERRIDES: dict[str, dict[str, str]] = {
         "grade": "DIR",
         "function": "FIN",
         "discipline_id": "DISC-FIN",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
+        "wc_id": HQ_WC_ID,
+        "work_centre": HQ_WC_NAME,
         "functional_designation": "Director (Finance)",
         "tier": "director",
     },
@@ -138,8 +152,8 @@ DEMO_ADMIN_ENTRY: dict[str, Any] = {
     "grade": "ADMIN",
     "function": "EXEC",
     "discipline_id": "DISC-PRD",
-    "wc_id": "WC-DEL",
-    "work_centre": "Delhi HQ",
+    "wc_id": HQ_WC_ID,
+    "work_centre": HQ_WC_NAME,
     "functional_designation": "Demo Admin — Switchable",
     "tier": "cmd",
     "is_admin": True,
@@ -221,7 +235,7 @@ def compute_users_from_sap(sap_dir: Path) -> list[dict[str, Any]]:
             emp_by_id[pernr] = row
             if (
                 row.get("STAT2") == "Active"
-                and row.get("WERKS") == "WC-DEL"
+                and row.get("WERKS") == HQ_WC_ID
                 and row.get("discipline_id") in ("DISC-HR", "DISC-FIN")
                 and row.get("PERSK") in ("E1", "E2", "E3", "E4")
             ):
@@ -365,7 +379,7 @@ def compute_users_from_sap(sap_dir: Path) -> list[dict[str, Any]]:
             for pernr, row in emp_by_id.items():
                 if (
                     row.get("STAT2") == "Active"
-                    and row.get("WERKS") == "WC-DEL"
+                    and row.get("WERKS") == HQ_WC_ID
                     and row.get("discipline_id") == spec["discipline_id"]
                     and row.get("PERSK") == spec["grade"]
                 ):
@@ -381,7 +395,7 @@ def compute_users_from_sap(sap_dir: Path) -> list[dict[str, Any]]:
                         candidates.append((pernr, row.get("name") or row.get("ENAME", "")))
             candidates.sort(key=lambda x: x[0])
             if not candidates:
-                raise RuntimeError(f"No candidate in WC-DEL satisfies completeness gate for {pid} ({spec})")
+                raise RuntimeError(f"No candidate in {HQ_WC_ID} satisfies completeness gate for {pid} ({spec})")
             selected_emp_id, selected_name = candidates[0]
 
         records[pid] = _build_record(
@@ -391,8 +405,8 @@ def compute_users_from_sap(sap_dir: Path) -> list[dict[str, Any]]:
             grade=spec["grade"],
             function=spec["function"],
             discipline_id=spec["discipline_id"],
-            wc_id="WC-DEL",
-            work_centre="Delhi HQ",
+            wc_id=HQ_WC_ID,
+            work_centre=HQ_WC_NAME,
             functional_designation=spec["functional_designation"],
             tier="junior",
         )
@@ -439,8 +453,8 @@ def verify_records(rows: list[dict[str, Any]]) -> None:
             raise AssertionError(f"{pid}: invalid emp_id {r['emp_id']!r}")
         if not r["display_name"] or r["display_name"] in FORBIDDEN_DISPLAY_NAMES:
             raise AssertionError(f"{pid}: forbidden or empty display_name {r['display_name']!r}")
-        if r["wc_id"] != "WC-DEL":
-            raise AssertionError(f"{pid}: expected wc_id='WC-DEL', got {r['wc_id']!r}")
+        if r["wc_id"] != HQ_WC_ID:
+            raise AssertionError(f"{pid}: expected wc_id={HQ_WC_ID!r}, got {r['wc_id']!r}")
         if r.get("synthetic") is not True:
             raise AssertionError(f"{pid}: expected synthetic=True")
         for col in ("has_pay_fy26", "has_leave_el", "has_posting", "has_apar", "ok_pay", "ok_leave", "ok_posting", "ok_apar"):
@@ -451,16 +465,17 @@ def verify_records(rows: list[dict[str, Any]]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate and check dim_app_user.csv and app_users.yaml")
     parser.add_argument("--check", action="store_true", help="Verify completeness gate and outputs")
+    parser.add_argument("--out-csv", type=Path, default=None, help="Override output CSV path")
+    parser.add_argument("--out-yaml", type=Path, default=None, help="Override output YAML path")
     args = parser.parse_args(argv)
 
     sap_dir = resolve_sap_landing_dir()
     rows = compute_users_from_sap(sap_dir)
     verify_records(rows)
-    if not args.check or not DEFAULT_OUT_CSV.exists() or not DEFAULT_OUT_YAML.exists():
-        write_outputs(rows)
-    else:
-        # Also ensure files on disk are up to date
-        write_outputs(rows)
+    out_csv = args.out_csv or DEFAULT_OUT_CSV
+    out_yaml = args.out_yaml or DEFAULT_OUT_YAML
+    if not args.check or args.out_csv is not None or args.out_yaml is not None:
+        write_outputs(rows, out_csv=out_csv, out_yaml=out_yaml)
 
     print("persona_id | emp_id     | display_name       | grade | func | wc_id  | pay26 | el/cl/hpl | post | apar")
     print("-" * 98)
@@ -471,7 +486,7 @@ def main(argv: list[str] | None = None) -> int:
             f"{r['grade']:<5} | {r['function']:<4} | {r['wc_id']:<6} | "
             f"{r['pay_fy26_months']:>5} | {l_str:>9} | {r['posting_rows']:>4} | {r['apar_rows']:>4}"
         )
-    print(f"\nOK: 11/11 personas verified; wrote {DEFAULT_OUT_CSV} and {DEFAULT_OUT_YAML}")
+    print(f"\nOK: 11/11 personas verified; wrote {out_csv} and {out_yaml}")
     return 0
 
 

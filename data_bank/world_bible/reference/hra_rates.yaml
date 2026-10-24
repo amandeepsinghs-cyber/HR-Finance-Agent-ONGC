@@ -1,0 +1,32 @@
+# SPEC-04 §5.3 dim_hra_rate (real, DPE OM 4-Aug-2017, compendium p.352, dpe_guidelines_compendium_admin_ministries_cpses.txt:18977-19010)
+hra_rates:
+  - city_class: "X"
+    population_band: ">= 50 lakh"
+    hra_pct_ida_lt_25: 24.0
+    hra_pct_ida_25_to_50: 27.0
+    hra_pct_ida_ge_50: 30.0
+    hrr_pct_bp: 7.5
+    status: "real"
+    source_doc: "dpe_guidelines_compendium_admin_ministries_cpses.txt:18977-19010 (DPE OM 4-Aug-2017)"
+  - city_class: "Y"
+    population_band: "5-50 lakh"
+    hra_pct_ida_lt_25: 16.0
+    hra_pct_ida_25_to_50: 18.0
+    hra_pct_ida_ge_50: 20.0
+    hrr_pct_bp: 5.0
+    status: "real"
+    source_doc: "dpe_guidelines_compendium_admin_ministries_cpses.txt:18977-19010 (DPE OM 4-Aug-2017)"
+  - city_class: "Z"
+    population_band: "< 5 lakh"
+    hra_pct_ida_lt_25: 8.0
+    hra_pct_ida_25_to_50: 9.0
+    hra_pct_ida_ge_50: 10.0
+    hrr_pct_bp: 2.5
+    status: "real"
+    source_doc: "dpe_guidelines_compendium_admin_ministries_cpses.txt:18977-19010 (DPE OM 4-Aug-2017)"
+
+city_class_by_state_or_type:
+  # DPE Census-2011 classification: Delhi, Mumbai = X; major state capitals / urban centres = Y; remote field towns = Z
+  metro_states_x: ["DL"]
+  metro_cities_x: ["New Delhi", "Mumbai", "Chennai", "Kolkata", "Bengaluru", "Hyderabad", "Ahmedabad"]
+  urban_cities_y: ["Dehradun", "Vadodara", "Surat", "Anand", "Rajahmundry", "Kakinada", "Jorhat", "Silchar", "Agartala", "Jodhpur", "Bokaro"]

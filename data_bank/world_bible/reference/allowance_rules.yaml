@@ -1,0 +1,87 @@
+# SPEC-04 §5.1 & §5.4 dim_allowance_rule and pay scale parameters
+pay_scales_2017:
+  E0: {min_inr: 50000, max_inr: 160000, prp_ceiling_pct: 40.0, status: "illustrative", source_doc: "SPEC-04 §5.1 (DPE ladder shifted +2)"}
+  E1: {min_inr: 60000, max_inr: 180000, prp_ceiling_pct: 40.0, status: "real", source_doc: "ongc_recruitment_advt_1_2024_GT.txt:18"}
+  E2: {min_inr: 70000, max_inr: 200000, prp_ceiling_pct: 40.0, status: "real", source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt Annex I"}
+  E3: {min_inr: 80000, max_inr: 220000, prp_ceiling_pct: 50.0, status: "real", source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt Annex I"}
+  E4: {min_inr: 90000, max_inr: 240000, prp_ceiling_pct: 50.0, status: "real", source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt Annex I"}
+  E5: {min_inr: 100000, max_inr: 260000, prp_ceiling_pct: 60.0, status: "real", source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt Annex I"}
+  E6: {min_inr: 120000, max_inr: 280000, prp_ceiling_pct: 70.0, status: "real", source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt Annex I"}
+  E7: {min_inr: 120000, max_inr: 280000, prp_ceiling_pct: 80.0, status: "illustrative", source_doc: "grades.yaml / SPEC-04 §5.1"}
+  E8: {min_inr: 130000, max_inr: 280000, prp_ceiling_pct: 90.0, status: "illustrative", source_doc: "grades.yaml / SPEC-04 §5.1"}
+  E9: {min_inr: 150000, max_inr: 300000, prp_ceiling_pct: 90.0, status: "real", source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt Annex I"}
+  DIR: {min_inr: 180000, max_inr: 340000, prp_ceiling_pct: 125.0, status: "real", source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt Schedule A"}
+  CMD: {min_inr: 200000, max_inr: 370000, prp_ceiling_pct: 150.0, status: "real", source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt Schedule A"}
+  GRP-B: {min_inr: 29000, max_inr: 98000, prp_ceiling_pct: 20.0, status: "illustrative", source_doc: "grades.yaml / SPEC-04 §5.1"}
+  GRP-C: {min_inr: 24000, max_inr: 87500, prp_ceiling_pct: 15.0, status: "illustrative", source_doc: "grades.yaml / SPEC-04 §5.1"}
+  GRP-D: {min_inr: 22000, max_inr: 78000, prp_ceiling_pct: 12.0, status: "illustrative", source_doc: "grades.yaml / SPEC-04 §5.1"}
+
+pay_scales_2007:
+  # DPE OM 3-Aug-2017 Annex I "Existing" column (:235-252)
+  E0: {min_inr: 20600, max_inr: 46500}
+  E1: {min_inr: 24900, max_inr: 50500}
+  E2: {min_inr: 29100, max_inr: 54500}
+  E3: {min_inr: 32900, max_inr: 58000}
+  E4: {min_inr: 36600, max_inr: 62000}
+  E5: {min_inr: 43200, max_inr: 66000}
+  E6: {min_inr: 51300, max_inr: 73000}
+  E7: {min_inr: 51300, max_inr: 73000}
+  E8: {min_inr: 51300, max_inr: 73000}
+  E9: {min_inr: 62000, max_inr: 80000}
+  DIR: {min_inr: 75000, max_inr: 100000}
+  CMD: {min_inr: 80000, max_inr: 125000}
+  GRP-B: {min_inr: 12500, max_inr: 39000}
+  GRP-C: {min_inr: 10500, max_inr: 34500}
+  GRP-D: {min_inr: 9500, max_inr: 30000}
+
+allowance_rules:
+  - allowance_code: "CAFETERIA_PERKS"
+    cap_pct_bp: 35.0
+    rule: "Cafeteria perks <= 35% of Basic Pay; infrastructure outside; 50% of company-accommodation perquisite loaded inside"
+    status: "real"
+    source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt:113-122 (para 9)"
+  - allowance_code: "HARDSHIP_OFFSHORE"
+    cap_pct_bp: 12.0
+    rule: "Offshore hardship duty <= 12% of Basic Pay for days actually at an offshore site; outside the 35% ceiling"
+    status: "real"
+    source_doc: "dpe_guidelines_compendium_admin_ministries_cpses.txt (DPE OM 4-Aug-2017)"
+  - allowance_code: "LOCATION_COMP_ALLOWANCE"
+    rates_pct_bp:
+      NE: 10.0
+      AN: 10.0
+      SPECIAL_A: 8.0
+      SPECIAL_B: 6.0
+      SPECIAL_C: 4.0
+      SPECIAL_D: 3.0
+    rule: "NE/Ladakh 10% BP; A&N 10/16/20%; special areas 8/6/4/3% BP; higher one only"
+    status: "real"
+    source_doc: "dpe_guidelines_compendium_admin_ministries_cpses.txt p.353 (DPE OM 7-Sep-2017)"
+  - allowance_code: "SUPERANNUATION_CAP"
+    cap_pct_bp_plus_da: 30.0
+    cpf_pct_bp_plus_da: 12.0
+    prmb_pct_bp_plus_da: 3.0
+    default_prbs_pct_bp_plus_da: 9.5
+    rule: "CPF + gratuity + PRBS + PRMB <= 30% of (BP + DA); PRBS capped to fit headroom"
+    status: "real"
+    source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt para 12"
+  - allowance_code: "GRATUITY_CEILING"
+    base_ceiling_inr: 2000000.0
+    step_pct_per_50pct_ida: 25.0
+    rule: "INR 20 Lakh from 1-Jan-2017, +25% each time IDA rises by 50%"
+    status: "real"
+    source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt para 12.1"
+  - allowance_code: "PRP_POOL"
+    rule: "<= 5% of year profit, 65:35 year:incremental; MoU 50% / team 30% / individual 20%"
+    status: "real"
+    source_doc: "dpe_om_03aug2017_3rd_prc_pay_revision_executives.txt:366-430 Annex IV"
+  - allowance_code: "FIELD_SHIFT_NIGHT_OT_NPA"
+    field_duty_pct_bp_onshore: 6.0
+    hard_station_flat_inr: 4500.0
+    shift_allowance_flat_inr: 2400.0
+    night_duty_flat_inr: 1800.0
+    npa_pct_bp_medical: 20.0
+    ot_multiplier: 2.0
+    ot_divisor_hours: 208.0
+    rule: "Field duty 4-8% BP onshore field/rig; NPA 20% BP for DISC-MED; OT = hours * 2 * (BP+DA)/208"
+    status: "illustrative"
+    source_doc: "SPEC-04 §4 family F & §5.4"
