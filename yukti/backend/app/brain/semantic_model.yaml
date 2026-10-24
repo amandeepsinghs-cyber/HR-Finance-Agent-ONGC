@@ -392,3 +392,31 @@ templates:
     period: fiscal_year
     default_from: FY17
     default_to: FY26
+  wacc_pct:
+    domain: finance
+    label: "ONGC Weighted Average Cost of Capital (WACC %)"
+    description: "Historical Weighted Average Cost of Capital (WACC %) series (FY17–FY26 or 5-year FY22–FY26), including Cost of Equity (Ke) and Post-Tax Cost of Debt (Kd*(1-t)), modelled from RBI/FBIL G-Sec, Damodaran ERP, and NSE equity beta."
+    period: range
+    default_from: FY22
+    default_to: FY26
+  wacc_components:
+    domain: finance
+    label: "ONGC WACC Build-up and Component Breakdown"
+    description: "Stacked components of WACC across years: Risk-free rate (Rf), Equity Risk Premium (Beta * ERP), and Cost of Debt, with weighted contributions to total WACC."
+    period: range
+    default_from: FY22
+    default_to: FY26
+  wacc_build_up:
+    domain: finance
+    label: "ONGC WACC Single-Year Parameter Build-Up"
+    description: "Single-year WACC parameter table and KPI: all 16 inputs and parameters (Rf, beta, ERP, CRP, Kd pretax, tax rate, equity/debt weights, Ke, Kd post-tax, WACC) with lineage sources."
+    period: fiscal_year
+    default_from: FY26
+    default_to: FY26
+  wacc_change_attribution:
+    domain: finance
+    label: "ONGC WACC Change Attribution (Shapley)"
+    description: "Exact 5-factor Shapley attribution (Rf, ERP, Beta, Kd after tax, Capital weights) explaining YoY changes in WACC, rendered as a waterfall bridge."
+    period: fiscal_year
+    default_from: FY22
+    default_to: FY23

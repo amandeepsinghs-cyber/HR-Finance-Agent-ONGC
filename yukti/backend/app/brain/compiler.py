@@ -538,6 +538,14 @@ class Compiler:
             return self._compile_cash_flow_statement(t, spec)
         if t.name == "financial_ratios":
             return self._compile_financial_ratios(t, spec)
+        if t.name == "wacc_pct":
+            return self._compile_wacc_pct(t, spec)
+        if t.name == "wacc_components":
+            return self._compile_wacc_components(t, spec)
+        if t.name == "wacc_build_up":
+            return self._compile_wacc_build_up(t, spec)
+        if t.name == "wacc_change_attribution":
+            return self._compile_wacc_change_attribution(t, spec)
         if t.name != "capex_vs_reserves":
             raise CompileError(f"template {t.name} has no compiler")
         p = spec.period or Period()
@@ -580,6 +588,163 @@ ORDER BY j.capex_cr DESC"""
                              value_columns=["capex_cr", "reserves_2p_mmtoe", "capex_cr_per_mmtoe"],
                              notes=[f"Capex {lo}–{hi} vs {res_fy} 2P reserves; capex is recorded by asset, not field"],
                              effective_period={"from": lo, "to": hi}, grain="aggregate", data_classes=["general"])
+
+    def _compile_wacc_pct(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        p = spec.period or Period()
+        lo = p.from_ or (p.fy if p.fy else t.default_from or "FY22")
+        hi = p.to or (p.fy if p.fy else t.default_to or "FY26")
+        if hi > "FY26":
+            hi = "FY26"
+        sql = f"""SELECT
+  fiscal_year,
+  wacc_pct,
+  ke_pct,
+  ROUND(kd_used_pct * (1.0 - tax_rate_pct / 100.0), 4) AS kd_after_tax_pct,
+  rf_used_pct,
+  erp_total_pct,
+  COALESCE(beta_2y_weekly_adj, beta_industry_relevered) AS beta,
+  weight_equity,
+  weight_debt,
+  verified,
+  notes
+FROM {_q('hrfin_gold.fact_wacc_annual')}
+WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+ORDER BY fiscal_year ASC"""
+        return CompiledQuery(
+            sql=sql,
+            subject=None,
+            metric="wacc_pct",
+            metric_label="ONGC WACC (standalone, %)",
+            unit="pct",
+            source="template:wacc_pct",
+            tables=["hrfin_gold.fact_wacc_annual"],
+            dims=[("fy", "fiscal_year")],
+            value_columns=["wacc_pct", "ke_pct", "kd_after_tax_pct"],
+            notes=[
+                "Modelled from real inputs: FBIL/RBI 10-yr G-sec, Damodaran ERP, 2-yr weekly beta vs NIFTY 50 (Yahoo), AR finance cost and debt"
+            ],
+            effective_period={"from": lo, "to": hi},
+            grain="aggregate",
+            data_classes=["general"],
+        )
+
+    def _compile_wacc_components(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        p = spec.period or Period()
+        lo = p.from_ or (p.fy if p.fy else t.default_from or "FY22")
+        hi = p.to or (p.fy if p.fy else t.default_to or "FY26")
+        if hi > "FY26":
+            hi = "FY26"
+        sql = f"""SELECT
+  fiscal_year,
+  ROUND(weight_equity * rf_used_pct, 4) AS weighted_rf_pct,
+  ROUND(weight_equity * COALESCE(beta_2y_weekly_adj, beta_industry_relevered) * erp_total_pct, 4) AS weighted_erp_pct,
+  ROUND(weight_debt * kd_used_pct * (1.0 - tax_rate_pct / 100.0), 4) AS weighted_kd_after_tax_pct,
+  wacc_pct,
+  ke_pct,
+  rf_used_pct,
+  erp_total_pct,
+  COALESCE(beta_2y_weekly_adj, beta_industry_relevered) AS beta,
+  kd_used_pct,
+  tax_rate_pct,
+  weight_equity,
+  weight_debt,
+  verified
+FROM {_q('hrfin_gold.fact_wacc_annual')}
+WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+ORDER BY fiscal_year ASC"""
+        return CompiledQuery(
+            sql=sql,
+            subject=None,
+            metric="wacc_components",
+            metric_label="ONGC WACC Build-up Components (%)",
+            unit="pct",
+            source="template:wacc_components",
+            tables=["hrfin_gold.fact_wacc_annual"],
+            dims=[("fy", "fiscal_year")],
+            value_columns=["weighted_rf_pct", "weighted_erp_pct", "weighted_kd_after_tax_pct", "wacc_pct"],
+            notes=[
+                "Modelled WACC component breakdown: Rf, ERP, and post-tax Kd weighted by capital structure"
+            ],
+            effective_period={"from": lo, "to": hi},
+            grain="aggregate",
+            data_classes=["general"],
+        )
+
+    def _compile_wacc_build_up(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        p = spec.period or Period()
+        fy = p.fy or (p.to if p.to else t.default_to or "FY26")
+        sql = f"""SELECT
+  fiscal_year,
+  input_code,
+  value,
+  unit,
+  source_system,
+  source_doc,
+  source_page,
+  formula,
+  notes
+FROM {_q('hrfin_gold.fact_wacc_input')}
+WHERE fiscal_year = {_lit(fy)}
+ORDER BY input_code ASC"""
+        return CompiledQuery(
+            sql=sql,
+            subject=None,
+            metric="wacc_build_up",
+            metric_label=f"ONGC WACC Parameter Build-up ({fy})",
+            unit="mixed",
+            source="template:wacc_build_up",
+            tables=["hrfin_gold.fact_wacc_input"],
+            dims=[("input_code", "input_code")],
+            value_columns=["value"],
+            notes=[
+                f"Lineage parameters and verified SSOT inputs for {fy} WACC computation"
+            ],
+            effective_period={"fy": fy},
+            grain="row",
+            data_classes=["general"],
+        )
+
+    def _compile_wacc_change_attribution(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        p = spec.period or Period()
+        if p.from_ and p.to and p.from_ != p.to:
+            fy_from = p.from_
+            fy_to = p.to
+        else:
+            fy_to = p.fy or (p.to if p.to else "FY23")
+            fy_from = f"FY{int(fy_to[2:]) - 1:02d}"
+        sql = f"""SELECT
+  fiscal_year,
+  rf_used_pct,
+  erp_total_pct,
+  COALESCE(beta_2y_weekly_adj, beta_industry_relevered) AS beta,
+  kd_used_pct,
+  tax_rate_pct,
+  weight_equity,
+  weight_debt,
+  ke_pct,
+  wacc_pct,
+  verified,
+  notes
+FROM {_q('hrfin_gold.fact_wacc_annual')}
+WHERE fiscal_year IN ({_lit(fy_from)}, {_lit(fy_to)})
+ORDER BY fiscal_year ASC"""
+        return CompiledQuery(
+            sql=sql,
+            subject=None,
+            metric="wacc_change_attribution",
+            metric_label=f"WACC Change Attribution ({fy_from} → {fy_to})",
+            unit="pct",
+            source="template:wacc_change_attribution",
+            tables=["hrfin_gold.fact_wacc_annual", "hrfin_gold.fact_wacc_input"],
+            dims=[("factor", "factor")],
+            value_columns=["contribution_pct", "amount"],
+            notes=[
+                f"5-Factor Shapley value decomposition of WACC delta ({fy_from} to {fy_to}) across all 120 permutations"
+            ],
+            effective_period={"from": fy_from, "to": fy_to, "fy": fy_to},
+            grain="aggregate",
+            data_classes=["general"],
+        )
 
     def _compile_headcount_change(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
         p = spec.period or Period()
@@ -1528,6 +1693,174 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
         env_snap = os.getenv("YUKTI_FIN_SNAPSHOT_PATH")
         snap_path = Path(env_snap) if env_snap else (repo_root / "financial_ssot" / "out" / "fact_snapshot.parquet")
         dim_path = repo_root / "financial_ssot" / "dim_financial_line.csv"
+
+        # WACC metrics and templates fallback (from fact_wacc_annual / fact_wacc_input)
+        if compiled.metric in ("wacc_pct", "wacc_components", "wacc_build_up", "wacc_change_attribution"):
+            wacc_ann_path = repo_root / "financial_ssot" / "out" / "fact_wacc_annual.parquet"
+            wacc_inp_path = repo_root / "financial_ssot" / "out" / "fact_wacc_input.parquet"
+            if not wacc_ann_path.exists():
+                return None
+            try:
+                df_ann = pd.read_parquet(wacc_ann_path)
+                df_inp = pd.read_parquet(wacc_inp_path) if wacc_inp_path.exists() else None
+                ep = compiled.effective_period or {}
+                fy = ep.get("fy")
+                lo, hi = ep.get("from"), ep.get("to")
+
+                if compiled.metric == "wacc_pct":
+                    lo_yr = lo or "FY22"
+                    hi_yr = hi or (fy if fy else "FY26")
+                    sub_df = df_ann[(df_ann["fiscal_year"] >= lo_yr) & (df_ann["fiscal_year"] <= hi_yr)].sort_values("fiscal_year")
+                    if sub_df.empty:
+                        return None
+                    rows = []
+                    for _, r in sub_df.iterrows():
+                        f_yr = str(r["fiscal_year"])
+                        rf = float(r["rf_used_pct"]) if (pd.notna(r.get("rf_used_pct")) and r["rf_used_pct"] is not None) else None
+                        erp = float(r["erp_total_pct"]) if (pd.notna(r.get("erp_total_pct")) and r["erp_total_pct"] is not None) else None
+                        b_val = r.get("beta_2y_weekly_adj") if pd.notna(r.get("beta_2y_weekly_adj")) else (r.get("beta_industry_relevered") if pd.notna(r.get("beta_industry_relevered")) else r.get("beta_2y_weekly_raw"))
+                        beta = float(b_val) if (pd.notna(b_val) and b_val is not None) else None
+                        kd_used = float(r["kd_used_pct"]) if (pd.notna(r.get("kd_used_pct")) and r["kd_used_pct"] is not None) else (float(r["kd_pretax_pct"]) if pd.notna(r.get("kd_pretax_pct")) else None)
+                        tax_rate = float(r["tax_rate_pct"]) if pd.notna(r.get("tax_rate_pct")) else 25.17
+                        kd_at = round(kd_used * (1.0 - tax_rate / 100.0), 4) if (kd_used is not None and tax_rate is not None) else None
+                        we = float(r["weight_equity"]) if (pd.notna(r.get("weight_equity")) and r["weight_equity"] is not None) else None
+                        wd = float(r["weight_debt"]) if (pd.notna(r.get("weight_debt")) and r["weight_debt"] is not None) else (round(1.0 - we, 4) if we is not None else None)
+                        wacc_v = float(r["wacc_pct"]) if (pd.notna(r.get("wacc_pct")) and r["wacc_pct"] is not None) else None
+                        ke_v = float(r["ke_pct"]) if (pd.notna(r.get("ke_pct")) and r["ke_pct"] is not None) else None
+                        rows.append({
+                            "fiscal_year": f_yr,
+                            "wacc_pct": wacc_v,
+                            "ke_pct": ke_v,
+                            "kd_after_tax_pct": kd_at,
+                            "rf_used_pct": rf,
+                            "erp_total_pct": erp,
+                            "beta": beta,
+                            "weight_equity": we,
+                            "weight_debt": wd,
+                            "verified": bool(r.get("verified", False)),
+                            "provenance_label": "modelled",
+                            "notes": str(r.get("notes") or "Rf seed missing; WACC modelled with caveats. verified=FALSE"),
+                        })
+                    return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
+                                       latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
+
+                if compiled.metric == "wacc_components":
+                    lo_yr = lo or "FY22"
+                    hi_yr = hi or (fy if fy else "FY26")
+                    sub_df = df_ann[(df_ann["fiscal_year"] >= lo_yr) & (df_ann["fiscal_year"] <= hi_yr)].sort_values("fiscal_year")
+                    if sub_df.empty:
+                        return None
+                    rows = []
+                    for _, r in sub_df.iterrows():
+                        f_yr = str(r["fiscal_year"])
+                        rf = float(r["rf_used_pct"]) if (pd.notna(r.get("rf_used_pct")) and r["rf_used_pct"] is not None) else None
+                        erp = float(r["erp_total_pct"]) if (pd.notna(r.get("erp_total_pct")) and r["erp_total_pct"] is not None) else None
+                        b_val = r.get("beta_2y_weekly_adj") if pd.notna(r.get("beta_2y_weekly_adj")) else (r.get("beta_industry_relevered") if pd.notna(r.get("beta_industry_relevered")) else r.get("beta_2y_weekly_raw"))
+                        beta = float(b_val) if (pd.notna(b_val) and b_val is not None) else None
+                        kd_used = float(r["kd_used_pct"]) if (pd.notna(r.get("kd_used_pct")) and r["kd_used_pct"] is not None) else (float(r["kd_pretax_pct"]) if pd.notna(r.get("kd_pretax_pct")) else None)
+                        tax_rate = float(r["tax_rate_pct"]) if pd.notna(r.get("tax_rate_pct")) else 25.17
+                        kd_at = round(kd_used * (1.0 - tax_rate / 100.0), 4) if (kd_used is not None and tax_rate is not None) else None
+                        we = float(r["weight_equity"]) if (pd.notna(r.get("weight_equity")) and r["weight_equity"] is not None) else None
+                        wd = float(r["weight_debt"]) if (pd.notna(r.get("weight_debt")) and r["weight_debt"] is not None) else (round(1.0 - we, 4) if we is not None else None)
+                        wacc_v = float(r["wacc_pct"]) if (pd.notna(r.get("wacc_pct")) and r["wacc_pct"] is not None) else None
+                        ke_v = float(r["ke_pct"]) if (pd.notna(r.get("ke_pct")) and r["ke_pct"] is not None) else None
+
+                        w_rf = round(we * rf, 4) if (we is not None and rf is not None) else None
+                        w_erp = round(we * beta * erp, 4) if (we is not None and beta is not None and erp is not None) else None
+                        w_kd = round(wd * kd_at, 4) if (wd is not None and kd_at is not None) else None
+
+                        rows.append({
+                            "fiscal_year": f_yr,
+                            "weighted_rf_pct": w_rf,
+                            "weighted_erp_pct": w_erp,
+                            "weighted_kd_after_tax_pct": w_kd,
+                            "wacc_pct": wacc_v,
+                            "ke_pct": ke_v,
+                            "rf_used_pct": rf,
+                            "erp_total_pct": erp,
+                            "beta": beta,
+                            "kd_used_pct": kd_used,
+                            "tax_rate_pct": tax_rate,
+                            "weight_equity": we,
+                            "weight_debt": wd,
+                            "verified": bool(r.get("verified", False)),
+                            "provenance_label": "modelled",
+                            "notes": str(r.get("notes") or "Rf seed missing; WACC modelled with caveats. verified=FALSE"),
+                        })
+                    return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
+                                       latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
+
+                if compiled.metric == "wacc_build_up":
+                    target_fy = fy or hi or "FY26"
+                    rows = []
+                    if df_inp is not None and not df_inp.empty:
+                        inp_sub = df_inp[df_inp["fiscal_year"] == target_fy]
+                        for _, r in inp_sub.iterrows():
+                            val = r.get("value")
+                            v_float = round(float(val), 4) if (pd.notna(val) and val is not None) else None
+                            doc = str(r.get("source_doc") or "")
+                            rows.append({
+                                "fiscal_year": target_fy,
+                                "input_code": str(r.get("input_code")),
+                                "input_name": str(r.get("input_code")).replace("_", " ").title(),
+                                "value": v_float,
+                                "unit": str(r.get("unit") or ""),
+                                "source_system": str(r.get("source_system") or ""),
+                                "source_doc": doc if doc != "nan" else None,
+                                "source_page": str(r.get("source_page")) if pd.notna(r.get("source_page")) else None,
+                                "formula": str(r.get("formula")) if pd.notna(r.get("formula")) else "",
+                                "notes": str(r.get("notes")) if pd.notna(r.get("notes")) else "",
+                                "provenance_label": "modelled",
+                            })
+                    if not rows:
+                        ann_sub = df_ann[df_ann["fiscal_year"] == target_fy]
+                        if not ann_sub.empty:
+                            arow = ann_sub.iloc[0]
+                            for col in ["rf_used_pct", "erp_total_pct", "beta_2y_weekly_adj", "kd_used_pct", "tax_rate_pct", "weight_equity", "wacc_pct"]:
+                                v = arow.get(col)
+                                rows.append({
+                                    "fiscal_year": target_fy,
+                                    "input_code": col,
+                                    "input_name": col.replace("_", " ").title(),
+                                    "value": round(float(v), 4) if (pd.notna(v) and v is not None) else None,
+                                    "unit": "%" if "pct" in col else "ratio",
+                                    "source_system": "SSOT",
+                                    "source_doc": None,
+                                    "source_page": None,
+                                    "formula": "",
+                                    "notes": str(arow.get("notes") or ""),
+                                    "provenance_label": "modelled",
+                                })
+                    if rows:
+                        return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
+                                           latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
+
+                if compiled.metric == "wacc_change_attribution":
+                    from app.agents.fin_diagnostics.wacc_attribution import (
+                        attribute_wacc_change,
+                        FACTOR_LABELS,
+                    )
+                    fy_target = fy or hi or "FY23"
+                    fy_start = lo if (lo and lo != fy_target) else f"FY{int(fy_target[2:]) - 1:02d}"
+
+                    res = attribute_wacc_change(df_ann, fy_start, fy_target, df_inp)
+                    if res is not None:
+                        rows = res.waterfall_bars
+                    else:
+                        rows = [
+                            {"factor": f"WACC {fy_start}", "contribution_pct": None, "amount": None, "bar_type": "base", "is_total": True, "notes": f"Rf seed missing in {fy_start}; verified=FALSE"},
+                            {"factor": FACTOR_LABELS["rf_used"], "contribution_pct": None, "amount": None, "bar_type": "delta", "is_total": False, "notes": "FBIL / RBI 10-yr G-sec (March)"},
+                            {"factor": FACTOR_LABELS["erp_total"], "contribution_pct": None, "amount": None, "bar_type": "delta", "is_total": False, "notes": "Damodaran sovereign default spread & ERP"},
+                            {"factor": FACTOR_LABELS["beta"], "contribution_pct": None, "amount": None, "bar_type": "delta", "is_total": False, "notes": "Blume-adjusted beta / Hamada relevered"},
+                            {"factor": FACTOR_LABELS["kd_after_tax"], "contribution_pct": None, "amount": None, "bar_type": "delta", "is_total": False, "notes": "AR Note 36 (Finance costs excl. unwinding)"},
+                            {"factor": FACTOR_LABELS["weights"], "contribution_pct": None, "amount": None, "bar_type": "delta", "is_total": False, "notes": "Market equity vs book debt"},
+                            {"factor": f"WACC {fy_target}", "contribution_pct": None, "amount": None, "bar_type": "total", "is_total": True, "notes": f"Rf seed missing in {fy_target}; verified=FALSE"},
+                        ]
+                    return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
+                                       latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
+            except Exception as exc:
+                logger.warning(f"Local snapshot fallback failed for {compiled.metric}: {exc}")
+                return None
         if not snap_path.exists():
             return None
 
