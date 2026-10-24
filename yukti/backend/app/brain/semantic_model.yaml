@@ -202,7 +202,7 @@ subjects:
   corporate:
     domain: finance
     table: hrfin_gold.ssot_corporate_annual_360
-    description: "Company-level annual Schedule III 3-Statement financials (P&L, Balance Sheet, Cash Flow, Financial Ratios), Yahoo Finance (ONGC.NS) consolidated lines, realisations and KPIs, one row per FY (FY17–FY26)."
+    description: "Company-level annual Schedule III 3-Statement financials (P&L, Balance Sheet, Cash Flow, Financial Ratios), Annual Report consolidated lines, realisations and KPIs, one row per FY (FY17–FY26)."
     period: fiscal_year
     default_fy: FY26
     fields:
@@ -239,10 +239,10 @@ subjects:
       deferred_tax_cr: {expr: "ROUND(SUM(deferred_tax_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Deferred tax (₹ cr)", polarity: lower}
       pat_cr: {expr: "ROUND(SUM(pat_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Standalone profit after tax — PAT (₹ cr)", polarity: higher}
       pat_margin_corporate_pct: {expr: "ROUND(AVG(pat_margin_pct), 1)", aggregation: avg, unit: pct, label: "Standalone net PAT margin (%)", polarity: higher}
-      consolidated_revenue_cr: {expr: "ROUND(SUM(consolidated_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group revenue ONGC.NS (₹ cr)", polarity: higher}
-      consolidated_ebitda_cr: {expr: "ROUND(SUM(consolidated_ebitda_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group EBITDA ONGC.NS (₹ cr)", polarity: higher}
-      consolidated_pbt_cr: {expr: "ROUND(SUM(consolidated_pbt_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group PBT ONGC.NS (₹ cr)", polarity: higher}
-      consolidated_pat_cr: {expr: "ROUND(SUM(consolidated_pat_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group PAT ONGC.NS (₹ cr)", polarity: higher}
+      consolidated_revenue_cr: {expr: "ROUND(SUM(consolidated_revenue_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group revenue (₹ cr)", polarity: higher}
+      consolidated_ebitda_cr: {expr: "ROUND(SUM(consolidated_ebitda_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group EBITDA (₹ cr)", polarity: higher}
+      consolidated_pbt_cr: {expr: "ROUND(SUM(consolidated_pbt_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group PBT (₹ cr)", polarity: higher}
+      consolidated_pat_cr: {expr: "ROUND(SUM(consolidated_pat_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Consolidated group PAT (₹ cr)", polarity: higher}
       # --- Balance Sheet Metrics (Schedule III Notes 5–23) ---
       total_assets_cr: {expr: "ROUND(SUM(total_assets_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total assets (₹ cr)", polarity: higher}
       non_current_assets_cr: {expr: "ROUND(SUM(non_current_assets_inr_cr), 2)", aggregation: sum, unit: inr_cr, label: "Total non-current assets (₹ cr)", polarity: higher}
@@ -303,7 +303,7 @@ subjects:
   subsidiaries:
     domain: finance
     table: hrfin_silver.subsidiary_financials
-    description: "ONGC Group subsidiaries & joint ventures (HPCL, MRPL, OVL, OPAL, OTPC) annual revenue, EBITDA, PAT, ROCE and dividend contribution to Consolidated ONGC.NS (FY17–FY26)."
+    description: "ONGC Group subsidiaries & joint ventures (HPCL, MRPL, OVL, OPAL, OTPC) annual revenue, EBITDA, PAT, ROCE and dividend contribution to Consolidated ONGC Group (FY17–FY26)."
     period: fiscal_year
     default_fy: FY26
     fields:
@@ -361,21 +361,21 @@ templates:
   pnl_statement:
     domain: finance
     label: "ONGC Schedule III Statement of Profit & Loss"
-    description: "Complete 23-line Ind-AS Schedule III + Yahoo Finance (ONGC.NS) Statement of Profit & Loss (Revenue from Operations, Crude/Gas/VAP, Other Income, Royalty, OIDB Cess, SAED Windfall Tax, Net Revenue, Operating Expenses, EBITDA, Exploration Write-Offs, DD&A, Finance Costs, Exceptional Items, PBT, Tax Expense, Standalone PAT & Consolidated PAT) for a single FY (with YoY comparison) or across a 10-year range (FY17–FY26)."
+    description: "Complete Ind-AS Schedule III Annual Report Statement of Profit & Loss (Revenue from Operations, Crude/Gas/VAP, Other Income, Royalty, OIDB Cess, SAED Windfall Tax, Net Revenue, Operating Expenses, Exploration Write-Offs, DD&A, Finance Costs, Exceptional Items, PBT, Tax Expense, Standalone PAT & Consolidated PAT) for a single FY (with YoY comparison) or across a 10-year range (FY17–FY26)."
     period: fiscal_year
     default_from: FY17
     default_to: FY26
   balance_sheet:
     domain: finance
     label: "ONGC Schedule III Balance Sheet"
-    description: "Complete 24-line Ind-AS Schedule III + Yahoo Finance (ONGC.NS) Balance Sheet (Oil & Gas Producing Properties, Other PPE & ROU Lease Assets, CWIP, Exploratory Wells-in-Progress, Subsidiary/JV Investments in HPCL/OVL/MRPL/OPaL, Site Restoration Escrow Fund, Inventories, Trade Receivables, Cash & Bank, Total Assets, Equity Share Capital, Other Equity Reserves, Net Worth, Long-Term & Short-Term Debt, Ind-AS 116 Lease Liabilities, ARO Decommissioning Provision, Deferred Tax Liabilities & Current Liabilities) for a single FY or across FY17–FY26."
+    description: "Complete Ind-AS Schedule III Annual Report Balance Sheet (Oil & Gas Producing Properties, Other PPE & ROU Lease Assets, CWIP, Exploratory Wells-in-Progress, Subsidiary/JV Investments in HPCL/OVL/MRPL/OPaL, Site Restoration Escrow Fund, Inventories, Trade Receivables, Cash & Bank, Total Assets, Equity Share Capital, Other Equity Reserves, Net Worth, Long-Term & Short-Term Debt, Ind-AS 116 Lease Liabilities, ARO Decommissioning Provision, Deferred Tax Liabilities & Current Liabilities) for a single FY or across FY17–FY26."
     period: fiscal_year
     default_from: FY17
     default_to: FY26
   cash_flow_statement:
     domain: finance
     label: "ONGC Ind-AS 7 Statement of Cash Flows"
-    description: "Complete 18-line Ind-AS 7 + Yahoo Finance (ONGC.NS) Statement of Cash Flows (PBT, Non-Cash DD&A/Exploration Adjustments, Working Capital Changes, Taxes Paid, Net Operating Cash Flow OCF, Capex Outflows, Subsidiary Acquisitions, Dividends/Interest Received, Investing Cash Flow, Net Borrowings, Lease Payments, Interest & Dividends Paid, Financing Cash Flow, Opening/Closing Cash & Free Cash Flow FCF) for a single FY or across FY17–FY26."
+    description: "Complete Ind-AS 7 Annual Report Statement of Cash Flows (PBT, Non-Cash DD&A/Exploration Adjustments, Working Capital Changes, Taxes Paid, Net Operating Cash Flow OCF, Capex Outflows, Subsidiary Acquisitions, Dividends/Interest Received, Investing Cash Flow, Net Borrowings, Lease Payments, Interest & Dividends Paid, Financing Cash Flow, Opening/Closing Cash & Free Cash Flow FCF) for a single FY or across FY17–FY26."
     period: fiscal_year
     default_from: FY17
     default_to: FY26

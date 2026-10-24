@@ -1,14 +1,15 @@
 {
-  "snapshot_date": "2026-10-22",
-  "label": "financial_build snapshot (unverified; real AR data pending)",
-  "note": "P0.9: runtime snapshot used only when BigQuery is unavailable (source=local_snapshot). Replaced by AR-verified lines in P1 (SPEC-01).",
+  "snapshot_date": "2026-10-24",
+  "label": "Verified Annual Report SSOT snapshot (fact_financial_statement_line)",
+  "note": "P1.10a: runtime snapshot exported from verified fact_snapshot.parquet.",
   "files": {
-    "ongc_10yr_schedule_iii_lines.json": "cc8664bf68b83a4cef0a3c96ab28a976f7d2bb16a03f22f03b233e7257aa0945",
-    "ongc_10yr_balance_sheet_lines.json": "d7a005c74545d5a033a87d069760458a8f042a7410702d5dcbe40ff430f4eefc",
-    "ongc_10yr_cash_flow_lines.json": "a15b52176798898ce3491c9e50d8d608a9b76aabc8b524788320dc66e73d88e3",
-    "ongc_10yr_ratios_lines.json": "87bd611f64494c577b8f639ec023833136b01eddb760eec1da6ab7bebb5119d9",
-    "ongc_10yr_corporate_wide.json": "683c96942e965bdda452970be80ad516e57a55acd30f48d90ae4ceee8cccbbe3",
+    "ongc_10yr_schedule_iii_lines.json": "fa1d85ccfa4183b984dc0f963de0a02739a29b570a0c361fe3c89645485bcf97",
+    "ongc_10yr_balance_sheet_lines.json": "3995527254cf770241430ae9a77c2987b01f738227034ed62e33f500ba0e5fb8",
+    "ongc_10yr_cash_flow_lines.json": "cf8ae7f60168ce9858c76c176870fdc7fabb69daa282bab15d0aacbc205b6cdd",
+    "ongc_10yr_ratios_lines.json": "f5f49b60bfbc00ac381315097f179abb0ff6afac4eaef69c9af569cf1530a202",
+    "ongc_10yr_corporate_wide.json": "4e6c25ad09af99512dabfc47fa931591ca8a6876bd90fa4dfe4c1f008987ed39",
     "ssot_financial_line_context.json": "80e47cff16687bb137d1821bba51f25a8ba80d119ca4d87e962c402f92120bbd",
     "financial_notes_corpus.jsonl": "c7e663ab815b2e3914cc15196040a86ad9499035aa20dddc489e017966fab84a"
-  }
+  },
+  "run_id": "20261024T032346Z"
 }

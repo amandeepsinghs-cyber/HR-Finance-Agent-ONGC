@@ -1211,8 +1211,7 @@ def verify_gates(
             notes_list[idx].append(f"V10 fail: {ex}")
             if same_vintage:
                 failed_rules[idx].add("V10")
-            else:
-                passed_rules[idx].add("V10")
+            # R2-m3: Do not add V10 to passed_rules when a cross-vintage V10 check fails.
             _add_conflict(
                 conflicts, fy, scope, lc,
                 f"xbrl:{xvint}", float(xval),
@@ -1334,8 +1333,12 @@ def verify_gates(
                 return "AR FY20 PDF is image-only (scanned) and BSE Reg 33 FY20 XBRL filing contains P&L/Segment only (no BS/CF/Notes)."
             if fy_s == "FY21" and lc_s.startswith(("N", "REV.TOTAL", "SEG.")):
                 return "AR FY21 PDF is image-only (scanned); AR FY22 comparative covers face statements and select notes only."
-            if lc_s in ("PL.EMP_BENEFIT", "OTH.PAID_UP_CAPITAL", "PL.EPS_DILUTED"):
-                return "Disclosed as a separate face line in BSE Reg 33 XBRL filings (FY18-FY21, FY23-FY24); in AR P&L staff cost is inside Note 35.1 (`N351.EMP_TOTAL`) and Basic == Diluted EPS."
+            if lc_s == "PL.EMP_BENEFIT":
+                return "Disclosed as a separate face line in BSE Reg 33 XBRL filings (FY18-FY21, FY23-FY24); in AR P&L staff cost is inside Note 35.1 (`N351.EMP_TOTAL`)."
+            if lc_s == "OTH.PAID_UP_CAPITAL":
+                return "XBRL Reg 33 paid-up equity share capital face tag (FY18-FY21, FY23-FY24); on the AR Balance Sheet face this is disclosed as Equity Share Capital (`BS.SHARE_CAPITAL`)."
+            if lc_s == "PL.EPS_DILUTED":
+                return "XBRL Reg 33 diluted EPS tag (FY18-FY21, FY23-FY24); in AR P&L Basic == Diluted EPS and is captured under `PL.EPS_BASIC`."
             if lc_s.startswith("PROD."):
                 return "Directors' Report summary table in `ten_year_raw` covers FY24-FY26; full FY13-FY26 production series is in `hrfin_gold.fact_production_annual` (P1.7)."
             if fy_s in ("FY25", "FY26") and lc_s.startswith(("REV.", "QTY.", "LEVY.")):

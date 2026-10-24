@@ -162,10 +162,12 @@ async def run_planner_turn(
         return None
     is_local_snapshot = getattr(result, "source", "bigquery") == "local_snapshot"
     snapshot_caveat = None
+    snap_date = getattr(result, "snapshot_date", None) or "2026-10-24"
+    snap_run_id = getattr(result, "snapshot_run_id", None) or "ssot_v3"
     if is_local_snapshot:
-        # P0.3 (BUG-04): no "Compiled … SQL / dry-run" claim when no SQL ran
-        snapshot_caveat = (f"Shown from a local snapshot ({result.snapshot_date or 'date unknown'}); "
-                           "live data service unavailable.")
+        # P0.3 (BUG-04) & P1.10a §5.2: honest local snapshot caveat with date and run_id
+        snapshot_caveat = (f"Shown from a local snapshot ({snap_date}): "
+                           f"Served from the verified local snapshot of {snap_date}; BigQuery unavailable.")
         status.append(f"Served from local snapshot; {len(result.rows)} rows in {result.latency_ms} ms")
     else:
         status.append(f"Compiled {compiled.source} SQL; dry-run {result.dry_run_bytes:,} bytes; {len(result.rows)} rows in {result.latency_ms} ms")
@@ -228,6 +230,65 @@ async def run_planner_turn(
         )
         spoken = clarify_prompt + spoken
     notes = list(compiled.notes) + [f"Not applied: {d}" for d in compiled.dropped]
+    is_fin_ssot = (
+        compiled.subject == "corporate"
+        or compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios")
+    )
+    fin_doc: Optional[str] = None
+    fin_page: Optional[str] = None
+    fin_sys: Optional[str] = None
+    fin_footnotes: List[str] = []
+    if is_fin_ssot and result.rows:
+        # Prefer a row with an explicit ONGC_AR_* doc and page_label
+        for r in result.rows:
+            sd = str(r.get("source_doc") or "")
+            sp = str(r.get("source_page_label") or "")
+            ss = str(r.get("source_system") or "")
+            fn = str(r.get("footnote_marker") or "").strip()
+            if fn and fn not in fin_footnotes:
+                fin_footnotes.append(fn)
+            if sd.startswith("ONGC_AR_") and sp and not fin_doc:
+                fin_doc, fin_page, fin_sys = sd, sp, ss or "ar"
+        if not fin_doc:
+            r0 = result.rows[0]
+            fin_doc = str(r0.get("source_doc") or "") or None
+            fin_page = str(r0.get("source_page_label") or "") or None
+            fin_sys = str(r0.get("source_system") or "") or None
+        for fn in fin_footnotes[:3]:
+            if fn not in notes:
+                notes.append(fn)
+
+    _DERIVED_RATIO_METRICS = {
+        "roce_pct", "consolidated_roce_pct", "roe_pct", "roa_pct",
+        "debt_to_equity_ratio", "net_debt_to_ebitda_ratio", "interest_coverage_ratio",
+        "current_ratio", "quick_ratio", "receivable_days",
+        "ebitda_margin_corporate_pct", "pat_margin_corporate_pct", "financial_ratios",
+    }
+    if is_local_snapshot:
+        if is_fin_ssot:
+            src_entry: Dict[str, Any] = {
+                "kind": "data",
+                "object": f"local_snapshot:fact_financial_statement_line@{snap_run_id}",
+            }
+            if fin_doc:
+                src_entry["doc"] = fin_doc
+            if fin_page:
+                src_entry["page_label"] = fin_page
+            sources_list = [src_entry]
+        else:
+            sources_list = [{"kind": "data", "object": "local snapshot (financial_build/data)"}]
+    else:
+        data_entry: Dict[str, Any] = {"kind": "data", "object": ", ".join(compiled.tables), "sql": compiled.sql}
+        if is_fin_ssot and fin_doc:
+            data_entry["doc"] = fin_doc
+            if fin_page:
+                data_entry["page_label"] = fin_page
+        sources_list = [data_entry]
+        if is_fin_ssot and fin_doc:
+            ar_entry: Dict[str, Any] = {"kind": "ar", "object": fin_doc, "doc": fin_doc}
+            if fin_page:
+                ar_entry["page_label"] = fin_page
+            sources_list.append(ar_entry)
 
     contract: Dict[str, Any] = {
         "turn_id": turn_id,
@@ -239,11 +300,7 @@ async def run_planner_turn(
         "insights": [i.text for i in insights][:4] or [s for s in headline.split(". ") if s and "on screen" not in s][:3],
         "insights_v2": [i.to_contract() for i in insights][:6],
         "drilldowns": make_drilldowns(spec, persona, compiled.grain, max_n=4 if compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios") else 3),
-        "sources": [({"kind": "data", "object": "local snapshot (financial_build/data)"} if is_local_snapshot
-                     else {"kind": "data", "object": ", ".join(compiled.tables), "sql": compiled.sql})] + (
-            [{"kind": "policy", "object": "financial_build snapshot (unverified; real AR data pending)", "clause_ref": "hrfin_docs.financial_notes_chunks"}]
-            if compiled.subject == "corporate" or compiled.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios") else []
-        ),
+        "sources": sources_list,
         "suggestions": [],
         "access": {"status": "allowed"},
         "export_options": ["sheets", "xlsx", "pdf"],
@@ -259,9 +316,34 @@ async def run_planner_turn(
                    "sql": None if is_local_snapshot else compiled.sql},
     }
     if is_local_snapshot:
-        contract["provenance"] = {"label": "local_snapshot", "snapshot_date": result.snapshot_date,
-                                  "detail": "financial_build snapshot (unverified; real AR data pending)"}
+        prov_obj: Dict[str, Any] = {
+            "label": "local_snapshot",
+            "snapshot_date": snap_date,
+            "run_id": snap_run_id,
+            "detail": f"Served from the verified local snapshot of {snap_date}; BigQuery unavailable.",
+        }
+        if fin_doc:
+            prov_obj["doc"] = fin_doc
+        if fin_page:
+            prov_obj["page_label"] = fin_page
+        contract["provenance"] = prov_obj
         notes = [snapshot_caveat] + notes
+    elif is_fin_ssot:
+        if compiled.metric in _DERIVED_RATIO_METRICS:
+            prov_label = "derived_ar"
+        elif fin_sys == "xbrl":
+            prov_label = "verified_xbrl"
+        else:
+            prov_label = "verified_ar"
+        prov_obj = {
+            "label": prov_label,
+            "doc": fin_doc,
+            "page_label": fin_page,
+            "detail": f"Verified SSOT ({fin_doc or 'ONGC AR'}" + (f" {fin_page})" if fin_page else ")"),
+        }
+        if prov_label == "derived_ar":
+            prov_obj["badge"] = "Derived from AR"
+        contract["provenance"] = prov_obj
     if notes:
         contract["caveat"] = "; ".join(notes)[:300]
     # B3.4 consistency: access status, text and visual agree.

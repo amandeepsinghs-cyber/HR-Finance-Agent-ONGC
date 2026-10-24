@@ -42,6 +42,89 @@ WC_ATTRIBUTE_FIELDS = {"sector": "sector", "state": "state", "hard_station_cat":
                        "onshore_offshore": "onshore_offshore", "wc_type": "type", "city": "city"}
 _OPS_SQL = {"=": "=", "!=": "!=", ">": ">", ">=": ">=", "<": "<", "<=": "<="}
 
+_GOLD_DS = "hrfin_gold"
+_V_AS_REPORTED = f"{_GOLD_DS}.v_fin_statement_as_reported"
+_V_TREND_LATEST = f"{_GOLD_DS}.v_fin_trend_latest"
+_T_FACT_FIN = f"{_GOLD_DS}.fact_financial_statement_line"
+
+CORP_METRIC_TO_SSOT: Dict[str, Tuple[str, str]] = {
+    "corporate_revenue_cr": ("standalone", "PL.REV_OPS"),
+    "crude_oil_revenue_cr": ("standalone", "REV.CRUDE"),
+    "natural_gas_revenue_cr": ("standalone", "REV.GAS"),
+    "vap_revenue_cr": ("standalone", "REV.VAP"),
+    "offshore_revenue_cr": ("standalone", "SEG.REV.OFF"),
+    "onshore_revenue_cr": ("standalone", "SEG.REV.ON"),
+    "other_income_cr": ("standalone", "PL.OTHER_INCOME"),
+    "total_income_cr": ("standalone", "PL.TOTAL_INCOME"),
+    "statutory_levies_cr": ("standalone", "LEVY.TOTAL"),
+    "royalty_cr": ("standalone", "LEVY.ROYALTY"),
+    "oidb_cess_cr": ("standalone", "LEVY.OIDB_CESS"),
+    "saed_windfall_tax_cr": ("standalone", "LEVY.OTHER_SAED"),
+    "prod_transport_selling_exp_cr": ("standalone", "PL.OPEX_10YR"),
+    "operating_expenses_cr": ("standalone", "PL.OPEX_10YR"),
+    "employee_cost_cr": ("standalone", "OTH.EMP_EXPENDITURE"),
+    "employee_benefit_net_pnl_cr": ("standalone", "PL.EMP_BENEFIT"),
+    "exploration_costs_written_off_cr": ("standalone", "PL.EXPL_WRITEOFF"),
+    "survey_costs_written_off_cr": ("standalone", "PL.EXPL_SURVEY"),
+    "exploratory_wells_written_off_cr": ("standalone", "PL.EXPL_WELL"),
+    "dda_cr": ("standalone", "PL.DDA"),
+    "finance_costs_cr": ("standalone", "PL.FIN_COST"),
+    "exceptional_items_cr": ("standalone", "PL.EXCEPTIONAL"),
+    "pbt_corporate_cr": ("standalone", "PL.PBT"),
+    "tax_expense_cr": ("standalone", "PL.TAX"),
+    "current_tax_cr": ("standalone", "PL.TAX_CURRENT"),
+    "deferred_tax_cr": ("standalone", "PL.TAX_DEFERRED"),
+    "pat_cr": ("standalone", "PL.PAT"),
+    "pat_margin_corporate_pct": ("standalone", "RATIO.PAT_MARGIN_PCT"),
+    "ebitda_margin_corporate_pct": ("standalone", "RATIO.PBIDT_MARGIN_PCT"),
+    "consolidated_revenue_cr": ("consolidated", "PL.REV_OPS"),
+    "consolidated_pbt_cr": ("consolidated", "PL.PBT"),
+    "consolidated_pat_cr": ("consolidated", "PL.PAT"),
+    "total_assets_cr": ("standalone", "BS.TOTAL_ASSETS"),
+    "non_current_assets_cr": ("standalone", "BS.ASSETS.NON_CURRENT.TOTAL"),
+    "oil_and_gas_assets_cr": ("standalone", "BS.OG_ASSETS"),
+    "other_ppe_and_rou_cr": ("standalone", "BS.OTHER_PPE"),
+    "cwip_cr": ("standalone", "BS.WIP_TOTAL_10YR"),
+    "exploratory_wells_in_progress_cr": ("standalone", "BS.IAUD_EXPL_WELLS"),
+    "investments_subsidiaries_jv_cr": ("standalone", "BS.INVESTMENTS_NC_10YR"),
+    "site_restoration_fund_cr": ("standalone", "BS.SRF_DEPOSIT_NC"),
+    "current_assets_cr": ("standalone", "BS.ASSETS.CURRENT.TOTAL"),
+    "inventories_cr": ("standalone", "BS.INVENTORIES"),
+    "trade_receivables_cr": ("standalone", "BS.TRADE_REC_C"),
+    "cash_and_bank_cr": ("standalone", "BS.CCE"),
+    "equity_share_capital_cr": ("standalone", "BS.SHARE_CAPITAL"),
+    "other_equity_reserves_cr": ("standalone", "BS.OTHER_EQUITY"),
+    "net_worth_cr": ("standalone", "BS.EQUITY.TOTAL"),
+    "consolidated_net_worth_cr": ("consolidated", "BS.EQUITY.TOTAL"),
+    "non_current_liabilities_cr": ("standalone", "BS.LIAB.NON_CURRENT.TOTAL"),
+    "long_term_debt_cr": ("standalone", "BS.BORROW_NC"),
+    "short_term_debt_cr": ("standalone", "BS.BORROW_CUR"),
+    "total_debt_cr": ("standalone", "BS.BORROW_TOTAL_10YR"),
+    "lease_liabilities_cr": ("standalone", "BS.LEASE_LIAB_TOTAL_10YR"),
+    "abandonment_provision_cr": ("standalone", "BS.PROV_NC"),
+    "deferred_tax_liability_net_cr": ("standalone", "BS.DTL_NET"),
+    "current_liabilities_cr": ("standalone", "BS.LIAB.CURRENT.TOTAL"),
+    "trade_payables_cr": ("standalone", "BS.TRADE_PAY"),
+    "total_liabilities_cr": ("standalone", "BS.LIAB.TOTAL"),
+    "net_working_capital_cr": ("standalone", "BS.WORKING_CAPITAL_10YR"),
+    "capital_employed_cr": ("standalone", "OTH.CAPITAL_EMPLOYED"),
+    "total_capex_cr": ("standalone", "CAPEX.TOTAL"),
+    "operating_cash_flow_cr": ("standalone", "CF.CFO"),
+    "investing_cash_flow_cr": ("standalone", "CF.CFI"),
+    "financing_cash_flow_cr": ("standalone", "CF.CFF"),
+    "net_cash_change_cr": ("standalone", "CF.NET_CHANGE_CCE"),
+    "dividend_payout_cr": ("standalone", "OTH.DIVIDEND_DECLARED"),
+    "csr_spend_cr": ("standalone", "OTH.CSR"),
+    "roce_pct": ("standalone", "RATIO.ROCE"),
+    "roe_pct": ("standalone", "RATIO.ROE_INCL_EXC"),
+    "debt_to_equity_ratio": ("standalone", "RATIO.DEBT_EQUITY"),
+    "current_ratio": ("standalone", "RATIO.CURRENT"),
+    "receivable_days": ("standalone", "RATIO.DEBTORS_TURNOVER_DAYS"),
+    "eps_basic_inr": ("standalone", "PL.EPS_BASIC"),
+    "book_value_per_share_inr": ("standalone", "RATIO.BVPS"),
+    "dividend_per_share_inr": ("standalone", "RATIO.DPS"),
+}
+
 
 class CompileError(ValueError):
     """The spec cannot be expressed on the semantic model (caller falls back to the legacy path)."""
@@ -74,10 +157,11 @@ class QueryResult:
     total_bytes: int = 0
     latency_ms: float = 0.0
     dry_run_bytes: int = 0
-    # P0.3 (BUG-04): where the rows really came from. "bigquery" = executed SQL; "local_snapshot" = the
-    # financial_build JSON fallback used when BigQuery is unavailable (no SQL ran, so no SQL is reported).
+    # P0.3 / P1.10a (BUG-04): where the rows really came from. "bigquery" = executed SQL; "local_snapshot" = the
+    # verified fact_snapshot.parquet fallback used when BigQuery is unavailable (no SQL ran, so no SQL is reported).
     source: str = "bigquery"
     snapshot_date: Optional[str] = None
+    snapshot_run_id: Optional[str] = None
 
 
 def _q(table: str) -> str:
@@ -257,6 +341,9 @@ class Compiler:
         table = subject.table
         col_override: Dict[str, str] = {}
         grain = "row" if (spec.grain == "row" or subject.row_only) else "aggregate"
+
+        if subject.name == "corporate" and grain != "row" and metric.name in CORP_METRIC_TO_SSOT and not filters:
+            return self._compile_corporate_ssot(subject, metric, spec, dims, notes, dropped)
 
         # ---- period handling
         if subject.period == "fiscal_year":
@@ -510,6 +597,140 @@ FROM hc ORDER BY headcount_change DESC"""
                              notes=[f"Headcount 31-Mar-{m0[:4]} vs 31-Mar-{m1[:4]} (monthly snapshots)"],
                              effective_period={"from": lo, "to": hi}, grain="aggregate", data_classes=["general"])
 
+    def _compile_corporate_ssot(
+        self, subject: SubjectDef, metric: Any, spec: QuerySpec,
+        dims: List[str], notes: List[str], dropped: List[str]
+    ) -> CompiledQuery:
+        """Compile corporate subject metrics against v_fin_statement_as_reported (single-FY) or v_fin_trend_latest (multi-FY)."""
+        p = spec.period or Period()
+        available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
+        is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in dims))
+        if is_multi_fy:
+            lo = p.from_ or "FY17"
+            hi = p.to or "FY26"
+            if hi > "FY26":
+                hi = "FY26"
+            view_tbl = _V_TREND_LATEST
+            fy_where = f"fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}"
+            eff_period: Dict[str, Any] = {"from": lo, "to": hi}
+            dim_out: List[Tuple[str, str]] = [("fy", "fiscal_year")]
+            notes = list(notes) + [f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"]
+        else:
+            fy = p.fy or (p.from_ if p.from_ and p.from_ == p.to else None) or subject.default_fy or "FY26"
+            if fy not in available:
+                older = [a for a in available if a <= fy]
+                new_fy = older[-1] if older else available[-1]
+                notes = list(notes) + [f"{fy} not in data; showing {new_fy}"]
+                fy = new_fy
+            view_tbl = _V_AS_REPORTED
+            fy_where = f"fiscal_year = {_lit(fy)}"
+            eff_period = {"fy": fy}
+            dim_out = [("fy", "fiscal_year")] if "fy" in dims else []
+            is_ratio = metric.name in (
+                "roce_pct", "consolidated_roce_pct", "roe_pct", "roa_pct",
+                "debt_to_equity_ratio", "net_debt_to_ebitda_ratio", "interest_coverage_ratio",
+                "current_ratio", "quick_ratio", "receivable_days", "ebitda_margin_corporate_pct", "pat_margin_corporate_pct",
+            )
+            notes = list(notes) + [
+                f"Derived from AR · {fy}" if is_ratio else f"Verified · Annual Report ({fy}, as reported)"
+            ]
+
+        corp_families = [
+            ["statutory_levies_cr", "royalty_cr", "oidb_cess_cr", "saed_windfall_tax_cr"],
+            ["crude_oil_revenue_cr", "natural_gas_revenue_cr", "vap_revenue_cr", "corporate_revenue_cr"],
+            ["offshore_revenue_cr", "onshore_revenue_cr", "corporate_revenue_cr"],
+            ["exploration_costs_written_off_cr", "exploratory_wells_written_off_cr", "survey_costs_written_off_cr"],
+            ["tax_expense_cr", "current_tax_cr", "deferred_tax_cr"],
+            ["consolidated_pat_cr", "pat_cr", "consolidated_revenue_cr", "corporate_revenue_cr"],
+            ["operating_cash_flow_cr", "investing_cash_flow_cr", "financing_cash_flow_cr", "total_capex_cr"],
+            ["total_assets_cr", "non_current_assets_cr", "current_assets_cr", "net_worth_cr", "total_liabilities_cr"],
+            ["oil_and_gas_assets_cr", "cwip_cr", "investments_subsidiaries_jv_cr", "site_restoration_fund_cr", "non_current_assets_cr"],
+            ["total_debt_cr", "lease_liabilities_cr", "long_term_debt_cr", "short_term_debt_cr", "cash_and_bank_cr"],
+            ["net_worth_cr", "equity_share_capital_cr", "other_equity_reserves_cr", "consolidated_net_worth_cr"],
+            ["abandonment_provision_cr", "site_restoration_fund_cr", "lease_liabilities_cr", "deferred_tax_liability_net_cr"],
+            ["trade_receivables_cr", "inventories_cr", "cash_and_bank_cr"],
+            ["roce_pct", "roe_pct"],
+            ["debt_to_equity_ratio", "current_ratio"],
+            ["eps_basic_inr", "book_value_per_share_inr", "dividend_per_share_inr"],
+            ["dividend_payout_cr", "dividend_per_share_inr"],
+        ]
+        metrics = [metric.name]
+        for fam in corp_families:
+            if metric.name in fam:
+                metrics = [metric.name] + [m for m in fam if m != metric.name and m in CORP_METRIC_TO_SSOT]
+                break
+        if len(metrics) == 1 and metric.name in ("pat_cr", "pbt_corporate_cr", "corporate_revenue_cr"):
+            base_fam = ["corporate_revenue_cr", "pbt_corporate_cr", "pat_cr", "consolidated_pat_cr"]
+            metrics = [metric.name] + [m for m in base_fam if m != metric.name and m in CORP_METRIC_TO_SSOT]
+
+        p_scope, p_code = CORP_METRIC_TO_SSOT[metric.name]
+        select_exprs: List[str] = ["fiscal_year"]
+        pair_set: List[Tuple[str, str]] = []
+        for mn in metrics:
+            sc, cd = CORP_METRIC_TO_SSOT[mn]
+            if (sc, cd) not in pair_set:
+                pair_set.append((sc, cd))
+            select_exprs.append(
+                f"MAX(IF(scope = {_lit(sc)} AND line_code = {_lit(cd)}, ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS {mn}"
+            )
+        extra_cols: List[str] = []
+        if metric.name == "roce_pct":
+            pair_set.append(("standalone", "RATIO.ROCE_INCL_EXC"))
+            select_exprs.append(
+                "MAX(IF(scope = 'standalone' AND line_code = 'RATIO.ROCE_INCL_EXC', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS roce_incl_exc_pct"
+            )
+            extra_cols.append("roce_incl_exc_pct")
+        if metric.name == "dividend_payout_cr":
+            pair_set.append(("standalone", "RATIO.DIVIDEND_PCT"))
+            select_exprs.append(
+                "MAX(IF(scope = 'standalone' AND line_code = 'RATIO.DIVIDEND_PCT', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS dividend_pct"
+            )
+            extra_cols.append("dividend_pct")
+
+        select_exprs.extend([
+            f"MAX(IF(scope = {_lit(p_scope)} AND line_code = {_lit(p_code)}, line_code, NULL)) AS line_code",
+            f"MAX(IF(scope = {_lit(p_scope)} AND line_code = {_lit(p_code)}, display_name, NULL)) AS display_name",
+            f"MAX(IF(scope = {_lit(p_scope)} AND line_code = {_lit(p_code)}, ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS value_inr_cr",
+            f"LOGICAL_OR(IF(scope = {_lit(p_scope)} AND line_code = {_lit(p_code)}, is_restated, FALSE)) AS is_restated",
+            f"MAX(IF(scope = {_lit(p_scope)} AND line_code = {_lit(p_code)}, COALESCE(footnote_marker, notes), NULL)) AS restatement_note",
+            f"MAX(IF(scope = {_lit(p_scope)} AND line_code = {_lit(p_code)}, CASE WHEN is_restated THEN '†' ELSE footnote_marker END, NULL)) AS footnote_marker",
+            f"MAX(IF(scope = {_lit(p_scope)} AND line_code = {_lit(p_code)}, REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf'), NULL)) AS source_doc",
+            f"MAX(IF(scope = {_lit(p_scope)} AND line_code = {_lit(p_code)}, source_page_label, NULL)) AS source_page_label",
+            f"MAX(IF(scope = {_lit(p_scope)} AND line_code = {_lit(p_code)}, source_system, NULL)) AS source_system",
+        ])
+
+        by_scope: Dict[str, List[str]] = {}
+        for sc, cd in pair_set:
+            if cd not in by_scope.setdefault(sc, []):
+                by_scope[sc].append(cd)
+        scope_conds = [
+            f"(scope = {_lit(sc)} AND line_code IN ({', '.join(_lit(c) for c in cds)}))"
+            for sc, cds in by_scope.items()
+        ]
+        sql = (
+            f"SELECT\n  " + ",\n  ".join(select_exprs)
+            + f"\nFROM {_q(view_tbl)}"
+            + f"\nWHERE {fy_where} AND verified = TRUE AND ({' OR '.join(scope_conds)})"
+            + "\nGROUP BY fiscal_year\nORDER BY fiscal_year ASC"
+        )
+        return CompiledQuery(
+            sql=sql,
+            subject="corporate",
+            metric=metric.name,
+            metric_label=metric.label,
+            unit=metric.unit,
+            source="generated",
+            tables=[view_tbl],
+            dims=dim_out,
+            value_columns=metrics + extra_cols,
+            notes=notes,
+            dropped=dropped,
+            effective_period=eff_period,
+            grain="aggregate",
+            data_classes=[metric.data_class],
+            aggregation=metric.aggregation,
+        )
+
     def _compile_pnl_statement(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
@@ -521,25 +742,36 @@ FROM hc ORDER BY headcount_change DESC"""
                 hi = "FY26"
             sql = f"""SELECT
   fiscal_year,
-  ROUND(gross_revenue_inr_cr, 0) AS revenue_from_ops_cr,
-  ROUND(other_income_inr_cr, 0) AS other_income_cr,
-  ROUND(statutory_levies_total_inr_cr, 0) AS statutory_levies_cr,
-  ROUND(royalty_inr_cr, 0) AS royalty_cr,
-  ROUND(oidb_cess_inr_cr, 0) AS oidb_cess_cr,
-  ROUND(saed_windfall_tax_inr_cr, 0) AS saed_windfall_tax_cr,
-  ROUND(net_revenue_inr_cr, 0) AS net_revenue_cr,
-  ROUND(operating_expenses_total_inr_cr, 0) AS operating_expenses_cr,
-  ROUND(ebitda_inr_cr, 0) AS ebitda_cr,
-  ROUND(exploration_costs_written_off_inr_cr, 0) AS exploration_writeoff_cr,
-  ROUND(dda_inr_cr, 0) AS dda_cr,
-  ROUND(finance_costs_inr_cr, 0) AS finance_costs_cr,
-  ROUND(exceptional_items_inr_cr, 0) AS exceptional_items_cr,
-  ROUND(pbt_inr_cr, 0) AS pbt_cr,
-  ROUND(tax_expense_total_inr_cr, 0) AS tax_expense_cr,
-  ROUND(pat_inr_cr, 0) AS standalone_pat_cr,
-  ROUND(consolidated_pat_inr_cr, 0) AS consolidated_pat_cr
-FROM {_q('hrfin_gold.ssot_corporate_annual_360')}
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.REV_OPS', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS revenue_from_ops_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.OTHER_INCOME', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS other_income_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.TOTAL_INCOME', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS total_income_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'LEVY.TOTAL', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS statutory_levies_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'LEVY.ROYALTY', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS royalty_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'LEVY.OIDB_CESS', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS oidb_cess_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'LEVY.OTHER_SAED', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS saed_windfall_tax_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.OPEX_10YR', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS operating_expenses_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.EXPL_WRITEOFF', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS exploration_writeoff_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.DDA', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS dda_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.FIN_COST', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS finance_costs_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.TOTAL_EXP', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS total_expenses_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.EXCEPTIONAL', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS exceptional_items_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.PBT', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS pbt_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.TAX', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS tax_expense_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.PAT', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS standalone_pat_cr,
+  MAX(IF(scope = 'consolidated' AND line_code = 'PL.PAT', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS consolidated_pat_cr,
+  LOGICAL_OR(is_restated) AS is_restated,
+  STRING_AGG(DISTINCT footnote_marker, '; ') AS restatement_note,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.REV_OPS', REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf'), NULL)) AS source_doc,
+  MAX(IF(scope = 'standalone' AND line_code = 'PL.REV_OPS', source_page_label, NULL)) AS source_page_label
+FROM {_q(_V_TREND_LATEST)}
 WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND line_code IN (
+    'PL.REV_OPS', 'PL.OTHER_INCOME', 'PL.TOTAL_INCOME', 'LEVY.TOTAL', 'LEVY.ROYALTY',
+    'LEVY.OIDB_CESS', 'LEVY.OTHER_SAED', 'PL.OPEX_10YR', 'PL.EXPL_WRITEOFF',
+    'PL.DDA', 'PL.FIN_COST', 'PL.TOTAL_EXP', 'PL.EXCEPTIONAL', 'PL.PBT', 'PL.TAX', 'PL.PAT'
+  )
+GROUP BY fiscal_year
 ORDER BY fiscal_year ASC"""
             return CompiledQuery(
                 sql=sql,
@@ -548,13 +780,13 @@ ORDER BY fiscal_year ASC"""
                 metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
                 unit="inr_cr",
                 source="template:pnl_statement",
-                tables=["hrfin_gold.ssot_corporate_annual_360"],
+                tables=[_V_TREND_LATEST],
                 dims=[("fy", "fiscal_year")],
                 value_columns=[
-                    "revenue_from_ops_cr", "ebitda_cr", "pbt_cr", "standalone_pat_cr",
+                    "revenue_from_ops_cr", "total_income_cr", "pbt_cr", "standalone_pat_cr",
                     "consolidated_pat_cr", "statutory_levies_cr", "exploration_writeoff_cr", "dda_cr",
                 ],
-                notes=[f"Source: financial_build snapshot (unverified; real AR data pending) ({lo}–{hi})"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
+                notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
                 effective_period={"from": lo, "to": hi},
                 grain="aggregate",
                 data_classes=["general"],
@@ -563,22 +795,45 @@ ORDER BY fiscal_year ASC"""
         fy = p.fy or "FY26"
         if fy not in available:
             fy = "FY26"
-        sql = f"""SELECT
-  line_order,
-  line_name AS line_item,
-  schedule_ref AS note_ref,
-  yahoo_finance_line,
-  ROUND(amount_inr_cr, 2) AS amount_cr,
-  ROUND(prior_fy_amount_inr_cr, 2) AS prior_fy_cr,
-  ROUND(yoy_delta_inr_cr, 2) AS yoy_delta_cr,
-  ROUND(yoy_change_pct, 1) AS yoy_change_pct,
-  ROUND(pct_of_revenue, 1) AS pct_of_revenue,
-  section,
-  line_code,
-  driver_note
-FROM {_q('hrfin_gold.ssot_corporate_pnl_lines')}
-WHERE fiscal_year = {_lit(fy)}
-ORDER BY line_order ASC"""
+        prev_fy = f"FY{int(fy[2:]) - 1:02d}"
+        sql = f"""WITH cur AS (
+  SELECT *
+  FROM {_q(_V_AS_REPORTED)}
+  WHERE statement = 'pnl' AND fiscal_year = {_lit(fy)} AND scope = 'standalone' AND verified = TRUE
+),
+prv AS (
+  SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
+  FROM {_q(_V_AS_REPORTED)}
+  WHERE statement = 'pnl' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND verified = TRUE
+),
+base AS (
+  SELECT MAX(IF(line_code = 'PL.REV_OPS', COALESCE(value_inr_cr, value), NULL)) AS base_val FROM cur
+)
+SELECT
+  cur.display_order AS line_order,
+  cur.line_code,
+  cur.display_name,
+  cur.display_name AS line_item,
+  cur.level,
+  cur.line_kind,
+  cur.section,
+  COALESCE(cur.ar_note_ref_typical, cur.schedule3_ref, '') AS note_ref,
+  cur.fiscal_year,
+  ROUND(COALESCE(cur.value_inr_cr, cur.value), 2) AS value_inr_cr,
+  ROUND(COALESCE(cur.value_inr_cr, cur.value), 2) AS amount_cr,
+  ROUND(prv.prev_val, 2) AS prior_fy_cr,
+  ROUND(COALESCE(cur.value_inr_cr, cur.value) - prv.prev_val, 2) AS yoy_delta_cr,
+  ROUND(SAFE_DIVIDE(100.0 * (COALESCE(cur.value_inr_cr, cur.value) - prv.prev_val), ABS(prv.prev_val)), 1) AS yoy_change_pct,
+  ROUND(SAFE_DIVIDE(100.0 * COALESCE(cur.value_inr_cr, cur.value), base.base_val), 1) AS pct_of_revenue,
+  cur.is_restated,
+  cur.footnote_marker,
+  REGEXP_REPLACE(cur.source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  cur.source_page_label,
+  cur.source_system
+FROM cur
+LEFT JOIN prv USING (line_code)
+CROSS JOIN base
+ORDER BY cur.display_order ASC, cur.line_order ASC"""
         return CompiledQuery(
             sql=sql,
             subject="corporate",
@@ -586,10 +841,10 @@ ORDER BY line_order ASC"""
             metric_label="ONGC Schedule III Statement of Profit & Loss",
             unit="inr_cr",
             source="template:pnl_statement",
-            tables=["hrfin_gold.ssot_corporate_pnl_lines", "hrfin_gold.ssot_corporate_annual_360"],
+            tables=[_V_AS_REPORTED],
             dims=[("line_item", "line_item")],
             value_columns=["amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_revenue"],
-            notes=[f"Source: financial_build snapshot (unverified; real AR data pending) · {fy}"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
+            notes=[f"Verified · Annual Report ({fy}, as reported)"],
             effective_period={"fy": fy},
             grain="aggregate",
             data_classes=["general"],
@@ -607,19 +862,31 @@ ORDER BY line_order ASC"""
                 hi = "FY26"
             sql = f"""SELECT
   fiscal_year,
-  ROUND(total_assets_inr_cr, 0) AS total_assets_cr,
-  ROUND(non_current_assets_inr_cr, 0) AS non_current_assets_cr,
-  ROUND(oil_and_gas_assets_inr_cr, 0) AS oil_and_gas_assets_cr,
-  ROUND(cwip_inr_cr, 0) AS cwip_cr,
-  ROUND(investments_subsidiaries_jv_inr_cr, 0) AS investments_subsidiaries_cr,
-  ROUND(current_assets_inr_cr, 0) AS current_assets_cr,
-  ROUND(cash_and_bank_inr_cr, 0) AS cash_and_bank_cr,
-  ROUND(net_worth_inr_cr, 0) AS net_worth_cr,
-  ROUND(total_debt_inr_cr, 0) AS total_debt_cr,
-  ROUND(abandonment_provision_inr_cr, 0) AS abandonment_provision_cr,
-  ROUND(total_liabilities_inr_cr, 0) AS total_liabilities_cr
-FROM {_q('hrfin_gold.ssot_corporate_annual_360')}
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.TOTAL_ASSETS', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS total_assets_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.ASSETS.NON_CURRENT.TOTAL', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS non_current_assets_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.OG_ASSETS', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS oil_and_gas_assets_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.WIP_TOTAL_10YR', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS cwip_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.INVESTMENTS_NC_10YR', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS investments_subsidiaries_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.ASSETS.CURRENT.TOTAL', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS current_assets_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.CCE', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS cash_and_bank_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.EQUITY.TOTAL', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS net_worth_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.BORROW_TOTAL_10YR', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS total_debt_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.PROV_NC', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS abandonment_provision_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.LIAB.TOTAL', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS total_liabilities_cr,
+  LOGICAL_OR(is_restated) AS is_restated,
+  STRING_AGG(DISTINCT footnote_marker, '; ') AS restatement_note,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.TOTAL_ASSETS', REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf'), NULL)) AS source_doc,
+  MAX(IF(scope = 'standalone' AND line_code = 'BS.TOTAL_ASSETS', source_page_label, NULL)) AS source_page_label
+FROM {_q(_V_TREND_LATEST)}
 WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND line_code IN (
+    'BS.TOTAL_ASSETS', 'BS.ASSETS.NON_CURRENT.TOTAL', 'BS.OG_ASSETS', 'BS.WIP_TOTAL_10YR',
+    'BS.INVESTMENTS_NC_10YR', 'BS.ASSETS.CURRENT.TOTAL', 'BS.CCE', 'BS.EQUITY.TOTAL',
+    'BS.BORROW_TOTAL_10YR', 'BS.PROV_NC', 'BS.LIAB.TOTAL'
+  )
+GROUP BY fiscal_year
 ORDER BY fiscal_year ASC"""
             return CompiledQuery(
                 sql=sql,
@@ -628,13 +895,13 @@ ORDER BY fiscal_year ASC"""
                 metric_label=f"ONGC Schedule III Balance Sheet Trend ({lo}–{hi})",
                 unit="inr_cr",
                 source="template:balance_sheet",
-                tables=["hrfin_gold.ssot_corporate_annual_360"],
+                tables=[_V_TREND_LATEST],
                 dims=[("fy", "fiscal_year")],
                 value_columns=[
                     "total_assets_cr", "net_worth_cr", "non_current_assets_cr", "current_assets_cr",
                     "total_liabilities_cr", "total_debt_cr", "cash_and_bank_cr", "cwip_cr",
                 ],
-                notes=[f"Source: financial_build snapshot (unverified; real AR data pending) ({lo}–{hi})"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
+                notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
                 effective_period={"from": lo, "to": hi},
                 grain="aggregate",
                 data_classes=["general"],
@@ -643,22 +910,45 @@ ORDER BY fiscal_year ASC"""
         fy = p.fy or "FY26"
         if fy not in available:
             fy = "FY26"
-        sql = f"""SELECT
-  line_order,
-  line_name AS line_item,
-  schedule_ref AS note_ref,
-  section,
-  ROUND(amount_inr_cr, 2) AS amount_cr,
-  ROUND(prior_fy_amount_inr_cr, 2) AS prior_fy_cr,
-  ROUND(yoy_delta_inr_cr, 2) AS yoy_delta_cr,
-  ROUND(yoy_change_pct, 1) AS yoy_change_pct,
-  ROUND(pct_of_total_assets, 1) AS pct_of_assets,
-  yahoo_finance_line,
-  line_code,
-  driver_note
-FROM {_q('hrfin_gold.ssot_corporate_balance_sheet_lines')}
-WHERE fiscal_year = {_lit(fy)}
-ORDER BY line_order ASC"""
+        prev_fy = f"FY{int(fy[2:]) - 1:02d}"
+        sql = f"""WITH cur AS (
+  SELECT *
+  FROM {_q(_V_AS_REPORTED)}
+  WHERE statement = 'balance_sheet' AND fiscal_year = {_lit(fy)} AND scope = 'standalone' AND verified = TRUE
+),
+prv AS (
+  SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
+  FROM {_q(_V_AS_REPORTED)}
+  WHERE statement = 'balance_sheet' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND verified = TRUE
+),
+base AS (
+  SELECT MAX(IF(line_code = 'BS.TOTAL_ASSETS', COALESCE(value_inr_cr, value), NULL)) AS base_val FROM cur
+)
+SELECT
+  cur.display_order AS line_order,
+  cur.line_code,
+  cur.display_name,
+  cur.display_name AS line_item,
+  cur.level,
+  cur.line_kind,
+  cur.section,
+  COALESCE(cur.ar_note_ref_typical, cur.schedule3_ref, '') AS note_ref,
+  cur.fiscal_year,
+  ROUND(COALESCE(cur.value_inr_cr, cur.value), 2) AS value_inr_cr,
+  ROUND(COALESCE(cur.value_inr_cr, cur.value), 2) AS amount_cr,
+  ROUND(prv.prev_val, 2) AS prior_fy_cr,
+  ROUND(COALESCE(cur.value_inr_cr, cur.value) - prv.prev_val, 2) AS yoy_delta_cr,
+  ROUND(SAFE_DIVIDE(100.0 * (COALESCE(cur.value_inr_cr, cur.value) - prv.prev_val), ABS(prv.prev_val)), 1) AS yoy_change_pct,
+  ROUND(SAFE_DIVIDE(100.0 * COALESCE(cur.value_inr_cr, cur.value), base.base_val), 1) AS pct_of_assets,
+  cur.is_restated,
+  cur.footnote_marker,
+  REGEXP_REPLACE(cur.source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  cur.source_page_label,
+  cur.source_system
+FROM cur
+LEFT JOIN prv USING (line_code)
+CROSS JOIN base
+ORDER BY cur.display_order ASC, cur.line_order ASC"""
         return CompiledQuery(
             sql=sql,
             subject="corporate",
@@ -666,10 +956,10 @@ ORDER BY line_order ASC"""
             metric_label="ONGC Schedule III Balance Sheet",
             unit="inr_cr",
             source="template:balance_sheet",
-            tables=["hrfin_gold.ssot_corporate_balance_sheet_lines", "hrfin_gold.ssot_corporate_annual_360"],
+            tables=[_V_AS_REPORTED],
             dims=[("line_item", "line_item")],
             value_columns=["amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_assets"],
-            notes=[f"Source: financial_build snapshot (unverified; real AR data pending) · {fy}"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
+            notes=[f"Verified · Annual Report ({fy}, as reported)"],
             effective_period={"fy": fy},
             grain="aggregate",
             data_classes=["general"],
@@ -687,15 +977,27 @@ ORDER BY line_order ASC"""
                 hi = "FY26"
             sql = f"""SELECT
   fiscal_year,
-  ROUND(operating_cash_flow_inr_cr, 0) AS operating_cash_flow_cr,
-  ROUND(investing_cash_flow_inr_cr, 0) AS investing_cash_flow_cr,
-  ROUND(financing_cash_flow_inr_cr, 0) AS financing_cash_flow_cr,
-  ROUND(total_capex_spent_inr_cr, 0) AS total_capex_cr,
-  ROUND(free_cash_flow_inr_cr, 0) AS free_cash_flow_cr,
-  ROUND(net_cash_change_inr_cr, 0) AS net_cash_change_cr,
-  ROUND(closing_cash_inr_cr, 0) AS closing_cash_cr
-FROM {_q('hrfin_gold.ssot_corporate_annual_360')}
+  MAX(IF(scope = 'standalone' AND line_code = 'CF.CFO', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS operating_cash_flow_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'CF.CFI', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS investing_cash_flow_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'CF.CFF', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS financing_cash_flow_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'CAPEX.TOTAL', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS total_capex_cr,
+  ROUND(
+    MAX(IF(scope = 'standalone' AND line_code = 'CF.CFO', COALESCE(value_inr_cr, value), NULL))
+    - ABS(COALESCE(MAX(IF(scope = 'standalone' AND line_code = 'CAPEX.TOTAL', COALESCE(value_inr_cr, value), NULL)), 0)),
+    2
+  ) AS free_cash_flow_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'CF.NET_CHANGE_CCE', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS net_cash_change_cr,
+  MAX(IF(scope = 'standalone' AND line_code = 'CF.CCE_CLOSE', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS closing_cash_cr,
+  LOGICAL_OR(is_restated) AS is_restated,
+  STRING_AGG(DISTINCT footnote_marker, '; ') AS restatement_note,
+  MAX(IF(scope = 'standalone' AND line_code = 'CF.CFO', REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf'), NULL)) AS source_doc,
+  MAX(IF(scope = 'standalone' AND line_code = 'CF.CFO', source_page_label, NULL)) AS source_page_label
+FROM {_q(_V_TREND_LATEST)}
 WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND line_code IN ('CF.CFO', 'CF.CFI', 'CF.CFF', 'CAPEX.TOTAL', 'CF.NET_CHANGE_CCE', 'CF.CCE_CLOSE')
+GROUP BY fiscal_year
 ORDER BY fiscal_year ASC"""
             return CompiledQuery(
                 sql=sql,
@@ -704,13 +1006,13 @@ ORDER BY fiscal_year ASC"""
                 metric_label=f"ONGC Ind-AS 7 Cash Flow Trend ({lo}–{hi})",
                 unit="inr_cr",
                 source="template:cash_flow_statement",
-                tables=["hrfin_gold.ssot_corporate_annual_360"],
+                tables=[_V_TREND_LATEST],
                 dims=[("fy", "fiscal_year")],
                 value_columns=[
                     "operating_cash_flow_cr", "free_cash_flow_cr", "total_capex_cr",
                     "investing_cash_flow_cr", "financing_cash_flow_cr", "closing_cash_cr",
                 ],
-                notes=[f"Source: financial_build snapshot (unverified; real AR data pending) ({lo}–{hi})"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
+                notes=[f"Verified · Annual Report trend ({lo}–{hi}, latest comparative vintage)"],
                 effective_period={"from": lo, "to": hi},
                 grain="aggregate",
                 data_classes=["general"],
@@ -719,22 +1021,45 @@ ORDER BY fiscal_year ASC"""
         fy = p.fy or "FY26"
         if fy not in available:
             fy = "FY26"
-        sql = f"""SELECT
-  line_order,
-  line_name AS line_item,
-  schedule_ref AS note_ref,
-  section,
-  ROUND(amount_inr_cr, 2) AS amount_cr,
-  ROUND(prior_fy_amount_inr_cr, 2) AS prior_fy_cr,
-  ROUND(yoy_delta_inr_cr, 2) AS yoy_delta_cr,
-  ROUND(yoy_change_pct, 1) AS yoy_change_pct,
-  ROUND(pct_of_ocf, 1) AS pct_of_ocf,
-  yahoo_finance_line,
-  line_code,
-  driver_note
-FROM {_q('hrfin_gold.ssot_corporate_cash_flow_lines')}
-WHERE fiscal_year = {_lit(fy)}
-ORDER BY line_order ASC"""
+        prev_fy = f"FY{int(fy[2:]) - 1:02d}"
+        sql = f"""WITH cur AS (
+  SELECT *
+  FROM {_q(_V_AS_REPORTED)}
+  WHERE statement = 'cash_flow' AND fiscal_year = {_lit(fy)} AND scope = 'standalone' AND verified = TRUE
+),
+prv AS (
+  SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
+  FROM {_q(_V_AS_REPORTED)}
+  WHERE statement = 'cash_flow' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND verified = TRUE
+),
+base AS (
+  SELECT MAX(IF(line_code = 'CF.CFO', COALESCE(value_inr_cr, value), NULL)) AS base_val FROM cur
+)
+SELECT
+  cur.display_order AS line_order,
+  cur.line_code,
+  cur.display_name,
+  cur.display_name AS line_item,
+  cur.level,
+  cur.line_kind,
+  cur.section,
+  COALESCE(cur.ar_note_ref_typical, cur.schedule3_ref, 'Ind-AS 7') AS note_ref,
+  cur.fiscal_year,
+  ROUND(COALESCE(cur.value_inr_cr, cur.value), 2) AS value_inr_cr,
+  ROUND(COALESCE(cur.value_inr_cr, cur.value), 2) AS amount_cr,
+  ROUND(prv.prev_val, 2) AS prior_fy_cr,
+  ROUND(COALESCE(cur.value_inr_cr, cur.value) - prv.prev_val, 2) AS yoy_delta_cr,
+  ROUND(SAFE_DIVIDE(100.0 * (COALESCE(cur.value_inr_cr, cur.value) - prv.prev_val), ABS(prv.prev_val)), 1) AS yoy_change_pct,
+  ROUND(SAFE_DIVIDE(100.0 * COALESCE(cur.value_inr_cr, cur.value), base.base_val), 1) AS pct_of_ocf,
+  cur.is_restated,
+  cur.footnote_marker,
+  REGEXP_REPLACE(cur.source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  cur.source_page_label,
+  cur.source_system
+FROM cur
+LEFT JOIN prv USING (line_code)
+CROSS JOIN base
+ORDER BY cur.display_order ASC, cur.line_order ASC"""
         return CompiledQuery(
             sql=sql,
             subject="corporate",
@@ -742,10 +1067,10 @@ ORDER BY line_order ASC"""
             metric_label="ONGC Ind-AS 7 Statement of Cash Flows",
             unit="inr_cr",
             source="template:cash_flow_statement",
-            tables=["hrfin_gold.ssot_corporate_cash_flow_lines", "hrfin_gold.ssot_corporate_annual_360"],
+            tables=[_V_AS_REPORTED],
             dims=[("line_item", "line_item")],
             value_columns=["amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_ocf"],
-            notes=[f"Source: financial_build snapshot (unverified; real AR data pending) · {fy}"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
+            notes=[f"Verified · Annual Report ({fy}, as reported)"],
             effective_period={"fy": fy},
             grain="aggregate",
             data_classes=["general"],
@@ -763,16 +1088,27 @@ ORDER BY line_order ASC"""
                 hi = "FY26"
             sql = f"""SELECT
   fiscal_year,
-  ROUND(ebitda_margin_pct, 1) AS ebitda_margin_pct,
-  ROUND(pat_margin_pct, 1) AS pat_margin_pct,
-  ROUND(standalone_roce_pct, 1) AS roce_pct,
-  ROUND(roe_pct, 1) AS roe_pct,
-  ROUND(debt_to_equity_ratio, 2) AS debt_to_equity_ratio,
-  ROUND(current_ratio, 2) AS current_ratio,
-  ROUND(eps_basic_inr, 2) AS eps_basic_inr,
-  ROUND(dividend_per_share_inr, 2) AS dividend_per_share_inr
-FROM {_q('hrfin_gold.ssot_corporate_annual_360')}
+  MAX(IF(scope = 'standalone' AND line_code = 'RATIO.PBIDT_MARGIN_PCT', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS ebitda_margin_pct,
+  MAX(IF(scope = 'standalone' AND line_code = 'RATIO.PAT_MARGIN_PCT', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS pat_margin_pct,
+  MAX(IF(scope = 'standalone' AND line_code = 'RATIO.ROCE', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS roce_pct,
+  MAX(IF(scope = 'standalone' AND line_code = 'RATIO.ROE_INCL_EXC', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS roe_pct,
+  MAX(IF(scope = 'standalone' AND line_code = 'RATIO.DEBT_EQUITY', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS debt_to_equity_ratio,
+  MAX(IF(scope = 'standalone' AND line_code = 'RATIO.CURRENT', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS current_ratio,
+  MAX(IF(scope = 'standalone' AND line_code IN ('PL.EPS_BASIC', 'RATIO.EPS'), ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS eps_basic_inr,
+  MAX(IF(scope = 'standalone' AND line_code = 'RATIO.DPS', ROUND(COALESCE(value_inr_cr, value), 2), NULL)) AS dividend_per_share_inr,
+  LOGICAL_OR(is_restated) AS is_restated,
+  STRING_AGG(DISTINCT footnote_marker, '; ') AS restatement_note,
+  MAX(IF(scope = 'standalone' AND line_code = 'RATIO.ROCE', REGEXP_REPLACE(source_doc, r'\\.txt$', '.pdf'), NULL)) AS source_doc,
+  MAX(IF(scope = 'standalone' AND line_code = 'RATIO.ROCE', source_page_label, NULL)) AS source_page_label
+FROM {_q(_V_TREND_LATEST)}
 WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
+  AND verified = TRUE
+  AND scope = 'standalone'
+  AND line_code IN (
+    'RATIO.PBIDT_MARGIN_PCT', 'RATIO.PAT_MARGIN_PCT', 'RATIO.ROCE', 'RATIO.ROE_INCL_EXC',
+    'RATIO.DEBT_EQUITY', 'RATIO.CURRENT', 'PL.EPS_BASIC', 'RATIO.EPS', 'RATIO.DPS'
+  )
+GROUP BY fiscal_year
 ORDER BY fiscal_year ASC"""
             return CompiledQuery(
                 sql=sql,
@@ -781,13 +1117,13 @@ ORDER BY fiscal_year ASC"""
                 metric_label=f"ONGC Key Financial Ratios Trend ({lo}–{hi})",
                 unit="pct",
                 source="template:financial_ratios",
-                tables=["hrfin_gold.ssot_corporate_annual_360"],
+                tables=[_V_TREND_LATEST],
                 dims=[("fy", "fiscal_year")],
                 value_columns=[
                     "ebitda_margin_pct", "pat_margin_pct", "roce_pct", "roe_pct",
                     "debt_to_equity_ratio", "current_ratio", "eps_basic_inr", "dividend_per_share_inr",
                 ],
-                notes=[f"ONGC Financial Ratios & Per-Share Metrics ({lo}–{hi})"],
+                notes=[f"Derived from AR · Financial Ratios ({lo}–{hi})"],
                 effective_period={"from": lo, "to": hi},
                 grain="aggregate",
                 data_classes=["general"],
@@ -796,19 +1132,40 @@ ORDER BY fiscal_year ASC"""
         fy = p.fy or "FY26"
         if fy not in available:
             fy = "FY26"
-        sql = f"""SELECT
-  line_order,
-  ratio_name AS line_item,
-  category,
-  unit,
-  ROUND(value, 2) AS value,
-  ROUND(prior_fy_value, 2) AS prior_fy_value,
-  ROUND(yoy_delta, 2) AS yoy_delta,
-  formula,
-  line_code
-FROM {_q('hrfin_gold.ssot_corporate_ratios_lines')}
-WHERE fiscal_year = {_lit(fy)}
-ORDER BY line_order ASC"""
+        prev_fy = f"FY{int(fy[2:]) - 1:02d}"
+        sql = f"""WITH cur AS (
+  SELECT *
+  FROM {_q(_V_AS_REPORTED)}
+  WHERE statement = 'ratio' AND fiscal_year = {_lit(fy)} AND scope = 'standalone' AND verified = TRUE
+),
+prv AS (
+  SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
+  FROM {_q(_V_AS_REPORTED)}
+  WHERE statement = 'ratio' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND verified = TRUE
+)
+SELECT
+  cur.display_order AS line_order,
+  cur.line_code,
+  cur.display_name,
+  cur.display_name AS line_item,
+  cur.level,
+  cur.line_kind,
+  cur.section AS category,
+  cur.unit,
+  cur.fiscal_year,
+  ROUND(COALESCE(cur.value_inr_cr, cur.value), 2) AS value_inr_cr,
+  ROUND(COALESCE(cur.value, cur.value_inr_cr), 2) AS value,
+  ROUND(prv.prev_val, 2) AS prior_fy_value,
+  ROUND(COALESCE(cur.value, cur.value_inr_cr) - prv.prev_val, 2) AS yoy_delta,
+  COALESCE(cur.formula, cur.subtotal_formula, '') AS formula,
+  cur.is_restated,
+  cur.footnote_marker,
+  REGEXP_REPLACE(cur.source_doc, r'\\.txt$', '.pdf') AS source_doc,
+  cur.source_page_label,
+  cur.source_system
+FROM cur
+LEFT JOIN prv USING (line_code)
+ORDER BY cur.display_order ASC, cur.line_order ASC"""
         return CompiledQuery(
             sql=sql,
             subject="corporate",
@@ -816,10 +1173,10 @@ ORDER BY line_order ASC"""
             metric_label="ONGC Financial Ratios & Credit Scorecard",
             unit="ratio",
             source="template:financial_ratios",
-            tables=["hrfin_gold.ssot_corporate_ratios_lines", "hrfin_gold.ssot_corporate_annual_360"],
+            tables=[_V_AS_REPORTED],
             dims=[("line_item", "line_item")],
             value_columns=["value", "prior_fy_value", "yoy_delta"],
-            notes=[f"Source: financial_build snapshot (unverified; real AR data pending) · {fy}"],  # P0.3 (BUG-02): honest "unverified" label until SPEC-01 lands
+            notes=[f"Derived from AR · {fy}"],
             effective_period={"fy": fy},
             grain="aggregate",
             data_classes=["general"],
@@ -870,135 +1227,303 @@ ORDER BY line_order ASC"""
                            latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=dry)
 
     def _execute_local_financial_fallback(self, compiled: CompiledQuery) -> Optional[QueryResult]:
-        """Deterministic local JSON fallback for 3-statements, ratios, and corporate 360 when BigQuery ADC expires."""
-        import json
+        """Deterministic local snapshot fallback from verified fact_snapshot.parquet when BigQuery is unavailable."""
         from pathlib import Path
+        import sys
+
         t0 = time.perf_counter()
-        data_dir = Path(__file__).resolve().parents[4] / "financial_build" / "data"
-        if not data_dir.exists():
-            return None
-        ep = compiled.effective_period or {}
-        fy = ep.get("fy")
-        lo, hi = ep.get("from"), ep.get("to")
+        repo_root = Path(__file__).resolve().parents[4]
         try:
-            if compiled.metric == "pnl_statement" and fy:
-                raw_rows = json.loads((data_dir / "ongc_10yr_schedule_iii_lines.json").read_text())
-                rows = [
-                    {
-                        "line_order": r.get("line_order"),
-                        "line_item": r.get("line_name"),
-                        "note_ref": r.get("schedule_ref"),
-                        "yahoo_finance_line": r.get("yahoo_finance_line"),
-                        "amount_cr": round(float(r["amount_inr_cr"]), 2) if r.get("amount_inr_cr") is not None else None,
-                        "prior_fy_cr": round(float(r["prior_fy_amount_inr_cr"]), 2) if r.get("prior_fy_amount_inr_cr") is not None else None,
-                        "yoy_delta_cr": round(float(r["yoy_delta_inr_cr"]), 2) if r.get("yoy_delta_inr_cr") is not None else None,
-                        "yoy_change_pct": round(float(r["yoy_change_pct"]), 1) if r.get("yoy_change_pct") is not None else None,
-                        "pct_of_revenue": round(float(r["pct_of_revenue"]), 1) if r.get("pct_of_revenue") is not None else None,
-                        "section": r.get("section"),
-                        "line_code": r.get("line_code"),
-                        "driver_note": r.get("driver_note"),
+            import pandas as pd
+        except ImportError:
+            py_ver = f"python{sys.version_info.major}.{sys.version_info.minor}"
+            for cand_root in (repo_root, repo_root.parent / "HR and Finance_ONGC__v3P1", repo_root.parent / "HR and Finance_ONGC"):
+                sp = cand_root / "financial_ssot" / ".venv" / "lib" / py_ver / "site-packages"
+                if sp.exists() and str(sp) not in sys.path:
+                    sys.path.insert(0, str(sp))
+            import pandas as pd
+
+        env_snap = os.getenv("YUKTI_FIN_SNAPSHOT_PATH")
+        snap_path = Path(env_snap) if env_snap else (repo_root / "financial_ssot" / "out" / "fact_snapshot.parquet")
+        dim_path = repo_root / "financial_ssot" / "dim_financial_line.csv"
+        if not snap_path.exists():
+            return None
+
+        try:
+            raw_df = pd.read_parquet(snap_path)
+            # CRITICAL (SPEC-01 / P1.10a): strictly serve ONLY verified=TRUE rows; never serve unverified/poisoned rows.
+            vdf = raw_df[(raw_df["verified"] == True) & (raw_df["period_type"] == "annual")].copy()  # noqa: E712
+            if vdf.empty:
+                return None
+            if dim_path.exists():
+                dim_df = pd.read_csv(dim_path)
+                vdf = vdf.merge(dim_df, on="line_code", how="left", suffixes=("", "_dim"))
+            else:
+                vdf["display_name"] = vdf.get("line_name_as_reported", vdf["line_code"])
+                vdf["display_order"] = vdf.get("line_order", 0)
+                vdf["level"] = 1
+                vdf["line_kind"] = "detail"
+                vdf["section"] = vdf["statement"]
+                vdf["ar_note_ref_typical"] = ""
+                vdf["schedule3_ref"] = ""
+                vdf["formula"] = ""
+                vdf["subtotal_formula"] = ""
+
+            def _norm_doc(val: Any) -> Optional[str]:
+                if pd.isna(val) or val is None:
+                    return None
+                s = str(val).strip()
+                return re.sub(r"\.txt$", ".pdf", s) if s else None
+
+            def _norm_str(val: Any) -> Optional[str]:
+                if pd.isna(val) or val is None:
+                    return None
+                s = str(val).strip()
+                return s if s and s.lower() != "nan" else None
+
+            def _val_num(r: Any) -> Optional[float]:
+                v = r.get("value_inr_cr")
+                if pd.isna(v) or v is None:
+                    v = r.get("value")
+                return round(float(v), 2) if (v is not None and pd.notna(v)) else None
+
+            def _as_rep_df() -> pd.DataFrame:
+                return vdf[(vdf["is_own_vintage"] == True) | (vdf["is_fallback_vintage"] == True)].copy()  # noqa: E712
+
+            def _latest_df() -> pd.DataFrame:
+                return vdf[vdf["is_latest_vintage"] == True].copy()  # noqa: E712
+
+            ep = compiled.effective_period or {}
+            fy = ep.get("fy")
+            lo, hi = ep.get("from"), ep.get("to")
+
+            # 1. Single-FY statement templates
+            stmt_map = {
+                "pnl_statement": ("pnl", "PL.REV_OPS", "pct_of_revenue"),
+                "balance_sheet": ("balance_sheet", "BS.TOTAL_ASSETS", "pct_of_assets"),
+                "cash_flow_statement": ("cash_flow", "CF.CFO", "pct_of_ocf"),
+                "financial_ratios": ("ratio", None, None),
+            }
+            if compiled.metric in stmt_map and fy:
+                st_name, base_code, pct_col = stmt_map[compiled.metric]
+                adf = _as_rep_df()
+                cur_df = adf[(adf["statement"] == st_name) & (adf["fiscal_year"] == fy) & (adf["scope"] == "standalone")].copy()
+                if cur_df.empty:
+                    return None
+                cur_df = cur_df.sort_values(["display_order", "line_order"])
+                prev_fy = f"FY{int(fy[2:]) - 1:02d}"
+                prv_df = adf[(adf["statement"] == st_name) & (adf["fiscal_year"] == prev_fy) & (adf["scope"] == "standalone")]
+                prv_map = {str(r["line_code"]): _val_num(r) for _, r in prv_df.iterrows()}
+                base_val = None
+                if base_code:
+                    b_rows = cur_df[cur_df["line_code"] == base_code]
+                    if not b_rows.empty:
+                        base_val = _val_num(b_rows.iloc[0])
+
+                rows: List[Dict[str, Any]] = []
+                for _, r in cur_df.iterrows():
+                    lc = str(r["line_code"])
+                    cur_v = _val_num(r)
+                    prv_v = prv_map.get(lc)
+                    delta_v = round(cur_v - prv_v, 2) if (cur_v is not None and prv_v is not None) else None
+                    yoy_pct = round(100.0 * (cur_v - prv_v) / abs(prv_v), 1) if (cur_v is not None and prv_v not in (None, 0)) else None
+                    fn_marker = None
+                    if bool(r.get("is_fallback_vintage")):
+                        fn_marker = f"{fy} not printed in AR {fy}; taken from {r.get('report_vintage')} comparative/10-yr"
+                    elif str(r.get("source_system")) == "xbrl":
+                        fn_marker = f"{fy} from {r.get('report_vintage')} BSE Reg 33 filing (AR PDF scanned)"
+                    row_dict: Dict[str, Any] = {
+                        "line_order": int(r.get("display_order") or r.get("line_order") or 0),
+                        "line_code": lc,
+                        "display_name": _norm_str(r.get("display_name")) or _norm_str(r.get("line_name_as_reported")) or lc,
+                        "line_item": _norm_str(r.get("display_name")) or _norm_str(r.get("line_name_as_reported")) or lc,
+                        "level": int(r.get("level") or 1),
+                        "line_kind": _norm_str(r.get("line_kind")) or "detail",
+                        "section": _norm_str(r.get("section")) or st_name,
+                        "note_ref": _norm_str(r.get("ar_note_ref_typical")) or _norm_str(r.get("schedule3_ref")) or "",
+                        "fiscal_year": fy,
+                        "value_inr_cr": cur_v,
+                        "is_restated": bool(r.get("is_restated")),
+                        "footnote_marker": fn_marker,
+                        "source_doc": _norm_doc(r.get("source_doc")),
+                        "source_page_label": _norm_str(r.get("source_page_label")),
+                        "source_system": _norm_str(r.get("source_system")),
                     }
-                    for r in raw_rows if r.get("fiscal_year") == fy
-                ]
-                rows.sort(key=lambda x: x.get("line_order") or 0)
+                    if compiled.metric == "financial_ratios":
+                        row_dict.update({
+                            "category": row_dict["section"],
+                            "unit": _norm_str(r.get("unit")) or "",
+                            "value": cur_v,
+                            "prior_fy_value": prv_v,
+                            "yoy_delta": delta_v,
+                            "formula": _norm_str(r.get("formula")) or _norm_str(r.get("subtotal_formula")) or "",
+                        })
+                    else:
+                        pct_base = round(100.0 * cur_v / base_val, 1) if (cur_v is not None and base_val not in (None, 0)) else None
+                        row_dict.update({
+                            "amount_cr": cur_v,
+                            "prior_fy_cr": prv_v,
+                            "yoy_delta_cr": delta_v,
+                            "yoy_change_pct": yoy_pct,
+                        })
+                        if pct_col:
+                            row_dict[pct_col] = pct_base
+                    rows.append(row_dict)
                 if rows:
                     return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
                                        latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
-            if compiled.metric == "balance_sheet" and fy:
-                raw_rows = json.loads((data_dir / "ongc_10yr_balance_sheet_lines.json").read_text())
-                rows = [
-                    {
-                        "line_order": r.get("line_order"),
-                        "line_item": r.get("line_name"),
-                        "note_ref": r.get("schedule_ref"),
-                        "section": r.get("section"),
-                        "amount_cr": round(float(r["amount_inr_cr"]), 2) if r.get("amount_inr_cr") is not None else None,
-                        "prior_fy_cr": round(float(r["prior_fy_amount_inr_cr"]), 2) if r.get("prior_fy_amount_inr_cr") is not None else None,
-                        "yoy_delta_cr": round(float(r["yoy_delta_inr_cr"]), 2) if r.get("yoy_delta_inr_cr") is not None else None,
-                        "yoy_change_pct": round(float(r["yoy_change_pct"]), 1) if r.get("yoy_change_pct") is not None else None,
-                        "pct_of_assets": round(float(r["pct_of_total_assets"]), 1) if r.get("pct_of_total_assets") is not None else None,
-                        "yahoo_finance_line": r.get("yahoo_finance_line"),
-                        "line_code": r.get("line_code"),
-                        "driver_note": r.get("driver_note"),
-                    }
-                    for r in raw_rows if r.get("fiscal_year") == fy
-                ]
-                rows.sort(key=lambda x: x.get("line_order") or 0)
+
+            # 2. Multi-FY statement templates
+            if compiled.metric in stmt_map and lo and hi:
+                ldf = _latest_df()
+                ldf = ldf[(ldf["fiscal_year"] >= lo) & (ldf["fiscal_year"] <= hi)]
+                if ldf.empty:
+                    return None
+                fys = sorted(ldf["fiscal_year"].unique())
+                lkp = {(str(r["scope"]), str(r["fiscal_year"]), str(r["line_code"])): r for _, r in ldf.iterrows()}
+
+                def _lv(sc: str, f_yr: str, cd: str) -> Optional[float]:
+                    rec = lkp.get((sc, f_yr, cd))
+                    return _val_num(rec) if rec is not None else None
+
+                rows = []
+                for f_yr in fys:
+                    if compiled.metric == "pnl_statement":
+                        p_rec = lkp.get(("standalone", f_yr, "PL.REV_OPS"))
+                        rows.append({
+                            "fiscal_year": f_yr,
+                            "revenue_from_ops_cr": _lv("standalone", f_yr, "PL.REV_OPS"),
+                            "other_income_cr": _lv("standalone", f_yr, "PL.OTHER_INCOME"),
+                            "total_income_cr": _lv("standalone", f_yr, "PL.TOTAL_INCOME"),
+                            "statutory_levies_cr": _lv("standalone", f_yr, "LEVY.TOTAL"),
+                            "royalty_cr": _lv("standalone", f_yr, "LEVY.ROYALTY"),
+                            "oidb_cess_cr": _lv("standalone", f_yr, "LEVY.OIDB_CESS"),
+                            "saed_windfall_tax_cr": _lv("standalone", f_yr, "LEVY.OTHER_SAED"),
+                            "operating_expenses_cr": _lv("standalone", f_yr, "PL.OPEX_10YR"),
+                            "exploration_writeoff_cr": _lv("standalone", f_yr, "PL.EXPL_WRITEOFF"),
+                            "dda_cr": _lv("standalone", f_yr, "PL.DDA"),
+                            "finance_costs_cr": _lv("standalone", f_yr, "PL.FIN_COST"),
+                            "total_expenses_cr": _lv("standalone", f_yr, "PL.TOTAL_EXP"),
+                            "exceptional_items_cr": _lv("standalone", f_yr, "PL.EXCEPTIONAL"),
+                            "pbt_cr": _lv("standalone", f_yr, "PL.PBT"),
+                            "tax_expense_cr": _lv("standalone", f_yr, "PL.TAX"),
+                            "standalone_pat_cr": _lv("standalone", f_yr, "PL.PAT"),
+                            "consolidated_pat_cr": _lv("consolidated", f_yr, "PL.PAT"),
+                            "is_restated": bool(p_rec["is_restated"]) if p_rec is not None else False,
+                            "source_doc": _norm_doc(p_rec["source_doc"]) if p_rec is not None else None,
+                            "source_page_label": _norm_str(p_rec["source_page_label"]) if p_rec is not None else None,
+                        })
+                    elif compiled.metric == "balance_sheet":
+                        p_rec = lkp.get(("standalone", f_yr, "BS.TOTAL_ASSETS"))
+                        rows.append({
+                            "fiscal_year": f_yr,
+                            "total_assets_cr": _lv("standalone", f_yr, "BS.TOTAL_ASSETS"),
+                            "non_current_assets_cr": _lv("standalone", f_yr, "BS.ASSETS.NON_CURRENT.TOTAL"),
+                            "oil_and_gas_assets_cr": _lv("standalone", f_yr, "BS.OG_ASSETS"),
+                            "cwip_cr": _lv("standalone", f_yr, "BS.WIP_TOTAL_10YR"),
+                            "investments_subsidiaries_cr": _lv("standalone", f_yr, "BS.INVESTMENTS_NC_10YR"),
+                            "current_assets_cr": _lv("standalone", f_yr, "BS.ASSETS.CURRENT.TOTAL"),
+                            "cash_and_bank_cr": _lv("standalone", f_yr, "BS.CCE"),
+                            "net_worth_cr": _lv("standalone", f_yr, "BS.EQUITY.TOTAL"),
+                            "total_debt_cr": _lv("standalone", f_yr, "BS.BORROW_TOTAL_10YR"),
+                            "abandonment_provision_cr": _lv("standalone", f_yr, "BS.PROV_NC"),
+                            "total_liabilities_cr": _lv("standalone", f_yr, "BS.LIAB.TOTAL"),
+                            "is_restated": bool(p_rec["is_restated"]) if p_rec is not None else False,
+                            "source_doc": _norm_doc(p_rec["source_doc"]) if p_rec is not None else None,
+                            "source_page_label": _norm_str(p_rec["source_page_label"]) if p_rec is not None else None,
+                        })
+                    elif compiled.metric == "cash_flow_statement":
+                        p_rec = lkp.get(("standalone", f_yr, "CF.CFO"))
+                        cfo_v = _lv("standalone", f_yr, "CF.CFO")
+                        capex_v = _lv("standalone", f_yr, "CAPEX.TOTAL")
+                        rows.append({
+                            "fiscal_year": f_yr,
+                            "operating_cash_flow_cr": cfo_v,
+                            "investing_cash_flow_cr": _lv("standalone", f_yr, "CF.CFI"),
+                            "financing_cash_flow_cr": _lv("standalone", f_yr, "CF.CFF"),
+                            "total_capex_cr": capex_v,
+                            "free_cash_flow_cr": round(cfo_v - abs(capex_v or 0.0), 2) if cfo_v is not None else None,
+                            "net_cash_change_cr": _lv("standalone", f_yr, "CF.NET_CHANGE_CCE"),
+                            "closing_cash_cr": _lv("standalone", f_yr, "CF.CCE_CLOSE"),
+                            "is_restated": bool(p_rec["is_restated"]) if p_rec is not None else False,
+                            "source_doc": _norm_doc(p_rec["source_doc"]) if p_rec is not None else None,
+                            "source_page_label": _norm_str(p_rec["source_page_label"]) if p_rec is not None else None,
+                        })
+                    elif compiled.metric == "financial_ratios":
+                        p_rec = lkp.get(("standalone", f_yr, "RATIO.ROCE"))
+                        rows.append({
+                            "fiscal_year": f_yr,
+                            "ebitda_margin_pct": _lv("standalone", f_yr, "RATIO.PBIDT_MARGIN_PCT"),
+                            "pat_margin_pct": _lv("standalone", f_yr, "RATIO.PAT_MARGIN_PCT"),
+                            "roce_pct": _lv("standalone", f_yr, "RATIO.ROCE"),
+                            "roe_pct": _lv("standalone", f_yr, "RATIO.ROE_INCL_EXC"),
+                            "debt_to_equity_ratio": _lv("standalone", f_yr, "RATIO.DEBT_EQUITY"),
+                            "current_ratio": _lv("standalone", f_yr, "RATIO.CURRENT"),
+                            "eps_basic_inr": _lv("standalone", f_yr, "PL.EPS_BASIC") or _lv("standalone", f_yr, "RATIO.EPS"),
+                            "dividend_per_share_inr": _lv("standalone", f_yr, "RATIO.DPS"),
+                            "is_restated": bool(p_rec["is_restated"]) if p_rec is not None else False,
+                            "source_doc": _norm_doc(p_rec["source_doc"]) if p_rec is not None else None,
+                            "source_page_label": _norm_str(p_rec["source_page_label"]) if p_rec is not None else None,
+                        })
                 if rows:
                     return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
                                        latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
-            if compiled.metric == "cash_flow_statement" and fy:
-                raw_rows = json.loads((data_dir / "ongc_10yr_cash_flow_lines.json").read_text())
-                rows = [
-                    {
-                        "line_order": r.get("line_order"),
-                        "line_item": r.get("line_name"),
-                        "note_ref": r.get("schedule_ref"),
-                        "section": r.get("section"),
-                        "amount_cr": round(float(r["amount_inr_cr"]), 2) if r.get("amount_inr_cr") is not None else None,
-                        "prior_fy_cr": round(float(r["prior_fy_amount_inr_cr"]), 2) if r.get("prior_fy_amount_inr_cr") is not None else None,
-                        "yoy_delta_cr": round(float(r["yoy_delta_inr_cr"]), 2) if r.get("yoy_delta_inr_cr") is not None else None,
-                        "yoy_change_pct": round(float(r["yoy_change_pct"]), 1) if r.get("yoy_change_pct") is not None else None,
-                        "pct_of_ocf": round(float(r["pct_of_ocf"]), 1) if r.get("pct_of_ocf") is not None else None,
-                        "yahoo_finance_line": r.get("yahoo_finance_line"),
-                        "line_code": r.get("line_code"),
-                        "driver_note": r.get("driver_note"),
-                    }
-                    for r in raw_rows if r.get("fiscal_year") == fy
-                ]
-                rows.sort(key=lambda x: x.get("line_order") or 0)
+
+            # 3. Corporate subject metrics (single-FY -> as_reported; multi-FY -> latest trend)
+            if compiled.subject == "corporate" and compiled.metric in CORP_METRIC_TO_SSOT:
+                is_multi = bool(lo and hi)
+                src_df = _latest_df() if is_multi else _as_rep_df()
+                if is_multi:
+                    src_df = src_df[(src_df["fiscal_year"] >= lo) & (src_df["fiscal_year"] <= hi)]
+                elif fy:
+                    src_df = src_df[src_df["fiscal_year"] == fy]
+                if src_df.empty:
+                    return None
+                lkp = {(str(r["scope"]), str(r["fiscal_year"]), str(r["line_code"])): r for _, r in src_df.iterrows()}
+                p_scope, p_code = CORP_METRIC_TO_SSOT[compiled.metric]
+                fys = sorted(src_df["fiscal_year"].unique())
+                rows = []
+                for f_yr in fys:
+                    p_rec = lkp.get((p_scope, f_yr, p_code))
+                    if p_rec is None and not is_multi:
+                        continue
+                    row_d: Dict[str, Any] = {"fiscal_year": f_yr}
+                    for vc in compiled.value_columns:
+                        if vc in CORP_METRIC_TO_SSOT:
+                            sc, cd = CORP_METRIC_TO_SSOT[vc]
+                            rec = lkp.get((sc, f_yr, cd))
+                            row_d[vc] = _val_num(rec) if rec is not None else None
+                        elif vc == "roce_incl_exc_pct":
+                            rec = lkp.get(("standalone", f_yr, "RATIO.ROCE_INCL_EXC"))
+                            row_d[vc] = _val_num(rec) if rec is not None else None
+                        elif vc == "dividend_pct":
+                            rec = lkp.get(("standalone", f_yr, "RATIO.DIVIDEND_PCT"))
+                            row_d[vc] = _val_num(rec) if rec is not None else None
+                    if p_rec is not None:
+                        is_rest = bool(p_rec.get("is_restated"))
+                        fn_mk = None
+                        if is_multi and is_rest:
+                            fn_mk = f"{f_yr} restated in {p_rec.get('report_vintage')}"
+                        elif bool(p_rec.get("is_fallback_vintage")):
+                            fn_mk = f"{f_yr} not printed in AR {f_yr}; taken from {p_rec.get('report_vintage')} comparative/10-yr"
+                        row_d.update({
+                            "line_code": p_code,
+                            "display_name": _norm_str(p_rec.get("display_name")) or _norm_str(p_rec.get("line_name_as_reported")) or p_code,
+                            "value_inr_cr": _val_num(p_rec),
+                            "is_restated": is_rest,
+                            "restatement_note": _norm_str(p_rec.get("notes")) or (f"{f_yr} restated in {p_rec.get('report_vintage')}" if is_rest else None),
+                            "footnote_marker": fn_mk,
+                            "source_doc": _norm_doc(p_rec.get("source_doc")),
+                            "source_page_label": _norm_str(p_rec.get("source_page_label")),
+                            "source_system": _norm_str(p_rec.get("source_system")),
+                        })
+                    if row_d.get(compiled.metric) is not None:
+                        rows.append(row_d)
                 if rows:
                     return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
                                        latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
-            if compiled.metric == "financial_ratios" and fy:
-                raw_rows = json.loads((data_dir / "ongc_10yr_ratios_lines.json").read_text())
-                rows = [
-                    {
-                        "line_order": r.get("line_order"),
-                        "line_item": r.get("ratio_name"),
-                        "category": r.get("category"),
-                        "unit": r.get("unit"),
-                        "value": round(float(r["value"]), 2) if r.get("value") is not None else None,
-                        "prior_fy_value": round(float(r["prior_fy_value"]), 2) if r.get("prior_fy_value") is not None else None,
-                        "yoy_delta": round(float(r["yoy_delta"]), 2) if r.get("yoy_delta") is not None else None,
-                        "formula": r.get("formula"),
-                        "line_code": r.get("line_code"),
-                    }
-                    for r in raw_rows if r.get("fiscal_year") == fy
-                ]
-                rows.sort(key=lambda x: x.get("line_order") or 0)
-                if rows:
-                    return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
-                                       latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
-            if compiled.metric == "pnl_statement" and lo and hi:
-                raw_rows = json.loads((data_dir / "ongc_10yr_corporate_wide.json").read_text())
-                rows = [
-                    {
-                        "fiscal_year": r.get("fiscal_year"),
-                        "revenue_from_ops_cr": round(float(r.get("gross_revenue_inr_cr") or 0), 0),
-                        "other_income_cr": round(float(r.get("other_income_inr_cr") or 0), 0),
-                        "statutory_levies_cr": round(float(r.get("statutory_levies_total_inr_cr") or 0), 0),
-                        "royalty_cr": round(float(r.get("royalty_inr_cr") or 0), 0),
-                        "oidb_cess_cr": round(float(r.get("oidb_cess_inr_cr") or 0), 0),
-                        "saed_windfall_tax_cr": round(float(r.get("saed_windfall_tax_inr_cr") or 0), 0),
-                        "net_revenue_cr": round(float(r.get("net_revenue_inr_cr") or 0), 0),
-                        "operating_expenses_cr": round(float(r.get("operating_expenses_total_inr_cr") or 0), 0),
-                        "ebitda_cr": round(float(r.get("ebitda_inr_cr") or 0), 0),
-                        "exploration_writeoff_cr": round(float(r.get("exploration_costs_written_off_inr_cr") or 0), 0),
-                        "dda_cr": round(float(r.get("dda_inr_cr") or 0), 0),
-                        "finance_costs_cr": round(float(r.get("finance_costs_inr_cr") or 0), 0),
-                        "exceptional_items_cr": round(float(r.get("exceptional_items_inr_cr") or 0), 0),
-                        "pbt_cr": round(float(r.get("pbt_inr_cr") or 0), 0),
-                        "tax_expense_cr": round(float(r.get("tax_expense_total_inr_cr") or 0), 0),
-                        "standalone_pat_cr": round(float(r.get("pat_inr_cr") or 0), 0),
-                        "consolidated_pat_cr": round(float(r.get("consolidated_pat_inr_cr") or 0), 0),
-                    }
-                    for r in raw_rows if lo <= str(r.get("fiscal_year", "")) <= hi
-                ]
-                if rows:
-                    return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
-                                       latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
-        except Exception:
+        except Exception as exc:
+            logger.warning(f"Local snapshot fallback failed for {compiled.metric}: {exc}")
             return None
         return None
 
@@ -1011,23 +1536,33 @@ ORDER BY line_order ASC"""
         except Exception as e:
             fb = self._execute_local_financial_fallback(compiled)
             if fb is not None:
-                # P0.3 (BUG-04): the fallback is no longer silent; callers label it "local_snapshot".
+                # P0.3 / P1.10a (BUG-04): the fallback is no longer silent; callers label it "local_snapshot".
                 logger.warning(f"BigQuery unavailable ({type(e).__name__}); serving {compiled.metric} from local snapshot")
                 fb.source = "local_snapshot"
                 fb.snapshot_date = _local_snapshot_date()
+                fb.snapshot_run_id = _local_snapshot_run_id()
                 return fb
             raise e
 
 
 def _local_snapshot_date() -> Optional[str]:
-    """Date (ISO) of the financial_build JSON snapshot used by the local fallback.
-
-    P0.9: read from `snapshot_manifest.json` (deterministic; file mtimes change on git clone / image build),
-    falling back to the newest `ongc_10yr_*.json` mtime when the manifest is absent.
-    """
+    """Date (ISO) of the verified SSOT snapshot used by the local fallback."""
     import json
     from pathlib import Path
-    data_dir = Path(__file__).resolve().parents[4] / "financial_build" / "data"
+    repo_root = Path(__file__).resolve().parents[4]
+    env_snap = os.getenv("YUKTI_FIN_SNAPSHOT_PATH")
+    snap_path = Path(env_snap) if env_snap else (repo_root / "financial_ssot" / "out" / "fact_snapshot.parquet")
+    if snap_path.exists():
+        try:
+            import pandas as pd
+            s = pd.read_parquet(snap_path, columns=["extracted_at"])
+            if not s.empty:
+                ext = str(s["extracted_at"].iloc[0])
+                if len(ext) >= 10 and ext[:4].isdigit():
+                    return ext[:10]
+        except Exception:
+            pass
+    data_dir = repo_root / "financial_build" / "data"
     try:
         manifest = data_dir / "snapshot_manifest.json"
         if manifest.exists():
@@ -1036,11 +1571,36 @@ def _local_snapshot_date() -> Optional[str]:
                 return str(d)
     except (OSError, ValueError):
         pass
+    return "2026-10-24"
+
+
+def _local_snapshot_run_id() -> str:
+    """Run ID of the verified SSOT snapshot used by the local fallback."""
+    import json
+    from pathlib import Path
+    repo_root = Path(__file__).resolve().parents[4]
+    env_snap = os.getenv("YUKTI_FIN_SNAPSHOT_PATH")
+    snap_path = Path(env_snap) if env_snap else (repo_root / "financial_ssot" / "out" / "fact_snapshot.parquet")
+    if snap_path.exists():
+        try:
+            import pandas as pd
+            s = pd.read_parquet(snap_path, columns=["extracted_at"])
+            if not s.empty:
+                ext = str(s["extracted_at"].iloc[0])
+                if ext:
+                    return ext.replace("-", "").replace(":", "").split(".")[0]
+        except Exception:
+            pass
+    data_dir = repo_root / "financial_build" / "data"
     try:
-        mtimes = [f.stat().st_mtime for f in data_dir.glob("ongc_10yr_*.json")]
-        return datetime.date.fromtimestamp(max(mtimes)).isoformat() if mtimes else None
-    except OSError:
-        return None
+        manifest = data_dir / "snapshot_manifest.json"
+        if manifest.exists():
+            rid = json.loads(manifest.read_text(encoding="utf-8")).get("run_id")
+            if rid:
+                return str(rid)
+    except (OSError, ValueError):
+        pass
+    return "ssot_v3"
 
 
 _COMPILER: Optional[Compiler] = None

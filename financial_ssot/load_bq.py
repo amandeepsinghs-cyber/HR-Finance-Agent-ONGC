@@ -17,6 +17,7 @@ Workflow:
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -137,7 +138,7 @@ def _create_views(ds: str) -> None:
       d.is_total,
       d.is_kpi,
       CASE
-        WHEN f.is_fallback_vintage THEN CONCAT(f.fiscal_year, ' from ', f.report_vintage, ' comparative/summary (no own-year AR table)')
+        WHEN f.is_fallback_vintage THEN CONCAT(f.fiscal_year, ' not printed in AR ', f.fiscal_year, '; taken from ', f.report_vintage, ' comparative/10-yr')
         WHEN f.source_system = 'xbrl' THEN CONCAT(f.fiscal_year, ' from ', f.report_vintage, ' BSE Reg 33 filing (AR PDF scanned)')
         ELSE NULL
       END AS footnote_marker
@@ -175,7 +176,7 @@ def _create_views(ds: str) -> None:
       d.is_kpi,
       CASE
         WHEN f.is_restated THEN CONCAT(f.fiscal_year, ' restated in ', f.report_vintage)
-        WHEN f.is_fallback_vintage THEN CONCAT(f.fiscal_year, ' from ', f.report_vintage, ' comparative/summary (no own-year AR table)')
+        WHEN f.is_fallback_vintage THEN CONCAT(f.fiscal_year, ' not printed in AR ', f.fiscal_year, '; taken from ', f.report_vintage, ' comparative/10-yr')
         ELSE NULL
       END AS footnote_marker
     FROM `{PROJECT_ID}.{ds}.fact_financial_statement_line` f
@@ -401,21 +402,27 @@ def run_staging_and_promote() -> Dict[str, Any]:
         assert int(bad_resolved["bad_n"]) == 0, "Found resolved conflicts with NULL resolved_by/resolved_at in staging"
 
         # 6. Promote verified staging tables to hrfin_gold (WRITE_TRUNCATE of v3 tables)
+        # R2-m5: Gold uses YEAR partitioning on period_end and 3 cluster fields (scope,statement,line_code) matching SPEC-01 §5.1 & staging.
+        _bq_query(f"DROP TABLE IF EXISTS `{PROJECT_ID}.{GOLD_DS}.fact_financial_statement_line`")
         _bq_load_parquet(dim_pq, GOLD_DS, "dim_financial_line", clustering_fields="statement,section")
         _bq_load_parquet(
             fact_pq,
             GOLD_DS,
             "fact_financial_statement_line",
             time_partitioning_field="period_end",
-            time_partitioning_type="DAY",
-            clustering_fields="scope,statement,fiscal_year,line_code",
+            time_partitioning_type="YEAR",
+            clustering_fields="scope,statement,line_code",
         )
         _bq_load_parquet(conf_pq, GOLD_DS, "fact_financial_line_conflict", clustering_fields="fiscal_year,scope,line_code")
         _bq_load_parquet(OUT_DIR / "fin_gate_run.parquet", GOLD_DS, "fin_gate_run")
-        for aname in anchor_names:
-            apath = OUT_DIR / f"{aname}.parquet"
-            if apath.exists():
-                _bq_load_parquet(apath, GOLD_DS, aname)
+        # R2-m6: P1.7 anchor tables (fact_segment, fact_production_annual, fact_reserves, fact_hr_aggregates,
+        # fact_price_realisation) are owned by P1.7 (`anchors`) and should only be promoted when P1.7 is G4-approved
+        # or when LOAD_P17_ANCHORS=1 is explicitly set.
+        if os.environ.get("LOAD_P17_ANCHORS", "0") == "1":
+            for aname in anchor_names:
+                apath = OUT_DIR / f"{aname}.parquet"
+                if apath.exists():
+                    _bq_load_parquet(apath, GOLD_DS, aname)
 
     _create_views(GOLD_DS)
 

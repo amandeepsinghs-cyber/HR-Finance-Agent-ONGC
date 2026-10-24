@@ -151,14 +151,21 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
         return vis
     dims = [alias for _, alias in compiled.dims]
     val = compiled.value_columns[0] if compiled.value_columns else (columns[-1] if columns else None)
+
+    def _pick_code(by_code_map: Dict[str, Dict[str, Any]], *codes: str) -> Dict[str, Any]:
+        for c in codes:
+            if c in by_code_map and by_code_map[c]:
+                return by_code_map[c]
+        return {}
+
     if compiled.metric == "pnl_statement" and dims and dims[0] == "line_item":
-        # Single-FY 23-line Schedule III + Yahoo Finance (ONGC.NS) Statement of Profit & Loss
+        # Single-FY Schedule III Statement of Profit & Loss (verified SSOT)
         fy = (compiled.effective_period or {}).get("fy", "FY26")
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-        rev_r = by_code.get("gross_revenue_inr_cr", {})
-        eb_r = by_code.get("ebitda_inr_cr", {})
-        pat_r = by_code.get("pat_inr_cr", {})
-        cpat_r = by_code.get("consolidated_pat_inr_cr", {})
+        rev_r = _pick_code(by_code, "PL.REV_OPS", "gross_revenue_inr_cr")
+        ti_r = _pick_code(by_code, "PL.TOTAL_INCOME", "total_income_inr_cr", "PL.REV_OPS", "gross_revenue_inr_cr")
+        pbt_r = _pick_code(by_code, "PL.PBT", "pbt_inr_cr")
+        pat_r = _pick_code(by_code, "PL.PAT", "pat_inr_cr")
         vis["kpis"] = [
             {
                 "label": f"Revenue from Ops ({fy})",
@@ -167,50 +174,48 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                 "delta": f"{rev_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(rev_r.get("yoy_change_pct"), (int, float)) else "",
             },
             {
-                "label": f"Standalone EBITDA ({fy})",
-                "value": eb_r.get("amount_cr"),
+                "label": f"Total Income ({fy})",
+                "value": ti_r.get("amount_cr"),
                 "unit": "₹ crore",
-                "delta": f"{eb_r.get('pct_of_revenue'):.1f}% EBITDA margin" if isinstance(eb_r.get("pct_of_revenue"), (int, float)) else "",
+                "delta": f"{ti_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(ti_r.get("yoy_change_pct"), (int, float)) else "Schedule III III",
+            },
+            {
+                "label": f"Profit Before Tax ({fy})",
+                "value": pbt_r.get("amount_cr"),
+                "unit": "₹ crore",
+                "delta": f"{pbt_r.get('pct_of_revenue'):.1f}% of Revenue" if isinstance(pbt_r.get("pct_of_revenue"), (int, float)) else "Schedule III VII",
             },
             {
                 "label": f"Standalone PAT ({fy})",
                 "value": pat_r.get("amount_cr"),
                 "unit": "₹ crore",
-                "delta": f"{pat_r.get('yoy_change_pct'):+.1f}% YoY · {pat_r.get('pct_of_revenue'):.1f}% margin" if isinstance(pat_r.get("yoy_change_pct"), (int, float)) else "",
-            },
-            {
-                "label": "Consolidated PAT (Group)",  # P0.3: no market-data label
-                "value": cpat_r.get("amount_cr"),
-                "unit": "₹ crore",
-                "delta": f"{cpat_r.get('yoy_change_pct'):+.1f}% YoY (Group)" if isinstance(cpat_r.get("yoy_change_pct"), (int, float)) else "Group Net Income",
+                "delta": f"{pat_r.get('yoy_change_pct'):+.1f}% YoY · {pat_r.get('pct_of_revenue'):.1f}% margin" if isinstance(pat_r.get("yoy_change_pct"), (int, float)) and isinstance(pat_r.get("pct_of_revenue"), (int, float)) else "",
             },
         ]
-        # 7 clean display columns so Key Takeaways sit side-by-side on desktop
+        # 7 clean display columns so Key Takeaways sit side-by-side on desktop, preserving SSOT metadata keys
         disp_cols = ["line_item", "note_ref", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_revenue"]
-        disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
+        disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
-        # Build step-by-step P&L Waterfall Bridge (Revenue -> Levies -> Opex -> EBITDA -> Other Inc -> Expl/DD&A/Fin -> PBT -> Tax -> PAT)
-        rev_v = _num(by_code.get("gross_revenue_inr_cr", {}).get("amount_cr"))
-        lev_v = -abs(_num(by_code.get("statutory_levies_total_inr_cr", {}).get("amount_cr")))
-        opex_v = round(
-            _num(by_code.get("ebitda_inr_cr", {}).get("amount_cr")) - (rev_v + lev_v), 2
-        )
-        eb_v = _num(by_code.get("ebitda_inr_cr", {}).get("amount_cr"))
-        oi_v = _num(by_code.get("other_income_inr_cr", {}).get("amount_cr"))
-        pbt_v = _num(by_code.get("pbt_inr_cr", {}).get("amount_cr"))
-        below_eb_v = round(pbt_v - (eb_v + oi_v), 2)
-        tax_v = round(_num(by_code.get("pat_inr_cr", {}).get("amount_cr")) - pbt_v, 2)
-        pat_v = _num(by_code.get("pat_inr_cr", {}).get("amount_cr"))
+        # Build step-by-step Schedule III P&L Waterfall Bridge (no synthesized EBITDA stage per SPEC-01 / P1.10a §5.4)
+        rev_v = _num(rev_r.get("amount_cr"))
+        oi_v = _num(_pick_code(by_code, "PL.OTHER_INCOME", "other_income_inr_cr").get("amount_cr"))
+        ti_v = _num(ti_r.get("amount_cr")) or round(rev_v + oi_v, 2)
+        te_v = -abs(_num(_pick_code(by_code, "PL.TOTAL_EXP", "total_expenses_inr_cr").get("amount_cr")))
+        pbt_pre_v = _num(_pick_code(by_code, "PL.PBT_PRE_EXC").get("amount_cr")) or round(ti_v + te_v, 2)
+        exc_v = _num(_pick_code(by_code, "PL.EXCEPTIONAL", "exceptional_items_inr_cr").get("amount_cr"))
+        pbt_v = _num(pbt_r.get("amount_cr"))
+        tax_v = -abs(_num(_pick_code(by_code, "PL.TAX", "tax_expense_total_inr_cr").get("amount_cr")))
+        pat_v = _num(pat_r.get("amount_cr"))
         wf_rows = [
             {"pnl_stage": "Revenue from Ops", "amount_cr": rev_v, "type": "total"},
-            {"pnl_stage": "Statutory Levies", "amount_cr": lev_v, "type": "delta"},
-            {"pnl_stage": "Operating Expenses", "amount_cr": opex_v, "type": "delta"},
-            {"pnl_stage": "Standalone EBITDA", "amount_cr": eb_v, "type": "total"},
             {"pnl_stage": "Other Income", "amount_cr": oi_v, "type": "delta"},
-            {"pnl_stage": "Expl, DD&A & Fin", "amount_cr": below_eb_v, "type": "delta"},
+            {"pnl_stage": "Total Income", "amount_cr": ti_v, "type": "total"},
+            {"pnl_stage": "Total Expenses", "amount_cr": te_v, "type": "delta"},
+            {"pnl_stage": "PBT before Exceptional", "amount_cr": pbt_pre_v, "type": "total"},
+            {"pnl_stage": "Exceptional Items", "amount_cr": exc_v, "type": "delta"},
             {"pnl_stage": "Profit Before Tax", "amount_cr": pbt_v, "type": "total"},
             {"pnl_stage": "Tax Expense", "amount_cr": tax_v, "type": "delta"},
-            {"pnl_stage": "Standalone PAT", "amount_cr": pat_v, "type": "total"},
+            {"pnl_stage": "Profit for the Year (PAT)", "amount_cr": pat_v, "type": "total"},
         ]
         ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "waterfall"
         vis["chart"] = build_chart_spec(kind=ck, columns=["pnl_stage", "amount_cr"], rows=wf_rows, title=title, unit="₹ Cr")
@@ -221,10 +226,10 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
     if compiled.metric == "balance_sheet" and dims and dims[0] == "line_item":
         fy = (compiled.effective_period or {}).get("fy", "FY26")
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-        ta_r = by_code.get("total_assets_inr_cr", {})
-        nw_r = by_code.get("net_worth_inr_cr", {})
-        ltd_r = by_code.get("long_term_debt_inr_cr", {})
-        cash_r = by_code.get("cash_and_bank_inr_cr", {})
+        ta_r = _pick_code(by_code, "BS.TOTAL_ASSETS", "total_assets_inr_cr")
+        nw_r = _pick_code(by_code, "BS.EQUITY.TOTAL", "net_worth_inr_cr")
+        ltd_r = _pick_code(by_code, "BS.BORROW_NC", "BS.BORROW_TOTAL_10YR", "long_term_debt_inr_cr")
+        cash_r = _pick_code(by_code, "BS.CCE", "cash_and_bank_inr_cr")
         vis["kpis"] = [
             {
                 "label": f"Total Assets ({fy})",
@@ -242,30 +247,31 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                 "label": f"Long-Term Borrowings ({fy})",
                 "value": ltd_r.get("amount_cr"),
                 "unit": "₹ crore",
-                "delta": f"{ltd_r.get('yoy_change_pct'):+.1f}% YoY" if isinstance(ltd_r.get("yoy_change_pct"), (int, float)) else "Note 21 Bonds",
+                "delta": f"{ltd_r.get('yoy_change_pct'):+.1f}% YoY" if isinstance(ltd_r.get("yoy_change_pct"), (int, float)) else "Non-Current Borrowings",
             },
             {
-                "label": f"Cash & Bank Balances ({fy})",
+                "label": f"Cash & Cash Equivalents ({fy})",
                 "value": cash_r.get("amount_cr"),
                 "unit": "₹ crore",
-                "delta": f"{cash_r.get('yoy_change_pct'):+.1f}% YoY (Net Cash Positive)" if isinstance(cash_r.get("yoy_change_pct"), (int, float)) else "Note 15/16",
+                "delta": f"{cash_r.get('yoy_change_pct'):+.1f}% YoY" if isinstance(cash_r.get("yoy_change_pct"), (int, float)) else "Schedule III B(ii)",
             },
         ]
         disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_change_pct", "pct_of_assets"]
-        disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
+        disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
-        bs_chart_codes = [
-            ("non_current_assets_inr_cr", "Non-Current Assets"),
-            ("current_assets_inr_cr", "Current Assets"),
-            ("total_assets_inr_cr", "Total Assets"),
-            ("net_worth_inr_cr", "Standalone Net Worth"),
-            ("non_current_liabilities_inr_cr", "Non-Current Liabilities"),
-            ("current_liabilities_inr_cr", "Current Liabilities"),
+        bs_chart_specs = [
+            (("BS.ASSETS.NON_CURRENT.TOTAL", "non_current_assets_inr_cr"), "Non-Current Assets"),
+            (("BS.ASSETS.CURRENT.TOTAL", "current_assets_inr_cr"), "Current Assets"),
+            (("BS.TOTAL_ASSETS", "total_assets_inr_cr"), "Total Assets"),
+            (("BS.EQUITY.TOTAL", "net_worth_inr_cr"), "Total Equity"),
+            (("BS.LIAB.NON_CURRENT.TOTAL", "non_current_liabilities_inr_cr"), "Non-Current Liabilities"),
+            (("BS.LIAB.CURRENT.TOTAL", "current_liabilities_inr_cr"), "Current Liabilities"),
         ]
-        bs_chart_rows = [
-            {"bs_head": lbl, "amount_cr": by_code[c].get("amount_cr"), "prior_fy_cr": by_code[c].get("prior_fy_cr")}
-            for c, lbl in bs_chart_codes if c in by_code
-        ]
+        bs_chart_rows = []
+        for codes_tuple, lbl in bs_chart_specs:
+            matched = _pick_code(by_code, *codes_tuple)
+            if matched:
+                bs_chart_rows.append({"bs_head": lbl, "amount_cr": matched.get("amount_cr"), "prior_fy_cr": matched.get("prior_fy_cr")})
         ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "bar"
         vis["chart"] = build_chart_spec(kind=ck, columns=["bs_head", "amount_cr", "prior_fy_cr"], rows=bs_chart_rows, title=title, unit="₹ Cr")
         vis["type"] = "chart" if (chart_kind and chart_kind not in ("kpi", "table")) else "table"
@@ -274,10 +280,10 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
     if compiled.metric == "cash_flow_statement" and dims and dims[0] == "line_item":
         fy = (compiled.effective_period or {}).get("fy", "FY26")
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-        ocf_r = by_code.get("operating_cash_flow_inr_cr", {})
-        icf_r = by_code.get("investing_cash_flow_inr_cr", {})
-        fcf_r = by_code.get("free_cash_flow_inr_cr", {})
-        cls_r = by_code.get("closing_cash_inr_cr", {})
+        ocf_r = _pick_code(by_code, "CF.CFO", "operating_cash_flow_inr_cr")
+        icf_r = _pick_code(by_code, "CF.CFI", "investing_cash_flow_inr_cr")
+        fcf_r = _pick_code(by_code, "CF.CFF", "free_cash_flow_inr_cr", "financing_cash_flow_inr_cr")
+        cls_r = _pick_code(by_code, "CF.CCE_CLOSE", "closing_cash_inr_cr")
         vis["kpis"] = [
             {
                 "label": f"Operating Cash Flow ({fy})",
@@ -292,32 +298,32 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                 "delta": "Capex + JVs net of Dividends",
             },
             {
-                "label": f"Free Cash Flow ({fy})",
+                "label": f"Financing Cash Flow ({fy})",
                 "value": fcf_r.get("amount_cr"),
                 "unit": "₹ crore",
-                "delta": f"{fcf_r.get('pct_of_ocf'):.1f}% of OCF" if isinstance(fcf_r.get("pct_of_ocf"), (int, float)) else "OCF − Total Capex",
+                "delta": f"{fcf_r.get('pct_of_ocf'):.1f}% of OCF" if isinstance(fcf_r.get("pct_of_ocf"), (int, float)) else "Ind-AS 7 CFF",
             },
             {
-                "label": f"Closing Cash & Bank ({fy})",
+                "label": f"Closing Cash & Equivalents ({fy})",
                 "value": cls_r.get("amount_cr"),
                 "unit": "₹ crore",
-                "delta": f"{cls_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(cls_r.get("yoy_change_pct"), (int, float)) else "Note 15/16",
+                "delta": f"{cls_r.get('yoy_change_pct'):+.1f}% vs prior FY" if isinstance(cls_r.get("yoy_change_pct"), (int, float)) else "Ind-AS 7 Closing CCE",
             },
         ]
         disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "pct_of_ocf"]
-        disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
+        disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
-        pbt_v = _num(by_code.get("pbt_inr_cr", {}).get("amount_cr"))
+        pbt_v = _num(_pick_code(by_code, "CF.START_PROFIT", "pbt_inr_cr").get("amount_cr"))
         nc_wc_v = round(
-            _num(by_code.get("non_cash_adjustments_cf_inr_cr", {}).get("amount_cr"))
-            + _num(by_code.get("working_capital_change_cf_inr_cr", {}).get("amount_cr")),
+            _num(_pick_code(by_code, "CF.ADJ_SUBTOTAL", "non_cash_adjustments_cf_inr_cr").get("amount_cr"))
+            + _num(_pick_code(by_code, "CF.WC_SUBTOTAL", "working_capital_change_cf_inr_cr").get("amount_cr")),
             2,
         )
-        tax_p_v = -abs(_num(by_code.get("income_tax_paid_cf_inr_cr", {}).get("amount_cr")))
-        ocf_v = _num(by_code.get("operating_cash_flow_inr_cr", {}).get("amount_cr"))
-        icf_v = _num(by_code.get("investing_cash_flow_inr_cr", {}).get("amount_cr"))
-        fcf_act_v = _num(by_code.get("financing_cash_flow_inr_cr", {}).get("amount_cr"))
-        net_chg_v = _num(by_code.get("net_cash_change_inr_cr", {}).get("amount_cr"))
+        tax_p_v = -abs(_num(_pick_code(by_code, "CF.TAX_PAID", "income_tax_paid_cf_inr_cr").get("amount_cr")))
+        ocf_v = _num(ocf_r.get("amount_cr"))
+        icf_v = _num(icf_r.get("amount_cr"))
+        fcf_act_v = _num(_pick_code(by_code, "CF.CFF", "financing_cash_flow_inr_cr").get("amount_cr"))
+        net_chg_v = _num(_pick_code(by_code, "CF.NET_CHANGE_CCE", "net_cash_change_inr_cr").get("amount_cr"))
         cf_wf_rows = [
             {"cf_stage": "Profit Before Tax", "amount_cr": pbt_v, "type": "total"},
             {"cf_stage": "Non-Cash & WC Adj", "amount_cr": nc_wc_v, "type": "delta"},
@@ -335,18 +341,18 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
     if compiled.metric == "financial_ratios" and dims and dims[0] == "line_item":
         fy = (compiled.effective_period or {}).get("fy", "FY26")
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-        ebm_r = by_code.get("ebitda_margin_pct", {})
-        roce_r = by_code.get("standalone_roce_pct", {})
-        roe_r = by_code.get("roe_pct", {})
-        de_r = by_code.get("debt_to_equity_ratio", {})
+        ebm_r = _pick_code(by_code, "RATIO.PBIDT_MARGIN_PCT", "ebitda_margin_pct")
+        roce_r = _pick_code(by_code, "RATIO.ROCE", "standalone_roce_pct")
+        roe_r = _pick_code(by_code, "RATIO.ROE_INCL_EXC", "roe_pct")
+        de_r = _pick_code(by_code, "RATIO.DEBT_EQUITY", "debt_to_equity_ratio")
         vis["kpis"] = [
-            {"label": f"EBITDA Margin ({fy})", "value": ebm_r.get("value"), "unit": "%", "delta": "Operating Profitability"},
+            {"label": f"PBIDT Margin ({fy})", "value": ebm_r.get("value"), "unit": "%", "delta": "Operating Profitability"},
             {"label": f"Standalone ROCE ({fy})", "value": roce_r.get("value"), "unit": "%", "delta": "Return on Capital Employed"},
             {"label": f"Return on Equity ({fy})", "value": roe_r.get("value"), "unit": "%", "delta": "PAT / Net Worth"},
-            {"label": f"Debt-to-Equity ({fy})", "value": de_r.get("value"), "unit": "x", "delta": "Net Cash Positive Balance Sheet"},
+            {"label": f"Debt-to-Equity ({fy})", "value": de_r.get("value"), "unit": "x", "delta": "Total Debt / Net Worth"},
         ]
         disp_cols = ["line_item", "category", "unit", "value", "prior_fy_value", "yoy_delta", "formula"]
-        disp_rows = [{k: r.get(k) for k in disp_cols} for r in rows]
+        disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
         pct_rows = [r for r in rows if r.get("unit") == "%"]
         ck = chart_kind if chart_kind and chart_kind not in ("kpi", "table") else "bar"
@@ -470,64 +476,68 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
         return lead + " The full list is on screen."
     dims = [alias for _, alias in compiled.dims]
     val = compiled.value_columns[0] if compiled.value_columns else None
+
+    def _pick_n(by_code_map: Dict[str, Dict[str, Any]], *codes: str) -> Dict[str, Any]:
+        for c in codes:
+            if c in by_code_map and by_code_map[c]:
+                return by_code_map[c]
+        return {}
+
     if compiled.metric == "pnl_statement" and dims and dims[0] == "line_item":
         fy = (compiled.effective_period or {}).get("fy", "FY26")
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-        rev = by_code.get("gross_revenue_inr_cr", {}).get("amount_cr")
-        lev = by_code.get("statutory_levies_total_inr_cr", {}).get("amount_cr")
-        eb = by_code.get("ebitda_inr_cr", {}).get("amount_cr")
-        pbt = by_code.get("pbt_inr_cr", {}).get("amount_cr")
-        pat = by_code.get("pat_inr_cr", {}).get("amount_cr")
-        cpat = by_code.get("consolidated_pat_inr_cr", {}).get("amount_cr")
+        rev = _pick_n(by_code, "PL.REV_OPS", "gross_revenue_inr_cr").get("amount_cr")
+        ti = _pick_n(by_code, "PL.TOTAL_INCOME", "total_income_inr_cr", "PL.REV_OPS", "gross_revenue_inr_cr").get("amount_cr")
+        te = _pick_n(by_code, "PL.TOTAL_EXP", "total_expenses_inr_cr").get("amount_cr")
+        pbt = _pick_n(by_code, "PL.PBT", "pbt_inr_cr").get("amount_cr")
+        pat = _pick_n(by_code, "PL.PAT", "pat_inr_cr").get("amount_cr")
         return (
             f"For {fy}, ONGC's Schedule III Revenue from Operations is {fmt_num(rev, 'inr_cr')}, "
-            f"Statutory Levies are {fmt_num(lev, 'inr_cr')}, Standalone EBITDA is {fmt_num(eb, 'inr_cr')}, "
-            f"Profit Before Tax is {fmt_num(pbt, 'inr_cr')}, Standalone PAT is {fmt_num(pat, 'inr_cr')}, "
-            f"and Consolidated Group PAT is {fmt_num(cpat, 'inr_cr')}. "
-            f"The complete 23-line Schedule III P&L statement is on screen."
+            f"Total Income is {fmt_num(ti, 'inr_cr')}, Total Expenses are {fmt_num(te, 'inr_cr')}, "
+            f"Profit Before Tax is {fmt_num(pbt, 'inr_cr')}, and Profit for the Year (PAT) is {fmt_num(pat, 'inr_cr')}. "
+            f"The complete Schedule III P&L statement is on screen."
         )
     if compiled.metric == "balance_sheet" and dims and dims[0] == "line_item":
         fy = (compiled.effective_period or {}).get("fy", "FY26")
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-        ta = by_code.get("total_assets_inr_cr", {}).get("amount_cr")
-        nca = by_code.get("non_current_assets_inr_cr", {}).get("amount_cr")
-        ca = by_code.get("current_assets_inr_cr", {}).get("amount_cr")
-        nw = by_code.get("net_worth_inr_cr", {}).get("amount_cr")
-        ncl = by_code.get("non_current_liabilities_inr_cr", {}).get("amount_cr")
-        cl = by_code.get("current_liabilities_inr_cr", {}).get("amount_cr")
+        ta = _pick_n(by_code, "BS.TOTAL_ASSETS", "total_assets_inr_cr").get("amount_cr")
+        nca = _pick_n(by_code, "BS.ASSETS.NON_CURRENT.TOTAL", "non_current_assets_inr_cr").get("amount_cr")
+        ca = _pick_n(by_code, "BS.ASSETS.CURRENT.TOTAL", "current_assets_inr_cr").get("amount_cr")
+        nw = _pick_n(by_code, "BS.EQUITY.TOTAL", "net_worth_inr_cr").get("amount_cr")
+        ncl = _pick_n(by_code, "BS.LIAB.NON_CURRENT.TOTAL", "non_current_liabilities_inr_cr").get("amount_cr")
+        cl = _pick_n(by_code, "BS.LIAB.CURRENT.TOTAL", "current_liabilities_inr_cr").get("amount_cr")
         return (
             f"As of 31 March {fy}, ONGC's Schedule III Total Assets stand at {fmt_num(ta, 'inr_cr')} "
             f"(Non-Current Assets {fmt_num(nca, 'inr_cr')} and Current Assets {fmt_num(ca, 'inr_cr')}), "
-            f"balanced by Standalone Net Worth of {fmt_num(nw, 'inr_cr')}, Non-Current Liabilities of {fmt_num(ncl, 'inr_cr')}, "
-            f"and Current Liabilities of {fmt_num(cl, 'inr_cr')}. The complete 24-line Schedule III Balance Sheet is on screen."
+            f"balanced by Total Equity of {fmt_num(nw, 'inr_cr')}, Non-Current Liabilities of {fmt_num(ncl, 'inr_cr')}, "
+            f"and Current Liabilities of {fmt_num(cl, 'inr_cr')}. The complete Schedule III Balance Sheet is on screen."
         )
     if compiled.metric == "cash_flow_statement" and dims and dims[0] == "line_item":
         fy = (compiled.effective_period or {}).get("fy", "FY26")
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-        ocf = by_code.get("operating_cash_flow_inr_cr", {}).get("amount_cr")
-        icf = by_code.get("investing_cash_flow_inr_cr", {}).get("amount_cr")
-        fcf_act = by_code.get("financing_cash_flow_inr_cr", {}).get("amount_cr")
-        fcf = by_code.get("free_cash_flow_inr_cr", {}).get("amount_cr")
-        cls_c = by_code.get("closing_cash_inr_cr", {}).get("amount_cr")
+        ocf = _pick_n(by_code, "CF.CFO", "operating_cash_flow_inr_cr").get("amount_cr")
+        icf = _pick_n(by_code, "CF.CFI", "investing_cash_flow_inr_cr").get("amount_cr")
+        fcf_act = _pick_n(by_code, "CF.CFF", "financing_cash_flow_inr_cr").get("amount_cr")
+        cls_c = _pick_n(by_code, "CF.CCE_CLOSE", "closing_cash_inr_cr").get("amount_cr")
         return (
             f"In {fy}, ONGC generated Net Cash from Operating Activities (OCF) of {fmt_num(ocf, 'inr_cr')}, "
             f"used {fmt_num(icf, 'inr_cr')} in Investing Activities and {fmt_num(fcf_act, 'inr_cr')} in Financing Activities, "
-            f"delivering Free Cash Flow (FCF) of {fmt_num(fcf, 'inr_cr')} and Closing Cash & Bank Balances of {fmt_num(cls_c, 'inr_cr')}. "
-            f"The complete 18-line Ind-AS 7 Cash Flow Statement is on screen."
+            f"with Closing Cash & Cash Equivalents of {fmt_num(cls_c, 'inr_cr')}. "
+            f"The complete Ind-AS 7 Cash Flow Statement is on screen."
         )
     if compiled.metric == "financial_ratios" and dims and dims[0] == "line_item":
         fy = (compiled.effective_period or {}).get("fy", "FY26")
         by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-        ebm = by_code.get("ebitda_margin_pct", {}).get("value")
-        pm = by_code.get("pat_margin_pct", {}).get("value")
-        roce = by_code.get("standalone_roce_pct", {}).get("value")
-        roe = by_code.get("roe_pct", {}).get("value")
-        de = by_code.get("debt_to_equity_ratio", {}).get("value")
-        eps = by_code.get("eps_basic_inr", {}).get("value")
+        ebm = _pick_n(by_code, "RATIO.PBIDT_MARGIN_PCT", "ebitda_margin_pct").get("value")
+        pm = _pick_n(by_code, "RATIO.PAT_MARGIN_PCT", "pat_margin_pct").get("value")
+        roce = _pick_n(by_code, "RATIO.ROCE", "standalone_roce_pct").get("value")
+        roe = _pick_n(by_code, "RATIO.ROE_INCL_EXC", "roe_pct").get("value")
+        de = _pick_n(by_code, "RATIO.DEBT_EQUITY", "debt_to_equity_ratio").get("value")
+        eps = _pick_n(by_code, "PL.EPS_BASIC", "RATIO.EPS", "eps_basic_inr").get("value")
         return (
-            f"For {fy}, ONGC's EBITDA Margin is {fmt_num(ebm, 'pct')}, Standalone PAT Margin is {fmt_num(pm, 'pct')}, "
+            f"For {fy}, ONGC's PBIDT Margin is {fmt_num(ebm, 'pct')}, Standalone PAT Margin is {fmt_num(pm, 'pct')}, "
             f"Standalone ROCE is {fmt_num(roce, 'pct')}, Return on Equity (ROE) is {fmt_num(roe, 'pct')}, "
-            f"Debt-to-Equity is {de}x, and Basic EPS is ₹{eps}/share. The complete 18-ratio scorecard is on screen."
+            f"Debt-to-Equity is {de}x, and Basic EPS is ₹{eps}/share. The complete ratio scorecard is on screen."
         )
     if not dims and val:
         v = rows[0].get(val)

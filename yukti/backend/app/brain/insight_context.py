@@ -191,35 +191,42 @@ def _search_financial_rag(query: str, fy: Optional[str], metric: str) -> Optiona
     return None
 
 
+def _pick_ic(by_code: Dict[str, Dict[str, Any]], *codes: str) -> Dict[str, Any]:
+    for c in codes:
+        if c in by_code and by_code[c]:
+            return by_code[c]
+    return {}
+
+
 def _pnl_statement_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
     from app.brain.insights import Insight, fmt
     by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-    rev = by_code.get("gross_revenue_inr_cr", {})
-    lev = by_code.get("statutory_levies_total_inr_cr", {})
-    saed = by_code.get("saed_windfall_tax_inr_cr", {})
-    ebitda = by_code.get("ebitda_inr_cr", {})
-    exp_wo = by_code.get("exploration_costs_written_off_inr_cr", {})
-    dda = by_code.get("dda_inr_cr", {})
-    pbt = by_code.get("pbt_inr_cr", {})
-    tax = by_code.get("tax_expense_total_inr_cr", {})
-    pat = by_code.get("pat_inr_cr", {})
-    cpat = by_code.get("consolidated_pat_inr_cr", {})
+    rev = _pick_ic(by_code, "PL.REV_OPS", "gross_revenue_inr_cr")
+    ti = _pick_ic(by_code, "PL.TOTAL_INCOME", "total_income_inr_cr", "PL.REV_OPS", "gross_revenue_inr_cr")
+    te = _pick_ic(by_code, "PL.TOTAL_EXP", "total_expenses_inr_cr")
+    lev = _pick_ic(by_code, "LEVY.TOTAL", "statutory_levies_total_inr_cr")
+    saed = _pick_ic(by_code, "LEVY.OTHER_SAED", "saed_windfall_tax_inr_cr")
+    exp_wo = _pick_ic(by_code, "PL.EXPL_WRITEOFF", "exploration_costs_written_off_inr_cr")
+    dda = _pick_ic(by_code, "PL.DDA", "dda_inr_cr")
+    pbt = _pick_ic(by_code, "PL.PBT", "pbt_inr_cr")
+    tax = _pick_ic(by_code, "PL.TAX", "tax_expense_total_inr_cr")
+    pat = _pick_ic(by_code, "PL.PAT", "pat_inr_cr")
 
     out: List[Insight] = []
-    if rev and ebitda and pat:
+    if rev and pat:
         rv = float(rev.get("amount_cr") or 0)
-        ebv = float(ebitda.get("amount_cr") or 0)
-        eb_pct = float(ebitda.get("pct_of_revenue") or 0)
+        tiv = float(ti.get("amount_cr") or rv)
+        tev = float(te.get("amount_cr") or 0)
+        pbtv_h = float(pbt.get("amount_cr") or 0)
         pv = float(pat.get("amount_cr") or 0)
         pyoy = float(pat.get("yoy_change_pct") or 0)
-        cpv = float(cpat.get("amount_cr") or 0)
         txt = (
             f"Schedule III {fy} Summary: Revenue from Operations {fmt(rv, 'inr_cr')}, "
-            f"Standalone EBITDA {fmt(ebv, 'inr_cr')} ({eb_pct:.1f}% margin), "
-            f"Standalone PAT {fmt(pv, 'inr_cr')} ({pyoy:+.1f}% YoY), and Consolidated Group PAT {fmt(cpv, 'inr_cr')}."
+            f"Total Income {fmt(tiv, 'inr_cr')}, Total Expenses {fmt(tev, 'inr_cr')}, "
+            f"Profit Before Tax {fmt(pbtv_h, 'inr_cr')}, and Standalone PAT {fmt(pv, 'inr_cr')} ({pyoy:+.1f}% YoY)."
         )
-        out.append(Insight(kind="headline", type="headline", value=pv, unit="inr_cr", ref="IX. Standalone Profit After Tax (PAT)",
-                           text=txt, facts=[rv, ebv, eb_pct, pv, abs(pyoy), pyoy, cpv] + _extract_nums(txt), priority=1))
+        out.append(Insight(kind="headline", type="headline", value=pv, unit="inr_cr", ref="Profit for the Year (PAT)",
+                           text=txt, facts=[rv, tiv, tev, pbtv_h, pv, abs(pyoy), pyoy] + _extract_nums(txt), priority=1))
     rag_txt = _search_financial_rag(query, fy, "pnl_statement")
     ctx_row = _lookup_line_context(fy, "pnl_statement")
     driver = str(ctx_row.get("what_happened_summary") or pat.get("driver_note") or rev.get("driver_note") or "").strip()
@@ -236,10 +243,10 @@ def _pnl_statement_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""
         lyoy = float(lev.get("yoy_change_pct") or 0)
         sv = float(saed.get("amount_cr") or 0)
         txt = (
-            f"Note 28 (Statutory Levies): Total levies were {fmt(lv, 'inr_cr')} ({lyoy:+.1f}% YoY; "
-            f"SAED windfall tax {fmt(sv, 'inr_cr')})."
+            f"Statutory Levies: Total levies were {fmt(lv, 'inr_cr')} ({lyoy:+.1f}% YoY; "
+            f"SAED/other levies {fmt(sv, 'inr_cr')})."
         )
-        out.append(Insight(kind="trend", type="pnl_levies", value=lv, unit="inr_cr", ref="Less: Statutory Levies (Royalty + Cess + SAED)",
+        out.append(Insight(kind="trend", type="pnl_levies", value=lv, unit="inr_cr", ref="Statutory Levies",
                            text=txt, facts=[lv, abs(lyoy), lyoy, sv] + _extract_nums(txt), priority=3))
     if exp_wo and dda and pbt and tax:
         ew = float(exp_wo.get("amount_cr") or 0)
@@ -247,10 +254,10 @@ def _pnl_statement_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""
         pbtv = float(pbt.get("amount_cr") or 0)
         txv = float(tax.get("amount_cr") or 0)
         txt = (
-            f"Notes 32–37 (Below-EBITDA Drivers): Exploration dry-well & survey write-offs were {fmt(ew, 'inr_cr')}, "
+            f"Key Expense Drivers: Exploration costs written off were {fmt(ew, 'inr_cr')}, "
             f"DD&A was {fmt(dv, 'inr_cr')}, yielding PBT of {fmt(pbtv, 'inr_cr')} and Tax Expense of {fmt(txv, 'inr_cr')}."
         )
-        out.append(Insight(kind="comparison", type="pnl_drivers", value=pbtv, unit="inr_cr", ref="VII. Profit Before Tax (PBT)",
+        out.append(Insight(kind="comparison", type="pnl_drivers", value=pbtv, unit="inr_cr", ref="Profit Before Tax (PBT)",
                            text=txt, facts=[ew, dv, pbtv, txv] + _extract_nums(txt), priority=4))
     return out
 
@@ -362,15 +369,15 @@ def _ratios_multi_year_insights(rows: List[Dict[str, Any]], query: str = ""):
 def _balance_sheet_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
     from app.brain.insights import Insight, fmt
     by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-    ta = by_code.get("total_assets_inr_cr", {})
-    nca = by_code.get("non_current_assets_inr_cr", {})
-    oga = by_code.get("oil_and_gas_assets_inr_cr", {})
-    cwip = by_code.get("cwip_inr_cr", {})
-    inv = by_code.get("investments_subsidiaries_jv_inr_cr", {})
-    nw = by_code.get("net_worth_inr_cr", {})
-    ltd = by_code.get("long_term_debt_inr_cr", {})
-    aro = by_code.get("abandonment_provision_inr_cr", {})
-    cash = by_code.get("cash_and_bank_inr_cr", {})
+    ta = _pick_ic(by_code, "BS.TOTAL_ASSETS", "total_assets_inr_cr")
+    nca = _pick_ic(by_code, "BS.ASSETS.NON_CURRENT.TOTAL", "non_current_assets_inr_cr")
+    oga = _pick_ic(by_code, "BS.OG_ASSETS", "oil_and_gas_assets_inr_cr")
+    cwip = _pick_ic(by_code, "BS.WIP_TOTAL_10YR", "BS.CWIP_OG", "cwip_inr_cr")
+    inv = _pick_ic(by_code, "BS.INVESTMENTS_SUB_JV", "BS.INVESTMENTS_NC_10YR", "investments_subsidiaries_jv_inr_cr")
+    nw = _pick_ic(by_code, "BS.EQUITY.TOTAL", "net_worth_inr_cr")
+    ltd = _pick_ic(by_code, "BS.BORROW_NC", "BS.BORROW_TOTAL_10YR", "long_term_debt_inr_cr")
+    aro = _pick_ic(by_code, "BS.PROV_NC", "abandonment_provision_inr_cr")
+    cash = _pick_ic(by_code, "BS.CCE", "cash_and_bank_inr_cr")
 
     out: List[Insight] = []
     if ta and nw:
@@ -402,7 +409,7 @@ def _balance_sheet_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""
             f"Notes 5–10 (Asset Composition): Oil & Gas Producing Properties Net Block is {fmt(ogav, 'inr_cr')}, "
             f"Capital Work-in-Progress (CWIP) is {fmt(cwv, 'inr_cr')}, and Subsidiary/JV Investments (HPCL, OVL, MRPL, OPaL) are {fmt(invv, 'inr_cr')}."
         )
-        out.append(Insight(kind="comparison", type="bs_assets", value=ogav, unit="inr_cr", ref="A1. Oil & Gas Producing Properties (Net Block)",
+        out.append(Insight(kind="comparison", type="bs_assets", value=ogav, unit="inr_cr", ref="Oil & Gas Assets",
                            text=txt, facts=[ogav, cwv, invv] + _extract_nums(txt), priority=3))
     if ltd and aro and cash:
         ltdv = float(ltd.get("amount_cr") or 0)
@@ -410,9 +417,9 @@ def _balance_sheet_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""
         cv = float(cash.get("amount_cr") or 0)
         txt = (
             f"Notes 15–22 (Liquidity & Obligations): Cash & Bank Balances stand at {fmt(cv, 'inr_cr')} against "
-            f"Long-Term Borrowings of {fmt(ltdv, 'inr_cr')} and Site Restoration ARO Provision of {fmt(arov, 'inr_cr')}."
+            f"Long-Term Borrowings of {fmt(ltdv, 'inr_cr')} and Non-Current Provisions of {fmt(arov, 'inr_cr')}."
         )
-        out.append(Insight(kind="trend", type="bs_liab", value=cv, unit="inr_cr", ref="B4. Cash, Cash Equivalents & Term Bank Deposits",
+        out.append(Insight(kind="trend", type="bs_liab", value=cv, unit="inr_cr", ref="Cash and Cash Equivalents",
                            text=txt, facts=[ltdv, arov, cv] + _extract_nums(txt), priority=4))
     return out
 
@@ -420,24 +427,23 @@ def _balance_sheet_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""
 def _cash_flow_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
     from app.brain.insights import Insight, fmt
     by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-    ocf = by_code.get("operating_cash_flow_inr_cr", {})
-    icf = by_code.get("investing_cash_flow_inr_cr", {})
-    fcf_act = by_code.get("financing_cash_flow_inr_cr", {})
-    fcf = by_code.get("free_cash_flow_inr_cr", {})
-    div_p = by_code.get("dividend_paid_cf_inr_cr", {})
-    cls_c = by_code.get("closing_cash_inr_cr", {})
+    ocf = _pick_ic(by_code, "CF.CFO", "operating_cash_flow_inr_cr")
+    icf = _pick_ic(by_code, "CF.CFI", "investing_cash_flow_inr_cr")
+    fcf_act = _pick_ic(by_code, "CF.CFF", "financing_cash_flow_inr_cr")
+    fcf = _pick_ic(by_code, "free_cash_flow_inr_cr", "CF.CFO")
+    div_p = _pick_ic(by_code, "CF.FIN_DIV_PAID", "dividend_paid_cf_inr_cr")
+    cls_c = _pick_ic(by_code, "CF.CCE_CLOSE", "closing_cash_inr_cr")
 
     out: List[Insight] = []
-    if ocf and fcf:
+    if ocf:
         ocfv = float(ocf.get("amount_cr") or 0)
-        fcfv = float(fcf.get("amount_cr") or 0)
         clsv = float(cls_c.get("amount_cr") or 0)
         txt = (
             f"Ind-AS 7 {fy} Cash Flow Summary: Net Cash from Operating Activities (OCF) was {fmt(ocfv, 'inr_cr')}, "
-            f"generating Free Cash Flow (FCF) of {fmt(fcfv, 'inr_cr')} and Closing Cash of {fmt(clsv, 'inr_cr')}."
+            f"with Closing Cash & Cash Equivalents of {fmt(clsv, 'inr_cr')}."
         )
-        out.append(Insight(kind="headline", type="headline", value=ocfv, unit="inr_cr", ref="I. Net Cash from Operating Activities (OCF)",
-                           text=txt, facts=[ocfv, fcfv, clsv] + _extract_nums(txt), priority=1))
+        out.append(Insight(kind="headline", type="headline", value=ocfv, unit="inr_cr", ref="Net Cash from Operating Activities (OCF)",
+                           text=txt, facts=[ocfv, clsv] + _extract_nums(txt), priority=1))
     rag_txt = _search_financial_rag(query, fy, "cash_flow_statement")
     ctx_row = _lookup_line_context(fy, "cash_flow_statement")
     driver = str(ctx_row.get("what_happened_summary") or ocf.get("driver_note") or "").strip()
@@ -457,7 +463,7 @@ def _cash_flow_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
             f"Capital Allocation ({fy}): Net Cash Used in Investing Activities was {fmt(icfv, 'inr_cr')} "
             f"and Net Cash Used in Financing Activities was {fmt(ffv, 'inr_cr')} (including Dividends Paid of {fmt(dpv, 'inr_cr')})."
         )
-        out.append(Insight(kind="comparison", type="cf_alloc", value=fcfv if fcf else 0.0, unit="inr_cr", ref="Memo: Free Cash Flow (OCF − Total Capex)",
+        out.append(Insight(kind="comparison", type="cf_alloc", value=float(fcf.get("amount_cr") or 0) if fcf else 0.0, unit="inr_cr", ref="Capital Allocation",
                            text=txt, facts=[icfv, ffv, dpv, abs(icfv), abs(ffv), abs(dpv)] + _extract_nums(txt), priority=3))
     return out
 
@@ -465,24 +471,24 @@ def _cash_flow_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
 def _financial_ratios_insights(rows: List[Dict[str, Any]], fy: str, query: str = ""):
     from app.brain.insights import Insight
     by_code = {str(r.get("line_code")): r for r in rows if r.get("line_code")}
-    ebm = by_code.get("ebitda_margin_pct", {}).get("value")
-    pm = by_code.get("pat_margin_pct", {}).get("value")
-    roce = by_code.get("standalone_roce_pct", {}).get("value")
-    roe = by_code.get("roe_pct", {}).get("value")
-    de = by_code.get("debt_to_equity_ratio", {}).get("value")
-    icr = by_code.get("interest_coverage_ratio", {}).get("value")
-    eps = by_code.get("eps_basic_inr", {}).get("value")
-    dps = by_code.get("dividend_per_share_inr", {}).get("value")
+    ebm = _pick_ic(by_code, "RATIO.PBIDT_MARGIN_PCT", "ebitda_margin_pct").get("value")
+    pm = _pick_ic(by_code, "RATIO.PAT_MARGIN_PCT", "pat_margin_pct").get("value")
+    roce = _pick_ic(by_code, "RATIO.ROCE", "standalone_roce_pct").get("value")
+    roe = _pick_ic(by_code, "RATIO.ROE_INCL_EXC", "roe_pct").get("value")
+    de = _pick_ic(by_code, "RATIO.DEBT_EQUITY", "debt_to_equity_ratio").get("value")
+    icr = _pick_ic(by_code, "interest_coverage_ratio", "RATIO.CURRENT").get("value")
+    eps = _pick_ic(by_code, "PL.EPS_BASIC", "RATIO.EPS", "eps_basic_inr").get("value")
+    dps = _pick_ic(by_code, "RATIO.DPS", "dividend_per_share_inr").get("value")
     txt1 = (
-        f"Profitability & Returns ({fy}): EBITDA Margin {ebm}%, Net PAT Margin {pm}%, "
+        f"Profitability & Returns ({fy}): PBIDT Margin {ebm}%, Net PAT Margin {pm}%, "
         f"Standalone ROCE {roce}%, and Return on Equity (ROE) {roe}%."
     )
     txt2 = (
-        f"Solvency & Per-Share ({fy}): Debt-to-Equity ratio is {de}x with {icr}x Interest Coverage; "
+        f"Solvency & Per-Share ({fy}): Debt-to-Equity ratio is {de}x; "
         f"Basic EPS is ₹{eps}/share and Dividend Per Share is ₹{dps}/share."
     )
     out = [
-        Insight(kind="headline", type="headline", value=float(ebm or 0), unit="pct", ref="EBITDA Margin (%)",
+        Insight(kind="headline", type="headline", value=float(ebm or 0), unit="pct", ref="PBIDT Margin (%)",
                 text=txt1, facts=_extract_nums(txt1), priority=1),
     ]
     rag_txt = _search_financial_rag(query, fy, "financial_ratios")
