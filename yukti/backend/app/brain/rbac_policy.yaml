@@ -305,10 +305,10 @@ column_patterns:
 # matched on word boundaries).
 topic_keywords:
   pay: [salary, salaries, pay of, pay band, net pay, basic pay, gross pay, average pay, take-home pay, take home pay, compensation, ctc, wages,
-        wage, remuneration, emoluments, prp, performance related pay, bonus, increment, allowance of, perks]
-  apar: [apar, apars, appraisal rating, appraisal score, performance rating, performance score]
+        wage, remuneration, emoluments, prp, performance related pay, bonus, increment, allowance of, perks, वेतन, तनख्वाह, सैलरी]
+  apar: [apar, apars, appraisal rating, appraisal score, performance rating, performance score, प्रदर्शन, मूल्यांकन, रेटिंग]
   sensitive: [vigilance, posh, sexual harassment, medical history, medical record, medical records, medical claim, medical claims, health record,
-              health records, disciplinary]
+              health records, disciplinary, सतर्कता, चिकित्सा, स्वास्थ्य]
 
 row_actions:
   - id: draft_transfer_note

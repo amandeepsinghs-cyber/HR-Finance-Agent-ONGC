@@ -234,7 +234,9 @@ def _mentions_individual_or_row_pay_target(question: str) -> bool:
         r"each\s+(?:employee|officer|executive)|every\s+(?:employee|officer|executive)|"
         r"list\s+(?:the\s+)?(?:net\s+pay|gross\s+pay|basic\s+pay|salary|salaries|ctc|pay)|"
         r"(?:net\s+pay|gross\s+pay|basic\s+pay|salary|salaries|ctc|pay\s+band)\s+of\s+all\b)\b"
-        r"|(?:रिपोर्टिंग\s*अधिकारी|मेरे\s*(?:अधिकारी|सहकर्मी|बॉस|मैनेजर|प्रबंधक))",
+        r"|(?:रिपोर्टिंग\s*अधिकारी|मेरे\s*(?:अधिकारी|सहकर्मी|बॉस|मैनेजर|प्रबंधक))"
+        r"|(?:का|की|ka|unka|unki|उनका|उनकी|उसका|उसकी)\s*(?:वेतन|तनख्वाह|सैलरी|salary|apar|medical|health)"
+        r"|employee\s*id\b.*(?:वेतन|तनख्वाह|सैलरी|salary|apar|medical|health)",
         q_low,
     ):
         return True
@@ -728,11 +730,11 @@ def suppress_small_cells(
     cell_count_col: Optional[str] = None,
     value_check: bool = True,
 ) -> Tuple[List[Dict[str, Any]], int]:
-    """Counts below the threshold become '<5' (D-11 / R-K5)."""
+    """Counts below the threshold become '<5' (D-11 / R-K5). Applies secondary suppression if exactly 1 cell is suppressed."""
     t = threshold or int(load_policy().get("small_cell_threshold", 5))
-    out, n = [], 0
-    for r in rows:
-        r2 = dict(r)
+    out = [dict(r) for r in rows]
+    n = 0
+    for i, r2 in enumerate(out):
         small_cell = (
             cell_count_col is not None
             and isinstance(r2.get(cell_count_col), (int, float))
@@ -743,11 +745,27 @@ def suppress_small_cells(
             if not isinstance(v, (int, float)) or isinstance(v, bool):
                 continue
             if small_cell or (value_check and 0 < v < t and (not by_name or _COUNT_COL.search(c))):
-                r2[c] = f"<{t}"
+                out[i][c] = f"<{t}"
                 n += 1
+
+    for c in value_columns:
+        num_suppressed = sum(1 for r in out if r.get(c) == f"<{t}")
+        if num_suppressed == 1:
+            min_val = None
+            min_idx = -1
+            for i, r in enumerate(out):
+                v = r.get(c)
+                if isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0:
+                    if min_val is None or v < min_val:
+                        min_val = v
+                        min_idx = i
+            if min_idx != -1:
+                out[min_idx][c] = f"<{t}"
+                n += 1
+
+    for r2 in out:
         if cell_count_col:
             r2.pop(cell_count_col, None)
-        out.append(r2)
     return out, n
 
 
@@ -958,8 +976,8 @@ def enforce_contract(
                     rows = tbl.get("rows") or []
                     row_flags = [_row_discipline_is_fin(r) for r in rows if isinstance(r, dict)]
                     if rows and any(f is not None for f in row_flags):
-                        fin_rows = [r for r in rows if isinstance(r, dict) and _row_discipline_is_fin(r) is True]
-                        non_fin_rows = [r for r in rows if isinstance(r, dict) and _row_discipline_is_fin(r) is not True]
+                        fin_rows = [r for r in rows if isinstance(r, dict) and (_row_discipline_is_fin(r) is True or r.get("emp_id") is None)]
+                        non_fin_rows = [r for r in rows if isinstance(r, dict) and _row_discipline_is_fin(r) is not True and r.get("emp_id") is not None]
                         if non_fin_rows:
                             filtered_non_fin_rows = True
                             for r in non_fin_rows:
