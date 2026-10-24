@@ -1,0 +1,106 @@
+agents:
+  - id: fin_diagnostics_agent
+    class: app.agents.fin_diagnostics.tool
+    requires_role: ["CMD", "DIR_HR", "DIR_FIN", "E1_HR", "E2_HR", "E3_HR", "E4_HR", "E1_FIN", "E2_FIN", "E3_FIN", "E4_FIN"]
+    description: Finance diagnostics agent for PBT bridge and root causes.
+    triggers:
+      - "(?i)\\b(diagnose|why did .* drop|bridge)\\b"
+    examples:
+      - "why did PBT drop in FY24"
+      - "give me a variance bridge"
+      - "diagnose the revenue drop"
+      - "show me a waterfall chart of costs"
+      - "what caused the profit to decrease"
+      - "pbt drop kyu hua"
+      - "fy24 me variance kya hai"
+      - "bridge chart dikhao"
+
+  - id: dcf_agent
+    est_seconds: 15
+    steps:
+      - id: load_inputs
+        label: "Loading inputs"
+      - id: wacc_build
+        label: "Building WACC"
+      - id: forecast
+        label: "Forecasting CF"
+      - id: valuation
+        label: "Computing valuation"
+      - id: sensitivity_grid
+        label: "Sensitivity"
+      - id: tornado
+        label: "Tornado"
+      - id: xlsx
+        label: "Generating XLSX"
+      - id: publish
+        label: "Publishing"
+    class: app.agents.dcf_agent.DCFAgent
+    requires_role: ["CMD", "DIR_FIN"]
+    description: Runs a discounted cash flow valuation.
+    triggers:
+      - "(?i)\\b(dcf|discounted cash flow|intrinsic val\\w*|under ?valued|over ?valued)\\b"
+    examples:
+      - "Can you run a discounted cash flow and tell if ONGC is undervalued?"
+      - "dcf run karo"
+      - "valuation kya hai"
+      - "is ongc overvalued"
+      - "show me intrinsic value"
+      - "calculate dcf for fy26"
+      - "run intrinsic valuation"
+      - "what is the wacc"
+
+  - id: hr_transfer_agent
+    class: app.agents.hr_transfer.tool
+    requires_role: ["CMD", "DIR_HR", "DIR_FIN", "E1_HR", "E2_HR", "E3_HR", "E4_HR", "E1_FIN", "E2_FIN", "E3_FIN", "E4_FIN"]
+    description: Proposes HR transfers and drafts review emails.
+    triggers:
+      - "(?i)\\b(transfer|relocat\\w*|postings|email|draft)\\b"
+    examples:
+      - "transfer employee 123"
+      - "draft an email to Director HR"
+      - "send this email"
+      - "relocate these executives to Mumbai"
+      - "prepare transfer orders"
+      - "email draft karo"
+      - "transfer order bhejo"
+      - "inhe delhi relocate karo"
+
+  - id: doc_export_agent
+    class: app.agents.doc_export.tool
+    requires_role: ["CMD", "DIR_HR", "DIR_FIN", "E1_HR", "E2_HR", "E3_HR", "E4_HR", "E1_FIN", "E2_FIN", "E3_FIN", "E4_FIN"]
+    description: Exports documents to Excel, PDF, etc.
+    run_mode: auto
+    steps:
+      - id: start
+        label: "Starting export"
+      - id: format
+        label: "Formatting file"
+      - id: done
+        label: "Done"
+    triggers:
+      - "(?i)\\b(export|download|pdf|xlsx|excel|csv)\\b"
+    examples:
+      - "export this to excel"
+      - "download as pdf"
+      - "can you export this data"
+      - "save this to a spreadsheet"
+      - "download the report"
+      - "is table ko excel me export karo"
+      - "pdf me download karo"
+      - "mujhe iska export chahiye"
+
+  - id: analyst
+    class: app.agents.analyst.AnalystAgent
+    requires_role: ["CMD", "DIR_HR", "DIR_FIN", "E1_HR", "E2_HR", "E3_HR", "E4_HR", "E1_FIN", "E2_FIN", "E3_FIN", "E4_FIN"]
+    description: Core analytical planner for HR and finance queries.
+    triggers:
+      - "(?i)\\b(balance sheet|profit|loss|salary|payroll|leave)\\b"
+    examples:
+      - "show balance sheet for 2024"
+      - "what is my salary"
+      - "how many employees are there"
+      - "what is the revenue"
+      - "give me the cash flow"
+      - "salary kitni hai"
+      - "balance sheet dikhao"
+      - "profit kitna hua"

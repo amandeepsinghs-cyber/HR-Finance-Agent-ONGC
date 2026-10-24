@@ -7,7 +7,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AnswerContract, ChartKind, ChartSpec, SourceCitation } from '@/contracts/answerContract';
+import { AnswerContract, ChartKind, ChartSpec, DcfModelSpec, JobSpec, SensitivityGridSpec, SourceCitation, TornadoSpec } from '@/contracts/answerContract';
 import { ChartRenderer } from './renderers/ChartRenderer';
 import { TableRenderer } from './renderers/TableRenderer';
 import { KpiRenderer } from './renderers/KpiRenderer';
@@ -18,13 +18,15 @@ import { RefusalRenderer } from './renderers/RefusalRenderer';
 import { SourceChipsModal } from './SourceChipsModal';
 import { RosterTable } from './renderers/RosterTable';
 import { CompareRenderer } from './renderers/CompareRenderer';
+import { ActionCard } from './agents/ActionCard';
+import { JobCard } from './agents/JobCard';
 import { replot, profile, ReplotResult, ReplotKind } from '@/charts/compat';
 import { normalizeRows } from '@/charts/normalize';
 import type { SpecPatch, VisualContainer } from '@/contracts/answerContract';
 import { sourceLabel } from './FloatingConversationPanel';
 import { planChart } from '@/charts/plan';
 import { cleanText, humanizeKey, toNumber } from '@/charts/format';
-import { Card, Chip, ContextChips } from './ui/primitives';
+import { Badge, Card, Chip, ContextChips } from './ui/primitives';
 import { Download, ChevronRight, Database, Scale, FileText, Loader2, Volume2, BarChart3, PieChart, Activity, Table as TableIcon, SlidersHorizontal, Sparkles, CornerDownRight } from 'lucide-react';
 
 const NOISE = /^(executed sql|grounding:|query:|sql query|voice turn completed|yukti ai connected|role:|served from|canvas visual|turn complete)/i;
@@ -102,16 +104,246 @@ export interface AnswerCardProps {
   onAsk?: (q: string, specPatch?: SpecPatch) => void;
 }
 
-/** Spoken-only / conversational answer (no visual): a quiet text card. */
+function getActiveSessionId(): string | undefined {
+  if (typeof window === 'undefined') return undefined;
+  const fromClient = (window as any).__yukti?.client?.getSessionId?.();
+  const fromStorage = window.sessionStorage?.getItem('yukti_active_session_id') || undefined;
+  return fromStorage || fromClient || undefined;
+}
+
+function dispatchJobCompleted(result: AnswerContract, finalJob: JobSpec): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent('yukti:job-completed', { detail: { job: finalJob, result } }));
+}
+
+const InlineSensitivityGrid: React.FC<{ grid: SensitivityGridSpec }> = ({ grid }) => (
+  <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)] p-3" data-testid="dcf-sensitivity-grid">
+    <div className="text-caption text-[var(--ink-2)] mb-2">
+      {grid.output.name} ({grid.output.unit}) — {grid.row_input.name} ({grid.row_input.unit}) × {grid.col_input.name} ({grid.col_input.unit})
+    </div>
+    <table className="w-full text-right border-collapse text-caption font-mono tabular-nums">
+      <thead>
+        <tr className="border-b border-[var(--hairline)] text-[var(--ink-3)]">
+          <th className="py-1.5 px-2 text-left">{grid.row_input.name} \ {grid.col_input.name}</th>
+          {grid.col_input.values.map((cv, ci) => (
+            <th key={ci} className="py-1.5 px-2">
+              {cv.toFixed(1)}%
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {grid.row_input.values.map((rv, ri) => (
+          <tr key={ri} className="border-b last:border-b-0 border-[var(--hairline)]">
+            <td className="py-1.5 px-2 text-left font-semibold text-[var(--ink)]">{rv.toFixed(2)}%</td>
+            {(grid.cells[ri] || []).map((cell, ci) => {
+              const isBase = grid.base?.row_idx === ri && grid.base?.col_idx === ci;
+              return (
+                <td
+                  key={ci}
+                  className={`py-1.5 px-2 ${isBase ? 'bg-[var(--accent)]/15 font-bold text-[var(--ink)]' : 'text-[var(--ink-2)]'}`}
+                  data-testid={isBase ? 'sensitivity-base-cell' : undefined}
+                >
+                  {cell === null || cell === undefined ? 'n/m' : `₹${cell.toFixed(1)}`}
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+const InlineTornadoView: React.FC<{ tornado: TornadoSpec }> = ({ tornado }) => (
+  <div className="rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)] p-3 space-y-2" data-testid="dcf-tornado-view">
+    <div className="text-caption text-[var(--ink-2)]">
+      {tornado.output.name} ({tornado.output.unit}) · Base ₹{tornado.output.base.toFixed(1)}
+    </div>
+    <div className="space-y-1.5">
+      {tornado.bars.map((b, i) => (
+        <div key={i} className="flex items-center justify-between gap-3 py-1 border-b last:border-b-0 border-[var(--hairline)] text-caption" data-testid="tornado-driver-row">
+          <span className="font-medium text-[var(--ink)]">{b.driver}</span>
+          <span className="font-mono tabular-nums text-[var(--ink-2)]">
+            ₹{b.low_inr.toFixed(1)} ({b.low_input}) → ₹{b.high_inr.toFixed(1)} ({b.high_input})
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const InlineDcfModelView: React.FC<{ model: DcfModelSpec; contract: AnswerContract }> = ({ model, contract }) => {
+  const [tab, setTab] = useState<'fcff' | 'wacc' | 'bridge' | 'sensitivity' | 'tornado'>('fcff');
+  const artifacts = contract.job?.artifacts?.length ? contract.job.artifacts : contract.artifacts || [];
+  return (
+    <div className="space-y-4" data-testid="dcf-model-view">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Badge tone="warning" data-testid="dcf-illustrative-badge">Illustrative</Badge>
+          <span className="text-caption text-[var(--ink-2)]" data-testid="dcf-disclaimer">
+            {model.disclaimer || 'Illustrative valuation, not investment advice.'}
+          </span>
+        </div>
+        {artifacts.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2">
+            {artifacts.map((art) => (
+              <a
+                key={art.export_id}
+                href={art.url || `/api/export/${encodeURIComponent(art.export_id)}`}
+                download={art.filename}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-pill border border-[var(--hairline)] bg-[var(--surface)] text-label font-medium text-[var(--ink)] hover:border-[var(--accent)]"
+                data-testid="dcf-artifact-link"
+              >
+                <Download className="w-3.5 h-3.5 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
+                <span>{art.filename}</span>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* KPI header */}
+      <div className="grid gap-3 sm:grid-cols-4" data-testid="dcf-kpi-header">
+        <Card className="p-3">
+          <div className="text-caption text-[var(--ink-3)]">Intrinsic value / share</div>
+          <div className="mt-1 text-title font-mono tabular-nums font-semibold text-[var(--ink)]" data-testid="dcf-intrinsic-inr">
+            ₹{model.per_share.intrinsic_inr.toFixed(1)}
+          </div>
+        </Card>
+        <Card className="p-3">
+          <div className="text-caption text-[var(--ink-3)]">Market price / share</div>
+          <div className="mt-1 text-title font-mono tabular-nums font-semibold text-[var(--ink)]" data-testid="dcf-market-inr">
+            ₹{model.per_share.market_inr.toFixed(1)}
+          </div>
+        </Card>
+        <Card className="p-3">
+          <div className="text-caption text-[var(--ink-3)]">Upside / (Downside)</div>
+          <div className="mt-1 text-title font-mono tabular-nums font-semibold text-[var(--ink)]" data-testid="dcf-upside-pct">
+            {model.per_share.upside_pct >= 0 ? '+' : ''}
+            {model.per_share.upside_pct.toFixed(1)}%
+          </div>
+        </Card>
+        <Card className="p-3">
+          <div className="text-caption text-[var(--ink-3)]">Verdict</div>
+          <div className="mt-1 text-body font-semibold text-[var(--ink)]" data-testid="dcf-verdict">
+            {model.per_share.verdict}
+          </div>
+        </Card>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--hairline)] pb-2" role="tablist">
+        {(
+          [
+            ['fcff', 'FCFF'],
+            ['wacc', 'WACC build-up'],
+            ['bridge', 'EV → equity bridge'],
+            ['sensitivity', 'Sensitivity'],
+            ['tornado', 'Tornado'],
+          ] as const
+        ).map(([id, label]) => (
+          <Chip
+            key={id}
+            role="tab"
+            aria-selected={tab === id}
+            selected={tab === id}
+            onClick={() => setTab(id)}
+            data-testid={`dcf-tab-${id}`}
+          >
+            {label}
+          </Chip>
+        ))}
+      </div>
+
+      {tab === 'fcff' && (
+        <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)] p-3" data-testid="dcf-panel-fcff">
+          <table className="w-full text-right border-collapse text-caption font-mono tabular-nums">
+            <thead>
+              <tr className="border-b border-[var(--hairline)] text-[var(--ink-3)]">
+                <th className="py-1.5 px-2 text-left">Line (₹ Cr)</th>
+                {model.forecast.years.map((yr) => (
+                  <th key={yr} className="py-1.5 px-2">{yr}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-[var(--hairline)]">
+                <td className="py-1.5 px-2 text-left font-medium text-[var(--ink)]">FCFF</td>
+                {model.forecast.lines.fcff.map((v, i) => (
+                  <td key={i} className="py-1.5 px-2 text-[var(--ink)]">{v.toFixed(1)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td className="py-1.5 px-2 text-left font-medium text-[var(--ink)]">PV of FCFF</td>
+                {model.forecast.lines.pv_fcff.map((v, i) => (
+                  <td key={i} className="py-1.5 px-2 text-[var(--ink-2)]">{v.toFixed(1)}</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {tab === 'wacc' && (
+        <div className="rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)] p-3 grid gap-2 sm:grid-cols-3 text-caption" data-testid="dcf-panel-wacc">
+          <div>Rf used: <span className="font-mono font-semibold">{model.wacc_build.rf_used_pct.toFixed(2)}%</span></div>
+          <div>Adjusted β: <span className="font-mono font-semibold">{model.wacc_build.beta_adj.toFixed(2)}</span></div>
+          <div>ERP: <span className="font-mono font-semibold">{model.wacc_build.erp_total_pct.toFixed(2)}%</span></div>
+          <div>Cost of Equity (Ke): <span className="font-mono font-semibold">{model.wacc_build.ke_pct.toFixed(2)}%</span></div>
+          <div>After-tax Kd: <span className="font-mono font-semibold">{model.wacc_build.kd_used_pct.toFixed(2)}%</span></div>
+          <div>WACC: <span className="font-mono font-semibold">{model.wacc_build.wacc_pct.toFixed(2)}%</span></div>
+        </div>
+      )}
+
+      {tab === 'bridge' && (
+        <div className="rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)] p-3 space-y-1.5 text-caption" data-testid="dcf-panel-bridge">
+          {model.bridge.map((row, idx) => (
+            <div key={idx} className="flex items-center justify-between gap-3 py-1 border-b last:border-b-0 border-[var(--hairline)]">
+              <span className={row.type === 'total' ? 'font-semibold text-[var(--ink)]' : 'text-[var(--ink-2)]'}>{row.label}</span>
+              <span className="font-mono tabular-nums text-[var(--ink)]">₹{row.value_inr_cr.toFixed(1)} Cr</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === 'sensitivity' && model.sensitivity_grid && (
+        <InlineSensitivityGrid grid={model.sensitivity_grid} />
+      )}
+
+      {tab === 'tornado' && model.tornado && (
+        <InlineTornadoView tornado={model.tornado} />
+      )}
+    </div>
+  );
+};
+
+/** Spoken-only / conversational answer (no visual): a quiet text card, plus ActionCard / JobCard when present. */
 const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: string; q: string; patch?: SpecPatch }[]; onAsk?: (q: string, patch?: SpecPatch) => void }> = ({ contract, followUps = [], onAsk }) => {
   const text = cleanText(contract.display_text || contract.spoken_summary || '');
+  const sessionId = getActiveSessionId();
   return (
     <article className="flex flex-col gap-3" data-testid="answer-card" data-visual-type="none">
       <div className="py-[0.5rem] max-w-[72rem] flex items-start gap-3">
         <Sparkles className="w-4 h-4 mt-[0.3rem] shrink-0 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" aria-hidden />
         <p className="text-body text-[var(--ink)] leading-relaxed">{text || '…'}</p>
       </div>
-      {onAsk && followUps.length > 0 && (
+      {contract.proposed_action && (
+        <ActionCard
+          proposedAction={contract.proposed_action}
+          sessionId={sessionId}
+          initialJob={contract.job || null}
+          onJobCompleted={dispatchJobCompleted}
+        />
+      )}
+      {!contract.proposed_action && contract.job && (
+        <JobCard
+          initialJob={contract.job}
+          sessionId={sessionId}
+          onJobCompleted={dispatchJobCompleted}
+        />
+      )}
+      {onAsk && followUps.length > 0 && !contract.proposed_action && (
         <nav aria-label="Follow-up questions" className="mt-auto pt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5" data-testid="follow-ups">
           {followUps.map((f) => (
             <button
@@ -413,6 +645,24 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               {effectiveVisualType === 'map' && visual?.map && <MapRenderer mapSpec={visual.map} isDark={isDark} />}
               {effectiveVisualType === 'refusal' && <RefusalRenderer access={contract.access} isDark={isDark} onViewAlternative={onNavigateToAlternative} />}
               {effectiveVisualType === 'kpi' && visual?.kpis && <KpiRenderer kpis={visual.kpis} isDark={isDark} hero />}
+              {effectiveVisualType === 'dcf_model' && visual?.dcf_model && <InlineDcfModelView model={visual.dcf_model} contract={contract} />}
+              {effectiveVisualType === 'sensitivity_grid' && visual?.sensitivity_grid && <InlineSensitivityGrid grid={visual.sensitivity_grid} />}
+              {effectiveVisualType === 'tornado' && visual?.tornado && <InlineTornadoView tornado={visual.tornado} />}
+              {contract.proposed_action && (
+                <ActionCard
+                  proposedAction={contract.proposed_action}
+                  sessionId={getActiveSessionId()}
+                  initialJob={contract.job || null}
+                  onJobCompleted={dispatchJobCompleted}
+                />
+              )}
+              {!contract.proposed_action && contract.job && effectiveVisualType !== 'dcf_model' && (
+                <JobCard
+                  initialJob={contract.job}
+                  sessionId={getActiveSessionId()}
+                  onJobCompleted={dispatchJobCompleted}
+                />
+              )}
             </section>
 
             {insights.length > 0 && !refused && (

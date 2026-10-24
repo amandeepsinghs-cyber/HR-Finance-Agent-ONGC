@@ -6,7 +6,7 @@ import { TopBar } from '@/components/TopBar';
 import { PersonaBanner } from '@/components/PersonaBanner';
 import { AuthBanner } from '@/components/AuthBanner';
 import { CanvasView } from '@/components/CanvasView';
-import { feedReducer, applyChartKind, latestAnswered, isReplotOf, Turn } from '@/state/feed';
+import { feedReducer, applyChartKind, latestAnswered, isReplotOf, rehydrateJobsForSession, Turn } from '@/state/feed';
 import { FloatingConversationPanel, ChatMessage, PanelMode } from '@/components/FloatingConversationPanel';
 import { OrbState } from '@/components/VoiceOrb';
 import { VoiceAudioEngine } from '@/services/audioAnalyser';
@@ -175,12 +175,39 @@ export default function YuktiApp() {
     turnsRef.current = turns;
   }, [contract, turns]);
 
-  // URL flags
+  // URL flags + P3.6a/b job rehydration and completion listener
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     if (q.get('mock') === '1') setIsLiveMode(false);
     if (q.get('debug') === '1') setIsDebug(true);
     if (q.get('theme') === 'dark') setIsDark(true);
+
+    let sid = window.sessionStorage?.getItem('yukti_active_session_id');
+    if (sid) {
+      yuktiClient.switchPersonaSession(sid, personaRef.current);
+    } else {
+      sid = yuktiClient.getSessionId();
+      try {
+        window.sessionStorage?.setItem('yukti_active_session_id', sid);
+      } catch {
+        // ignore storage quota errors
+      }
+    }
+    void rehydrateJobsForSession(sid, dispatchFeed);
+
+    const onJobCompleted = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ job: any; result: AnswerContract }>).detail;
+      if (!detail?.job || !detail?.result) return;
+      dispatchFeed({ type: 'job_result', job: detail.job, result: detail.result });
+      const spoken = cleanText(detail.result.spoken_summary || detail.result.display_text);
+      const speakId = `job:${detail.job.id}:1`;
+      if (spoken && !engineRef.current?.getMuted() && liveRef.current && yuktiClient.isLiveVoiceReady()) {
+        speakTrackerRef.current.begin();
+        yuktiClient.sendSpeak(spoken, speakId);
+      }
+    };
+    window.addEventListener('yukti:job-completed', onJobCompleted);
+    return () => window.removeEventListener('yukti:job-completed', onJobCompleted);
   }, []);
 
   // Theme class

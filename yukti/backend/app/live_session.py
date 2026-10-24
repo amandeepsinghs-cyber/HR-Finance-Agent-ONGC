@@ -228,6 +228,74 @@ class LiveSessionManager:
         self._mic_frames_dropped = 0
         self._playback_until = 0.0  # perf_counter() when the browser's playback of sent audio is expected to end
         self._audio_rx_count = 0
+        # P3.6b: voice job-completion announcement queue and deduplication
+        self._user_is_speaking = False
+        self._queued_job_speaks: List[Dict[str, str]] = []
+        self._announced_speak_ids: set[str] = set()
+        self._emitted_job_contracts: set[str] = set()
+        LiveSessionManager._ACTIVE_SESSIONS[self.session_id] = self
+        with contextlib.suppress(Exception):
+            from app.jobs.executor import get_executor
+            get_executor().register_ws_notifier(LiveSessionManager.notify_job_update)
+
+    @classmethod
+    async def notify_job_update(cls, session_id: str, payload: Dict[str, Any]) -> None:
+        mgr = cls._ACTIVE_SESSIONS.get(session_id)
+        if mgr is not None and mgr.active:
+            job = payload.get("job") if isinstance(payload, dict) else None
+            if isinstance(job, dict):
+                await mgr.handle_job_update(job)
+
+    async def handle_job_update(self, job: Dict[str, Any]) -> None:
+        """P3.6b (SPEC-03 §9): push job_update to WS; when status=succeeded, emit result contract once and speak spoken_summary verbatim with speak_id=job:<id>:1 (queued if user is speaking)."""
+        await self.send_json({"type": "job_update", "job": job})
+        if job.get("status") != "succeeded":
+            return
+        job_id = str(job.get("id") or "")
+        result = job.get("result")
+        if not isinstance(result, dict) and job_id:
+            with contextlib.suppress(Exception):
+                from app.jobs.store import get_job_store
+                stored = get_job_store().get_job(job_id)
+                if isinstance(stored, dict):
+                    result = stored.get("result")
+        if not isinstance(result, dict):
+            return
+
+        if job_id and job_id not in self._emitted_job_contracts:
+            self._emitted_job_contracts.add(job_id)
+            await self.send_json({"type": "contract", "contract": result})
+
+        spoken_summary = (result.get("spoken_summary") or "").strip()
+        if not spoken_summary or not job_id:
+            return
+        speak_id = f"job:{job_id}:1"
+        if speak_id in self._announced_speak_ids:
+            return
+        if self._user_is_speaking:
+            self._queued_job_speaks.append({"speak_id": speak_id, "text": spoken_summary})
+        else:
+            await self._trigger_job_speak(speak_id, spoken_summary)
+
+    async def _trigger_job_speak(self, speak_id: str, spoken_summary: str) -> None:
+        if speak_id in self._announced_speak_ids:
+            return
+        self._announced_speak_ids.add(speak_id)
+        await self.inbound.put({
+            "text": json.dumps({
+                "type": "speak",
+                "speak_id": speak_id,
+                "text": spoken_summary,
+            })
+        })
+
+    async def _flush_queued_job_speaks(self) -> None:
+        if self._user_is_speaking or not self._queued_job_speaks:
+            return
+        pending = list(self._queued_job_speaks)
+        self._queued_job_speaks.clear()
+        for item in pending:
+            await self._trigger_job_speak(item["speak_id"], item["text"])
 
     async def send_json(self, payload: Dict[str, Any]) -> bool:
         try:
@@ -379,47 +447,75 @@ class LiveSessionManager:
             else:
                 # Default to ask_yukti
                 query_str = str(args.get("query", "")).strip() or "How many executives have been posted in Delhi for 5 years or more?"
-                # Check if the query itself is a screen control command
-                sc_intent = detect_screen_control_intent(query_str)
-                if sc_intent:
-                    result = await self._apply_screen_control(
-                        sc_intent.get("action") or sc_intent.get("command", ""),
-                        sc_intent.get("value", ""),
-                    )
-                else:
-                    from app.turn_runner import get_agent_turn_runner
-                    trun = get_agent_turn_runner()
-                    contract = await trun.execute_turn_async(
-                        query=query_str,
-                        session_id=self.session_id,
-                        persona=self.persona,
-                        principal=self.principal,  # P0.4
-                        language=self.language,
-                    )
-                    # Strip internal telemetry keys before sending contract
-                    clean_contract = dict(contract)
-                    ui_action = clean_contract.pop("ui_action", None)
-                    for k in ("latency_ms", "from_answer_cache", "generated_sql", "tool_called"):
-                        clean_contract.pop(k, None)
+                # P3.6b: deterministic proposal confirm/cancel/edit check before LLM/turn_runner
+                from app.intents.confirm import resolve_pending_proposal_async
+                pa_res = await resolve_pending_proposal_async(query_str, self.session_state)
+                if pa_res is not None:
+                    await self.send_json({
+                        "type": "user_transcript",
+                        "text": pa_res["echo"],
+                        "is_final": True,
+                    })
+                    clean_contract = dict(pa_res["contract"])
                     await self.send_json({
                         "type": "contract",
                         "contract": clean_contract,
                     })
-                    if ui_action:
+                    if pa_res.get("job"):
                         await self.send_json({
-                            "type": "ui_action",
-                            **ui_action,
+                            "type": "job_update",
+                            "job": pa_res["job"],
                         })
-                    vis = clean_contract.get("visual") or {}
-                    self.state.setdefault("ui", {})["visual_title"] = vis.get("title", "")
                     result = {
                         "status": "OK",
                         "spoken_summary": clean_contract.get("spoken_summary", ""),
                         "display_text": clean_contract.get("display_text", ""),
-                        "visual_type": vis.get("type", "none"),
-                        "visual_title": vis.get("title", ""),
-                        "insights": clean_contract.get("insights", []),
+                        "visual_type": "none",
+                        "visual_title": "",
+                        "insights": [],
                     }
+                else:
+                    # Check if the query itself is a screen control command
+                    sc_intent = detect_screen_control_intent(query_str)
+                    if sc_intent:
+                        result = await self._apply_screen_control(
+                            sc_intent.get("action") or sc_intent.get("command", ""),
+                            sc_intent.get("value", ""),
+                        )
+                    else:
+                        from app.turn_runner import get_agent_turn_runner
+                        trun = get_agent_turn_runner()
+                        contract = await trun.execute_turn_async(
+                            query=query_str,
+                            session_id=self.session_id,
+                            persona=self.persona,
+                            principal=self.principal,  # P0.4
+                            language=self.language,
+                        )
+                        # Strip internal telemetry keys before sending contract
+                        clean_contract = dict(contract)
+                        ui_action = clean_contract.pop("ui_action", None)
+                        for k in ("latency_ms", "from_answer_cache", "generated_sql", "tool_called"):
+                            clean_contract.pop(k, None)
+                        await self.send_json({
+                            "type": "contract",
+                            "contract": clean_contract,
+                        })
+                        if ui_action:
+                            await self.send_json({
+                                "type": "ui_action",
+                                **ui_action,
+                            })
+                        vis = clean_contract.get("visual") or {}
+                        self.state.setdefault("ui", {})["visual_title"] = vis.get("title", "")
+                        result = {
+                            "status": "OK",
+                            "spoken_summary": clean_contract.get("spoken_summary", ""),
+                            "display_text": clean_contract.get("display_text", ""),
+                            "visual_type": vis.get("type", "none"),
+                            "visual_title": vis.get("title", ""),
+                            "insights": clean_contract.get("insights", []),
+                        }
         except Exception as e:
             logger.warning(f"[{self.session_id}] Voice tool {name} failed: {e}")
             from app.turn_runner import _is_auth_or_outage_error, safe_error_copy  # P0.1 r2 (BUG-33)
@@ -792,6 +888,10 @@ class LiveSessionManager:
                             turn_complete=True,
                         )
 
+                elif msg_type == "job_update":
+                    if isinstance(msg.get("job"), dict):
+                        await self.handle_job_update(msg["job"])
+
                 elif msg_type in ("text", "prompt"):
                     query_text = (msg.get("text") or "").strip()
                     if not query_text:
@@ -803,6 +903,30 @@ class LiveSessionManager:
                     turn_state["t_first_audio_ms"] = None
                     turn_state["total_audio_bytes"] = 0
                     self._log_turn("User", query_text)
+                    # P3.6b: deterministic proposal confirm/cancel/edit check before sending to Gemini Live
+                    from app.intents.confirm import resolve_pending_proposal_async
+                    pa_res = await resolve_pending_proposal_async(query_text, self.session_state)
+                    if pa_res is not None:
+                        await self.send_json({
+                            "type": "user_transcript",
+                            "text": pa_res["echo"],
+                            "is_final": True,
+                        })
+                        await self.send_json({
+                            "type": "contract",
+                            "contract": pa_res["contract"],
+                        })
+                        if pa_res.get("job"):
+                            await self.send_json({
+                                "type": "job_update",
+                                "job": pa_res["job"],
+                            })
+                        await self.send_json({
+                            "type": "turn_complete",
+                            "full_text": pa_res["contract"].get("spoken_summary", ""),
+                            "metrics": {"audio_bytes_total": 0},
+                        })
+                        continue
                     await self.send_json({
                         "type": "user_transcript",
                         "text": query_text,
@@ -835,6 +959,7 @@ class LiveSessionManager:
                         continue
                     now_ts = time.perf_counter()
                     if peak >= 8:
+                        self._user_is_speaking = True
                         turn_state["voice_frames_in_turn"] += 1
                         turn_state["last_voice_ts"] = now_ts
                     elif now_ts - turn_state["last_voice_ts"] > 1.5:
@@ -846,16 +971,19 @@ class LiveSessionManager:
                     )
 
                 elif msg_type in ("audio_stream_end", "audio_end"):
+                    self._user_is_speaking = False
                     logger.info(
                         f"[{self.session_id}] Rx {msg_type} (total chunks={self._audio_rx_count}, voice_frames={turn_state['voice_frames_in_turn']})"
                     )
                     if self._is_speak_only or turn_state["voice_frames_in_turn"] == 0:
                         turn_state["voice_frames_in_turn"] = 0
+                        await self._flush_queued_job_speaks()
                         continue
                     turn_state["voice_frames_in_turn"] = 0
                     if self.t_turn_start is None:
                         self.t_turn_start = time.perf_counter()
                     await session.send_realtime_input(audio_stream_end=True)
+                    await self._flush_queued_job_speaks()
 
                 elif msg_type == "interrupt":
                     # Do not echo `interrupted` (that re-opened the browser's drop gate while old-reply
@@ -1003,6 +1131,7 @@ class LiveSessionManager:
                                 done_speak = self._speak_id
                                 self._is_speak_only = False
                                 self._speak_id = None
+                                self._user_is_speaking = False
                                 logger.info(
                                     f"[{self.session_id}] Speak {done_speak} completed (audio_bytes={turn_state['total_audio_bytes']}, first_audio_ms={turn_state['t_first_audio_ms']})"
                                 )
@@ -1019,40 +1148,60 @@ class LiveSessionManager:
                                 turn_state["t_first_audio_ms"] = None
                                 turn_state["total_audio_bytes"] = 0
                                 turn_state["tool_called_in_turn"] = False
+                                await self._flush_queued_job_speaks()
                                 continue
 
+                            self._user_is_speaking = False
                             # Safety net: if the user spoke a question (`heard`) and Gemini answered directly
                             # without invoking `ask_yukti` or `control_screen`, run `turn_runner` so the canvas still updates!
                             if heard and not turn_state["tool_called_in_turn"] and not bg_tool_tasks:
-                                q_low = heard.lower().strip().rstrip("?!.")
-                                greetings = {"hi", "hello", "hey", "yo", "namaste", "thanks", "thank you", "ok", "okay"}
-                                if q_low not in greetings and len(q_low) > 3:
-                                    sc_intent = detect_screen_control_intent(heard)
-                                    if sc_intent:
-                                        await self._apply_screen_control(
-                                            sc_intent.get("action") or sc_intent.get("command", ""),
-                                            sc_intent.get("value", ""),
-                                        )
-                                    else:
-                                        try:
-                                            from app.turn_runner import get_agent_turn_runner
-                                            trun = get_agent_turn_runner()
-                                            c = await trun.execute_turn_async(
-                                                query=heard,
-                                                session_id=self.session_id,
-                                                persona=self.persona,
-                                                principal=self.principal,  # P0.4
-                                                language=self.language,
+                                from app.intents.confirm import resolve_pending_proposal_async
+                                pa_res = await resolve_pending_proposal_async(heard, self.session_state)
+                                if pa_res is not None:
+                                    await self.send_json({
+                                        "type": "user_transcript",
+                                        "text": pa_res["echo"],
+                                        "is_final": True,
+                                    })
+                                    await self.send_json({
+                                        "type": "contract",
+                                        "contract": pa_res["contract"],
+                                    })
+                                    if pa_res.get("job"):
+                                        await self.send_json({
+                                            "type": "job_update",
+                                            "job": pa_res["job"],
+                                        })
+                                else:
+                                    q_low = heard.lower().strip().rstrip("?!.")
+                                    greetings = {"hi", "hello", "hey", "yo", "namaste", "thanks", "thank you", "ok", "okay"}
+                                    if q_low not in greetings and len(q_low) > 3:
+                                        sc_intent = detect_screen_control_intent(heard)
+                                        if sc_intent:
+                                            await self._apply_screen_control(
+                                                sc_intent.get("action") or sc_intent.get("command", ""),
+                                                sc_intent.get("value", ""),
                                             )
-                                            clean_c = dict(c)
-                                            ui_act = clean_c.pop("ui_action", None)
-                                            for k in ("latency_ms", "from_answer_cache", "generated_sql", "tool_called"):
-                                                clean_c.pop(k, None)
-                                            await self.send_json({"type": "contract", "contract": clean_c})
-                                            if ui_act:
-                                                await self.send_json({"type": "ui_action", **ui_act})
-                                        except Exception as e_safety:
-                                            logger.warning(f"[{self.session_id}] Safety-net turn_runner failed for heard={heard!r}: {e_safety}")
+                                        else:
+                                            try:
+                                                from app.turn_runner import get_agent_turn_runner
+                                                trun = get_agent_turn_runner()
+                                                c = await trun.execute_turn_async(
+                                                    query=heard,
+                                                    session_id=self.session_id,
+                                                    persona=self.persona,
+                                                    principal=self.principal,  # P0.4
+                                                    language=self.language,
+                                                )
+                                                clean_c = dict(c)
+                                                ui_act = clean_c.pop("ui_action", None)
+                                                for k in ("latency_ms", "from_answer_cache", "generated_sql", "tool_called"):
+                                                    clean_c.pop(k, None)
+                                                await self.send_json({"type": "contract", "contract": clean_c})
+                                                if ui_act:
+                                                    await self.send_json({"type": "ui_action", **ui_act})
+                                            except Exception as e_safety:
+                                                logger.warning(f"[{self.session_id}] Safety-net turn_runner failed for heard={heard!r}: {e_safety}")
 
                             if heard:
                                 self._log_turn("User", heard)
@@ -1076,6 +1225,7 @@ class LiveSessionManager:
                             turn_state["t_first_audio_ms"] = None
                             turn_state["total_audio_bytes"] = 0
                             turn_state["tool_called_in_turn"] = False
+                            await self._flush_queued_job_speaks()
 
                     if not got_any:
                         return "server_closed"
@@ -1107,6 +1257,7 @@ class LiveSessionManager:
     async def _run_fallback_loop(self) -> None:
         """Deterministic fallback loop if Gemini Live is unreachable."""
         from app.turn_runner import get_agent_turn_runner
+        from app.intents.confirm import resolve_pending_proposal_async
         trun = get_agent_turn_runner()
         # Tell the browser voice is down so the UI doesn't sit in "connecting" with a dead mic.
         with contextlib.suppress(Exception):
@@ -1131,10 +1282,44 @@ class LiveSessionManager:
                 data = json.loads(msg["text"])
             except json.JSONDecodeError:
                 continue
-            if data.get("type") not in ("text", "prompt"):
+            mtype = data.get("type")
+            if mtype == "job_update":
+                if isinstance(data.get("job"), dict):
+                    await self.handle_job_update(data["job"])
+                continue
+            if mtype == "speak":
+                speak_text = (data.get("text") or "").strip()
+                if speak_text:
+                    speak_id = str(data.get("speak_id") or f"spk-{int(time.time() * 1000)}")
+                    self._speak_id = speak_id
+                    self._is_speak_only = True
+                    # Speak turn in fallback mode: emit turn_complete with speak_id and full_text, zero duplicate agent_transcript bubbles
+                    self._is_speak_only = False
+                    self._speak_id = None
+                    await self.send_json({
+                        "type": "turn_complete",
+                        "speak_id": speak_id,
+                        "full_text": speak_text,
+                        "metrics": {
+                            "audio_bytes_total": 0,
+                            "speak_only": True,
+                            "speak_id": speak_id,
+                        },
+                    })
+                continue
+            if mtype not in ("text", "prompt"):
                 continue
             text = (data.get("text") or "").strip()
             if not text:
+                continue
+            pa_res = await resolve_pending_proposal_async(text, self.session_state)
+            if pa_res is not None:
+                await self.send_json({"type": "user_transcript", "text": pa_res["echo"], "is_final": True})
+                await self.send_json({"type": "contract", "contract": pa_res["contract"]})
+                if pa_res.get("job"):
+                    await self.send_json({"type": "job_update", "job": pa_res["job"]})
+                spoken_pa = pa_res["contract"].get("spoken_summary") or pa_res["contract"].get("display_text") or ""
+                await self.send_json({"type": "turn_complete", "full_text": spoken_pa, "metrics": {"audio_bytes_total": 0}})
                 continue
             await self.send_json({"type": "user_transcript", "text": text, "is_final": True})
             try:
@@ -1159,5 +1344,4 @@ class LiveSessionManager:
             if ui_act:
                 await self.send_json({"type": "ui_action", **ui_act})
             spoken = clean_c.get("spoken_summary") or clean_c.get("display_text") or ""
-            await self.send_json({"type": "agent_transcript", "text": spoken, "is_final": True})
             await self.send_json({"type": "turn_complete", "full_text": spoken, "metrics": {"audio_bytes_total": 0}})

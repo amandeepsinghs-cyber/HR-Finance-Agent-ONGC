@@ -1,9 +1,11 @@
 /**
- * Conversation feed state (U2.2): an ordered list of turns (question → answer) that replaces the single
- * `contract` + history strip. Pure reducer so it can be unit-tested without React.
+ * Conversation feed state (U2.2 + P3.6a): an ordered list of turns (question → answer) that replaces the single
+ * `contract` + history strip, plus background job result append and reload rehydration (`SPEC-03 §9`, `BEH-05.10`).
+ * Pure reducer so it can be unit-tested without React.
  */
-import type { AnswerContract, SpecPatch } from '@/contracts/answerContract';
+import type { AnswerContract, JobSpec, SpecPatch } from '@/contracts/answerContract';
 import { replot, profile, ReplotKind, ALL_KINDS } from '@/charts/compat';
+import { getJobResult, JobWithResult, listJobs } from '@/lib/jobsClient';
 
 export type TurnStatus = 'pending' | 'done' | 'error';
 
@@ -29,6 +31,8 @@ export type FeedAction =
   | { type: 'fail'; id: string; error: string }
   | { type: 'settle'; id: string; text?: string; at?: number }
   | { type: 'refine'; update: (c: AnswerContract) => AnswerContract; id?: string }
+  | { type: 'job_result'; job: JobSpec; result: AnswerContract; at?: number }
+  | { type: 'rehydrate_jobs'; jobs: JobWithResult[]; at?: number }
   | { type: 'drop'; id: string }
   | { type: 'reset' }
   | { type: 'restore'; turns: Turn[] };
@@ -43,6 +47,20 @@ const textContract = (text: string, id: string): AnswerContract => ({
   access: { status: 'allowed' },
 });
 
+function buildJobProgressContract(job: JobSpec): AnswerContract {
+  return {
+    contract_version: 3,
+    turn_id: `job_progress:${job.id}`,
+    language: 'en',
+    spoken_summary: `Running ${job.agent} in the background.`,
+    display_text: `Running ${job.agent} in the background.`,
+    visual: { type: 'none', mode: 'replace', title: `Background Job · ${job.agent}` },
+    sources: [],
+    access: { status: 'allowed' },
+    job,
+  };
+}
+
 export function feedReducer(state: Turn[], a: FeedAction): Turn[] {
   const now = (t?: number) => t ?? Date.now();
   switch (a.type) {
@@ -53,8 +71,6 @@ export function feedReducer(state: Turn[], a: FeedAction): Turn[] {
     case 'question':
       return state.map((t) => (t.id === a.id ? { ...t, question: a.question } : t));
     case 'answer': {
-      // Fill the named turn. An explicit id that no longer exists (reset / dropped) is a stale answer: ignore it,
-      // never let it fill a different question's card. Id-less answers fill the latest pending turn or append.
       let idx = a.id ? state.findIndex((t) => t.id === a.id) : -1;
       if (a.id && idx < 0) return state;
       if (idx < 0) {
@@ -80,10 +96,92 @@ export function feedReducer(state: Turn[], a: FeedAction): Turn[] {
         { id, question: a.question || a.contract.visual?.title || 'Question', status: 'done', contract: a.contract, askedAt: now(a.at), answeredAt: now(a.at), fresh: true },
       ];
     }
+    case 'job_result': {
+      const turnId = a.result.turn_id || `job:${a.job.id}`;
+      const enrichedResult: AnswerContract = {
+        ...a.result,
+        turn_id: turnId,
+        job: a.result.job || a.job,
+      };
+      const existingIdx = state.findIndex(
+        (t) => t.id === turnId || t.contract?.turn_id === turnId,
+      );
+      if (existingIdx >= 0) {
+        const copy = [...state];
+        copy[existingIdx] = {
+          ...copy[existingIdx],
+          status: 'done',
+          contract: enrichedResult,
+          answeredAt: now(a.at),
+          fresh: true,
+        };
+        return copy;
+      }
+      return [
+        ...state,
+        {
+          id: turnId,
+          question: enrichedResult.visual?.title || `Completed ${a.job.agent}`,
+          status: 'done',
+          contract: enrichedResult,
+          askedAt: now(a.at),
+          answeredAt: now(a.at),
+          fresh: true,
+        },
+      ];
+    }
+    case 'rehydrate_jobs': {
+      let next = [...state];
+      for (const job of a.jobs) {
+        const resTurnId = job.result?.turn_id || `job:${job.id}`;
+        const hasResultTurn = next.some(
+          (t) => t.id === resTurnId || t.contract?.turn_id === resTurnId,
+        );
+        const hasJobCardTurn = next.some(
+          (t) => t.contract?.job?.id === job.id,
+        );
+
+        if (job.status === 'succeeded' && job.result) {
+          if (!hasResultTurn) {
+            const enriched: AnswerContract = {
+              ...job.result,
+              turn_id: resTurnId,
+              job: job.result.job || job,
+            };
+            next = [
+              ...next,
+              {
+                id: resTurnId,
+                question: enriched.visual?.title || `DCF Valuation (${job.id})`,
+                status: 'done',
+                contract: enriched,
+                askedAt: now(a.at),
+                answeredAt: now(a.at),
+                fresh: false,
+              },
+            ];
+          }
+        } else if (!hasJobCardTurn && !hasResultTurn) {
+          const progId = `job_progress:${job.id}`;
+          next = [
+            ...next,
+            {
+              id: progId,
+              question: `Background job · ${job.agent}`,
+              status: 'done',
+              contract: buildJobProgressContract(job),
+              askedAt: now(a.at),
+              answeredAt: now(a.at),
+              fresh: false,
+            },
+          ];
+        }
+      }
+      return next;
+    }
     case 'fail':
       return state.map((t) => (t.id === a.id ? { ...t, status: 'error', error: a.error } : t));
     case 'settle': {
-      // A voice turn ended. If it never got a contract: keep it as a text answer, or drop it if empty.
       const t = state.find((x) => x.id === a.id);
       if (!t || t.status !== 'pending') return state;
       const text = (a.text || '').trim();
@@ -91,8 +189,6 @@ export function feedReducer(state: Turn[], a: FeedAction): Turn[] {
       return state.map((x) => (x.id === a.id ? { ...x, status: 'done', contract: textContract(text, x.id), answeredAt: now(a.at), fresh: true } : x));
     }
     case 'refine': {
-      // Re-plot / "show as table" updates the CURRENT (latest answered) card in place (U2.5) — or a specific
-      // card when the toolbar of a historic card is used.
       for (let i = state.length - 1; i >= 0; i--) {
         const t = state[i];
         if (a.id && t.id !== a.id) continue;
@@ -117,6 +213,36 @@ export function feedReducer(state: Turn[], a: FeedAction): Turn[] {
   }
 }
 
+/**
+ * Rehydrate running/completed jobs for `sessionId` via `GET /api/jobs?session_id=` (`SPEC-03 §9`, `BEH-05.10`).
+ */
+export async function rehydrateJobsForSession(
+  sessionId: string,
+  dispatch: (a: FeedAction) => void,
+): Promise<void> {
+  if (!sessionId) return;
+  try {
+    const jobs = await listJobs(sessionId);
+    if (!jobs.length) return;
+    const hydrated: JobWithResult[] = await Promise.all(
+      jobs.map(async (j) => {
+        if (j.status === 'succeeded' && !j.result) {
+          try {
+            const res = await getJobResult(j.id);
+            return { ...j, result: res };
+          } catch {
+            return j;
+          }
+        }
+        return j;
+      }),
+    );
+    dispatch({ type: 'rehydrate_jobs', jobs: hydrated });
+  } catch {
+    // ignore offline errors during rehydration
+  }
+}
+
 /** Order-independent signature of a visual's data rows (values only; chart kind / column order ignored). */
 function rowsSignature(c?: AnswerContract): string {
   const v: any = c?.visual;
@@ -131,11 +257,6 @@ function rowsSignature(c?: AnswerContract): string {
     .join('\n');
 }
 
-/**
- * A backend re-plot of the current card (e.g. voice "show as pie"): refine in place, don't append.
- * True only for an explicit flag, or mode 'refine' with the SAME title AND identical data rows — a follow-up like
- * "now for FY25" with the same title and row count but different values is a new answer (U2 G4 #2).
- */
 export function isReplotOf(c: AnswerContract, current?: AnswerContract): boolean {
   if (!current) return false;
   if ((c as any).replot === true || (c.visual as any)?.replot === true) return true;
@@ -152,7 +273,6 @@ export const latestAnswered = (turns: Turn[]): Turn | undefined => {
   return undefined;
 };
 
-/** "Show this as <kind>" for voice/typed commands: the same engine as the toolbar (U5.7/U5.8), note attached. */
 export function applyChartKind(prev: AnswerContract, kindRaw: string): AnswerContract {
   if (!prev?.visual || prev.visual.type === 'none') return prev;
   const kind = kindRaw.toLowerCase() as ReplotKind;
