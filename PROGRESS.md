@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:23 UTC · branch `v3/P0-stabilise` @ `7a9c9b6`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:25 UTC · branch `v3/P0-stabilise` @ `f8054ef`
 
 > [!IMPORTANT]
-> **Overall: 24% complete (weighted)** — 13/62 steps ✅ done, 6 in flight, 43 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 26% complete (weighted)** — 13/62 steps ✅ done, 6 in flight, 43 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `██████░░░░░░░░░░░░░░` 29% | 2 | 1 | 0 | 3 | 6 | 0 | 12 |
+| **P1** | Real finance SSOT | `████████░░░░░░░░░░░░` 38% | 2 | 3 | 0 | 1 | 6 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 3% | 0 | 0 | 0 | 1 | 7 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
@@ -24,8 +24,8 @@
 | Step | Status | Task | Owner | Next action |
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
-| P1.3 | 🔄 In progress | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | Complete build + evidence |
-| P1.5 | 🔄 In progress | Yahoo loader + market provider chain (optional, retryable) | F | Complete build + evidence |
+| P1.3 | 🔍 In review | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | Apply review findings / approve |
+| P1.5 | 🔍 In review | Yahoo loader + market provider chain (optional, retryable) | F | Apply review findings / approve |
 | P1.8 | 🔍 In review | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | Apply review findings / approve |
 | P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
 | P4.1 | 🔄 In progress | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Complete build + evidence |
@@ -140,6 +140,8 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `e7c8705` | 2026-10-24 | P1.3 (G4 r2 fixes): B1 wrapped-heading merge (connector/total keywords) + (A+B+C) letter formulas, CF completeness test, AR FY19 c |
+| `b3514b1` | 2026-10-24 | P1.5 (G4 r2 fixes): M1 chart rows carry interval, Yahoo provider dedupes by (ticker,date,interval) and serves 1d only (monthly nev |
 | `aa1ae08` | 2026-10-23 | P1.8 (G4 r2 fixes): BigQuery re-tag applied (8,712 rows to chunker v2; 61 section moves), evidence §8.1 |
 | `d639520` | 2026-10-23 | P1.5 (pre-G4) beta weekly pull: NSE last-trading-day weekly closes ONGC + NIFTY 50, 104 wks 2024-10-25..2026-10-16 (214 req, 0 blo |
 | `1a885ee` | 2026-10-23 | P1.8 (G4 r2 fixes): C1 held-out paraphrase eval (18 Q, LEXICAL_WEIGHT frozen: hybrid 7/18, vector 8/18) + leakage/skew/in-sample d |
@@ -153,8 +155,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `a92101d` | 2026-10-23 | P0.10 (G4 r2 fixes): barge-in needs near-continuous speech (0.5 s window, >=85% loud, no dip >100 ms, duty + echo-correlation guar |
 | `2ac6cb5` | 2026-10-23 | P0.10 (pre-G4): adaptive voice barge-in (sustained, echo-relative), speak_id gating end-to-end (no orphan/fragment bubbles), Stop  |
 | `8a95da5` | 2026-10-23 | P0.10a (pre-G4): stopgap half-duplex mic gate (browser: no PCM while playing +300 ms; backend: drop while generating/speak/estimat |
-| `3f5e4b3` | 2026-10-23 | P0.9 (G4 r2 fixes): end-to-end degraded-run evidence (with/without snapshot, broken ADC), Dockerfile fail-closed + demo-mode notes |
-| `4945902` | 2026-10-23 | P0.5 (G4 r2 fixes): prod with no YUKTI_ALLOWED_ORIGINS allows no cross-origin callers (minor) |
 
 ## 8. Integrity checks
 
