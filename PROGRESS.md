@@ -1,19 +1,19 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 08:53 UTC · branch `v3/P0-stabilise` @ `02e31ef`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 09:34 UTC · branch `v3/P0-stabilise` @ `59784c8`
 
 > [!IMPORTANT]
-> **Overall: 57% complete (weighted)** — 33/62 steps ✅ done, 7 in flight, 22 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 23 warning(s).
+> **Overall: 65% complete (weighted)** — 36/62 steps ✅ done, 10 in flight, 16 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 23 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `██████████████████░░` 92% | 10 | 1 | 0 | 1 | 0 | 0 | 12 |
-| **P2H** | HR: personas, V19, Employee-360 | `█████████░░░░░░░░░░░` 44% | 3 | 0 | 0 | 2 | 3 | 0 | 8 |
-| **P2F** | Finance diagnostics (V20) | `██░░░░░░░░░░░░░░░░░░` 12% | 0 | 0 | 0 | 3 | 3 | 0 | 6 |
-| **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
+| **P1** | Real finance SSOT | `███████████████████░` 94% | 11 | 0 | 0 | 1 | 0 | 0 | 12 |
+| **P2H** | HR: personas, V19, Employee-360 | `██████████░░░░░░░░░░` 50% | 3 | 1 | 0 | 1 | 3 | 0 | 8 |
+| **P2F** | Finance diagnostics (V20) | `███████████████░░░░░` 75% | 2 | 3 | 0 | 1 | 0 | 0 | 6 |
+| **P3** | Agents + DCF (V22) | `██░░░░░░░░░░░░░░░░░░` 8% | 0 | 0 | 0 | 3 | 7 | 0 | 10 |
 | **P4** | Visual 9/10 + exports (V21) | `████████████████████` 100% | 9 | 0 | 0 | 0 | 0 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
@@ -24,12 +24,15 @@
 | Step | Status | Task | Owner | Next action |
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
-| P1.9 | 🔍 In review | WACC inputs + `fact_wacc_annual` (manual RBI seed CSV with lineage; Rf = raw INR 10-yr G-sec at FY-end) | F (+O load, human RBI seed) | Apply review findings / approve |
-| P2H.4 | 🔄 In progress | V19 turns 4–5: export intent + columns + xlsx link; email agent (.eml/.docx/mailto); delete canned proposal | O→F | Complete build + evidence |
+| P2H.4 | 🔍 In review | V19 turns 4–5: export intent + columns + xlsx link; email agent (.eml/.docx/mailto); delete canned proposal | O→F | Apply review findings / approve |
 | P2H.5 | 🔄 In progress | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | Complete build + evidence |
-| P2F.1 | 🔄 In progress | Year clarification (chips + voice) | O | Complete build + evidence |
-| P2F.2 | 🔄 In progress | Multi-year statement payload (4–10 FY columns) | O | Complete build + evidence |
-| P2F.4 | 🔄 In progress | Variance-attribution engine (pure module + fixtures) | F | Complete build + evidence |
+| P2F.1 | 🔍 In review | Year clarification (chips + voice) | O | Apply review findings / approve |
+| P2F.2 | 🔍 In review | Multi-year statement payload (4–10 FY columns) | O | Apply review findings / approve |
+| P2F.3 | 🔍 In review | WACC metric + chart + driver attribution | O (Shapley → F optional) | Apply review findings / approve |
+| P2F.5 | 🔄 In progress | Grounded "why" + non-circular grounding | O | Complete build + evidence |
+| P3.1 | 🔄 In progress | Contract v3 consolidation: add `proposed_action`, `job`, `provenance`, `dcf_model`; **owns the `contract_versi | O | Complete build + evidence |
+| P3.2 | 🔄 In progress | Jobs API + executor + job state store + SSE | O | Complete build + evidence |
+| P3.4 | 🔄 In progress | DCF engine core | F (O reviews API first) | Complete build + evidence |
 
 **Ready to start:**
 
@@ -67,9 +70,9 @@
 | V17 | FEAT-017, FEAT-031 | 🔴 🔴 |  | 🔴 |
 | V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P2H.7, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
-| V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5, P2F.6 | 🔴 |
+| V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P2F.1, P2F.2, P2F.3, P2F.5 | 🔴 |
 | V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5 | 🟡 |
-| V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1, P1.9, P3.1, P3.2, P3.3, P3.4, P3.4b, P3.5 … | ⛔ |
+| V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1, P3.1, P3.2, P3.3, P3.4, P3.4b, P3.5, P3.6a … | ⛔ |
 | V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P2H.5, P2H.6, P2H.7, P2H.8 | 🟡 |
 
 _Not mapped to a feature (process / question-bank / naming verbatims, tracked in UPGRADE_CHECKLIST Part A and docs/question_bank.md): V1, V4, V5, V9, V10._
@@ -103,12 +106,12 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-021 Employee-360 enterprise table (realistic, reconciled) | 🟡 | 1/4 |
 | FEAT-022 Field economics-360 reconciled to company AR totals | 🔴 | 1/3 |
 | FEAT-023 V19 transfer workflow: Excel intent + Email agent | 🔴 | 1/2 |
-| FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ⛔ | 0/7 |
+| FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ⛔ | 3/7 |
 | FEAT-025 Financial statement table visual | 🟡 | 3/4 |
 | FEAT-026 Chart portfolio completion + correct waterfall | 🔴 | 4/4 |
 | FEAT-027 Export suite | 🟡 | 2/4 |
 | FEAT-028 Coordinator + agent registry + jobs + permission UX | ⛔ | 0/6 |
-| FEAT-029 DCF valuation agent | ⛔ | 0/4 |
+| FEAT-029 DCF valuation agent | ⛔ | 1/4 |
 | FEAT-030 One-brain consolidation + numeric golden eval | ⛔ | 2/8 |
 | FEAT-031 Identity & security hardening | 🔴 | 3/3 |
 | FEAT-032 Provenance honesty & degraded-mode transparency | 🔴 | 4/4 |
@@ -130,9 +133,9 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-07 | in_progress | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:✅ |
 | BUG-08 | in_progress | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:✅ |
 | BUG-09 | in_progress | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:✅ |
-| BUG-10 | open | "Can you export this as an Excel file" not understood | P2H.4 | P2H.4:🔄 |
-| BUG-11 | open | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 r | P2H.4 | P2H.4:🔄 |
-| BUG-12 | open | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 3310 | P2H.4, P5.1 | P2H.4:🔄 P5.1:⬜ |
+| BUG-10 | open | "Can you export this as an Excel file" not understood | P2H.4 | P2H.4:🔍 |
+| BUG-11 | open | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 r | P2H.4 | P2H.4:🔍 |
+| BUG-12 | open | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 3310 | P2H.4, P5.1 | P2H.4:🔍 P5.1:⬜ |
 | BUG-13 | open | Cloud Run = baseline rev `00001`; `financial_build/` not in the image | P0.9, P5.6 | P0.9:✅ P5.6:⬜ |
 | BUG-35 | in_progress | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | P4.9, P5.6 | P4.9:✅ P5.6:⬜ |
 
@@ -140,21 +143,21 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `979b3d1` | 2026-10-24 | P2F.3 (pre-G4): WACC metrics, chart routing, and 5-factor Shapley attribution (SPEC-02 §5, 21/21 tests) |
+| `73274fb` | 2026-10-24 | P2H.4 (pre-G4): V19 turns 4-5 export intent + columns + xlsx link, email_draft agent + EmailDraftRenderer, delete canned proposal  |
+| `aba36a5` | 2026-10-24 | P1.6 (pre-G4): Add P1.6_evidence.md for verified SSOT load |
+| `f9f6e29` | 2026-10-24 | P1.9 (G4 r1 fixes): resolve P19-B1..P19-B3 in build_wacc.py and inputs.py (9/9 tests) |
+| `7b53be0` | 2026-10-24 | P2F.4 + P2F.6 (G4 r1 fixes) + P2F.1 frontend: resolve P2F4-B1..B3 & P2F6-B1..B3 (24/24 tests) and port ClarifySpec UI |
+| `5ce3b16` | 2026-10-24 | P2F.1 + P2F.2: multi-year statement payload and BUG-42 fix |
+| `0655f18` | 2026-10-24 | P2H.5 (pre-G4 r4): Fix objective scaling and remove residual pools, report gap |
+| `6d645f2` | 2026-10-24 | P2F.6 (pre-G4): Top-5 action generator, safe AST expr evaluator, and delegation table (SPEC-08 §7, 12/12 tests) |
+| `1d0fffa` | 2026-10-24 | P2F.6 (pre-G4): Author SPEC-08 §7.1 lever library (levers.yaml) |
+| `0551174` | 2026-10-24 | P2F.4 (pre-G4): Deterministic variance-attribution & PBT bridge engine (SPEC-08 §6.1, 9/9 tests) |
 | `f27e188` | 2026-10-24 | P1.6 (pre-G4): Resolve 497 conflict rows and load to BigQuery |
 | `0f72640` | 2026-10-24 | P1.9 (pre-G4): WACC input pack and fact_wacc_annual offline build |
 | `b2eb34c` | 2026-10-24 | P2H.3 (G4 r2 fixes): Resolve R2-B1..B5 (f-string anchor_date, idempotent k>=5 suppression & raw_total in narrate/insights, remove  |
 | `a459f84` | 2026-10-24 | P4.8 (pre-G4): Finance rubric §F (F1–F14), scorecard template, and 10 light/dark screenshots |
 | `4cea078` | 2026-10-24 | P4.5 (pre-G4 B3): DcfModelCard tabbed composite, SPEC-02 §10 fixture, and B2 minor polish |
-| `ee74e31` | 2026-10-24 | P2H.5 (pre-G4 r3): Fix DPE caps and objective fn, document natural gaps |
-| `7778426` | 2026-10-24 | P1.10a (pre-G4 r7): Fix multi-FY balance_sheet, revenue_per_employee_cr offline fallback, and production volume metrics for F43/F4 |
-| `e41b866` | 2026-10-24 | P1.10a (pre-G4): Fix revenue_per_employee_cr average headcount math and offline fallback |
-| `e5cfaf7` | 2026-10-24 | P2H.3 (G4 r1 fixes): Fixed M1-M5, S1, S6 |
-| `07704f5` | 2026-10-24 | P2H.2 (G4 r6 fix): Pass principal to runner on HTTP/WS, CMD audit-only query_data, HTTP tests added |
-| `36b86c0` | 2026-10-24 | P2H.5 (WIP r2): plugs removed, bounds enforced, FY20 added; known gap documented |
-| `8f52a91` | 2026-10-24 | P1.10a (G4 r5 fixes): fix BQ snapshot fallback, add legacy_unverified and derived metrics |
-| `24f439a` | 2026-10-24 | P2H.2 (G4 r5 fix): Restrict query_data to CMD, instantiate agent per principal turn, pass rbac r5 bypass tests |
-| `c0b1df2` | 2026-10-24 | P2H.2 (G4 r4b): Fix D-64 query_data tool absence test, fix literal table name in catalog consistency test |
-| `2a94fe1` | 2026-10-24 | P1.11 (pre-G4) golden runner + P1 run: 95/117 |
 
 ## 8. Integrity checks
 
