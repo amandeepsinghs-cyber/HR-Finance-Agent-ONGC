@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 05:17 UTC · branch `v3/P0-stabilise` @ `804d500`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 05:26 UTC · branch `v3/P0-stabilise` @ `38650b1`
 
 > [!IMPORTANT]
-> **Overall: 42% complete (weighted)** — 23/62 steps ✅ done, 8 in flight, 31 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 8 warning(s).
+> **Overall: 42% complete (weighted)** — 24/62 steps ✅ done, 7 in flight, 31 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 8 warning(s).
 
 ## 1. Phase progress
 
@@ -14,7 +14,7 @@
 | **P2H** | HR: personas, V19, Employee-360 | `████░░░░░░░░░░░░░░░░` 22% | 1 | 0 | 0 | 3 | 4 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `█████████████░░░░░░░` 64% | 5 | 0 | 1 | 1 | 2 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `██████████████░░░░░░` 69% | 6 | 0 | 0 | 1 | 2 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -30,7 +30,6 @@
 | P2H.3 | 🔄 In progress | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | Complete build + evidence |
 | P2H.5 | 🔄 In progress | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | Complete build + evidence |
 | P4.6 | 🔄 In progress | Export backend: formatted xlsx, CSV, PDF (WeasyPrint + Noto), docx, honest Sheets/Docs, audit, naming | O→F | Complete build + evidence |
-| P4.7 | 🔨 Built (pre-G4) | Export frontend: menu, PNG/SVG, intents for all formats EN/HI, toasts | F | Run G4 review → docs/reviews/<step>.md |
 
 **Ready to start:**
 
@@ -54,10 +53,10 @@
 
 | Verbatim | Features | Feature status | Open steps | Coverage |
 |---|---|---|---|---|
-| V2 | FEAT-027 | 🟡 | P2H.4, P3.5, P4.6, P4.7 | 🟡 |
+| V2 | FEAT-027 | 🟡 | P2H.4, P3.5, P4.6 | 🟡 |
 | V3 | FEAT-010, FEAT-031 | 🔴 🔴 |  | 🔴 |
 | V6 | FEAT-013 | 🔴 | P5.2 | 🔴 |
-| V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ 🟡 🔴 🟡 | P2H.4, P3.5, P4.5, P4.6, P4.7, P4.8 | 🟡 |
+| V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ 🟡 🔴 🟡 | P2H.4, P3.5, P4.5, P4.6, P4.8 | 🟡 |
 | V8 | FEAT-001, FEAT-013 | ✅ 🔴 | P5.2 | 🟡 |
 | V11 | FEAT-001, FEAT-002, FEAT-003, FEAT-009 | ✅ 🟡 ✅ 🔴 | P5.1 | 🟡 |
 | V12 | FEAT-004, FEAT-005 | 🟡 ✅ |  | 🟡 |
@@ -69,7 +68,7 @@
 | V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.6, P1.10a, P1.10b, P2H.7, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
 | V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5, P2F.6 | 🔴 |
-| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.5, P4.6, P4.7, P4.8 | 🟡 |
+| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.5, P4.6, P4.8 | 🟡 |
 | V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1, P1.9, P3.1, P3.2, P3.3, P3.4, P3.4b, P3.5 … | ⛔ |
 | V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P1.10a, P2H.5, P2H.6, P2H.7, P2H.8 | 🟡 |
 
@@ -107,7 +106,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ⛔ | 0/7 |
 | FEAT-025 Financial statement table visual | 🟡 | 2/4 |
 | FEAT-026 Chart portfolio completion + correct waterfall | 🔴 | 2/4 |
-| FEAT-027 Export suite | 🟡 | 0/4 |
+| FEAT-027 Export suite | 🟡 | 1/4 |
 | FEAT-028 Coordinator + agent registry + jobs + permission UX | ⛔ | 0/6 |
 | FEAT-029 DCF valuation agent | ⛔ | 0/4 |
 | FEAT-030 One-brain consolidation + numeric golden eval | ⛔ | 1/8 |
@@ -117,7 +116,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 ## 6. Bugs
 
 - **Blockers:** 14 total — 🔴 open 6 · 🟠 in progress 6 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 28 total — 🔴 open 15 · 🟠 in progress 7 · ↩ regressed 0 · ✅ closed 6
+- **Important:** 28 total — 🔴 open 14 · 🟠 in progress 8 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
@@ -141,6 +140,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `8afe1f6` | 2026-10-24 | P4.7 (G4 r1 fixes): M1 formatless default only with export/download verb + target (no save/भेजो/में बनाओ), recipient sends → backe |
 | `a4047ff` | 2026-10-24 | P4.7 evidence |
 | `65531be` | 2026-10-24 | P4.7 (pre-G4) frontend: ExportMenu (8 SPEC-10 items; PNG/SVG chart-only), client PNG ≥1600px + SVG with title/unit/source, §4.9 fi |
 | `328b6f5` | 2026-10-24 | P1.7 (G4 r3 fixes): R2-1 to R2-4 fixes |
@@ -155,7 +155,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `8dfebbc` | 2026-10-24 | P4.2 (pre-G4) backend: statement visual contract, statement_builder, presenter flag gate, and synthetic fixtures |
 | `0ddbe7f` | 2026-10-24 | P2H.1 (G4 r2 fixes): bind Principal in agent tool, remove EMP-102451 defaults, compiler-enforced self/pay_aggregate, D-43 director |
 | `cb0a01b` | 2026-10-24 | P4.4 (G4 r2 fixes) frontend: M1 gauge/bullet keep the row + target, M2 box re-plot keeps records grouped by category (+ repeated-d |
-| `02742aa` | 2026-10-24 | P4.4 (pre-G4) frontend: combo dual-axis, 100% stacked, heatmap, box plot (client quartiles + outliers), gauge (target only) render |
 
 ## 8. Integrity checks
 
