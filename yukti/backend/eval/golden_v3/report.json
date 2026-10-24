@@ -1,0 +1,944 @@
+{
+  "run_id": "run-1792824772",
+  "git_sha": "f400a3ab5fc75f252efd4eb4bf61c22e573ce7a7",
+  "passes": 21,
+  "total": 117,
+  "results": [
+    {
+      "case": "F01",
+      "phrasing": "What was revenue from operations in FY24?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.REV_OPS', 'fy': 'FY24', 'scope'",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F01",
+      "phrasing": "Tell me ONGC's revenue from operations for FY24.",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.REV_OPS', 'fy': 'FY24', 'scope'",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F01",
+      "phrasing": "FY24 mein revenue kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.REV_OPS', 'fy': 'FY24', 'scope'",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F02",
+      "phrasing": "Profit after tax 2023-24",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY24', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F02",
+      "phrasing": "What was the profit after tax for FY24?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY24', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F02",
+      "phrasing": "2023-24 ka PAT kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY24', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F03",
+      "phrasing": "How much tax did ONGC pay in FY25? (tax expense)",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.TAX_EXPENSE', 'fy': 'FY25', 'sc",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F03",
+      "phrasing": "What was the total tax expense in FY25?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.TAX_EXPENSE', 'fy': 'FY25', 'sc",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F03",
+      "phrasing": "FY25 mein ONGC ka tax expense kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.TAX_EXPENSE', 'fy': 'FY25', 'sc",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F04",
+      "phrasing": "FY26 profit before tax",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PBT', 'fy': 'FY26', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F04",
+      "phrasing": "Show me profit before tax for FY26.",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PBT', 'fy': 'FY26', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F04",
+      "phrasing": "FY26 ka profit before tax kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PBT', 'fy': 'FY26', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F05",
+      "phrasing": "EPS last year (context: latest FY26)",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.EPS_BASIC', 'fy': 'FY25', 'scop",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F05",
+      "phrasing": "What was the basic EPS last year in FY25?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.EPS_BASIC', 'fy': 'FY25', 'scop",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F05",
+      "phrasing": "Pichhle saal ka EPS kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.EPS_BASIC', 'fy': 'FY25', 'scop",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F06",
+      "phrasing": "Can you show me the balance sheet for 2024?",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[{'line_code': 'BS.TOTAL_ASSETS', 'fy': 'FY24', 's",
+      "note": "Pass"
+    },
+    {
+      "case": "F06",
+      "phrasing": "Show me the FY24 balance sheet.",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[{'line_code': 'BS.TOTAL_ASSETS', 'fy': 'FY24', 's",
+      "note": "Pass"
+    },
+    {
+      "case": "F06",
+      "phrasing": "2024 ki balance sheet dikhao",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[{'line_code': 'BS.TOTAL_ASSETS', 'fy': 'FY24', 's",
+      "note": "Pass"
+    },
+    {
+      "case": "F07",
+      "phrasing": "Total assets as of March 2026",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'BS.TOTAL_ASSETS', 'fy': 'FY26', 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F07",
+      "phrasing": "What were the total assets at the end of March 2026?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'BS.TOTAL_ASSETS', 'fy': 'FY26', 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F07",
+      "phrasing": "March 2026 tak total assets kitne the?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'BS.TOTAL_ASSETS', 'fy': 'FY26', 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F08",
+      "phrasing": "Cash flow from operations FY25",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CFO', 'fy': 'FY25', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F08",
+      "phrasing": "What was the operating cash flow in FY25?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CFO', 'fy': 'FY25', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F08",
+      "phrasing": "FY25 mein operating cash flow kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CFO', 'fy': 'FY25', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F09",
+      "phrasing": "Operating cash flow FY24",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CFO', 'fy': 'FY24', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F09",
+      "phrasing": "How much cash flow from operations did ONGC generate in FY24?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CFO', 'fy': 'FY24', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F09",
+      "phrasing": "FY24 ka cash flow from operations kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CFO', 'fy': 'FY24', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F10",
+      "phrasing": "FY26 CFO",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CFO', 'fy': 'FY26', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F10",
+      "phrasing": "What was cash flow from operations for FY26?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CFO', 'fy': 'FY26', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F10",
+      "phrasing": "FY26 ka CFO kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CFO', 'fy': 'FY26', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F11",
+      "phrasing": "Closing cash and cash equivalents FY26",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'BS.CASH_EQUIV', 'fy': 'FY26', 'sco",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F11",
+      "phrasing": "What was the ending cash and cash equivalents in FY26?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'BS.CASH_EQUIV', 'fy': 'FY26', 'sco",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F11",
+      "phrasing": "FY26 mein closing cash and cash equivalents kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'BS.CASH_EQUIV', 'fy': 'FY26', 'sco",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F13",
+      "phrasing": "Revenue trend for the last 10 years",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F13",
+      "phrasing": "Show me how revenue moved over ten years.",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F13",
+      "phrasing": "Pichhle 10 saal ka revenue dikhao",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F14",
+      "phrasing": "PAT for the last 5 years",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F14",
+      "phrasing": "Show me the profit after tax trend for 5 years.",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F14",
+      "phrasing": "Pichhle 5 saal ka PAT dikhao",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F15",
+      "phrasing": "ROCE in FY23",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'RATIO.ROCE', 'fy': 'FY23', 'scope'",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F15",
+      "phrasing": "What was the return on capital employed in FY23?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'RATIO.ROCE', 'fy': 'FY23', 'scope'",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F15",
+      "phrasing": "FY23 mein ROCE kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'RATIO.ROCE', 'fy': 'FY23', 'scope'",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F16",
+      "phrasing": "ROCE trend 5 years",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F16",
+      "phrasing": "Show me the ROCE trend for the last 5 years.",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F16",
+      "phrasing": "Pichhle 5 saal ka ROCE trend dikhao",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F17",
+      "phrasing": "Royalty paid in FY17",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.ROYALTY', 'fy': 'FY17', 'scope",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F17",
+      "phrasing": "What was the royalty payment in FY17?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.ROYALTY', 'fy': 'FY17', 'scope",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F17",
+      "phrasing": "FY17 mein royalty kitni pay ki thi?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.ROYALTY', 'fy': 'FY17', 'scope",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F18",
+      "phrasing": "Statutory levies FY24",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.STATUTORY_LEVIES', 'fy': 'FY24",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F18",
+      "phrasing": "What were the total statutory levies in FY24?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.STATUTORY_LEVIES', 'fy': 'FY24",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F18",
+      "phrasing": "FY24 mein statutory levies kitne the?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.STATUTORY_LEVIES', 'fy': 'FY24",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F19",
+      "phrasing": "Other levies incl. SAED, FY25 vs FY26",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[{'line_code': 'EXP.OTHER_LEVIES_SAED', 'fy': 'FY2",
+      "note": "Pass"
+    },
+    {
+      "case": "F19",
+      "phrasing": "Compare other levies including SAED between FY25 and FY26.",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[{'line_code': 'EXP.OTHER_LEVIES_SAED', 'fy': 'FY2",
+      "note": "Pass"
+    },
+    {
+      "case": "F19",
+      "phrasing": "FY25 aur FY26 ke SAED levies compare karo",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[{'line_code': 'EXP.OTHER_LEVIES_SAED', 'fy': 'FY2",
+      "note": "Pass"
+    },
+    {
+      "case": "F20",
+      "phrasing": "Capex in FY25",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CAPEX', 'fy': 'FY25', 'scope': ",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F20",
+      "phrasing": "What was ONGC's capital expenditure in FY25?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CAPEX', 'fy': 'FY25', 'scope': ",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F20",
+      "phrasing": "FY25 ka capex kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CF.CAPEX', 'fy': 'FY25', 'scope': ",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F21",
+      "phrasing": "Capex last 10 years",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F21",
+      "phrasing": "Show me capital expenditure for the last 10 years.",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F21",
+      "phrasing": "Pichhle 10 saal ka capex trend dikhao",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F22",
+      "phrasing": "Dividend declared for FY26",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'DIVIDEND_DECLARED', 'fy': 'FY26', ",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F22",
+      "phrasing": "What was the dividend declared in FY26?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'DIVIDEND_DECLARED', 'fy': 'FY26', ",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F22",
+      "phrasing": "FY26 mein kitna dividend declare hua?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'DIVIDEND_DECLARED', 'fy': 'FY26', ",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F23",
+      "phrasing": "Debt-equity ratio FY26",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'RATIO.DEBT_EQUITY', 'fy': 'FY26', ",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F23",
+      "phrasing": "What was the debt to equity ratio for FY26?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'RATIO.DEBT_EQUITY', 'fy': 'FY26', ",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F23",
+      "phrasing": "FY26 ka debt equity ratio kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'RATIO.DEBT_EQUITY', 'fy': 'FY26', ",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F24",
+      "phrasing": "Borrowings and lease liabilities FY26",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'BS.BORROWINGS', 'fy': 'FY26', 'sco",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F24",
+      "phrasing": "Show me borrowings and lease liabilities for FY26.",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'BS.BORROWINGS', 'fy': 'FY26', 'sco",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F24",
+      "phrasing": "FY26 ki borrowings aur lease liabilities kitni hain?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'BS.BORROWINGS', 'fy': 'FY26', 'sco",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F25",
+      "phrasing": "Exploration write-offs FY25",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.EXPLORATION_WRITEOFF_TOTAL', '",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F25",
+      "phrasing": "What were the exploration write-offs in FY25?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.EXPLORATION_WRITEOFF_TOTAL', '",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F25",
+      "phrasing": "FY25 mein exploration write-offs kitne the?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.EXPLORATION_WRITEOFF_TOTAL', '",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F26",
+      "phrasing": "DD&A FY26",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.DDA', 'fy': 'FY26', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F26",
+      "phrasing": "What was the depreciation, depletion, and amortisation in FY26?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.DDA', 'fy': 'FY26', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F26",
+      "phrasing": "FY26 ka DD&A kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.DDA', 'fy': 'FY26', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F27",
+      "phrasing": "Finance cost FY24",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.FIN_COST', 'fy': 'FY24', 'scope",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F27",
+      "phrasing": "What was the finance cost in FY24?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.FIN_COST', 'fy': 'FY24', 'scope",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F27",
+      "phrasing": "FY24 mein finance cost kitni thi?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.FIN_COST', 'fy': 'FY24', 'scope",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F28",
+      "phrasing": "Other income FY24 (single FY, as reported)",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.OTHER_INCOME', 'fy': 'FY24', 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F28",
+      "phrasing": "What was other income as reported in FY24?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.OTHER_INCOME', 'fy': 'FY24', 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F28",
+      "phrasing": "FY24 mein reported other income kitni thi?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.OTHER_INCOME', 'fy': 'FY24', 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F29",
+      "phrasing": "Other income last 3 years (trend)",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F29",
+      "phrasing": "Show me other income for the last 3 years.",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F29",
+      "phrasing": "Pichhle 3 saal ki other income dikhao",
+      "status": "PASS",
+      "got": "Chart (Not implemented detailed check)",
+      "expected": "[]",
+      "note": "Pass"
+    },
+    {
+      "case": "F30",
+      "phrasing": "PAT FY19 (single FY)",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F30",
+      "phrasing": "What was profit after tax for FY19 as reported?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F30",
+      "phrasing": "FY19 ka reported PAT kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F31",
+      "phrasing": "PAT trend 10 years, FY19 point",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F31",
+      "phrasing": "Show me the 10-year PAT trend restated point for FY19.",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F31",
+      "phrasing": "10-year trend mein FY19 ka PAT kitna hai?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PL.PAT', 'fy': 'FY19', 'scope': 's",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F37",
+      "phrasing": "Consolidated revenue FY26",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[]",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F37",
+      "phrasing": "What was the consolidated revenue from operations for FY26?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[]",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F37",
+      "phrasing": "FY26 ka consolidated revenue kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[]",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F39",
+      "phrasing": "Number of employees FY26",
+      "status": "ERROR",
+      "got": "Exception",
+      "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop",
+      "note": "'NoneType' object has no attribute 'get'"
+    },
+    {
+      "case": "F39",
+      "phrasing": "What was ONGC's total employee headcount in FY26?",
+      "status": "ERROR",
+      "got": "Exception",
+      "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop",
+      "note": "'NoneType' object has no attribute 'get'"
+    },
+    {
+      "case": "F39",
+      "phrasing": "FY26 mein kitne employees the?",
+      "status": "ERROR",
+      "got": "Exception",
+      "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY26', 'scop",
+      "note": "'NoneType' object has no attribute 'get'"
+    },
+    {
+      "case": "F40",
+      "phrasing": "Employees 10 years ago",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F40",
+      "phrasing": "How many employees were there ten years ago in FY17?",
+      "status": "ERROR",
+      "got": "Exception",
+      "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop",
+      "note": "'NoneType' object has no attribute 'get'"
+    },
+    {
+      "case": "F40",
+      "phrasing": "10 saal pehle kitne employees the?",
+      "status": "ERROR",
+      "got": "Exception",
+      "expected": "[{'line_code': 'HR.HEADCOUNT', 'fy': 'FY17', 'scop",
+      "note": "'NoneType' object has no attribute 'get'"
+    },
+    {
+      "case": "F41",
+      "phrasing": "Expenditure on employees FY26",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.EMPLOYEE_BENEFIT', 'fy': 'FY26",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F41",
+      "phrasing": "What was the total expenditure on employees in FY26?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.EMPLOYEE_BENEFIT', 'fy': 'FY26",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F41",
+      "phrasing": "FY26 mein employee expenditure kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXP.EMPLOYEE_BENEFIT', 'fy': 'FY26",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F42",
+      "phrasing": "Revenue per employee FY26",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F42",
+      "phrasing": "What was the revenue generated per employee in FY26?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F42",
+      "phrasing": "FY26 mein per employee revenue kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'RATIO.REV_PER_EMPLOYEE', 'fy': 'FY",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F43",
+      "phrasing": "Crude oil production FY26",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', '",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F43",
+      "phrasing": "How much crude oil was produced in FY26 including joint ventures?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', '",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F43",
+      "phrasing": "FY26 mein crude oil production kitna hua?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PROD.CRUDE_TOTAL', 'fy': 'FY26', '",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F44",
+      "phrasing": "Gas sold FY24",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F44",
+      "phrasing": "What was the volume of natural gas sold in FY24?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F44",
+      "phrasing": "FY24 mein kitni gas bechi gayi?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'PROD.GAS_SOLD', 'fy': 'FY24', 'val",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F45",
+      "phrasing": "Contribution to exchequer FY23",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F45",
+      "phrasing": "What was ONGC's total contribution to the exchequer in FY23?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F45",
+      "phrasing": "FY23 mein exchequer ko kitna contribute kiya?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'EXCHEQUER_CONTRIBUTION', 'fy': 'FY",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F46",
+      "phrasing": "CSR spend FY26",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CSR_SPEND', 'fy': 'FY26', 'value_i",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F46",
+      "phrasing": "How much did ONGC spend on CSR activities in FY26?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CSR_SPEND', 'fy': 'FY26', 'value_i",
+      "note": "Not a KPI"
+    },
+    {
+      "case": "F46",
+      "phrasing": "FY26 mein CSR spend kitna tha?",
+      "status": "FAIL",
+      "got": "chart",
+      "expected": "[{'line_code': 'CSR_SPEND', 'fy': 'FY26', 'value_i",
+      "note": "Not a KPI"
+    }
+  ]
+}
