@@ -114,6 +114,38 @@ def query_data(
     # 1. Apply Query-Craft Rules & Project Qualification
     safe_sql = sl.apply_query_craft_rules(sql_query)
 
+    # 1.5 Table-level RBAC Check (R3-B3)
+    from app.semantic.normalize import referenced_tables
+    from app.brain.rbac import decide
+    for t in referenced_tables(safe_sql):
+        t_low = t.lower()
+        if "payroll" in t_low:
+            dc = "pay"
+        elif "apar" in t_low:
+            dc = "apar"
+        elif "medical_claims" in t_low or "posh" in t_low:
+            dc = "sensitive"
+        else:
+            continue
+            
+        decision = decide(persona=persona, data_classes=[dc])
+        if decision.action == "refuse":
+            return {
+                "status": "refused",
+                "error": decision.reason or "Access restricted.",
+                "sql": safe_sql,
+                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+                "row_count": 0,
+                "rows": [],
+                "columns": [],
+                "insights": None,
+                "display_text": None,
+                "narrative": None,
+                "chart_spec": None,
+                "chart_kind": "refusal",
+                "code": decision.code
+            }
+
     # 2. Strict In-Process Safety Validation
     is_safe, safety_err = sl.validate_sql_safety(safe_sql)
     if not is_safe:

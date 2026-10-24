@@ -155,8 +155,19 @@ def topic_classes(question: str) -> List[str]:
     """Sensitive topics in the question (word-boundary match; 'apar' never matches 'apart')."""
     q = (question or "").lower()
     out = []
+    is_policy = is_policy_process_question(question)
+    is_case = bool(re.search(r"\b(case|complaint|record|inquiry|incident)\b", q))
+    has_named = _mentions_individual_or_row_pay_target(question)
     for cls, words in (load_policy().get("topic_keywords") or {}).items():
-        if any(re.search(r"(?<![a-z])" + re.escape(w) + r"(?![a-z])", q) for w in words):
+        matched = False
+        for w in words:
+            if re.search(r"(?<![a-z])" + re.escape(w) + r"(?![a-z])", q):
+                if cls == "sensitive" and w in ("posh", "sexual harassment"):
+                    if is_policy and not is_case and not has_named:
+                        continue
+                matched = True
+                break
+        if matched:
             out.append(cls)
     return out
 
@@ -727,6 +738,7 @@ def suppress_small_cells(
     by_name: bool = True,
     cell_count_col: Optional[str] = None,
     value_check: bool = True,
+    apply_secondary: bool = True,
 ) -> Tuple[List[Dict[str, Any]], int]:
     """Counts below the threshold become '<5' (D-11 / R-K5). Applies secondary suppression if exactly 1 cell is suppressed."""
     t = threshold or int(load_policy().get("small_cell_threshold", 5))
@@ -746,20 +758,23 @@ def suppress_small_cells(
                 out[i][c] = f"<{t}"
                 n += 1
 
-    for c in value_columns:
-        num_suppressed = sum(1 for r in out if r.get(c) == f"<{t}")
-        if num_suppressed == 1:
-            min_val = None
-            min_idx = -1
-            for i, r in enumerate(out):
-                v = r.get(c)
-                if isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0:
-                    if min_val is None or v < min_val:
-                        min_val = v
-                        min_idx = i
-            if min_idx != -1:
-                out[min_idx][c] = f"<{t}"
-                n += 1
+    if apply_secondary:
+        for c in value_columns:
+            if by_name and not _COUNT_COL.search(c):
+                continue
+            num_suppressed = sum(1 for r in out if r.get(c) == f"<{t}")
+            if num_suppressed == 1:
+                min_val = None
+                min_idx = -1
+                for i, r in enumerate(out):
+                    v = r.get(c)
+                    if isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0:
+                        if min_val is None or v < min_val:
+                            min_val = v
+                            min_idx = i
+                if min_idx != -1:
+                    out[min_idx][c] = "suppressed"
+                    n += 1
 
     for r2 in out:
         if cell_count_col:

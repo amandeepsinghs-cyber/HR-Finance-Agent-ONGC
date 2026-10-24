@@ -620,21 +620,30 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
                 elif "pay" in topics:
                     rid, code = "D1", "R-PAY"
                 elif "posh" in q_l or "harassment" in q_l:
-                    rid, code = "R-POSH", "R-SENS"
+                    from app.brain.rbac import is_policy_process_question, _mentions_individual_or_row_pay_target
+                    is_policy = is_policy_process_question(query)
+                    is_case = bool(re.search(r"\b(case|complaint|record|inquiry|incident)\b", q_l))
+                    has_named = _mentions_individual_or_row_pay_target(query)
+                    if is_policy and not is_case and not has_named:
+                        rid, code = None, None
+                    else:
+                        rid, code = "R-POSH", "R-SENS"
                 elif "medical" in q_l or "health" in q_l:
                     rid, code = "R-MED", "R-SENS"
                 else:
                     rid, code = "D6", "R-SENS"
-                d = REFUSAL_DEFINITIONS[rid]
-                return AccessDecision(
-                    status="refused",
-                    reason=d["reason"],
-                    rule_ref=d["rule_ref"] + " · D-11",
-                    alternative=d["alternative"],
-                    alternative_sql=d["alternative_sql"],
-                    refusal_id=rid,
-                    code=code,
-                )
+                
+                if rid and code:
+                    d = REFUSAL_DEFINITIONS[rid]
+                    return AccessDecision(
+                        status="refused",
+                        reason=d["reason"],
+                        rule_ref=d["rule_ref"] + " · D-11",
+                        alternative=d["alternative"],
+                        alternative_sql=d["alternative_sql"],
+                        refusal_id=rid,
+                        code=code,
+                    )
             # Check for draft transfer list
             if "draft transfer list" in q_low or "draft fy27 transfer order" in q_low:
                 d = REFUSAL_DEFINITIONS["D2"]

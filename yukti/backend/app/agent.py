@@ -83,7 +83,21 @@ async def query_data(sql_query: str, title: Optional[str] = None) -> Dict[str, A
 
     Always follow the 5 Query-Craft rules and dataset allow-list.
     """
-    return await asyncio.to_thread(execute_query_data, sql_query=sql_query, title=title)
+    from app.auth import get_active_principal
+    principal = get_active_principal()
+    if principal is None:
+        return {
+            "type": "error",
+            "code": "E-AUTH",
+            "error": "Authentication error (E-AUTH): no server principal bound for query execution.",
+            "retryable": False,
+        }
+    return await asyncio.to_thread(
+        execute_query_data, 
+        sql_query=sql_query, 
+        title=title, 
+        persona=principal.persona
+    )
 
 
 async def run_certified_query(

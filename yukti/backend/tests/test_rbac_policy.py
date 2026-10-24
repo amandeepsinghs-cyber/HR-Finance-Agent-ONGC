@@ -194,10 +194,10 @@ def test_to_aggregate_turns_roster_into_counts_by_grade():
 def test_small_cell_suppression():
     rows = [{"grade": "E1", "headcount": 3}, {"grade": "E2", "headcount": 5}, {"grade": "E3", "headcount": 0},
             {"grade": "E4", "avg_age": 2.0}]
-    out, n = suppress_small_cells(rows, ["headcount", "avg_age"])
-    assert out[0]["headcount"] == "<5" and out[1]["headcount"] == "<5" and out[2]["headcount"] == 0
+    out, n = suppress_small_cells(rows, ["headcount", "avg_age"], apply_secondary=False)
+    assert out[0]["headcount"] == "<5" and out[1]["headcount"] == 5 and out[2]["headcount"] == 0
     assert out[3]["avg_age"] == 2.0  # not a count column
-    assert n == 2
+    assert n == 1
 
 
 def test_row_actions_only_for_leadership_and_directors():
@@ -256,7 +256,7 @@ def test_b1_count_columns_suppressed_regardless_of_name():
 def test_b1_small_cells_hide_averages_via_population_count():
     rows = [{"grade": "E9", "avg_age": 58.2, "_n": 3}, {"grade": "E2", "avg_age": 31.0, "_n": 400}]
     out, n = suppress_small_cells(rows, ["avg_age"], cell_count_col="_n", value_check=False)
-    assert out[0]["avg_age"] == "<5" and out[1]["avg_age"] == "<5" and "_n" not in out[0] and n == 2
+    assert out[0]["avg_age"] == "<5" and out[1]["avg_age"] == 31.0 and "_n" not in out[0] and n == 1
 
 
 def test_b2_presenter_survives_suppressed_cells():
@@ -340,7 +340,7 @@ def test_secondary_suppression():
     out, n = suppress_small_cells(rows, ["headcount"], threshold=5, by_name=False)
     # E2 is <5. Since it's exactly 1 cell, E1 (the next smallest) should also be suppressed!
     assert out[1]["headcount"] == "<5"
-    assert out[0]["headcount"] == "<5"
+    assert out[0]["headcount"] == "suppressed"
     assert out[2]["headcount"] == 20
     assert n == 2
 
@@ -352,3 +352,21 @@ def test_enforce_contract_refuses_pay_for_junior():
     assert out["access"]["code"] == "R-PAY"
     assert out["visual"]["type"] == "refusal"
 
+
+def test_d61_secondary_suppression_prevents_derivation():
+    from app.brain.rbac import suppress_small_cells
+    rows = [{"grade": "E1", "count": 2}, {"grade": "E2", "count": 15}, {"grade": "E3", "count": 25}]
+    out, n = suppress_small_cells(rows, ["count"])
+    assert out[0]["count"] == "<5"
+    assert out[1]["count"] == "suppressed"
+    assert out[2]["count"] == 25
+    assert n == 2
+
+def test_d61_secondary_suppression_applies_only_when_exactly_one_primary_cell():
+    from app.brain.rbac import suppress_small_cells
+    rows = [{"grade": "E1", "count": 2}, {"grade": "E2", "count": 3}, {"grade": "E3", "count": 25}]
+    out, n = suppress_small_cells(rows, ["count"])
+    assert out[0]["count"] == "<5"
+    assert out[1]["count"] == "<5"
+    assert out[2]["count"] == 25
+    assert n == 2  # No secondary suppression because there were 2 primary cells
