@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:25 UTC · branch `v3/P0-stabilise` @ `f8054ef`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:26 UTC · branch `v3/P0-stabilise` @ `b177c76`
 
 > [!IMPORTANT]
-> **Overall: 26% complete (weighted)** — 13/62 steps ✅ done, 6 in flight, 43 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 26% complete (weighted)** — 14/62 steps ✅ done, 5 in flight, 43 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `████████░░░░░░░░░░░░` 38% | 2 | 3 | 0 | 1 | 6 | 0 | 12 |
+| **P1** | Real finance SSOT | `████████░░░░░░░░░░░░` 40% | 3 | 2 | 0 | 1 | 6 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 3% | 0 | 0 | 0 | 1 | 7 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
@@ -25,7 +25,6 @@
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.3 | 🔍 In review | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | Apply review findings / approve |
-| P1.5 | 🔍 In review | Yahoo loader + market provider chain (optional, retryable) | F | Apply review findings / approve |
 | P1.8 | 🔍 In review | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | Apply review findings / approve |
 | P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
 | P4.1 | 🔄 In progress | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Complete build + evidence |
@@ -65,11 +64,11 @@
 | V15 | FEAT-015, FEAT-026 | 🟡 🔴 | P4.1, P4.4, P4.5, P4.8 | 🟡 |
 | V16 | FEAT-016 | 🟡 | P4.9 | 🟡 |
 | V17 | FEAT-017, FEAT-031 | 🔴 🔴 | P2H.1, P2H.2 | 🔴 |
-| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.3, P1.5, P1.6, P1.7, P1.8, P1.10a, P1.10b … | 🔴 |
+| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.3, P1.6, P1.7, P1.8, P1.10a, P1.10b, P2H.7 … | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P1.7, P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
-| V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.5, P1.8, P1.9, P2F.1, P2F.2, P2F.3, P2F.4 … | 🔴 |
+| V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.8, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5 … | 🔴 |
 | V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.1, P4.2, P4.3, P4.4, P4.5 … | 🟡 |
-| V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1, P1.5, P1.9, P3.1, P3.2, P3.3, P3.4, P3.4b … | ⛔ |
+| V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1, P1.9, P3.1, P3.2, P3.3, P3.4, P3.4b, P3.5 … | ⛔ |
 | V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P1.7, P1.10a, P2H.5, P2H.6, P2H.7, P2H.8 | 🟡 |
 
 _Not mapped to a feature (process / question-bank / naming verbatims, tracked in UPGRADE_CHECKLIST Part A and docs/question_bank.md): V1, V4, V5, V9, V10._
@@ -98,7 +97,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-016 AI aura visual language | 🟡 | 0/1 |
 | FEAT-017 Eleven-persona matrix + function split + `self` scope | 🔴 | 0/2 |
 | FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 2/8 |
-| FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 0/2 |
+| FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 1/2 |
 | FEAT-020 Knowledge RAG over real AR text | 🔴 | 0/1 |
 | FEAT-021 Employee-360 enterprise table (realistic, reconciled) | 🟡 | 0/4 |
 | FEAT-022 Field economics-360 reconciled to company AR totals | 🔴 | 0/3 |
