@@ -1,6 +1,6 @@
 /* Unit tests for the chart compatibility matrix + transform engine (U5.7). Run: npx --yes tsx scripts/test_compat.ts */
 import assert from 'node:assert/strict';
-import { replot, profile, kindsFor, ReplotKind } from '../src/charts/compat';
+import { ALL_KINDS, replot, profile, kindsFor, ReplotKind } from '../src/charts/compat';
 import { planChart } from '../src/charts/plan';
 import type { VisualContainer } from '../src/contracts/answerContract';
 import roster from '../src/fixtures/v2/v2_roster_419.json';
@@ -9,7 +9,8 @@ import hc from '../src/fixtures/v2/v2_insights_drilldowns.json';
 import grades from '../src/fixtures/c1_donut_by_grade.json';
 import combo from '../src/fixtures/c11_combo_headcount_prod.json';
 
-const KINDS: ReplotKind[] = ['bar', 'hbar', 'donut', 'pie', 'line', 'area', 'histogram', 'scatter', 'treemap', 'waterfall', 'funnel', 'grouped_bar', 'stacked_bar', 'bullet', 'table'];
+// P4.4: the toolbar/replot kind list is the single source (incl. combo, 100% stacked, heatmap, box, gauge)
+const KINDS: ReplotKind[] = ALL_KINDS;
 
 const V = {
   records: (roster as any).visual as VisualContainer,

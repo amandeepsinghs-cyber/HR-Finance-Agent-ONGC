@@ -61,11 +61,11 @@ const ID_LIKE_RE = /(^|_)(id|code|no|number)$/i;
 const TARGET_RE = /^(target|target_pct|target_value)$/i;
 
 const PART_OF_WHOLE: ReplotKind[] = ['pie', 'donut', 'treemap', 'funnel'];
-export const ALL_KINDS: ReplotKind[] = ['bar', 'hbar', 'donut', 'pie', 'line', 'area', 'histogram', 'scatter', 'treemap', 'waterfall', 'funnel', 'grouped_bar', 'stacked_bar', 'bullet', 'table'];
+export const ALL_KINDS: ReplotKind[] = ['bar', 'hbar', 'donut', 'pie', 'line', 'area', 'histogram', 'scatter', 'treemap', 'waterfall', 'funnel', 'grouped_bar', 'stacked_bar', 'stacked_100', 'combo', 'heatmap', 'box', 'gauge', 'bullet', 'table'];
 
 const an = (w: string) => (/^[aeiou]/i.test(w) ? `an ${w}` : `a ${w}`);
 const label = (k: ReplotKind) =>
-  (({ hbar: 'horizontal bar', grouped_bar: 'grouped bar', stacked_bar: 'stacked bar' } as Record<string, string>)[k] || k);
+  (({ hbar: 'horizontal bar', grouped_bar: 'grouped bar', stacked_bar: 'stacked bar', stacked_100: '100% stacked bar', combo: 'combo chart', box: 'box plot' } as Record<string, string>)[k] || k);
 
 /** Profile the data behind a visual (from its preserved source when present). */
 export function profile(visual?: VisualContainer): DataProfile {
@@ -156,6 +156,59 @@ const currentKindOf = (v: VisualContainer) => (v.type === 'chart' ? v.chart?.kin
 export function compatibility(p: DataProfile, kind: ReplotKind): { status: ReplotResult['status']; alternative?: ReplotKind; note?: string } {
   if (kind === 'table') return { status: 'native' };
   if (p.n === 0) return { status: 'alternative', alternative: 'table', note: 'There is no data to chart.' };
+  // P4.4 (SPEC-09 §4.6): portfolio-A kinds have strict data-shape rules — never silent, always the nearest + a note.
+  const textCols = p.columns.filter((c) => !p.measures.includes(c) && c !== p.dimKey && p.rows.some((r) => typeof r[c] === 'string'));
+  if (kind === 'combo') {
+    return p.measures.length >= 2 && p.shape !== 'single'
+      ? { status: 'native' }
+      : { status: 'alternative', alternative: p.shape === 'time' ? 'line' : 'bar', note: 'A combo chart needs two measures (e.g. a value and a %); showing the closest view.' };
+  }
+  if (kind === 'stacked_100') {
+    if (p.measures.length >= 2 && !p.hasNegative && p.shape !== 'single') return { status: 'native' };
+    return { status: 'alternative', alternative: p.shape === 'single' ? 'table' : 'bar', note: p.hasNegative ? 'A 100% stacked bar cannot show negative values.' : 'A 100% stacked bar needs two or more parts per category.' };
+  }
+  if (kind === 'heatmap') {
+    return textCols.length >= 1 && p.measures.length >= 1
+      ? { status: 'native' }
+      : { status: 'alternative', alternative: 'bar', note: 'A heatmap needs two categories and a measure (e.g. work centre × month).' };
+  }
+  if (kind === 'box') {
+    const pre = ['min', 'q1', 'median', 'q3', 'max'].every((k) => p.columns.includes(k));
+    return pre || (p.shape === 'records' && p.measures.length >= 1) || (p.n >= 10 && p.measures.length >= 1 && (textCols.length >= 1 || p.groupable.length >= 1))
+      ? { status: 'native' }
+      : { status: 'alternative', alternative: 'bar', note: 'A box plot needs individual records per group; showing the summary instead.' };
+  }
+  if (kind === 'gauge') {
+    return p.shape === 'single' && p.hasTarget
+      ? { status: 'native' }
+      : { status: 'alternative', alternative: p.hasTarget ? 'bullet' : 'table', note: 'A gauge shows one value against a target.' };
+  }
+  if (kind === 'scatter' && p.measures.length < 2) {
+    // P4.4: no fabricated "rank" axis — a scatter needs two real measures
+    return { status: 'alternative', alternative: p.shape === 'time' ? 'line' : 'bar', note: 'A scatter plot needs two measures per item; showing the closest view.' };
+  }
+  // SPEC-09 §4.6 (restores the U5.7 rules): part-of-whole can't show losses; pies can't show time; lines imply order.
+  if (PART_OF_WHOLE.includes(kind) && p.hasNegative) {
+    return { status: 'alternative', alternative: 'hbar', note: 'Shares cannot show losses; showing gains and losses as bars.' };
+  }
+  if ((kind === 'pie' || kind === 'donut') && p.shape === 'time') {
+    return { status: 'alternative', alternative: 'bar', note: 'A pie cannot show change over time; showing columns over time.' };
+  }
+  if ((kind === 'line' || kind === 'area') && p.shape === 'categorical' && !p.ordinal) {
+    return { status: 'alternative', alternative: 'bar', note: 'A line implies an order; these categories are shown as bars.' };
+  }
+  if (kind === 'histogram' && p.shape === 'time') {
+    // P4.4 (SPEC-09 §4.6): histograms are for distributions, never time series
+    return { status: 'alternative', alternative: 'line', note: 'A histogram is for distributions; this time series is shown as a line.' };
+  }
+  if (kind === 'histogram' && p.shape === 'categorical' && p.n < 30) {
+    // U5 I1: a handful of values is not a distribution — rank them instead
+    return { status: 'alternative', alternative: 'hbar', note: 'Too few values for a distribution; showing them ranked.' };
+  }
+  if ((kind === 'funnel' || kind === 'waterfall') && p.shape === 'categorical' && !p.hasNegative) {
+    // U5 N2: funnels need stages; waterfalls need signed changes (typed statement bridges are handled before this)
+    return { status: 'alternative', alternative: 'hbar', note: kind === 'funnel' ? 'These categories are not stages; showing them ranked.' : 'A waterfall needs gains and losses; showing the values ranked.' };
+  }
   if (p.shape === 'single') {
     if (p.measures.length >= 1) return { status: 'transform' };
     return { status: 'alternative', alternative: 'table' };
@@ -216,7 +269,7 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
   if (requested === 'waterfall' && !opts.metric) {
     // (a) the answer already carries a typed bridge (backend presenter) → keep it, never rebuild from table rows
     if (base.chart?.kind === 'waterfall' && hasTypedRows(base.chart.data)) {
-      return { requested, applied: 'waterfall', status: 'native', visual: { ...base, type: 'chart', mode: 'refine' } as VisualContainer };
+      return { requested, applied: 'waterfall', status: 'native', visual: { ...base, source, type: 'chart', mode: 'refine' } as VisualContainer };
     }
     // (b) statement lines → bridge.ts (same algorithm + classes JSON as backend bridge.py)
     const st = statementLines(base);
@@ -231,19 +284,19 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
     }
     // (c) a single value can never be a bridge (BEH-04.13 / BEH-07.34): keep the visual, say why
     if (p.shape === 'single') {
-      return { requested, applied: (base.type === 'chart' ? base.chart?.kind : 'table') as ReplotKind, status: 'alternative', note: bridgeErrorCopy(singleValueError()), visual: base };
+      return { requested, applied: (base.type === 'chart' ? base.chart?.kind : 'table') as ReplotKind, status: 'alternative', note: bridgeErrorCopy(singleValueError()), visual: { ...base, source } as VisualContainer };
     }
     // (d) other data: a waterfall only makes sense for typed rows; otherwise fall through to the generic path
   }
   // Same kind requested again and the chart data already exists → return the base chart unchanged.
   if (!opts.metric && base.type === 'chart' && requested === currentKindOf(base) && Array.isArray(base.chart?.data) && base.chart!.data!.length) {
-    return { requested, applied: requested, status: 'native', note: (base as any).replot_note, visual: base };
+    return { requested, applied: requested, status: 'native', note: (base as any).replot_note, visual: { ...base, source } as VisualContainer };
   }
   // Coming FROM a histogram of raw values: part-of-whole / bar views reuse exactly those bins ("slices = bins").
   const currentKind = base.type === 'chart' ? base.chart?.kind : undefined;
   if (!opts.metric && (requested === currentKind || (requested === 'table' && base.type === 'table') ) && (base as any).source) {
     // already showing this kind (e.g. voice "pie" after the toolbar chose pie): no-op, keeps "slices = bins"
-    return { requested, applied: requested, status: 'native', note: (base as any).replot_note, visual: base };
+    return { requested, applied: requested, status: 'native', note: (base as any).replot_note, visual: { ...base, source } as VisualContainer };
   }
   // Only histograms we BUILT by binning raw values (records / categorical); ordinal buckets are already bins.
   const BIN_TARGETS: ReplotKind[] = p.shape === 'records' ? ['pie', 'donut', 'treemap', 'funnel', 'bar', 'hbar'] : ['pie', 'donut', 'treemap', 'funnel'];
@@ -316,18 +369,8 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
     x = p.dimKey; // bins stay in order (ordinal labels)
   }
 
-  // Ensure scatter / grouped_bar / stacked_bar always have >= 2 numeric measures
-  if ((applied === 'scatter' || applied === 'grouped_bar' || applied === 'stacked_bar') && data.length > 0) {
-    const numCols = Object.keys(data[0] || {}).filter((k) => k !== x && toNumber(data[0][k]) !== null);
-    if (numCols.length < 2) {
-      const tot = data.reduce((s, r) => s + Math.abs(toNumber(r[y]) ?? 0), 0) || 1;
-      const avgVal = Number((tot / Math.max(1, data.length)).toFixed(2));
-      data = data.map((r, idx) => ({
-        ...r,
-        ...(applied === 'scatter' ? { rank: idx + 1 } : { benchmark: avgVal }),
-      }));
-    }
-  }
+  // P4.4 (SPEC-09 §4.5 #16): no fabricated "rank" / "benchmark" measures. Kinds that need two measures are
+  // gated in compatibility() and fall back to the nearest view with a note instead.
 
   const chart: ChartSpec = {
     ...(base.chart || {}),
@@ -344,11 +387,23 @@ export function replot(visual: VisualContainer | undefined, requested: ReplotKin
     // ordinal buckets / existing bins draw as-is; raw values (records / categorical) are always binned
     prebinned: applied === 'histogram' ? p.ordinal || p.shape === 'distribution' : undefined,
   };
+  // Every transform / fallback explains itself in one line (U5.7 rule; was missing for record-grain transforms).
+  const note =
+    c.note ||
+    (c.status === 'native'
+      ? undefined
+      : y === 'count' && x !== 'bin'
+        ? `Each bar counts records by ${humanizeKey(x).toLowerCase()}.`
+        : x === 'bin'
+          ? 'Values are grouped into ranges.'
+          : p.shape === 'single'
+            ? 'Each bar is one measure.'
+            : `Showing ${humanizeKey(y).toLowerCase()} by ${humanizeKey(x).toLowerCase()}.`);
   return {
     requested,
     applied,
     status: c.status,
-    note: c.note,
+    note,
     visual: { ...base, ...keep, type: 'chart', mode: 'refine', chart, table: base.table } as VisualContainer,
   };
 }

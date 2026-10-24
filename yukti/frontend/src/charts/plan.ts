@@ -22,6 +22,11 @@ export type ChartForm =
   | 'grouped'
   | 'stacked'
   | 'multiples'
+  | 'combo' // P4.4: bars (value) on the left axis + line (%) on the right axis
+  | 'stacked100' // P4.4: each category sums to 100%
+  | 'heatmap' // P4.4: category × category × measure
+  | 'box' // P4.4: quartiles per group
+  | 'gauge' // P4.4: single value vs target band
   | 'kpi';
 
 export interface Row {
@@ -46,6 +51,10 @@ export interface ChartPlan {
   annotations: { x: any; label: string }[];
   /** Raw values (sorted desc) when a histogram was requested over fewer than SPARSE_N values: drawn ranked. */
   sparseRows?: Row[];
+  /** P4.4 heatmap: second category key (y axis) */
+  dim2Key?: string;
+  /** P4.4 combo: measure drawn as the right-axis line */
+  lineKey?: string;
 }
 
 /** Below this many raw values a histogram (and its density line) misleads; the renderer ranks the values. */
@@ -132,7 +141,28 @@ export function planChart(spec: ChartSpec): ChartPlan {
   let seriesKeys: string[] = [valueKey];
   let sparseRows: Row[] | undefined;
 
-  if (data.length === 1 && (!kind || kind === 'kpi')) {
+  // P4.4 (SPEC-09 §4.5): explicit portfolio kinds with their own data-shape rules.
+  const textKeys = keys.filter((k) => isTextKey(data, k) && !/status|type|unit/i.test(k));
+  const isPctKey = (k: string) => /pct|percent|margin|rate|ratio|%/i.test(k);
+  let dim2Key: string | undefined;
+  let lineKey: string | undefined;
+
+  if (kind === 'gauge' && data.length === 1) {
+    form = hasTarget ? 'gauge' : 'kpi';
+  } else if (kind === 'combo' && metricKeys.length >= 2) {
+    lineKey = metricKeys.find(isPctKey) || metricKeys[1];
+    const barKey = metricKeys.find((k) => k !== lineKey) || valueKey;
+    seriesKeys = [barKey, lineKey];
+    form = 'combo';
+  } else if (kind === 'stacked_100' && metricKeys.length >= 2 && !data.some((r) => metricKeys.some((k) => (toNumber(r[k]) ?? 0) < 0))) {
+    seriesKeys = metricKeys.slice(0, 8);
+    form = 'stacked100';
+  } else if (kind === 'heatmap' && textKeys.length >= 2) {
+    dim2Key = textKeys.find((k) => k !== dimKey);
+    form = 'heatmap';
+  } else if (kind === 'box' && (textKeys.length >= 1 || ['min', 'q1', 'median', 'q3', 'max'].every((k) => keys.includes(k)))) {
+    form = 'box';
+  } else if (data.length === 1 && (!kind || kind === 'kpi')) {
     form = 'kpi';
   } else if (data.length === 1 && metricKeys.length >= 2) {
     // Single-entity row with multiple measures (e.g. Ankleshwar Asset Revenue, EBITDA, PBT): pivot the measures.
@@ -305,5 +335,7 @@ export function planChart(spec: ChartSpec): ChartPlan {
     total,
     annotations: spec.annotations || [],
     ...(sparseRows ? { sparseRows } : {}),
+    ...(dim2Key ? { dim2Key } : {}),
+    ...(lineKey ? { lineKey } : {}),
   };
 }

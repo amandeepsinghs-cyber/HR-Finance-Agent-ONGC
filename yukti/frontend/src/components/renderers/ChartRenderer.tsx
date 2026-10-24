@@ -22,6 +22,11 @@ import {
   stackedOption,
   ramp,
   niceBounds,
+  comboOption,
+  stacked100Option,
+  heatmapOption,
+  boxOption,
+  gaugeOption,
 } from '@/charts/options';
 import { fmtValue, fmtShare, humanizeKey, humanizeValue, parseUnit, toNumber } from '@/charts/format';
 import { KpiRenderer } from './KpiRenderer';
@@ -184,6 +189,16 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = fal
         return groupedOption(plan, t, data);
       case 'stacked':
         return stackedOption(plan, t, data);
+      case 'combo':
+        return comboOption(plan, t, data);
+      case 'stacked100':
+        return stacked100Option(plan, t, data);
+      case 'heatmap':
+        return heatmapOption(plan, t, data);
+      case 'box':
+        return boxOption(plan, t, data);
+      case 'gauge':
+        return gaugeOption(plan, t, data);
       default:
         return null;
     }

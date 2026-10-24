@@ -23,7 +23,9 @@
     "test:voice-gate": "node scripts/test_voice_gate.mjs",
     "contracts": "node scripts/sync_contracts.mjs",
     "test:bridge": "node scripts/sync_contracts.mjs --check && node scripts/test_bridge.mjs",
-    "test:statement": "node scripts/test_statement.mjs"
+    "test:statement": "node scripts/test_statement.mjs",
+    "test:portfolio": "node scripts/test_portfolio.mjs",
+    "test:compat": "npx --yes tsx scripts/test_compat.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

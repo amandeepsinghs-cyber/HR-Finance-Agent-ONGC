@@ -17,6 +17,7 @@ export type ChartKind =
   | 'bar'
   | 'hbar'
   | 'stacked_bar'
+  | 'stacked_100'
   | 'grouped_bar'
   | 'line'
   | 'area'

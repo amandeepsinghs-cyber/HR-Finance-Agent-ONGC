@@ -1,0 +1,2 @@
+{"synthetic": true, "note": "Illustrative fixture (P4.4): single value + target -> gauge", "kind": "gauge", "unit": "%",
+ "data": [{"parameter":"MoU score","achievement_pct":87.5,"target":90}]}

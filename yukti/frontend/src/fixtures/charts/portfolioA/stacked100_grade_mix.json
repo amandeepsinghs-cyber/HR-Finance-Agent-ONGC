@@ -1,0 +1,2 @@
+{"synthetic": true, "note": "Illustrative fixture (P4.4): parts per category -> 100% stacked", "kind": "stacked_100",
+ "data": [{"wc":"Delhi","executives":680,"non_executives":263},{"wc":"Mumbai","executives":2100,"non_executives":1400},{"wc":"Mehsana","executives":900,"non_executives":1200}]}
