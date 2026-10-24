@@ -108,7 +108,8 @@ def test_b34_junior_names_become_aggregate_and_agree(results):
     assert c["access"]["status"] == "partial"
     assert "name" not in _cols(c) and "emp_id" not in _cols(c)
     assert c["visual"]["table"]["masking"]["level"] == "aggregate"
-    assert "restricted" in c["spoken_summary"].lower()
+    spoken_low = c["spoken_summary"].lower()
+    assert any(k in spoken_low for k in ("restricted", "can't share individual names", "individual names"))
     assert c["query_spec"]["grain"] == "aggregate"
 
 

@@ -127,6 +127,21 @@ def topic_classes(question: str) -> List[str]:
 
 _EMP_ID_LITERAL_RE = re.compile(r"\b(EMP-\d{4,6})\b", re.IGNORECASE)
 
+_V2_AGG_PAY_RE = re.compile(
+    r"\b("
+    r"average\s+ctc|avg\.?\s+ctc|mean\s+ctc|median\s+ctc|"
+    r"average\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay|ctc)\s+(?:of|for)\s+e[1-9](?:\s+(?:officers|executives|staff|employees))?\b|"
+    r"average\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay|ctc)\s+(?:by\s+grade|across\s+grades|for\s+e[1-9]\s+(?:executives|officers))|"
+    r"starting\s+(?:basic\s+)?(?:pay|salary|scale)|"
+    r"entry[\s\-]+(?:level\s+)?(?:basic\s+)?(?:pay|salary|scale)|"
+    r"minimum\s+(?:basic\s+)?(?:pay|scale)|"
+    r"get\s+on\s+joining|joining\s+(?:basic\s+)?(?:pay|salary|scale)|"
+    r"pay\s+(?:scale|band|range|matrix|slab)s?|"
+    r"grade[\s\-]*wise\s+(?:average\s+|avg\s+)?(?:ctc|salary|pay)"
+    r")\b",
+    re.IGNORECASE,
+)
+
 # Non-person capitalized phrases so we don't mistake ONGC entities for a person's name
 _NON_PERSON_PROPER_WORDS = {
     "delhi", "mumbai", "dehradun", "ahmedabad", "mehsana", "assam", "tripura", "rajahmundry",
@@ -350,6 +365,15 @@ def _enrich_classes_from_question(
         classes = [c for c in classes if c != "pay_aggregate"]
         if "pay_individual" not in classes and "pay" not in classes:
             classes.append("pay" if "general" in base_classes else "pay_individual")
+    elif (
+        has_pay_word
+        and _V2_AGG_PAY_RE.search(q)
+        and not _mentions_individual_or_row_pay_target(q)
+        and not any(c in ("pay_individual", "pay", "named") for c in base_classes)
+        and (spec is None or (spec.grain == "aggregate" and not any(f.field in ("emp_id", "name") for f in (spec.filters or []))))
+    ):
+        if "pay_aggregate" not in classes:
+            classes.append("pay_aggregate")
 
     # Board confidential succession / divestment / deliberation notes
     if re.search(r"\b(?:confidential\s+board|board\s+(?:hr\s+)?(?:succession|divestment)\s+note)\b", q_low):

@@ -174,6 +174,8 @@ async def run_planner_turn(
         if _is_junior(persona) and compiled.grain == "aggregate" and not spec.self_scope:
             compiled = compiler.compile(spec, cell_count=True, self_emp_id=self_emp_id)  # per-cell population for suppression
         result = await compiler.execute(compiled)
+    except UnknownPersona:
+        raise
     except CompileError as e:
         logger.info(f"planner compile fallback: {e}")
         return None

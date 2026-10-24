@@ -504,3 +504,28 @@ def test_s1_s2_s3_s4_regressions():
         with pytest.raises(UnknownPersona):
             decide(bad, ["general_hr"])  # type: ignore[arg-type]
 
+
+@pytest.mark.parametrize(
+    "persona",
+    ["E1_HR", "E2_HR", "E3_HR", "E4_HR", "E1_FIN", "E2_FIN", "E3_FIN", "E4_FIN"],
+)
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Average monthly basic pay of E1 officers",          # SPEC-06 Q07
+        "What does an E1 officer get on joining?",           # SPEC-06 Q08
+        "average salary of E1 officers",                     # P2H.1 §6 packet example
+        "joining pay of E1",                                 # reviewer R2-M1 probe
+        "Average CTC of E3 executives",
+    ],
+)
+def test_r2_m1_check_access_and_decide_allow_junior_aggregate_pay(persona: str, query: str):
+    """R2-M1 (BUG-28): check_access and decide() both allow aggregate pay by grade for all 8 juniors."""
+    from app.access_control import check_access
+
+    acc = check_access(persona, query=query)
+    assert acc.status == "allowed", f"{persona} x {query!r} -> check_access returned {acc.status} ({acc.code})"
+    dec = decide(persona, ["general"], query)
+    assert dec.action == "allow", f"{persona} x {query!r} -> decide returned {dec.action} ({dec.code})"
+
+

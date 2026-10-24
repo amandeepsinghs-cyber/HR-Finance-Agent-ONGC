@@ -424,15 +424,18 @@ def normalize_persona(persona: Optional[str]) -> str:
 _AGGREGATE_PAY_RE = re.compile(
     r"\b("
     r"average\s+ctc|avg\.?\s+ctc|mean\s+ctc|median\s+ctc|"
+    r"average\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay|ctc)\s+(?:of|for)\s+e[1-9](?:\s+(?:officers|executives|staff|employees))?\b|"
+    r"average\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay|ctc)\s+(?:by\s+grade|across\s+grades|for\s+e[1-9]\s+(?:executives|officers))|"
     r"starting\s+(?:basic\s+)?(?:pay|salary|scale)|"
     r"entry[\s\-]+(?:level\s+)?(?:basic\s+)?(?:pay|salary|scale)|"
     r"minimum\s+(?:basic\s+)?(?:pay|scale)|"
+    r"get\s+on\s+joining|joining\s+(?:basic\s+)?(?:pay|salary|scale)|"
     r"pay\s+(?:scale|band|range|matrix|slab)s?|"
-    r"grade[\s\-]*wise\s+(?:average\s+|avg\s+)?(?:ctc|salary|pay)|"
-    r"average\s+(?:salary|pay)\s+(?:by\s+grade|across\s+grades|for\s+e[1-4]\s+executives)"
+    r"grade[\s\-]*wise\s+(?:average\s+|avg\s+)?(?:ctc|salary|pay)"
     r")\b",
     re.IGNORECASE,
 )
+
 
 _SELF_QUERY_RE = re.compile(
     r"(?:"
@@ -448,12 +451,13 @@ _SELF_QUERY_RE = re.compile(
 
 
 def is_aggregate_pay_question(question: Optional[str]) -> bool:
-    """Return True if `question` asks ONLY for cohort/grade average CTC or entry pay scale policy (closes BUG-07, S1)."""
+    """Return True if `question` asks ONLY for cohort/grade average CTC or entry pay scale policy (closes BUG-07, BUG-28, R2-M1)."""
     if not question:
         return False
     q = question.strip()
     q_low = q.lower()
-    if not _AGGREGATE_PAY_RE.search(q):
+    from app.brain.rbac import _V2_AGG_PAY_RE, _mentions_individual_or_row_pay_target
+    if not (_V2_AGG_PAY_RE.search(q) or _AGGREGATE_PAY_RE.search(q)):
         return False
     if re.search(
         r"\b(each|every|individual|reporting\s+officer|my\s+team|my\s+colleague\w*|"
@@ -461,7 +465,6 @@ def is_aggregate_pay_question(question: Optional[str]) -> bool:
         q_low,
     ):
         return False
-    from app.brain.rbac import _mentions_individual_or_row_pay_target
     if _mentions_individual_or_row_pay_target(q):
         return False
     return True

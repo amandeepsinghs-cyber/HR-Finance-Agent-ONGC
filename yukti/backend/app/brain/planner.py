@@ -516,7 +516,7 @@ class Planner:
         is_entry_pay = bool(
             re.search(
                 r"\b(starting\s+(?:basic\s+)?(?:pay|salary|scale)|entry[- ]?(?:level\s+)?(?:basic\s+)?(?:pay|salary|scale)|"
-                r"minimum\s+(?:basic\s+)?(?:pay|scale)|get\s+on\s+joining|joining\s+pay|pay\s+scale\s+of\s+e[1-9])\b",
+                r"minimum\s+(?:basic\s+)?(?:pay|scale)|get\s+on\s+joining|joining\s+(?:basic\s+)?(?:pay|salary|scale)|pay\s+scale\s+of\s+e[1-9])\b",
                 ql_early,
             )
         )
@@ -527,6 +527,16 @@ class Planner:
                 f_list.append({"field": "grade", "op": "=", "values": [g_match.group(1).upper()]})
             intent = "data"
             raw = dict(raw, intent="data", metric="pay_scale_min_inr", is_followup=False, dimensions=["grade"], filters=f_list)
+        elif (intent != "data" or not raw.get("metric")) and re.search(
+            r"\b(?:average|avg\.?|mean|median)\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay|ctc)\s+(?:of|for|by|across)\s+(?:e[1-9]\b|grade\w*)",
+            ql_early,
+        ):
+            g_match = re.search(r"\b(e[1-9])\b", ql_early, re.I)
+            f_list = list(raw.get("filters") or [])
+            if g_match and not any(f.get("field") == "grade" for f in f_list if isinstance(f, dict)):
+                f_list.append({"field": "grade", "op": "=", "values": [g_match.group(1).upper()]})
+            intent = "data"
+            raw = dict(raw, intent="data", metric="avg_gross_salary_lakh", is_followup=False, dimensions=["grade"], filters=f_list)
 
         # SPEC-06 §4.5 (M3): possessive first-person ("my", "mera/meri", "मेरा/मेरी") + immediate HR entity -> self_scope=True
         # Never match when "my" modifies a non-self noun ("in my opinion", "my team", "my colleagues", "my reporting officer")

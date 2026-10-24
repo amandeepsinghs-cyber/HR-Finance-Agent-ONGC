@@ -178,3 +178,17 @@ Across the full `yukti/backend/tests` directory:
 - **Offline / deterministic suites (`1,092 passed`, `0 failed`):** All RBAC, persona, self-scope, refusal copy, auth token, certified query (89-query catalog), B2 regression, provenance labels, export security, transfer note, catalog consistency, degraded copy, and QuerySpec suites pass 100%.
 - **Pre-existing live Gemini / BigQuery / snapshot-drift suites (outside `P2H.1` scope):**
   - `test_finance_chain.py`, `test_flagship_chain.py`, `test_planner_golden.py`, `test_materialized_reconcile.py`: Require live Gemini LLM narration (e.g. live sentence-count variation 6 vs 4) or reflect pre-existing `local_snapshot` vs live `bigquery` PBT figures (`7753.84` vs `7132.1`). Zero failures in any offline test after `M6` fixes.
+
+---
+
+## 6. Gate 4 Round 3 Fixes (`R2-M1` & `test_rbac_live.py:111`)
+
+Per [`docs/reviews/P2H.1.md`](./P2H.1.md) Round 2 (`R2-M1`):
+1. **`R2-M1` (`yukti/backend/app/access_control.py`, `yukti/backend/app/brain/rbac.py`, `yukti/backend/app/brain/planner.py`):**
+   - Aligned `_AGGREGATE_PAY_RE` in `access_control.py` with `rbac._V2_AGG_PAY_RE` so canonical aggregate-pay questions (`"Average monthly basic pay of E1 officers"` [Q07], `"What does an E1 officer get on joining?"` [Q08], `"average salary of E1 officers"` [P2H.1 §6], `"joining pay of E1"`, `"Average CTC of E3 executives"`) pass `check_access(persona, query=...)` with `status == "allowed"` and `decide(persona, ...)` with `action == "allow"` across all 8 junior personas (`E1_HR..E4_HR`, `E1_FIN..E4_FIN`), while keeping the `_mentions_individual_or_row_pay_target` exclusion so individual/named/row pay remains refused with `R-PAY` (closing **BUG-28** end-to-end).
+   - Added parametrized `test_r2_m1_check_access_and_decide_allow_junior_aggregate_pay` (8 juniors × 5 phrasings = 40 test cases) in `tests/test_persona_question_matrix.py` (**436 passed**).
+2. **`test_rbac_live.py:111` (`test_b34_junior_names_become_aggregate_and_agree`):**
+   - Updated the `spoken_summary` wording assert to accept the P2H.2 SPEC-06 §4.6 `R-NAMED` copy (`"can't share individual names"` / `"individual names"` / `"restricted"`).
+3. **Combined Evidence Suites (`1,132 passed` across the 12 core suites, `1,169 passed` including transfer-note/export/no-leak/query-spec):**
+   - All 40 new `R2-M1` `check_access` + `decide` tests pass in `tests/test_persona_question_matrix.py`.
+
