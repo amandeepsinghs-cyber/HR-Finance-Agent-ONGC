@@ -189,7 +189,13 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     if (!t?.rows?.length) return t && t.columns ? t : prof.rows.length ? { columns: prof.columns, rows: prof.rows } : undefined;
     return { ...t, rows: normalizeRows(t.columns, t.rows as unknown[]) };
   }, [effVisual, prof]);
-  const replotNote = override?.note || visual?.replot_note;
+  // P4.1: backend BridgeError / data-shape notes arrive as visual.note (EN) / note_hi (HI); re-plot notes as replot_note
+  const replotNote =
+    override?.note ||
+    visual?.replot_note ||
+    ((contract as any).language === 'hi' && (visual as any)?.note_hi) ||
+    (visual as any)?.note ||
+    undefined;
   // P4.3 (FEAT-025, BUG-38/39): statements render as statements — the P4.2 `statement` visual, or a legacy
   // statement table adapted on the client (clean labels, indentation, ruled subtotals) until P4.2/P1 land.
   const statementSpec = useMemo(() => {
