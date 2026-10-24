@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 05:26 UTC · branch `v3/P0-stabilise` @ `38650b1`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 05:37 UTC · branch `v3/P0-stabilise` @ `b3d9754`
 
 > [!IMPORTANT]
-> **Overall: 42% complete (weighted)** — 24/62 steps ✅ done, 7 in flight, 31 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 8 warning(s).
+> **Overall: 44% complete (weighted)** — 24/62 steps ✅ done, 8 in flight, 30 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 8 warning(s).
 
 ## 1. Phase progress
 
@@ -11,10 +11,10 @@
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `████████████░░░░░░░░` 60% | 6 | 1 | 0 | 2 | 3 | 0 | 12 |
-| **P2H** | HR: personas, V19, Employee-360 | `████░░░░░░░░░░░░░░░░` 22% | 1 | 0 | 0 | 3 | 4 | 0 | 8 |
+| **P2H** | HR: personas, V19, Employee-360 | `██████░░░░░░░░░░░░░░` 28% | 1 | 1 | 0 | 2 | 4 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `██████████████░░░░░░` 69% | 6 | 0 | 0 | 1 | 2 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `██████████████░░░░░░` 72% | 6 | 0 | 0 | 2 | 1 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -26,16 +26,17 @@
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.11 | 🔄 In progress | Finance golden set (P1 gate) + V20 chain (P2F gate) | F + FL | Complete build + evidence |
 | P1.6 | 🔍 In review | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; | O (+F gates, FL evidence) | Apply review findings / approve |
-| P2H.2 | 🔄 In progress | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Complete build + evidence |
+| P2H.2 | 🔍 In review | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Apply review findings / approve |
 | P2H.3 | 🔄 In progress | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | Complete build + evidence |
 | P2H.5 | 🔄 In progress | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | Complete build + evidence |
+| P4.5 | 🔄 In progress | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions | F | Complete build + evidence |
 | P4.6 | 🔄 In progress | Export backend: formatted xlsx, CSV, PDF (WeasyPrint + Noto), docx, honest Sheets/Docs, audit, naming | O→F | Complete build + evidence |
 
 **Ready to start:**
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
-| P4.5 | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions | F | P4.4 |
+| — | Nothing is unblocked: finish the in-flight steps above (G4 reviews) first. | | |
 
 ## 3. Sponsor action items
 
@@ -126,7 +127,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-02 | open | BS/CF/ratios wrong (FY24 total assets 4,22,820 vs AR 4,46,021; FY25 CFO 63,180 vs 73,010;  | P0.3, P1.10b, P1.2 | P0.3:✅ P1.10b:⬜ P1.2:✅ |
 | BUG-03 | open | Same metric, three values (FY17 royalty 7,635 / 8,548 / AR 11,575) | P1.10b, P1.6 | P1.10b:⬜ P1.6:🔍 |
 | BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:⬜ P1.11:🔄 P5.1:⬜ P5.3:⬜ |
-| BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:🔄 |
+| BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:🔍 |
 | BUG-07 | in_progress | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:✅ |
 | BUG-08 | in_progress | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:✅ |
 | BUG-09 | in_progress | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:✅ |
@@ -140,6 +141,9 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `ddcdbd4` | 2026-10-24 | P4.5 B1 (pre-G4) frontend: sensitivity_grid + tornado typed visuals (SPEC-09 §5 types), ECharts builders (exact ₹ cells, diverging |
+| `0a9387e` | 2026-10-24 | P2H.2 frontend: portal PersonaPicker to <body> (TopBar backdrop-blur clipped the modal); E2E report + screenshots (8 scenarios) wi |
+| `186f6d6` | 2026-10-24 | P1.11 (pre-G4) golden YAML: 61 cases (39 P1, 22 P2F) + V20 chain (6 steps) |
 | `8afe1f6` | 2026-10-24 | P4.7 (G4 r1 fixes): M1 formatless default only with export/download verb + target (no save/भेजो/में बनाओ), recipient sends → backe |
 | `a4047ff` | 2026-10-24 | P4.7 evidence |
 | `65531be` | 2026-10-24 | P4.7 (pre-G4) frontend: ExportMenu (8 SPEC-10 items; PNG/SVG chart-only), client PNG ≥1600px + SVG with title/unit/source, §4.9 fi |
@@ -152,9 +156,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `c651a99` | 2026-10-24 | P4.2 (G4 r2 fixes) backend: preserve 4 KPIs with flag off, fix catalog scan docstring, wire CF-BS cash tie, fix fixture source key |
 | `41b998a` | 2026-10-24 | P1.6 (pre-G4): build verified financial SSOT fact/dim tables, V01-V12 gates, conflicts, snapshot, and BQ load |
 | `c05192c` | 2026-10-24 | P4.4 (pre-G4) backend: mirror frontend compat rules into chart_rules.py and add 280-cell parity suite |
-| `8dfebbc` | 2026-10-24 | P4.2 (pre-G4) backend: statement visual contract, statement_builder, presenter flag gate, and synthetic fixtures |
-| `0ddbe7f` | 2026-10-24 | P2H.1 (G4 r2 fixes): bind Principal in agent tool, remove EMP-102451 defaults, compiler-enforced self/pay_aggregate, D-43 director |
-| `cb0a01b` | 2026-10-24 | P4.4 (G4 r2 fixes) frontend: M1 gauge/bullet keep the row + target, M2 box re-plot keeps records grouped by category (+ repeated-d |
 
 ## 8. Integrity checks
 
