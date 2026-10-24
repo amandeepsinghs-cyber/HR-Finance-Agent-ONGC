@@ -27,17 +27,36 @@ import { sourceLabel } from './FloatingConversationPanel';
 import { planChart } from '@/charts/plan';
 import { cleanText, humanizeKey, toNumber } from '@/charts/format';
 import { Card, Chip, ContextChips } from './ui/primitives';
+import { ExportMenu } from './ExportMenu';
+import { getTokens } from '@/charts/theme';
+import { chartsWithin } from '@/charts/chartRegistry';
+import {
+  chartsToPng,
+  chartsToSvg,
+  exportFilename,
+  filenamePartsFromContract,
+  triggerDownload,
+  downloadText,
+  postExportAudit,
+} from '@/charts/exportImage';
+import {
+  ExportFormat,
+  normalizeExportFormat,
+  readyCopy,
+  honestWorkspaceCopy,
+  defaultedCopy,
+} from '@/services/exportIntent';
 import { Download, ChevronRight, Database, Scale, FileText, Loader2, Volume2, BarChart3, PieChart, Activity, Table as TableIcon, SlidersHorizontal, Sparkles, CornerDownRight } from 'lucide-react';
 
 const NOISE = /^(executed sql|grounding:|query:|sql query|voice turn completed|yukti ai connected|role:|served from|canvas visual|turn complete)/i;
 
-const EXPORT_LABELS: Record<string, string> = {
-  sheets: 'Google Sheets',
-  docs: 'Google Docs',
-  word: 'Word (.docx)',
-  pdf: 'PDF',
-  xlsx: 'Excel (.xlsx)',
-};
+/** P4.7: event the page dispatches for typed/spoken export intents; the latest card performs the export. */
+export const EXPORT_EVENT = 'yukti:export';
+export interface ExportEventDetail {
+  value: string; // 'pdf' | 'png:default' | 'auto' | …
+  handled?: boolean;
+}
+
 
 const PRIMARY_KINDS: { id: ChartKind | 'table'; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'bar', label: 'Bar', icon: BarChart3 },
@@ -135,7 +154,6 @@ const TextAnswer: React.FC<{ contract: AnswerContract; followUps?: { label: stri
 
 export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false, persona, isLatest = false, onNavigateToAlternative, onAsk, onReplot }) => {
   const [selectedSource, setSelectedSource] = useState<SourceCitation | null>(null);
-  const [exportOpen, setExportOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   useEffect(() => {
     setMoreOpen(false);
@@ -159,7 +177,8 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
       document.removeEventListener('keydown', onKey);
     };
   }, [moreOpen]);
-  const [exporting, setExporting] = useState<string | null>(null);
+  const [exporting, setExporting] = useState<ExportFormat | null>(null);
+  const visualRef = useRef<HTMLElement | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(toastTimer.current), []);
@@ -231,12 +250,9 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   ).filter((x) => x.text && !NOISE.test(x.text));
   const insights = insightItems.map((x) => x.text);
   const sources = (contract.sources || []).filter((s, i, arr) => arr.findIndex((x) => sourceLabel(x) === sourceLabel(s)) === i);
-  // U2.3: every answer card offers Sheets, Docs, Word and PDF (plus anything else the backend lists) — unless the
-  // backend deliberately sent an empty list (e.g. restricted content).
-  const exportOptions =
-    contract.export_options && contract.export_options.length === 0
-      ? []
-      : Array.from(new Set([...(contract.export_options || []), 'sheets', 'docs', 'word', 'pdf'])).filter((o) => EXPORT_LABELS[o]);
+  // P4.7: every answer card offers the full SPEC-10 menu — unless the backend deliberately sent an empty list
+  // (e.g. restricted content). PNG/SVG appear only while a chart is on screen.
+  const exportDisabled = !!contract.export_options && contract.export_options.length === 0;
   const summaryBanner = cleanText(contract.display_text || contract.spoken_summary || '');
 
   const spark = useMemo(() => {
@@ -247,44 +263,150 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
     return { values: vals, kind: plan.timeLike ? ('line' as const) : ('bars' as const), highlight: vals.indexOf(Math.max(...vals)) };
   }, [visual]);
 
-  const handleExport = async (format: string, pick?: { columns: string[]; rows: Record<string, any>[] }) => {
-    setExportOpen(false);
+  const showToast = (msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 6000);
+  };
+
+  /**
+   * P4.7 (SPEC-10): one export path for menu clicks, roster selections and typed/spoken intents.
+   * Server formats go through POST /api/export with the turn id (the backend re-applies RBAC masking from the
+   * signed session; client rows are only a fallback for local/legacy turns). PNG/SVG are drawn on the client from
+   * the live chart and then audit-logged.
+   */
+  const handleExport = async (format: ExportFormat, opts?: { pick?: { columns: string[]; rows: Record<string, any>[] }; defaulted?: boolean }) => {
+    const lang = (contract as any).language as string | undefined;
+    const who = persona || contract.persona || 'CMD';
+    const turnId = contract.turn_id || '';
+    const sessionId = (contract as any).session_id as string | undefined;
+    const masked = !!effectiveTableSpec?.masking && effectiveTableSpec.masking.level !== 'none';
+    const aggregate = effectiveTableSpec?.masking?.level === 'aggregate';
+    const themeTok = getTokens(isDark);
+    const lightTok = getTokens(false);
     setExporting(format);
-    const title = (visual?.title || 'Yukti_Export').replace(/[^a-zA-Z0-9_-]+/g, '_').slice(0, 60);
-    // U5.5: export the answer's own rows, normalised (array rows → objects); roster exports pass the selection.
-    const columns = pick?.columns || prof.columns;
-    const rows = pick?.rows || prof.rows;
-    const content = visual?.document?.markdown || visual?.clause?.text || cleanText(contract.display_text);
     try {
+      if (format === 'png' || format === 'svg') {
+        const charts = chartsWithin(visualRef.current);
+        if (!charts.length) throw new Error(lang === 'hi' ? 'स्क्रीन पर कोई चार्ट नहीं है' : 'There is no chart on screen to export');
+        const unit = effectiveChartSpec?.unit ? String(effectiveChartSpec.unit) : '';
+        const meta = {
+          title: cleanText(visual?.title || 'Yukti answer'),
+          // unit · as-of (the period is already in the title; a single FY here would mislabel a range)
+          subtitle:
+            [unit, (contract as any).query_spec?.as_of ? `As of ${(contract as any).query_spec.as_of}` : ''].filter(Boolean).join(' · ') ||
+            undefined,
+          source: firstSource ? `Source: ${sourceLabel(firstSource)}` : localSnapshot ? 'Source: local snapshot' : undefined,
+          // design tokens (same source as the chart): image matches the theme on screen
+          background: themeTok.surface,
+          ink: themeTok.text,
+          ink2: themeTok.sub,
+          fontFamily: typeof window !== 'undefined' ? getComputedStyle(document.body).fontFamily : undefined,
+        };
+        const filename = exportFilename({ ...filenamePartsFromContract(contract), persona: who, ext: format, aggregate });
+        if (format === 'png') {
+          const { dataUrl } = await chartsToPng(charts, meta);
+          triggerDownload(dataUrl, filename);
+        } else {
+          downloadText(chartsToSvg(charts, meta), filename, 'image/svg+xml');
+        }
+        void postExportAudit({
+          turn_id: turnId,
+          session_id: sessionId,
+          format,
+          filename,
+          rows: effectiveChartSpec?.data?.length || 0,
+          columns: prof.columns,
+          masked,
+        });
+        showToast([opts?.defaulted ? defaultedCopy(format, lang) : '', readyCopy(format, lang)].filter(Boolean).join(' '));
+        return;
+      }
+
+      // Server-side formats. PDF/Word embed the visible chart image when there is one.
+      let chartPng: string | undefined;
+      if ((format === 'pdf' || format === 'docx' || format === 'docs') && effectiveVisualType === 'chart') {
+        const charts = chartsWithin(visualRef.current);
+        if (charts.length) {
+          try {
+            chartPng = (
+              await chartsToPng(charts, {
+                title: cleanText(visual?.title || ''),
+                // documents print on white: always the light tokens
+                background: lightTok.surface,
+                ink: lightTok.text,
+                ink2: lightTok.sub,
+              })
+            ).dataUrl;
+          } catch {
+            chartPng = undefined; // the document still exports with its table
+          }
+        }
+      }
+      const columns = opts?.pick?.columns || prof.columns;
+      const rows = opts?.pick?.rows || prof.rows;
+      const content = visual?.document?.markdown || visual?.clause?.text || cleanText(contract.display_text);
       const res = await fetch('/api/export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ format, title, content, columns, rows }),
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          turn_id: turnId || undefined,
+          session_id: sessionId,
+          format,
+          title: cleanText(visual?.title || '') || undefined,
+          content,
+          columns,
+          rows,
+          chart_png: chartPng,
+        }),
       });
-      const j = await res.json();
-      if (!res.ok) throw new Error(j?.message || `HTTP ${res.status}`);
-      const placeholder = !!j.url && String(j.url).includes('yukti-');
-      if (j.url && /docs|sheets/.test(format) && !placeholder) {
-        setToast(`Created in ${EXPORT_LABELS[format]}.`);
-        window.open(j.url, '_blank', 'noopener');
-      } else if (j.export_id) {
-        // Workspace sign-in is not configured here: download the local copy (.docx / .xlsx) instead.
-        const a = document.createElement('a');
-        a.href = `/api/export/${encodeURIComponent(j.export_id)}`;
-        a.download = j.filename || `${title}.${j.format || format}`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setToast(placeholder ? `Google Workspace isn't connected here, so I downloaded ${j.filename || 'a local copy'} instead.` : `Downloading ${j.filename || EXPORT_LABELS[format]}`);
-      }
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j?.detail?.message || j?.message || `HTTP ${res.status}`);
+      const art = j.artifact || j;
+      const href = art.url || (art.export_id ? `/api/export/${encodeURIComponent(art.export_id)}` : '');
+      if (!href) throw new Error('No file was returned');
+      // Same-origin download only: never open an external (e.g. docs.google.com) URL from an export.
+      if (/^https?:\/\//i.test(href) && !href.startsWith(window.location.origin)) throw new Error('Unexpected export link');
+      triggerDownload(href, art.filename || `yukti_export.${art.kind || format}`);
+      const honest = format === 'sheets' || format === 'docs' ? j.toast || honestWorkspaceCopy(format, lang) : j.toast;
+      showToast([opts?.defaulted ? defaultedCopy(format, lang) : '', honest || readyCopy(format, lang)].filter(Boolean).join(' '));
     } catch (e: any) {
-      setToast(`Export failed: ${e?.message || e}`);
+      showToast(`${lang === 'hi' ? 'एक्सपोर्ट नहीं हो सका' : 'Export failed'}: ${e?.message || e}`);
     } finally {
       setExporting(null);
-      if (toastTimer.current) window.clearTimeout(toastTimer.current);
-      toastTimer.current = window.setTimeout(() => setToast(null), 4500);
     }
   };
+
+  // Typed/spoken export intents (page → EXPORT_EVENT) are performed by the latest card only.
+  const exportRef = useRef(handleExport);
+  exportRef.current = handleExport;
+  useEffect(() => {
+    if (!isLatest) return;
+    const onExport = (e: Event) => {
+      const d = (e as CustomEvent<ExportEventDetail>).detail;
+      if (!d || d.handled) return;
+      d.handled = true;
+      const [raw, flag] = String(d.value || 'auto').split(':');
+      let fmt = normalizeExportFormat(raw);
+      let defaulted = flag === 'default';
+      if (fmt === 'auto') {
+        fmt = effectiveVisualType === 'chart' && chartsWithin(visualRef.current).length ? 'png' : 'xlsx';
+        defaulted = true;
+      }
+      if ((fmt === 'png' || fmt === 'svg') && !chartsWithin(visualRef.current).length) {
+        fmt = 'xlsx'; // asked for an image of a table: give the spreadsheet and say so
+        defaulted = true;
+      }
+      if (exportDisabled || refused) {
+        showToast((contract as any).language === 'hi' ? 'इस उत्तर का एक्सपोर्ट उपलब्ध नहीं है।' : 'Export is not available for this answer.');
+        return;
+      }
+      void exportRef.current(fmt as ExportFormat, { defaulted });
+    };
+    window.addEventListener(EXPORT_EVENT, onExport);
+    return () => window.removeEventListener(EXPORT_EVENT, onExport);
+  }, [isLatest, effectiveVisualType, exportDisabled, refused, contract]);
 
   const fixedHeight = ((effectiveVisualType === 'chart' && !effVisual?.compare?.items?.length) || effectiveVisualType === 'map');
   const selfFramed = effectiveVisualType === 'clause' || effectiveVisualType === 'document' || effectiveVisualType === 'refusal' || effectiveVisualType === 'table' || displayVisualType === 'statement';
@@ -353,22 +475,12 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
                 </h2>
                 <ContextChips className="mt-2" items={contextChips} source={sourceTag} data-testid="context-chips" />
               </div>
-              {exportOptions.length > 0 && !refused && (
-                <div className="relative shrink-0">
-                  <Chip onClick={() => setExportOpen((o) => !o)} className="!py-2" aria-haspopup="menu" aria-expanded={exportOpen} data-testid="export-button">
-                    {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4 text-[var(--accent-deep)] dark:text-[var(--accent-soft)]" />}
-                    Export
-                  </Chip>
-                  {exportOpen && (
-                    <div role="menu" className="absolute right-0 top-[calc(100%+0.4rem)] w-[13rem] rounded-[var(--radius-lg)] border border-[var(--hairline)] bg-[var(--card)] shadow-[var(--panel-shadow)] p-1.5 z-40">
-                      {exportOptions.map((o) => (
-                        <button key={o} role="menuitem" onClick={() => handleExport(o)} className="w-full text-left px-3 py-2 rounded-[var(--radius-sm)] text-label hover:bg-[var(--surface)]">
-                          {EXPORT_LABELS[o]}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              {!exportDisabled && !refused && (
+                <ExportMenu
+                  hasChart={effectiveVisualType === 'chart'}
+                  busy={exporting}
+                  onPick={(f) => void handleExport(f)}
+                />
               )}
             </div>
 
@@ -387,6 +499,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
           <div className={`grid gap-[1.75rem] ${insights.length && !refused && !wideTable ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
             <section
               className={`min-w-0 self-start w-full ${selfFramed ? '' : 'py-[0.35rem]'} ${fixedHeight ? 'h-[clamp(22rem,calc(100vh-23rem),46rem)]' : ''}`}
+              ref={visualRef}
               data-testid="visual-card"
               data-visual-type={displayVisualType}
               data-chart-kind={effectiveVisualType === 'chart' ? effectiveChartSpec?.kind : effectiveVisualType}
@@ -425,7 +538,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
                           : undefined,
                     );
                   }}
-                  onExport={(columns, rows) => void handleExport('xlsx', { columns, rows })}
+                  onExport={(columns, rows) => void handleExport('xlsx', { pick: { columns, rows } })}
                 />
               )}
               {effectiveVisualType === 'table' && !statementSpec && effectiveTableSpec && !isRoster && <TableRenderer table={effectiveTableSpec} isDark={isDark} />}
@@ -508,7 +621,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
       )}
 
       {toast && (
-        <div role="status" className="fixed left-1/2 -translate-x-1/2 bottom-28 z-50 px-4 py-2.5 rounded-full bg-[var(--ink)] text-[var(--canvas)] text-label shadow-lg">
+        <div role="status" data-testid="toast" className="fixed left-1/2 -translate-x-1/2 bottom-28 z-50 max-w-[min(40rem,90vw)] px-4 py-2.5 rounded-[var(--radius-lg)] bg-[var(--ink)] text-[var(--canvas)] text-label text-center shadow-lg">
           {toast}
         </div>
       )}

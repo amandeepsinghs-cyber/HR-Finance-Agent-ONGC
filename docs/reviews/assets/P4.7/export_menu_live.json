@@ -1,0 +1,97 @@
+[
+  {
+    "name": "chart answer on screen",
+    "ok": true,
+    "info": "Show revenue for the last 5 years"
+  },
+  {
+    "name": "menu lists 8 items for a chart",
+    "ok": true,
+    "info": "xlsx,csv,pdf,png,svg,docx,sheets,docs"
+  },
+  {
+    "name": "PNG name matches §4.9",
+    "ok": true,
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.png"
+  },
+  {
+    "name": "PNG ≥ 1600 px wide",
+    "ok": true,
+    "info": "2044×1266"
+  },
+  {
+    "name": "SVG name matches §4.9",
+    "ok": true,
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.svg"
+  },
+  {
+    "name": "SVG is markup with title text",
+    "ok": true,
+    "info": "14398 bytes"
+  },
+  {
+    "name": "intent \"download the chart as png\" → .png",
+    "ok": true,
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.png"
+  },
+  {
+    "name": "ready toast shown after export",
+    "ok": true,
+    "info": "Your image is ready."
+  },
+  {
+    "name": "xlsx via menu",
+    "ok": true,
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.xlsx"
+  },
+  {
+    "name": "csv via menu",
+    "ok": true,
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.csv"
+  },
+  {
+    "name": "pdf via menu",
+    "ok": true,
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.pdf"
+  },
+  {
+    "name": "docx via menu",
+    "ok": true,
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.docx"
+  },
+  {
+    "name": "sheets downloads a local file",
+    "ok": true,
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.xlsx"
+  },
+  {
+    "name": "sheets honest toast",
+    "ok": true,
+    "info": "Google Sheets isn't connected yet, so I've downloaded an Excel file. In Sheets, use File →"
+  },
+  {
+    "name": "docs downloads a local file",
+    "ok": true,
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.docx"
+  },
+  {
+    "name": "docs honest toast",
+    "ok": true,
+    "info": "Google Docs isn't connected yet, so I've downloaded a Word document. In Docs, use File → O"
+  },
+  {
+    "name": "Hindi intent → .pdf",
+    "ok": true,
+    "info": "yukti_revenue_from_operations_corp_fy22-fy26_cmd_20261024-0513.pdf"
+  },
+  {
+    "name": "no docs.google.com request or popup",
+    "ok": true,
+    "info": ""
+  },
+  {
+    "name": "no page errors",
+    "ok": true,
+    "info": ""
+  }
+]

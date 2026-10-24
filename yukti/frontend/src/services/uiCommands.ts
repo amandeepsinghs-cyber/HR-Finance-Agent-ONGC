@@ -14,6 +14,7 @@
 
 import { useEffect } from 'react';
 import { resolveKind } from '@/charts/kindPrecedence';
+import { resolveExportIntent } from './exportIntent';
 
 export const UI_ACTIONS = {
   theme: ['light', 'dark'] as const,
@@ -54,7 +55,9 @@ export const UI_ACTIONS = {
   persona: ['CMD', 'DIR_HR', 'DIR_FIN', 'E2_HR', 'E3_FIN'] as const,
   language: ['en', 'hi', 'hi-en'] as const,
   panel: ['expand', 'dock', 'minimise', 'close', 'open_history'] as const,
-  export: ['pdf', 'xlsx', 'docx', 'sheets', 'docs'] as const,
+  // P4.7 (SPEC-10 §4.8): all formats; 'auto' = pick by the visual on screen. A ':default' suffix (e.g.
+  // 'png:default') means no format word was given, so the card states which default it used.
+  export: ['xlsx', 'csv', 'pdf', 'png', 'svg', 'docx', 'eml', 'sheets', 'docs', 'auto'] as const,
   history: ['back', 'forward'] as const,
 } as const;
 
@@ -114,8 +117,10 @@ export function labelOf(cmd: UiCommand): string {
         : cmd.value === 'minimise'
         ? 'Minimised conversation'
         : `Panel → ${cmd.value}`;
-    case 'export':
-      return `Exported → ${cmd.value.toUpperCase()}`;
+    case 'export': {
+      const f = String(cmd.value).split(':')[0];
+      return f === 'auto' ? 'Export' : `Export → ${f.toUpperCase()}`;
+    }
     case 'history':
       return cmd.value === 'back' ? 'History → Previous visual' : 'History → Next visual';
   }
@@ -213,6 +218,16 @@ function matchClause(raw: string): UiCommand | null {
     return { action: 'panel', value: 'minimise' };
   }
 
+  // P4.7 (SPEC-10 §4.8): export intents, all formats, EN + HI. Checked before re-plot so "export the table to
+  // excel" is an export, not a table view. A format word wins; otherwise the chart/table default (said aloud).
+  {
+    const ex = resolveExportIntent(s);
+    if (ex) {
+      const value = ex.defaulted ? (ex.target ? `${ex.format}:default` : 'auto') : ex.format;
+      return { action: 'export', value };
+    }
+  }
+
   // Visual / Chart Kind morphing (ONLY when pure re-plot of current data, anchored ^...$)
   if (/^(show|view|plot|display|switch|make)\s+(this\s+|it\s+|current\s+)?(as\s+|to\s+|in\s+)?(a\s+)?table(\s+view)?$|^टेबल\s*में\s*दिखाओ$/.test(s)) {
     return { action: 'chart_kind', value: 'table' };
@@ -256,13 +271,7 @@ function matchClause(raw: string): UiCommand | null {
     if (k && (UI_ACTIONS.chart_kind as readonly string[]).includes(k)) return { action: 'chart_kind', value: k as (typeof UI_ACTIONS.chart_kind)[number] };
   }
 
-  // Export
-  if (/\b(export\s+(to\s+)?pdf|download\s+pdf|save\s+as\s+pdf)\b/.test(s)) {
-    return { action: 'export', value: 'pdf' };
-  }
-  if (/\b(export\s+(to\s+)?(excel|xlsx|sheets)|download\s+(excel|xlsx))\b/.test(s)) {
-    return { action: 'export', value: 'xlsx' };
-  }
+  // Export: handled above by resolveExportIntent (P4.7).
 
   // Persona: P0.4 (BUG-06, SPEC-06 §4.4) — never switched from typed/spoken text. Such requests go to the
   // backend, which answers R-ROLE (or, for the demo presenter, issues a new signed session).
