@@ -1,0 +1,120 @@
+{
+  "contract_version": 3,
+  "turn_id": "turn-v3-actions-001",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Here are the top 5 quantified actions for FY26 based on the PBT variance bridge and Annual Report disclosures.",
+  "display_text": "Top 5 Quantified Actions for FY26 (grounded in FY25→FY26 variance drivers and AR FY26 MD&A).",
+  "visual": {
+    "type": "actions",
+    "mode": "replace",
+    "title": "Top 5 Quantified Actions — FY26",
+    "actions": {
+      "fy": "FY26",
+      "persona_mode": "board_delegation",
+      "items": [
+        {
+          "rank": 1,
+          "lever_id": "LEV_WELL_INTERVENTION",
+          "title": "Accelerate brownfield well interventions in Mumbai High & Heera",
+          "what_to_do": "Execute 45 sidetrack and ESP replacement workovers to arrest mature-field crude decline.",
+          "impact": {
+            "low": 820.0,
+            "mid": 1230.0,
+            "high": 1640.0,
+            "unit": "INR_cr",
+            "kind": "annual",
+            "label": "Modelled estimate"
+          },
+          "owner": "CMD",
+          "horizon_days": 90,
+          "kpi": "Incremental crude production (MMT) & realizations (₹ cr)",
+          "evidence": [
+            {
+              "type": "data",
+              "ref": "REV.CRUDE: ₹-4,210.5 cr YoY (FY26 vs FY25)"
+            },
+            {
+              "type": "ar",
+              "ref": "AR FY26 p.98"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "delegation_table": [
+        {
+          "owner": "CMD",
+          "ask": "Approve 45 brownfield workovers in Mumbai High & Heera",
+          "by_when": "90d",
+          "kpi": "Incremental crude production (MMT) & realizations (₹ cr)",
+          "evidence": "REV.CRUDE: ₹-4,210.5 cr YoY; AR FY26 p.98"
+        }
+      ]
+    }
+  },
+  "actions": {
+    "fy": "FY26",
+    "persona_mode": "board_delegation",
+    "items": [
+      {
+        "rank": 1,
+        "lever_id": "LEV_WELL_INTERVENTION",
+        "title": "Accelerate brownfield well interventions in Mumbai High & Heera",
+        "what_to_do": "Execute 45 sidetrack and ESP replacement workovers to arrest mature-field crude decline.",
+        "impact": {
+          "low": 820.0,
+          "mid": 1230.0,
+          "high": 1640.0,
+          "unit": "INR_cr",
+          "kind": "annual",
+          "label": "Modelled estimate"
+        },
+        "owner": "CMD",
+        "horizon_days": 90,
+        "kpi": "Incremental crude production (MMT) & realizations (₹ cr)",
+        "evidence": [
+          {
+            "type": "data",
+            "ref": "REV.CRUDE: ₹-4,210.5 cr YoY (FY26 vs FY25)"
+          },
+          {
+            "type": "ar",
+            "ref": "AR FY26 p.98"
+          }
+        ],
+        "confidence": "high"
+      }
+    ],
+    "delegation_table": [
+      {
+        "owner": "CMD",
+        "ask": "Approve 45 brownfield workovers in Mumbai High & Heera",
+        "by_when": "90d",
+        "kpi": "Incremental crude production (MMT) & realizations (₹ cr)",
+        "evidence": "REV.CRUDE: ₹-4,210.5 cr YoY; AR FY26 p.98"
+      }
+    ]
+  },
+  "insights": [
+    "Crude oil revenue variance is the largest FY26 driver."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "v_fin_statement_line",
+      "title": "ONGC Standalone P&L (FY25–FY26)"
+    }
+  ],
+  "suggestions": [],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "pdf",
+    "xlsx"
+  ],
+  "status_events": [
+    "Completed"
+  ]
+}

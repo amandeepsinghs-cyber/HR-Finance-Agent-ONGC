@@ -1,0 +1,96 @@
+{
+  "contract_version": 3,
+  "turn_id": "turn-v3-proposal-001",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Can I run the DCF valuation agent on ONGC Standalone? It takes about 15 seconds.",
+  "display_text": "Can I run the DCF valuation agent on ONGC Standalone (FY26 base, 10-year forecast FY27–FY36)?",
+  "visual": {
+    "type": "none",
+    "mode": "replace"
+  },
+  "insights": [
+    "Pulls FY17–FY26 historicals from Annual Reports and current market snapshot.",
+    "Builds WACC, 10-year FCFF, terminal value, EV-to-equity bridge, and 9×9 sensitivity grid."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "v_fin_statement_line",
+      "title": "ONGC Standalone Financials (FY17–FY26)"
+    }
+  ],
+  "suggestions": [
+    "Run DCF agent",
+    "Edit assumptions"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "xlsx",
+    "pdf"
+  ],
+  "status_events": [
+    "Awaiting user confirmation"
+  ],
+  "proposed_action": {
+    "id": "pa_01jc8dcf0001",
+    "agent": "dcf_agent",
+    "summary": "Can I run the DCF valuation agent in the background? It takes about 15 seconds.",
+    "inputs": {
+      "scope": "standalone",
+      "horizon_years": 10,
+      "brent_usd": 75.0,
+      "wacc_pct": 11.42,
+      "terminal_g_pct": 2.5
+    },
+    "editable_inputs": [
+      {
+        "key": "wacc_pct",
+        "label": "WACC",
+        "type": "percent",
+        "value": 11.42,
+        "min": 6.0,
+        "max": 16.0,
+        "step": 0.25,
+        "unit": "%",
+        "source": "fact_wacc_annual FY26"
+      },
+      {
+        "key": "terminal_g_pct",
+        "label": "Terminal growth g",
+        "type": "percent",
+        "value": 2.5,
+        "min": 0.0,
+        "max": 6.0,
+        "step": 0.25,
+        "unit": "%",
+        "source": "SPEC-02 §8"
+      },
+      {
+        "key": "brent_usd",
+        "label": "Long-run Brent",
+        "type": "number",
+        "value": 75.0,
+        "min": 40.0,
+        "max": 120.0,
+        "step": 1.0,
+        "unit": "USD/bbl",
+        "source": "AR FY26 realised"
+      }
+    ],
+    "est_seconds": 15,
+    "requires_role": [
+      "CMD",
+      "DIR_FIN"
+    ],
+    "buttons": [
+      "run",
+      "edit",
+      "cancel"
+    ],
+    "voice_confirm_hint": "Say yes, run it, or cancel.",
+    "expires_at": "2026-10-24T12:00:00Z"
+  }
+}

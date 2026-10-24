@@ -1,0 +1,61 @@
+{
+  "contract_version": 3,
+  "turn_id": "turn-v3-clarify-001",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Which fiscal period would you like for the Standalone Income Statement — FY26 latest, FY25, a 5-year trend, or the 10-year summary?",
+  "display_text": "Which fiscal period would you like for the Standalone Income Statement (P&L)?",
+  "visual": {
+    "type": "none",
+    "mode": "replace"
+  },
+  "insights": [],
+  "sources": [],
+  "suggestions": [
+    "FY26 (latest)",
+    "FY25",
+    "5-year trend (FY22–FY26)",
+    "10-year summary (FY17–FY26)"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "pdf"
+  ],
+  "status_events": [
+    "Awaiting clarification"
+  ],
+  "clarify": {
+    "slot": "fiscal_period",
+    "question": "Which fiscal period would you like for the Standalone Income Statement (P&L)?",
+    "options": [
+      {
+        "label": "FY26 (latest)",
+        "value": "FY26",
+        "spoken": "FY26 latest"
+      },
+      {
+        "label": "FY25",
+        "value": "FY25",
+        "spoken": "FY25"
+      },
+      {
+        "label": "5-year trend (FY22–FY26)",
+        "value": "FY22..FY26",
+        "spoken": "five year trend"
+      },
+      {
+        "label": "10-year summary (FY17–FY26)",
+        "value": "FY17..FY26",
+        "spoken": "ten year summary"
+      }
+    ],
+    "pending_intent": {
+      "domain": "finance",
+      "metric": "pnl_statement",
+      "scope": "standalone"
+    },
+    "expires_after_turns": 2
+  }
+}

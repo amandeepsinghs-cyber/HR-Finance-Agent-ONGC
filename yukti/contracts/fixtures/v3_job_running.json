@@ -1,0 +1,70 @@
+{
+  "contract_version": 3,
+  "turn_id": "turn-v3-job-running-001",
+  "language": "en",
+  "persona": "DIR_FIN",
+  "spoken_summary": "Running the ONGC Standalone DCF valuation agent now. Step 2 of 6 is in progress.",
+  "display_text": "Running ONGC Standalone DCF valuation agent (Step 2 of 6: Computing WACC & capital structure).",
+  "visual": {
+    "type": "none",
+    "mode": "replace"
+  },
+  "insights": [],
+  "sources": [],
+  "suggestions": [],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "pdf"
+  ],
+  "status_events": [
+    "Job running"
+  ],
+  "job": {
+    "id": "job_01jc8dcf0002",
+    "agent": "dcf_agent",
+    "status": "running",
+    "progress": 0.33,
+    "steps": [
+      {
+        "id": "load_inputs",
+        "label": "Pulling 10-year historicals (FY17–FY26)",
+        "status": "done",
+        "started_at": "2026-10-24T10:00:00Z",
+        "ended_at": "2026-10-24T10:00:02Z"
+      },
+      {
+        "id": "wacc_build",
+        "label": "Computing WACC & capital structure",
+        "status": "running",
+        "started_at": "2026-10-24T10:00:02Z",
+        "ended_at": null
+      },
+      {
+        "id": "forecast",
+        "label": "Projecting 10-year FCFF (FY27–FY36)",
+        "status": "pending"
+      },
+      {
+        "id": "valuation",
+        "label": "Terminal value & EV-to-equity bridge",
+        "status": "pending"
+      },
+      {
+        "id": "sensitivity_grid",
+        "label": "9×9 sensitivity grid & 8-driver tornado",
+        "status": "pending"
+      },
+      {
+        "id": "xlsx",
+        "label": "Writing 6-sheet .xlsx workbook",
+        "status": "pending"
+      }
+    ],
+    "artifacts": [],
+    "error": null,
+    "created_at": "2026-10-24T10:00:00Z",
+    "finished_at": null
+  }
+}

@@ -23,13 +23,7 @@
       ]
     },
     "persona": {
-      "enum": [
-        "CMD",
-        "DIR_HR",
-        "DIR_FIN",
-        "E2_HR",
-        "E3_FIN"
-      ]
+      "$ref": "#/$defs/persona"
     },
     "spoken_summary": {
       "type": "string",
@@ -51,6 +45,12 @@
           "enum": [
             "chart",
             "table",
+            "statement",
+            "sensitivity_grid",
+            "tornado",
+            "dcf_model",
+            "actions",
+            "email_draft",
             "kpi",
             "clause",
             "document",
@@ -99,6 +99,9 @@
                     "refused"
                   ]
                 },
+                "code": {
+                  "type": "string"
+                },
                 "masked_columns": {
                   "type": "array",
                   "items": {
@@ -116,6 +119,35 @@
             "total_rows": {
               "type": "integer",
               "description": "Full row count when rows[] is a page/sample"
+            },
+            "column_labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "hidden_columns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "default_sort": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "dir": {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ]
+                }
+              }
+            },
+            "as_of": {
+              "type": "string"
             },
             "row_actions": {
               "type": "array",
@@ -145,13 +177,7 @@
                     "description": "e.g. 'Draft a transfer note for {emp_name}'"
                   },
                   "min_role": {
-                    "enum": [
-                      "CMD",
-                      "DIR_HR",
-                      "DIR_FIN",
-                      "E2_HR",
-                      "E3_FIN"
-                    ]
+                    "$ref": "#/$defs/persona"
                   }
                 }
               }
@@ -198,6 +224,12 @@
             },
             "highlight": {
               "type": "string"
+            },
+            "provenance": {
+              "enum": [
+                "real",
+                "illustrative"
+              ]
             }
           }
         },
@@ -220,6 +252,9 @@
               "type": "integer"
             }
           }
+        },
+        "email_draft": {
+          "$ref": "#/$defs/email_draft_spec"
         },
         "map": {
           "type": "object",
@@ -308,6 +343,21 @@
               "type": "boolean"
             }
           }
+        },
+        "statement": {
+          "$ref": "#/$defs/statement_spec"
+        },
+        "sensitivity_grid": {
+          "$ref": "#/$defs/sensitivity_grid_spec"
+        },
+        "tornado": {
+          "$ref": "#/$defs/tornado_spec"
+        },
+        "actions": {
+          "$ref": "#/$defs/actions_spec"
+        },
+        "dcf_model": {
+          "$ref": "#/$defs/dcf_model_spec"
         }
       }
     },
@@ -356,7 +406,7 @@
     },
     "suggestions": {
       "type": "array",
-      "maxItems": 3,
+      "maxItems": 6,
       "items": {
         "type": "string"
       }
@@ -374,6 +424,9 @@
             "refused"
           ]
         },
+        "code": {
+          "type": "string"
+        },
         "reason": {
           "type": "string"
         },
@@ -381,7 +434,68 @@
           "type": "string"
         },
         "alternative": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "required": [
+                "label",
+                "question"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "question": {
+                  "type": "string"
+                },
+                "label_hi": {
+                  "type": "string"
+                },
+                "question_hi": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "question"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "label_hi": {
+                "type": "string"
+              },
+              "question_hi": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "self_emp_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "allow_pay_aggregate": {
+          "type": "boolean"
         }
       }
     },
@@ -393,7 +507,12 @@
           "docs",
           "word",
           "pdf",
-          "xlsx"
+          "xlsx",
+          "csv",
+          "png",
+          "svg",
+          "docx",
+          "eml"
         ]
       }
     },
@@ -407,9 +526,10 @@
     "contract_version": {
       "enum": [
         1,
-        2
+        2,
+        3
       ],
-      "description": "Absent = 1. Version 2 adds the optional fields below (U2.1); all are optional so v1 producers stay valid."
+      "description": "Absent = 1. v2 adds U2.1 fields; v3 = all SPEC-03 §5.1 ledger fields (proposed_action, job, provenance, clarify, actions, artifacts, statement, email_draft, dcf_model …). All optional."
     },
     "insights_v2": {
       "type": "array",
@@ -453,14 +573,72 @@
     "query_spec": {
       "$ref": "#/$defs/query_spec"
     },
+    "definition_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Canonical rule definition ID from app/semantic/definitions.yaml (e.g. DELHI_GT5_CONT_V1)"
+    },
     "caveat": {
       "type": "string",
       "description": "data note shown inside Sources (caveats, assumptions)"
     },
+    "clarify": {
+      "$ref": "#/$defs/clarify"
+    },
+    "actions": {
+      "$ref": "#/$defs/actions_spec",
+      "description": "P2F.6 (SPEC-08 §7.3): top-level mirror of visual.actions when visual.type='actions'"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      },
+      "description": "P2H.4 / P4.6 (SPEC-10 §5): exported files attached to this turn"
+    },
+    "email_draft": {
+      "$ref": "#/$defs/email_draft_spec",
+      "description": "P2H.4 (SPEC-07 §4.5): top-level mirror of visual.email_draft when visual.type='email_draft'"
+    },
+    "proposed_action": {
+      "$ref": "#/$defs/proposed_action"
+    },
+    "job": {
+      "$ref": "#/$defs/job"
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "status": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "sql": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
     "ui_action": {
       "type": "object",
-      "description": "optional screen command bundled with the answer (e.g. chart_kind)",
+      "description": "optional screen command bundled with the answer (e.g. chart_kind, download)",
       "properties": {
+        "type": {
+          "enum": [
+            "chart_kind",
+            "panel_mode",
+            "theme",
+            "download",
+            "export",
+            "set_persona"
+          ]
+        },
         "action": {
           "type": "string"
         },
@@ -469,11 +647,1038 @@
         },
         "value": {
           "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "export_id": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
         }
       }
     }
   },
   "$defs": {
+    "persona": {
+      "enum": [
+        "CMD",
+        "DIR_HR",
+        "DIR_FIN",
+        "E1_HR",
+        "E2_HR",
+        "E3_HR",
+        "E4_HR",
+        "E1_FIN",
+        "E2_FIN",
+        "E3_FIN",
+        "E4_FIN"
+      ]
+    },
+    "proposed_action": {
+      "type": "object",
+      "required": [
+        "id",
+        "agent",
+        "summary",
+        "inputs",
+        "est_seconds",
+        "requires_role",
+        "expires_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "pa_<uuid>; idempotency key for POST /api/jobs"
+        },
+        "agent": {
+          "enum": [
+            "dcf_agent",
+            "hr_transfer_agent",
+            "fin_diagnostics_agent",
+            "doc_export_agent"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "Question shown and spoken, e.g. 'Can I run the DCF valuation agent in the background? It takes about 15 seconds.'"
+        },
+        "inputs": {
+          "type": "object",
+          "description": "Resolved inputs that will run if confirmed (validated against the agent input_schema)"
+        },
+        "editable_inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/editable_input"
+          }
+        },
+        "est_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "requires_role": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/persona"
+          }
+        },
+        "buttons": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "run",
+              "edit",
+              "cancel"
+            ]
+          },
+          "default": [
+            "run",
+            "edit",
+            "cancel"
+          ]
+        },
+        "voice_confirm_hint": {
+          "type": "string",
+          "description": "e.g. 'Say yes, run it, or cancel.'"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "proposal TTL = 10 min"
+        }
+      },
+      "additionalProperties": false
+    },
+    "editable_input": {
+      "type": "object",
+      "required": [
+        "key",
+        "label",
+        "type",
+        "value"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "number",
+            "percent",
+            "enum",
+            "fy"
+          ]
+        },
+        "value": {},
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "step": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array"
+        },
+        "source": {
+          "type": "string",
+          "description": "e.g. 'fact_wacc_annual FY26' or 'AR FY26 p.298'"
+        }
+      }
+    },
+    "job": {
+      "type": "object",
+      "required": [
+        "id",
+        "agent",
+        "status",
+        "progress"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "job_<uuid>"
+        },
+        "agent": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "running",
+            "succeeded",
+            "failed",
+            "cancelled",
+            "expired"
+          ]
+        },
+        "progress": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "status"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "pending",
+                  "running",
+                  "done",
+                  "failed",
+                  "skipped"
+                ]
+              },
+              "started_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "ended_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "result_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "turn_id of the result contract, or gs:// URI of the artifact"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifact"
+          },
+          "description": "Artifact shape owned by SPEC-10 §5 ({export_id, kind, filename, url, rows, columns, masked, created_at, expires_at, sha256}); jobs fill at least kind, export_id, filename"
+        },
+        "error": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string",
+              "description": "user-safe text only (BUG-33)"
+            }
+          }
+        },
+        "created_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "finished_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "label"
+      ],
+      "properties": {
+        "label": {
+          "enum": [
+            "verified_ar",
+            "verified_xbrl",
+            "yahoo_consolidated",
+            "derived_ar",
+            "modelled",
+            "illustrative",
+            "synthetic",
+            "local_snapshot",
+            "mixed"
+          ]
+        },
+        "detail": {
+          "type": "string",
+          "description": "e.g. 'ONGC AR FY2023-24, Standalone P&L p.245'"
+        },
+        "snapshot_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "share_of_rows": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "export_id",
+        "kind",
+        "filename"
+      ],
+      "properties": {
+        "export_id": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "xlsx",
+            "csv",
+            "pdf",
+            "png",
+            "svg",
+            "docx",
+            "eml"
+          ]
+        },
+        "filename": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "integer"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "masked": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      }
+    },
+    "email_draft_spec": {
+      "type": "object",
+      "required": [
+        "to",
+        "subject",
+        "body_md"
+      ],
+      "properties": {
+        "to": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "email"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "cc": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "from": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            }
+          }
+        },
+        "subject": {
+          "type": "string"
+        },
+        "body_md": {
+          "type": "string"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/artifact"
+              }
+            ]
+          }
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "editable": {
+          "type": "boolean"
+        },
+        "footer": {
+          "type": "string"
+        }
+      }
+    },
+    "clarify": {
+      "type": "object",
+      "required": [
+        "question",
+        "options",
+        "slot"
+      ],
+      "properties": {
+        "slot": {
+          "enum": [
+            "fiscal_period",
+            "statement",
+            "scope",
+            "entity"
+          ]
+        },
+        "question": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "value"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "spoken": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "pending_spec": {
+          "$ref": "#/$defs/query_spec"
+        },
+        "pending_intent": {
+          "type": "object"
+        },
+        "expires_after_turns": {
+          "type": "integer"
+        }
+      }
+    },
+    "actions_spec": {
+      "type": "object",
+      "required": [
+        "fy",
+        "items",
+        "delegation_table"
+      ],
+      "properties": {
+        "fy": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": [
+              "rank",
+              "lever_id",
+              "title",
+              "what_to_do",
+              "impact",
+              "kpi",
+              "evidence"
+            ],
+            "properties": {
+              "rank": {
+                "type": "integer"
+              },
+              "lever_id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "what_to_do": {
+                "type": "string"
+              },
+              "impact": {
+                "type": "object",
+                "properties": {
+                  "low": {
+                    "type": "number"
+                  },
+                  "mid": {
+                    "type": "number"
+                  },
+                  "high": {
+                    "type": "number"
+                  },
+                  "unit": {
+                    "const": "INR_cr"
+                  },
+                  "kind": {
+                    "enum": [
+                      "one_off",
+                      "annual"
+                    ]
+                  },
+                  "label": {
+                    "const": "Modelled estimate"
+                  }
+                }
+              },
+              "owner": {
+                "enum": [
+                  "CMD",
+                  "DIR_FIN",
+                  "DIR_HR"
+                ]
+              },
+              "horizon_days": {
+                "enum": [
+                  30,
+                  90,
+                  180
+                ]
+              },
+              "kpi": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "data",
+                        "ar"
+                      ]
+                    },
+                    "ref": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "confidence": {
+                "type": [
+                  "number",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        "delegation_table": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "owner": {
+                "type": "string"
+              },
+              "ask": {
+                "type": "string"
+              },
+              "by_when": {
+                "type": "string"
+              },
+              "kpi": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "sensitivity_axis": {
+      "type": "object",
+      "required": [
+        "name",
+        "unit",
+        "values"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "sensitivity_grid_spec": {
+      "type": "object",
+      "required": [
+        "row_input",
+        "col_input",
+        "output",
+        "cells",
+        "base"
+      ],
+      "properties": {
+        "row_input": {
+          "$ref": "#/$defs/sensitivity_axis"
+        },
+        "col_input": {
+          "$ref": "#/$defs/sensitivity_axis"
+        },
+        "output": {
+          "type": "object",
+          "required": [
+            "name",
+            "unit"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "unit": {
+              "type": "string"
+            }
+          }
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        },
+        "base": {
+          "type": "object",
+          "required": [
+            "row_idx",
+            "col_idx"
+          ],
+          "properties": {
+            "row_idx": {
+              "type": "integer"
+            },
+            "col_idx": {
+              "type": "integer"
+            }
+          }
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "tornado_spec": {
+      "type": "object",
+      "required": [
+        "output",
+        "bars"
+      ],
+      "properties": {
+        "output": {
+          "type": "object",
+          "required": [
+            "name",
+            "unit",
+            "base"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "base": {
+              "type": "number"
+            }
+          }
+        },
+        "bars": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "driver",
+              "low_input",
+              "high_input",
+              "low_inr",
+              "high_inr"
+            ],
+            "properties": {
+              "driver": {
+                "type": "string"
+              },
+              "low_input": {
+                "type": "string"
+              },
+              "high_input": {
+                "type": "string"
+              },
+              "low_inr": {
+                "type": "number"
+              },
+              "high_inr": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "dcf_model_spec": {
+      "type": "object",
+      "required": [
+        "run_id",
+        "as_of",
+        "per_share",
+        "wacc_build",
+        "forecast",
+        "terminal",
+        "bridge",
+        "disclaimer"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string"
+        },
+        "engine_version": {
+          "type": "string"
+        },
+        "as_of": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "per_share": {
+          "type": "object",
+          "required": [
+            "intrinsic_inr",
+            "market_inr",
+            "upside_pct",
+            "verdict"
+          ],
+          "properties": {
+            "intrinsic_inr": {
+              "type": "number"
+            },
+            "market_inr": {
+              "type": "number"
+            },
+            "market_date": {
+              "type": "string"
+            },
+            "upside_pct": {
+              "type": "number"
+            },
+            "verdict": {
+              "type": "string"
+            }
+          }
+        },
+        "wacc_build": {
+          "type": "object",
+          "required": [
+            "rf_used_pct",
+            "beta_adj",
+            "erp_total_pct",
+            "ke_pct",
+            "kd_used_pct",
+            "tax_rate_pct",
+            "weight_equity",
+            "wacc_pct"
+          ],
+          "properties": {
+            "rf_used_pct": {
+              "type": "number"
+            },
+            "beta_adj": {
+              "type": "number"
+            },
+            "erp_total_pct": {
+              "type": "number"
+            },
+            "ke_pct": {
+              "type": "number"
+            },
+            "kd_pretax_pct": {
+              "type": "number"
+            },
+            "kd_used_pct": {
+              "type": "number"
+            },
+            "tax_rate_pct": {
+              "type": "number"
+            },
+            "weight_equity": {
+              "type": "number"
+            },
+            "weight_debt": {
+              "type": "number"
+            },
+            "wacc_pct": {
+              "type": "number"
+            }
+          }
+        },
+        "forecast": {
+          "type": "object",
+          "required": [
+            "years",
+            "lines"
+          ],
+          "properties": {
+            "years": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "lines": {
+              "type": "object",
+              "required": [
+                "fcff",
+                "discount_factor",
+                "pv_fcff"
+              ],
+              "properties": {
+                "revenue": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "ebit": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "fcff": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "discount_factor": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "pv_fcff": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "terminal": {
+          "type": "object",
+          "required": [
+            "method",
+            "g_pct",
+            "tv_inr_cr",
+            "pv_tv_inr_cr"
+          ],
+          "properties": {
+            "method": {
+              "enum": [
+                "gordon",
+                "exit_multiple"
+              ]
+            },
+            "g_pct": {
+              "type": "number"
+            },
+            "tv_inr_cr": {
+              "type": "number"
+            },
+            "pv_tv_inr_cr": {
+              "type": "number"
+            },
+            "exit_multiple": {
+              "type": "number"
+            },
+            "tv_exit_inr_cr": {
+              "type": "number"
+            },
+            "implied_g_pct": {
+              "type": "number"
+            },
+            "implied_multiple": {
+              "type": "number"
+            },
+            "warning": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "bridge": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "value_inr_cr"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "value_inr_cr": {
+                "type": "number"
+              },
+              "type": {
+                "enum": [
+                  "delta",
+                  "total"
+                ]
+              },
+              "source": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "sensitivity_grid": {
+          "$ref": "#/$defs/sensitivity_grid_spec"
+        },
+        "tornado": {
+          "$ref": "#/$defs/tornado_spec"
+        },
+        "fcff_statement": {
+          "$ref": "#/$defs/statement_spec"
+        },
+        "wacc_statement": {
+          "$ref": "#/$defs/statement_spec"
+        },
+        "provenance_label": {
+          "type": "string"
+        },
+        "disclaimer": {
+          "type": "string"
+        }
+      }
+    },
     "chart_spec": {
       "type": "object",
       "description": "Small declarative spec; the UI maps it to ECharts. No code from the model.",
@@ -487,8 +1692,10 @@
             "pie",
             "donut",
             "bar",
+            "column",
             "hbar",
             "stacked_bar",
+            "stacked_100",
             "grouped_bar",
             "line",
             "area",
@@ -502,10 +1709,32 @@
             "gauge",
             "funnel",
             "scatter",
+            "bubble",
+            "sunburst",
+            "sankey",
+            "choropleth",
             "kpi",
             "table",
             "map"
           ]
+        },
+        "x_order": {
+          "enum": [
+            "explicit",
+            "auto",
+            "value_desc",
+            "value_asc",
+            "alpha"
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "footnote": {
+          "type": "string"
+        },
+        "prebinned": {
+          "type": "boolean"
         },
         "data": {
           "type": "array",
@@ -793,8 +2022,10 @@
             "pie",
             "donut",
             "bar",
+            "column",
             "hbar",
             "stacked_bar",
+            "stacked_100",
             "grouped_bar",
             "line",
             "area",
@@ -808,6 +2039,10 @@
             "gauge",
             "funnel",
             "scatter",
+            "bubble",
+            "sunburst",
+            "sankey",
+            "choropleth",
             "kpi",
             "table",
             "map"
@@ -895,6 +2130,199 @@
         },
         "spec_patch": {
           "$ref": "#/$defs/spec_patch"
+        }
+      }
+    },
+    "statement_row": {
+      "type": "object",
+      "required": [
+        "label",
+        "level",
+        "kind",
+        "values"
+      ],
+      "properties": {
+        "line_code": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "kind": {
+          "enum": [
+            "line",
+            "subtotal",
+            "total"
+          ]
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "yoy_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "note_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "type": "object",
+          "required": [
+            "doc"
+          ],
+          "properties": {
+            "doc": {
+              "type": "string"
+            },
+            "page": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        },
+        "is_restated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "statement_section": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "rows"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/statement_row"
+          }
+        }
+      }
+    },
+    "statement_spec": {
+      "type": "object",
+      "description": "Typed financial statement visual (P4.2 / SPEC-09 §4.1)",
+      "required": [
+        "statement",
+        "periods",
+        "sections"
+      ],
+      "properties": {
+        "statement": {
+          "enum": [
+            "pnl",
+            "balance_sheet",
+            "cash_flow"
+          ]
+        },
+        "scope": {
+          "enum": [
+            "standalone",
+            "consolidated"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "periods": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "string"
+          }
+        },
+        "period_labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "show_yoy": {
+          "type": "boolean"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/statement_section"
+          }
+        },
+        "totals_check": {
+          "type": "object",
+          "required": [
+            "identity",
+            "passed"
+          ],
+          "properties": {
+            "identity": {
+              "type": "string"
+            },
+            "passed": {
+              "type": "boolean"
+            },
+            "max_abs_delta_cr": {
+              "type": "number"
+            }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "primary": {
+              "type": "string"
+            },
+            "basis": {
+              "type": "string"
+            },
+            "extraction": {
+              "type": "string"
+            },
+            "verified": {
+              "type": "boolean"
+            }
+          }
+        },
+        "as_of": {
+          "type": "string"
+        },
+        "footnotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "synthetic": {
+          "type": "boolean"
         }
       }
     }

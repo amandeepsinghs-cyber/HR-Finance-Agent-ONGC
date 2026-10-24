@@ -1,0 +1,60 @@
+{
+  "contract_version": 3,
+  "turn_id": "turn-v3-provenance-local-001",
+  "language": "en",
+  "persona": "E4_FIN",
+  "spoken_summary": "Standalone Revenue from Operations in FY26 was 1,32,508.1 crore rupees, sourced from the local snapshot of Annual Report FY26 page 297.",
+  "display_text": "ONGC Standalone Revenue from Operations in FY26: ₹1,32,508.1 crore (AR FY26 p.297).",
+  "visual": {
+    "type": "kpi",
+    "mode": "replace",
+    "title": "Revenue from Operations (FY26)",
+    "kpis": [
+      {
+        "label": "Revenue from Operations (FY26)",
+        "value": "₹1,32,508.1 Cr",
+        "unit": "INR Cr",
+        "delta": "-3.9% YoY"
+      }
+    ]
+  },
+  "insights": [
+    "Standalone Revenue from Operations declined 3.9% YoY from ₹1,37,846.3 Cr in FY25."
+  ],
+  "sources": [
+    {
+      "kind": "data",
+      "object": "fact_snapshot.parquet",
+      "title": "ONGC Annual Report FY26 p.297 (Local Snapshot)"
+    }
+  ],
+  "suggestions": [
+    "Show full FY26 P&L",
+    "Why did revenue change in FY26?"
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "pdf",
+    "csv"
+  ],
+  "status_events": [
+    "Completed"
+  ],
+  "status": {
+    "source": "local_snapshot",
+    "sql": null
+  },
+  "provenance": {
+    "label": "local_snapshot",
+    "detail": "ONGC AR FY2025-26, Standalone P&L p.297 (served from verified local Parquet snapshot)",
+    "snapshot_date": "2026-03-31",
+    "components": [
+      {
+        "label": "verified_ar",
+        "share_of_rows": 1.0
+      }
+    ]
+  }
+}

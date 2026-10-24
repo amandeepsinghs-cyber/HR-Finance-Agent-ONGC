@@ -28,8 +28,35 @@ def get_contract_validator() -> jsonschema.Draft202012Validator:
 
 
 _VALID_LANGUAGES = {"en", "hi", "hi-en"}
-_VALID_PERSONAS = {"CMD", "DIR_HR", "DIR_FIN", "E2_HR", "E3_FIN"}
-_VALID_VISUAL_TYPES = {"kpi", "chart", "table", "clause", "document", "refusal", "none"}
+_VALID_PERSONAS = {
+    "CMD",
+    "DIR_HR",
+    "DIR_FIN",
+    "E1_HR",
+    "E2_HR",
+    "E3_HR",
+    "E4_HR",
+    "E1_FIN",
+    "E2_FIN",
+    "E3_FIN",
+    "E4_FIN",
+}
+_VALID_VISUAL_TYPES = {
+    "kpi",
+    "chart",
+    "table",
+    "statement",
+    "sensitivity_grid",
+    "tornado",
+    "dcf_model",
+    "actions",
+    "clause",
+    "document",
+    "email_draft",
+    "map",
+    "refusal",
+    "none",
+}
 _VALID_VISUAL_MODES = {"replace", "refine", "compare", "restore"}
 
 
