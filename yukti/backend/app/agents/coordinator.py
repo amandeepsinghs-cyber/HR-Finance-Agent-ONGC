@@ -16,6 +16,27 @@ async def route_turn(query: str, persona: str, session: Any = None) -> Dict[str,
         if resolved:
             return resolved
 
+    from app.intents.confirm import extract_voice_edits
+    edits = extract_voice_edits(query)
+    if edits and session and hasattr(session, "last_agent_result") and getattr(session, "last_agent_result"):
+        last = session.last_agent_result
+        if last.get("agent") == "dcf_agent":
+            import uuid
+            action_id = str(uuid.uuid4())
+            pa = {
+                "id": action_id,
+                "agent": "dcf_agent",
+                "editable_inputs": [{"key": k, "value": v, "edited_by_user": True} for k, v in edits.items()],
+                "inputs": edits
+            }
+            if not hasattr(session, "pending_actions"):
+                session.pending_actions = {}
+            session.pending_actions[action_id] = pa
+            return {
+                "proposed_action": pa,
+                "answer": "Updated assumptions. Do you want to proceed?"
+            }
+
     # 2. Standard router
     router = get_router()
     agent_id = router.route(query)

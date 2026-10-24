@@ -142,3 +142,38 @@
         provenance: modelled
         cite:
           spec: "SPEC-08 §7"
+
+- id: V22
+  name: "V22 DCF Agent Flow (BEH-05: Propose -> Confirm -> What-if)"
+  gate: P3.4b
+  persona: DIR_FIN
+  fresh_session: true
+  description: "DCF agent workflow testing proposal, execution, and overrides."
+  steps:
+    - step: 1
+      ref: BEH-05.01
+      phrasing: "Can you run a discounted cash flow and tell me if ONGC is undervalued or overvalued?"
+      expect:
+        visual_type: none
+        proposed_action:
+          agent: "dcf_agent"
+        job: null
+
+    - step: 2
+      ref: BEH-05.02
+      phrasing: "yes, run it"
+      expect:
+        job:
+          status: "succeeded"
+          within_s: 20
+        artifacts_include: ["xlsx"]
+        visual_type: dcf_model
+
+    - step: 3
+      ref: BEH-05.05
+      phrasing: "what if WACC is 11%?"
+      expect:
+        visual_type: none
+        proposed_action:
+          agent: "dcf_agent"
+          has_override: true

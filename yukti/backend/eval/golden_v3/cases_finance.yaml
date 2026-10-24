@@ -1354,3 +1354,24 @@
     cite:
       doc: ONGC_AR_FY2023-24.pdf
       page_label: "245"
+
+- id: F49
+  gate: P3.4b
+  persona: DIR_FIN
+  phrasings:
+    - "Can you run a discounted cash flow and tell me if ONGC is undervalued or overvalued?"
+  expect:
+    visual_type: none
+    proposed_action:
+      agent: "dcf_agent"
+    job: null
+
+- id: F50
+  gate: P3.4b
+  persona: E2_FIN
+  phrasings:
+    - "Can you run a discounted cash flow and tell me if ONGC is undervalued or overvalued?"
+  expect:
+    visual_type: refusal
+    access:
+      status: "refused"

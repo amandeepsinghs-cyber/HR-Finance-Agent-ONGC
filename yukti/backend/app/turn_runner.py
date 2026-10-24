@@ -445,6 +445,51 @@ class AgentTurnRunner:
             session_state.record_turn(sc_contract, user_query=query)
             return sc_contract
 
+        # 0b. Agent Coordinator (P3.3)
+        from app.agents.coordinator import route_turn
+        coord_res = await route_turn(query, norm_persona, session_state)
+        
+        if coord_res.get("proposed_action") or coord_res.get("access", {}).get("status") == "refused":
+            contract = {
+                "contract_version": 3,
+                "turn_id": turn_id,
+                "language": det_lang,
+                "persona": norm_persona,
+                "spoken_summary": coord_res.get("answer", ""),
+                "display_text": coord_res.get("answer", ""),
+                "visual": {"type": "none", "mode": "replace"} if "access" not in coord_res else {"type": "refusal", "mode": "replace"},
+                "insights": [],
+                "sources": [],
+                "suggestions": [],
+                "access": coord_res.get("access", {"status": "allowed"}),
+                "export_options": [],
+                "status_events": ["Coordinated by Agent Router"],
+                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+            }
+            if coord_res.get("proposed_action"):
+                contract["proposed_action"] = coord_res["proposed_action"]
+            if coord_res.get("ui_action") is not None:
+                contract["ui_action"] = coord_res["ui_action"]
+            if coord_res.get("alternative"):
+                contract["alternative"] = coord_res["alternative"]
+            if coord_res.get("rule_ref"):
+                contract["rule_ref"] = coord_res["rule_ref"]
+            
+            self._validate_contract(contract)
+            session_state.record_turn(contract, user_query=query)
+            return contract
+            
+        elif coord_res.get("delegate_to") and coord_res["delegate_to"] != "analyst":
+            # Direct execution path for non-proposed agents (e.g. fin_diagnostics, hr_transfer)
+            # We would run them here, but for now we just continue if analyst.
+            pass
+        elif "contract" in coord_res:
+            # Resolved confirm intent returns a full contract response
+            res_contract = coord_res["contract"]
+            self._validate_contract(res_contract)
+            session_state.record_turn(res_contract, user_query=query)
+            return res_contract
+
         # 1. Access Check Hook (Persona Authorization)
         # Runs BEFORE every data fast-path below (by-discipline, headcount, histogram, draft, ...)
         # so restricted personas (e.g. E2_HR / E3_FIN) cannot reach confidential data via shortcuts.
