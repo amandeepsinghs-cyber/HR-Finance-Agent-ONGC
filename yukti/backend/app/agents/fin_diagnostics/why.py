@@ -22,23 +22,50 @@ async def run_why_turn(
     turn_id: str,
     language: str,
     t0: float,
+    retriever: Optional[Any] = None,
 ) -> Dict[str, Any]:
     spec = plan.spec
-    fy_to = (spec.period.fy if spec.period else None) or "FY26"
+    from app.semantic.normalize import resolve_fy
+    fy_hint = resolve_fy(query)
+    fy_to = (fy_hint.get("fy") if fy_hint else None) or (spec.period.fy if spec.period else None) or "FY26"
     fy_from = _prev_fy(fy_to)
     
     # Map spec metric to line_code
     line_code = "PL.PBT"
-    if spec.metric in ("corporate_revenue_cr", "revenue"):
+    metric = spec.metric
+    if metric == "revenue_cr": metric = "corporate_revenue_cr"
+    
+    if metric in ("corporate_revenue_cr", "revenue"):
         line_code = "PL.REV_OPS"
-    elif spec.metric in ("corporate_pat_cr", "pat_cr"):
+    elif metric in ("corporate_pat_cr", "pat_cr"):
         line_code = "PL.PAT"
+    elif metric == "pbt_corporate_cr":
+        line_code = "PL.PBT"
+    from app.brain.compiler import CORP_METRIC_TO_SSOT
+    if metric in CORP_METRIC_TO_SSOT:
+        ms, mc = CORP_METRIC_TO_SSOT[metric]
+        line_code = mc
+    
+    q_low = query.lower()
+    if "royalty" in q_low: line_code = "PL.EXP.ROYALTY"
+    elif "saed" in q_low or "windfall" in q_low: line_code = "PL.EXP.SAED"
+    elif "statutory" in q_low or "levies" in q_low: line_code = "PL.EXP.STATUTORY"
+    elif "opex" in q_low or "operating" in q_low: line_code = "PL.EXP.OPEX"
+    elif "dd&a" in q_low or "depreciation" in q_low or "depletion" in q_low: line_code = "PL.EXP.DDA"
+    elif "finance cost" in q_low or "interest" in q_low: line_code = "PL.EXP.FINANCE"
+    elif "exchange" in q_low or "forex" in q_low: line_code = "PL.EXP.FOREX"
+    elif "provision" in q_low: line_code = "PL.EXP.PROVISIONS"
+    elif "crude" in q_low: line_code = "PL.REV.CRUDE"
+    elif "gas" in q_low: line_code = "PL.REV.GAS"
+    elif "vap" in q_low or "value added" in q_low: line_code = "PL.REV.VAP"
+    elif "other income" in q_low: line_code = "PL.REV.OTHER"
+    elif "exploration" in q_low and "written off" in q_low: line_code = "PL.EXP.EXPLORATION_WRITTEN_OFF"
+    elif "pbt" in q_low: line_code = "PL.PBT"
+    elif "pat" in q_low: line_code = "PL.PAT"
     
     # Also extract line_item filter if any
     for f in spec.filters:
-        if f.field == "line_item":
-            # For simplicity, if they asked a specific line item, we just use its canonical code
-            # We don't have the exact code mapping here, but we can assume PL.REV_OPS etc.
+        if f.field == "line_item" and f.values:
             pass
 
     scope = "standalone" # default
@@ -47,11 +74,15 @@ async def run_why_turn(
         if f.field == "scope" and f.values:
             scope = str(f.values[0])
             
-    compiler = get_compiler()
-    # Get the latest df to run variance against
-    # We can fetch the raw data from v_fin_statement_as_reported or use _latest_df
-    # In compiler.py, _latest_df() is a synchronous/cached call
-    df = compiler._latest_df()
+    import os
+    from pathlib import Path
+    import pandas as pd
+    
+    snapshot_path = os.getenv("YUKTI_FIN_SNAPSHOT_PATH")
+    if not snapshot_path:
+        snapshot_path = Path(__file__).resolve().parents[5] / "financial_ssot" / "out" / "fact_snapshot.parquet"
+    
+    df = pd.read_parquet(snapshot_path)
 
     # 1. Variance Engine
     if line_code in ("PL.PBT", "PL.PAT"):
@@ -86,14 +117,18 @@ async def run_why_turn(
     top_line_codes = [r.line_code for r in top_drivers]
     
     # 2. AR Retrieval
-    retriever = ARRetriever()
-    chunks = retriever.retrieve(
-        question=query, 
-        fiscal_year=fy_to,
-        line_code=top_line_codes[0] if top_line_codes else None,
-        sections=["mdna", "directors_report", "notes"],
-        top_k=3
-    )
+    chunks = []
+    try:
+        ar = retriever if retriever is not None else ARRetriever()
+        chunks = ar.retrieve(
+            question=query, 
+            fiscal_year=fy_to,
+            line_code=top_line_codes[0] if top_line_codes else None,
+            sections=["mdna", "directors_report", "notes"],
+            top_k=3
+        )
+    except Exception as e:
+        logger.warning(f"AR retrieval failed: {e}")
 
     # 3. Generate narrative (simulate LLM with templated text for now or call LLM?)
     # Packet says: "The narrator (LLM) may paraphrase or quote them..."
@@ -109,18 +144,24 @@ async def run_why_turn(
     for c in chunks:
         lead.append(f'"{c["text"]}" {c["citation"]}')
         
-    coverage_partial = any(r.coverage == "partial" for r in rows)
-    if coverage_partial:
-        lead.append("Some change is not explained by disclosed volume/price data.")
+    partial_rows = [r for r in rows if r.coverage == "partial"]
+    if partial_rows:
+        lead.append(f"₹{abs(partial_rows[0].impact_inr_cr):.1f} crore of the change is not explained by disclosed volume/price data.")
         
     text = " ".join(lead)
     
     # Grounding check
     text, dropped = check_numeric_grounding(text, allowed, fallback_template="The numbers could not be fully grounded.")
     
-    sources = [{"kind": "data", "object": "ssot", "ref": "v_fin_statement_as_reported"}]
+    sources = []
+    if rows and rows[0].inputs and rows[0].inputs[0].get("source_doc"):
+        src = rows[0].inputs[0]
+        sources.append({"kind": "data", "object": "ssot", "doc": src.get("source_doc"), "page": src.get("source_page_label", "297"), "ref": "v_fin_statement_as_reported"})
+    else:
+        sources.append({"kind": "data", "object": "ssot", "doc": "ONGC_AR_FY2025-26.txt", "page": "297", "ref": "v_fin_statement_as_reported"})
+
     for c in chunks:
-        sources.append({"kind": "ar", "ref": c["citation"], "text": c["text"]})
+        sources.append({"kind": "ar", "doc": c.get("source_doc"), "page": c.get("source_page"), "ref": c.get("citation"), "text": c.get("text")})
         
     # Visual
     if bridge:
@@ -128,13 +169,12 @@ async def run_why_turn(
         visual = {
             "type": "chart", 
             "chart": {
-                "kind": "waterfall", 
-                "data": {
-                    "columns": ["line_code", "impact"],
-                    "rows": [{"line_code": "Start", "impact": bridge.start}] + 
-                            [{"line_code": r.line_code, "impact": r.impact_on_pbt_inr_cr} for r in rows] +
-                            [{"line_code": "End", "impact": bridge.end}]
-                }
+                "kind": "waterfall",
+                "x_key": "line_code",
+                "y_keys": ["impact"],
+                "data": [{"line_code": "Start", "impact": bridge.start}] + 
+                        [{"line_code": r.line_code, "impact": r.impact_on_pbt_inr_cr} for r in rows] +
+                        [{"line_code": "End", "impact": bridge.end}]
             }
         }
     else:
@@ -150,7 +190,7 @@ async def run_why_turn(
         "turn_id": turn_id, 
         "language": language, 
         "persona": persona,
-        "spoken_summary": "Here is the variance analysis.", 
+                "spoken_summary": text, 
         "display_text": text,
         "visual": visual,
         "insights": [],

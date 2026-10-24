@@ -137,9 +137,15 @@ async def run_planner_turn(
     is_why = False
     if getattr(plan, "intent", "") == "why":
         is_why = True
-    elif plan.intent == "data" and plan.spec and plan.spec.metric in ("corporate_revenue_cr", "pbt_corporate_cr", "corporate_pat_cr", "pbt_cr", "pat_cr", "pnl_statement"):
-        if re.search(r"\b(why|what drove|reason\w*|cause\w*|attribut\w*|how come)\b", query, re.I):
-            is_why = True
+    elif plan.intent == "data" and plan.spec:
+        from app.brain.compiler import CORP_METRIC_TO_SSOT
+        has_filter = any(f.field in ("field", "asset", "basin", "block") for f in plan.spec.filters) if plan.spec.filters else False
+        is_corp = plan.spec.metric in CORP_METRIC_TO_SSOT or plan.spec.metric in ("revenue_cr", "pbt_cr", "pat_cr", "ebitda_cr", "pnl_statement")
+        if is_corp and not has_filter:
+            if re.search(r"\b(why|what drove|what caused|reason\w*|cause\w*|attribut\w*|how come)\b", query or "", re.I):
+                is_why = True
+                if plan.spec.metric == "revenue_cr":
+                    plan.spec.metric = "corporate_revenue_cr"
 
     if is_why:
         from app.agents.fin_diagnostics.why import run_why_turn
@@ -293,7 +299,7 @@ async def run_planner_turn(
         if ctx_fy != latest:
             spoken += f" Showing {ctx_fy}, as before. Say 'latest' for {latest}."
             
-    import re
+
     bare_year_match = re.match(r"^\s*(20\d{2})\s*$", query)
     if bare_year_match:
         yyyy = int(bare_year_match.group(1))

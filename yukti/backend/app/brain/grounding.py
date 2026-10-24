@@ -2,7 +2,7 @@ import re
 from typing import Set, List, Tuple
 
 _NUM = re.compile(r"(?<![A-Za-z])[−-]?\d[\d,]*(?:\.\d+)?")
-_QUOTE = re.compile(r'"([^"]*)"(?:\s*\[AR\s*FY\d{2}\s*p\.\d+\])?')
+_QUOTE = re.compile(r'"([^"]*)"\s*\[AR\s*FY\d{2}(?:\s+PDF)?\s*p\.[^\]]+\]')
 
 def _to_float(tok: str) -> float | None:
     try:
@@ -19,21 +19,21 @@ def check_numeric_grounding(text: str, allowed: Set[float], fallback_template: s
     Returns (cleaned_text, dropped_sentences).
     If >1 sentence is dropped, returns fallback_template.
     """
-    sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', text) if s.strip()]
+    quotes = []
+    def _save_quote(m):
+        quotes.append(m.group(0))
+        return f" __QUOTE_{len(quotes)-1}__ "
+        
+    text_safe = _QUOTE.sub(_save_quote, text)
+    
+    sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', text_safe) if s.strip()]
     
     dropped = []
     kept = []
     
     for sent in sentences:
-        # Remove quoted parts so their numbers aren't checked against `allowed`
-        # We only ignore them if they are explicitly quoted AR excerpts.
-        # "A number that appears only inside a verbatim quoted AR excerpt (in quotation marks, with a page cite) is allowed..."
-        # We'll just remove all quoted strings before checking numbers, or only those with a cite.
-        # Let's remove any text in quotes.
-        clean_sent = _QUOTE.sub(" ", sent)
-        
         # Also ignore FY years
-        clean_sent = re.sub(r"\bFY\s?\d{2}(?:\s?[-–]\s?\d{2})?\b", " ", clean_sent, flags=re.I)
+        clean_sent = re.sub(r"\bFY\s?\d{2}(?:\s?[-–]\s?\d{2})?\b", " ", sent, flags=re.I)
         # Also calendar years between 1990 and 2040
         
         ungrounded = False
@@ -64,12 +64,16 @@ def check_numeric_grounding(text: str, allowed: Set[float], fallback_template: s
                 break
                 
         if ungrounded:
-            dropped.append(sent)
+            import logging; logging.getLogger(__name__).info(f"grounding_drop: {sent}"); dropped.append(sent)
         else:
             kept.append(sent)
             
     if len(dropped) > 1 and fallback_template:
         return fallback_template, dropped
         
-    return " ".join(kept), dropped
+    kept_text = " ".join(kept)
+    for i, q in enumerate(quotes):
+        kept_text = kept_text.replace(f"__QUOTE_{i}__", q)
+        
+    return kept_text, dropped
 

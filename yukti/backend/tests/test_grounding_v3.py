@@ -30,3 +30,12 @@ def test_grounding_quotes():
     assert not dropped
     assert "5000" in res
 
+
+def test_grounding_royalty_drop():
+    text = "Royalty rose to ₹15,280 crore"
+    allowed = {1000.0} # some other number
+    res, dropped = check_numeric_grounding(text, allowed, "Fallback text.")
+    assert len(dropped) == 1
+    assert res == ""
+    import logging
+    # it logs grounding_drop: Royalty rose to ₹15,280 crore

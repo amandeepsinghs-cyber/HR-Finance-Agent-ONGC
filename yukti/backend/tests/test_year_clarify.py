@@ -13,12 +13,23 @@ class MockSessionState:
         self.spec_history = spec_history or []
         self.last_rows = []
 
+from app.brain.planner import Plan
+class MockPlanner:
+    async def plan(self, query, prev=None, history=None):
+        if "statement" in query.lower():
+            return Plan(intent="data", spec=QuerySpec(metric="pnl_statement"), latency_ms=10)
+        if "crude" in query.lower():
+            return Plan(intent="data", spec=QuerySpec(metric="crude_production"), latency_ms=10)
+        return Plan(intent="data", spec=QuerySpec(metric="pnl_statement"), latency_ms=10)
+
 @pytest.fixture(autouse=True)
 def setup_config(monkeypatch):
     monkeypatch.setenv("YUKTI_CLARIFY_TEST", "1")
     monkeypatch.setenv("YUKTI_FIN_SSOT_V3", "1")
     monkeypatch.setenv("YUKTI_PLANNER", "1")
     monkeypatch.setenv("YUKTI_FORCE_BQ_FAIL", "1")
+    import app.brain.pipeline
+    monkeypatch.setattr(app.brain.pipeline, "get_planner", lambda: MockPlanner())
 
 @pytest.mark.asyncio
 async def test_year_clarify_ac01():
