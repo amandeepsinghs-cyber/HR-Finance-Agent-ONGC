@@ -582,45 +582,102 @@ class AgentTurnRunner:
             except Exception:
                 pass
                 
-        try:
-            planned = await run_planner_turn(query, session_state, norm_persona, turn_id, det_lang, t0,
-                                             patch_override=patch_obj, base_spec=base_obj, principal=principal)
-            if planned is not None:
-                return self._finalize_planner_contract(planned, session_state, query, t0)
-        except Exception as e_plan:
-            import logging
-            logging.getLogger(__name__).exception(f"Planner pipeline failed: {e_plan}")
-            
+        if os.getenv("YUKTI_PLANNER", "1") != "0":
+            try:
+                planned = await run_planner_turn(query, session_state, norm_persona, turn_id, det_lang, t0,
+                                                 patch_override=patch_obj, base_spec=base_obj, principal=principal)
+                if planned is not None:
+                    return self._finalize_planner_contract(planned, session_state, query, t0)
+            except Exception as e_plan:
+                import logging
+                logging.getLogger(__name__).exception(f"Planner pipeline failed: {e_plan}")
+
         session_state.spec_history.append({})
         session_state.spec_history[:] = session_state.spec_history[-20:]
 
-        if os.getenv("YUKTI_LEGACY_AGENT", "0") == "1":
+        if os.getenv("YUKTI_LEGACY_AGENT", "0") == "1" or os.getenv("YUKTI_PLANNER") == "0":
             # Continue on legacy
             self._prune_adk_sessions(norm_persona, session_id)
+            try:
+                await self.adk_session_service.create_session(
+                    app_name="yukti_agent",
+                    user_id=norm_persona,
+                    session_id=session_id,
+                )
+            except Exception:
+                pass
+            user_content = types.Content(role="user", parts=[types.Part.from_text(text=query)])
+            tool_calls_recorded = []
             tool_responses_recorded = []
-            
-            async def intercept_tools(e):
-                from google.adk.events import ToolCallResultEvent
-                if isinstance(e, ToolCallResultEvent):
-                    if hasattr(e.content, "parts"):
-                        for p in e.content.parts:
-                            fr = getattr(p, "function_response", None)
-                            if fr and fr.name != "generate_business_insights" and isinstance(getattr(fr, "response", None), dict):
-                                tool_responses_recorded.append(fr.response)
-                                
-            self.runner.add_event_listener(intercept_tools)
-            response = await self.runner.run(query, user_id=norm_persona, session_id=session_id)
-            self.runner.remove_event_listener(intercept_tools)
-            
-            contract = self._build_visual_and_sources(
-                model_text=response.content.text,
+            model_text_parts = []
+            status_events = ["Analyzing enterprise data requirements..."]
+
+            try:
+                async for event in self.runner.run_async(
+                    user_id=norm_persona,
+                    session_id=session_id,
+                    new_message=user_content,
+                ):
+                    fcalls = event.get_function_calls()
+                    if fcalls:
+                        for fc in fcalls:
+                            tool_calls_recorded.append({"name": fc.name, "args": fc.args})
+                    fresps = event.get_function_responses()
+                    if fresps:
+                        for fr in fresps:
+                            tool_responses_recorded.append({"name": fr.name, "response": fr.response})
+                    if event.content and event.content.parts:
+                        for p in event.content.parts:
+                            if p.text:
+                                model_text_parts.append(p.text)
+            except Exception as e:
+                logger.exception(f"Error during ADK agent execution: {e}")
+                spoken_err = safe_error_copy(e, det_lang)
+                contract_err = {
+                    "turn_id": turn_id,
+                    "language": det_lang,
+                    "persona": norm_persona,
+                    "spoken_summary": spoken_err,
+                    "display_text": spoken_err,
+                    "visual": {"type": "none", "mode": "replace"},
+                    "insights": ["Operational query error"],
+                    "sources": [{"kind": "data", "object": "hrfin_gold"}],
+                    "suggestions": ["Try rephrasing query", "Check work centre status"],
+                    "access": {"status": "allowed"},
+                    "export_options": ["pdf"],
+                    "status_events": ["Execution error in BigQuery tool"],
+                    "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+                }
+                self._validate_contract(contract_err)
+                session_state.record_turn(contract_err)
+                return contract_err
+
+            full_model_text = "".join(model_text_parts).strip()
+            spoken_summary = self._extract_spoken_summary(full_model_text, det_lang)
+            visual_obj, sources_list = self._build_visual_and_sources(
+                tool_calls=tool_calls_recorded,
                 tool_responses=tool_responses_recorded,
                 query=query,
-                language=det_lang,
-                turn_id=turn_id,
-                persona=norm_persona,
-                t0=t0,
+                voice_override=voice_override,
+                session_state=session_state,
             )
+            contract = {
+                "turn_id": turn_id,
+                "language": det_lang,
+                "persona": norm_persona,
+                "spoken_summary": spoken_summary,
+                "display_text": full_model_text or spoken_summary,
+                "visual": visual_obj,
+                "insights": [],
+                "sources": sources_list,
+                "suggestions": ["What can you do?"],
+                "access": {"status": "allowed"},
+                "export_options": ["pdf", "xlsx"],
+                "status_events": status_events,
+                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+            }
+            self._validate_contract(contract)
+            session_state.record_turn(contract, user_query=query)
             return contract
         else:
             # Honest structured response

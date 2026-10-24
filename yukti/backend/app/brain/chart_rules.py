@@ -896,7 +896,7 @@ def build_chart_spec(
     if not rows or not columns:
         return {"kind": "table", "data": [], "title": title}
 
-    if kind not in CHART_KINDS:
+    if kind not in CHART_KINDS and kind != "column":
         kind = "bar"
 
     # If waterfall is requested on statement rows carrying `line_code`, build a verified bridge.

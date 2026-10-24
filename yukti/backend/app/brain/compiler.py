@@ -750,7 +750,7 @@ ORDER BY fiscal_year ASC"""
             dims=[("fy", "fiscal_year")],
             value_columns=["wacc_pct", "ke_pct", "kd_after_tax_pct"],
             notes=[
-                "Modelled from real inputs: FBIL/RBI 10-yr G-sec, Damodaran ERP, 2-yr weekly beta vs NIFTY 50 (Yahoo), AR finance cost and debt"
+                "Modelled from real inputs: FBIL/RBI 10-yr G-sec, Damodaran ERP, 2-yr weekly beta vs NIFTY 50 (NSE), AR finance cost and debt"
             ],
             effective_period={"from": lo, "to": hi},
             grain="aggregate",
