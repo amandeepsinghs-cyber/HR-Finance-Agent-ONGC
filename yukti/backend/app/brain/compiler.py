@@ -1003,6 +1003,7 @@ ORDER BY fiscal_year ASC"""
         )
 
     def _v3__compile_pnl_statement(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        scope = spec.filter_on('scope') or 'standalone'
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
@@ -1034,8 +1035,8 @@ ORDER BY fiscal_year ASC"""
 FROM {_q(_V_TREND_LATEST)}
 WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
   AND verified = TRUE
-  AND scope = 'standalone'
-  AND source_table = 'standalone_pnl'
+  AND scope = '{scope}'
+  AND STARTS_WITH(line_code, 'PL.') AND NOT STARTS_WITH(line_code, 'PL_10YR')
 ORDER BY display_order ASC, fiscal_year DESC"""
                 return CompiledQuery(
                     sql=sql,
@@ -1114,12 +1115,12 @@ ORDER BY fiscal_year ASC"""
         sql = f"""WITH cur AS (
   SELECT *
   FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'pnl' AND fiscal_year = {_lit(fy)} AND scope = 'standalone' AND verified = TRUE AND is_own_vintage = TRUE AND source_table = 'standalone_pnl'
+  WHERE statement = 'pnl' AND fiscal_year = {_lit(fy)} AND scope = '{scope}' AND verified = TRUE AND is_own_vintage = TRUE AND STARTS_WITH(line_code, 'PL.') AND NOT STARTS_WITH(line_code, 'PL_10YR')
 ),
 prv AS (
   SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
   FROM {_q(_T_FACT_FIN)}
-  WHERE statement = 'pnl' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND report_vintage = {_lit(vintage)} AND source_table = 'standalone_pnl' AND period_type = 'annual'
+  WHERE statement = 'pnl' AND fiscal_year = {_lit(prev_fy)} AND scope = '{scope}' AND report_vintage = {_lit(vintage)} AND STARTS_WITH(line_code, 'PL.') AND NOT STARTS_WITH(line_code, 'PL_10YR') AND period_type = 'annual'
 ),
 base AS (
   SELECT MAX(IF(line_code = 'PL.REV_OPS', COALESCE(value_inr_cr, value), NULL)) AS base_val FROM cur
@@ -1167,6 +1168,7 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
         )
 
     def _v3__compile_balance_sheet(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        scope = spec.filter_on('scope') or 'standalone'
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
@@ -1198,16 +1200,16 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
 FROM {_q(_V_TREND_LATEST)}
 WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
   AND verified = TRUE
-  AND scope = 'standalone'
-  AND source_table = 'standalone_pnl'
+  AND scope = '{scope}'
+  AND STARTS_WITH(line_code, 'BS.') AND NOT STARTS_WITH(line_code, 'BS_10YR')
 ORDER BY display_order ASC, fiscal_year DESC"""
                 return CompiledQuery(
                     sql=sql,
                     subject="corporate",
-                    metric="pnl_statement",
-                    metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
+                    metric="balance_sheet",
+                    metric_label=f"ONGC Schedule III Balance Sheet Trend ({lo}–{hi})",
                     unit="inr_cr",
-                    source="template:pnl_statement",
+                    source="template:balance_sheet",
                     tables=[_V_TREND_LATEST],
                     dims=[],
                     value_columns=["value_inr_cr"],
@@ -1238,7 +1240,7 @@ ORDER BY display_order ASC, fiscal_year DESC"""
 FROM {_q(_V_TREND_LATEST)}
 WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
   AND verified = TRUE
-  AND scope = 'standalone'
+  AND scope = '{scope}'
   AND line_code IN (
     'BS.TOTAL_ASSETS', 'BS.ASSETS.NON_CURRENT.TOTAL', 'BS.OG_ASSETS', 'BS.WIP_TOTAL_10YR',
     'BS.INVESTMENTS_NC_10YR', 'BS.ASSETS.CURRENT.TOTAL', 'BS.CCE', 'BS.EQUITY.TOTAL',
@@ -1273,12 +1275,12 @@ ORDER BY fiscal_year ASC"""
         sql = f"""WITH cur AS (
   SELECT *
   FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'balance_sheet' AND fiscal_year = {_lit(fy)} AND scope = 'standalone' AND verified = TRUE AND is_own_vintage = TRUE AND source_table = 'standalone_balance_sheet'
+  WHERE statement = 'balance_sheet' AND fiscal_year = {_lit(fy)} AND scope = '{scope}' AND verified = TRUE AND is_own_vintage = TRUE AND source_table = 'standalone_balance_sheet'
 ),
 prv AS (
   SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
   FROM {_q(_T_FACT_FIN)}
-  WHERE statement = 'balance_sheet' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND report_vintage = {_lit(vintage)} AND source_table = 'standalone_balance_sheet' AND period_type = 'annual'
+  WHERE statement = 'balance_sheet' AND fiscal_year = {_lit(prev_fy)} AND scope = '{scope}' AND report_vintage = {_lit(vintage)} AND source_table = 'standalone_balance_sheet' AND period_type = 'annual'
 ),
 base AS (
   SELECT MAX(IF(line_code = 'BS.TOTAL_ASSETS', COALESCE(value_inr_cr, value), NULL)) AS base_val FROM cur
@@ -1326,6 +1328,7 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
         )
 
     def _v3__compile_cash_flow_statement(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        scope = spec.filter_on('scope') or 'standalone'
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
@@ -1357,16 +1360,16 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
 FROM {_q(_V_TREND_LATEST)}
 WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
   AND verified = TRUE
-  AND scope = 'standalone'
-  AND source_table = 'standalone_pnl'
+  AND scope = '{scope}'
+  AND STARTS_WITH(line_code, 'CF.') AND NOT STARTS_WITH(line_code, 'CF_10YR')
 ORDER BY display_order ASC, fiscal_year DESC"""
                 return CompiledQuery(
                     sql=sql,
                     subject="corporate",
-                    metric="pnl_statement",
-                    metric_label=f"ONGC Schedule III P&L Trend ({lo}–{hi})",
+                    metric="cash_flow_statement",
+                    metric_label=f"ONGC Schedule III Cash Flow Trend ({lo}–{hi})",
                     unit="inr_cr",
-                    source="template:pnl_statement",
+                    source="template:cash_flow_statement",
                     tables=[_V_TREND_LATEST],
                     dims=[],
                     value_columns=["value_inr_cr"],
@@ -1397,7 +1400,7 @@ ORDER BY display_order ASC, fiscal_year DESC"""
 FROM {_q(_V_TREND_LATEST)}
 WHERE fiscal_year BETWEEN {_lit(lo)} AND {_lit(hi)}
   AND verified = TRUE
-  AND scope = 'standalone'
+  AND scope = '{scope}'
   AND line_code IN ('CF.CFO', 'CF.CFI', 'CF.CFF', 'CAPEX.TOTAL', 'CF.NET_CHANGE_CCE', 'CF.CCE_CLOSE')
 GROUP BY fiscal_year
 ORDER BY fiscal_year ASC"""
@@ -1428,12 +1431,12 @@ ORDER BY fiscal_year ASC"""
         sql = f"""WITH cur AS (
   SELECT *
   FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'cash_flow' AND fiscal_year = {_lit(fy)} AND scope = 'standalone' AND verified = TRUE AND is_own_vintage = TRUE AND source_table = 'standalone_cash_flow'
+  WHERE statement = 'cash_flow' AND fiscal_year = {_lit(fy)} AND scope = '{scope}' AND verified = TRUE AND is_own_vintage = TRUE AND source_table = 'standalone_cash_flow'
 ),
 prv AS (
   SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
   FROM {_q(_T_FACT_FIN)}
-  WHERE statement = 'cash_flow' AND fiscal_year = {_lit(prev_fy)} AND scope = 'standalone' AND report_vintage = {_lit(vintage)} AND source_table = 'standalone_cash_flow' AND period_type = 'annual'
+  WHERE statement = 'cash_flow' AND fiscal_year = {_lit(prev_fy)} AND scope = '{scope}' AND report_vintage = {_lit(vintage)} AND source_table = 'standalone_cash_flow' AND period_type = 'annual'
 ),
 base AS (
   SELECT MAX(IF(line_code = 'CF.CFO', COALESCE(value_inr_cr, value), NULL)) AS base_val FROM cur
@@ -1986,98 +1989,51 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                     return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
                                        latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
 
-            # 2. Multi-FY statement templates
+                        # 2. Multi-FY statement templates
             if compiled.metric in stmt_map and lo and hi:
                 ldf = _latest_df()
                 ldf = ldf[(ldf["fiscal_year"] >= lo) & (ldf["fiscal_year"] <= hi)]
+                
+                # Extract scope from sql if present
+                scope = "standalone"
+                if "scope = 'consolidated'" in compiled.sql:
+                    scope = "consolidated"
+                elif "scope = 'yahoo'" in compiled.sql:
+                    scope = "yahoo"
+                
+                if "scope" in ldf.columns:
+                    ldf = ldf[ldf["scope"] == scope]
+                    
                 if ldf.empty:
                     return None
-                fys = sorted(ldf["fiscal_year"].unique())
-                lkp = {(str(r["scope"]), str(r["fiscal_year"]), str(r["line_code"])): r for _, r in ldf.iterrows()}
-
-                def _lv(sc: str, f_yr: str, cd: str) -> Optional[float]:
-                    rec = lkp.get((sc, f_yr, cd))
-                    return _val_num(rec) if rec is not None else None
-
+                
                 rows = []
-                for f_yr in fys:
-                    if compiled.metric == "pnl_statement":
-                        p_rec = lkp.get(("standalone", f_yr, "PL.REV_OPS"))
-                        rows.append({
-                            "fiscal_year": f_yr,
-                            "revenue_from_ops_cr": _lv("standalone", f_yr, "PL.REV_OPS"),
-                            "other_income_cr": _lv("standalone", f_yr, "PL.OTHER_INCOME"),
-                            "total_income_cr": _lv("standalone", f_yr, "PL.TOTAL_INCOME"),
-                            "statutory_levies_cr": _lv("standalone", f_yr, "LEVY.TOTAL"),
-                            "royalty_cr": _lv("standalone", f_yr, "LEVY.ROYALTY"),
-                            "oidb_cess_cr": _lv("standalone", f_yr, "LEVY.OIDB_CESS"),
-                            "saed_windfall_tax_cr": _lv("standalone", f_yr, "LEVY.OTHER_SAED"),
-                            "operating_expenses_cr": _lv("standalone", f_yr, "PL.OPEX_10YR"),
-                            "exploration_writeoff_cr": _lv("standalone", f_yr, "PL.EXPL_WRITEOFF"),
-                            "dda_cr": _lv("standalone", f_yr, "PL.DDA"),
-                            "finance_costs_cr": _lv("standalone", f_yr, "PL.FIN_COST"),
-                            "total_expenses_cr": _lv("standalone", f_yr, "PL.TOTAL_EXP"),
-                            "exceptional_items_cr": _lv("standalone", f_yr, "PL.EXCEPTIONAL"),
-                            "pbt_cr": _lv("standalone", f_yr, "PL.PBT"),
-                            "tax_expense_cr": _lv("standalone", f_yr, "PL.TAX"),
-                            "standalone_pat_cr": _lv("standalone", f_yr, "PL.PAT"),
-                            "consolidated_pat_cr": _lv("consolidated", f_yr, "PL.PAT"),
-                            "is_restated": bool(p_rec.get("is_restated")) if p_rec is not None else False,
-                            "source_doc": _norm_doc(p_rec.get("source_doc")) if p_rec is not None else None,
-                            "source_page_label": _norm_str(p_rec.get("source_page_label")) if p_rec is not None else None,
-                        })
-                    elif compiled.metric == "balance_sheet":
-                        p_rec = lkp.get(("standalone", f_yr, "BS.TOTAL_ASSETS"))
-                        rows.append({
-                            "fiscal_year": f_yr,
-                            "total_assets_cr": _lv("standalone", f_yr, "BS.TOTAL_ASSETS"),
-                            "non_current_assets_cr": _lv("standalone", f_yr, "BS.ASSETS.NON_CURRENT.TOTAL"),
-                            "oil_and_gas_assets_cr": _lv("standalone", f_yr, "BS.OG_ASSETS"),
-                            "cwip_cr": _lv("standalone", f_yr, "BS.WIP_TOTAL_10YR"),
-                            "investments_subsidiaries_cr": _lv("standalone", f_yr, "BS.INVESTMENTS_NC_10YR"),
-                            "current_assets_cr": _lv("standalone", f_yr, "BS.ASSETS.CURRENT.TOTAL"),
-                            "cash_and_bank_cr": _lv("standalone", f_yr, "BS.CCE"),
-                            "net_worth_cr": _lv("standalone", f_yr, "BS.EQUITY.TOTAL"),
-                            "total_debt_cr": _lv("standalone", f_yr, "BS.BORROW_TOTAL_10YR"),
-                            "abandonment_provision_cr": _lv("standalone", f_yr, "BS.PROV_NC"),
-                            "total_liabilities_cr": _lv("standalone", f_yr, "BS.LIAB.TOTAL"),
-                            "is_restated": bool(p_rec.get("is_restated")) if p_rec is not None else False,
-                            "source_doc": _norm_doc(p_rec.get("source_doc")) if p_rec is not None else None,
-                            "source_page_label": _norm_str(p_rec.get("source_page_label")) if p_rec is not None else None,
-                        })
-                    elif compiled.metric == "cash_flow_statement":
-                        p_rec = lkp.get(("standalone", f_yr, "CF.CFO"))
-                        cfo_v = _lv("standalone", f_yr, "CF.CFO")
-                        capex_v = _lv("standalone", f_yr, "CAPEX.TOTAL")
-                        rows.append({
-                            "fiscal_year": f_yr,
-                            "operating_cash_flow_cr": cfo_v,
-                            "investing_cash_flow_cr": _lv("standalone", f_yr, "CF.CFI"),
-                            "financing_cash_flow_cr": _lv("standalone", f_yr, "CF.CFF"),
-                            "total_capex_cr": capex_v,
-                            "free_cash_flow_cr": round(cfo_v - abs(capex_v or 0.0), 2) if cfo_v is not None else None,
-                            "net_cash_change_cr": _lv("standalone", f_yr, "CF.NET_CHANGE_CCE"),
-                            "closing_cash_cr": _lv("standalone", f_yr, "CF.CCE_CLOSE"),
-                            "is_restated": bool(p_rec.get("is_restated")) if p_rec is not None else False,
-                            "source_doc": _norm_doc(p_rec.get("source_doc")) if p_rec is not None else None,
-                            "source_page_label": _norm_str(p_rec.get("source_page_label")) if p_rec is not None else None,
-                        })
-                    elif compiled.metric == "financial_ratios":
-                        p_rec = lkp.get(("standalone", f_yr, "RATIO.ROCE"))
-                        rows.append({
-                            "fiscal_year": f_yr,
-                            "ebitda_margin_pct": _lv("standalone", f_yr, "RATIO.PBIDT_MARGIN_PCT"),
-                            "pat_margin_pct": _lv("standalone", f_yr, "RATIO.PAT_MARGIN_PCT"),
-                            "roce_pct": _lv("standalone", f_yr, "RATIO.ROCE"),
-                            "roe_pct": _lv("standalone", f_yr, "RATIO.ROE_INCL_EXC"),
-                            "debt_to_equity_ratio": _lv("standalone", f_yr, "RATIO.DEBT_EQUITY"),
-                            "current_ratio": _lv("standalone", f_yr, "RATIO.CURRENT"),
-                            "eps_basic_inr": _lv("standalone", f_yr, "PL.EPS_BASIC") or _lv("standalone", f_yr, "RATIO.EPS"),
-                            "dividend_per_share_inr": _lv("standalone", f_yr, "RATIO.DPS"),
-                            "is_restated": bool(p_rec.get("is_restated")) if p_rec is not None else False,
-                            "source_doc": _norm_doc(p_rec.get("source_doc")) if p_rec is not None else None,
-                            "source_page_label": _norm_str(p_rec.get("source_page_label")) if p_rec is not None else None,
-                        })
+                st_name, _, _ = stmt_map[compiled.metric]
+                for _, r in ldf.iterrows():
+                    lc = str(r["line_code"])
+                    if st_name == "pnl" and not (lc.startswith("PL.") and not lc.startswith("PL_10YR")): continue
+                    if st_name == "balance_sheet" and not (lc.startswith("BS.") and not lc.startswith("BS_10YR")): continue
+                    if st_name == "cash_flow" and not (lc.startswith("CF.") and not lc.startswith("CF_10YR")): continue
+                    
+                    cur_v = _val_num(r)
+                    rows.append({
+                        "line_order": int(r.get("display_order") or r.get("line_order") or 0),
+                        "line_code": lc,
+                        "display_name": _norm_str(r.get("display_name")) or _norm_str(r.get("line_name_as_reported")) or lc,
+                        "line_item": _norm_str(r.get("display_name")) or _norm_str(r.get("line_name_as_reported")) or lc,
+                        "level": int(r.get("level") or 1),
+                        "line_kind": _norm_str(r.get("line_kind")) or "detail",
+                        "section": _norm_str(r.get("section")) or st_name,
+                        "note_ref": _norm_str(r.get("ar_note_ref_typical")) or _norm_str(r.get("schedule3_ref")) or "",
+                        "fiscal_year": str(r["fiscal_year"]),
+                        "value_inr_cr": cur_v,
+                        "amount_cr": cur_v,
+                        "is_restated": bool(r.get("is_restated")),
+                        "footnote_marker": _norm_str(r.get("footnote_marker")),
+                        "source_doc": _norm_doc(r.get("source_doc")),
+                        "source_page_label": _norm_str(r.get("source_page_label")),
+                        "source_system": _norm_str(r.get("source_system")),
+                    })
                 if rows:
                     return QueryResult(columns=list(rows[0].keys()), rows=rows, total_bytes=0,
                                        latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
@@ -2199,6 +2155,7 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
 
 
     def _legacy__compile_pnl_statement(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        scope = spec.filter_on('scope') or 'standalone'
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
@@ -2327,6 +2284,7 @@ ORDER BY line_order ASC"""
             aggregation="ratio",
         )
     def _legacy__compile_balance_sheet(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        scope = spec.filter_on('scope') or 'standalone'
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))
@@ -2449,6 +2407,7 @@ ORDER BY line_order ASC"""
             aggregation="ratio",
         )
     def _legacy__compile_cash_flow_statement(self, t: TemplateDef, spec: QuerySpec) -> CompiledQuery:
+        scope = spec.filter_on('scope') or 'standalone'
         p = spec.period or Period()
         available = ["FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]
         is_multi_fy = bool((p.from_ and p.to and p.from_ != p.to) or ("fy" in spec.dimensions))

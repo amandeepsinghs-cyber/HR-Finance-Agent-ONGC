@@ -15,6 +15,7 @@ from typing import Any, Dict, Iterable, List, Optional, Set
 
 from app.brain.insights import Insight
 from app.brain.query_spec import QuerySpec
+from app.brain.grounding import check_numeric_grounding
 
 _NUM = re.compile(r"(?<![A-Za-z])[−-]?\d[\d,]*(?:\.\d+)?")
 _SENT = re.compile(r"(?<=[.!?])\s+")
@@ -93,20 +94,22 @@ def grounding_violations(text: str, allowed: Set[float]) -> List[str]:
 
 
 def compose_spoken(headline: str, insights: List[Insight], allowed: Set[float], max_sentences: int = 4) -> Dict[str, Any]:
-    """Headline + up to two insight sentences, 2–4 sentences, every number grounded."""
+    """Headline + up to two insight sentences, 2-4 sentences, every number grounded."""
     base = [s for s in _SENT.split(headline.strip()) if s and "on screen" not in s.lower()]
     sentences = base[:2]
     for ins in insights:
         if len(sentences) >= max_sentences - 1:
             break
         if ins.type == "headline":
-            continue  # restates the headline value; shown as an insight card, not spoken twice
+            continue
         if ins.text and ins.text not in sentences and not any(ins.text[:30] in s for s in sentences):
             sentences.append(ins.text)
     sentences.append("Details are on screen.")
     text = " ".join(s.strip() for s in sentences)
-    bad = grounding_violations(text, allowed)
-    if bad:  # fall back to the deterministic headline only
-        text = " ".join(base[:2] + ["Details are on screen."])
-        bad = grounding_violations(text, allowed)
-    return {"text": text, "ungrounded": bad, "sentences": len([s for s in _SENT.split(text) if s])}
+    
+    fallback = " ".join(base[:2] + ["Details are on screen."])
+    text, dropped = check_numeric_grounding(text, allowed, fallback)
+    
+    # We still need to return ungrounded: bad, but now dropped has sentences.
+    # To keep compatibility, we just return the dropped sentences as ungrounded.
+    return {"text": text, "ungrounded": dropped, "sentences": len([s for s in _SENT.split(text) if s])}

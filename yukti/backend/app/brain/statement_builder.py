@@ -620,9 +620,8 @@ def build_statement_spec(
     omitted_periods: List[str] = []
     active_periods: List[str] = []
     for p in requested_periods:
-        if p in discovered_periods:
-            active_periods.append(p)
-        else:
+        active_periods.append(p)
+        if p not in discovered_periods:
             omitted_periods.append(p)
 
     # 3. Group rows by line_code (or clean label) while preserving 100% of SSOT `line_order` (`order`)

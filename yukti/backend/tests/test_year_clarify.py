@@ -17,6 +17,8 @@ class MockSessionState:
 def setup_config(monkeypatch):
     monkeypatch.setenv("YUKTI_CLARIFY_TEST", "1")
     monkeypatch.setenv("YUKTI_FIN_SSOT_V3", "1")
+    monkeypatch.setenv("YUKTI_PLANNER", "1")
+    monkeypatch.setenv("YUKTI_FORCE_BQ_FAIL", "1")
 
 @pytest.mark.asyncio
 async def test_year_clarify_ac01():
@@ -43,37 +45,91 @@ async def test_year_clarify_context_carryover():
     
     contract = await run_planner_turn("show the income statement", sess, "dir_fin", "turn2", "en", time.time())
     
-    # In pipeline, if period is inherited, it returns None to continue to compiler
-    # or it modifies plan.spec and falls through.
     if contract is not None:
         assert "clarify" not in contract.get("contract", {})
+        # check that spoken_summary has context carryover text
+        assert "Showing FY24, as before" in contract["contract"].get("spoken_summary", "")
 
+PHRASES = [
+    ("present year", "FY26"),
+    ("this year", "FY26"),
+    ("current", "FY26"),
+    ("latest", "FY26"),
+    ("is saal", "FY26"),
+    ("last year", "FY25"),
+    ("previous year", "FY25"),
+    ("pichhle saal", "FY25"),
+    ("2025", "FY25"),
+    ("FY25", "FY25"),
+    ("FY 2024-25", "FY25"),
+    ("2024-25", "FY25"),
+    ("five years", "FY22..FY26"),
+    ("5 saal", "FY22..FY26"),
+    ("last 5", "FY22..FY26"),
+    ("5-year trend (FY22–FY26)", "FY22..FY26"),
+    ("ten years", "FY17..FY26"),
+    ("decade", "FY17..FY26"),
+    ("10 saal", "FY17..FY26")
+]
+
+@pytest.mark.parametrize("query, expected_fy", PHRASES)
 @pytest.mark.asyncio
-async def test_year_clarify_resolution():
-    sess = MockSessionState(turns=[{
-        "user_query": "Can I see the income statement?",
-        "contract": {
-            "clarify": {
-                "slot": "fiscal_period",
-                "pending_spec": QuerySpec(metric="pnl_statement").to_contract()
-            }
-        }
-    }])
-    
+async def test_year_clarify_resolution(query, expected_fy):
     runner = AgentTurnRunner(None)
+    session_id = f"test_session_{query.replace(' ', '_')}"
     
-    # "present year"
-    c = await runner.execute_turn_async(
-        query="present year",
-        session_id="test_session",
+    # Turn 1
+    c1 = await runner.execute_turn_async(
+        query="Can I see the income statement?",
+        session_id=session_id,
         persona="dir_fin"
     )
-    assert c is not None
-    assert c.get("clarify") is None
-    # Wait, runner.run_turn returns the final contract. The fiscal year should be in query spec but that's internal.
-    # The presenter should output "FY26" in display text or context.
-    # We can just verify it resolves properly by mocking the planner or checking no clarify is returned.
+    assert c1.get("clarify") is not None
+    
+    # Turn 2
+    c2 = await runner.execute_turn_async(
+        query=query,
+        session_id=session_id,
+        persona="dir_fin"
+    )
+    
+    # Clarify should be resolved
+    assert c2.get("clarify") is None
+    
+    # We should get a data response, meaning the pipeline executed.
+    # The pipeline will put the resolved spec in the query_spec
+    qs = c2.get("query_spec", {})
+    period = qs.get("period", {})
+    if ".." in expected_fy:
+        expected_from, expected_to = expected_fy.split("..")
+        assert period.get("from") == expected_from
+        assert period.get("to") == expected_to
+    else:
+        assert period.get("fy") == expected_fy
+        
+    if query == "2025":
+        assert "FY2024-25 (year ended 31-Mar-2025)" in c2.get("spoken_summary", "")
 
-    # Wait, runner.run_turn calls planner. It should return a contract with FY26.
-    pass
-
+@pytest.mark.asyncio
+async def test_year_clarify_expiry():
+    runner = AgentTurnRunner(None)
+    session_id = "test_session_expiry"
+    
+    # Turn 1
+    c1 = await runner.execute_turn_async(
+        query="Can I see the income statement?",
+        session_id=session_id,
+        persona="dir_fin"
+    )
+    assert c1.get("clarify") is not None
+    
+    # Turn 2 - Unrelated
+    c2 = await runner.execute_turn_async(
+        query="what is crude production?",
+        session_id=session_id,
+        persona="dir_fin"
+    )
+    # The clarify should expire, answering the new query.
+    assert c2.get("clarify") is None
+    qs = c2.get("query_spec", {})
+    assert qs.get("metric") != "pnl_statement"
