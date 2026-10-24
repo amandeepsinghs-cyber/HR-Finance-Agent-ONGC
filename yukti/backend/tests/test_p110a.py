@@ -1,4 +1,3 @@
-
 import pytest
 import asyncio
 import time
@@ -16,9 +15,10 @@ def test_p110a_b2_sql():
     assert "is_own_vintage = TRUE" in compiled.sql
     assert "report_vintage = 'AR_FY24'" in compiled.sql
 
+@pytest.mark.parametrize("force_bq_fail", ["0", "1"])
 @pytest.mark.asyncio
-async def test_p110a_end_to_end(monkeypatch):
-    monkeypatch.setenv("YUKTI_FORCE_BQ_FAIL", "1")
+async def test_p110a_end_to_end(monkeypatch, force_bq_fail):
+    monkeypatch.setenv("YUKTI_FORCE_BQ_FAIL", force_bq_fail)
     sm = get_session_manager()
     sess = sm.get_or_create(f"p110a-test-{time.time_ns()}", persona="hr_manager", language="en")
     
@@ -29,7 +29,9 @@ async def test_p110a_end_to_end(monkeypatch):
         "What is the 5-year trend for P&L?",
         "Show me the PAT trend",
         "What is the ROCE for FY23?",
-        "Cash flow statement for FY24"
+        "Cash flow statement for FY24",
+        "Revenue per employee for FY26",
+        "Contribution to exchequer for FY25"
     ]
     
     for q in questions:
@@ -49,8 +51,6 @@ async def test_p110a_end_to_end(monkeypatch):
         
         if q == "Balance sheet for 2024":
             table = res.get("contract", {}).get("visual", {}).get("table")
-            if not table:
-                print(res)
             assert table is not None
             cols = table["columns"]
             assert any("prior_fy_cr" in k for k in cols)
@@ -60,6 +60,20 @@ async def test_p110a_end_to_end(monkeypatch):
             total_assets_row = next(r for r in table["rows"] if r["line_code"] == "BS.TOTAL_ASSETS")
             assert abs(total_assets_row["prior_fy_cr"] - 369878.37) < 0.1
             
+        if q == "Revenue per employee for FY26":
+            table = res.get("contract", {}).get("visual", {}).get("table")
+            assert table is not None
+            row = table["rows"][0]
+            val = row.get("revenue_per_employee_cr") or row.get("value_inr_cr")
+            assert abs(float(val) - 5.581) < 0.01
+
+        if q == "Contribution to exchequer for FY25":
+            table = res.get("contract", {}).get("visual", {}).get("table")
+            assert table is not None
+            row = table["rows"][0]
+            val = row.get("exchequer_contribution_cr") or row.get("value_inr_cr")
+            assert abs(float(val) - 60398.3) < 0.1
+
 def test_p110a_flag_off():
     app.config.YUKTI_FIN_SSOT_V3 = False
     c = get_compiler()
