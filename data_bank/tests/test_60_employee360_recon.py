@@ -16,7 +16,7 @@ def test_emp_r01_to_r09_reconciliation():
         ["cost_note35_a_inr", "cost_note35_b_inr", "cost_note35_c_inr", "cost_note35_d_inr", "cost_note35_e_inr", "cost_note35_f_inr"]
     ].sum().reset_index()
     
-    pools_df = pools_df[pools_df["basis"] == "residual"]
+    pools_df = pools_df[pools_df["basis"].isin(["residual", "real_total_modelled_split"])]
     pool_sums = pools_df.groupby(["fiscal_year", "note35_line"])["amount_inr"].sum().reset_index()
     
     for fy in ["FY17", "FY18", "FY19", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26"]:
@@ -61,5 +61,5 @@ def test_emp_r10_headcount():
         
         year_str = "20" + fy[2:4]
         month_str = f"{year_str}-03"
-        modeled_hc = hc_df[hc_df["month"].str.startswith(month_str)]["active_headcount"].sum()
+        modeled_hc = hc_df[hc_df["month"].str.startswith(month_str)]["headcount"].sum()
         assert modeled_hc == target_hc, f"EMP-R10 failed for {fy}: {modeled_hc} != {target_hc}"

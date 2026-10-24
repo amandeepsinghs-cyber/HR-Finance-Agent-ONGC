@@ -1996,7 +1996,7 @@ def generate_all():
     df_emp, df_post, df_prod = load_upstream_landing()
 
     df_snapshot = generate_headcount_snapshot(df_emp, df_post)
-    from .gen_22_hr_payroll import generate_payroll_monthly_wrapper
+    import gen_22_hr_payroll; generate_payroll_monthly_wrapper = gen_22_hr_payroll.generate_payroll_monthly_wrapper; # generate_payroll_monthly_wrapper
     df_payroll = generate_payroll_monthly_wrapper(df_emp, df_post, work_centres, grades, disciplines, cost_centres)
     df_sanc = generate_sanctioned_posts(df_emp, df_post, work_centres, grades, disciplines)
     df_apar = generate_apar_ratings(df_emp, df_post, grades)
