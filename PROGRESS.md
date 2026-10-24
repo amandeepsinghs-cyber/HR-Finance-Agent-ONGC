@@ -1,20 +1,20 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:50 UTC · branch `v3/P0-stabilise` @ `c422e4c`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:55 UTC · branch `v3/P0-stabilise` @ `33935f4`
 
 > [!IMPORTANT]
-> **Overall: 29% complete (weighted)** — 16/62 steps ✅ done, 6 in flight, 40 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 31% complete (weighted)** — 16/62 steps ✅ done, 8 in flight, 38 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `██████████░░░░░░░░░░` 48% | 5 | 0 | 0 | 3 | 4 | 0 | 12 |
+| **P1** | Real finance SSOT | `██████████░░░░░░░░░░` 52% | 5 | 1 | 0 | 2 | 4 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 3% | 0 | 0 | 0 | 1 | 7 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `██░░░░░░░░░░░░░░░░░░` 8% | 0 | 0 | 1 | 1 | 7 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `████░░░░░░░░░░░░░░░░` 22% | 0 | 1 | 2 | 1 | 5 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -25,9 +25,11 @@
 |---|---|---|---|---|
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.6 | 🔄 In progress | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; | O (+F gates, FL evidence) | Complete build + evidence |
-| P1.7 | 🔄 In progress | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | Complete build + evidence |
+| P1.7 | 🔍 In review | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | Apply review findings / approve |
 | P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
-| P4.1 | 🔄 In progress | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Complete build + evidence |
+| P4.1 | 🔍 In review | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Apply review findings / approve |
+| P4.2 | 🔄 In progress | `visual.type=statement` contract + presenter emit (multi-FY) | O | Complete build + evidence |
+| P4.3 | 🔨 Built (pre-G4) | `StatementTable` renderer | F | Run G4 review → docs/reviews/<step>.md |
 | P4.9 | 🔨 Built (pre-G4) | Orb visible in docked mode + optional edge aura (low priority, V21) | F | Run G4 review → docs/reviews/<step>.md |
 
 **Ready to start:**
@@ -127,8 +129,8 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:⬜ P1.11:⬜ P5.1:⬜ P5.3:⬜ |
 | BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:⬜ |
 | BUG-07 | open | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:🔄 |
-| BUG-08 | open | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:🔄 |
-| BUG-09 | open | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:🔄 |
+| BUG-08 | open | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:🔍 |
+| BUG-09 | open | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:🔍 |
 | BUG-10 | open | "Can you export this as an Excel file" not understood | P2H.4 | P2H.4:⬜ |
 | BUG-11 | open | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 r | P2H.4 | P2H.4:⬜ |
 | BUG-12 | open | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 3310 | P2H.4, P5.1 | P2H.4:⬜ P5.1:⬜ |
@@ -139,6 +141,9 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `bf679b7` | 2026-10-24 | P4.3 (pre-G4) + P4.2 TS types: StatementTable renderer (sticky wrapping labels, latest-first FY + unit row, tabular Indian figures |
+| `b2c0eeb` | 2026-10-24 | P1.7 (pre-G4): anchor tables from real ARs (segment, production, reserves, hr_aggregates, realisation) |
+| `3fe4973` | 2026-10-24 | P4.1 (pre-G4) backend: signed P&L bridge, kind precedence, re-plot & false-success fix |
 | `61ddef0` | 2026-10-24 | P4.9 (pre-G4): Siri-like orb visible in docked/fullscreen while listening/thinking/speaking (same mic-button/stop-speaking testids |
 | `4433ffc` | 2026-10-24 | P4.1 (pre-G4) frontend: bridge.ts (signed P&L bridge from shared classes JSON), compat.replot statement/typed-waterfall path, dele |
 | `632b5b7` | 2026-10-24 | P4.1a (pre-G4): shared bridge contract + fixtures |
@@ -151,9 +156,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `7c0f7f3` | 2026-10-23 | P1.8 (pre-G4): real AR text chunker (8 ARs, 8,712 page-bounded chunks, section/note/keyword tags), text-embedding-005 load to new  |
 | `02d41b2` | 2026-10-23 | P1.5 (pre-G4): Yahoo loader (offline JSON parse, polite fetcher, exit 3 on 429) + D-45 provider chain Yahoo->NSE archive->manual s |
 | `fa3abb4` | 2026-10-23 | P1.4 (G4 r2 fixes): flag FY23 S C&CE filing defect (cf_cce_filing_defect, no line code) + test; PaidUp -> OTH.PAID_UP_CAPITAL; Seg |
-| `6a7985b` | 2026-10-23 | P1.4 (pre-G4): NSE XBRL parser (12 files, FY18-FY21/FY23-FY24 S+C; lxml, FourD/OneD/OneI by context name), tag->line-code map prop |
-| `9911844` | 2026-10-23 | P0.10 (G4 r2): voice barge-in off by default (BUG-41) |
-| `acea15a` | 2026-10-23 | P1.2 (pre-G4): deterministic AR 10-yr table parser (AR FY26/FY24/FY22 standalone, FY13-FY26), page/folio index, token parser, V09  |
 
 ## 8. Integrity checks
 
