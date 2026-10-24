@@ -48,13 +48,22 @@ def test_voice_smoke_six_utterances():
         assert exp.get("verbatim_tts_match") is True
 
 
-def test_legacy_stress_test_archived_and_offline_runner_passes():
+def test_legacy_stress_test_archived_and_offline_runner_passes(tmp_path):
     archived = REPO_ROOT / "docs" / "archive" / "v2_2026-10-22" / "run_30x4_stress_test.py"
     assert archived.exists(), "Legacy run_30x4_stress_test.py must be archived (SPEC-11 AC-07)"
 
-    report_path = GOLDEN_DIR / "report.md"
+    report_path = tmp_path / "report.md"
+    json_path = tmp_path / "report.json"
     result = subprocess.run(
-        [sys.executable, str(GOLDEN_DIR / "run_golden.py"), "--offline-subset", "--report", str(report_path)],
+        [
+            sys.executable,
+            str(GOLDEN_DIR / "run_golden.py"),
+            "--offline-subset",
+            "--report",
+            str(report_path),
+            "--json-report",
+            str(json_path),
+        ],
         cwd=str(BACKEND_DIR),
         capture_output=True,
         text=True,

@@ -2,18 +2,18 @@ import re
 import time
 from typing import Dict, Any, Optional, Tuple
 
-# DPE 3rd PRC / ONGC Executive Pay Scales (effective 01-Jan-2017, INR per month)
+# DPE 3rd PRC (OM W-02/0028/2017-DPE(WC)-GL-XIII/17 dated 03-Aug-2017) & ONGC dim_grade (world_bible/reference/grades.yaml)
 _PRC_PAY_SCALES: Dict[str, Tuple[int, int, str]] = {
-    "E0": (30000, 120000, "Jr. Officer / Asst. Executive (E0)"),
-    "E1": (60000, 180000, "Assistant Executive Engineer / Officer (E1)"),
-    "E2": (70000, 200000, "Executive Engineer / Officer (E2)"),
-    "E3": (80000, 220000, "Sr. Executive Engineer / Dy. Manager (E3)"),
-    "E4": (90000, 240000, "Manager / Superintending Engineer (E4)"),
-    "E5": (100000, 260000, "Chief Manager / Chief Engineer (E5)"),
-    "E6": (120000, 280000, "Deputy General Manager (E6)"),
-    "E7": (120000, 280000, "General Manager (E7)"),
-    "E8": (120000, 280000, "Chief General Manager (E8)"),
-    "E9": (150000, 300000, "Executive Director (E9)"),
+    "E0": (30000, 120000, "Assistant Officer / Graduate Trainee (E0)"),
+    "E1": (60000, 180000, "Assistant Executive Engineer (AEE) / Officer (E1)"),
+    "E2": (70000, 200000, "Assistant Executive Engineer (AEE) / Deputy Manager (E2)"),
+    "E3": (80000, 220000, "Executive Engineer (EE) / Manager (E3)"),
+    "E4": (90000, 240000, "Superintending Engineer (SE) / Chief Manager (E4)"),
+    "E5": (100000, 260000, "Deputy General Manager (DGM) (E5)"),
+    "E6": (120000, 280000, "Joint General Manager (JGM) / Addl. GM (E6)"),
+    "E7": (120000, 280000, "General Manager (GM) (E7)"),
+    "E8": (130000, 280000, "Chief General Manager (CGM) (E8)"),
+    "E9": (150000, 300000, "Executive Director (ED) / Group General Manager (E9)"),
 }
 
 
@@ -136,8 +136,8 @@ def _handle_entry_pay_or_breakdown(
         "sources": [
             {
                 "kind": "policy",
-                "doc_id": "ONGC Pay Revision Order (3rd PRC)",
-                "title": "DPE 3rd PRC Executive Pay Scales & Allowances (w.e.f. 01-Jan-2017)",
+                "doc_id": "DPE OM 03-Aug-2017 & ONGC dim_grade (3rd PRC)",
+                "title": "DPE 3rd PRC Executive Pay Scales (OM W-02/0028/2017-DPE(WC) dated 03-Aug-2017; world_bible/reference/grades.yaml)",
                 "clause": "Clause 1.0–4.0",
             }
         ],
@@ -167,17 +167,20 @@ def handle_policy(query: str, session_state: Any, norm_persona: str, det_lang: s
     if sal_contract is not None:
         return sal_contract
 
-    policy_Match = bool(re.search(
-        r"\b(casual\s+leaves?|special\s+casual|earned\s+leaves?|half\s+pay\s+leaves?|commuted\s+leaves?|"
-        r"maternity\s+leaves?|paternity\s+leaves?|child\s+care\s+leaves?|study\s+leaves?|extraordinary\s+leaves?|"
-        r"quarantine\s+leaves?|sabbatical|compensatory\s+off|comp\s+off|leave\s+rules?|leave\s+policy|"
-        r"leave\s+encashment|encash\s+leave|leased\s+accommodation|self\s+lease|ta\s*/?\s*da|travel\s+entitlement|"
-        r"furniture\s+scheme|furniture\s+allowance|laptop\s+reimbursement|laptop\s+allowance|"
-        r"house\s+building\s+advance|car\s+advance|conveyance\s+advance|prbs|post\s+retirement\s+medical|"
-        r"asha\s+kiran|book\s+of\s+delegated\s+powers|delegated\s+powers|financial\s+powers|"
-        r"resignation\s+notice|probation\s+period)\b",
-        q_clean,
-    )) or q_clean in ("leave", "leave. casual leave", "casual leave", "leaves", "what is the leave policy") or ("relevant policy rules" in q_clean or "policy guidelines" in q_clean or q_clean == "what are the relevant policy rules")
+    policy_Match = bool(
+        re.search(
+            r"\b(casual\s+leaves?|special\s+casual|earned\s+leaves?|half\s+pay\s+leaves?|commuted\s+leaves?|"
+            r"maternity\s+leaves?|paternity\s+leaves?|child\s+care\s+leaves?|study\s+leaves?|extraordinary\s+leaves?|"
+            r"quarantine\s+leaves?|sabbatical|compensatory\s+off|comp\s+off|leave\s+rules?|leave\s+policy|"
+            r"leave\s+encashment|encash\s+leave|leased\s+accommodation|self\s+lease|ta\s*/?\s*da|travel\s+entitlement|"
+            r"furniture\s+scheme|furniture\s+allowance|laptop\s+reimbursement|laptop\s+allowance|"
+            r"house\s+building\s+advance|car\s+advance|conveyance\s+advance|prbs|post\s+retirement\s+medical|"
+            r"asha\s+kiran|book\s+of\s+delegated\s+powers|delegated\s+powers|financial\s+powers|"
+            r"resignation\s+notice|probation\s+period|relevant\s+policy\s+rules|policy\s+guidelines)\b",
+            q_clean,
+        )
+        or re.fullmatch(r"(?:leave|leaves|leave\.\s*casual\s+leave|what\s+is\s+the\s+leave\s+policy)", q_clean)
+    )
 
     if not policy_Match:
         return None
@@ -229,7 +232,7 @@ def handle_policy(query: str, session_state: Any, norm_persona: str, det_lang: s
                 "doc_id": doc_id,
                 "doc_title": doc_title,
                 "clause_ref": clause_ref,
-                "effective_date": "2026-01-01",
+                **({"effective_date": c0["effective_date"]} if c0.get("effective_date") else {}),
                 "source_type": "official" if c0.get("provenance") == "real" else "reconstruction",
                 "provenance": c0.get("provenance", "illustrative"),
                 "text": text,

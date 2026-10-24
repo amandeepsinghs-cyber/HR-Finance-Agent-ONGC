@@ -4,12 +4,22 @@ from typing import List, Set, Tuple
 
 logger = logging.getLogger(__name__)
 
-_NUM = re.compile(r"(?<![A-Za-z])[−-]?\d[\d,]*(?:\.\d+)?")
+_NUM = re.compile(r"(?<![A-Za-z\d])[−-]?\d[\d,]*(?:\.\d+)?")
 _QUOTE = re.compile(r'"([^"]*)"\s*\[AR\s*FY\d{2}(?:\s+PDF)?\s*p\.[^\]]+\]')
-# SPEC-11 §5: Narrator rejects ungrounded coverage claims unless explicitly from the coverage manifest
+# SPEC-11 §5: Narrator rejects ungrounded coverage claims unless explicitly from the coverage manifest.
+# Anchored on data-availability semantics so analytic prose ("Net profit grew only 2% in FY2024.") is preserved.
 _COVERAGE_CLAIM_RE = re.compile(
-    r"\b(only|up\s+to|upto|until|not\s+available|don'?t\s+have|do\s+not\s+have|cannot\s+access)\b"
-    r".*\b(FY\s?\d{2,4}|20\d\d|data|balance\s+sheet|income\s+statement|cash\s+flow)\b",
+    r"(?:"
+    r"\b(?:data|figures|statements?|records?|balance\s+sheet|income\s+statement|cash\s+flow)\s+"
+    r"(?:is|are)?\s*(?:only\s+)?(?:available|present|loaded|exist\w*)?\s*(?:only\s+)?"
+    r"(?:up\s*to|upto|until|till|through)\s+(?:FY\s?\d{2,4}|20\d\d)"
+    r"|"
+    r"\b(?:only\s+have|have\s+only)\s+(?:data|figures|statements?|records?|balance\s+sheet|income\s+statement|cash\s+flow)\b"
+    r".*\b(?:up\s*to|upto|until|till|through|for)\s+(?:FY\s?\d{2,4}|20\d\d)"
+    r"|"
+    r"\b(?:not\s+available|unavailable|don'?t\s+have|do\s+not\s+have|cannot\s+access)\b"
+    r".*\b(?:FY\s?\d{2,4}|20\d\d|data|balance\s+sheet|income\s+statement|cash\s+flow)\b"
+    r")",
     re.I,
 )
 
@@ -55,7 +65,7 @@ def check_numeric_grounding(
             continue
 
         # Ignore FY years, grade tokens (E1..E9, W1..W7), and date tokens (e.g. 19-Oct-2026, 31 March)
-        clean_sent = re.sub(r"\bFY\s?\d{2}(?:\s?[-–]\s?\d{2})?\b", " ", sent, flags=re.I)
+        clean_sent = re.sub(r"\bFY\s?\d{2,4}(?:\s?[-–]\s?\d{2,4})?\b", " ", sent, flags=re.I)
         clean_sent = re.sub(
             r"\b\d{1,2}(?:st|nd|rd|th)?[\s-][A-Za-z]{3,9}(?:[\s-]\d{4}|\s+FY\d{2})?\b",
             " ",

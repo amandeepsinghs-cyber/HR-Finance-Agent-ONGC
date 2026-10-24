@@ -414,6 +414,7 @@ def main() -> int:
     parser.add_argument("--base-url", type=str, default="http://127.0.0.1:8095")
     parser.add_argument("--no-cache", action="store_true")
     parser.add_argument("--report", type=str, default=None)
+    parser.add_argument("--json-report", type=str, default=None)
     args = parser.parse_args()
 
     base_dir = Path(__file__).resolve().parent
@@ -430,7 +431,7 @@ def main() -> int:
 
     run_id = f"v3-golden-{int(time.time())}"
     out_md = Path(args.report) if args.report else (base_dir / "report.md")
-    out_json = base_dir / "report.json"
+    out_json = Path(args.json_report) if args.json_report else (out_md.with_suffix(".json") if args.report else (base_dir / "report.json"))
 
     if args.offline_subset or os.environ.get("YUKTI_OFFLINE_EVAL") == "1":
         results, metrics = asyncio.run(

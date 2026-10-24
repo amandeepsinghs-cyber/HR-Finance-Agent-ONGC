@@ -37,7 +37,7 @@ def test_partial_utterance_hold_bug17():
 
 
 def test_grounding_drops_ungrounded_coverage_claim_bug20():
-    """SPEC-11 §5 / BUG-20: Ungrounded 'only have data up to FY25' is stripped by grounding."""
+    """SPEC-11 §5 / BUG-20: Ungrounded 'only have data up to FY25' is stripped, while analytic 'only'/'up to' is preserved."""
     prose = (
         "Revenue from operations in FY25 was ₹1,37,846.29 Cr. "
         "I only have data up to FY25 and FY24 is not available in the database."
@@ -47,6 +47,16 @@ def test_grounding_drops_ungrounded_coverage_claim_bug20():
     assert "only have data" not in cleaned
     assert len(dropped) == 1
     assert "only have data" in dropped[0]
+
+    # True positive availability claim
+    c_tp, d_tp = check_numeric_grounding("Data is only available up to FY2023. Revenue was 5.", {5.0})
+    assert c_tp == "Revenue was 5."
+    assert len(d_tp) == 1
+
+    # False positive regression: analytic prose with 'only' + FY/year must NOT be dropped
+    c_fp, d_fp = check_numeric_grounding("Net profit grew only 2% in FY2024. Revenue was 5.", {2.0, 5.0})
+    assert c_fp == "Net profit grew only 2% in FY2024. Revenue was 5."
+    assert d_fp == []
 
 
 def test_hindi_and_hinglish_narration_bug19_beh07_35():
