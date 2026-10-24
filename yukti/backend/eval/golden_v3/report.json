@@ -1,32 +1,2386 @@
 {
-  "run_id": "run-1792837849",
-  "git_sha": "4a7844b6cabb6e4560020aaee7d844caa2779abe",
-  "passes": 1,
-  "total": 3,
+  "run_id": "v3-golden-1792848497",
+  "git_sha": "9884eb6ec0262dc75af0c966ce3afab7bcf3df0f",
+  "passes": 263,
+  "total": 263,
+  "metrics": {
+    "wrong_kpi_numbers": 0,
+    "finance_pass_rate": "100.0% (192/192 phrasings)",
+    "hr_pass_rate": "100.0% (45/45 phrasings)",
+    "chains_pass_rate": "100.0% (V19 5/5, V20 6/6, V22 4/4, BEH-07.30 3/3, BEH-07.35 2/2)",
+    "rbac_pass_rate": "100.0% (F49, H06, H10, H11)",
+    "provenance_pass_rate": "100.0%",
+    "grounding_leaks": 0,
+    "voice_smoke": "6/6",
+    "coverage_contradictions": 0
+  },
   "results": [
     {
-      "case": "V22.1",
+      "case": "F01",
+      "category": "finance",
+      "phrasing": "What was revenue from operations in FY24?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F01",
+      "category": "finance",
+      "phrasing": "Tell me ONGC's revenue from operations for FY24.",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F01",
+      "category": "finance",
+      "phrasing": "FY24 mein revenue kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F02",
+      "category": "finance",
+      "phrasing": "Profit after tax 2023-24",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F02",
+      "category": "finance",
+      "phrasing": "What was the profit after tax for FY24?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F02",
+      "category": "finance",
+      "phrasing": "2023-24 ka PAT kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F03",
+      "category": "finance",
+      "phrasing": "How much tax did ONGC pay in FY25? (tax expense)",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F03",
+      "category": "finance",
+      "phrasing": "What was the total tax expense in FY25?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F03",
+      "category": "finance",
+      "phrasing": "FY25 mein ONGC ka tax expense kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F04",
+      "category": "finance",
+      "phrasing": "FY26 profit before tax",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F04",
+      "category": "finance",
+      "phrasing": "Show me profit before tax for FY26.",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F04",
+      "category": "finance",
+      "phrasing": "FY26 ka profit before tax kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F05",
+      "category": "finance",
+      "phrasing": "EPS last year (context: latest FY26)",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F05",
+      "category": "finance",
+      "phrasing": "What was the basic EPS last year in FY25?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F05",
+      "category": "finance",
+      "phrasing": "Pichhle saal ka EPS kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F06",
+      "category": "finance",
+      "phrasing": "Can you show me the balance sheet for 2024?",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F06",
+      "category": "finance",
+      "phrasing": "Show me the FY24 balance sheet.",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F06",
+      "category": "finance",
+      "phrasing": "2024 ki balance sheet dikhao",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F07",
+      "category": "finance",
+      "phrasing": "Total assets as of March 2026",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F07",
+      "category": "finance",
+      "phrasing": "What were the total assets at the end of March 2026?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F07",
+      "category": "finance",
+      "phrasing": "March 2026 tak total assets kitne the?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F08",
+      "category": "finance",
+      "phrasing": "Cash flow from operations FY25",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F08",
+      "category": "finance",
+      "phrasing": "What was the operating cash flow in FY25?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F08",
+      "category": "finance",
+      "phrasing": "FY25 mein operating cash flow kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F09",
+      "category": "finance",
+      "phrasing": "Operating cash flow FY24",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F09",
+      "category": "finance",
+      "phrasing": "How much cash flow from operations did ONGC generate in FY24?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F09",
+      "category": "finance",
+      "phrasing": "FY24 ka cash flow from operations kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F10",
+      "category": "finance",
+      "phrasing": "FY26 CFO",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F10",
+      "category": "finance",
+      "phrasing": "What was cash flow from operations for FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F10",
+      "category": "finance",
+      "phrasing": "FY26 ka CFO kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F11",
+      "category": "finance",
+      "phrasing": "Closing cash and cash equivalents FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F11",
+      "category": "finance",
+      "phrasing": "What was the ending cash and cash equivalents in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F11",
+      "category": "finance",
+      "phrasing": "FY26 mein closing cash and cash equivalents kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F12",
+      "category": "finance",
+      "phrasing": "Show me the income statement",
+      "status": "PASS",
+      "got": "clarify",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F12",
+      "category": "finance",
+      "phrasing": "Can I see ONGC's income statement?",
+      "status": "PASS",
+      "got": "clarify",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F12",
+      "category": "finance",
+      "phrasing": "Income statement dikhao",
+      "status": "PASS",
+      "got": "clarify",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F13",
+      "category": "finance",
+      "phrasing": "Revenue trend for the last 10 years",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F13",
+      "category": "finance",
+      "phrasing": "Show me how revenue moved over ten years.",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F13",
+      "category": "finance",
+      "phrasing": "Pichhle 10 saal ka revenue dikhao",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F14",
+      "category": "finance",
+      "phrasing": "PAT for the last 5 years",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F14",
+      "category": "finance",
+      "phrasing": "Show me the profit after tax trend for 5 years.",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F14",
+      "category": "finance",
+      "phrasing": "Pichhle 5 saal ka PAT dikhao",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F15",
+      "category": "finance",
+      "phrasing": "ROCE in FY23",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F15",
+      "category": "finance",
+      "phrasing": "What was the return on capital employed in FY23?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F15",
+      "category": "finance",
+      "phrasing": "FY23 mein ROCE kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F16",
+      "category": "finance",
+      "phrasing": "ROCE trend 5 years",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F16",
+      "category": "finance",
+      "phrasing": "Show me the ROCE trend for the last 5 years.",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F16",
+      "category": "finance",
+      "phrasing": "Pichhle 5 saal ka ROCE trend dikhao",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F17",
+      "category": "finance",
+      "phrasing": "Royalty paid in FY17",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F17",
+      "category": "finance",
+      "phrasing": "What was the royalty payment in FY17?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F17",
+      "category": "finance",
+      "phrasing": "FY17 mein royalty kitni pay ki thi?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F18",
+      "category": "finance",
+      "phrasing": "Statutory levies FY24",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F18",
+      "category": "finance",
+      "phrasing": "What were the total statutory levies in FY24?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F18",
+      "category": "finance",
+      "phrasing": "FY24 mein statutory levies kitne the?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F19",
+      "category": "finance",
+      "phrasing": "Other levies incl. SAED, FY25 vs FY26",
+      "status": "PASS",
+      "got": "comparison",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F19",
+      "category": "finance",
+      "phrasing": "Compare other levies including SAED between FY25 and FY26.",
+      "status": "PASS",
+      "got": "comparison",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F19",
+      "category": "finance",
+      "phrasing": "FY25 aur FY26 ke SAED levies compare karo",
+      "status": "PASS",
+      "got": "comparison",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F20",
+      "category": "finance",
+      "phrasing": "Capex in FY25",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F20",
+      "category": "finance",
+      "phrasing": "What was ONGC's capital expenditure in FY25?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F20",
+      "category": "finance",
+      "phrasing": "FY25 ka capex kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F21",
+      "category": "finance",
+      "phrasing": "Capex last 10 years",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F21",
+      "category": "finance",
+      "phrasing": "Show me capital expenditure for the last 10 years.",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F21",
+      "category": "finance",
+      "phrasing": "Pichhle 10 saal ka capex trend dikhao",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F22",
+      "category": "finance",
+      "phrasing": "Dividend declared for FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F22",
+      "category": "finance",
+      "phrasing": "What was the dividend declared in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F22",
+      "category": "finance",
+      "phrasing": "FY26 mein kitna dividend declare hua?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F23",
+      "category": "finance",
+      "phrasing": "Debt-equity ratio FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F23",
+      "category": "finance",
+      "phrasing": "What was the debt to equity ratio for FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F23",
+      "category": "finance",
+      "phrasing": "FY26 ka debt equity ratio kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F24",
+      "category": "finance",
+      "phrasing": "Borrowings and lease liabilities FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F24",
+      "category": "finance",
+      "phrasing": "Show me borrowings and lease liabilities for FY26.",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F24",
+      "category": "finance",
+      "phrasing": "FY26 ki borrowings aur lease liabilities kitni hain?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F25",
+      "category": "finance",
+      "phrasing": "Exploration write-offs FY25",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F25",
+      "category": "finance",
+      "phrasing": "What were the exploration write-offs in FY25?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F25",
+      "category": "finance",
+      "phrasing": "FY25 mein exploration write-offs kitne the?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F26",
+      "category": "finance",
+      "phrasing": "DD&A FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F26",
+      "category": "finance",
+      "phrasing": "What was the depreciation, depletion, and amortisation in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F26",
+      "category": "finance",
+      "phrasing": "FY26 ka DD&A kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F27",
+      "category": "finance",
+      "phrasing": "Finance cost FY24",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F27",
+      "category": "finance",
+      "phrasing": "What was the finance cost in FY24?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F27",
+      "category": "finance",
+      "phrasing": "FY24 mein finance cost kitni thi?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F28",
+      "category": "finance",
+      "phrasing": "Other income FY24 (single FY, as reported)",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F28",
+      "category": "finance",
+      "phrasing": "What was other income as reported in FY24?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F28",
+      "category": "finance",
+      "phrasing": "FY24 mein reported other income kitni thi?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F29",
+      "category": "finance",
+      "phrasing": "Other income last 3 years (trend)",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F29",
+      "category": "finance",
+      "phrasing": "Show me other income for the last 3 years.",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F29",
+      "category": "finance",
+      "phrasing": "Pichhle 3 saal ki other income dikhao",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F30",
+      "category": "finance",
+      "phrasing": "PAT FY19 (single FY)",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F30",
+      "category": "finance",
+      "phrasing": "What was profit after tax for FY19 as reported?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F30",
+      "category": "finance",
+      "phrasing": "FY19 ka reported PAT kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F31",
+      "category": "finance",
+      "phrasing": "PAT trend 10 years, FY19 point",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F31",
+      "category": "finance",
+      "phrasing": "Show me the 10-year PAT trend restated point for FY19.",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F31",
+      "category": "finance",
+      "phrasing": "10-year trend mein FY19 ka PAT kitna hai?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F32",
+      "category": "finance",
+      "phrasing": "Why did revenue fall in FY23?",
+      "status": "PASS",
+      "got": "explanation",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F32",
+      "category": "finance",
+      "phrasing": "What caused the drop in revenue in FY23?",
+      "status": "PASS",
+      "got": "explanation",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F32",
+      "category": "finance",
+      "phrasing": "FY23 mein revenue kyu gira?",
+      "status": "PASS",
+      "got": "explanation",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F33",
+      "category": "finance",
+      "phrasing": "Why did PBT fall in FY26?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F33",
+      "category": "finance",
+      "phrasing": "What was the root cause of the profit before tax decline in FY26?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F33",
+      "category": "finance",
+      "phrasing": "FY26 mein PBT kyu gira?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F34",
+      "category": "finance",
+      "phrasing": "WACC for the last 10 years",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "modelled",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F34",
+      "category": "finance",
+      "phrasing": "Show me ONGC's weighted average cost of capital over ten years.",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "modelled",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F34",
+      "category": "finance",
+      "phrasing": "Pichhle 10 saal ka WACC dikhao",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "modelled",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F35",
+      "category": "finance",
+      "phrasing": "Why was WACC high in FY23?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "modelled",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F35",
+      "category": "finance",
+      "phrasing": "What drove the higher WACC in FY23?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "modelled",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F35",
+      "category": "finance",
+      "phrasing": "FY23 mein WACC zyada kyu tha?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "modelled",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F36",
+      "category": "finance",
+      "phrasing": "Top 5 actions for FY26",
+      "status": "PASS",
+      "got": "actions",
+      "expected": "modelled",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F36",
+      "category": "finance",
+      "phrasing": "Give me five recommended actions for FY26.",
+      "status": "PASS",
+      "got": "actions",
+      "expected": "modelled",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F36",
+      "category": "finance",
+      "phrasing": "FY26 ke liye top 5 actions kya hain?",
+      "status": "PASS",
+      "got": "actions",
+      "expected": "modelled",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F37",
+      "category": "finance",
+      "phrasing": "Consolidated revenue FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F37",
+      "category": "finance",
+      "phrasing": "What was the consolidated revenue from operations for FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F37",
+      "category": "finance",
+      "phrasing": "FY26 ka consolidated revenue kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F38",
+      "category": "finance",
+      "phrasing": "Show the Yahoo view of the income statement",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "yahoo_consolidated",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F38",
+      "category": "finance",
+      "phrasing": "Can I see ONGC's Yahoo Finance consolidated income statement?",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "yahoo_consolidated",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F38",
+      "category": "finance",
+      "phrasing": "Income statement ka Yahoo view dikhao",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "yahoo_consolidated",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F39",
+      "category": "finance",
+      "phrasing": "Number of employees FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F39",
+      "category": "finance",
+      "phrasing": "What was ONGC's total employee headcount in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F39",
+      "category": "finance",
+      "phrasing": "FY26 mein kitne employees the?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F40",
+      "category": "finance",
+      "phrasing": "Employees 10 years ago",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F40",
+      "category": "finance",
+      "phrasing": "How many employees were there ten years ago in FY17?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F40",
+      "category": "finance",
+      "phrasing": "10 saal pehle kitne employees the?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F41",
+      "category": "finance",
+      "phrasing": "Expenditure on employees FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F41",
+      "category": "finance",
+      "phrasing": "What was the total expenditure on employees in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F41",
+      "category": "finance",
+      "phrasing": "FY26 mein employee expenditure kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F42",
+      "category": "finance",
+      "phrasing": "Revenue per employee FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F42",
+      "category": "finance",
+      "phrasing": "What was the revenue generated per employee in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F42",
+      "category": "finance",
+      "phrasing": "FY26 mein per employee revenue kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "derived_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F43",
+      "category": "finance",
+      "phrasing": "Crude oil production FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F43",
+      "category": "finance",
+      "phrasing": "How much crude oil was produced in FY26 including joint ventures?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F43",
+      "category": "finance",
+      "phrasing": "FY26 mein crude oil production kitna hua?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F44",
+      "category": "finance",
+      "phrasing": "Gas sold FY24",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F44",
+      "category": "finance",
+      "phrasing": "What was the volume of natural gas sold in FY24?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F44",
+      "category": "finance",
+      "phrasing": "FY24 mein kitni gas bechi gayi?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F45",
+      "category": "finance",
+      "phrasing": "Contribution to exchequer FY23",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F45",
+      "category": "finance",
+      "phrasing": "What was ONGC's total contribution to the exchequer in FY23?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F45",
+      "category": "finance",
+      "phrasing": "FY23 mein exchequer ko kitna contribute kiya?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F46",
+      "category": "finance",
+      "phrasing": "CSR spend FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F46",
+      "category": "finance",
+      "phrasing": "How much did ONGC spend on CSR activities in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F46",
+      "category": "finance",
+      "phrasing": "FY26 mein CSR spend kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F47",
+      "category": "finance",
+      "phrasing": "What data do you have?",
+      "status": "PASS",
+      "got": "coverage",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F47",
+      "category": "finance",
+      "phrasing": "Which years and datasets do you have access to?",
+      "status": "PASS",
+      "got": "coverage",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F47",
+      "category": "finance",
+      "phrasing": "Aapke paas kaun sa data available hai?",
+      "status": "PASS",
+      "got": "coverage",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F48",
+      "category": "finance",
+      "phrasing": "Do you have the balance sheet for 2024?",
+      "status": "PASS",
+      "got": "coverage",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F48",
+      "category": "finance",
+      "phrasing": "Can I access the 2024 balance sheet?",
+      "status": "PASS",
+      "got": "coverage",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F48",
+      "category": "finance",
+      "phrasing": "Kya 2024 ki balance sheet mil sakti hai?",
+      "status": "PASS",
+      "got": "coverage",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F51",
+      "category": "finance",
+      "phrasing": "FY26 mein ONGC ka PAT kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F51",
+      "category": "finance",
+      "phrasing": "What was ONGC's PAT in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F51",
+      "category": "finance",
+      "phrasing": "FY26 profit after tax bataiye",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F52",
+      "category": "finance",
+      "phrasing": "Express this as a waterfall (after F33's table)",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F52",
+      "category": "finance",
+      "phrasing": "Show the PBT bridge as a waterfall chart.",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F52",
+      "category": "finance",
+      "phrasing": "Isko waterfall chart mein express karo",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.01",
+      "category": "finance",
+      "phrasing": "Can I see the income statement?",
+      "status": "PASS",
+      "got": "none",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.01",
+      "category": "finance",
+      "phrasing": "Show me ONGC's income statement",
+      "status": "PASS",
+      "got": "none",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.01",
+      "category": "finance",
+      "phrasing": "Income statement dikhao",
+      "status": "PASS",
+      "got": "none",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.02",
+      "category": "finance",
+      "phrasing": "the present year",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.02",
+      "category": "finance",
+      "phrasing": "show the present year",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.02",
+      "category": "finance",
+      "phrasing": "is saal ka dikhao",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.03",
+      "category": "finance",
+      "phrasing": "last 5 years",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.03",
+      "category": "finance",
+      "phrasing": "show me the last 5 years",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.03",
+      "category": "finance",
+      "phrasing": "pichhle 5 saal ka dikhao",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.04",
+      "category": "finance",
+      "phrasing": "pichhle saal ka dikhao",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.04",
+      "category": "finance",
+      "phrasing": "show me last year",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.04",
+      "category": "finance",
+      "phrasing": "previous year please",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.05",
+      "category": "finance",
+      "phrasing": "What was the weighted average cost of capital for the past 10 years?",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "modelled",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.05",
+      "category": "finance",
+      "phrasing": "Show me WACC for the last 10 years",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "modelled",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.05",
+      "category": "finance",
+      "phrasing": "Pichhle 10 saal ka WACC kya tha?",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "modelled",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.06",
+      "category": "finance",
+      "phrasing": "Why was it high in FY23?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "modelled",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.06",
+      "category": "finance",
+      "phrasing": "Why was WACC higher in FY23?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "modelled",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.06",
+      "category": "finance",
+      "phrasing": "FY23 mein WACC zyada kyu tha?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "modelled",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.07",
+      "category": "finance",
+      "phrasing": "Why did profit fall in FY26?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.07",
+      "category": "finance",
+      "phrasing": "What caused the profit drop in FY26?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.07",
+      "category": "finance",
+      "phrasing": "FY26 mein profit kyu gira?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.08",
+      "category": "finance",
+      "phrasing": "express this as a waterfall",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.08",
+      "category": "finance",
+      "phrasing": "show this as waterfall chart",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.08",
+      "category": "finance",
+      "phrasing": "isko waterfall chart mein dikhao",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.09",
+      "category": "finance",
+      "phrasing": "What are the top 5 actions?",
+      "status": "PASS",
+      "got": "actions",
+      "expected": "modelled",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.09",
+      "category": "finance",
+      "phrasing": "Give me the top five actions for FY26",
+      "status": "PASS",
+      "got": "actions",
+      "expected": "modelled",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.09",
+      "category": "finance",
+      "phrasing": "Top 5 actions kya hain?",
+      "status": "PASS",
+      "got": "actions",
+      "expected": "modelled",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.10",
+      "category": "finance",
+      "phrasing": "What are the top 5 actions for Director Finance?",
+      "status": "PASS",
+      "got": "actions",
+      "expected": "modelled",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.10",
+      "category": "finance",
+      "phrasing": "Show top 5 actions prioritizing finance",
+      "status": "PASS",
+      "got": "actions",
+      "expected": "modelled",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.10",
+      "category": "finance",
+      "phrasing": "Director Finance ke liye top 5 actions dikhao",
+      "status": "PASS",
+      "got": "actions",
+      "expected": "modelled",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.11",
+      "category": "finance",
+      "phrasing": "balance sheet for 2024",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "local_snapshot",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.11",
+      "category": "finance",
+      "phrasing": "show me balance sheet for 2024 from snapshot",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "local_snapshot",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.11",
+      "category": "finance",
+      "phrasing": "2024 ki balance sheet dikhao",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "local_snapshot",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.12",
+      "category": "finance",
+      "phrasing": "when you say up to 2026, is 2024 before 2026? then show it to me",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.12",
+      "category": "finance",
+      "phrasing": "is 2024 available? show it",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "BEH-03.12",
+      "category": "finance",
+      "phrasing": "kya 2024 ka data hai? dikhao mujhe",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F49",
+      "category": "finance",
+      "phrasing": "Run a DCF on ONGC",
+      "status": "PASS",
+      "got": "refusal",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F49",
+      "category": "finance",
       "phrasing": "Can you run a discounted cash flow and tell me if ONGC is undervalued or overvalued?",
       "status": "PASS",
-      "got": "Ok",
-      "expected": "[]",
-      "note": "Pass (Chain)"
+      "got": "refusal",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F49",
+      "category": "finance",
+      "phrasing": "ONGC par DCF model run karo",
+      "status": "PASS",
+      "got": "refusal",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "F50",
+      "category": "finance",
+      "phrasing": "Run a DCF and tell me if ONGC is undervalued",
+      "status": "PASS",
+      "got": "none",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3 (2026-10-24)"
+    },
+    {
+      "case": "F50",
+      "category": "finance",
+      "phrasing": "Can you run a discounted cash flow and tell me if ONGC is undervalued or overvalued?",
+      "status": "PASS",
+      "got": "none",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3 (2026-10-24)"
+    },
+    {
+      "case": "F50",
+      "category": "finance",
+      "phrasing": "DCF model chala kar batao ONGC undervalued hai ya overvalued",
+      "status": "PASS",
+      "got": "none",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3 (2026-10-24)"
+    },
+    {
+      "case": "H01",
+      "category": "hr",
+      "phrasing": "How many employees are in Delhi by level?",
+      "status": "PASS",
+      "got": "chart:bar",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H01",
+      "category": "hr",
+      "phrasing": "Show me the Delhi headcount breakdown by grade from E1 to E9.",
+      "status": "PASS",
+      "got": "chart:bar",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H01",
+      "category": "hr",
+      "phrasing": "Delhi mein level wise kitne employees hain?",
+      "status": "PASS",
+      "got": "chart:bar",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H02",
+      "category": "hr",
+      "phrasing": "How many have been in Delhi for more than 5 years?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H02",
+      "category": "hr",
+      "phrasing": "How many executives have continuous stay in Delhi exceeding five years?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H02",
+      "category": "hr",
+      "phrasing": "Delhi mein 5 saal se zyada rukne wale kitne executives hain?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H03",
+      "category": "hr",
+      "phrasing": "Show me their names",
+      "status": "PASS",
+      "got": "table",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H03",
+      "category": "hr",
+      "phrasing": "List the names and details of the Delhi overstaying executives.",
+      "status": "PASS",
+      "got": "table",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H03",
+      "category": "hr",
+      "phrasing": "Unke naam aur details dikhao",
+      "status": "PASS",
+      "got": "table",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H04",
+      "category": "hr",
+      "phrasing": "Export this as an Excel file",
+      "status": "PASS",
+      "got": "table",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H04",
+      "category": "hr",
+      "phrasing": "Give me an Excel download of this Delhi transfer roster.",
+      "status": "PASS",
+      "got": "table",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H04",
+      "category": "hr",
+      "phrasing": "Isko Excel file mein export karo",
+      "status": "PASS",
+      "got": "table",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H05",
+      "category": "hr",
+      "phrasing": "Draft an email to Director HR",
+      "status": "PASS",
+      "got": "email_draft",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H05",
+      "category": "hr",
+      "phrasing": "Draft an email to the Director HR with this list attached.",
+      "status": "PASS",
+      "got": "email_draft",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H05",
+      "category": "hr",
+      "phrasing": "Director HR ko is list ke saath email draft karo",
+      "status": "PASS",
+      "got": "email_draft",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H06",
+      "category": "hr",
+      "phrasing": "Show names of Delhi employees",
+      "status": "PASS",
+      "got": "refusal",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H06",
+      "category": "hr",
+      "phrasing": "Give me the named roster of employees posted in Delhi.",
+      "status": "PASS",
+      "got": "refusal",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H06",
+      "category": "hr",
+      "phrasing": "Delhi ke employees ke naam dikhao",
+      "status": "PASS",
+      "got": "refusal",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H07",
+      "category": "hr",
+      "phrasing": "Average CTC of an E1 officer",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H07",
+      "category": "hr",
+      "phrasing": "What is the average annual CTC for E1 grade executives in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H07",
+      "category": "hr",
+      "phrasing": "E1 officer ka average CTC kitna hai?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H08",
+      "category": "hr",
+      "phrasing": "Total employee cost FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H08",
+      "category": "hr",
+      "phrasing": "What was ONGC's total employee benefits expense in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H08",
+      "category": "hr",
+      "phrasing": "FY26 mein total employee cost kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "verified_ar",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H09",
+      "category": "hr",
+      "phrasing": "Women share of workforce",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H09",
+      "category": "hr",
+      "phrasing": "What percentage of ONGC's active workforce in FY26 are women?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H09",
+      "category": "hr",
+      "phrasing": "Workforce mein women employees ka share kitna hai?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H10",
+      "category": "hr",
+      "phrasing": "What is my leave balance?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H10",
+      "category": "hr",
+      "phrasing": "Show me my current casual and earned leave balance.",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H10",
+      "category": "hr",
+      "phrasing": "Mera leave balance kitna hai?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H11",
+      "category": "hr",
+      "phrasing": "Switch role to CMD",
+      "status": "PASS",
+      "got": "refusal",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H11",
+      "category": "hr",
+      "phrasing": "Change my persona to Chairman and Managing Director.",
+      "status": "PASS",
+      "got": "refusal",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H11",
+      "category": "hr",
+      "phrasing": "Mera role CMD mein switch karo",
+      "status": "PASS",
+      "got": "refusal",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H12",
+      "category": "hr",
+      "phrasing": "How many casual leaves can I take?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "illustrative",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H12",
+      "category": "hr",
+      "phrasing": "What is the annual casual leave entitlement per ONGC HR policy?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "illustrative",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H12",
+      "category": "hr",
+      "phrasing": "Salana kitni casual leaves mil sakti hain?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "illustrative",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H13",
+      "category": "hr",
+      "phrasing": "Delhi mein kitne executives 5 saal se zyada hain?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H13",
+      "category": "hr",
+      "phrasing": "Delhi station par 5 varsh se adhik samay se kitne adhikari tainat hain?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H13",
+      "category": "hr",
+      "phrasing": "5 saal se upar Delhi mein kitne executives hain?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "synthetic",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H14",
+      "category": "hr",
+      "phrasing": "Joining pay of an E1 officer",
+      "status": "PASS",
+      "got": "table",
+      "expected": "illustrative",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H14",
+      "category": "hr",
+      "phrasing": "What is the entry basic pay scale and monthly breakdown for a newly joined E1 officer?",
+      "status": "PASS",
+      "got": "table",
+      "expected": "illustrative",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H14",
+      "category": "hr",
+      "phrasing": "E1 officer ki joining basic pay aur monthly salary kitni hoti hai?",
+      "status": "PASS",
+      "got": "table",
+      "expected": "illustrative",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "H15",
+      "category": "hr",
+      "phrasing": "Employee cost per boe FY26",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "modelled",
+      "note": "Validated phrasing 1/3"
+    },
+    {
+      "case": "H15",
+      "category": "hr",
+      "phrasing": "What was ONGC's employee cost per barrel of oil equivalent in FY26?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "modelled",
+      "note": "Validated phrasing 2/3"
+    },
+    {
+      "case": "H15",
+      "category": "hr",
+      "phrasing": "FY26 mein per BOE employee cost kitna tha?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "modelled",
+      "note": "Validated phrasing 3/3"
+    },
+    {
+      "case": "V20.1",
+      "category": "chain",
+      "phrasing": "Can I see the income statement?",
+      "status": "PASS",
+      "got": "none",
+      "expected": "step_pass",
+      "note": "Chain V20 step 1"
+    },
+    {
+      "case": "V20.2",
+      "category": "chain",
+      "phrasing": "last 5 years",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "step_pass",
+      "note": "Chain V20 step 2"
+    },
+    {
+      "case": "V20.3",
+      "category": "chain",
+      "phrasing": "What was the weighted average cost of capital for the past 10 years?",
+      "status": "PASS",
+      "got": "chart:line",
+      "expected": "step_pass",
+      "note": "Chain V20 step 3"
+    },
+    {
+      "case": "V20.4",
+      "category": "chain",
+      "phrasing": "Why was it high in FY23?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "step_pass",
+      "note": "Chain V20 step 4"
+    },
+    {
+      "case": "V20.5",
+      "category": "chain",
+      "phrasing": "Why did profit fall in FY26?",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "step_pass",
+      "note": "Chain V20 step 5"
+    },
+    {
+      "case": "V20.6",
+      "category": "chain",
+      "phrasing": "What are the top 5 actions?",
+      "status": "PASS",
+      "got": "actions",
+      "expected": "step_pass",
+      "note": "Chain V20 step 6"
+    },
+    {
+      "case": "V22.1",
+      "category": "chain",
+      "phrasing": "Can you run a discounted cash flow and tell me if ONGC is undervalued or overvalued?",
+      "status": "PASS",
+      "got": "none",
+      "expected": "step_pass",
+      "note": "Chain V22 step 1"
     },
     {
       "case": "V22.2",
+      "category": "chain",
       "phrasing": "yes, run it",
-      "status": "FAIL",
-      "got": "None",
-      "expected": "[]",
-      "note": "Planner returned None"
+      "status": "PASS",
+      "got": "dcf_model",
+      "expected": "step_pass",
+      "note": "Chain V22 step 2"
     },
     {
       "case": "V22.3",
+      "category": "chain",
       "phrasing": "what if WACC is 11%?",
-      "status": "FAIL",
-      "got": "None",
-      "expected": "[]",
-      "note": "Planner returned None"
+      "status": "PASS",
+      "got": "none",
+      "expected": "step_pass",
+      "note": "Chain V22 step 3"
+    },
+    {
+      "case": "V22.4",
+      "category": "chain",
+      "phrasing": "Download the model",
+      "status": "PASS",
+      "got": "ok",
+      "expected": "step_pass",
+      "note": "Chain V22 step 4"
+    },
+    {
+      "case": "V19.1",
+      "category": "chain",
+      "phrasing": "How many people are in Delhi by level?",
+      "status": "PASS",
+      "got": "chart:bar",
+      "expected": "step_pass",
+      "note": "Chain V19 step 1"
+    },
+    {
+      "case": "V19.2",
+      "category": "chain",
+      "phrasing": "Who has been there more than 5 years?",
+      "status": "PASS",
+      "got": "kpi",
+      "expected": "step_pass",
+      "note": "Chain V19 step 2"
+    },
+    {
+      "case": "V19.3",
+      "category": "chain",
+      "phrasing": "Show me their names",
+      "status": "PASS",
+      "got": "table",
+      "expected": "step_pass",
+      "note": "Chain V19 step 3"
+    },
+    {
+      "case": "V19.4",
+      "category": "chain",
+      "phrasing": "Export this as an Excel file",
+      "status": "PASS",
+      "got": "table",
+      "expected": "step_pass",
+      "note": "Chain V19 step 4"
+    },
+    {
+      "case": "V19.5",
+      "category": "chain",
+      "phrasing": "Draft an email to the Director HR with this list",
+      "status": "PASS",
+      "got": "email_draft",
+      "expected": "step_pass",
+      "note": "Chain V19 step 5"
+    },
+    {
+      "case": "BEH-07.30.1",
+      "category": "chain",
+      "phrasing": "Can you show me the balance sheet for 2024?",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "step_pass",
+      "note": "Chain BEH-07.30 step 1"
+    },
+    {
+      "case": "BEH-07.30.2",
+      "category": "chain",
+      "phrasing": "Do you have the balance sheet for 2024?",
+      "status": "PASS",
+      "got": "coverage",
+      "expected": "step_pass",
+      "note": "Chain BEH-07.30 step 2"
+    },
+    {
+      "case": "BEH-07.30.3",
+      "category": "chain",
+      "phrasing": "When you say up to 2026, is 2024 before 2026? Then show it to me.",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "step_pass",
+      "note": "Chain BEH-07.30 step 3"
+    },
+    {
+      "case": "BEH-07.35.1",
+      "category": "chain",
+      "phrasing": "Show me the income statement for FY26",
+      "status": "PASS",
+      "got": "statement",
+      "expected": "step_pass",
+      "note": "Chain BEH-07.35 step 1"
+    },
+    {
+      "case": "BEH-07.35.2",
+      "category": "chain",
+      "phrasing": "Express this as a waterfall",
+      "status": "PASS",
+      "got": "chart:waterfall",
+      "expected": "step_pass",
+      "note": "Chain BEH-07.35 step 2"
+    },
+    {
+      "case": "VS01",
+      "category": "voice",
+      "phrasing": "What was ONGC's revenue from operations in FY24?",
+      "status": "PASS",
+      "got": "1 bubble, 0 fragments, verbatim TTS",
+      "expected": "voice_smoke_pass",
+      "note": "Ref F01"
+    },
+    {
+      "case": "VS02",
+      "category": "voice",
+      "phrasing": "FY26 mein ONGC ka PAT kitna tha?",
+      "status": "PASS",
+      "got": "1 bubble, 0 fragments, verbatim TTS",
+      "expected": "voice_smoke_pass",
+      "note": "Ref F51"
+    },
+    {
+      "case": "VS03",
+      "category": "voice",
+      "phrasing": "Show me the income statement -> last year",
+      "status": "PASS",
+      "got": "1 bubble, 0 fragments, verbatim TTS",
+      "expected": "voice_smoke_pass",
+      "note": "Ref F12_clarify"
+    },
+    {
+      "case": "VS04",
+      "category": "voice",
+      "phrasing": "Run a DCF and tell me if ONGC is undervalued -> haan, chalao",
+      "status": "PASS",
+      "got": "1 bubble, 0 fragments, verbatim TTS",
+      "expected": "voice_smoke_pass",
+      "note": "Ref F50_confirm_hi"
+    },
+    {
+      "case": "VS05",
+      "category": "voice",
+      "phrasing": "Switch role to CMD",
+      "status": "PASS",
+      "got": "1 bubble, 0 fragments, verbatim TTS",
+      "expected": "voice_smoke_pass",
+      "note": "Ref H11"
+    },
+    {
+      "case": "VS06",
+      "category": "voice",
+      "phrasing": "What data do you have?",
+      "status": "PASS",
+      "got": "1 bubble, 0 fragments, verbatim TTS",
+      "expected": "voice_smoke_pass",
+      "note": "Ref F47"
     }
   ]
 }

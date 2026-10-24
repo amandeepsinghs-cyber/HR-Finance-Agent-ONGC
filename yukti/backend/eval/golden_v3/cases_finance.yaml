@@ -817,6 +817,26 @@
     cite:
       spec: "SPEC-01"
 
+- id: F38
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Show the Yahoo view of the income statement"
+    - "Can I see ONGC's Yahoo Finance consolidated income statement?"
+    - "Income statement ka Yahoo view dikhao"
+  expect:
+    visual_type: statement
+    scope: yahoo_consolidated
+    columns:
+      - "FY26"
+      - "FY25"
+      - "FY24"
+      - "FY23"
+    badge: "Yahoo Finance (consolidated, unverified)"
+    provenance: yahoo_consolidated
+    cite:
+      spec: "SPEC-01 §9"
+
 - id: F39
   gate: P1
   persona: CMD
@@ -1357,21 +1377,26 @@
 
 - id: F49
   gate: P3.4b
+  persona: E2_FIN
+  phrasings:
+    - "Run a DCF on ONGC"
+    - "Can you run a discounted cash flow and tell me if ONGC is undervalued or overvalued?"
+    - "ONGC par DCF model run karo"
+  expect:
+    visual_type: refusal
+    access:
+      status: "refused"
+    alternative: "fact_wacc_annual"
+
+- id: F50
+  gate: P3.4b
   persona: DIR_FIN
   phrasings:
+    - "Run a DCF and tell me if ONGC is undervalued"
     - "Can you run a discounted cash flow and tell me if ONGC is undervalued or overvalued?"
+    - "DCF model chala kar batao ONGC undervalued hai ya overvalued"
   expect:
     visual_type: none
     proposed_action:
       agent: "dcf_agent"
     job: null
-
-- id: F50
-  gate: P3.4b
-  persona: E2_FIN
-  phrasings:
-    - "Can you run a discounted cash flow and tell me if ONGC is undervalued or overvalued?"
-  expect:
-    visual_type: refusal
-    access:
-      status: "refused"

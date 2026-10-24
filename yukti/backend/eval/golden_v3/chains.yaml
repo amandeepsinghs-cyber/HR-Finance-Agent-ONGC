@@ -177,3 +177,138 @@
         proposed_action:
           agent: "dcf_agent"
           has_override: true
+
+    - step: 4
+      ref: BEH-05.06
+      phrasing: "Download the model"
+      expect:
+        artifacts_include: ["xlsx"]
+
+- id: V19
+  name: "V19 Delhi Transfer Chain (BEH-02: Level breakdown -> >5 yrs overstay -> Named roster -> Excel export -> Email draft to Director HR)"
+  gate: P2H
+  persona: CMD
+  fresh_session: true
+  description: "Five-step HR transfer audit journey for CMD in Delhi."
+  steps:
+    - step: 1
+      ref: BEH-02.01
+      phrasing: "How many people are in Delhi by level?"
+      expect:
+        visual_type: chart:bar
+        grade_order: ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"]
+        values:
+          - metric: delhi_exec_headcount
+            value_headcount: 851
+            tol: 0
+        provenance: synthetic
+
+    - step: 2
+      ref: BEH-02.02
+      phrasing: "Who has been there more than 5 years?"
+      expect:
+        visual_type: kpi
+        values:
+          - metric: delhi_overstay_5y_exec
+            value_headcount: 419
+            tol: 0
+          - metric: delhi_overstay_5y_all_cadres
+            value_headcount: 645
+            tol: 0
+        provenance: synthetic
+
+    - step: 3
+      ref: BEH-02.03
+      phrasing: "Show me their names"
+      expect:
+        visual_type: table
+        expected_rows: 419
+        provenance: synthetic
+
+    - step: 4
+      ref: BEH-02.04
+      phrasing: "Export this as an Excel file"
+      expect:
+        visual_type: table
+        artifacts_include: ["xlsx"]
+        expected_rows: 419
+        provenance: synthetic
+
+    - step: 5
+      ref: BEH-02.05
+      phrasing: "Draft an email to the Director HR with this list"
+      expect:
+        visual_type: email_draft
+        cohort_count: 419
+        attachment_ext: "xlsx"
+        provenance: synthetic
+
+- id: BEH-07.30
+  name: "BEH-07.30 Balance Sheet 2024 -> Coverage Question -> Repeat Previous Statement"
+  gate: P5
+  persona: CMD
+  fresh_session: true
+  description: "Verifies bare calendar year 2024 notice, coverage check for 2024, and 'then show it to me' repeat guard."
+  steps:
+    - step: 1
+      ref: BEH-07.30.T1
+      phrasing: "Can you show me the balance sheet for 2024?"
+      expect:
+        visual_type: statement
+        values:
+          - line_code: BS.TOTAL_ASSETS
+            fy: FY24
+            value_inr_cr: 446020.89
+            tol: 0.05
+        provenance: verified_ar
+
+    - step: 2
+      ref: BEH-07.30.T2
+      phrasing: "Do you have the balance sheet for 2024?"
+      expect:
+        visual_type: coverage
+        answer_prefix: "Yes"
+        forbidden_content:
+          - "only up to 2026"
+        provenance: verified_ar
+
+    - step: 3
+      ref: BEH-07.30.T3
+      phrasing: "When you say up to 2026, is 2024 before 2026? Then show it to me."
+      expect:
+        visual_type: statement
+        values:
+          - line_code: BS.TOTAL_ASSETS
+            fy: FY24
+            value_inr_cr: 446020.89
+            tol: 0.05
+        provenance: verified_ar
+
+- id: BEH-07.35
+  name: "BEH-07.35 Income Statement -> Express as Waterfall"
+  gate: P5
+  persona: CMD
+  fresh_session: true
+  description: "Verifies follow-up 'express this as a waterfall' converts statement to signed P&L bridge ending at PAT."
+  steps:
+    - step: 1
+      ref: BEH-07.35.T1
+      phrasing: "Show me the income statement for FY26"
+      expect:
+        visual_type: statement
+        values:
+          - line_code: PL.PAT
+            fy: FY26
+            value_inr_cr: 32894.02
+            tol: 0.05
+        provenance: verified_ar
+
+    - step: 2
+      ref: BEH-07.35.T2
+      phrasing: "Express this as a waterfall"
+      expect:
+        visual_type: chart:waterfall
+        ending_value_inr_cr: 32894.02
+        forbidden_content:
+          - "EBITDA"
+        provenance: verified_ar

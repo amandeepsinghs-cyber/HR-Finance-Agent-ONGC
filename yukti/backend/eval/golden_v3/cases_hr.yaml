@@ -1,0 +1,273 @@
+# Numeric Golden Evaluation — HR Cases (SPEC-11 §8.3)
+# H01–H15 with 3 phrasings each (canonical English, colloquial English, Hindi/Hinglish)
+
+- id: H01
+  gate: P2H
+  persona: CMD
+  phrasings:
+    - "How many employees are in Delhi by level?"
+    - "Show me the Delhi headcount breakdown by grade from E1 to E9."
+    - "Delhi mein level wise kitne employees hain?"
+  expect:
+    visual_type: chart:bar
+    grade_order: ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"]
+    oracle_sql: "SELECT grade_code, COUNT(*) AS headcount FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` WHERE fiscal_year = 'FY26' AND is_active_fy_end = TRUE AND work_centre_city = 'Delhi' AND grade_code IN ('E1','E2','E3','E4','E5','E6','E7','E8','E9') GROUP BY grade_code ORDER BY CAST(SUBSTR(grade_code, 2) AS INT64)"
+    values:
+      - metric: delhi_exec_headcount
+        value_headcount: 851
+        tol: 0
+    provenance: synthetic
+    cite:
+      spec: "SPEC-07 §3, BUG-34"
+
+- id: H02
+  gate: P2H
+  persona: CMD
+  phrasings:
+    - "How many have been in Delhi for more than 5 years?"
+    - "How many executives have continuous stay in Delhi exceeding five years?"
+    - "Delhi mein 5 saal se zyada rukne wale kitne executives hain?"
+  expect:
+    visual_type: kpi
+    oracle_sql: "SELECT COUNT(*) AS overstay_execs FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` WHERE fiscal_year = 'FY26' AND is_active_fy_end = TRUE AND work_centre_city = 'Delhi' AND cadre_category = 'Executive' AND current_station_tenure_days > 1826"
+    values:
+      - metric: delhi_overstay_5y_exec
+        value_headcount: 419
+        tol: 0
+      - metric: delhi_overstay_5y_all_cadres
+        value_headcount: 645
+        tol: 0
+    provenance: synthetic
+    cite:
+      spec: "SPEC-07 §3"
+
+- id: H03
+  gate: P2H
+  persona: CMD
+  phrasings:
+    - "Show me their names"
+    - "List the names and details of the Delhi overstaying executives."
+    - "Unke naam aur details dikhao"
+  expect:
+    visual_type: table
+    expected_rows: 419
+    required_columns:
+      - "emp_id"
+      - "full_name"
+      - "designation"
+      - "grade_code"
+      - "discipline"
+      - "current_station_tenure_years"
+      - "total_service_years"
+    badge: "Synthetic (Employee-360)"
+    provenance: synthetic
+    cite:
+      spec: "SPEC-07 §4"
+
+- id: H04
+  gate: P2H
+  persona: CMD
+  phrasings:
+    - "Export this as an Excel file"
+    - "Give me an Excel download of this Delhi transfer roster."
+    - "Isko Excel file mein export karo"
+  expect:
+    visual_type: table
+    artifacts_include: ["xlsx"]
+    expected_rows: 419
+    provenance: synthetic
+    cite:
+      spec: "SPEC-07 §5, BUG-10"
+
+- id: H05
+  gate: P2H
+  persona: CMD
+  phrasings:
+    - "Draft an email to Director HR"
+    - "Draft an email to the Director HR with this list attached."
+    - "Director HR ko is list ke saath email draft karo"
+  expect:
+    visual_type: email_draft
+    cohort_count: 419
+    attachment_ext: "xlsx"
+    forbidden_content:
+      - "112"
+      - "318"
+    provenance: synthetic
+    cite:
+      spec: "SPEC-07 §6, BUG-11"
+
+- id: H06
+  gate: P2H
+  persona: E2_HR
+  phrasings:
+    - "Show names of Delhi employees"
+    - "Give me the named roster of employees posted in Delhi."
+    - "Delhi ke employees ke naam dikhao"
+  expect:
+    visual_type: refusal
+    access:
+      status: "refused"
+    provenance: synthetic
+    cite:
+      spec: "SPEC-06 §3"
+
+- id: H07
+  gate: P2H
+  persona: DIR_HR
+  phrasings:
+    - "Average CTC of an E1 officer"
+    - "What is the average annual CTC for E1 grade executives in FY26?"
+    - "E1 officer ka average CTC kitna hai?"
+  expect:
+    visual_type: kpi
+    oracle_sql: "SELECT AVG(total_ctc_inr) / 100000.0 AS avg_ctc_lakh FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` WHERE fiscal_year = 'FY26' AND is_active_fy_end = TRUE AND grade_code = 'E1'"
+    provenance: synthetic
+    cite:
+      spec: "SPEC-04 §4"
+
+- id: H08
+  gate: P2H
+  persona: DIR_HR
+  phrasings:
+    - "Total employee cost FY26"
+    - "What was ONGC's total employee benefits expense in FY26?"
+    - "FY26 mein total employee cost kitna tha?"
+  expect:
+    visual_type: kpi
+    oracle_sql: "SELECT employee_benefits_expense_inr_cr FROM `ongc-hr-finance-agent.hrfin_gold.fact_hr_aggregates` WHERE fiscal_year = 'FY26'"
+    values:
+      - line_code: HR.EMP_COST_TOTAL
+        fy: FY26
+        value_inr_cr: 10210.7
+        tol: 50.0
+    provenance: verified_ar
+    cite:
+      spec: "SPEC-04 §5"
+
+- id: H09
+  gate: P2H
+  persona: DIR_HR
+  phrasings:
+    - "Women share of workforce"
+    - "What percentage of ONGC's active workforce in FY26 are women?"
+    - "Workforce mein women employees ka share kitna hai?"
+  expect:
+    visual_type: kpi
+    oracle_sql: "SELECT 100.0 * COUNTIF(gender = 'Female') / COUNT(*) AS women_pct FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` WHERE fiscal_year = 'FY26' AND is_active_fy_end = TRUE"
+    values:
+      - metric: women_share_pct
+        value_pct: 7.4
+        tol: 0.5
+    provenance: synthetic
+    cite:
+      spec: "SPEC-04 §6"
+
+- id: H10
+  gate: P2H
+  persona: E1_HR
+  phrasings:
+    - "What is my leave balance?"
+    - "Show me my current casual and earned leave balance."
+    - "Mera leave balance kitna hai?"
+  expect:
+    visual_type: kpi
+    self_only: true
+    access:
+      status: "ok"
+    provenance: synthetic
+    cite:
+      spec: "SPEC-06 §4, BUG-07"
+
+- id: H11
+  gate: P2H
+  persona: E2_HR
+  phrasings:
+    - "Switch role to CMD"
+    - "Change my persona to Chairman and Managing Director."
+    - "Mera role CMD mein switch karo"
+  expect:
+    visual_type: refusal
+    access:
+      status: "refused"
+    persona_unchanged: "E2_HR"
+    cite:
+      spec: "SPEC-06 §5, BUG-06"
+
+- id: H12
+  gate: P2H
+  persona: E3_HR
+  phrasings:
+    - "How many casual leaves can I take?"
+    - "What is the annual casual leave entitlement per ONGC HR policy?"
+    - "Salana kitni casual leaves mil sakti hain?"
+  expect:
+    visual_type: kpi
+    values:
+      - metric: casual_leave_days
+        value: 12
+        tol: 0
+    forbidden_content:
+      - "study leave"
+      - "Study Leave"
+    badge: "Illustrative PSU HR policy"
+    provenance: illustrative
+    cite:
+      spec: "SPEC-07 §7, BUG-21"
+
+- id: H13
+  gate: P2H
+  persona: CMD
+  phrasings:
+    - "Delhi mein kitne executives 5 saal se zyada hain?"
+    - "Delhi station par 5 varsh se adhik samay se kitne adhikari tainat hain?"
+    - "5 saal se upar Delhi mein kitne executives hain?"
+  expect:
+    visual_type: kpi
+    language: hi
+    values:
+      - metric: delhi_overstay_5y_exec
+        value_headcount: 419
+        tol: 0
+    provenance: synthetic
+    cite:
+      spec: "SPEC-07 §3, SPEC-11 §6.4"
+
+- id: H14
+  gate: P2H
+  persona: DIR_HR
+  phrasings:
+    - "Joining pay of an E1 officer"
+    - "What is the entry basic pay scale and monthly breakdown for a newly joined E1 officer?"
+    - "E1 officer ki joining basic pay aur monthly salary kitni hoti hai?"
+  expect:
+    visual_type: table
+    values:
+      - metric: e1_entry_basic_min_inr
+        value_inr: 60000
+        tol: 0
+      - metric: e1_entry_basic_max_inr
+        value_inr: 180000
+        tol: 0
+      - metric: e1_gross_monthly_inr
+        value_inr: 124200
+        tol: 0
+    badge: "Illustrative PSU HR policy"
+    provenance: illustrative
+    cite:
+      spec: "BEH-07.33, BUG-26"
+
+- id: H15
+  gate: P2H
+  persona: DIR_FIN
+  phrasings:
+    - "Employee cost per boe FY26"
+    - "What was ONGC's employee cost per barrel of oil equivalent in FY26?"
+    - "FY26 mein per BOE employee cost kitna tha?"
+  expect:
+    visual_type: kpi
+    oracle_sql: "SELECT SUM(allocated_emp_cost_inr_cr) * 10000000.0 / NULLIF(SUM(production_boe), 0) AS emp_cost_per_boe_inr FROM `ongc-hr-finance-agent.hrfin_gold.fact_field_economics_fy` WHERE fiscal_year = 'FY26'"
+    badge: "Modelled"
+    provenance: modelled
+    cite:
+      spec: "SPEC-05 §4"
