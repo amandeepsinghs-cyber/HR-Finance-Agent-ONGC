@@ -1,0 +1,44 @@
+{
+  "fixture_id": "error_missing_end",
+  "synthetic": true,
+  "synthetic_note": "Synthetic error fixture: missing end line (PAT).",
+  "expected_error": {
+    "code": "missing_end",
+    "reason_contains": "PAT"
+  },
+  "type": "statement",
+  "statement": "pnl",
+  "scope": "standalone",
+  "title": "Incomplete P&L Statement (Missing PAT)",
+  "unit": "INR_crore",
+  "periods": ["FY26"],
+  "sections": [
+    {
+      "id": "income",
+      "label": "Income",
+      "rows": [
+        {
+          "line_code": "REV_OPS",
+          "label": "Revenue from operations",
+          "level": 1,
+          "kind": "line",
+          "values": { "FY26": 132508.14 }
+        },
+        {
+          "line_code": "OTHER_INC",
+          "label": "Other income",
+          "level": 1,
+          "kind": "line",
+          "values": { "FY26": 10355.76 }
+        },
+        {
+          "line_code": "TOT_INC",
+          "label": "Total income",
+          "level": 0,
+          "kind": "subtotal",
+          "values": { "FY26": 142863.90 }
+        }
+      ]
+    }
+  ]
+}

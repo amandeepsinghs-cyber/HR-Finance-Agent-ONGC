@@ -1,0 +1,216 @@
+{
+  "version": 1,
+  "description": "30-utterance chart kind precedence fixture shared by Python and TypeScript (SPEC-09 §4.4, §6.4, BEH-04.04/.10/.11/.20-.31, BUG-22).",
+  "cases": [
+    {
+      "id": "KP-01",
+      "utterance": "show revenue vs profit for last 5 years as a line chart",
+      "expected_kind": "line",
+      "category": "explicit_overrides_heuristic",
+      "ref": "SPEC-09 §6.4 / BEH-04.20 / BUG-22"
+    },
+    {
+      "id": "KP-02",
+      "utterance": "Show revenue vs profit for the last 5 years as a line chart",
+      "expected_kind": "line",
+      "category": "explicit_overrides_heuristic",
+      "ref": "BEH-04.20"
+    },
+    {
+      "id": "KP-03",
+      "utterance": "plot revenue and PAT trend over 10 years",
+      "expected_kind": "line",
+      "category": "trend_time_series",
+      "ref": "SPEC-09 §6.4 / BEH-04.21"
+    },
+    {
+      "id": "KP-04",
+      "utterance": "show revenue, EBITDA and PAT for FY24 in tabular form",
+      "expected_kind": "table",
+      "category": "explicit_tabular_form",
+      "ref": "SPEC-09 §6.4 / BEH-04.04 / BUG-22"
+    },
+    {
+      "id": "KP-05",
+      "utterance": "display revenue and operating expenses for FY22 to FY26 as a bar chart",
+      "expected_kind": "bar",
+      "category": "explicit_overrides_heuristic",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-06",
+      "utterance": "compare revenue and profit across assets as a horizontal bar chart",
+      "expected_kind": "hbar",
+      "category": "explicit_overrides_heuristic",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-07",
+      "utterance": "show revenue and PAT margin for 5 years as a combo chart",
+      "expected_kind": "combo",
+      "category": "explicit_overrides_heuristic",
+      "ref": "BEH-04.22"
+    },
+    {
+      "id": "KP-08",
+      "utterance": "plot revenue and cost breakdown across regions as a stacked bar chart",
+      "expected_kind": "stacked_bar",
+      "category": "explicit_overrides_heuristic",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-09",
+      "utterance": "show revenue vs profit by year as a grouped bar chart",
+      "expected_kind": "grouped_bar",
+      "category": "explicit_overrides_heuristic",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-10",
+      "utterance": "show cost components of revenue in a pie chart",
+      "expected_kind": "pie",
+      "category": "explicit_overrides_heuristic",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-11",
+      "utterance": "show statutory levies share of revenue as a donut chart",
+      "expected_kind": "donut",
+      "category": "explicit_overrides_heuristic",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-12",
+      "utterance": "plot revenue and profit over 5 years as an area chart",
+      "expected_kind": "area",
+      "category": "explicit_overrides_heuristic",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-13",
+      "utterance": "plot field revenue vs profit as a scatter plot",
+      "expected_kind": "scatter",
+      "category": "explicit_overrides_heuristic",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-14",
+      "utterance": "show capex and opex hierarchy as a treemap",
+      "expected_kind": "treemap",
+      "category": "explicit_kind",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-15",
+      "utterance": "show monthly overtime by work centre as a heatmap",
+      "expected_kind": "heatmap",
+      "category": "explicit_kind",
+      "ref": "BEH-04.26"
+    },
+    {
+      "id": "KP-16",
+      "utterance": "show age distribution of Delhi staff as a histogram",
+      "expected_kind": "histogram",
+      "category": "explicit_kind",
+      "ref": "BEH-04.31"
+    },
+    {
+      "id": "KP-17",
+      "utterance": "show a box plot of tenure by level in Delhi",
+      "expected_kind": "box",
+      "category": "explicit_kind",
+      "ref": "BEH-04.25"
+    },
+    {
+      "id": "KP-18",
+      "utterance": "show recruitment pipeline stages as a funnel chart",
+      "expected_kind": "funnel",
+      "category": "explicit_kind",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-19",
+      "utterance": "show MoU target achievement as a gauge chart",
+      "expected_kind": "gauge",
+      "category": "explicit_kind",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-20",
+      "utterance": "show MoU parameter performance as a bullet chart",
+      "expected_kind": "bullet",
+      "category": "explicit_kind",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-21",
+      "utterance": "show work centre headcount on an india map",
+      "expected_kind": "map",
+      "category": "explicit_kind",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-22",
+      "utterance": "Can you express it as a waterfall?",
+      "expected_kind": "waterfall",
+      "category": "replot_command",
+      "ref": "BEH-04.10"
+    },
+    {
+      "id": "KP-23",
+      "utterance": "इसे वॉटरफॉल में दिखाओ",
+      "expected_kind": "waterfall",
+      "category": "hindi_replot",
+      "ref": "BEH-04.11"
+    },
+    {
+      "id": "KP-24",
+      "utterance": "पिछले पाँच साल का रेवेन्यू और प्रॉफिट रेखा चार्ट में दिखाओ",
+      "expected_kind": "line",
+      "category": "hindi_explicit",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-25",
+      "utterance": "आय विवरण को सारणी में दिखाओ",
+      "expected_kind": "table",
+      "category": "hindi_explicit",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-26",
+      "utterance": "इसे कॉलम चार्ट में दिखाओ",
+      "expected_kind": "bar",
+      "category": "hindi_replot",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-27",
+      "utterance": "एसेट डेटा को पाई चार्ट में दिखाओ",
+      "expected_kind": "pie",
+      "category": "hindi_replot",
+      "ref": "SPEC-09 §4.4"
+    },
+    {
+      "id": "KP-28",
+      "utterance": "show the bridge from revenue to profit for FY26",
+      "expected_kind": "waterfall",
+      "category": "bridge_wording",
+      "ref": "SPEC-09 §4.4 rule 4"
+    },
+    {
+      "id": "KP-29",
+      "utterance": "walk me from revenue to PAT for FY25",
+      "expected_kind": "waterfall",
+      "category": "bridge_wording",
+      "ref": "SPEC-09 §4.4 rule 4"
+    },
+    {
+      "id": "KP-30",
+      "utterance": "show the income statement in a table",
+      "expected_kind": "table",
+      "category": "explicit_table",
+      "ref": "SPEC-09 §4.4"
+    }
+  ]
+}

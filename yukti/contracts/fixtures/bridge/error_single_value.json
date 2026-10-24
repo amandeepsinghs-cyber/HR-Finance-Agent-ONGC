@@ -1,0 +1,30 @@
+{
+  "fixture_id": "error_single_value",
+  "synthetic": true,
+  "synthetic_note": "Synthetic error fixture (BEH-04.13 / BEH-07.34): single-value KPI visual cannot build a bridge.",
+  "expected_error": {
+    "code": "single_value",
+    "reason_contains": "single"
+  },
+  "type": "kpi",
+  "title": "Ankleshwar Asset Revenue (FY26)",
+  "unit": "INR_crore",
+  "periods": ["FY26"],
+  "kpis": [
+    {
+      "label": "Gross revenue (₹ cr)",
+      "value": 13870.37,
+      "unit": "₹ crore"
+    }
+  ],
+  "table": {
+    "columns": ["asset_name", "gross_revenue_cr"],
+    "rows": [
+      {
+        "asset_name": "Ankleshwar Asset",
+        "gross_revenue_cr": 13870.37
+      }
+    ]
+  },
+  "sections": []
+}

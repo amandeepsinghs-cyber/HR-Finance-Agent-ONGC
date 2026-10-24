@@ -1,0 +1,78 @@
+{
+  "fixture_id": "error_subtotal_mismatch",
+  "synthetic": true,
+  "synthetic_note": "Synthetic error fixture (BEH-04.15): subtotal PBT mismatch > ₹0.5 cr.",
+  "expected_error": {
+    "code": "subtotal_mismatch",
+    "reason_contains": "PBT"
+  },
+  "type": "statement",
+  "statement": "pnl",
+  "scope": "standalone",
+  "title": "Corrupt P&L Statement (PBT Subtotal Mismatch)",
+  "unit": "INR_crore",
+  "periods": ["FY26"],
+  "sections": [
+    {
+      "id": "income",
+      "label": "Income",
+      "rows": [
+        {
+          "line_code": "REV_OPS",
+          "label": "Revenue from operations",
+          "level": 1,
+          "kind": "line",
+          "values": { "FY26": 132508.14 }
+        },
+        {
+          "line_code": "OTHER_INC",
+          "label": "Other income",
+          "level": 1,
+          "kind": "line",
+          "values": { "FY26": 10355.76 }
+        },
+        {
+          "line_code": "TOT_INC",
+          "label": "Total income",
+          "level": 0,
+          "kind": "subtotal",
+          "values": { "FY26": 142863.90 }
+        }
+      ]
+    },
+    {
+      "id": "expenses",
+      "label": "Expenses",
+      "rows": [
+        {
+          "line_code": "PROD_EXP",
+          "label": "Production, transportation & operating expenditure",
+          "level": 1,
+          "kind": "line",
+          "values": { "FY26": 101049.01 }
+        },
+        {
+          "line_code": "PBT",
+          "label": "Profit before tax",
+          "level": 0,
+          "kind": "subtotal",
+          "values": { "FY26": 41830.00 }
+        },
+        {
+          "line_code": "TAX_EXP",
+          "label": "Tax expense",
+          "level": 1,
+          "kind": "line",
+          "values": { "FY26": 8920.87 }
+        },
+        {
+          "line_code": "PAT",
+          "label": "Profit for the year (PAT)",
+          "level": 0,
+          "kind": "total",
+          "values": { "FY26": 32894.02 }
+        }
+      ]
+    }
+  ]
+}
