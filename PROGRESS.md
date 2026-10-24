@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:49 UTC · branch `v3/P0-stabilise` @ `7fb6d38`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 03:50 UTC · branch `v3/P0-stabilise` @ `c422e4c`
 
 > [!IMPORTANT]
-> **Overall: 28% complete (weighted)** — 15/62 steps ✅ done, 7 in flight, 40 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 29% complete (weighted)** — 16/62 steps ✅ done, 6 in flight, 40 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `█████████░░░░░░░░░░░` 46% | 4 | 1 | 0 | 3 | 4 | 0 | 12 |
+| **P1** | Real finance SSOT | `██████████░░░░░░░░░░` 48% | 5 | 0 | 0 | 3 | 4 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 3% | 0 | 0 | 0 | 1 | 7 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
@@ -26,7 +26,6 @@
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.6 | 🔄 In progress | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; | O (+F gates, FL evidence) | Complete build + evidence |
 | P1.7 | 🔄 In progress | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | Complete build + evidence |
-| P1.8 | 🔍 In review | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | Apply review findings / approve |
 | P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
 | P4.1 | 🔄 In progress | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Complete build + evidence |
 | P4.9 | 🔨 Built (pre-G4) | Orb visible in docked mode + optional edge aura (low priority, V21) | F | Run G4 review → docs/reviews/<step>.md |
@@ -65,9 +64,9 @@
 | V15 | FEAT-015, FEAT-026 | 🟡 🔴 | P4.1, P4.4, P4.5, P4.8 | 🟡 |
 | V16 | FEAT-016 | 🟡 | P4.9 | 🟡 |
 | V17 | FEAT-017, FEAT-031 | 🔴 🔴 | P2H.1, P2H.2 | 🔴 |
-| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.6, P1.7, P1.8, P1.10a, P1.10b, P2H.7, P2H.8 | 🔴 |
+| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.6, P1.7, P1.10a, P1.10b, P2H.7, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P1.7, P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
-| V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.8, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5 … | 🔴 |
+| V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5, P2F.6 | 🔴 |
 | V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.1, P4.2, P4.3, P4.4, P4.5 … | 🟡 |
 | V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1, P1.9, P3.1, P3.2, P3.3, P3.4, P3.4b, P3.5 … | ⛔ |
 | V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P1.7, P1.10a, P2H.5, P2H.6, P2H.7, P2H.8 | 🟡 |
@@ -99,7 +98,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-017 Eleven-persona matrix + function split + `self` scope | 🔴 | 0/2 |
 | FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 3/8 |
 | FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 1/2 |
-| FEAT-020 Knowledge RAG over real AR text | 🔴 | 0/1 |
+| FEAT-020 Knowledge RAG over real AR text | 🔴 | 1/1 |
 | FEAT-021 Employee-360 enterprise table (realistic, reconciled) | 🟡 | 0/4 |
 | FEAT-022 Field economics-360 reconciled to company AR totals | 🔴 | 0/3 |
 | FEAT-023 V19 transfer workflow: Excel intent + Email agent | 🔴 | 0/2 |
