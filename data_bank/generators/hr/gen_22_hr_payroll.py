@@ -159,8 +159,12 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
     
     fy_groups = df_payroll.groupby("fiscal_year")[["fixed_note35a", "adjustable_note35a_base"]].sum().reset_index()
     
-    alpha_dict = {}
     payroll_policies = []
+    
+    # We will fit u_fy, k_fy, ot_fy for each FY separately.
+    u_dict = {}
+    k_dict = {}
+    ot_dict = {}
     
     for _, row in fy_groups.iterrows():
         fy = row["fiscal_year"]
@@ -170,34 +174,62 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
             if target_total:
                 target = target_total * note35_targets.get(("FY21", "note35_1_a")) / note35_targets.get(("FY21", "employee_cost_total"))
         
-        if not target:
-            alpha = 1.0
-        else:
+        u_fy, k_fy, ot_fy = 1.0, 1.0, 1.0
+        
+        if target:
             target_inr = target * 1e6
-            if row["adjustable_note35a_base"] > 0:
-                alpha = (target_inr - row["fixed_note35a"]) / row["adjustable_note35a_base"]
-            else:
-                alpha = 1.0
-            alpha = max(0.85, min(1.15, alpha))
+            fixed_note35a = row["fixed_note35a"]
+            # Arrears are part of fixed_note35a effectively
+            arrears_sum = 0
+            if fy == "FY18":
+                arrears_sum = df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "LGART_1001"].sum() * 0.15
+            elif fy == "FY19":
+                arrears_sum = df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "LGART_1001"].sum() * 0.10
+            
+            fixed_total = fixed_note35a + arrears_sum
+            
+            caf_base = df_payroll.loc[df_payroll["fiscal_year"] == fy, "cafeteria_allowance_inr_base"].sum()
+            prp_base = df_payroll.loc[df_payroll["fiscal_year"] == fy, "prp_accrual_inr_base"].sum()
+            ot_base = df_payroll.loc[df_payroll["fiscal_year"] == fy, "overtime_amount_inr_base"].sum()
+            
+            def objective(x):
+                # We want to hit the target, but also keep u, k, ot as close to 1.0 as possible
+                calc = fixed_total + caf_base*min(1.0, x[0]) + prp_base*x[1] + ot_base*x[2]
+                return (calc - target_inr)**2 + 1e10 * ((x[0]-1.0)**2 + (x[1]-1.0)**2 + (x[2]-1.0)**2)
                 
-        alpha_dict[fy] = alpha
+            import scipy.optimize as opt
+            res = opt.minimize(objective, [1.0, 1.0, 1.0], bounds=[(0.85, 1.15), (0.85, 1.15), (0.85, 1.15)])
+            u_fy, k_fy, ot_fy = res.x
+                
+        u_dict[fy] = u_fy
+        k_dict[fy] = k_fy
+        ot_dict[fy] = ot_fy
+        
         payroll_policies.append({
             "fiscal_year": fy,
-            "k_fy": alpha,
-            "u_fy": alpha,
-            "ot_fy": alpha
+            "k_fy": k_fy,
+            "u_fy": u_fy,
+            "ot_fy": ot_fy
         })
         
     df_policies = pd.DataFrame(payroll_policies)
     df_policies.to_csv(TARGETS_CSV.parent / "payroll_policy_fy.csv", index=False)
     
-    df_payroll["alpha"] = df_payroll["fiscal_year"].map(alpha_dict)
+    df_payroll["u_fy"] = df_payroll["fiscal_year"].map(u_dict)
+    df_payroll["k_fy"] = df_payroll["fiscal_year"].map(k_dict)
+    df_payroll["ot_fy"] = df_payroll["fiscal_year"].map(ot_dict)
     
-    df_payroll["cafeteria_allowances_inr"] = df_payroll["cafeteria_allowance_inr_base"] * df_payroll["alpha"]
-    df_payroll["overtime_amount_inr"] = df_payroll["overtime_amount_inr_base"] * df_payroll["alpha"]
-    df_payroll["prp_inr"] = df_payroll["prp_accrual_inr_base"] * df_payroll["alpha"]
+    df_payroll["cafeteria_allowances_inr"] = df_payroll["cafeteria_allowance_inr_base"] * df_payroll["u_fy"].clip(upper=1.0)
+    df_payroll["overtime_amount_inr"] = df_payroll["overtime_amount_inr_base"] * df_payroll["ot_fy"]
+    df_payroll["prp_inr"] = df_payroll["prp_accrual_inr_base"] * df_payroll["k_fy"]
     
-    df_payroll["LGART_9001"] = df_payroll["fixed_note35a"] + df_payroll["cafeteria_allowances_inr"] + df_payroll["overtime_amount_inr"] + df_payroll["prp_inr"]
+    # 3rd-PRC wage arrears paid in FY18 and FY19
+    df_payroll["arrears_inr"] = 0.0
+    df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "arrears_inr"] = df_payroll.loc[df_payroll["fiscal_year"] == "FY18", "LGART_1001"] * 0.15
+    df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "arrears_inr"] = df_payroll.loc[df_payroll["fiscal_year"] == "FY19", "LGART_1001"] * 0.10
+
+    
+    df_payroll["LGART_9001"] = df_payroll["fixed_note35a"] + df_payroll["cafeteria_allowances_inr"] + df_payroll["overtime_amount_inr"] + df_payroll["prp_inr"] + df_payroll["arrears_inr"]
     
     df_payroll["LGART_9002"] = df_payroll["LGART_9001"] - df_payroll["income_tax_tds_inr"] - df_payroll["employer_cpf_inr"]
     df_payroll["payroll_id"] = [f"PAY-{i:08d}" for i in range(1, len(df_payroll) + 1)]
@@ -212,15 +244,18 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
     pools = []
     fy_sums = df_payroll.groupby("fiscal_year")[["cost_note35_a_inr", "cost_note35_b_inr", "cost_note35_c_inr", "cost_note35_d_inr", "cost_note35_e_inr", "cost_note35_f_inr"]].sum().reset_index()
     
+    # Calculate basic + da by year for driver
+    bp_da_by_fy = df_payroll.groupby("fiscal_year")[["LGART_1001", "LGART_1002"]].sum().sum(axis=1).to_dict()
+
     for _, row in fy_sums.iterrows():
         fy = row["fiscal_year"]
-        for line, col, pool_code in [
-            
-            
-            ("note35_1_c", "cost_note35_c_inr", "POOL_ACTUARIAL_TRUEUP"),
-            ("note35_1_d", "cost_note35_d_inr", "POOL_ACTUARIAL_TRUEUP"),
-            ("note35_1_e", "cost_note35_e_inr", "POOL_RETIREE_PRMB"),
-            ("note35_1_f", "cost_note35_f_inr", "POOL_WELFARE_INFRA"),
+        bp_da = bp_da_by_fy.get(fy, 0.0)
+        
+        for line, col, pool_code, driver_pct in [
+            ("note35_1_c", "cost_note35_c_inr", "POOL_ACTUARIAL_TRUEUP", 0.02),
+            ("note35_1_d", "cost_note35_d_inr", "POOL_ACTUARIAL_TRUEUP", 0.03),
+            ("note35_1_e", "cost_note35_e_inr", "POOL_RETIREE_PRMB", 0.04),
+            ("note35_1_f", "cost_note35_f_inr", "POOL_WELFARE_INFRA", 0.05),
         ]:
             target = note35_targets.get((fy, line))
             if not target:
@@ -230,18 +265,21 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
             if target:
                 target_inr = target * 1e6
                 modelled_inr = row[col]
-                residual = target_inr - modelled_inr
-                if residual != 0:
+                
+                # Illustrative driver for cost pools, replacing plug residual
+                pool_amount = bp_da * driver_pct
+                
+                if pool_amount > 0:
                     pools.append({
                         "fiscal_year": fy,
                         "month_start": f"{fy[:2]}26-03-01",
                         "pool_code": pool_code,
                         "note35_line": line[-1],
-                        "amount_inr": residual,
-                        "allocation_basis": f"AR line {line[-1]} actuarial/infra provisions",
+                        "amount_inr": pool_amount,
+                        "allocation_basis": f"Illustrative {driver_pct*100}% of BP+DA for {line[-1]}",
                         "cost_destination": "CO-HQ",
                         "segment": "Corporate",
-                        "basis": "real_total_modelled_split"
+                        "basis": "illustrative_driver"
                     })
                 
     df_pools = pd.DataFrame(pools)

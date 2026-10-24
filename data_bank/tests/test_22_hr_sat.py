@@ -344,9 +344,13 @@ def test_dpe_statutory_caps():
     """Verify DA%, cafeteria <= 35%, and superannuation contributions within DPE 30% cap."""
     df_pay = pd.read_csv(LANDING_SAP / "PY_CLUSTER_EXP.csv", nrows=5000)
 
-    # Cafeteria allowance <= 35% of Basic Pay (LGART_1001)
+    # Cafeteria allowance <= 35% of Basic Pay (LGART_1001), 50% for 2007 E-grades
     cafeteria_ratio = df_pay["cafeteria_allowances_inr"] / df_pay["LGART_1001"]
-    assert (cafeteria_ratio <= 0.3501).all(), "Cafeteria allowances breached DPE 35% cap"
+    
+    is_fy17_exec = (df_pay["fiscal_year"] == "FY17") & (df_pay["grade_id"].str.startswith("E") | df_pay["grade_id"].isin(["DIR", "CMD"]))
+    import numpy as np
+    caps = np.where(is_fy17_exec, 0.5001, 0.3501)
+    assert (cafeteria_ratio <= caps).all(), "Cafeteria allowances breached DPE cap"
 
     # Superannuation benefit pct <= 30.0% of (Basic + DA)
     assert (df_pay["superannuation_benefit_pct"] <= 30.0).all(), "Superannuation breached DPE 30% cap"
