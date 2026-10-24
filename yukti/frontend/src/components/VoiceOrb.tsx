@@ -140,9 +140,9 @@ export const VoiceOrb: React.FC<VoiceOrbProps> = ({
       const coreR = W * (0.26 + 0.025 * Math.cos(phase * 1.2) + smoothLevel * 0.05);
       const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR);
       const coreAlpha = isDark ? 0.32 + smoothLevel * 0.18 : 0.78 + smoothLevel * 0.15;
-      coreGrad.addColorStop(0, `tint(255, 255, 255, ${Math.min(0.95, coreAlpha)})`);
-      coreGrad.addColorStop(0.48, `tint(255, 255, 255, ${coreAlpha * 0.55})`);
-      coreGrad.addColorStop(1, 'tint(255, 255, 255, 0)');
+      coreGrad.addColorStop(0, `rgba(255, 255, 255, ${Math.min(0.95, coreAlpha)})`);
+      coreGrad.addColorStop(0.48, `rgba(255, 255, 255, ${coreAlpha * 0.55})`);
+      coreGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
       ctx.fillStyle = coreGrad;
       ctx.beginPath();
       ctx.arc(cx, cy, coreR, 0, Math.PI * 2);
@@ -151,10 +151,10 @@ export const VoiceOrb: React.FC<VoiceOrbProps> = ({
       // 4. Circular radial feather mask (destination-in) so the outer edge is 100% circular & feathery (never clips to a square)
       ctx.globalCompositeOperation = 'destination-in';
       const featherMask = ctx.createRadialGradient(cx, cy, W * 0.18, cx, cy, W * 0.48);
-      featherMask.addColorStop(0, 'tint(255, 255, 255, 1)');
-      featherMask.addColorStop(0.68, 'tint(255, 255, 255, 0.92)');
-      featherMask.addColorStop(0.88, 'tint(255, 255, 255, 0.35)');
-      featherMask.addColorStop(1, 'tint(255, 255, 255, 0)');
+      featherMask.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      featherMask.addColorStop(0.68, 'rgba(255, 255, 255, 0.92)');
+      featherMask.addColorStop(0.88, 'rgba(255, 255, 255, 0.35)');
+      featherMask.addColorStop(1, 'rgba(255, 255, 255, 0)');
       ctx.fillStyle = featherMask;
       ctx.fillRect(0, 0, W, H);
 
