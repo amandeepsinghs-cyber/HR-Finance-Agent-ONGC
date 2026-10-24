@@ -401,7 +401,7 @@ class Compiler:
             for rc in subject.row_columns:
                 expr = rc["expr"]
                 if definition_id and rc["as"] in ("delhi_tenure_years", "station_tenure_years"):
-                    expr = "ROUND(DATE_DIFF(DATE '2026-10-19', continuous_from_date, DAY) / 365.25, 1)"
+                    expr = f"ROUND(DATE_DIFF(DATE '{self.model.anchor_date}', continuous_from_date, DAY) / 365.25, 1)"
                 cols.append(f"{expr} AS {rc['as']}")
                 if not is_self:
                     data_classes.add(rc.get("data_class", "general"))

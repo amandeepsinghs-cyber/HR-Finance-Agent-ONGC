@@ -97,7 +97,7 @@ queries:
     \ (alignment with C1/H10/X10): overdue pool also excludes executives whose current\n-- posting carries a valid exemption_tag\
     \ ('None' = no tag; exemption_valid_until >= 2026-10-19 or NULL).\n\nWITH overdue AS (\n    SELECT v.wc_id, v.emp_id\n\
     \    FROM `ongc-hr-finance-agent.hrfin_gold.v_continuous_stay` v\n    WHERE v.is_current_stay = TRUE\n      AND v.grade_id\
-    \ LIKE 'E%'\n      AND v.continuous_stay_months >= @min_stay_months\n      AND DATE_DIFF(v.retirement_date, DATE '2026-10-19',\
+    \ LIKE 'E%'\n      AND DATE_DIFF(DATE '2026-10-19', v.continuous_from_date, DAY) > 1826\n      AND DATE_DIFF(v.retirement_date, DATE '2026-10-19',\
     \ DAY) > 3 * 365.25\n      AND v.emp_id NOT IN (\n          SELECT ph.emp_id FROM posting_history ph\n          WHERE\
     \ ph.is_current_posting = TRUE\n            AND NULLIF(ph.exemption_tag, 'None') IS NOT NULL\n            AND (ph.exemption_valid_until\
     \ >= DATE '2026-10-19' OR ph.exemption_valid_until IS NULL)\n      )\n),\nod_wc AS (\n    SELECT wc_id, COUNT(DISTINCT\
@@ -597,7 +597,7 @@ queries:
     \ falls by the number moved.\n-- Semantic audit 2026-10-20 (alignment with C1/H10/X10): overdue pool also excludes executives\
     \ whose current\n-- posting carries a valid exemption_tag ('None' = no tag; exemption_valid_until >= 2026-10-19 or NULL).\n\
     \nWITH params AS (SELECT 200 AS officers),\npool AS (\n    SELECT\n        COUNT(DISTINCT e.emp_id) AS source_pool_e3_e5,\n\
-    \        COUNT(DISTINCT IF(v.continuous_stay_months >= @min_stay_months AND DATE_DIFF(v.retirement_date, DATE '2026-10-19',\
+    \        COUNT(DISTINCT IF(DATE_DIFF(DATE '2026-10-19', v.continuous_from_date, DAY) > 1826 AND DATE_DIFF(v.retirement_date, DATE '2026-10-19',\
     \ DAY) > 3 * 365.25 AND ex.emp_id IS NULL, e.emp_id, NULL)) AS source_pool_overdue\n    FROM employee_master e\n    LEFT\
     \ JOIN `ongc-hr-finance-agent.hrfin_gold.v_continuous_stay` v ON v.emp_id = e.emp_id AND v.is_current_stay\n    LEFT JOIN\
     \ (SELECT DISTINCT emp_id FROM posting_history WHERE is_current_posting = TRUE AND NULLIF(exemption_tag, 'None') IS NOT\
@@ -1117,7 +1117,7 @@ queries:
     \ <= 3*365.25 days)\n    -- or a recorded exemption still valid on 2026-10-19.\n    SELECT s.*, IFNULL(h.served_cat_c,\
     \ FALSE) AS served_cat_c,\n           DATE_DIFF(s.retirement_date, DATE '2026-10-19', DAY) <= 3 * 365.25 AS retiring_3y,\n\
     \           s.exemption_tag IS NOT NULL AND IFNULL(s.exemption_valid_until, DATE '9999-12-31') >= DATE '2026-10-19' AS\
-    \ valid_exemption,\n           s.continuous_stay_months >= @min_stay_months AS stay_ge_5y,\n           s.continuous_stay_months\
+    \ valid_exemption,\n           DATE_DIFF(DATE '2026-10-19', s.continuous_from_date, DAY) > 1826 AS stay_ge_5y,\n           s.continuous_stay_months\
     \ BETWEEN 36 AND 59 AS stay_3_to_5y,\n           s.continuous_from_date = DATE '2020-07-01' AS censored_2020_07_01\n \
     \   FROM stay s\n    LEFT JOIN ever_hard h ON h.emp_id = s.emp_id\n),\nflags AS (\n    SELECT r.*,\n           r.stay_ge_5y\
     \ AND NOT r.retiring_3y AND NOT r.valid_exemption AS due_for_rotation,\n           r.stay_3_to_5y AND NOT r.retiring_3y\
@@ -2738,7 +2738,7 @@ queries:
     \ 365.25 AS within_3yr_of_superannuation,\n    NULLIF(p.exemption_tag, 'None') AS exemption_tag\nFROM `ongc-hr-finance-agent.hrfin_gold.v_continuous_stay`\
     \ v\nJOIN dim_discipline d ON d.discipline_id = v.discipline_id\nLEFT JOIN posting_history p ON p.emp_id = v.emp_id AND\
     \ p.is_current_posting AND p.wc_id = @wc_id\nWHERE v.is_current_stay AND v.wc_id = 'WC-DEL' AND v.grade_id LIKE 'E%' AND\
-    \ v.continuous_stay_months >= @min_stay_months\nORDER BY delhi_years DESC, v.emp_id;"
+    \ DATE_DIFF(DATE '2026-10-19', v.continuous_from_date, DAY) > 1826\nORDER BY delhi_years DESC, v.emp_id;"
   params:
     wc_id:
       type: STRING
@@ -3514,7 +3514,7 @@ queries:
     \ AS (\n    SELECT emp_id\n    FROM posting_history\n    WHERE is_current_posting AND NULLIF(exemption_tag, 'None') IS\
     \ NOT NULL\n      AND (exemption_valid_until IS NULL OR exemption_valid_until >= DATE '2026-10-19')\n),\noverdue AS (\n\
     \    SELECT v.emp_id, v.wc_id, v.grade_id, v.continuous_stay_months AS months_at_station\n    FROM `ongc-hr-finance-agent.hrfin_gold.v_continuous_stay`\
-    \ v\n    WHERE v.is_current_stay AND STARTS_WITH(v.grade_id, 'E') AND v.continuous_stay_months >= @min_stay_months\n \
+    \ v\n    WHERE v.is_current_stay AND STARTS_WITH(v.grade_id, 'E') AND DATE_DIFF(DATE '2026-10-19', v.continuous_from_date, DAY) > 1826\n \
     \     AND v.emp_id NOT IN (SELECT emp_id FROM exempt)\n      AND DATE_DIFF(v.retirement_date, DATE '2026-10-19', DAY)\
     \ > 3 * 365.25\n),\nf AS (\n    SELECT field_id, fiscal_year, lifting_cost_per_boe_usd, total_production_boe\n    FROM\
     \ field_pnl_annual\n    WHERE LOWER(line_type) = 'field' AND fiscal_year IN ('FY25', 'FY26')\n),\nlift AS (\n    SELECT\

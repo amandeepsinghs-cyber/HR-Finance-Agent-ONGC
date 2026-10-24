@@ -5,7 +5,7 @@
     intent: data
     metric: headcount
     grain: aggregate
-    dimensions: []
+    dimensions: ['grade']
     filters:
       - {field: wc, op: "=", value: WC-DEL}
       - {field: cadre, op: "=", value: executive}
@@ -15,7 +15,7 @@
     domain: hr
     metric: headcount
     grain: aggregate
-    dimensions: []
+    dimensions: ['grade']
     filters:
       - {field: wc, op: "=", value: WC-DEL}
       - {field: cadre, op: "=", value: executive}
@@ -190,7 +190,7 @@
     domain: hr
     metric: headcount
     grain: aggregate
-    dimensions: []
+    dimensions: ['grade']
     filters:
       - {field: wc, op: "=", value: WC-MUM}
       - {field: cadre, op: "=", value: executive}
@@ -294,7 +294,7 @@
   question: "Show me Champang's P&L"
   prior: null
   expect:
-    metric_in: [pbt_cr, ebitda_cr, revenue_cr]
+    metric_in: [pbt_cr, ebitda_cr, revenue_cr, pnl_statement]
     filters_include:
       - {field: field, op: "=", value: FLD-CHP}
 

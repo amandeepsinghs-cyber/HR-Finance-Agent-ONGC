@@ -13,6 +13,7 @@ from app.brain.compiler import GRADE_LEVEL_ORDER, CompiledQuery, QueryResult
 from app.brain.query_spec import QuerySpec
 from app.semantic.entities import get_entities
 from app.tools.chart_rules import build_chart_spec, select_chart_kind
+from app.brain.semantic_model import get_semantic_model
 
 EXEC_LEVELS: List[str] = ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"]
 ALL_NON_BOARD_LEVELS: List[str] = ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "GRP-B", "GRP-C", "GRP-D"]
@@ -36,10 +37,10 @@ def _format_exemption(r: Dict[str, Any]) -> str:
         s = str(ex).strip()
         if s and s.upper() not in ("NONE", "NULL", "FALSE", "—", "-"):
             if s.upper() == "SUPERANNUATION":
-                return "Superannuation (<3 yrs)"
+                return "Pre-retirement (≤2 yrs)"
             return s.replace("_", "-").title()
     if r.get("is_superannuation_exempt") in (True, 1, "true", "True"):
-        return "Superannuation (<3 yrs)"
+        return "Pre-retirement (≤2 yrs)"
     return "—"
 
 
@@ -81,7 +82,7 @@ def format_workforce_roster_table(
         "years_to_retirement",
         "exemption",
     ]
-    can_keep_hidden = (persona or "").strip().upper() in ("CMD", "DIR_HR")
+    can_keep_hidden = (persona or "").strip().upper() in ("CMD", "DIR_HR", "DIR_FIN")
     hidden_cols = ["emp_id", "discipline"] if can_keep_hidden else []
     all_cols = visible_cols + hidden_cols
 
@@ -124,7 +125,7 @@ def format_workforce_roster_table(
         "column_labels": column_labels,
         "hidden_columns": hidden_cols,
         "default_sort": {"key": tenure_key, "dir": "desc"},
-        "as_of": "2026-10-19",
+        "as_of": get_semantic_model().anchor_date,
     }
     return tbl, used_fallback
 
@@ -134,16 +135,17 @@ def order_workforce_grade_rows(
     compiled: CompiledQuery,
     val_col: str,
     rows: List[Dict[str, Any]],
+    raw_rows: Optional[List[Dict[str, Any]]] = None
 ) -> Tuple[List[Dict[str, Any]], int, int, int]:
     """Separates CMD/DIR board rows and orders level rows explicitly by `GRADE_LEVEL_ORDER`.
 
     Returns `(ordered_rows, cmd_count, dir_count, total_including_board)`.
     """
-    by_grade: Dict[str, Dict[str, Any]] = {}
     cmd_n = 0
     dir_n = 0
     total_with_board = 0
-    for r in rows:
+    source_for_totals = raw_rows if raw_rows is not None else rows
+    for r in source_for_totals:
         g = str(r.get("grade") or "").strip().upper()
         v = _num(r.get(val_col))
         total_with_board += int(round(v))
@@ -151,7 +153,11 @@ def order_workforce_grade_rows(
             cmd_n += int(round(v))
         elif g == "DIR":
             dir_n += int(round(v))
-        elif g:
+            
+    by_grade: Dict[str, Dict[str, Any]] = {}
+    for r in rows:
+        g = str(r.get("grade") or "").strip().upper()
+        if g not in ("CMD", "DIR") and g:
             by_grade[g] = dict(r)
 
     has_explicit_grade_filter = any(f.field == "grade" for f in (spec.filters or []))
@@ -276,7 +282,7 @@ def scope_phrases(spec: QuerySpec, compiled: Optional[CompiledQuery] = None) -> 
     elif p.get("from"):
         out.append(f"{p['from']}–{p['to']}")
     elif p.get("as_of"):
-        out.append("As of 19-Oct-2026")
+        out.append("As of {get_semantic_model().anchor_date}")
     return out
 
 
@@ -285,7 +291,8 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                  n_total: Optional[int] = None,
                  breakdown: Optional[Tuple[List[str], List[Dict[str, Any]]]] = None,
                  persona: str = "CMD",
-                 query: str = "") -> Dict[str, Any]:
+                 query: str = "",
+                 raw_rows: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
     unit = CHART_UNIT.get(compiled.unit)
     unit_word = UNIT_WORDS.get(compiled.unit, "")
     cap = 2000 if compiled.grain == "row" else 200   # rosters ship whole (UI virtualises, U5.2)
@@ -537,7 +544,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             bd_cols, bd_rows = breakdown
             bd_dim, bd_val = bd_cols[0], bd_cols[1]
             if compiled.subject == "workforce" and bd_dim == "grade" and compiled.metric == "headcount":
-                ordered_bd, cmd_n, dir_n, _ = order_workforce_grade_rows(spec, compiled, bd_val, bd_rows)
+                ordered_bd, cmd_n, dir_n, _ = order_workforce_grade_rows(spec, compiled, bd_val, bd_rows, raw_rows=None)
                 bd_rows = ordered_bd
                 ck = chart_kind if (chart_kind and chart_kind not in ("kpi", "table", "histogram", "bar")) else "column"
                 vis["type"] = "chart"
@@ -605,7 +612,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
     if compiled.unit in ("pct", "usd_per_boe", "ratio") and len(compiled.value_columns) > 1:
         pass  # mixed measures still chart the primary measure only
     if compiled.subject == "workforce" and dims == ["grade"] and compiled.metric == "headcount" and val:
-        ordered_rows, cmd_n, dir_n, total_with_board = order_workforce_grade_rows(spec, compiled, val, rows)
+        ordered_rows, cmd_n, dir_n, total_with_board = order_workforce_grade_rows(spec, compiled, val, rows, raw_rows=raw_rows)
         st_short = _station_short_name(compiled.station_wc_id)
         exec_num_rows = [
             r for r in ordered_rows
@@ -632,13 +639,15 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             chart_lvl["note"] = LEVEL_CHART_NOTE
             if cmd_n > 0 or dir_n > 0:
                 chart_lvl["footnote"] = f"Also in {st_short}: CMD {cmd_n}, Directors {dir_n}"
+            if any('<5' in str(r.get(val, '')) for r in rows):
+                chart_lvl["footnote"] = chart_lvl.get("footnote", "") + (" · " if chart_lvl.get("footnote") else "") + "cells <5 suppressed"
             vis["chart"] = chart_lvl
         kpis_lvl: List[Dict[str, Any]] = [
             {
                 "label": f"Total {st_short} Staff" if st_short != "ONGC" else "Total Active Staff",
                 "value": total_with_board,
                 "unit": unit_word,
-                "delta": f"Also in {st_short}: CMD {cmd_n}, Directors {dir_n}" if (cmd_n or dir_n) else f"Across {len(ordered_rows)} levels",
+                "delta": (f"Also in {st_short}: CMD {cmd_n}, Directors {dir_n}" if (cmd_n or dir_n) else f"Across {len(ordered_rows)} levels") + (" (cells <5 suppressed)" if any('<5' in str(r.get(val, '')) for r in rows) else ""),
             }
         ]
         if exec_num_rows:

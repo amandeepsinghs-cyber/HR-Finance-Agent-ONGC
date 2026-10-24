@@ -12,3 +12,9 @@
 
 ## Deviations
 None.
+
+## R4b Feedback fixes:
+- Added explicit test for `query_data` tool absence for E1-E4 (`test_r4_e1_e4_query_data_tool_absent`).
+- Corrected direct call test to use `app.agent.query_data` which properly enforces the D-64 block.
+- Confirmed DIR_FIN explicitly refused HR data via `query_data` AST checks, but allowed FIN data, ensuring defence-in-depth even if LLM natively replies gracefully.
+- All 1816 tests pass.

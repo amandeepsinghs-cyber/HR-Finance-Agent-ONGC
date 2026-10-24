@@ -79,7 +79,7 @@ def test_t2_names_roster(chain):
     assert c["query_spec"]["grain"] == "row" and _filters(c) == BASE
     t = c["visual"]["table"]
     assert t.get("total_rows") == 419 and len(t["rows"]) == 419
-    assert {"name", "designation", "grade", "ongc_tenure_years", "station_tenure_years"} <= set(t["columns"])
+    assert {"name", "functional_designation", "grade", "ongc_tenure_years", "delhi_tenure_years"} <= set(t["columns"])
 
 
 def test_t3_by_discipline(chain):

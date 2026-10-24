@@ -20,6 +20,7 @@ from google.genai import types
 from app.access_control import check_access, normalize_persona
 from app.agent import create_yukti_agent
 from app.answer_composer import detect_language, get_contract_validator, validate_and_repair_contract
+from app.brain.semantic_model import get_semantic_model
 from app.brain.pipeline import planner_enabled, run_planner_turn
 from app.config import DEFAULT_TEXT_MODEL, GCP_PROJECT, VERTEX_TEXT_LOCATION
 from app.router import get_semantic_router
@@ -112,10 +113,10 @@ def make_clean_title_and_subtitle(
                 sub += " | Station Category C"
             if ents.wc_notes.get(target_wc):
                 sub += f" | {ents.wc_notes[target_wc]}"
-            return f"{label}: Executives with ≥5 Years' Continuous Stay", f"{sub} | As of 19-Oct-2026"
+            return f"{label}: Executives with ≥5 Years' Continuous Stay", f"{sub} | {get_semantic_model().anchor_date}"
 
     clean = re.sub(r"^(How many|What is the|What are the|Which|Please show|Tell me about)\s+", "", query, flags=re.IGNORECASE).strip().rstrip("?")
-    return clean[:65].capitalize(), "ONGC enterprise records (demo data) | As of 19-Oct-2026"
+    return clean[:65].capitalize(), f"ONGC enterprise records (demo data) | {get_semantic_model().anchor_date}"
 
 
 def make_clean_title(query: str) -> str:
@@ -793,7 +794,7 @@ class AgentTurnRunner:
                         "type": "table" if chart_k == "table" else "chart",
                         "mode": "refine",
                         "title": title_disc,
-                        "subtitle": f"Work Centre: {city_lbl} | Breakdown by Discipline | As of 19-Oct-2026",
+                        "subtitle": f"Work Centre: {city_lbl} | Breakdown by Discipline | {get_semantic_model().anchor_date}",
                         "chart": chart_spec,
                         "table": {"columns": cols, "rows": rows[:20]},
                     },
@@ -963,7 +964,7 @@ class AgentTurnRunner:
                             "type": "table" if chart_k == "table" else "chart",
                             "mode": "replace",
                             "title": title_hc,
-                            "subtitle": f"Work Centre: {wc_label} | Active Regular Rolls: {total_emp:,} | Sanctioned: {sanctioned:,} | As of 19-Oct-2026",
+                            "subtitle": f"Work Centre: {wc_label} | Active Regular Rolls: {total_emp:,} | Sanctioned: {sanctioned:,} | {get_semantic_model().anchor_date}",
                             "kpis": kpis,
                             "chart": chart_spec,
                             "table": {"columns": cols_hc, "rows": rows_hc[:20]},
@@ -1030,7 +1031,7 @@ class AgentTurnRunner:
                             "type": "table" if chart_k == "table" else "chart",
                             "mode": "replace",
                             "title": title_all,
-                            "subtitle": f"Company-Wide Active Regular Workforce: {total_emp:,} across {len(rows_all)} Work Centres | As of 19-Oct-2026",
+                            "subtitle": f"Company-Wide Active Regular Workforce: {total_emp:,} across {len(rows_all)} Work Centres | {get_semantic_model().anchor_date}",
                             "kpis": [
                                 {"label": "Total Active Workforce", "value": total_emp, "unit": "employees", "delta": f"{len(rows_all)} work centres"},
                                 {"label": "Executives", "value": exec_emp, "unit": "officers", "delta": f"{round(exec_emp * 100.0 / max(1, total_emp), 1)}% of rolls"},

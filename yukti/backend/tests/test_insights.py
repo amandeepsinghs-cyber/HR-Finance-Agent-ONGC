@@ -400,13 +400,13 @@ def test_named_exceptions_none(example_context: InsightContext):
 # ------------------------------------------------------------------ 6. policy_flags
 def test_policy_flags_positive():
     rows = [
-        {"name": f"Emp_{i}", "station_tenure_years": 6.0, "retiring_within_3yr": False}
+        {"name": f"Emp_{i}", "station_tenure_years": 6.0, "is_superannuation_exempt": False}
         for i in range(4)
     ] + [
-        {"name": f"Emp_{i+4}", "station_tenure_years": 2.0, "retiring_within_3yr": True}
+        {"name": f"Emp_{i+4}", "station_tenure_years": 2.0, "is_superannuation_exempt": True}
         for i in range(2)
     ] + [
-        {"name": f"Emp_{i+6}", "station_tenure_years": 3.0, "retiring_within_3yr": False}
+        {"name": f"Emp_{i+6}", "station_tenure_years": 3.0, "is_superannuation_exempt": False}
         for i in range(4)
     ]
     ctx = InsightContext(
@@ -425,8 +425,8 @@ def test_policy_flags_positive():
     assert ins.priority == 16
     assert ins.value == 4.0
     assert ins.unit == "employees"
-    assert ins.text == "4 of 10 are past the 5-year rotation norm; 2 are within 3 years of superannuation (exempt)."
-    assert ins.facts == [4.0, 10.0, 5.0, 2.0, 3.0]
+    assert ins.text == "4 of 10 are past the 5-year rotation norm; 2 are within 2 years of superannuation (exempt)."
+    assert ins.facts == [4.0, 10.0, 5.0, 2.0, 2.0]
 
 
 def test_policy_flags_none_cases():

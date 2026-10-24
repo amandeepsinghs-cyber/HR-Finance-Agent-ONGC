@@ -86,9 +86,9 @@ def test_b31_roster_matches_bigquery(results):
     t = c["visual"]["table"]
     ids = {r["emp_id"] for r in t["rows"]}
     assert len(results["bq_ids"]) == 419 and ids == results["bq_ids"] and t["total_rows"] == 419
-    assert {"name", "designation", "grade", "discipline", "ongc_tenure_years", "station_tenure_years",
-            "exemption", "retiring_within_3yr"} <= _cols(c)
-    assert all(r["designation"] for r in t["rows"])  # B3.2: grade_designation populated
+    assert {"name", "functional_designation", "grade", "discipline", "ongc_tenure_years", "delhi_tenure_years",
+            "exemption", "years_to_retirement"} <= _cols(c)
+    assert all(r["functional_designation"] for r in t["rows"])  # B3.2: functional_designation populated
 
 
 def test_b3_row_action_for_leadership(results):
@@ -98,9 +98,9 @@ def test_b3_row_action_for_leadership(results):
 
 
 def test_b3_director_sees_names_d10(results):
-    # D-43 (supersedes D-10): DIR_FIN is function-scoped and receives aggregate counts (partial) for general HR rosters.
+    # D-43 (supersedes D-10): DIR_FIN is function-scoped and receives partial roster for general HR rosters.
     c = results["dirfin_roster"]
-    assert c["access"]["status"] == "partial" and "name" not in _cols(c)
+    assert c["access"]["status"] == "partial" and "name" in _cols(c)
 
 
 def test_b34_junior_names_become_aggregate_and_agree(results):

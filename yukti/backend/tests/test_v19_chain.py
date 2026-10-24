@@ -455,8 +455,12 @@ def test_v19_rbac_11_personas_x_3_turns(v19_runner, persona: str, turn_step: str
         c = c1
         assert c["access"]["status"] in ("allowed", "partial")
         assert c["visual"]["chart"]["kind"] == "column"
+        insights_str = " ".join(c.get("insights", []))
+        assert "CMD" not in insights_str and "DIR" not in insights_str
         rows = c["visual"]["table"]["rows"]
         if persona.startswith(("E1_", "E2_", "E3_", "E4_")):
+            assert "943" in c["visual"].get("title", "") or "943" in c.get("display_text", "") or "943" in c.get("spoken_summary", "")
+
             # Juniors have k>=5 small-cell suppression (E9=4 -> '<5', GRP-B=0 -> '<5')
             by_g = {r["grade"]: r["headcount"] for r in rows}
             assert by_g.get("E9") == "<5"
@@ -484,6 +488,9 @@ def test_v19_rbac_11_personas_x_3_turns(v19_runner, persona: str, turn_step: str
         if persona.startswith(("E1_", "E2_", "E3_", "E4_")):
             # E9 has 3 executives >5 yrs -> suppressed to '<5' for juniors
             assert by_g.get("E9") == "<5"
+            text_all = c["visual"].get("title", "") + " " + c.get("display_text", "") + " " + " ".join(c.get("insights", []))
+            assert "419" in text_all
+
             if persona.endswith("_FIN"):
                 assert c["visual"]["table"]["masking"]["level"] == "aggregate"
         else:
@@ -509,11 +516,16 @@ def test_v19_rbac_11_personas_x_3_turns(v19_runner, persona: str, turn_step: str
         assert c3["visual"]["table"]["hidden_columns"] == ["emp_id", "discipline"]
         assert c3["visual"]["table"]["total_rows"] == 419
     elif persona == "DIR_FIN":
-        # DIR_FIN gets aggregate counts by level (non-FIN rows collapsed to aggregate)
+        # DIR_FIN gets partial roster: granular names for FIN, collapsed groups for HR/Corp.
         assert c3["access"]["status"] == "partial"
-        assert "name" not in cols and "emp_id" not in cols
+        assert "name" in cols and "functional_designation" in cols
+        assert c3["visual"]["table"]["hidden_columns"] == ["emp_id", "discipline"]
         assert c3["visual"]["table"]["masking"]["level"] == "aggregate"
-        assert active_cohort is not None and "name" not in set(active_cohort.get("columns") or [])
+        rows = c3["visual"]["table"]["rows"]
+        has_named = any(r.get("name") and "employees" not in str(r.get("name")) for r in rows)
+        has_collapsed = any("employees" in str(r.get("name")) for r in rows)
+        assert has_named and has_collapsed
+        assert active_cohort is not None
     else:
         # E1..E4_HR and E1..E4_FIN: R-NAMED + aggregate counts by grade (k>=5)
         assert c3["access"]["status"] == "partial"

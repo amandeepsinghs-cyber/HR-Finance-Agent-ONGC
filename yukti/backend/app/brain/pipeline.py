@@ -12,6 +12,8 @@ from __future__ import annotations
 import logging
 import os
 import re
+from app.brain.semantic_model import get_semantic_model
+from app.access_control import UnknownPersona
 import time
 from typing import Any, Dict, List, Optional
 
@@ -168,7 +170,8 @@ async def run_planner_turn(
         if policy.action == "refuse":
             return {"contract": _refusal_contract(policy, spec, persona, turn_id, language, t0), "meta": {"spec": None}}
         downgraded_from_row = bool(policy.action == "aggregate" and spec.grain == "row")
-        if policy.action == "aggregate" and downgraded_from_row:
+        is_partial_director = bool(policy.persona_class == "director" and downgraded_from_row)
+        if policy.action == "aggregate" and downgraded_from_row and not is_partial_director:
             spec = to_aggregate(spec)
             compiled = compiler.compile(spec, self_emp_id=self_emp_id)
             status.append("RBAC: names restricted for this role; answering with aggregate counts (D-11)")
@@ -200,6 +203,27 @@ async def run_planner_turn(
     n_total = total_rows(result)
     columns, rows, code_maps = localise_rows(compiled, result)
     raw_rows_before_k5 = [dict(r) for r in rows]
+    
+    if is_partial_director:
+        my_func = policy.function
+        out_rows = []
+        collapsed = {}
+        for r in raw_rows_before_k5:
+            disc = str(r.get("discipline") or "").upper()
+            row_func = "FIN" if "FIN" in disc else "HR"
+            if row_func == my_func:
+                if "emp_id" in r:
+                    r["emp_id"] = None
+                out_rows.append(r)
+            else:
+                g = str(r.get("grade") or "UNKNOWN")
+                collapsed[g] = collapsed.get(g, 0) + 1
+        for g, count in collapsed.items():
+            func_lbl = "Finance" if my_func == "HR" else "HR/Corp"
+            out_rows.append({"grade": g, "name": f"{count} {g} employees ({func_lbl})"})
+        rows = out_rows
+        status.append("RBAC: partial roster (D-43); out-of-function rows collapsed")
+
     junior = _is_junior(persona)
     suppressed = 0
     if junior and compiled.grain == "aggregate":
@@ -222,14 +246,16 @@ async def run_planner_turn(
     if compiled.grain == "aggregate" and (not compiled.dims or len(rows) == 1) and rows and (not junior or compiled.definition_id):
         breakdown = await _companion_breakdown(spec, compiled, compiler, junior=junior)
     visual = build_visual(spec, compiled, columns, rows, plan.chart_kind, title, subtitle, mode, n_total,
-                          breakdown=breakdown, persona=persona, query=query)
-    headline = narrate(spec, compiled, columns, rows, n_total)
+                          breakdown=breakdown, persona=persona, query=query, raw_rows=raw_rows_before_k5)
+    chart_rows = visual.get("table", {}).get("rows") or rows
+    insight_rows = [r for r in chart_rows if str(r.get("grade", "")).strip().upper() not in ("CMD", "DIR")]
+    headline = narrate(spec, compiled, columns, insight_rows, n_total=n_total)
     # B4: deterministic insights (+ previous-FY comparison where the subject has fiscal years),
     # drill-down chips, and a narrator limited to computed facts with a numeric-grounding check.
     prev_rows = await _previous_period_rows(spec, compiled, compiler)
-    insights = compute_insights(build_insight_context(spec, compiled, rows, n_total, prev_rows,
+    insights = compute_insights(build_insight_context(spec, compiled, insight_rows, n_total, prev_rows,
                                                       scope_phrases(spec, compiled), query=query))
-    extra_nums = derived_numbers(compiled, rows, n_total)
+    extra_nums = derived_numbers(compiled, insight_rows, n_total)
     if breakdown and breakdown[1]:
         for br in breakdown[1]:
             for bv in br.values():
@@ -262,7 +288,7 @@ async def run_planner_turn(
         from app.brain.presenter import _station_short_name
         st_short = _station_short_name(compiled.station_wc_id)
         n_gt5_exec, n_gt5_all = await _v19_sibling_counts(spec, compiled, compiler, raw_rows_before_k5)
-        rule_line = "Continuous stay at the current station, more than 5.0 years, as of 2026-10-19"
+        rule_line = f"Continuous stay at the current station, more than 5.0 years, as of {get_semantic_model().anchor_date}"
         jrtp_line = "JRTP Rev 4 cl. 3.2 — rotation after 3–5 years (**Illustrative**)"
         hc_line = "Delhi High Court (2018), ONGC v. B.V. Srihari Rao"
         v19_sources = [
@@ -324,7 +350,7 @@ async def run_planner_turn(
         ins_texts = [visual["title"]] + ins_texts[:3]
         ins_v2_list = [{"kind": "headline", "text": visual["title"]}] + ins_v2_list[:5]
     if compiled.definition_id in ("DELHI_GT5_CONT_V1", "STATION_GT5_CONT_V1") and compiled.grain == "aggregate" and not downgraded_from_row:
-        rule_ins = "Continuous stay at the current station, more than 5.0 years, as of 2026-10-19"
+        rule_ins = f"Continuous stay at the current station, more than 5.0 years, as of {get_semantic_model().anchor_date}"
         cite_ins = "JRTP Rev 4 cl. 3.2 — rotation after 3–5 years (**Illustrative**) · Delhi High Court (2018), ONGC v. B.V. Srihari Rao"
         ins_texts = [ins_texts[0] if ins_texts else spoken, rule_ins, cite_ins] + ins_texts[1:2]
         ins_v2_list = [

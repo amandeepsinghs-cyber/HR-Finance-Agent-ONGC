@@ -8,6 +8,7 @@ active dataset (`last_rows`, `last_columns`, `last_sql`), and visual mode transi
 from dataclasses import dataclass, field
 import logging
 import re
+from app.brain.semantic_model import get_semantic_model
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -225,7 +226,7 @@ class SessionState:
             "rows": rows,
             "level_rows": list(rows) if "grade" in cols else (list(active.get("level_rows") or []) if active else []),
             "rbac_decision": rbac_dec,
-            "as_of": str(tbl.get("as_of") or "2026-10-19"),
+            "as_of": str(tbl.get("as_of") or get_semantic_model().anchor_date),
             "emp_id": emp_id,
             "artifacts": [],
             "visual": dict(vis),
