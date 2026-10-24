@@ -297,9 +297,11 @@ def get_tenure_band(tenure: float) -> str:
     else:
         return ">10yr"
 
-female_first = ["Sunita", "Pooja", "Anjali", "Deepa", "Sneha", "Kavita", "Ritu", "Meena", "Priyanka", "Shweta", "Neha", "Aarti", "Asha", "Divya", "Swati", "Rashmi", "Nandini", "Pallavi", "Geeta", "Rekha"]
-male_first = ["Rajesh", "Suresh", "Ramesh", "Amit", "Alok", "Sanjay", "Manoj", "Anil", "Sunil", "Pradeep", "Dinesh", "Rakesh", "Vikram", "Santosh", "Ajay", "Vijay", "Mukesh", "Ashok", "Praveen", "Mahesh"]
-last_names = ["Sharma", "Verma", "Singh", "Kumar", "Patel", "Gupta", "Mishra", "Joshi", "Das", "Banerjee", "Chatterjee", "Bhattacharya", "Nair", "Pillai", "Reddy", "Rao", "Kulkarni", "Deshmukh", "Choudhury", "Bora", "Saikia", "Gogoi", "Baruah", "Hazarika", "Deka", "Sarma", "Goswami", "Ahmed", "Ali", "Biswas", "Saha", "Roy", "Dutta", "Mukherjee", "Ghosh", "Majumdar"]
+import yaml
+
+NAME_POOLS_YAML = os.path.join(REF_DIR, "name_pools.yaml")
+with open(NAME_POOLS_YAML, "r", encoding="utf-8") as f:
+    NAME_POOLS = yaml.safe_load(f)
 
 REAL_PERSON_NAMES_BLACKLIST = {
     "arun kumar singh", "arun singh", "arun kumar",
@@ -312,13 +314,32 @@ REAL_PERSON_NAMES_BLACKLIST = {
     "r s sharma", "subir raha",
 }
 
-def make_name(gender: str) -> str:
+_NAME_TRACKER = {}
+
+def make_name(gender: str, state_code: str, wc_id: str) -> str:
+    surnames = NAME_POOLS["surnames_by_state"].get(state_code, NAME_POOLS["surnames_by_state"]["DL"])
+    first_names = NAME_POOLS["first_names_by_gender"]["Female"] if gender == "Female" else NAME_POOLS["first_names_by_gender"]["Male"]
+    attempts = 0
     while True:
-        if gender == "Female":
-            cand = f"{random.choice(female_first)} {random.choice(last_names)}"
+        attempts += 1
+        fn = random.choice(first_names)
+        sn = random.choice(surnames)
+        has_mi = random.random() < 0.30
+        if has_mi:
+            mi = random.choice(NAME_POOLS["middle_initials"])
+            cand = f"{fn} {mi} {sn}"
         else:
-            cand = f"{random.choice(male_first)} {random.choice(last_names)}"
-        if cand.lower() not in REAL_PERSON_NAMES_BLACKLIST:
+            cand = f"{fn} {sn}"
+        
+        # In Delhi HQ E3 DISC-FIN, we might be pinning Rajesh Kulkarni (handled in demo persona).
+        # We need to make sure we don't violate EMP-R26 (<= 3 identical names per WC).
+        # But if attempts > 50, we just return to avoid infinite loop.
+        if cand.lower() in REAL_PERSON_NAMES_BLACKLIST:
+            continue
+            
+        wc_counts = _NAME_TRACKER.setdefault(wc_id, {})
+        if wc_counts.get(cand, 0) < 3 or attempts > 50:
+            wc_counts[cand] = wc_counts.get(cand, 0) + 1
             return cand
 
 print("Initializing generation ID counters...")
@@ -363,7 +384,7 @@ def apply_demo_personas():
     personas_list = [
         {
             "emp_id": "EMP-000001",
-            "name": "Chairman & CEO",
+            "name": "Arun Mehra",
             "cadre": "executive",
             "gender": "Male",
             "dob": datetime.date(1967, 8, 15),
@@ -375,13 +396,13 @@ def apply_demo_personas():
             "discipline_id": "DISC-PRD",
             "current_grade_id": "CMD",
             "current_wc_id": delhi_hq_wc,
-            "current_designation": "Chairman & Chief Executive Officer",
+            "current_designation": "Chairman & Managing Director",
             "entry_mode": "GATE_GT",
             "current_posting_from": datetime.date(2023, 1, 1),
         },
         {
             "emp_id": "EMP-000002",
-            "name": "Director (HR)",
+            "name": "Manish Deshpande",
             "cadre": "executive",
             "gender": "Male",
             "dob": datetime.date(1968, 5, 20),
@@ -393,13 +414,13 @@ def apply_demo_personas():
             "discipline_id": "DISC-HR",
             "current_grade_id": "DIR",
             "current_wc_id": delhi_hq_wc,
-            "current_designation": "Director (Human Resources)",
+            "current_designation": "Director (HR)",
             "entry_mode": "Campus_Placement",
             "current_posting_from": datetime.date(2023, 6, 1),
         },
         {
             "emp_id": "EMP-000003",
-            "name": "Director (Finance)",
+            "name": "Vivek Rao",
             "cadre": "executive",
             "gender": "Male",
             "dob": datetime.date(1968, 11, 10),
@@ -1376,7 +1397,7 @@ for _ in range(gt_intake_count):
     dob_val = doj_val - datetime.timedelta(days=int(random.uniform(min_entry_e, max_entry_e) * 365.25))
     total_population.append({
         "emp_id": next_emp_id(),
-        "name": make_name(g),
+        "name": make_name(g, WC_BY_ID[wid].get("state_code", "DL"), wid),
         "gender": g,
         "dob": dob_val,
         "doj": doj_val,
@@ -1404,7 +1425,7 @@ for _ in range(non_intake_count):
     dob_val = doj_val - datetime.timedelta(days=int(random.uniform(min_entry_ne, max_entry_ne) * 365.25))
     total_population.append({
         "emp_id": next_emp_id(),
-        "name": make_name(g),
+        "name": make_name(g, WC_BY_ID[wid].get("state_code", "DL"), wid),
         "gender": g,
         "dob": dob_val,
         "doj": doj_val,
@@ -1447,14 +1468,15 @@ for idx, s in enumerate(total_population):
     s["emp_id"] = emp_id
 
     gender = s.get("gender", "Male")
-    name = s.get("name") or make_name(gender)
+    wc_id = s.get("current_wc_id") or s.get("wc_id") or delhi_hq_wc
+    state_code = s.get("home_state_code") or WC_BY_ID[wc_id]["state_code"]
+    name = s.get("name") or make_name(gender, state_code, wc_id)
     dob = s["dob"]
     doj = s["doj"]
     fy_joined = s.get("fiscal_year_joined") or get_fy(doj)
     cat = s.get("category") or "General"
     pwd = s.get("pwd_flag", False)
     pwd_cat = s.get("pwd_category") if pwd else None
-
     wc_id = s.get("current_wc_id") or s.get("wc_id") or delhi_hq_wc
     state_code = s.get("home_state_code") or WC_BY_ID[wc_id]["state_code"]
     disc_id = s.get("discipline_id") or "DISC-PRD"

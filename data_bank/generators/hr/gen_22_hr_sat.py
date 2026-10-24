@@ -276,7 +276,7 @@ def generate_headcount_snapshot(df_emp: pd.DataFrame, df_post: pd.DataFrame) -> 
 # -----------------------------------------------------------------------------
 # 3. GENERATE H8: PAYROLL MONTHLY
 # -----------------------------------------------------------------------------
-def generate_payroll_monthly(
+def generate_payroll_monthly_old(
     df_emp: pd.DataFrame, df_post: pd.DataFrame,
     work_centres: Dict[str, Any], grades: Dict[str, Any], disciplines: Dict[str, Any],
     cost_centres: List[Dict[str, Any]]
@@ -1996,7 +1996,8 @@ def generate_all():
     df_emp, df_post, df_prod = load_upstream_landing()
 
     df_snapshot = generate_headcount_snapshot(df_emp, df_post)
-    df_payroll = generate_payroll_monthly(df_emp, df_post, work_centres, grades, disciplines, cost_centres)
+    from .gen_22_hr_payroll import generate_payroll_monthly_wrapper
+    df_payroll = generate_payroll_monthly_wrapper(df_emp, df_post, work_centres, grades, disciplines, cost_centres)
     df_sanc = generate_sanctioned_posts(df_emp, df_post, work_centres, grades, disciplines)
     df_apar = generate_apar_ratings(df_emp, df_post, grades)
     df_succ = generate_succession_plan(df_emp, df_post, work_centres)

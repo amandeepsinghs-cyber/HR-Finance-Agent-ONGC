@@ -17,19 +17,23 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 REF_DIR = REPO_ROOT / "data_bank" / "world_bible" / "reference"
 
 
+
+_BUNDLE_CACHE = None
 def load_pay_reference_bundle(ref_dir: Path = REF_DIR) -> dict[str, Any]:
-    """Load `ida_rates.yaml`, `hra_rates.yaml`, and `allowance_rules.yaml`."""
+    global _BUNDLE_CACHE
+    if _BUNDLE_CACHE is not None: return _BUNDLE_CACHE
     with (ref_dir / "ida_rates.yaml").open("r", encoding="utf-8") as f:
         ida_doc = yaml.safe_load(f)
     with (ref_dir / "hra_rates.yaml").open("r", encoding="utf-8") as f:
         hra_doc = yaml.safe_load(f)
     with (ref_dir / "allowance_rules.yaml").open("r", encoding="utf-8") as f:
         allow_doc = yaml.safe_load(f)
-    return {
+    _BUNDLE_CACHE = {
         "ida_rates": ida_doc["ida_rates"],
         "hra_rules": hra_doc,
         "allowance_rules": allow_doc,
     }
+    return _BUNDLE_CACHE
 
 
 def roundup_10(amount: float) -> float:
