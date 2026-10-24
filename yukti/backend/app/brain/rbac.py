@@ -7,8 +7,9 @@
 
 Supports:
 - Function dimension (`EXEC`, `HR`, `FIN`) and `director_function_scope` toggle (`True` D-43 vs `False` D-10).
-- `self` scope priority (`@self_emp_id` bound from `principal.emp_id`; zero cross-employee leakage).
-- Junior aggregate pay (`pay_aggregate`, k >= 5) and starting/entry pay scale queries (closes BUG-07).
+- `self` scope priority (`@self_emp_id` bound from `principal.emp_id`; compiler-enforced predicate only; zero cross-employee leakage).
+- Junior aggregate pay (`pay_aggregate`, k >= 5) from compiled aggregate spec only (closes BUG-07, M3, M4).
+- Director post-query enforcement (`enforce_contract` applies D-43 to `DIR_FIN` and `DIR_HR` as well as `E1–E4`).
 - Role escalation refusal (`R-ROLE`) for all 10 non-CMD personas.
 """
 
@@ -25,6 +26,7 @@ import yaml
 from app.access_control import (
     JUNIOR_FIN_PERSONAS,
     JUNIOR_HR_PERSONAS,
+    VALID_PERSONAS,
     UnknownPersona,
     normalize_persona,
 )
@@ -123,34 +125,20 @@ def topic_classes(question: str) -> List[str]:
     return out
 
 
-# ── Natural-language classifiers for v2 data classes & function scope ────────
-
-_V2_AGG_PAY_RE = re.compile(
-    r"\b("
-    r"average\s+ctc|avg\.?\s+ctc|mean\s+ctc|median\s+ctc|"
-    r"average\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay)\s+(?:of|for)\s+e[1-9]\b|"
-    r"average\s+(?:monthly\s+)?(?:basic\s+)?(?:salary|pay)\s+(?:by\s+grade|across\s+grades|for\s+e[1-4]\s+(?:executives|officers))|"
-    r"starting\s+(?:basic\s+)?(?:pay|salary|scale)|"
-    r"entry[\s\-]+(?:level\s+)?(?:basic\s+)?(?:pay|salary|scale)|"
-    r"minimum\s+(?:basic\s+)?(?:pay|scale)|"
-    r"get\s+on\s+joining|joining\s+(?:pay|salary)|"
-    r"pay\s+(?:scale|band|range|matrix|slab)s?|"
-    r"grade[\s\-]*wise\s+(?:average\s+|avg\s+)?(?:ctc|salary|pay)"
-    r")\b",
-    re.IGNORECASE,
-)
-
-_FIRST_PERSON_SELF_RE = re.compile(
-    r"(?:(?<![a-z])(?:my|mine|myself|mera|meri|mere|have\s+i\s+been)(?![a-z])|(?:मेरा|मेरी|मेरे))"
-    r".*?"
-    r"(?:(?<![a-z])(?:salary|payslip|pay\s*slip|pay\s+components|pay\s+scale|ctc|basic\s*pay|da|hra|prp|gross\s*pay|net\s*pay|"
-    r"leave|el|cl|hpl|balance|posting|postings|posted|tenure|station|transfer|apar|rating|ratings|score|appraisal|"
-    r"entitlement|entitlements|advance|advances|hba|car\s+advance|furniture|laptop|medical|reimbursement)(?![a-z])|"
-    r"(?:वेतन|सैलरी|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|पात्रता))",
-    re.IGNORECASE,
-)
-
 _EMP_ID_LITERAL_RE = re.compile(r"\b(EMP-\d{4,6})\b", re.IGNORECASE)
+
+# Non-person capitalized phrases so we don't mistake ONGC entities for a person's name
+_NON_PERSON_PROPER_WORDS = {
+    "delhi", "mumbai", "dehradun", "ahmedabad", "mehsana", "assam", "tripura", "rajahmundry",
+    "chennai", "kolkata", "uran", "hazira", "ankleshwar", "cambay", "bokaro", "jorhat",
+    "nazira", "sivasagar", "silchar", "agartala", "kakinada", "karaikal", "vadodara",
+    "ongc", "india", "high", "office", "hq", "asset", "basin", "work", "centre", "center",
+    "executive", "executives", "officer", "officers", "director", "chairman", "managing",
+    "human", "resources", "finance", "accounts", "board", "note", "transfer", "policy",
+    "annual", "report", "balance", "sheet", "income", "statement", "cash", "flow",
+    "profit", "loss", "schedule", "march", "april", "may", "june", "july", "august",
+    "september", "october", "november", "december", "january", "february",
+}
 
 
 def _known_persona_identities() -> List[Tuple[str, str, str, str]]:
@@ -170,42 +158,88 @@ def _known_persona_identities() -> List[Tuple[str, str, str, str]]:
     return out
 
 
+def _mentions_individual_or_row_pay_target(question: str) -> bool:
+    """Return True if `question` names a specific person/employee ID or asks for row-level/per-employee pay."""
+    if not question:
+        return False
+    q = question.strip()
+    q_low = q.lower()
+    if _EMP_ID_LITERAL_RE.search(q):
+        return True
+    if re.search(r"\b\d{6}\b", q):
+        return True
+    for _, _, name_low, _ in _known_persona_identities():
+        if name_low and len(name_low) > 3 and name_low in q_low:
+            return True
+    if re.search(
+        r"\b(reporting\s+officer|my\s+boss|my\s+manager|my\s+colleague\w*|my\s+team|"
+        r"each\s+(?:employee|officer|executive)|every\s+(?:employee|officer|executive)|"
+        r"list\s+(?:the\s+)?(?:net\s+pay|gross\s+pay|basic\s+pay|salary|salaries|ctc|pay)|"
+        r"(?:net\s+pay|gross\s+pay|basic\s+pay|salary|salaries|ctc|pay\s+band)\s+of\s+all\b)\b",
+        q_low,
+    ):
+        return True
+    # Check capitalized two-word person name after "of" / "for" or possessive "'s" (e.g. "pay band of Ramesh Kumar")
+    for m in re.finditer(r"(?:\b(?:of|for)\s+([A-Z][a-z]{2,})\s+([A-Z][a-z]{2,})\b|\b([A-Z][a-z]{2,})(?:\s+([A-Z][a-z]{2,}))?'s\b)", q):
+        words = [w.lower() for w in m.groups() if w]
+        if words and not any(w in _NON_PERSON_PROPER_WORDS for w in words):
+            return True
+    return False
+
+
 def _detect_self_emp_id(
     canon_persona: Optional[str],
     question: str,
     data_classes: List[str],
     explicit_self_emp_id: Optional[str] = None,
+    spec: Optional[QuerySpec] = None,
 ) -> Optional[str]:
-    """Return the caller's `emp_id` if the request is strictly self-scoped; else `None`."""
+    """Return the caller's `emp_id` ONLY when the compiled query/spec is strictly self-scoped (M3 / SPEC-06 §4.2).
+
+    Never grants `self` from a question-text regex alone.
+    """
     if not canon_persona or canon_persona not in PERSONA_DIRECTORY:
         return None
     my_info = PERSONA_DIRECTORY[canon_persona]
     my_emp_id = explicit_self_emp_id or str(my_info.get("emp_id", ""))
-    my_name = str(my_info.get("display_name", "")).lower()
     q = (question or "").strip()
     q_low = q.lower()
 
-    # Check if the question explicitly references ANY other employee ID or other known persona name
+    # Reject if the question references any other employee ID, known persona name, or non-self group
     mentioned_emp_ids = {m.upper() for m in _EMP_ID_LITERAL_RE.findall(q)}
     if mentioned_emp_ids and mentioned_emp_ids != {my_emp_id.upper()}:
         return None
 
-    for other_pid, other_emp_low, other_name_low, _ in _known_persona_identities():
+    for other_pid, _, other_name_low, _ in _known_persona_identities():
         if other_pid == canon_persona:
             continue
         if other_name_low and len(other_name_low) > 3 and other_name_low in q_low:
             return None
 
-    # 1. Explicit `self` class (compiler-enforced predicate `emp_id = @self_emp_id`)
-    if "self" in (data_classes or []):
-        return my_emp_id
+    if re.search(
+        r"\b(in\s+my\s+opinion|my\s+(?:team|colleague\w*|peer\w*|subordinate\w*|reporting\s+officer|boss|manager)|"
+        r"all\s+(?:e[1-9]\s+)?(?:hr\s+|finance\s+)?(?:officer\w*|executive\w*|employee\w*|staff)|"
+        r"(?:each|every)\s+(?:officer|executive|employee))\b",
+        q_low,
+    ):
+        return None
 
-    # 2. First-person possessive self-service query ("my payslip", "my leave balance", "mera salary", etc.)
-    if q and _FIRST_PERSON_SELF_RE.search(q):
-        return my_emp_id
+    # Check if `spec` has a foreign emp_id filter
+    spec_has_self_predicate = False
+    if spec is not None:
+        for f in spec.filters or []:
+            if f.field == "emp_id":
+                vals = f.value if isinstance(f.value, list) else [f.value]
+                norm_vals = {str(v).strip().upper() for v in vals if v is not None}
+                if f.op == "=" and norm_vals <= {"@SELF_EMP_ID", my_emp_id.upper()}:
+                    spec_has_self_predicate = True
+                else:
+                    return None
+        if spec.self_scope:
+            spec_has_self_predicate = True
 
-    # 3. Explicit self_emp_id supplied by caller when no other employee is named
-    if explicit_self_emp_id and not mentioned_emp_ids:
+    # Grant `self` ONLY when the compiled classes include `"self"` or the QuerySpec carries the self predicate
+    if "self" in (data_classes or []) or spec_has_self_predicate:
         return my_emp_id
 
     return None
@@ -215,79 +249,107 @@ def _infer_target_function(
     question: str,
     classes: List[str],
     explicit_target: Optional[str] = None,
+    spec: Optional[QuerySpec] = None,
 ) -> str:
-    """Infer whether the target data/employee belongs to `'HR'`, `'FIN'`, or `'CORP'`."""
-    if explicit_target:
-        return explicit_target.strip().upper()
-    q_low = (question or "").lower()
+    """Infer whether the target data/employee belongs to `'HR'`, `'FIN'`, `'CORP'`, or `'MIXED'` (M5 / D-43)."""
+    q = (question or "").strip()
+    q_low = q.lower()
+    q_up = q.upper()
 
-    # Check known employee names / IDs first
+    # 1. Detect mixed HR + Finance questions (e.g. "APAR of E3 HR officers and the finance officer",
+    #    "names of all Delhi staff (DISC-FIN)") -> MIXED (never single-function FIN/HR).
+    mentions_hr_group = bool(
+        "DISC-HR" in q_up
+        or re.search(
+            r"\b(hr\s+officer\w*|hr\s+executive\w*|e[1-9]\s+hr\b|hr\s+e[1-9]\b|all\s+(?:delhi\s+)?(?:staff|employees|executives|officers))\b",
+            q_low,
+        )
+    )
+    mentions_fin_group = bool(
+        "DISC-FIN" in q_up
+        or re.search(
+            r"\b(finance\s+officer\w*|finance\s+executive\w*|accounts\s+officer\w*|e[1-9]\s+finance\b|finance\s+e[1-9]\b)\b",
+            q_low,
+        )
+    )
     for _, emp_low, name_low, fn in _known_persona_identities():
         if (emp_low and emp_low in q_low) or (name_low and len(name_low) > 3 and name_low in q_low):
-            return "HR" if fn == "EXEC" else fn
+            if fn == "FIN":
+                mentions_fin_group = True
+            elif fn == "HR":
+                mentions_hr_group = True
 
-    if "DISC-FIN" in (question or "").upper() or any(
-        w in q_low
-        for w in [
-            "finance officer",
-            "finance e1",
-            "finance e2",
-            "finance e3",
-            "finance e4",
-            "e1 finance",
-            "e2 finance",
-            "e3 finance",
-            "e4 finance",
-            "accounts officer",
-            "vendor-level",
-            "cost-centre ledger",
-            "cost-center ledger",
-            "dcf valuation",
-        ]
-    ):
-        return "FIN"
+    if mentions_hr_group and mentions_fin_group:
+        return "MIXED"
 
-    if "DISC-HR" in (question or "").upper() or any(
-        w in q_low
-        for w in [
-            "board hr",
-            "hr succession",
-            "posh",
-            "disciplinary",
-            "vigilance",
-            "hr officer",
-            "hr executive",
-        ]
-    ):
+    # 2. When a compiled QuerySpec is available, derive target function from the spec's discipline filter (M5).
+    if spec is not None:
+        disc_filters = [f for f in (spec.filters or []) if f.field in ("discipline", "discipline_id", "function")]
+        if disc_filters:
+            all_vals: set[str] = set()
+            for df in disc_filters:
+                if df.op not in ("=", "in"):
+                    return "MIXED"
+                vs = df.value if isinstance(df.value, list) else [df.value]
+                all_vals |= {str(v).strip().upper() for v in vs if v is not None}
+            if all_vals == {"DISC-FIN"} or all_vals == {"FIN"}:
+                return "FIN"
+            if all_vals == {"DISC-HR"} or all_vals == {"HR"}:
+                return "HR"
+            return "MIXED"
+        # No discipline filter on the spec: for HR workforce/personal classes, unscoped queries span all disciplines
+        # (so for DIR_FIN, it is not FIN-scoped; for DIR_HR, HR is the domain owner).
+        if any(c in ("fin_internal", "general_fin", "valuation_run") for c in classes) or spec.domain == "finance":
+            return "FIN"
+        return "HR"
+
+    # 3. Explicit target_function (when question is not mixed)
+    if explicit_target:
+        return explicit_target.strip().upper()
+
+    # 4. Known persona names / IDs (single function)
+    if mentions_fin_group and not mentions_hr_group:
+        # Ensure it's not a general "all staff" query with a finance keyword tacked on
+        if not re.search(r"\b(all|every)\s+(?:delhi\s+|mumbai\s+)?(?:staff|employees|executives)\b", q_low):
+            return "FIN"
+
+    if mentions_hr_group and not mentions_fin_group:
         return "HR"
 
     if any(c in ("fin_internal", "general_fin", "valuation_run") for c in classes):
         return "FIN"
+    if "board_confidential" in classes:
+        if any(w in q_low for w in ("divestment", "marginal field", "valuation")):
+            return "FIN"
+        return "HR"
     return "HR"
 
 
-def _enrich_classes_from_question(question: str, base_classes: List[str], pc: str) -> List[str]:
-    """Derive v2 data classes from `question` and `base_classes`."""
+def _enrich_classes_from_question(
+    question: str,
+    base_classes: List[str],
+    pc: str,
+    spec: Optional[QuerySpec] = None,
+) -> List[str]:
+    """Derive v2 data classes from `question` and `base_classes` without ever dropping compiler classes (M3, M4, S3)."""
     q = (question or "").strip()
     q_low = q.lower()
+    # Keep ALL compiler-derived base classes intact (never strip pay_individual, named, apar, sensitive)
     classes = list(base_classes or ["general"])
 
     if not q:
         return classes
 
-    # Check aggregate pay / entry pay first (closes BUG-07)
-    is_agg_pay = bool(_V2_AGG_PAY_RE.search(q)) and not bool(_EMP_ID_LITERAL_RE.search(q))
-    if is_agg_pay:
-        for _, _, name_low, _ in _known_persona_identities():
-            if name_low and len(name_low) > 3 and name_low in q_low:
-                is_agg_pay = False
-                break
-
-    if is_agg_pay:
-        classes = [c for c in classes if c not in ("general", "general_hr", "pay", "pay_individual")]
-        if "pay_aggregate" not in classes:
-            classes.append("pay_aggregate")
-        return classes
+    # M4: If a specific person or row-grain pay target is mentioned in a pay question, always add pay_individual
+    # and remove pay_aggregate so individual/named pay is never misclassified as aggregate pay.
+    t_classes = topic_classes(q)
+    has_pay_word = "pay" in t_classes or bool(
+        re.search(r"\b(pay\s+(?:scale|band|range|matrix|slab)s?|starting\s+pay|joining\s+pay|basic\s+pay|net\s+pay|gross\s+pay|salary|ctc)\b", q_low)
+    )
+    if has_pay_word and _mentions_individual_or_row_pay_target(q):
+        classes = [c for c in classes if c != "pay_aggregate"]
+        if "pay_individual" not in classes and "pay" not in classes:
+            classes.append("pay" if "general" in base_classes else "pay_individual")
 
     # Board confidential succession / divestment / deliberation notes
     if re.search(r"\b(?:confidential\s+board|board\s+(?:hr\s+)?(?:succession|divestment)\s+note)\b", q_low):
@@ -303,8 +365,11 @@ def _enrich_classes_from_question(question: str, base_classes: List[str], pc: st
         if "fin_internal" not in classes:
             classes.append("fin_internal")
 
-    # Valuation model run
-    if re.search(r"\b(?:dcf\s+valuation|wacc)\b", q_low):
+    # S3: Valuation model run (only DCF / valuation model execution, NEVER bare WACC which is general_fin)
+    if re.search(
+        r"\b(?:dcf\s+valuation|run\s+a?\s*(?:dcf|valuation)|compute\s+a?\s*(?:dcf|valuation)|valuation\s+model\s+run)\b",
+        q_low,
+    ):
         if "valuation_run" not in classes:
             classes.append("valuation_run")
 
@@ -318,8 +383,7 @@ def _enrich_classes_from_question(question: str, base_classes: List[str], pc: st
             classes.append("named")
 
     # Topic keywords (pay, apar, sensitive)
-    t_classes = topic_classes(q)
-    if pc == "junior" or any(tc in ("pay", "apar", "sensitive") for tc in t_classes):
+    if pc in ("junior", "director") or any(tc in ("pay", "apar", "sensitive") for tc in t_classes):
         for tc in t_classes:
             if tc == "pay":
                 if "pay" not in classes and "pay_individual" not in classes and "pay_aggregate" not in classes:
@@ -427,11 +491,18 @@ def decide(
     target_function: Optional[str] = None,
     director_function_scope: Optional[bool] = None,
     self_emp_id: Optional[str] = None,
+    spec: Optional[QuerySpec] = None,
 ) -> PolicyDecision:
-    """Evaluate RBAC policy for `(persona, data_classes, question)` and return `PolicyDecision`."""
-    canon = _canon_or_raw(persona)
-    pc = persona_class(canon or persona)
-    p_func = persona_function(canon or persona)
+    """Evaluate RBAC policy for `(persona, data_classes, question)` and return `PolicyDecision`.
+
+    S4 / SPEC-06 §4.4: `persona` must be one of the 11 canonical personas (`Principal.persona`);
+    empty, unknown, or un-normalized aliases raise `UnknownPersona`.
+    """
+    if not persona or not isinstance(persona, str) or persona.strip().upper() not in VALID_PERSONAS:
+        raise UnknownPersona(f"decide() requires a canonical persona in {sorted(VALID_PERSONAS)}, got {persona!r}")
+    canon = persona.strip().upper()
+    pc = persona_class(canon)
+    p_func = persona_function(canon)
     pol = load_policy()
     refs = pol.get("rule_refs", {})
 
@@ -447,7 +518,7 @@ def decide(
                 rule_ref=refs.get("D-41"),
                 reason=None,
                 code=None,
-                persona=canon or persona,
+                persona=canon,
                 function=p_func,
                 target_function="ANY",
             )
@@ -457,15 +528,15 @@ def decide(
             data_classes=["role_escalation"],
             trigger="role_escalation",
             rule_ref=refs.get("D-41") or "SPEC-06 §4.4",
-            reason=refusal_text(canon or persona, "role_escalation"),
+            reason=refusal_text(canon, "role_escalation"),
             code="R-ROLE",
-            persona=canon or persona,
+            persona=canon,
             function=p_func,
             target_function="ANY",
         )
 
-    # 2. Self-scope check (SPEC-06 §5.3: `self` overrides `pay_individual`/`apar`/`named` for own record)
-    detected_self_id = _detect_self_emp_id(canon, question, in_classes, explicit_self_emp_id=self_emp_id)
+    # 2. Self-scope check (M3 / SPEC-06 §4.2 & §5.3: granted ONLY when compiled spec/data_classes carry `self`)
+    detected_self_id = _detect_self_emp_id(canon, question, in_classes, explicit_self_emp_id=self_emp_id, spec=spec)
     if detected_self_id:
         return PolicyDecision(
             action="allow",
@@ -475,15 +546,15 @@ def decide(
             rule_ref="SPEC-06 §5.3",
             reason="Self-service query bound to @self_emp_id.",
             code=None,
-            persona=canon or persona,
+            persona=canon,
             function=p_func,
             target_function="SELF",
             self_emp_id=detected_self_id,
         )
 
-    # 3. Enrich classes and target_function from question when provided
-    classes = _enrich_classes_from_question(question, in_classes or ["general"], pc)
-    eff_target = _infer_target_function(question, classes, explicit_target=target_function)
+    # 3. Enrich classes and target_function from question & compiled spec (M4, M5)
+    classes = _enrich_classes_from_question(question, in_classes or ["general"], pc, spec=spec)
+    eff_target = _infer_target_function(question, classes, explicit_target=target_function, spec=spec)
 
     # SPEC-06 §6 Q18: Finance junior drafting an HR cohort/transfer email -> refuse (R-FUNC)
     if (
@@ -498,32 +569,23 @@ def decide(
             data_classes=sorted(set(classes)),
             trigger="named",
             rule_ref=refs.get("D-43") or refs.get("D-11"),
-            reason=refusal_text(canon or persona, "function_mismatch"),
+            reason=refusal_text(canon, "function_mismatch"),
             code="R-FUNC",
-            persona=canon or persona,
+            persona=canon,
             function=p_func,
             target_function="HR",
         )
 
-    # Legacy compatibility: if a bare v1 test calls `decide("DIR_FIN", ["named"])` with no question
-    # and no explicit target_function and a legacy class name, check if target_function was omitted.
-    # For explicit v2 calls or when question/target_function is supplied, evaluate function scope strictly.
     worst = "allow"
     trigger: Optional[str] = None
     worst_code: Optional[str] = None
 
     for c in sorted(set(classes)):
-        # If bare v1 legacy call `decide("DIR_FIN", ["pay"])` or `decide("DIR_FIN", ["named"])`
-        # without question or target_function, treat target_function as caller's own function for
-        # function_scoped classes unless target_function was explicitly passed.
         call_target = eff_target
-        if not question and target_function is None and c in ("named", "pay", "pay_individual", "apar", "board_confidential"):
-            # When testing the 11x12 matrix without target_function, HR-owned classes default to HR
-            # EXCEPT legacy v1 5x5 test which passes "pay" (not "pay_individual").
-            if c == "pay":
-                call_target = p_func
+        if not question and target_function is None and spec is None and c == "pay":
+            call_target = p_func
         act, code = _resolve_class_action(
-            canon or persona,
+            canon,
             c,
             target_function=call_target,
             director_function_scope=director_function_scope,
@@ -537,12 +599,12 @@ def decide(
         if pc == "junior":
             reason = "Individual names and postings are restricted for E1–E4 officers; showing aggregate counts instead."
         else:
-            reason = f"Cross-functional detail is aggregated for {canon or persona} under D-43."
+            reason = f"Cross-functional detail is aggregated for {canon} under D-43."
     elif worst == "refuse":
         if worst_code == "R-FUNC":
-            reason = refusal_text(canon or persona, "function_mismatch")
+            reason = refusal_text(canon, "function_mismatch")
         elif worst_code == "R-BOARD":
-            reason = refusal_text(canon or persona, "board_confidential")
+            reason = refusal_text(canon, "board_confidential")
         else:
             reason = (
                 {
@@ -552,7 +614,7 @@ def decide(
                     "sensitive": "Vigilance, POSH and medical records",
                     "board_confidential": "Board-confidential succession notes",
                 }.get(trigger or "", "These records")
-                + " are confidential for E1–E4 officers."
+                + (" are confidential for E1–E4 officers." if pc == "junior" else f" outside your functional scope are restricted under D-43 ({canon}).")
             )
 
     return PolicyDecision(
@@ -563,7 +625,7 @@ def decide(
         rule_ref=ref,
         reason=reason,
         code=worst_code,
-        persona=canon or persona,
+        persona=canon,
         function=p_func,
         target_function=eff_target,
     )
@@ -652,10 +714,86 @@ def _strip_columns(table: Dict[str, Any], masked: List[str]) -> None:
     table["rows"] = new_rows
 
 
-def enforce_contract(contract: Dict[str, Any], persona: str) -> Dict[str, Any]:
-    """Post-query guard on any contract (planner or legacy). Idempotent."""
+def _row_discipline_is_fin(row: Dict[str, Any]) -> Optional[bool]:
+    """Return True if row is explicitly Finance, False if explicitly non-Finance, None if row has no discipline column."""
+    for k in ("discipline_id", "discipline", "function", "discipline_name"):
+        if k in row and row[k] is not None:
+            val = str(row[k]).strip().upper()
+            if val in ("DISC-FIN", "FIN", "FINANCE", "FINANCE & ACCOUNTS"):
+                return True
+            return False
+    return None
+
+
+def _verified_self_bypass(c: Dict[str, Any], canon_persona: Optional[str]) -> bool:
+    """M3: Return True ONLY when every returned row belongs to the signed principal (`emp_id == self_id`)
+    or when the compiler signed `self_scope=True` with `emp_id = @self_emp_id` and no foreign `emp_id` exists.
+    A missing `emp_id` column on an untrusted table never passes as self-scoped.
+    """
+    if not canon_persona or canon_persona not in PERSONA_DIRECTORY:
+        return False
+    expected_self = str(PERSONA_DIRECTORY[canon_persona].get("emp_id", "")).upper()
+    access = c.get("access") or {}
+    self_id = str(access.get("self_emp_id") or "").strip().upper()
+    if not self_id or self_id != expected_self or access.get("status") != "allowed":
+        return False
+
+    vis = c.get("visual") or {}
+    tbl = vis.get("table")
+    rows = (tbl.get("rows") or []) if isinstance(tbl, dict) else []
+    compiler_signed = (
+        bool((c.get("query_spec") or {}).get("self_scope"))
+        and "emp_id = @self_emp_id" in str(c.get("generated_sql") or "")
+    )
+    if rows:
+        all_have_emp_id = all(isinstance(r, dict) and bool(r.get("emp_id")) for r in rows)
+        any_foreign = any(
+            isinstance(r, dict) and r.get("emp_id") and str(r.get("emp_id")).strip().upper() != expected_self
+            for r in rows
+        )
+        if any_foreign:
+            return False
+        if all_have_emp_id or compiler_signed:
+            return True
+        return False
+    return compiler_signed
+
+
+def _scrub_leaked_values_from_contract(c: Dict[str, Any], vis: Dict[str, Any], masked_values: List[str], rule_label: str = "D-11") -> None:
+    texts = (
+        [c.get("spoken_summary") or "", c.get("display_text") or "", c.get("caveat") or ""]
+        + [str(i) for i in c.get("insights") or []]
+        + [str((vis.get("document") or {}).get("markdown") or "")]
+    )
+    leaked = any(v and v in t for v in set(masked_values) for t in texts)
+    if leaked or vis.get("type") == "document":
+        safe = (
+            f"This answer contains personal details that are restricted for your role ({rule_label}), "
+            "so only the permitted summary is shown."
+        )
+        c["spoken_summary"] = safe
+        c["display_text"] = safe
+        c["insights"] = [safe]
+        c.pop("insights_v2", None)
+        c.pop("caveat", None)
+        if vis.get("type") == "document":
+            vis["type"] = "table" if vis.get("table") else "none"
+            vis.pop("document", None)
+
+
+def enforce_contract(
+    contract: Dict[str, Any],
+    persona: str,
+    *,
+    director_function_scope: Optional[bool] = None,
+) -> Dict[str, Any]:
+    """Post-query guard on any contract (planner or legacy). Idempotent.
+
+    Applies to both `junior` (D-11) and `director` when `director_function_scope=True` (D-43 / M5).
+    """
     c = contract
-    pc = persona_class(persona)
+    canon = _canon_or_raw(persona)
+    pc = persona_class(canon or persona)
     vis = c.get("visual") or {}
     access = c.setdefault("access", {"status": "allowed"})
 
@@ -679,33 +817,163 @@ def enforce_contract(contract: Dict[str, Any], persona: str) -> Dict[str, Any]:
                     "rule_ref": access.get("rule_ref") or "D-11",
                 },
             )
-
-    if pc != "junior":
         return c
 
-    # If the contract was explicitly marked as a self-scoped query (`access.self_emp_id` set),
-    # allow the employee's own row to pass through unmasked after verifying no other emp_id is present.
-    self_id = access.get("self_emp_id")
-    if self_id and access.get("status") == "allowed":
-        tbl = vis.get("table")
-        if isinstance(tbl, dict):
-            rows = tbl.get("rows") or []
-            foreign = [
-                r.get("emp_id")
-                for r in rows
-                if isinstance(r, dict) and r.get("emp_id") and str(r.get("emp_id")).upper() != str(self_id).upper()
-            ]
-            if not foreign:
-                return c
+    if pc == "leadership":
+        return c
 
-    # Check if this is an aggregate pay contract (e.g. avg_ctc_lakh by grade with no named columns)
-    allow_agg_pay = bool(access.get("allow_pay_aggregate"))
+    # Verified self-scope bypass (M3): every row must have emp_id == principal.emp_id (or compiler-signed @self_emp_id)
+    if _verified_self_bypass(c, canon):
+        return c
 
-    threshold = int(load_policy().get("small_cell_threshold", 5))
-    masked_all: List[str] = []
-    masked_values: List[str] = []
+    pol = load_policy()
+    threshold = int(pol.get("small_cell_threshold", 5))
+    dir_scope = (
+        bool(pol.get("director_function_scope", True))
+        if director_function_scope is None
+        else bool(director_function_scope)
+    )
+
+    # ── Director post-query enforcement under D-43 (M5) ──────────────────────────
+    if pc == "director":
+        if not dir_scope:
+            return c
+        masked_all: List[str] = []
+        masked_values: List[str] = []
+        suppressed = 0
+
+        if canon == "DIR_FIN":
+            # 1. Sensitive columns (POSH / vigilance / medical) are always aggregated (k >= 5) for DIR_FIN
+            # 2. Named / pay / APAR rows: keep Finance rows if rows carry discipline; otherwise strip restricted columns
+            #    unless the query was explicitly scoped to FIN (`target_function == "FIN"` or `DISC-FIN` in SQL).
+            sql_str = str(c.get("generated_sql") or "").upper()
+            is_fin_scoped_query = (
+                str(access.get("target_function") or "").upper() == "FIN"
+                or ("DISC-FIN" in sql_str and "DISC-HR" not in sql_str)
+            )
+            filtered_non_fin_rows = False
+            had_apar = False
+            had_pay = False
+            had_sens = False
+
+            for tbl in [vis.get("table")] + [it for it in ((vis.get("compare") or {}).get("items") or [])]:
+                if not isinstance(tbl, dict) or "columns" not in tbl:
+                    continue
+                cols = tbl.get("columns") or []
+                sens_cols = [col for col in cols if column_class(col) == "sensitive"]
+                if sens_cols:
+                    had_sens = True
+                    for r in tbl.get("rows") or []:
+                        if isinstance(r, dict):
+                            masked_values += [str(r[m]) for m in sens_cols if isinstance(r.get(m), str) and len(str(r[m])) > 2]
+                    _strip_columns(tbl, sens_cols)
+                    masked_all += sens_cols
+
+                hr_personal_cols = [col for col in (tbl.get("columns") or []) if column_class(col) in ("named", "pay", "apar")]
+                if hr_personal_cols:
+                    if any(column_class(col) == "apar" for col in hr_personal_cols):
+                        had_apar = True
+                    if any(column_class(col) == "pay" for col in hr_personal_cols):
+                        had_pay = True
+                    rows = tbl.get("rows") or []
+                    row_flags = [_row_discipline_is_fin(r) for r in rows if isinstance(r, dict)]
+                    if rows and any(f is not None for f in row_flags):
+                        fin_rows = [r for r in rows if isinstance(r, dict) and _row_discipline_is_fin(r) is True]
+                        non_fin_rows = [r for r in rows if isinstance(r, dict) and _row_discipline_is_fin(r) is not True]
+                        if non_fin_rows:
+                            filtered_non_fin_rows = True
+                            for r in non_fin_rows:
+                                for col in hr_personal_cols:
+                                    if isinstance(r.get(col), str) and len(str(r[col])) > 2:
+                                        masked_values.append(str(r[col]))
+                            tbl["rows"] = fin_rows
+                            if "total_rows" in tbl:
+                                tbl["total_rows"] = len(fin_rows)
+                    elif not is_fin_scoped_query:
+                        for r in rows:
+                            if isinstance(r, dict):
+                                masked_values += [str(r[m]) for m in hr_personal_cols if isinstance(r.get(m), str) and len(str(r[m])) > 2]
+                        _strip_columns(tbl, hr_personal_cols)
+                        masked_all += hr_personal_cols
+
+                if had_sens or masked_all:
+                    rows = tbl.get("rows") or []
+                    if rows and isinstance(rows[0], dict):
+                        tbl["rows"], n_s = suppress_small_cells(rows, list(rows[0].keys()), threshold)
+                        suppressed += n_s
+
+            if masked_all or filtered_non_fin_rows or suppressed:
+                _scrub_leaked_values_from_contract(c, vis, masked_values, rule_label="D-43")
+                code = "R-SENS" if had_sens else ("R-APAR" if had_apar else ("R-PAY" if had_pay else "R-FUNC"))
+                access["status"] = "partial"
+                access["code"] = code
+                access["rule_ref"] = pol.get("rule_refs", {}).get("D-43", "D-43")
+                access["reason"] = (
+                    "Under D-43 function scope, non-Finance HR personal records are restricted for Director (Finance); showing Finance scope only."
+                )
+                tbl = vis.get("table")
+                if isinstance(tbl, dict):
+                    tbl["masking"] = {
+                        "level": "partial" if filtered_non_fin_rows else "aggregate",
+                        "code": code,
+                        "masked_columns": sorted(set(masked_all)),
+                        "reason": access["reason"],
+                        "rule_ref": "D-43",
+                    }
+            return c
+
+        if canon == "DIR_HR":
+            # DIR_HR sees fin_internal only as aggregates (D-43)
+            for tbl in [vis.get("table")] + [it for it in ((vis.get("compare") or {}).get("items") or [])]:
+                if not isinstance(tbl, dict) or "columns" not in tbl:
+                    continue
+                fin_cols = [col for col in (tbl.get("columns") or []) if column_class(col) == "fin_internal"]
+                if fin_cols:
+                    for r in tbl.get("rows") or []:
+                        if isinstance(r, dict):
+                            masked_values += [str(r[m]) for m in fin_cols if isinstance(r.get(m), str) and len(str(r[m])) > 2]
+                    _strip_columns(tbl, fin_cols)
+                    masked_all += fin_cols
+            if masked_all:
+                _scrub_leaked_values_from_contract(c, vis, masked_values, rule_label="D-43")
+                access["status"] = "partial"
+                access["code"] = "R-FUNC"
+                access["rule_ref"] = pol.get("rule_refs", {}).get("D-43", "D-43")
+                access["reason"] = "Internal Finance ledger columns are aggregated for Director (HR) under D-43."
+                tbl = vis.get("table")
+                if isinstance(tbl, dict):
+                    tbl["masking"] = {
+                        "level": "aggregate",
+                        "code": "R-FUNC",
+                        "masked_columns": sorted(set(masked_all)),
+                        "reason": access["reason"],
+                        "rule_ref": "D-43",
+                    }
+            return c
+
+        return c
+
+    # ── Junior (E1–E4) post-query enforcement under D-11 (M3, M4) ────────────────
+    # M4: allow_pay_aggregate is honoured ONLY when the contract is a true aggregate (no named columns in table,
+    # query_spec.grain == "aggregate", no emp_id filter, and dimensions within the allowed cohort set).
+    qspec = c.get("query_spec") or {}
+    tbl_check = vis.get("table") or {}
+    has_named_col = any(column_class(col) == "named" for col in (tbl_check.get("columns") or []))
+    allow_agg_pay = bool(
+        access.get("allow_pay_aggregate")
+        and not has_named_col
+        and qspec.get("grain", "aggregate") == "aggregate"
+        and not any((f.get("field") in ("emp_id", "name", "emp_name")) for f in (qspec.get("filters") or []) if isinstance(f, dict))
+    )
+
+    masked_all = []
+    masked_values = []
     suppressed = 0
-    restricted_classes = ("named", "apar", "sensitive") if allow_agg_pay else ("named", "pay", "apar", "sensitive")
+    restricted_classes = ("named", "apar", "sensitive", "fin_internal") if (allow_agg_pay and canon in JUNIOR_HR_PERSONAS) else (
+        ("named", "apar", "sensitive") if allow_agg_pay else (
+            ("named", "pay", "apar", "sensitive", "fin_internal") if canon in JUNIOR_HR_PERSONAS else ("named", "pay", "apar", "sensitive")
+        )
+    )
 
     for tbl in [vis.get("table")] + [it for it in ((vis.get("compare") or {}).get("items") or [])]:
         if not isinstance(tbl, dict) or "columns" not in tbl:
@@ -732,35 +1000,17 @@ def enforce_contract(contract: Dict[str, Any], persona: str) -> Dict[str, Any]:
                 vis["chart"]["data"], _ = suppress_small_cells(data, list(data[0].keys()), threshold)
     # Personal values must not survive in any text field or document (G4 B3 B-3).
     if masked_all:
-        texts = (
-            [c.get("spoken_summary") or "", c.get("display_text") or "", c.get("caveat") or ""]
-            + [str(i) for i in c.get("insights") or []]
-            + [str((vis.get("document") or {}).get("markdown") or "")]
-        )
-        leaked = any(v and v in t for v in set(masked_values) for t in texts)
-        if leaked or vis.get("type") == "document":
-            safe = (
-                "This answer contains personal details that are restricted for your role (D-11), "
-                "so only the permitted summary is shown."
-            )
-            c["spoken_summary"] = safe
-            c["display_text"] = safe
-            c["insights"] = [safe]
-            c.pop("insights_v2", None)
-            c.pop("caveat", None)
-            if vis.get("type") == "document":
-                vis["type"] = "table" if vis.get("table") else "none"
-                vis.pop("document", None)
+        _scrub_leaked_values_from_contract(c, vis, masked_values, rule_label="D-11")
     if suppressed and access.get("status") == "allowed" and not masked_all:
         access["status"] = "partial"
         access["reason"] = f"{suppressed} cell(s) below {threshold} shown as <{threshold} for E1–E4 officers"
-        access["rule_ref"] = load_policy().get("rule_refs", {}).get("D-11")
+        access["rule_ref"] = pol.get("rule_refs", {}).get("D-11")
         access["code"] = "R-K5"
         tbl = vis.get("table")
         if isinstance(tbl, dict):
             tbl.setdefault("masking", {"level": "aggregate", "reason": access["reason"], "rule_ref": "D-11", "code": "R-K5"})
     if masked_all and access.get("status") == "allowed":
-        refs = load_policy().get("rule_refs", {})
+        refs = pol.get("rule_refs", {})
         access["status"] = "partial"
         access["reason"] = "Personal columns hidden for E1–E4 officers: " + ", ".join(sorted(set(masked_all)))
         access["rule_ref"] = refs.get("D-11")

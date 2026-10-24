@@ -371,13 +371,20 @@ class Compiler:
             if len(metrics) == 1 and metric.name in ("pat_cr", "pbt_corporate_cr", "ebitda_corporate_cr", "corporate_revenue_cr"):
                 base_fam = ["corporate_revenue_cr", "ebitda_corporate_cr", "pbt_corporate_cr", "pat_cr", "consolidated_pat_cr"]
                 metrics = [metric.name] + [m for m in base_fam if m != metric.name and m in subject.metrics]
+        has_person_filter = any(f.field in ("emp_id", "name", "emp_name") for f in filters)
+        allowed_pay_dims = {"grade", "discipline", "wc", "asset", "fy", "sector", "region"}
         for mn in metrics:
             select.append(f"{subject.metrics[mn].expr} AS {mn}")
             if not is_self:
                 dc = subject.metrics[mn].data_class
-                if dc == "pay" and grain == "aggregate" and not is_self:
-                    data_classes.add("pay_aggregate")
-                    data_classes.discard("pay")
+                if dc in ("pay", "pay_aggregate", "pay_individual"):
+                    if grain == "aggregate" and not has_person_filter and set(dims) <= allowed_pay_dims:
+                        data_classes.add("pay_aggregate")
+                        data_classes.discard("pay")
+                    else:
+                        data_classes.add("pay_individual")
+                        data_classes.discard("pay")
+                        data_classes.discard("pay_aggregate")
                 else:
                     data_classes.add(dc)
         if cell_count and subject.name in CELL_COUNT_SUBJECTS:
@@ -1072,7 +1079,9 @@ ORDER BY line_order ASC"""
         try:
             if os.getenv("YUKTI_FORCE_BQ_FAIL", "0") in ("1", "true", "yes"):  # BEH-07.22 forced-failure test flag
                 raise ConnectionError("forced BigQuery failure (YUKTI_FORCE_BQ_FAIL=1)")
-            return await asyncio.to_thread(self._run_sync, compiled.sql, compiled.params)
+            if compiled.params:
+                return await asyncio.to_thread(self._run_sync, compiled.sql, compiled.params)
+            return await asyncio.to_thread(self._run_sync, compiled.sql)
         except Exception as e:
             fb = self._execute_local_financial_fallback(compiled)
             if fb is not None:

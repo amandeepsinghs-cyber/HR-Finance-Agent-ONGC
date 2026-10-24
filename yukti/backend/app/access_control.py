@@ -355,19 +355,19 @@ LIMIT 5;"""
 }
 
 
-# B3 (D-11): topic refusals that have no question in the original bank.
+# B3 (D-11 / S2): topic refusals that have no question in the original bank.
 REFUSAL_DEFINITIONS["R-POSH"] = {
     "reason": "POSH complaints and Internal Committee proceedings are confidential under the POSH Act 2013.",
     "rule_ref": "Sexual Harassment of Women at Workplace Act 2013, Section 16 (confidentiality)",
     "alternative": "The POSH policy, the complaint procedure and the Internal Committee contacts for your station.",
-    "restricted_personas": {"E2_HR", "E3_FIN"},
+    "restricted_personas": set(JUNIOR_PERSONAS),
     "alternative_sql": None,
 }
 REFUSAL_DEFINITIONS["R-MED"] = {
     "reason": "Individual medical and health records are confidential personal data.",
     "rule_ref": "ONGC Medical Attendance & Treatment Rules (confidentiality) · D-11",
     "alternative": "Aggregate medical-claim volumes and turnaround times by work centre.",
-    "restricted_personas": {"E2_HR", "E3_FIN"},
+    "restricted_personas": set(JUNIOR_PERSONAS),
     "alternative_sql": None,
 }
 
@@ -435,66 +435,116 @@ _AGGREGATE_PAY_RE = re.compile(
 )
 
 _SELF_QUERY_RE = re.compile(
-    r"(?:(?<![a-z])(?:my|mine|myself|mera|meri|mere)(?![a-z])|(?:मेरा|मेरी|मेरे))"
-    r".*?"
-    r"(?:(?<![a-z])(?:salary|payslip|pay\s*slip|pay\s+components|ctc|basic\s*pay|da|hra|prp|gross\s*pay|net\s*pay|"
+    r"(?:"
+    r"(?<![a-z])(?:my|mine|mera|meri|mere)(?:\s+(?:own|current|latest|monthly|annual|fy\d{2}|september|march|april|personal)){0,2}\s+"
+    r"(?:salary|payslip|pay\s*slip|pay\s+components|pay\s+scale|ctc|basic\s*pay|da|hra|prp|gross\s*pay|net\s*pay|"
     r"leave|el|cl|hpl|balance|posting|postings|tenure|station|transfer|apar|rating|ratings|score|appraisal|"
-    r"entitlement|entitlements|advance|advances|hba|car\s+advance|furniture|laptop|medical|reimbursement)(?![a-z])|"
-    r"(?:वेतन|सैलरी|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|पात्रता))",
+    r"entitlement|entitlements|advance|advances|hba|car\s+advance|furniture|laptop|medical\s+claim\w*|reimbursement)(?![a-z])"
+    r"|(?<![a-z])(?:how\s+long\s+have\s+i\s+been\s+posted|where\s+am\s+i\s+posted)(?![a-z])"
+    r"|(?:मेरा|मेरी|मेरे)\s+(?:\S+\s+){0,2}(?:वेतन|सैलरी|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|पात्रता)"
+    r")",
     re.IGNORECASE,
 )
 
 
 def is_aggregate_pay_question(question: Optional[str]) -> bool:
-    """Return True if `question` asks for cohort/grade average CTC or entry pay scale policy (closes BUG-07)."""
+    """Return True if `question` asks ONLY for cohort/grade average CTC or entry pay scale policy (closes BUG-07, S1)."""
     if not question:
         return False
     q = question.strip()
+    q_low = q.lower()
     if not _AGGREGATE_PAY_RE.search(q):
         return False
-    if re.search(r"\bEMP-\d{4,6}\b", q, re.IGNORECASE):
+    if re.search(
+        r"\b(each|every|individual|reporting\s+officer|my\s+team|my\s+colleague\w*|"
+        r"salary\s+of\s+(?:each|every|all)|pay\s+of\s+(?:each|every|all)|list\s+.*(?:salary|pay|ctc))\b",
+        q_low,
+    ):
         return False
-    if re.search(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?'s\s+(?:salary|ctc|pay|payslip)\b", q):
+    from app.brain.rbac import _mentions_individual_or_row_pay_target
+    if _mentions_individual_or_row_pay_target(q):
         return False
     return True
 
 
 def is_self_question(question: Optional[str], persona: Optional[str] = None) -> bool:
-    """Return True if `question` is a self-service query for the caller's own record."""
+    """Return True if `question` is strictly a self-service query for the caller's own record (S1 / M3)."""
     if not question:
         return False
     q = question.strip()
     q_low = q.lower()
-    if "reporting officer" in q_low:
+    if re.search(
+        r"\b(reporting\s+officer|in\s+my\s+opinion|my\s+(?:team|colleague\w*|peer\w*|subordinate\w*|boss|manager|department|division|section|unit)|"
+        r"(?:each|every|all)\s+(?:employee\w*|officer\w*|executive\w*|staff))\b",
+        q_low,
+    ):
         return False
-    if _SELF_QUERY_RE.search(q):
-        return True
+    canon = None
     if persona:
         try:
             canon = normalize_persona(persona)
         except UnknownPersona:
             canon = None
-        if canon:
-            from app.auth import PERSONA_DIRECTORY
+    from app.auth import PERSONA_DIRECTORY
 
-            info = PERSONA_DIRECTORY.get(canon, {})
-            emp_id = str(info.get("emp_id", ""))
-            disp = str(info.get("display_name", ""))
-            if emp_id and emp_id.lower() in q_low:
-                return True
-            if disp and len(disp) > 3 and disp.lower() in q_low:
-                return True
+    my_emp_id = str((PERSONA_DIRECTORY.get(canon or "", {}) or {}).get("emp_id", "")).lower()
+    emp_mentions = [m.lower() for m in re.findall(r"\bEMP-\d{4,6}\b", q, re.IGNORECASE)]
+    if emp_mentions and any(m != my_emp_id for m in emp_mentions):
+        return False
+    for pid, info in PERSONA_DIRECTORY.items():
+        if pid in ("DEMO_ADMIN", canon):
+            continue
+        other_name = str(info.get("display_name", "")).lower()
+        if other_name and len(other_name) > 3 and other_name in q_low:
+            return False
+
+    if _SELF_QUERY_RE.search(q):
+        return True
+    if canon:
+        info = PERSONA_DIRECTORY.get(canon, {})
+        emp_id = str(info.get("emp_id", ""))
+        disp = str(info.get("display_name", ""))
+        if emp_id and emp_id.lower() in q_low:
+            return True
+        if disp and len(disp) > 3 and disp.lower() in q_low:
+            return True
     return False
 
 
 def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[str] = None) -> AccessDecision:
-    """Evaluates whether the given persona has clearance for an entry or query topic.
+    """Evaluates whether the given persona has clearance for an entry or query topic (S1, S2).
 
     Returns an AccessDecision object.
     """
     normalized_persona = normalize_persona(persona)
 
-    # 0. Self-scope check (own payslip/leave/posting/APAR/entitlements -> allowed across all 11 personas)
+    # 1. Check if entry_id corresponds to a known refusal first (S1)
+    root_id = entry_id.split("__")[0] if entry_id else None
+    if root_id and root_id in REFUSAL_DEFINITIONS:
+        ref_def = REFUSAL_DEFINITIONS[root_id]
+        if normalized_persona == "DIR_FIN" and root_id in ("R-POSH", "R-MED"):
+            return AccessDecision(
+                status="partial",
+                reason="Under D-43, Director (Finance) receives aggregate counts only (k >= 5) for POSH and medical records.",
+                rule_ref="D-43 · " + ref_def["rule_ref"],
+                alternative=ref_def["alternative"],
+                alternative_sql=ref_def["alternative_sql"],
+                refusal_id=root_id,
+                code="R-SENS",
+            )
+        if normalized_persona in ref_def["restricted_personas"]:
+            return AccessDecision(
+                status="refused",
+                reason=ref_def["reason"],
+                rule_ref=ref_def["rule_ref"],
+                alternative=ref_def["alternative"],
+                alternative_sql=ref_def["alternative_sql"],
+                refusal_id=root_id,
+            )
+        elif normalized_persona == "CMD":
+            return AccessDecision(status="allowed")
+
+    # 2. Check strict self-scope or aggregate-pay relaxation (only when no other-employee/team target is present)
     if query and is_self_question(query, normalized_persona):
         from app.auth import PERSONA_DIRECTORY
 
@@ -506,35 +556,12 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
             self_emp_id=self_id,
         )
 
-    # 0b. Aggregate pay / entry basic pay check (closes BUG-07 -> allowed across all 11 personas)
     if query and is_aggregate_pay_question(query):
         return AccessDecision(
             status="allowed",
             reason="Aggregate pay / entry pay-scale query allowed across all personas (k >= 5).",
             rule_ref="SPEC-06 §5.1 · D-41",
         )
-
-    # 1. Check if entry_id corresponds to a known refusal
-    root_id = entry_id.split("__")[0] if entry_id else None
-
-    # Check for direct refusal mapping
-    if root_id and root_id in REFUSAL_DEFINITIONS:
-        ref_def = REFUSAL_DEFINITIONS[root_id]
-
-        # If persona is restricted for this refusal
-        if normalized_persona in ref_def["restricted_personas"]:
-            return AccessDecision(
-                status="refused",
-                reason=ref_def["reason"],
-                rule_ref=ref_def["rule_ref"],
-                alternative=ref_def["alternative"],
-                alternative_sql=ref_def["alternative_sql"],
-                refusal_id=root_id,
-            )
-        elif normalized_persona == "CMD":
-            # D-10 (B3): the CMD sees individual pay and APAR too; the former CMD refusal for D1/M3
-            # (CDA Rule 5.0 reading) is superseded by the sponsor decision.
-            return AccessDecision(status="allowed")
 
     # 2. Text / Query keyword heuristic for novel queries
     if query:

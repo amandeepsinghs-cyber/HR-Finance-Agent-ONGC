@@ -16,6 +16,7 @@ IAP assertion. The request body, WebSocket query string and voice/text commands 
 from __future__ import annotations
 
 import base64
+from contextvars import ContextVar, Token
 import hashlib
 import hmac
 import json
@@ -29,6 +30,7 @@ import time
 from dataclasses import asdict, dataclass
 from typing import Any, Dict, List, Optional
 import uuid
+import yaml
 
 from fastapi import HTTPException, Request
 
@@ -37,144 +39,31 @@ logger = logging.getLogger("yukti.auth")
 COOKIE_NAME = "yk_session"
 TOKEN_TTL_S = 8 * 3600
 
-# P2H.1 (SPEC-06 §4.1 / D-41 / D-60): 11 canonical personas seeded from dim_app_user.csv / app_users.yaml + DEMO_ADMIN.
-_DEFAULT_PERSONA_DIRECTORY: Dict[str, Dict[str, Any]] = {
-    "CMD": {
-        "emp_id": "EMP-000001",
-        "display_name": "Arun Mehra",
-        "designation": "Chairman & Managing Director",
-        "functional_designation": "Chairman & Managing Director",
-        "function": "EXEC",
-        "grade": "CMD",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-    "DIR_HR": {
-        "emp_id": "EMP-000002",
-        "display_name": "Manish Deshpande",
-        "designation": "Director (HR)",
-        "functional_designation": "Director (HR)",
-        "function": "HR",
-        "grade": "DIR",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-    "DIR_FIN": {
-        "emp_id": "EMP-000003",
-        "display_name": "Vivek Rao",
-        "designation": "Director (Finance)",
-        "functional_designation": "Director (Finance)",
-        "function": "FIN",
-        "grade": "DIR",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-    "E1_HR": {
-        "emp_id": "EMP-100151",
-        "display_name": "Dinesh Deshmukh",
-        "designation": "HR Officer (E1)",
-        "functional_designation": "HR Officer (E1)",
-        "function": "HR",
-        "grade": "E1",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-    "E2_HR": {
-        "emp_id": "EMP-102451",
-        "display_name": "Pooja Verma",
-        "designation": "HR Executive (E2)",
-        "functional_designation": "HR Executive (E2)",
-        "function": "HR",
-        "grade": "E2",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-    "E3_HR": {
-        "emp_id": "EMP-100144",
-        "display_name": "Pooja Pillai",
-        "designation": "Senior HR Executive (E3)",
-        "functional_designation": "Senior HR Executive (E3)",
-        "function": "HR",
-        "grade": "E3",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-    "E4_HR": {
-        "emp_id": "EMP-100178",
-        "display_name": "Aarti Saikia",
-        "designation": "Dy. Manager HR (E4)",
-        "functional_designation": "Dy. Manager HR (E4)",
-        "function": "HR",
-        "grade": "E4",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-    "E1_FIN": {
-        "emp_id": "EMP-100150",
-        "display_name": "Ajay Deshmukh",
-        "designation": "Accounts Officer (E1)",
-        "functional_designation": "Accounts Officer (E1)",
-        "function": "FIN",
-        "grade": "E1",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-    "E2_FIN": {
-        "emp_id": "EMP-100152",
-        "display_name": "Praveen Nair",
-        "designation": "Finance Executive (E2)",
-        "functional_designation": "Finance Executive (E2)",
-        "function": "FIN",
-        "grade": "E2",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-    "E3_FIN": {
-        "emp_id": "EMP-100146",
-        "display_name": "Asha Mishra",
-        "designation": "Finance Officer (E3)",
-        "functional_designation": "Finance Officer (E3)",
-        "function": "FIN",
-        "grade": "E3",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-    "E4_FIN": {
-        "emp_id": "EMP-100145",
-        "display_name": "Santosh Banerjee",
-        "designation": "Dy. Manager Finance (E4)",
-        "functional_designation": "Dy. Manager Finance (E4)",
-        "function": "FIN",
-        "grade": "E4",
-        "wc_id": "WC-DEL",
-        "work_centre": "Delhi HQ",
-    },
-}
-
 
 def _load_persona_directory() -> Dict[str, Dict[str, Any]]:
-    yaml_path = Path(__file__).resolve().parent / "brain" / "app_users.yaml"
-    if yaml_path.exists():
-        try:
-            import yaml
+    """P2H.1 (SPEC-06 §4.1 / D-41 / D-60 / S9): load the 11 canonical personas strictly from app_users.yaml."""
+    from app.access_control import VALID_PERSONAS
 
-            raw = yaml.safe_load(yaml_path.read_text(encoding="utf-8")) or {}
-            personas = raw.get("personas") or {}
-            if len(personas) == 11:
-                out: Dict[str, Dict[str, Any]] = {}
-                for pid, info in personas.items():
-                    desig = info.get("functional_designation") or info.get("designation") or ""
-                    out[pid] = {
-                        **info,
-                        "designation": desig,
-                        "functional_designation": desig,
-                        "wc_id": info.get("wc_id", "WC-DEL"),
-                        "work_centre": info.get("work_centre", "Delhi HQ"),
-                    }
-                return out
-        except Exception as exc:  # noqa: BLE001
-            logger.warning(f"Could not load app_users.yaml ({exc}); using built-in persona directory")
-    return {k: dict(v) for k, v in _DEFAULT_PERSONA_DIRECTORY.items()}
+    yaml_path = Path(__file__).resolve().parent / "brain" / "app_users.yaml"
+    if not yaml_path.exists():
+        raise RuntimeError(f"app_users.yaml not found at {yaml_path}; required for 11-persona identity directory")
+    raw = yaml.safe_load(yaml_path.read_text(encoding="utf-8")) or {}
+    personas = raw.get("personas") or {}
+    if set(personas.keys()) != set(VALID_PERSONAS) or len(personas) != 11:
+        raise RuntimeError(
+            f"app_users.yaml must define all 11 canonical personas {sorted(VALID_PERSONAS)}, got {sorted(personas.keys())}"
+        )
+    out: Dict[str, Dict[str, Any]] = {}
+    for pid, info in personas.items():
+        desig = info.get("functional_designation") or info.get("designation") or ""
+        out[pid] = {
+            **info,
+            "designation": desig,
+            "functional_designation": desig,
+            "wc_id": info.get("wc_id", "WC-DEL"),
+            "work_centre": info.get("work_centre", "Delhi HQ"),
+        }
+    return out
 
 
 PERSONA_DIRECTORY: Dict[str, Dict[str, Any]] = _load_persona_directory()
@@ -208,6 +97,44 @@ class Principal:
         if not d.get("functional_designation"):
             d["functional_designation"] = self.designation
         return d
+
+
+# Per-turn server-side Principal contextvar so agent tool wrappers (run_certified_query, etc.)
+# always bind the authenticated Principal (M1 / SPEC-06 §4.5) and fail closed when absent.
+_ACTIVE_PRINCIPAL: ContextVar[Optional[Principal]] = ContextVar("yukti_active_principal", default=None)
+
+
+def set_active_principal(principal: Optional[Principal]) -> Token:
+    return _ACTIVE_PRINCIPAL.set(principal)
+
+
+def reset_active_principal(token: Token) -> None:
+    _ACTIVE_PRINCIPAL.reset(token)
+
+
+def get_active_principal() -> Optional[Principal]:
+    return _ACTIVE_PRINCIPAL.get()
+
+
+def principal_for_persona(persona: str) -> Principal:
+    """Build a server-side Principal for a canonical persona (raises UnknownPersona on unknown/empty)."""
+    from app.access_control import normalize_persona
+
+    canon = normalize_persona(persona)
+    info = PERSONA_DIRECTORY[canon]
+    return Principal(
+        emp_id=str(info["emp_id"]),
+        persona=canon,
+        function=str(info["function"]),
+        grade=str(info["grade"]),
+        display_name=str(info["display_name"]),
+        designation=str(info["designation"]),
+        is_admin=False,
+        demo=True,
+        wc_id=str(info.get("wc_id", "WC-DEL")),
+        work_centre=str(info.get("work_centre", "Delhi HQ")),
+        functional_designation=str(info.get("functional_designation") or info["designation"]),
+    )
 
 
 # ------------------------------------------------------------------ signing key

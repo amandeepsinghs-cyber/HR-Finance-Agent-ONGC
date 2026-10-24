@@ -117,7 +117,23 @@ async def run_certified_query(
         merged["min_grade"] = min_grade
     if field_id:
         merged["field_id"] = field_id
-    return await asyncio.to_thread(execute_certified_query, query_id=query_id, params=merged or None)
+    from app.auth import get_active_principal
+
+    principal = get_active_principal()
+    if principal is None:
+        return {
+            "type": "error",
+            "code": "E-AUTH",
+            "error": "Authentication error (E-AUTH): no server principal bound for certified query execution.",
+            "retryable": False,
+        }
+    return await asyncio.to_thread(
+        execute_certified_query,
+        query_id=query_id,
+        params=merged or None,
+        persona=principal.persona,
+        self_emp_id=principal.emp_id,
+    )
 
 
 async def search_policy(query: str) -> Dict[str, Any]:

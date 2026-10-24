@@ -98,8 +98,9 @@ def test_b3_row_action_for_leadership(results):
 
 
 def test_b3_director_sees_names_d10(results):
+    # D-43 (supersedes D-10): DIR_FIN is function-scoped and receives aggregate counts (partial) for general HR rosters.
     c = results["dirfin_roster"]
-    assert c["access"]["status"] == "allowed" and "name" in _cols(c)
+    assert c["access"]["status"] == "partial" and "name" not in _cols(c)
 
 
 def test_b34_junior_names_become_aggregate_and_agree(results):

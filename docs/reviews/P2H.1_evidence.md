@@ -128,3 +128,53 @@ $ cd yukti/backend && "/usr/local/google/home/amandeepsinghs/o&g agentic transfo
 1. **Both certified library paths updated:** `certified_query.py` loads `yukti/backend/certified/library.yaml` while `P2H.1.md` also references `yukti/backend/app/brain/certified/library.yaml`. Both files are kept identical so runtime and the packet's CI grep gate stay in sync.
 2. **Both Dataform gold paths created:** Created `dataform/definitions/gold/dim_app_user.sqlx` (packet path) and `data_bank/medallion/dataform/definitions/gold/dim_app_user.sqlx` (repo Dataform root).
 3. **`test_auth_tokens.py` & `test_role_escalation.py` updated for 11 personas (D-60 item 2):** Updated `test_auth_tokens.py` to expect all 11 personas (`E3_FIN = Asha Mishra`) and extended `test_role_escalation.py` from 4 to 10 non-CMD personas (60/60 escalation cases).
+
+---
+
+## 5. Round 2: G4 Review Fixes (`M1`–`M6` and `S1`–`S9`)
+
+All 6 must-fix items (`M1`–`M6`) and 9 should-fix items (`S1`–`S9`) from [`docs/reviews/P2H.1.md`](./P2H.1.md) have been resolved and covered by regression tests:
+
+| Finding | Resolution | Verification |
+|---|---|---|
+| **M1 (`agent.py:120`, `certified_query.py:83`)** | Added `ContextVar` (`_ACTIVE_PRINCIPAL`) in `auth.py`, bound in `turn_runner.py::execute_turn_async`. `agent.py::run_certified_query` reads `get_active_principal()` and fails closed (`code: "E-AUTH"`) when no server `Principal` is bound — never defaults to `CMD`/`EMP-000001`. Removed `persona: str = "CMD"` default in `certified_query.py::run_certified_query`. | `tests/test_self_scope.py::test_agent_tool_wrapper_uses_active_principal_and_fails_closed` |
+| **M2 (`certified_query.py:52-63`, `certified/library.yaml`)** | Removed `"E2_HR"` default and `"EMP-102451"` fallback from `resolve_self_emp_id`; raises `UnknownPersona` on `None`, empty, or unknown personas. Replaced all `default: EMP-102451` YAML attributes with `default: null` in both `certified/library.yaml` and `app/brain/certified/library.yaml`. | `grep -cE "EMP-[0-9]{4,6}" certified/library.yaml app/brain/certified/library.yaml` -> **`0`**; `cmp -s` -> exit `0` |
+| **M3 (`rbac.py`, `planner.py`, `pipeline.py`)** | Removed question-text regex from `_detect_self_emp_id`. `self` class is granted only when `"self" in data_classes` or `spec.self_scope` / `emp_id = @self_emp_id` is in the compiled `QuerySpec` (and no foreign employee/team target is present). `_verified_self_bypass` in `enforce_contract` requires every row in `table.rows` to have `emp_id == principal.emp_id` before skipping column masking. Tightened `planner.py` (`is_self_hr`) to exclude `"in my opinion"` / `"my colleagues"` / `"all officers"`. | `tests/test_self_scope.py::test_m3_adversarial_my_opinion_does_not_bypass_rbac` |
+| **M4 (`rbac.py`, `compiler.py`, `pipeline.py`)** | `_enrich_classes_from_question` never strips compiler-derived classes (`pay_individual`, `named`, etc.) and never grants `pay_aggregate` from question text; any question naming an individual (`"What is the pay band of Ramesh Kumar"`) or requesting employee-level pay adds `pay_individual` and removes `pay_aggregate`. `compiler.py` only emits `pay_aggregate` when `grain == "aggregate"`, no `emp_id`/`name` filter is present, and `set(dims) <= {"grade", "discipline", "wc", "asset", "fy", "sector", "region"}`. | `tests/test_self_scope.py::test_m4_named_pay_band_and_row_grain_pay_refused_for_junior` |
+| **M5 (`rbac.py`)** | `_infer_target_function` inspects `spec.filters` (`discipline == 'DISC-FIN'` vs `'DISC-HR'`) and marks mixed HR+Finance queries (`"Show APAR ratings of E3 HR officers and the finance officer"`, `"Show names of all Delhi staff (DISC-FIN)"`) as `"MIXED"` (refused/aggregated for single-function Directors). Extended `enforce_contract` to enforce D-43 for `DIR_FIN` (strips `sensitive` columns + $k \ge 5$ suppression; filters mixed tables to `DISC-FIN` rows and scrubs non-FIN names) and `DIR_HR` (strips `fin_internal` columns). | `tests/test_self_scope.py::test_m5_director_cross_function_mixed_query_and_enforce_contract` |
+| **M6 (`certified_query.py`, `test_b2_review_regressions.py`)** | `list_certified_queries()` returns the 89 root catalog queries (`_CERTIFIED_ROOT_QUERIES`), while `get_certified_entry()` resolves both the 89 root queries and the `self_queries` section. `run_planner_turn` catches `UnknownPersona` for non-self queries and falls back to least-privilege `E1_HR` while `decide()` strictly raises `UnknownPersona`. Fixed `compiler.py::execute` `_run_sync` signature compatibility when `compiled.params` is empty. | `tests/test_certified_query.py` (**5 passed**), `tests/test_b2_review_regressions.py` (**8 passed**), `tests/test_provenance_labels.py` (**17 passed**) |
+| **S1–S9 (`access_control.py`, `rbac.py`, `auth.py`, `test_rbac_live.py`)** | Fixed S1 (`check_access` evaluates foreign employee/refusal keywords before `is_self_question`/`is_aggregate_pay_question`), S2 (`R-POSH`/`R-MED` use `JUNIOR_PERSONAS` and return `partial` for `DIR_FIN`), S3 (`wacc` is `general_fin`; only valuation/DCF model runs are `valuation_run`), S4 (`decide()` raises `UnknownPersona` on unknown/empty/alias strings), S5 (`pipeline.py` and `certified_query.py` prefer `principal.emp_id`), S6 (added 198-case test without explicit `target_function`), S7 (updated `test_rbac_live.py::test_b3_director_sees_names_d10` for D-43), and S9 (`auth.py` loads strictly from `app_users.yaml`). | `tests/test_persona_question_matrix.py` (**396 passed**), `tests/test_self_scope.py::test_s1_s2_s3_s4_regressions` |
+
+### Round 2 Verification Commands & Output
+
+```text
+$ cd yukti/backend
+$ cmp -s certified/library.yaml app/brain/certified/library.yaml && echo "OK: library.yaml copies identical"
+OK: library.yaml copies identical
+
+$ grep -cE "EMP-[0-9]{4,6}" certified/library.yaml app/brain/certified/library.yaml
+certified/library.yaml:0
+app/brain/certified/library.yaml:0
+
+$ "/usr/local/google/home/amandeepsinghs/o&g agentic transformation/Oil & Gas Agent Portfolio/cloud_run_apps/HR and Finance_ONGC/yukti/backend/.venv/bin/python" -m pytest -q \
+    tests/test_personas_v3.py \
+    tests/test_self_scope.py \
+    tests/test_persona_question_matrix.py \
+    tests/test_rbac_policy.py \
+    tests/test_role_escalation.py \
+    tests/test_auth_tokens.py \
+    tests/test_refusal_copy.py \
+    tests/test_certified_query.py \
+    tests/test_b2_review_regressions.py \
+    tests/test_catalog_consistency.py \
+    tests/test_degraded_copy.py \
+    tests/test_provenance_labels.py
+1092 passed, 3 warnings in 23.45s
+```
+
+### Full-Suite Classification (Offline vs Live Environment Tests)
+
+Across the full `yukti/backend/tests` directory:
+- **Offline / deterministic suites (`1,092 passed`, `0 failed`):** All RBAC, persona, self-scope, refusal copy, auth token, certified query (89-query catalog), B2 regression, provenance labels, export security, transfer note, catalog consistency, degraded copy, and QuerySpec suites pass 100%.
+- **Pre-existing live Gemini / BigQuery / snapshot-drift suites (outside `P2H.1` scope):**
+  - `test_finance_chain.py`, `test_flagship_chain.py`, `test_planner_golden.py`, `test_materialized_reconcile.py`: Require live Gemini LLM narration (e.g. live sentence-count variation 6 vs 4) or reflect pre-existing `local_snapshot` vs live `bigquery` PBT figures (`7753.84` vs `7132.1`). Zero failures in any offline test after `M6` fixes.

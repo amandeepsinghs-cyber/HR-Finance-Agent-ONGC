@@ -325,3 +325,182 @@ def test_198_persona_question_matrix(persona: str, q_entry: Dict[str, Any]):
     for text_field in (dec.reason or "",):
         for forbidden in ("Reauthentication", "RefreshError", "Traceback"):
             assert forbidden not in text_field
+
+
+@pytest.mark.parametrize("persona", PERSONAS_11)
+@pytest.mark.parametrize("q_entry", QUESTIONS_18, ids=[q["id"] for q in QUESTIONS_18])
+def test_198_persona_question_matrix_without_explicit_target_function(persona: str, q_entry: Dict[str, Any]):
+    """S6: Verify all 198 cases also match when `target_function` is omitted and inferred from `spec` + `question`."""
+    exp_action, exp_code = _expected_for(persona, q_entry)
+    dec = decide(
+        persona,
+        q_entry["data_classes"],
+        q_entry["question"],
+        spec=q_entry["spec"],
+        director_function_scope=True,
+    )
+    assert dec.action == exp_action, f"{persona} × {q_entry['id']} (no target_function): expected {exp_action}, got {dec}"
+    assert dec.code == exp_code, f"{persona} × {q_entry['id']} (no target_function): expected {exp_code}, got {dec}"
+
+
+def test_m3_adversarial_self_bypass_blocked():
+    """M3: 'In my opinion, list net pay of all E2 HR officers' and 'my colleagues medical claims' never grant `self`."""
+    from app.brain.planner import Planner
+    from app.brain.rbac import enforce_contract
+
+    q1 = "In my opinion, list net pay of all E2 HR officers"
+    dec1 = decide("E2_HR", ["general_hr"], q1)
+    assert dec1.action == "refuse"
+    assert dec1.code == "R-PAY"
+    assert dec1.self_emp_id is None
+    assert "self" not in dec1.data_classes
+
+    # Even if compiler already derived ["named", "pay_individual"], they are never dropped
+    dec1b = decide("E2_HR", ["named", "pay_individual"], q1)
+    assert dec1b.action == "refuse"
+    assert dec1b.code == "R-PAY"
+    assert "named" in dec1b.data_classes and "pay_individual" in dec1b.data_classes
+
+    # Planner.to_plan must not set self_scope=True on q1
+    plan1 = Planner().to_plan(q1, {}, prev=None)
+    assert not (plan1.spec and plan1.spec.self_scope)
+
+    q2 = "my colleagues medical claims"
+    dec2 = decide("E3_FIN", ["general_hr"], q2)
+    assert dec2.action == "refuse"
+    assert dec2.code == "R-SENS"
+    assert dec2.self_emp_id is None
+    assert "self" not in dec2.data_classes
+
+    # enforce_contract: a table missing an `emp_id` column is NOT bypassed even if access.self_emp_id is set
+    c_untrusted = {
+        "turn_id": "t-m3",
+        "language": "en",
+        "persona": "E2_HR",
+        "spoken_summary": "Ramesh Kumar earns 150000.",
+        "display_text": "Ramesh Kumar earns 150000.",
+        "insights": [],
+        "sources": [],
+        "access": {"status": "allowed", "self_emp_id": "EMP-102451"},
+        "visual": {
+            "type": "table",
+            "mode": "replace",
+            "table": {
+                "columns": ["name", "net_pay_inr", "grade"],
+                "rows": [{"name": "Ramesh Kumar", "net_pay_inr": 150000, "grade": "E2"}],
+            },
+        },
+    }
+    enforced = enforce_contract(c_untrusted, "E2_HR")
+    assert "name" not in enforced["visual"]["table"]["columns"]
+    assert "net_pay_inr" not in enforced["visual"]["table"]["columns"]
+    assert "Ramesh Kumar" not in str(enforced)
+
+
+def test_m4_adversarial_pay_band_of_named_individual_refused():
+    """M4: 'What is the pay band of Ramesh Kumar' is refused (R-PAY) and never strips compiler `pay_individual`."""
+    q = "What is the pay band of Ramesh Kumar"
+    for base_classes in (["general_hr"], ["pay_individual"], ["pay_aggregate"], ["named", "pay_individual"]):
+        dec = decide("E2_HR", base_classes, q)
+        assert dec.action == "refuse", (base_classes, dec)
+        assert dec.code == "R-PAY", (base_classes, dec)
+        assert "pay_individual" in dec.data_classes
+
+
+def test_m5_dir_fin_function_scope_mixed_query_and_director_enforce_contract():
+    """M5: DIR_FIN asking for mixed HR + Finance APAR is refused pre-query, and enforce_contract filters non-Finance rows."""
+    import copy
+    from app.brain.rbac import enforce_contract
+
+    q_mixed = "Show APAR ratings of E3 HR officers and the finance officer"
+    dec_mixed = decide("DIR_FIN", ["apar"], q_mixed)
+    assert dec_mixed.action == "refuse"
+    assert dec_mixed.code == "R-APAR"
+
+    q_spoof = "Show names of all Delhi staff (DISC-FIN)"
+    dec_spoof = decide("DIR_FIN", ["named"], q_spoof)
+    assert dec_spoof.action == "aggregate"
+
+    # Post-query enforce_contract on DIR_FIN with mixed HR + FIN rows keeps ONLY Finance rows and scrubs HR names
+    mixed_contract = {
+        "turn_id": "t-m5",
+        "language": "en",
+        "persona": "DIR_FIN",
+        "spoken_summary": "Pooja Pillai scored 8.5 and Asha Mishra scored 9.1.",
+        "display_text": "Pooja Pillai scored 8.5 and Asha Mishra scored 9.1.",
+        "insights": ["Pooja Pillai 8.5", "Asha Mishra 9.1"],
+        "sources": [{"kind": "data"}],
+        "access": {"status": "allowed"},
+        "visual": {
+            "type": "table",
+            "mode": "replace",
+            "table": {
+                "columns": ["emp_id", "name", "discipline_id", "apar_score"],
+                "rows": [
+                    {"emp_id": "EMP-100144", "name": "Pooja Pillai", "discipline_id": "DISC-HR", "apar_score": 8.5},
+                    {"emp_id": "EMP-100146", "name": "Asha Mishra", "discipline_id": "DISC-FIN", "apar_score": 9.1},
+                ],
+                "total_rows": 2,
+            },
+        },
+    }
+    out_df = enforce_contract(copy.deepcopy(mixed_contract), "DIR_FIN")
+    rows_df = out_df["visual"]["table"]["rows"]
+    assert len(rows_df) == 1
+    assert rows_df[0]["emp_id"] == "EMP-100146"
+    assert "Pooja Pillai" not in str(out_df)
+    assert out_df["access"]["status"] == "partial"
+    assert out_df["access"]["code"] == "R-APAR"
+
+    # Post-query enforce_contract on DIR_HR strips fin_internal columns
+    fin_internal_contract = {
+        "turn_id": "t-m5-hr",
+        "language": "en",
+        "persona": "DIR_HR",
+        "spoken_summary": "Vendor Acme Ltd invoice INV-9001 is overdue.",
+        "display_text": "Vendor Acme Ltd invoice INV-9001 is overdue.",
+        "insights": [],
+        "sources": [{"kind": "data"}],
+        "access": {"status": "allowed"},
+        "visual": {
+            "type": "table",
+            "mode": "replace",
+            "table": {
+                "columns": ["vendor_name", "invoice_no", "amount_cr"],
+                "rows": [{"vendor_name": "Acme Ltd", "invoice_no": "INV-9001", "amount_cr": 12.4}],
+            },
+        },
+    }
+    out_dhr = enforce_contract(copy.deepcopy(fin_internal_contract), "DIR_HR")
+    assert "vendor_name" not in out_dhr["visual"]["table"]["columns"]
+    assert "invoice_no" not in out_dhr["visual"]["table"]["columns"]
+    assert "Acme Ltd" not in str(out_dhr)
+    assert out_dhr["access"]["status"] == "partial"
+    assert out_dhr["access"]["code"] == "R-FUNC"
+
+
+def test_s1_s2_s3_s4_regressions():
+    """S1 (check_access order), S2 (R-POSH/R-MED), S3 (WACC is general_fin), S4 (decide raises UnknownPersona)."""
+    from app.access_control import UnknownPersona, check_access
+
+    # S1: topic refusals are not bypassed by self/aggregate-pay regexes
+    assert check_access("E1_HR", query="pay scale and salary of each employee in Delhi").status == "refused"
+    dec_team = check_access("E3_FIN", query="list my team's APAR ratings")
+    assert dec_team.status == "refused"
+    assert dec_team.self_emp_id is None
+
+    # S2: R-POSH and R-MED restrict all 8 juniors and return partial/aggregate for DIR_FIN
+    assert check_access("E1_HR", entry_id="R-POSH").status == "refused"
+    assert check_access("E4_FIN", entry_id="R-MED").status == "refused"
+    assert check_access("DIR_FIN", entry_id="R-POSH").status == "partial"
+
+    # S3: WACC is general_fin (allowed for all 11 personas), whereas running a DCF valuation is valuation_run
+    for p in PERSONAS_11:
+        assert decide(p, ["general_fin"], "What is ONGC's WACC for FY25?").action == "allow"
+    assert decide("E1_HR", ["general_fin"], "Run a DCF valuation of ONGC").action == "refuse"
+
+    # S4: decide() raises UnknownPersona on empty, unknown, or un-normalized persona strings
+    for bad in ("", None, "E5_HR", "DEMO_ADMIN", "chairman"):
+        with pytest.raises(UnknownPersona):
+            decide(bad, ["general_hr"])  # type: ignore[arg-type]
+

@@ -277,13 +277,21 @@ class AgentTurnRunner:
         P0.4: when `principal` (app.auth.Principal, from the signed session token) is given, its persona
         is the only persona used; nothing in the query or the contract can change it (admins excepted).
         """
+        from app.auth import principal_for_persona, reset_active_principal, set_active_principal
+
         if principal is not None:
             persona = principal.persona
-        contract = await self._execute_turn_inner(
-            query=query, session_id=session_id, persona=persona, language=language,
-            voice_override=voice_override, history=history, ui_context=ui_context,
-            spec_patch=spec_patch, base_spec=base_spec, principal=principal,
-        )
+        else:
+            principal = principal_for_persona(persona)
+        token = set_active_principal(principal)
+        try:
+            contract = await self._execute_turn_inner(
+                query=query, session_id=session_id, persona=persona, language=language,
+                voice_override=voice_override, history=history, ui_context=ui_context,
+                spec_patch=spec_patch, base_spec=base_spec, principal=principal,
+            )
+        finally:
+            reset_active_principal(token)
         from app.brain.rbac import enforce_contract, persona_class
         req_persona = normalize_persona(persona)
         # P0.4 (BUG-06): the persona is never taken from the contract (that let a free-text "switch role"
@@ -685,7 +693,7 @@ class AgentTurnRunner:
                     patch_obj, base_obj = None, None
             try:
                 planned = await run_planner_turn(query, session_state, norm_persona, turn_id, det_lang, t0,
-                                                 patch_override=patch_obj, base_spec=base_obj)
+                                                 patch_override=patch_obj, base_spec=base_obj, principal=principal)
                 if planned is not None:
                     return self._finalize_planner_contract(planned, session_state, query, t0)
             except Exception as e_plan:  # the planner must never take a turn down (G4 B2 F-4)

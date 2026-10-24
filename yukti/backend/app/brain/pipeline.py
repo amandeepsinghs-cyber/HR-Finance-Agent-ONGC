@@ -97,6 +97,7 @@ async def run_planner_turn(
     spec_override: Optional[QuerySpec] = None,
     patch_override: Optional[SpecPatch] = None,
     base_spec: Optional[QuerySpec] = None,
+    principal: Optional[Any] = None,
 ) -> Optional[Dict[str, Any]]:
     """Returns a contract (dict) or None to fall back to the legacy path."""
     # B3: junior personas use the planner under the RBAC policy engine (pre-query decision on the
@@ -141,18 +142,29 @@ async def run_planner_turn(
     spec = plan.spec
     compiler = get_compiler()
     policy = None
-    from app.auth import PERSONA_DIRECTORY
-    self_emp_id = (PERSONA_DIRECTORY.get(persona) or {}).get("emp_id")
+    from app.auth import PERSONA_DIRECTORY, get_active_principal
+    eff_principal = principal or get_active_principal()
+    if eff_principal is not None and getattr(eff_principal, "emp_id", None):
+        self_emp_id = str(eff_principal.emp_id)
+    else:
+        self_emp_id = (PERSONA_DIRECTORY.get(persona) or {}).get("emp_id")
     try:
         compiled = compiler.compile(spec, self_emp_id=self_emp_id)
         # B3.3 / SPEC-06 pre-query policy on the compiled spec (data classes of metric + roster columns)
         # and on the question's topic (pay / APAR / vigilance / self ...).
-        policy = decide(
-            persona,
-            compiled.data_classes,
-            query,
-            self_emp_id=self_emp_id if (spec.self_scope or "self" in compiled.data_classes) else None,
-        )
+        from app.access_control import UnknownPersona
+        try:
+            policy = decide(
+                persona,
+                compiled.data_classes,
+                query,
+                self_emp_id=self_emp_id if (spec.self_scope or "self" in compiled.data_classes) else None,
+                spec=spec,
+            )
+        except UnknownPersona:
+            if spec.self_scope or "self" in compiled.data_classes:
+                raise
+            policy = decide("E1_HR", compiled.data_classes, query, spec=spec)
         if policy.action == "refuse":
             return {"contract": _refusal_contract(policy, spec, persona, turn_id, language, t0), "meta": {"spec": None}}
         if policy.action == "aggregate":
@@ -255,8 +267,23 @@ async def run_planner_turn(
         "suggestions": [],
         "access": {
             "status": "allowed",
-            **({"self_emp_id": policy.self_emp_id} if (policy and policy.self_emp_id) else {}),
-            **({"allow_pay_aggregate": True} if (policy and "pay_aggregate" in policy.data_classes and policy.action == "allow") else {}),
+            **({"self_emp_id": policy.self_emp_id} if (policy and policy.self_emp_id and "self" in compiled.data_classes) else {}),
+            **(
+                {"allow_pay_aggregate": True}
+                if (
+                    policy
+                    and compiled.grain == "aggregate"
+                    and "pay_aggregate" in policy.data_classes
+                    and "pay_individual" not in policy.data_classes
+                    and "named" not in policy.data_classes
+                    and policy.action == "allow"
+                    and not any(f.field in ("emp_id", "name", "emp_name") for f in spec.filters)
+                    and set(spec.dimensions) <= {"grade", "discipline", "wc", "asset", "fy"}
+                )
+                else {}
+            ),
+            **({"target_function": policy.target_function} if (policy and policy.target_function) else {}),
+            **({"data_classes": policy.data_classes} if (policy and policy.data_classes) else {}),
         },
         "export_options": ["sheets", "xlsx", "pdf"],
         "status_events": status,

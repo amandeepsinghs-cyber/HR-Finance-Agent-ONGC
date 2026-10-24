@@ -39,8 +39,8 @@ LEGACY_SELF_IDS = ["E1", "E2", "E3", "E6"]
 
 
 def test_zero_hardcoded_emp_id_literals_in_certified_libraries():
-    """SPEC-06 §4.5 CI grep gate: 0 literal emp_id = 'EMP-...' in certified/library.yaml and app/brain/certified/library.yaml."""
-    pat = re.compile(r"emp_id\s*=\s*'EMP-[0-9]+'", re.IGNORECASE)
+    """SPEC-06 §4.5 / M2 CI grep gate: 0 literal EMP-XXXXXX anywhere in certified/library.yaml and app/brain/certified/library.yaml."""
+    pat = re.compile(r"EMP-[0-9]{4,6}", re.IGNORECASE)
     for path in (CERT_LIB_MAIN, CERT_LIB_BRAIN):
         assert path.exists(), f"Missing {path}"
         text = path.read_text(encoding="utf-8")
@@ -142,3 +142,56 @@ def test_planner_marks_possessive_queries_as_self_scope_and_pipeline_allows_my(u
 
 def test_person_re_still_blocks_explicit_employee_number():
     assert _planner_allowed("Show details of employee 104523", "E2_HR") is False
+
+
+@pytest.mark.parametrize("bad_persona", [None, "", "   ", "UNKNOWN", "E5_HR", "DEMO_ADMIN", "INTERN"])
+def test_m2_resolve_self_emp_id_and_run_certified_query_reject_unknown_or_empty_persona(bad_persona):
+    """M2: resolve_self_emp_id and run_certified_query on self queries raise UnknownPersona when persona is missing/unknown."""
+    from app.access_control import UnknownPersona
+
+    with pytest.raises(UnknownPersona):
+        resolve_self_emp_id(bad_persona)
+    with pytest.raises(UnknownPersona):
+        run_certified_query("my_payslip", persona=bad_persona)
+
+
+def test_m1_agent_tool_wrapper_fails_closed_without_principal_and_binds_active_principal(monkeypatch):
+    """M1: agent.run_certified_query fails closed without an active Principal and binds distinct emp_ids per persona."""
+    import asyncio
+    from app import agent as agent_mod
+    from app.auth import principal_for_persona, reset_active_principal, set_active_principal
+
+    captured_calls: List[Dict[str, Any]] = []
+
+    def _fake_exec(query_id: str, params=None, persona=None, self_emp_id=None):
+        captured_calls.append({"query_id": query_id, "persona": persona, "self_emp_id": self_emp_id})
+        return {"type": "certified_query_result", "query_id": query_id, "persona": persona, "self_emp_id": self_emp_id}
+
+    monkeypatch.setattr(agent_mod, "execute_certified_query", _fake_exec)
+
+    # 1. Without a bound server Principal -> fail closed with E-AUTH (never defaults to CMD / EMP-000001)
+    res_no_principal = asyncio.run(agent_mod.run_certified_query("my_payslip"))
+    assert res_no_principal["type"] == "error"
+    assert res_no_principal["code"] == "E-AUTH"
+    assert len(captured_calls) == 0
+
+    # 2. Bound to E1_HR -> passes E1_HR / EMP-100151
+    tok1 = set_active_principal(principal_for_persona("E1_HR"))
+    try:
+        res_e1 = asyncio.run(agent_mod.run_certified_query("my_payslip"))
+    finally:
+        reset_active_principal(tok1)
+
+    # 3. Bound to E3_FIN -> passes E3_FIN / EMP-100146
+    tok2 = set_active_principal(principal_for_persona("E3_FIN"))
+    try:
+        res_e3 = asyncio.run(agent_mod.run_certified_query("my_payslip"))
+    finally:
+        reset_active_principal(tok2)
+
+    assert res_e1["persona"] == "E1_HR" and res_e1["self_emp_id"] == "EMP-100151"
+    assert res_e3["persona"] == "E3_FIN" and res_e3["self_emp_id"] == "EMP-100146"
+    assert res_e1["self_emp_id"] != res_e3["self_emp_id"]
+    assert res_e1["self_emp_id"] != "EMP-000001"
+    assert res_e3["self_emp_id"] != "EMP-000001"
+

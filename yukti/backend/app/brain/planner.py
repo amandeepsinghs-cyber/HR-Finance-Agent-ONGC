@@ -528,15 +528,27 @@ class Planner:
             intent = "data"
             raw = dict(raw, intent="data", metric="pay_scale_min_inr", is_followup=False, dimensions=["grade"], filters=f_list)
 
-        # SPEC-06 §4.5: possessive first-person ("my", "mera/meri", "मेरा/मेरी") + HR entity -> self_scope=True
-        is_self_hr = bool(
+        # SPEC-06 §4.5 (M3): possessive first-person ("my", "mera/meri", "मेरा/मेरी") + immediate HR entity -> self_scope=True
+        # Never match when "my" modifies a non-self noun ("in my opinion", "my team", "my colleagues", "my reporting officer")
+        # or when plural/other-employee targets appear ("all ... officers", "each employee", "EMP-...").
+        has_non_self_target = bool(
             re.search(
-                r"(?:(?<![a-z])(?:my|mine|myself|mera|meri|mere|i\s+have\s+been|have\s+i\s+been)(?![a-z])|(?:मेरा|मेरी|मेरे))"
-                r".*?"
-                r"(?:(?<![a-z])(?:salary|payslip|pay\s*slip|pay\s+components|pay\s+scale|ctc|basic\s*pay|da|hra|prp|"
-                r"leave|el|cl|hpl|balance|posting|postings|posted|tenure|station|transfer|apar|rating|ratings|score|appraisal|"
-                r"entitlement|entitlements|advance|advances|medical|reimbursement)(?![a-z])|"
-                r"(?:वेतन|सैलरी|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|पात्रता))",
+                r"\b(in\s+my\s+opinion|my\s+(?:team|colleague\w*|peer\w*|subordinate\w*|reporting\s+officer|boss|manager|department|division|section|unit)|"
+                r"all\s+(?:e[1-9]\s+)?(?:hr\s+|finance\s+)?(?:officer\w*|executive\w*|employee\w*|staff)|"
+                r"(?:each|every)\s+(?:officer|executive|employee)|emp-\d{4,6})\b",
+                ql_early,
+            )
+        )
+        is_self_hr = (not has_non_self_target) and bool(
+            re.search(
+                r"(?:"
+                r"(?<![a-z])(?:my|mine|mera|meri|mere)(?:\s+(?:own|current|latest|monthly|annual|fy\d{2}|september|march|april|personal)){0,2}\s+"
+                r"(?:salary|payslip|pay\s*slip|pay\s+components|pay\s+scale|ctc|basic\s*pay|da|hra|prp|gross\s*pay|net\s*pay|"
+                r"leave|el|cl|hpl|balance|posting|postings|station|transfer|apar|rating|ratings|score|appraisal|"
+                r"entitlement|entitlements|advance|advances|hba|car\s+advance|furniture|laptop|medical\s+claim\w*|reimbursement)(?![a-z])"
+                r"|(?<![a-z])(?:how\s+long\s+have\s+i\s+been\s+posted|where\s+am\s+i\s+posted)(?![a-z])"
+                r"|(?:मेरा|मेरी|मेरे)\s+(?:\S+\s+){0,2}(?:वेतन|सैलरी|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|पात्रता)"
+                r")",
                 question,
                 re.I,
             )
