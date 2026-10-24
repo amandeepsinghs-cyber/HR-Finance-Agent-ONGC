@@ -372,11 +372,6 @@ def test_d61_secondary_suppression_applies_only_when_exactly_one_primary_cell():
     assert n == 2  # No secondary suppression because there were 2 primary cells
 
 def test_r4_dir_fin_sql_parsing():
-    import pytest
-    try:
-        import sqlglot
-    except ImportError:
-        pytest.skip("sqlglot not installed")
     """R4-B1: DIR_FIN querying HR columns from DISC-FIN vs MIXED."""
     # Assuming we mock sqlglot or just use query_data directly?
     # test_rbac_policy.py does not test query_data directly usually, but I'll do it.
@@ -412,3 +407,34 @@ def test_r4_secondary_suppression_3_5_0():
     assert out[1]["count"] == "suppressed"
     assert out[2]["count"] == 0
     assert n == 2
+
+def test_r4_e1_e4_query_data_tool_absent():
+    """R4-B1 (D-64): E1-E4 have no free-form SQL tool."""
+    from app.agent import create_yukti_agent
+    from app.auth import Principal, set_active_principal, reset_active_principal
+    
+    token = Principal(emp_id="EMP-123", display_name="Test", persona="E2_HR", function="HR", grade="E2", designation="Test")
+    token_auth = set_active_principal(token)
+    try:
+        agent = create_yukti_agent()
+        tool_names = [t.__name__ for t in agent.tools]
+        assert "query_data" not in tool_names
+    finally:
+        reset_active_principal(token_auth)
+
+def test_r4_e1_e4_direct_query_data_refusal():
+    """R4-B1 (D-64): direct call to query_data by E1-E4 refuses."""
+    from app.agent import query_data
+    from app.auth import Principal, set_active_principal, reset_active_principal
+    import asyncio
+    
+    token = Principal(emp_id="EMP-123", display_name="Test", persona="E2_HR", function="HR", grade="E2", designation="Test")
+    token_auth = set_active_principal(token)
+    try:
+        res = asyncio.run(query_data(sql_query="SELECT * FROM hrfin_gold.ssot_workforce_employee"))
+        assert res.get("status") == "refused"
+        assert res.get("code") == "R-FUNC"
+    finally:
+        reset_active_principal(token_auth)
+
+
