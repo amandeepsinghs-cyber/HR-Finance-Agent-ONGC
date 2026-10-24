@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:10 UTC · branch `v3/P0-stabilise` @ `395ccb4`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:19 UTC · branch `v3/P0-stabilise` @ `5855b90`
 
 > [!IMPORTANT]
-> **Overall: 33% complete (weighted)** — 18/62 steps ✅ done, 7 in flight, 37 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 1 warning(s).
+> **Overall: 34% complete (weighted)** — 19/62 steps ✅ done, 6 in flight, 37 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 4 warning(s).
 
 ## 1. Phase progress
 
@@ -14,7 +14,7 @@
 | **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 6% | 0 | 0 | 0 | 2 | 6 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
-| **P4** | Visual 9/10 + exports (V21) | `██████░░░░░░░░░░░░░░` 28% | 2 | 0 | 0 | 2 | 5 | 0 | 9 |
+| **P4** | Visual 9/10 + exports (V21) | `███████░░░░░░░░░░░░░` 36% | 3 | 0 | 0 | 1 | 5 | 0 | 9 |
 | **P5** | One brain, eval, redeploy | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
@@ -28,14 +28,13 @@
 | P1.7 | 🔍 In review | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | Apply review findings / approve |
 | P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
 | P2H.2 | 🔄 In progress | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Complete build + evidence |
-| P4.1 | 🔄 In progress | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Complete build + evidence |
 | P4.2 | 🔄 In progress | `visual.type=statement` contract + presenter emit (multi-FY) | O | Complete build + evidence |
 
 **Ready to start:**
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
-| — | Nothing is unblocked: finish the in-flight steps above (G4 reviews) first. | | |
+| P4.4 | Portfolio batch A: combo dual-axis, 100% stacked, heatmap, box, gauge, scatter fix; compat matrix | F | P4.1 |
 
 ## 3. Sponsor action items
 
@@ -56,19 +55,19 @@
 | V2 | FEAT-027 | 🟡 | P2H.4, P3.5, P4.6, P4.7 | 🟡 |
 | V3 | FEAT-010, FEAT-031 | 🔴 🔴 | P2H.1 | 🔴 |
 | V6 | FEAT-013 | 🔴 | P5.2 | 🔴 |
-| V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ 🟡 🔴 🟡 | P2H.4, P3.5, P4.1, P4.4, P4.5, P4.6, P4.7, P4.8 | 🟡 |
+| V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ 🟡 🔴 🟡 | P2H.4, P3.5, P4.4, P4.5, P4.6, P4.7, P4.8 | 🟡 |
 | V8 | FEAT-001, FEAT-013 | ✅ 🔴 | P5.2 | 🟡 |
 | V11 | FEAT-001, FEAT-002, FEAT-003, FEAT-009 | ✅ 🟡 ✅ 🔴 | P5.1 | 🟡 |
 | V12 | FEAT-004, FEAT-005 | 🟡 ✅ |  | 🟡 |
 | V13 | FEAT-006, FEAT-009, FEAT-010, FEAT-011, FEAT-021 | 🟡 🔴 🔴 🟡 🟡 | P1.7, P2H.3, P2H.5, P2H.6, P2H.8, P2F.5, P5.1 | 🟡 |
 | V14 | FEAT-007, FEAT-010, FEAT-011, FEAT-014 | 🟡 🔴 🟡 🔴 | P2F.5, P3.1, P5.4, P5.5, P5.6 | 🟡 |
-| V15 | FEAT-015, FEAT-026 | 🟡 🔴 | P4.1, P4.4, P4.5, P4.8 | 🟡 |
+| V15 | FEAT-015, FEAT-026 | 🟡 🔴 | P4.4, P4.5, P4.8 | 🟡 |
 | V16 | FEAT-016 | 🟡 |  | 🟡 |
 | V17 | FEAT-017, FEAT-031 | 🔴 🔴 | P2H.1, P2H.2 | 🔴 |
 | V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1, P1.6, P1.7, P1.10a, P1.10b, P2H.7, P2H.8 | 🔴 |
 | V19 | FEAT-021, FEAT-023 | 🟡 🔴 | P1.7, P2H.3, P2H.4, P2H.5, P2H.6, P2H.8 | 🟡 |
 | V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1, P1.9, P2F.1, P2F.2, P2F.3, P2F.4, P2F.5, P2F.6 | 🔴 |
-| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.1, P4.2, P4.4, P4.5, P4.6 … | 🟡 |
+| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 | P2H.4, P2F.2, P3.5, P4.2, P4.4, P4.5, P4.6, P4.7 … | 🟡 |
 | V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1, P1.9, P3.1, P3.2, P3.3, P3.4, P3.4b, P3.5 … | ⛔ |
 | V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 | P1.7, P1.10a, P2H.5, P2H.6, P2H.7, P2H.8 | 🟡 |
 
@@ -105,7 +104,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-023 V19 transfer workflow: Excel intent + Email agent | 🔴 | 0/2 |
 | FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ⛔ | 0/7 |
 | FEAT-025 Financial statement table visual | 🟡 | 1/4 |
-| FEAT-026 Chart portfolio completion + correct waterfall | 🔴 | 0/4 |
+| FEAT-026 Chart portfolio completion + correct waterfall | 🔴 | 1/4 |
 | FEAT-027 Export suite | 🟡 | 0/4 |
 | FEAT-028 Coordinator + agent registry + jobs + permission UX | ⛔ | 0/6 |
 | FEAT-029 DCF valuation agent | ⛔ | 0/4 |
@@ -115,8 +114,8 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 ## 6. Bugs
 
-- **Blockers:** 14 total — 🔴 open 9 · 🟠 in progress 3 · ↩ regressed 0 · ✅ closed 2
-- **Important:** 26 total — 🔴 open 17 · 🟠 in progress 3 · ↩ regressed 0 · ✅ closed 6
+- **Blockers:** 14 total — 🔴 open 7 · 🟠 in progress 5 · ↩ regressed 0 · ✅ closed 2
+- **Important:** 26 total — 🔴 open 16 · 🟠 in progress 4 · ↩ regressed 0 · ✅ closed 6
 - **Cosmetic:** 1 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 0
 
 **Open blockers:**
@@ -128,8 +127,8 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:⬜ P1.11:⬜ P5.1:⬜ P5.3:⬜ |
 | BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:🔄 |
 | BUG-07 | open | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:🔄 |
-| BUG-08 | open | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:🔄 |
-| BUG-09 | open | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:🔄 |
+| BUG-08 | in_progress | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:✅ |
+| BUG-09 | in_progress | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:✅ |
 | BUG-10 | open | "Can you export this as an Excel file" not understood | P2H.4 | P2H.4:⬜ |
 | BUG-11 | open | "Draft an email to Director HR" → canned AGT proposal ("401 net recommendations" vs "146 r | P2H.4 | P2H.4:⬜ |
 | BUG-12 | open | Hard-coded answers/numbers (Parliament "143 vacancies", Champang EBITDA-negative, `or 3310 | P2H.4, P5.1 | P2H.4:⬜ P5.1:⬜ |
@@ -140,6 +139,8 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `3d39d40` | 2026-10-24 | P4.1 (G4 r3 fix) backend: route FY-specific waterfall chips from multi-year trend to planner single-FY bridge + R2-S1..S4 |
+| `dde5194` | 2026-10-24 | P2H.2 (pre-G4) frontend part 2: RefusalRenderer (backend refusal copy line, alternative chips that ask the permitted question, Why |
 | `9645676` | 2026-10-24 | P2H.2 (pre-G4) backend: refusal_copy.yaml (9 codes EN/HI), answer_composer 11-persona display & refusal contract |
 | `e4993d6` | 2026-10-24 | P4.1 (frontend): render backend visual.note / note_hi (BridgeError copy) in the answer card |
 | `7c87812` | 2026-10-24 | P4.1 (G4 r2 fixes) backend: fix M1 shortcut guard, M2 multi-FY which-year & period pass-through, M3 presenter BridgeError fallback |
@@ -153,11 +154,12 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `61ddef0` | 2026-10-24 | P4.9 (pre-G4): Siri-like orb visible in docked/fullscreen while listening/thinking/speaking (same mic-button/stop-speaking testids |
 | `4433ffc` | 2026-10-24 | P4.1 (pre-G4) frontend: bridge.ts (signed P&L bridge from shared classes JSON), compat.replot statement/typed-waterfall path, dele |
 | `632b5b7` | 2026-10-24 | P4.1a (pre-G4): shared bridge contract + fixtures |
-| `e7c8705` | 2026-10-24 | P1.3 (G4 r2 fixes): B1 wrapped-heading merge (connector/total keywords) + (A+B+C) letter formulas, CF completeness test, AR FY19 c |
-| `b3514b1` | 2026-10-24 | P1.5 (G4 r2 fixes): M1 chart rows carry interval, Yahoo provider dedupes by (ticker,date,interval) and serves 1d only (monthly nev |
 
 ## 8. Integrity checks
 
+- ⚠️ BUG-08 is still in_progress although all its steps (P4.1) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-09 is still in_progress although all its steps (P4.1) are ✅ — close it in BUG_REGISTER.md.
+- ⚠️ BUG-22 is still in_progress although all its steps (P4.1) are ✅ — close it in BUG_REGISTER.md.
 - ⚠️ BUG-38 is still in_progress although all its steps (P4.3) are ✅ — close it in BUG_REGISTER.md.
 
 ---

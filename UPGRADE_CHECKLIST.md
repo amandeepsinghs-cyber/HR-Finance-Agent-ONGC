@@ -111,7 +111,7 @@
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
-| P4.1 | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-value message | O→F | 026 | SPEC-09 §4.3–4.4, BEH-04 | 08, 09, 22 | FY24 bridge ends at PAT ₹40,526 cr; probe phrasings pass | [P4.1](docs/delegation/packets/v3/P4.1.md) | 🔄 |
+| P4.1 | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-value message | O→F | 026 | SPEC-09 §4.3–4.4, BEH-04 | 08, 09, 22 | FY24 bridge ends at PAT ₹40,526 cr; probe phrasings pass | [P4.1](docs/delegation/packets/v3/P4.1.md) | ✅ |
 | P4.2 | `visual.type=statement` contract + presenter emit (multi-FY) | O | 025 | SPEC-09 §4.1 | — | Fixture validates; values = SSOT | [P4.2](docs/delegation/packets/v3/P4.2.md) | 🔄 |
 | P4.3 | `StatementTable` renderer | F | 025 | SPEC-09 §4.2 | 38, 39 | Rubric ≥ 9/10 light + dark; line labels never truncated (wrap) at 1366/1920 px + big screen; no artificial numbering (AR names, hierarchy by indent) | [P4.3](docs/delegation/packets/v3/P4.3.md) | ✅ |
 | P4.4 | Portfolio batch A: combo dual-axis, 100% stacked, heatmap, box, gauge, scatter fix; compat matrix | F | 026 | SPEC-09 §4.5–4.6 | 23 | Every kind renders from a fixture | [P4.4](docs/delegation/packets/v3/P4.4.md) | ⬜ |
