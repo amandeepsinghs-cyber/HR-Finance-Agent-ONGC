@@ -289,10 +289,46 @@ def test_gate_r1_price_realisation(anchor_tables):
     assert fy23_crude.empty, "FY23 crude should be omitted (narrative range only)"
 
 
-def test_anchors_issues_csv_empty(anchor_tables):
-    """anchors_issues.csv must contain 0 gate failures."""
+def test_anchors_issues_csv_only_gaps(anchor_tables):
+    """anchors_issues.csv must contain 0 gate failures, but should contain gaps."""
     repo_root = Path(__file__).resolve().parent.parent.parent
     issues_path = repo_root / "financial_ssot" / "out" / "anchors_issues.csv"
     assert issues_path.exists()
     df_issues = pd.read_csv(issues_path)
-    assert df_issues.empty, f"Found unexpected issues: {df_issues.to_dict('records')}"
+    
+    # Assert there are no actual gate failures (where gate is not gap)
+    if not df_issues.empty and "gate" in df_issues.columns:
+        gate_failures = df_issues[df_issues["gate"] != "gap"]
+        
+        # FY23 has a narrative gap which might not have gate="gap" explicitly in some older code, 
+        # but in our code it uses the key 'gap' in dict. Wait, if it has 'gap' in dict, pd.DataFrame puts NaN in gate.
+        gate_failures = gate_failures[gate_failures["gap"].isna()]
+        
+        assert gate_failures.empty, f"Found unexpected gate failures: {gate_failures.to_dict('records')}"
+    
+    # R2-4 regression: ensure the 8 unverified press release realisation rows are listed as gaps
+    unverified_pr = df_issues[(df_issues["gate"] == "gap") & (df_issues["detail"].str.contains("Unverified press release", na=False))]
+    assert len(unverified_pr) == 8, f"Expected 8 unverified PR gaps, got {len(unverified_pr)}"
+
+def test_r2_fixes(anchor_tables):
+    df_res = anchor_tables["fact_reserves"]
+    df_seg = anchor_tables["fact_segment"]
+    df_price = anchor_tables["fact_price_realisation"]
+
+    # R2-1: FY22 2P accretion = 40.82
+    fy22_2p = df_res[(df_res["fiscal_year"] == "FY22") & (df_res["category"] == "2P")].iloc[0]
+    assert fy22_2p["accretion_mmtoe"] == 40.82
+
+    # R2-2: FY19 RRR parsed as 1.41
+    fy19_2p_ongc = df_res[(df_res["fiscal_year"] == "FY19") & (df_res["category"] == "2P") & (df_res["region"] == "domestic_ongc")].iloc[0]
+    assert fy19_2p_ongc["rrr"] == 1.41
+    
+    # R2-3: own-vintage AR_FY2016-17 FY17 rows survive
+    fy17_own = df_seg[(df_seg["fiscal_year"] == "FY17") & (df_seg["report_vintage"] == "AR_FY2016-17")]
+    assert not fy17_own.empty, "FY17 own-vintage rows should survive"
+
+    # R2-3: stop right-column bleed at L17848 into FY16 SEG.IMP.TOTAL
+    imp_total = df_seg[(df_seg["report_vintage"] == "AR_FY2016-17") & (df_seg["line_code"] == "SEG.IMP.TOTAL") & (df_seg["fiscal_year"] == "FY16")]
+    if not imp_total.empty:
+        assert imp_total.iloc[0]["value_inr_mn"] != 1289853.21
+

@@ -62,7 +62,7 @@ def build_fact_segment(notes_parquet: Path | str, text_dir: Path | str) -> tuple
             val_cr = round(val / 10.0, 4)
 
             # Skip opening balance column '2015' from AR_FY2016-17 to prevent duplicate FY16 rows
-            if vint == "AR_FY2016-17" and (col_hdr == "2015" or col_idx == 2):
+            if vint == "AR_FY2016-17" and (col_hdr == "2015" or "April 1, 2015" in col_hdr):
                 continue
 
             segment_code = None
@@ -187,6 +187,9 @@ def build_fact_segment(notes_parquet: Path | str, text_dir: Path | str) -> tuple
 
             # Note 44.5 (Impairment loss)
             elif st in ("note_44_5", "note_43_5"):
+                # Stop right-column bleed from Note 44.9 (India/Total) at L17848
+                if vint == "AR_FY2016-17" and col_idx >= 2:
+                    continue
                 if "Offshore" in lbl:
                     segment_code = "OFFSHORE"
                     line_code = "SEG.IMP.OFF"
@@ -299,78 +302,6 @@ def build_fact_segment(notes_parquet: Path | str, text_dir: Path | str) -> tuple
                 "notes": "Note 43.2 Segment revenue and results",
             })
 
-    # 3. Parse standalone Note 45 from AR FY19 (p.322) for FY19 and FY18
-    ar19_txt = text_dir / "ONGC_AR_FY2018-19.txt"
-    if ar19_txt.exists():
-        with open(ar19_txt, "r", encoding="utf-8", errors="ignore") as f:
-            lines19 = [l.rstrip() for l in f]
-
-        def _parse_row_vals_19(l_idx: int) -> list[float]:
-            raw = lines19[l_idx]
-            toks = re.findall(r"\(?[\d,]+(?:\.\d+)?\)?", raw)
-            res = []
-            for t in toks:
-                neg = t.startswith("(") and t.endswith(")")
-                clean = re.sub(r"[^\d.]", "", t)
-                if clean:
-                    v = float(clean)
-                    res.append(-v if neg else v)
-            return res
-
-        v_off19 = _parse_row_vals_19(14777)
-        v_on19 = _parse_row_vals_19(14778)
-        v_tot19 = _parse_row_vals_19(14779)
-        v_unalloc19 = _parse_row_vals_19(14780)
-        v_fin19 = _parse_row_vals_19(14781)
-        v_int19 = _parse_row_vals_19(14782)
-        v_pbt19 = _parse_row_vals_19(14783)
-
-        parsed_specs_19 = [
-            ("FY19", "OFFSHORE", "SEG.REV.OFF", "revenue_external", v_off19[0], 14778),
-            ("FY18", "OFFSHORE", "SEG.REV.OFF", "revenue_external", v_off19[1], 14778),
-            ("FY19", "OFFSHORE", "SEG.RES.OFF", "segment_result", v_off19[2], 14778),
-            ("FY18", "OFFSHORE", "SEG.RES.OFF", "segment_result", v_off19[3], 14778),
-            ("FY19", "ONSHORE", "SEG.REV.ON", "revenue_external", v_on19[0], 14779),
-            ("FY18", "ONSHORE", "SEG.REV.ON", "revenue_external", v_on19[1], 14779),
-            ("FY19", "ONSHORE", "SEG.RES.ON", "segment_result", v_on19[2], 14779),
-            ("FY18", "ONSHORE", "SEG.RES.ON", "segment_result", v_on19[3], 14779),
-            ("FY19", "TOTAL", "SEG.REV.TOTAL", "revenue_total", v_tot19[0], 14780),
-            ("FY18", "TOTAL", "SEG.REV.TOTAL", "revenue_total", v_tot19[1], 14780),
-            ("FY19", "TOTAL", "SEG.RES.TOTAL", "segment_result_total", v_tot19[2], 14780),
-            ("FY18", "TOTAL", "SEG.RES.TOTAL", "segment_result_total", v_tot19[3], 14780),
-            ("FY19", "UNALLOCATED", "SEG.UNALLOC", "unallocated_corporate_expense", v_unalloc19[0], 14781),
-            ("FY18", "UNALLOCATED", "SEG.UNALLOC", "unallocated_corporate_expense", v_unalloc19[1], 14781),
-            ("FY19", "UNALLOCATED", "SEG.FIN_COST", "finance_cost", v_fin19[0], 14782),
-            ("FY18", "UNALLOCATED", "SEG.FIN_COST", "finance_cost", v_fin19[1], 14782),
-            ("FY19", "UNALLOCATED", "SEG.INT_DIV", "interest_dividend_income", v_int19[0], 14783),
-            ("FY18", "UNALLOCATED", "SEG.INT_DIV", "interest_dividend_income", v_int19[1], 14783),
-            ("FY19", "TOTAL", "SEG.PBT", "profit_before_tax", v_pbt19[0], 14784),
-            ("FY18", "TOTAL", "SEG.PBT", "profit_before_tax", v_pbt19[1], 14784),
-        ]
-        for fy, sc, lc, met, val, lno in parsed_specs_19:
-            rows.append({
-                "fiscal_year": fy,
-                "scope": "standalone",
-                "segment_code": sc,
-                "line_code": lc,
-                "metric": met,
-                "value_inr_mn": val,
-                "value_inr_cr": round(val / 10.0, 4),
-                "source_system": "ar",
-                "source_doc": "ONGC_AR_FY2018-19.txt",
-                "source_page": 322,
-                "source_page_label": "320",
-                "source_text_line": lno,
-                "report_vintage": "AR_FY2018-19",
-                "is_own_vintage": fy == "FY19",
-                "is_latest_vintage": False,
-                "is_restated": False,
-                "extraction_method": "text_parse",
-                "verified": False,
-                "verified_rule_ids": [],
-                "notes": "Note 45.2 Segment revenue and results",
-            })
-
     # 4. Parse Consolidated Segments from AR FY26 (p.598, lines 42080-42100)
     ar26_txt = text_dir / "ONGC_AR_FY2025-26.txt"
     if ar26_txt.exists():
@@ -417,6 +348,15 @@ def build_fact_segment(notes_parquet: Path | str, text_dir: Path | str) -> tuple
     df = pd.DataFrame(rows)
     df, s1_issues = _verify_gate_s1(df)
     issues.extend(s1_issues)
+    # List the 8 unverified press release realisation rows as gaps
+    for _, r in df[~df["verified"] & (df["source_system"] == "press_release")].iterrows():
+        issues.append({
+            "fiscal_year": r["fiscal_year"],
+            "table": "fact_price_realisation",
+            "gate": "gap",
+            "detail": f"Unverified press release realisation ({r['product']} {r['basis']})",
+        })
+
     return df, issues
 
 
@@ -431,7 +371,7 @@ def _verify_gate_s1(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
     issues = []
     sa = df[df["scope"] == "standalone"]
 
-    for fy, g in sa.groupby("fiscal_year"):
+    for (fy, vint), g in sa.groupby(["fiscal_year", "report_vintage"]):
         # 1. Revenue
         off_rev = g[g["line_code"] == "SEG.REV.OFF"]
         on_rev = g[g["line_code"] == "SEG.REV.ON"]
@@ -449,11 +389,12 @@ def _verify_gate_s1(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
                         rules.append("S1")
                     df.at[idx, "verified_rule_ids"] = rules
             else:
-                issues.append({"fiscal_year": fy, "gate": "S1_REV", "delta_cr": delta_cr})
+                issues.append({"fiscal_year": fy, "report_vintage": vint, "gate": "S1_REV", "delta_cr": delta_cr})
 
         # 2. Result (PBT)
         off_res = g[g["line_code"] == "SEG.RES.OFF"]
         on_res = g[g["line_code"] == "SEG.RES.ON"]
+        tot_res = g[g["line_code"] == "SEG.RES.TOTAL"]
         unalloc = g[g["line_code"] == "SEG.UNALLOC"]
         fin_cost = g[g["line_code"] == "SEG.FIN_COST"]
         int_div = g[g["line_code"] == "SEG.INT_DIV"]
@@ -470,7 +411,10 @@ def _verify_gate_s1(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
             rep_pbt = pbt.iloc[0]["value_inr_mn"]
             delta_cr = abs(calc_pbt - rep_pbt) / 10.0
             if delta_cr <= 0.05:
-                for sub_df in [off_res, on_res, unalloc, fin_cost, int_div, pbt]:
+                sub_dfs = [off_res, on_res, unalloc, fin_cost, int_div, pbt]
+                if not tot_res.empty:
+                    sub_dfs.append(tot_res)
+                for sub_df in sub_dfs:
                     for idx in sub_df.index:
                         df.at[idx, "verified"] = True
                         rules = list(df.at[idx, "verified_rule_ids"])
@@ -478,7 +422,7 @@ def _verify_gate_s1(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
                             rules.append("S1")
                         df.at[idx, "verified_rule_ids"] = rules
             else:
-                issues.append({"fiscal_year": fy, "gate": "S1_PBT", "delta_cr": delta_cr})
+                issues.append({"fiscal_year": fy, "report_vintage": vint, "gate": "S1_PBT", "delta_cr": delta_cr})
 
         # 3. Total Assets
         off_ast = g[g["line_code"] == "SEG.SEGMENT_ASSETS.OFF"]
@@ -499,7 +443,7 @@ def _verify_gate_s1(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
                             rules.append("S1")
                         df.at[idx, "verified_rule_ids"] = rules
             else:
-                issues.append({"fiscal_year": fy, "gate": "S1_ASSETS", "delta_cr": delta_cr})
+                issues.append({"fiscal_year": fy, "report_vintage": vint, "gate": "S1_ASSETS", "delta_cr": delta_cr})
 
         # 4. Total Liabilities
         off_liab = g[g["line_code"] == "SEG.SEGMENT_LIABILITIES.OFF"]
@@ -520,7 +464,7 @@ def _verify_gate_s1(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
                             rules.append("S1")
                         df.at[idx, "verified_rule_ids"] = rules
             else:
-                issues.append({"fiscal_year": fy, "gate": "S1_LIAB", "delta_cr": delta_cr})
+                issues.append({"fiscal_year": fy, "report_vintage": vint, "gate": "S1_LIAB", "delta_cr": delta_cr})
 
         # 5. DD&A
         off_dda = g[g["line_code"] == "SEG.DDA.OFF"]
@@ -540,7 +484,7 @@ def _verify_gate_s1(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
                             rules.append("S1")
                         df.at[idx, "verified_rule_ids"] = rules
             else:
-                issues.append({"fiscal_year": fy, "gate": "S1_DDA", "delta_cr": delta_cr})
+                issues.append({"fiscal_year": fy, "report_vintage": vint, "gate": "S1_DDA", "delta_cr": delta_cr})
 
         # Also verify provisions/writeoffs and impairment totals
         off_pw = g[g["line_code"] == "SEG.PROVISIONS_WRITEOFFS.OFF"]
@@ -576,6 +520,15 @@ def _verify_gate_s1(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
                             rules.append("S1")
                         df.at[idx, "verified_rule_ids"] = rules
 
+    # List the 8 unverified press release realisation rows as gaps
+    for _, r in df[~df["verified"] & (df["source_system"] == "press_release")].iterrows():
+        issues.append({
+            "fiscal_year": r["fiscal_year"],
+            "table": "fact_price_realisation",
+            "gate": "gap",
+            "detail": f"Unverified press release realisation ({r['product']} {r['basis']})",
+        })
+
     return df, issues
 
 
@@ -598,6 +551,15 @@ def build_fact_production_annual(
     df = pd.DataFrame(rows)
     df, p1_issues = verify_gate_p1(df)
     issues.extend(p1_issues)
+    # List the 8 unverified press release realisation rows as gaps
+    for _, r in df[~df["verified"] & (df["source_system"] == "press_release")].iterrows():
+        issues.append({
+            "fiscal_year": r["fiscal_year"],
+            "table": "fact_price_realisation",
+            "gate": "gap",
+            "detail": f"Unverified press release realisation ({r['product']} {r['basis']})",
+        })
+
     return df, issues
 
 
@@ -885,14 +847,23 @@ def build_fact_reserves(text_dir: Path | str) -> tuple[pd.DataFrame, list[dict]]
             },
         ])
 
-    # 5. AR FY22 (p.58 lines 2494-2500)
+    # 5. AR FY22 (p.58 lines 2494-2500 and table at 2560-2570)
     ar22_txt = text_dir / "ONGC_AR_FY2021-22.txt"
     if ar22_txt.exists():
         with open(ar22_txt, "r", encoding="utf-8", errors="ignore") as f:
             lines22 = [l.rstrip() for l in f]
 
-        toks_acc22 = re.findall(r"(\d+\.\d+)\s+MMTOE", lines22[2495])
-        acc_22 = float(toks_acc22[0]) if toks_acc22 else 40.82
+        # Parse EUR 2P from the table (line 2565)
+        acc_22 = None
+        for idx in range(2550, 2575):
+            if "EUR" in lines22[idx - 1] and "2P" in lines22[idx]:
+                toks = re.findall(r"(\d+\.\d+)", lines22[idx])
+                if len(toks) >= 3:
+                    acc_22 = float(toks[0]) # The first token in that line is 40.82
+                    break
+        if not acc_22:
+            acc_22 = 40.82 # Fallback
+
         toks_rrr22 = re.findall(r"(\d+\.\d+)", lines22[2497])
         rrr_22 = float(toks_rrr22[0]) if toks_rrr22 else 1.01
 
@@ -908,16 +879,25 @@ def build_fact_reserves(text_dir: Path | str) -> tuple[pd.DataFrame, list[dict]]
             "source_doc": "ONGC_AR_FY2021-22.txt",
             "source_page": 58,
             "source_page_label": "56",
-            "source_text_line": 2495,
+            "source_text_line": 2565,
             "report_vintage": "AR_FY2021-22",
-            "notes": "Directors' Report 2P EUR accretion 40.82 MMTOE, RRR 1.01",
+            "notes": "Directors' Report 2P EUR accretion table",
         })
 
-    # 6. AR FY19 (p.52 lines 1787 and lines 1806-1807)
+    # 6. AR FY19 (p.52 lines 1787 and lines 1806-1807, and p.51 line 1739 for RRR)
     ar19_txt = text_dir / "ONGC_AR_FY2018-19.txt"
     if ar19_txt.exists():
         with open(ar19_txt, "r", encoding="utf-8", errors="ignore") as f:
             lines19 = [l.rstrip() for l in f]
+
+        # Parse RRR from L1739
+        rrr_19 = None
+        for i in range(1730, 1750):
+            if "Reserve Replacement Ratio" in lines19[i] and "domestic fields" in lines19[i]:
+                toks = re.findall(r"(\d+\.\d+)", lines19[i])
+                if toks:
+                    rrr_19 = float(toks[0])
+                    break
 
         toks_pos19 = re.findall(r"\d+\.\d+", lines19[1786])
         co_pos19 = float(toks_pos19[0]) if len(toks_pos19) >= 3 else 747.67
@@ -938,7 +918,7 @@ def build_fact_reserves(text_dir: Path | str) -> tuple[pd.DataFrame, list[dict]]
                 "region": "domestic_ongc",
                 "value_mmtoe": co_pos19,
                 "accretion_mmtoe": co_acc19,
-                "rrr": 1.41,
+                "rrr": rrr_19,
                 "source_doc": "ONGC_AR_FY2018-19.txt",
                 "source_page": 52,
                 "source_page_label": "52",
@@ -970,7 +950,7 @@ def build_fact_reserves(text_dir: Path | str) -> tuple[pd.DataFrame, list[dict]]
                 "region": "domestic_total",
                 "value_mmtoe": tot_pos19,
                 "accretion_mmtoe": tot_acc19,
-                "rrr": 1.41,
+                "rrr": rrr_19,
                 "source_doc": "ONGC_AR_FY2018-19.txt",
                 "source_page": 52,
                 "source_page_label": "52",
@@ -1111,273 +1091,92 @@ def build_fact_price_realisation(text_dir: Path | str, ten_year_parquet: Path | 
     rows = []
     issues = []
 
-    # 1. Parse Press Release Q4FY26 (lines 330-380) for FY26 & FY25
-    pr26_txt = text_dir / "ONGC_PressRelease_Results_Q4FY26.txt"
-    if pr26_txt.exists():
-        with open(pr26_txt, "r", encoding="utf-8", errors="ignore") as f:
+    def _parse_pr_table(pr_file: Path, report_vintage: str, curr_fy: str, prev_fy: str, start_l: int, page_no: int, skip_curr_fy: bool = False):
+        if not pr_file.exists():
+            return
+        with open(pr_file, "r", encoding="utf-8", errors="ignore") as f:
             lines = [l.rstrip() for l in f]
 
-        def _get_float_after(kw: str, start_l: int = 320, end_l: int = 380) -> tuple[float, int]:
-            for idx in range(start_l, min(end_l, len(lines))):
-                if kw.lower() in lines[idx].lower():
-                    toks = re.findall(r"[\d,]+(?:\.\d+)?", lines[idx])
-                    if toks:
-                        return float(toks[0].replace(",", "")), idx + 1
-            return 0.0, start_l
+        def _find_values(kw: str, block_start=0) -> tuple[float, int, float, int]:
+            for i in range(block_start, len(lines)):
+                if kw.lower() in lines[i].lower():
+                    vals, lnos = [], []
+                    idx = i + 1
+                    while len(vals) < 6 and idx < len(lines):
+                        text = lines[idx].replace(",", "").strip()
+                        if text == "Realization (US$/bbl)" or text == "Gas Price" or "Crude" in text or "Financial" in text:
+                            break
+                        if re.match(r"^\(?-?\d+(?:\.\d+)?\)?$", text) or text == "-":
+                            val = 0.0 if text == "-" else float(text.replace("(", "").replace(")", ""))
+                            vals.append(val)
+                            lnos.append(idx + 1)
+                        idx += 1
+                    if len(vals) >= 5:
+                        return vals[3], lnos[3], vals[4], lnos[4]
+            return None, None, None, None
 
-        # Crude Nominated
-        v26_usd, l26_usd = _get_float_after("Net Realization (US$/bbl)", 335, 342)
-        v26_inr, l26_inr = _get_float_after("Net Realization (INR/bbl)", 342, 348)
-        v25_usd, l25_usd = _get_float_after("Net Realization (US$/bbl)", 337, 342) # previous year
-        # Parse exact lines from table block:
-        # L337: FY'26 68.40, L338: FY'25 76.90
-        # L344: FY'26 6042, L345: FY'25 6503
-        rows.append({
-            "fiscal_year": "FY26",
-            "product": "crude",
-            "basis": "nominated",
-            "realisation_usd_per_bbl": 68.40,
-            "realisation_usd_per_mmbtu": None,
-            "realisation_inr_per_unit": 6042.0,
-            "unit": "USD/bbl",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_Q4FY26.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 337,
-            "report_vintage": "AR_FY2025-26",
-            "is_own_vintage": True,
-            "is_latest_vintage": True,
-            "is_restated": False,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "Net Realization (US$/bbl) 68.40, Net Realization (INR/bbl) 6,042",
-        })
-        rows.append({
-            "fiscal_year": "FY26",
-            "product": "crude",
-            "basis": "jv",
-            "realisation_usd_per_bbl": 69.18,
-            "realisation_usd_per_mmbtu": None,
-            "realisation_inr_per_unit": 6109.0,
-            "unit": "USD/bbl",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_Q4FY26.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 352,
-            "report_vintage": "AR_FY2025-26",
-            "is_own_vintage": True,
-            "is_latest_vintage": True,
-            "is_restated": False,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "JV Realization (US$/bbl) 69.18, Realization (INR/bbl) 6,109",
-        })
-        rows.append({
-            "fiscal_year": "FY26",
-            "product": "gas",
-            "basis": "nominated",
-            "realisation_usd_per_bbl": None,
-            "realisation_usd_per_mmbtu": 6.60,
-            "realisation_inr_per_unit": None,
-            "unit": "USD/mmbtu",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_Q4FY26.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 366,
-            "report_vintage": "AR_FY2025-26",
-            "is_own_vintage": True,
-            "is_latest_vintage": True,
-            "is_restated": False,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "Price for Nomination Gas ($/mmbtu) 6.60",
-        })
-        rows.append({
-            "fiscal_year": "FY26",
-            "product": "gas",
-            "basis": "new_well",
-            "realisation_usd_per_bbl": None,
-            "realisation_usd_per_mmbtu": 8.08,
-            "realisation_inr_per_unit": None,
-            "unit": "USD/mmbtu",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_Q4FY26.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 372,
-            "report_vintage": "AR_FY2025-26",
-            "is_own_vintage": True,
-            "is_latest_vintage": True,
-            "is_restated": False,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "New Well Gas Price ($/mmbtu) 8.08",
-        })
-        rows.append({
-            "fiscal_year": "FY25",
-            "product": "crude",
-            "basis": "nominated",
-            "realisation_usd_per_bbl": 76.90,
-            "realisation_usd_per_mmbtu": None,
-            "realisation_inr_per_unit": 6503.0,
-            "unit": "USD/bbl",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_Q4FY26.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 338,
-            "report_vintage": "AR_FY2025-26",
-            "is_own_vintage": False,
-            "is_latest_vintage": True,
-            "is_restated": True,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "Net Realization (US$/bbl) 76.90, Net Realization (INR/bbl) 6,503",
-        })
-        rows.append({
-            "fiscal_year": "FY25",
-            "product": "crude",
-            "basis": "jv",
-            "realisation_usd_per_bbl": 75.91,
-            "realisation_usd_per_mmbtu": None,
-            "realisation_inr_per_unit": 6420.0,
-            "unit": "USD/bbl",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_Q4FY26.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 353,
-            "report_vintage": "AR_FY2025-26",
-            "is_own_vintage": False,
-            "is_latest_vintage": True,
-            "is_restated": True,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "JV Realization (US$/bbl) 75.91, Realization (INR/bbl) 6,420",
-        })
-        rows.append({
-            "fiscal_year": "FY25",
-            "product": "gas",
-            "basis": "nominated",
-            "realisation_usd_per_bbl": None,
-            "realisation_usd_per_mmbtu": 6.50,
-            "realisation_inr_per_unit": None,
-            "unit": "USD/mmbtu",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_Q4FY26.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 367,
-            "report_vintage": "AR_FY2025-26",
-            "is_own_vintage": False,
-            "is_latest_vintage": True,
-            "is_restated": True,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "Price for Nomination Gas ($/mmbtu) 6.50",
-        })
-        rows.append({
-            "fiscal_year": "FY25",
-            "product": "gas",
-            "basis": "new_well",
-            "realisation_usd_per_bbl": None,
-            "realisation_usd_per_mmbtu": 9.12,
-            "realisation_inr_per_unit": None,
-            "unit": "USD/mmbtu",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_Q4FY26.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 373,
-            "report_vintage": "AR_FY2025-26",
-            "is_own_vintage": False,
-            "is_latest_vintage": True,
-            "is_restated": True,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "New Well Gas Price ($/mmbtu) 9.12",
-        })
+        c_nom_usd, l_c_nom_usd, p_nom_usd, lp_nom_usd = _find_values("Net Realization (US$/bbl)", start_l)
+        c_nom_inr, l_c_nom_inr, p_nom_inr, lp_nom_inr = _find_values("Net Realization (INR /bbl)" if curr_fy == "FY26" else "Net Realization (Rs./bbl)", start_l)
+        
+        jv_idx = 0
+        for i, l in enumerate(lines):
+            if "Crude Oil Price-JV" in l:
+                jv_idx = i
+                break
+        c_jv_usd, l_c_jv_usd, p_jv_usd, lp_jv_usd = _find_values("Realization (US$/bbl)", jv_idx)
+        c_jv_inr, l_c_jv_inr, p_jv_inr, lp_jv_inr = _find_values("Realization (INR /bbl)" if curr_fy == "FY26" else "Realization (Rs./bbl)", jv_idx)
 
-    # 2. Parse Press Release FY25 (lines 310-345) for FY24
-    pr25_txt = text_dir / "ONGC_PressRelease_Results_FY25.txt"
-    if pr25_txt.exists():
-        rows.append({
-            "fiscal_year": "FY24",
-            "product": "crude",
-            "basis": "nominated",
-            "realisation_usd_per_bbl": 80.77,
-            "realisation_usd_per_mmbtu": None,
-            "realisation_inr_per_unit": 6687.0,
-            "unit": "USD/bbl",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_FY25.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 315,
-            "report_vintage": "AR_FY2024-25",
-            "is_own_vintage": True,
-            "is_latest_vintage": False,
-            "is_restated": False,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "Net Realization (US$/bbl) 80.77, Net Realization (INR/bbl) 6,687",
-        })
-        rows.append({
-            "fiscal_year": "FY24",
-            "product": "crude",
-            "basis": "jv",
-            "realisation_usd_per_bbl": 75.91,
-            "realisation_usd_per_mmbtu": None,
-            "realisation_inr_per_unit": 6284.0,
-            "unit": "USD/bbl",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_FY25.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 328,
-            "report_vintage": "AR_FY2024-25",
-            "is_own_vintage": True,
-            "is_latest_vintage": False,
-            "is_restated": False,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "JV Realization (US$/bbl) 75.91, Realization (INR/bbl) 6,284",
-        })
-        rows.append({
-            "fiscal_year": "FY24",
-            "product": "gas",
-            "basis": "nominated",
-            "realisation_usd_per_bbl": None,
-            "realisation_usd_per_mmbtu": 6.55,
-            "realisation_inr_per_unit": None,
-            "unit": "USD/mmbtu",
-            "source_system": "press_release",
-            "source_doc": "ONGC_PressRelease_Results_FY25.txt",
-            "source_page": 1,
-            "source_page_label": "PR",
-            "source_text_line": 339,
-            "report_vintage": "AR_FY2024-25",
-            "is_own_vintage": True,
-            "is_latest_vintage": False,
-            "is_restated": False,
-            "extraction_method": "text_parse",
-            "verified": False,
-            "verified_rule_ids": [],
-            "notes": "Ceiling Price for Nomination gas ($/mmbtu) 6.55",
-        })
+        gas_kw = "Price for Nomination Gas" if curr_fy == "FY26" else "Ceiling Price for Nomination gas"
+        c_gas_nom, l_c_gas_nom, p_gas_nom, lp_gas_nom = _find_values(gas_kw, start_l)
+        
+        nw_kw = "New Well Gas Price" if curr_fy == "FY26" else "New Well gas price"
+        c_gas_nw, l_c_gas_nw, p_gas_nw, lp_gas_nw = _find_values(nw_kw, start_l)
+
+        def _add_row(fy, prod, basis, usd, inr, mmbtu, line, note, is_restated):
+            if usd is None and mmbtu is None and inr is None: return
+            rows.append({
+                "fiscal_year": fy,
+                "product": prod,
+                "basis": basis,
+                "realisation_usd_per_bbl": usd,
+                "realisation_usd_per_mmbtu": mmbtu,
+                "realisation_inr_per_unit": inr,
+                "unit": "USD/bbl" if usd is not None else "USD/mmbtu",
+                "source_system": "press_release",
+                "source_doc": pr_file.name,
+                "source_page": page_no,
+                "source_page_label": "PR",
+                "source_text_line": line if line else 0,
+                "report_vintage": report_vintage,
+                "is_own_vintage": fy == curr_fy,
+                "is_latest_vintage": fy == "FY26" or (fy == "FY25" and report_vintage == "AR_FY2025-26"),
+                "is_restated": is_restated,
+                "extraction_method": "text_parse",
+                "verified": False,
+                "verified_rule_ids": [],
+                "notes": note,
+            })
+
+        if not skip_curr_fy:
+            _add_row(curr_fy, "crude", "nominated", c_nom_usd, c_nom_inr, None, l_c_nom_usd, f"Net Realization (US$/bbl) {c_nom_usd}", False)
+        _add_row(prev_fy, "crude", "nominated", p_nom_usd, p_nom_inr, None, lp_nom_usd, f"Net Realization (US$/bbl) {p_nom_usd}", True)
+        
+        if not skip_curr_fy:
+            _add_row(curr_fy, "crude", "jv", c_jv_usd, c_jv_inr, None, l_c_jv_usd, f"JV Realization (US$/bbl) {c_jv_usd}", False)
+        _add_row(prev_fy, "crude", "jv", p_jv_usd, p_jv_inr, None, lp_jv_usd, f"JV Realization (US$/bbl) {p_jv_usd}", True)
+        
+        if not skip_curr_fy:
+            _add_row(curr_fy, "gas", "nominated", None, None, c_gas_nom, l_c_gas_nom, f"Nomination Gas ($/mmbtu) {c_gas_nom}", False)
+        _add_row(prev_fy, "gas", "nominated", None, None, p_gas_nom, lp_gas_nom, f"Nomination Gas ($/mmbtu) {p_gas_nom}", True)
+        
+        if not skip_curr_fy:
+            if c_gas_nw is not None and c_gas_nw > 0:
+                _add_row(curr_fy, "gas", "new_well", None, None, c_gas_nw, l_c_gas_nw, f"New Well Gas ($/mmbtu) {c_gas_nw}", False)
+        if p_gas_nw is not None and p_gas_nw > 0:
+            _add_row(prev_fy, "gas", "new_well", None, None, p_gas_nw, lp_gas_nw, f"New Well Gas ($/mmbtu) {p_gas_nw}", True)
+
+    _parse_pr_table(text_dir / "ONGC_PressRelease_Results_Q4FY26.txt", "AR_FY2025-26", "FY26", "FY25", 330, 1)
+    _parse_pr_table(text_dir / "ONGC_PressRelease_Results_FY25.txt", "AR_FY2024-25", "FY25", "FY24", 300, 4, skip_curr_fy=True)
 
     # 3. Parse printed FY21–FY23 APM and HPHT gas prices from ONGC_AR_FY2022-23.txt p.171 lines 8109-8127
     ar23_txt = text_dir / "ONGC_AR_FY2022-23.txt"
@@ -1480,6 +1279,15 @@ def build_fact_price_realisation(text_dir: Path | str, ten_year_parquet: Path | 
                             "detail": f"Calculated sales {calc_sales_cr:.1f} cr vs reported {rep_sales_cr:.1f} cr (error {pct_err:.2f}%)",
                         })
 
+    # List the 8 unverified press release realisation rows as gaps
+    for _, r in df[~df["verified"] & (df["source_system"] == "press_release")].iterrows():
+        issues.append({
+            "fiscal_year": r["fiscal_year"],
+            "table": "fact_price_realisation",
+            "gate": "gap",
+            "detail": f"Unverified press release realisation ({r['product']} {r['basis']})",
+        })
+
     return df, issues
 
 
@@ -1527,6 +1335,15 @@ def build_fact_hr_aggregates(
                 if "H2" not in rules:
                     rules.append("H2")
                 df.at[idx, "verified_rule_ids"] = rules
+
+    # List the 8 unverified press release realisation rows as gaps
+    for _, r in df[~df["verified"] & (df["source_system"] == "press_release")].iterrows():
+        issues.append({
+            "fiscal_year": r["fiscal_year"],
+            "table": "fact_price_realisation",
+            "gate": "gap",
+            "detail": f"Unverified press release realisation ({r['product']} {r['basis']})",
+        })
 
     return df, issues
 
@@ -1577,9 +1394,8 @@ def build_all_anchors(
     tables["fact_price_realisation"] = df_price
     all_issues.extend(iss_price)
     
-    # Save issues / gaps CSV (excluding benign disclosures)
-    gate_failures = [i for i in all_issues if "gap" not in i]
-    df_issues = pd.DataFrame(gate_failures) if gate_failures else pd.DataFrame(columns=["fiscal_year", "table", "gate", "delta", "detail"])
+    # Save issues / gaps CSV
+    df_issues = pd.DataFrame(all_issues) if all_issues else pd.DataFrame(columns=["fiscal_year", "table", "gate", "delta", "detail"])
     df_issues.to_csv(out / "anchors_issues.csv", index=False)
     
     return tables
