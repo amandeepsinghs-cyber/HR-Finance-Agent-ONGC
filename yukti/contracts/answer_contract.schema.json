@@ -51,6 +51,9 @@
           "enum": [
             "chart",
             "table",
+            "statement",
+            "sensitivity_grid",
+            "tornado",
             "kpi",
             "clause",
             "document",
@@ -308,6 +311,9 @@
               "type": "boolean"
             }
           }
+        },
+        "statement": {
+          "$ref": "#/$defs/statement_spec"
         }
       }
     },
@@ -895,6 +901,198 @@
         },
         "spec_patch": {
           "$ref": "#/$defs/spec_patch"
+        }
+      }
+    },
+    "statement_row": {
+      "type": "object",
+      "required": [
+        "label",
+        "level",
+        "kind",
+        "values"
+      ],
+      "properties": {
+        "line_code": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "kind": {
+          "enum": [
+            "line",
+            "subtotal",
+            "total"
+          ]
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "yoy_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "note_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "type": "object",
+          "required": [
+            "doc"
+          ],
+          "properties": {
+            "doc": {
+              "type": "string"
+            },
+            "page": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        },
+        "is_restated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "statement_section": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "rows"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/statement_row"
+          }
+        }
+      }
+    },
+    "statement_spec": {
+      "type": "object",
+      "description": "Typed financial statement visual (P4.2 / SPEC-09 §4.1)",
+      "required": [
+        "statement",
+        "periods",
+        "sections"
+      ],
+      "properties": {
+        "statement": {
+          "enum": [
+            "pnl",
+            "balance_sheet",
+            "cash_flow"
+          ]
+        },
+        "scope": {
+          "enum": [
+            "standalone",
+            "consolidated"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "periods": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "string"
+          }
+        },
+        "period_labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "show_yoy": {
+          "type": "boolean"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/statement_section"
+          }
+        },
+        "totals_check": {
+          "type": "object",
+          "required": [
+            "identity",
+            "passed"
+          ],
+          "properties": {
+            "identity": {
+              "type": "string"
+            },
+            "passed": {
+              "type": "boolean"
+            },
+            "max_abs_delta_cr": {
+              "type": "number"
+            }
+          }
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "primary": {
+              "type": "string"
+            },
+            "basis": {
+              "type": "string"
+            },
+            "extraction": {
+              "type": "string"
+            },
+            "verified": {
+              "type": "boolean"
+            }
+          }
+        },
+        "as_of": {
+          "type": "string"
+        },
+        "footnotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "synthetic": {
+          "type": "boolean"
         }
       }
     }

@@ -489,6 +489,15 @@ class AgentTurnRunner:
                 # Detect explicit single-FY selection in the current utterance (BEH-04.12)
                 fy_res = resolve_fy(query)
                 req_fy = fy_res.get("fy") if isinstance(fy_res, dict) and fy_res.get("fy") else None
+                if (
+                    req_fy is None
+                    and len(stmt_periods) == 2
+                    and getattr(session_state, "spec_history", None)
+                    and isinstance(session_state.spec_history[-1], dict)
+                ):
+                    last_p = session_state.spec_history[-1].get("period") or {}
+                    if isinstance(last_p, dict) and last_p.get("fy") and not last_p.get("from"):
+                        req_fy = str(last_p["fy"]).upper()
 
                 # Detect multi-period statement or multi-FY P&L trend table (M2 / BEH-04.12)
                 multi_fy_list: List[str] = []

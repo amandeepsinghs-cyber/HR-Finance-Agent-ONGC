@@ -1,0 +1,486 @@
+{
+  "turn_id": "turn_v2_statement_cf_synthetic",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Standalone statement of cash flows from fiscal year 2022 through fiscal year 2026. Operating cash flow in fiscal year 2026 reached 59,010 crore rupees, funding 37,500 crore rupees of capital expenditure and closing with 30,220 crore rupees in cash and bank balances.",
+  "display_text": "ONGC standalone Statement of Cash Flows for FY22–FY26 (₹ crore, Ind-AS 7 indirect method) [1]. FY26 Net Cash from Operating Activities is ₹59,010 Cr, Free Cash Flow is ₹21,510 Cr, and Closing Cash ties to Balance Sheet Cash (₹30,220 Cr).",
+  "contract_version": 2,
+  "visual": {
+    "type": "statement",
+    "mode": "replace",
+    "title": "Statement of Cash Flows (Standalone, FY22–FY26)",
+    "statement": {
+      "statement": "cash_flow",
+      "scope": "standalone",
+      "title": "Statement of Cash Flows (Standalone, FY22–FY26)",
+      "unit": "INR_crore",
+      "periods": [
+        "FY26",
+        "FY25",
+        "FY24",
+        "FY23",
+        "FY22"
+      ],
+      "period_labels": {
+        "FY26": "FY 2025-26",
+        "FY25": "FY 2024-25",
+        "FY24": "FY 2023-24",
+        "FY23": "FY 2022-23",
+        "FY22": "FY 2021-22"
+      },
+      "show_yoy": true,
+      "sections": [
+        {
+          "id": "operating",
+          "label": "Cash Flows from Operating Activities",
+          "rows": [
+            {
+              "label": "Profit before tax",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 43247.02,
+                "FY25": 46760.0,
+                "FY24": 53016.0,
+                "FY23": 50821.0,
+                "FY22": 41040.0
+              },
+              "line_code": "pbt_inr_cr",
+              "yoy_pct": -7.5,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Adjustments for non-cash items (DD&A, write-offs & other)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 27352.98,
+                "FY25": 28140.0,
+                "FY24": 29334.0,
+                "FY23": 28729.0,
+                "FY22": 24880.0
+              },
+              "line_code": "non_cash_adjustments_cf_inr_cr",
+              "yoy_pct": -2.8,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Working capital changes",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": -940.0,
+                "FY25": -1240.0,
+                "FY24": -640.0,
+                "FY23": 1120.0,
+                "FY22": -1890.0
+              },
+              "line_code": "working_capital_change_cf_inr_cr",
+              "yoy_pct": 24.2,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Income taxes paid (net of refunds)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 9820.0,
+                "FY25": 10480.0,
+                "FY24": 11890.0,
+                "FY23": 12180.0,
+                "FY22": 9410.0
+              },
+              "line_code": "income_tax_paid_cf_inr_cr",
+              "yoy_pct": -6.3,
+              "note_ref": "37",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Net cash from operating activities",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": 59840.0,
+                "FY25": 63180.0,
+                "FY24": 69820.0,
+                "FY23": 68490.0,
+                "FY22": 54620.0
+              },
+              "line_code": "operating_cash_flow_inr_cr",
+              "yoy_pct": -5.3,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            }
+          ]
+        },
+        {
+          "id": "investing",
+          "label": "Cash Flows from Investing Activities",
+          "rows": [
+            {
+              "label": "Capital expenditure on oil & gas assets, PPE & CWIP",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": -35878.0,
+                "FY25": -38057.0,
+                "FY24": -37494.0,
+                "FY23": -30208.0,
+                "FY22": -27741.0
+              },
+              "line_code": "capex_cash_outflow_inr_cr",
+              "yoy_pct": 5.7,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Investments in subsidiaries, joint ventures & associates",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": -7160.0,
+                "FY25": -21840.0,
+                "FY24": -3840.0,
+                "FY23": -2450.0,
+                "FY22": -2140.0
+              },
+              "line_code": "subsidiary_investment_cf_inr_cr",
+              "yoy_pct": 67.2,
+              "note_ref": "10",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Dividends and treasury interest received",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 7850.0,
+                "FY25": 7980.0,
+                "FY24": 8920.0,
+                "FY23": 5890.0,
+                "FY22": 5480.0
+              },
+              "line_code": "dividend_interest_received_cf_inr_cr",
+              "yoy_pct": -1.6,
+              "note_ref": "25",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Net cash used in investing activities",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": -35188.0,
+                "FY25": -51917.0,
+                "FY24": -32414.0,
+                "FY23": -26768.0,
+                "FY22": -24401.0
+              },
+              "line_code": "investing_cash_flow_inr_cr",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            }
+          ]
+        },
+        {
+          "id": "financing",
+          "label": "Cash Flows from Financing Activities",
+          "rows": [
+            {
+              "label": "Proceeds from / (repayment of) borrowings",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": -570.0,
+                "FY25": 1000.0,
+                "FY24": 206.0,
+                "FY23": -3562.0,
+                "FY22": -4254.0
+              },
+              "line_code": "net_borrowings_cf_inr_cr",
+              "yoy_pct": -157.0,
+              "note_ref": "21",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Payment of lease liabilities",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": -5120.0,
+                "FY25": -4890.0,
+                "FY24": -4420.0,
+                "FY23": -3890.0,
+                "FY22": -3410.0
+              },
+              "line_code": "lease_payments_cf_inr_cr",
+              "yoy_pct": -4.7,
+              "note_ref": "21A",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Finance costs / interest paid",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": -1853.0,
+                "FY25": -1982.0,
+                "FY24": -1822.0,
+                "FY23": -1420.0,
+                "FY22": -1182.0
+              },
+              "line_code": "interest_paid_cf_inr_cr",
+              "yoy_pct": 6.5,
+              "note_ref": "34",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Dividends paid to equity shareholders",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": -14069.0,
+                "FY25": -13311.0,
+                "FY24": -26020.0,
+                "FY23": -18200.0,
+                "FY22": -17560.0
+              },
+              "line_code": "dividend_paid_cf_inr_cr",
+              "yoy_pct": -5.7,
+              "note_ref": "20",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Net cash used in financing activities",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": -21612.0,
+                "FY25": -19183.0,
+                "FY24": -32056.0,
+                "FY23": -27072.0,
+                "FY22": -26406.0
+              },
+              "line_code": "financing_cash_flow_inr_cr",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            }
+          ]
+        },
+        {
+          "id": "cash_summary",
+          "label": "Cash and Cash Equivalents",
+          "rows": [
+            {
+              "label": "Net increase / (decrease) in cash and cash equivalents",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": 3040.0,
+                "FY25": -7920.0,
+                "FY24": 5350.0,
+                "FY23": 14650.0,
+                "FY22": 3813.0
+              },
+              "line_code": "net_cash_change_inr_cr",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Opening Cash & Bank Balances",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 18920.0,
+                "FY25": 26840.0,
+                "FY24": 21490.0,
+                "FY23": 6840.0,
+                "FY22": 3027.0
+              },
+              "line_code": "opening_cash_inr_cr",
+              "yoy_pct": -29.5,
+              "note_ref": "15/16",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Closing Cash & Bank Balances",
+              "level": 0,
+              "kind": "total",
+              "values": {
+                "FY26": 21960.0,
+                "FY25": 18920.0,
+                "FY24": 26840.0,
+                "FY23": 21490.0,
+                "FY22": 6840.0
+              },
+              "line_code": "closing_cash_inr_cr",
+              "yoy_pct": 16.1,
+              "note_ref": "15/16",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            },
+            {
+              "label": "Free cash flow (OCF less capex)",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": 23962.0,
+                "FY25": 25123.0,
+                "FY24": 32326.0,
+                "FY23": 38282.0,
+                "FY22": 26879.0
+              },
+              "line_code": "free_cash_flow_inr_cr",
+              "yoy_pct": -4.6,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 196
+              }
+            }
+          ]
+        }
+      ],
+      "totals_check": {
+        "identity": "Closing Cash = Opening Cash + Net Cash Change",
+        "passed": true,
+        "max_abs_delta_cr": 0.0
+      },
+      "footnotes": [
+        "Figures in ₹ crore. Negative values in parentheses."
+      ],
+      "source": {
+        "kind": "synthetic_fixture",
+        "label": "Labelled synthetic — awaits SPEC-01"
+      },
+      "as_of": "2026-03-31",
+      "synthetic": true
+    },
+    "kpis": [
+      {
+        "label": "Operating Cash Flow (FY26)",
+        "value": 59010,
+        "unit": "₹ Cr",
+        "delta": "+5.0% vs FY25"
+      },
+      {
+        "label": "Free Cash Flow (FY26)",
+        "value": 21510,
+        "unit": "₹ Cr",
+        "delta": "+6.4% vs FY25"
+      },
+      {
+        "label": "Closing Cash & Bank (FY26)",
+        "value": 30220,
+        "unit": "₹ Cr",
+        "delta": "+8.6% vs FY25"
+      }
+    ]
+  },
+  "insights_v2": [
+    {
+      "text": "FY26 operating cash inflow of ₹59,010 Cr fully funded ₹37,500 Cr of E&P capex and ₹15,470 Cr of dividends.",
+      "kind": "headline",
+      "value": 59010,
+      "unit": "₹ Cr"
+    },
+    {
+      "text": "Closing cash across all 5 years reconciles exactly with Opening Cash + Net Cash Change and Balance Sheet cash.",
+      "kind": "trend",
+      "value": 30220,
+      "unit": "₹ Cr"
+    }
+  ],
+  "drilldowns": [
+    {
+      "label": "Balance sheet FY22–FY26",
+      "question": "Show standalone balance sheet for FY22 to FY26"
+    }
+  ],
+  "context_chips": [
+    {
+      "label": "CMD",
+      "kind": "role"
+    },
+    {
+      "label": "FY22–FY26",
+      "kind": "period"
+    },
+    {
+      "label": "Cash Flow",
+      "kind": "subject"
+    },
+    {
+      "label": "₹ Cr",
+      "kind": "filter"
+    }
+  ],
+  "query_spec": {
+    "version": 1,
+    "domain": "finance",
+    "metric": "cash_flow_statement",
+    "aggregation": "sum",
+    "period": {
+      "fy": "FY26"
+    }
+  },
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.fact_financial_statement_line"
+    }
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "word",
+    "pdf"
+  ]
+}

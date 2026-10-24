@@ -1,0 +1,491 @@
+{
+  "turn_id": "turn_v2_statement_pnl_synthetic",
+  "language": "en",
+  "persona": "CMD",
+  "spoken_summary": "Standalone statement of profit and loss from fiscal year 2022 through fiscal year 2026. In fiscal year 2026, revenue from operations stood at 1,32,508 crore rupees and profit after tax reached 38,348 crore rupees.",
+  "display_text": "ONGC standalone Statement of Profit and Loss for FY22–FY26 (₹ crore, Schedule III format) [1]. FY26 Revenue from Operations is ₹1,32,508.14 Cr and Profit After Tax (PAT) is ₹38,348.07 Cr (+7.6% YoY).",
+  "contract_version": 2,
+  "visual": {
+    "type": "statement",
+    "mode": "replace",
+    "title": "Statement of Profit and Loss (Standalone, FY22–FY26)",
+    "statement": {
+      "statement": "pnl",
+      "scope": "standalone",
+      "title": "Statement of Profit and Loss (Standalone, FY22–FY26)",
+      "unit": "INR_crore",
+      "periods": [
+        "FY26",
+        "FY25",
+        "FY24",
+        "FY23",
+        "FY22"
+      ],
+      "period_labels": {
+        "FY26": "FY 2025-26",
+        "FY25": "FY 2024-25",
+        "FY24": "FY 2023-24",
+        "FY23": "FY 2022-23",
+        "FY22": "FY 2021-22"
+      },
+      "show_yoy": true,
+      "sections": [
+        {
+          "id": "income",
+          "label": "Income",
+          "rows": [
+            {
+              "label": "Revenue from operations",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 132508.14,
+                "FY25": 137846.29,
+                "FY24": 138402.13,
+                "FY23": 155517.32,
+                "FY22": 110345.4
+              },
+              "line_code": "REV_OPS",
+              "yoy_pct": -3.9,
+              "note_ref": "30",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Other income",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 10355.76,
+                "FY25": 10479.44,
+                "FY24": 10778.19,
+                "FY23": 7626.55,
+                "FY22": 6515.58
+              },
+              "line_code": "OTHER_INC",
+              "yoy_pct": -1.2,
+              "note_ref": "31",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Total income",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": 142863.9,
+                "FY25": 148325.73,
+                "FY24": 149180.32,
+                "FY23": 163143.87,
+                "FY22": 116860.98
+              },
+              "line_code": "TOT_INC",
+              "yoy_pct": -3.7,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            }
+          ]
+        },
+        {
+          "id": "expenses",
+          "label": "Expenses",
+          "rows": [
+            {
+              "label": "Statutory levies",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 25999.0,
+                "FY25": 30968.0,
+                "FY24": 32410.0,
+                "FY23": 45284.2,
+                "FY22": 27932.2
+              },
+              "line_code": "STAT_LEVIES",
+              "yoy_pct": -16.0,
+              "note_ref": "35",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Production, transportation & operating expenditure",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 31056.05,
+                "FY25": 28245.61,
+                "FY24": 30646.97,
+                "FY23": 25444.94,
+                "FY22": 21944.42
+              },
+              "line_code": "PROD_EXP",
+              "yoy_pct": 10.0,
+              "note_ref": "35",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Employee benefits expense",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 3106.0,
+                "FY25": 3021.6,
+                "FY24": 2961.39,
+                "FY23": 3295.08,
+                "FY22": 2530.52
+              },
+              "line_code": "EMP_BENEFIT",
+              "yoy_pct": 2.8,
+              "note_ref": "35.1",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Exploration costs written off",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 9728.78,
+                "FY25": 9825.72,
+                "FY24": 5568.73,
+                "FY23": 9994.45,
+                "FY22": 5508.29
+              },
+              "line_code": "EXPL_WRITEOFF",
+              "yoy_pct": -1.0,
+              "note_ref": "36",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Depletion, depreciation & amortisation",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 25133.82,
+                "FY25": 24352.44,
+                "FY24": 20495.71,
+                "FY23": 16795.15,
+                "FY22": 14545.7
+              },
+              "line_code": "DDA",
+              "yoy_pct": 3.2,
+              "note_ref": "37",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Finance costs",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 4529.26,
+                "FY25": 4603.97,
+                "FY24": 4081.31,
+                "FY23": 3499.6,
+                "FY22": 2359.86
+              },
+              "line_code": "FIN_COST",
+              "yoy_pct": -1.6,
+              "note_ref": "36",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Purchase of stock-in-trade",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 354.46,
+                "FY25": 416.81,
+                "FY24": 310.0,
+                "FY23": 280.0,
+                "FY22": 220.0
+              },
+              "line_code": "PURCHASES",
+              "yoy_pct": -15.0,
+              "note_ref": "32",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Other operating expenses",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 841.64,
+                "FY25": 851.76,
+                "FY24": 790.0,
+                "FY23": 720.0,
+                "FY22": 630.0
+              },
+              "line_code": "OTHER_EXP",
+              "yoy_pct": -1.2,
+              "note_ref": "38",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            }
+          ]
+        },
+        {
+          "id": "profit",
+          "label": "Profit & Tax",
+          "rows": [
+            {
+              "label": "Exceptional items",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": -300.0,
+                "FY25": -280.0,
+                "FY24": 1100.0,
+                "FY23": -7435.13,
+                "FY22": 250.0
+              },
+              "line_code": "EXCEPTIONAL",
+              "yoy_pct": -7.1,
+              "note_ref": "39",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Profit before tax",
+              "level": 0,
+              "kind": "subtotal",
+              "values": {
+                "FY26": 41814.89,
+                "FY25": 45759.82,
+                "FY24": 53016.21,
+                "FY23": 50395.32,
+                "FY22": 41439.99
+              },
+              "line_code": "PBT",
+              "yoy_pct": -8.6,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Tax expense",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 8920.87,
+                "FY25": 10149.5,
+                "FY24": 12490.24,
+                "FY23": 11566.45,
+                "FY22": 2434.25
+              },
+              "line_code": "TAX_EXP",
+              "yoy_pct": -12.1,
+              "note_ref": "40",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Profit for the year (PAT)",
+              "level": 0,
+              "kind": "total",
+              "values": {
+                "FY26": 32894.02,
+                "FY25": 35610.32,
+                "FY24": 40525.97,
+                "FY23": 38828.87,
+                "FY22": 39005.74
+              },
+              "line_code": "PAT",
+              "yoy_pct": -7.6,
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Other comprehensive income (net of tax)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": -423.78,
+                "FY25": -8319.84,
+                "FY24": 18373.04,
+                "FY23": -518.64,
+                "FY22": 3731.91
+              },
+              "line_code": "OCI",
+              "yoy_pct": 94.9,
+              "note_ref": "41",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            },
+            {
+              "label": "Basic and diluted EPS (₹)",
+              "level": 1,
+              "kind": "line",
+              "values": {
+                "FY26": 26.15,
+                "FY25": 28.31,
+                "FY24": 32.21,
+                "FY23": 30.86,
+                "FY22": 31.01
+              },
+              "line_code": "EPS_BASIC",
+              "yoy_pct": -7.6,
+              "note_ref": "42",
+              "source": {
+                "doc": "Synthetic Fixture (pre-SPEC-01)",
+                "page": 1
+              },
+              "is_restated": false
+            }
+          ]
+        }
+      ],
+      "totals_check": {
+        "identity": "Total Income = Revenue + Other Income; PAT = PBT - Tax",
+        "passed": true,
+        "max_abs_delta_cr": 0.0
+      },
+      "footnotes": [
+        "Figures in ₹ crore. Negative values in parentheses."
+      ],
+      "source": {
+        "kind": "synthetic_fixture",
+        "label": "Labelled synthetic — awaits SPEC-01"
+      },
+      "as_of": "2026-03-31",
+      "synthetic": true
+    },
+    "kpis": [
+      {
+        "label": "Revenue from Operations (FY26)",
+        "value": 132508.14,
+        "unit": "₹ Cr",
+        "delta": "-3.9% vs FY25"
+      },
+      {
+        "label": "Profit Before Tax (FY26)",
+        "value": 50666.07,
+        "unit": "₹ Cr",
+        "delta": "+7.2% vs FY25"
+      },
+      {
+        "label": "Profit After Tax (FY26)",
+        "value": 38348.07,
+        "unit": "₹ Cr",
+        "delta": "+7.6% vs FY25"
+      }
+    ]
+  },
+  "insights_v2": [
+    {
+      "text": "FY26 standalone PAT rose 7.6% YoY to ₹38,348.07 Cr despite a 3.9% moderation in gross revenue.",
+      "kind": "headline",
+      "value": 38348.07,
+      "unit": "₹ Cr"
+    },
+    {
+      "text": "Statutory levies declined 14.3% YoY to ₹27,820.12 Cr following windfall tax removal.",
+      "kind": "trend",
+      "value": 27820.12,
+      "unit": "₹ Cr"
+    }
+  ],
+  "drilldowns": [
+    {
+      "label": "FY26 P&L waterfall bridge",
+      "question": "Show FY26 P&L as a waterfall bridge"
+    },
+    {
+      "label": "FY25 P&L waterfall bridge",
+      "question": "Show FY25 P&L as a waterfall bridge"
+    }
+  ],
+  "context_chips": [
+    {
+      "label": "CMD",
+      "kind": "role"
+    },
+    {
+      "label": "FY22–FY26",
+      "kind": "period"
+    },
+    {
+      "label": "Profit & Loss",
+      "kind": "subject"
+    },
+    {
+      "label": "₹ Cr",
+      "kind": "filter"
+    }
+  ],
+  "query_spec": {
+    "version": 1,
+    "domain": "finance",
+    "metric": "pnl_statement",
+    "aggregation": "sum",
+    "period": {
+      "fy": "FY26"
+    }
+  },
+  "sources": [
+    {
+      "kind": "data",
+      "object": "hrfin_gold.fact_financial_statement_line"
+    }
+  ],
+  "access": {
+    "status": "allowed"
+  },
+  "export_options": [
+    "sheets",
+    "docs",
+    "word",
+    "pdf"
+  ]
+}
