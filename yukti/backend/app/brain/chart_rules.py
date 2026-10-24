@@ -8,9 +8,36 @@ matcher never matches PAT or generic "profit").
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import math
 import re
 from typing import Any, Dict, List, Optional, Tuple
+
+# P4.4 (SPEC-09 §4.6): exact mirror of `ALL_KINDS` in `yukti/frontend/src/charts/compat.ts`.
+ALL_KINDS: Tuple[str, ...] = (
+    "bar",
+    "hbar",
+    "donut",
+    "pie",
+    "line",
+    "area",
+    "histogram",
+    "scatter",
+    "treemap",
+    "waterfall",
+    "funnel",
+    "grouped_bar",
+    "stacked_bar",
+    "stacked_100",
+    "combo",
+    "heatmap",
+    "box",
+    "gauge",
+    "bullet",
+    "table",
+)
+
+PART_OF_WHOLE: Tuple[str, ...] = ("pie", "donut", "treemap", "funnel")
 
 CHART_KINDS = (
     "table",
@@ -199,6 +226,24 @@ def is_pure_replot_request(query: str) -> Tuple[bool, Optional[str]]:
         "show as treemap": "treemap",
         "heatmap": "heatmap",
         "show as heatmap": "heatmap",
+        "combo": "combo",
+        "combo chart": "combo",
+        "show as combo": "combo",
+        "show as combo chart": "combo",
+        "100% stacked": "stacked_100",
+        "100% stacked bar": "stacked_100",
+        "show as 100% stacked": "stacked_100",
+        "stacked bar": "stacked_bar",
+        "grouped bar": "grouped_bar",
+        "box": "box",
+        "box plot": "box",
+        "box chart": "box",
+        "show as box plot": "box",
+        "gauge": "gauge",
+        "show as gauge": "gauge",
+        "bullet": "bullet",
+        "bullet chart": "bullet",
+        "funnel": "funnel",
         "waterfall": "waterfall",
         "waterfall chart": "waterfall",
         "show as waterfall": "waterfall",
@@ -349,6 +394,393 @@ def compute_histogram_bins(
     return bins, ["bucket", "count", "share_pct", "normal_fit"]
 
 
+_ORDINAL_RE = re.compile(
+    r"^(E\d+|W\d+|GRP-[A-Z]|Q[1-4]|[<>≤≥]\s?\d+|\d+\s?[-–]\s?\d+|\d+\+?\s?(days|yrs?|years?)?)$",
+    re.I,
+)
+_TIME_RE = re.compile(
+    r"^(FY\s?\d{2,4}(-\d{2})?|\d{4}(-\d{2})?|Q[1-4]\s?\d{2,4}|[A-Z][a-z]{2}[- ]\d{2,4})$"
+)
+_TIME_SPAN_RE = re.compile(r"^\d{4}\s?[-–]\s?\d{2}$")
+_BIN_SPAN_RE = re.compile(r"^(?!\d{4}\s?[-–]\s?\d{2}$)\d+(\.\d+)?\s?[-–]\s?\d+(\.\d+)?")
+_TIME_KEY_RE = re.compile(
+    r"^(year|yr|fy|fiscal|fiscal_year|financial_year|month|quarter|date|period)$|_(date|month|quarter|fy|period)$|^(fy|fiscal)_",
+    re.I,
+)
+_BIN_KEY_RE = re.compile(r"(^bin$|bucket|range|band|bracket)", re.I)
+_HELPER_RE = re.compile(r"^(lat|lon|lng|weight|rank|id|order|sort|emp_id|pincode|code)$", re.I)
+_ID_LIKE_RE = re.compile(r"(^|_)(id|code|no|number)$", re.I)
+_TARGET_RE = re.compile(r"^(target|target_pct|target_value)$", re.I)
+_STATUS_TYPE_UNIT_RE = re.compile(r"status|type|unit", re.I)
+_NAMES_DIM_RE = re.compile(r"^(emp_name|employee_name|officer_name|name|employee|officer)$", re.I)
+_NAMES_COL_RE = re.compile(r"^(emp_name|employee_name|emp_id|employee_id)$", re.I)
+_NUMERIC_STR_RE = re.compile(r"^-?[\d,]+(\.\d+)?$")
+_PCT_MEASURE_RE = re.compile(r"pct|percent|margin|rate|ratio|%", re.I)
+
+
+def _to_number(v: Any) -> Optional[float]:
+    """Exact Python mirror of `toNumber(v)` in `yukti/frontend/src/charts/format.ts`."""
+    if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(float(v)):
+        return float(v)
+    if isinstance(v, str) and _NUMERIC_STR_RE.match(v.strip()):
+        try:
+            return float(v.replace(",", ""))
+        except ValueError:
+            return None
+    return None
+
+
+def _normalize_rows(
+    columns: Optional[List[str]],
+    rows: Optional[List[Any]],
+) -> List[Dict[str, Any]]:
+    """Exact Python mirror of `normalizeRows(columns, rows)` in `yukti/frontend/src/charts/normalize.ts`."""
+    if not rows or not isinstance(rows, list):
+        return []
+    cols = columns if isinstance(columns, list) else []
+    out: List[Dict[str, Any]] = []
+    for row in rows:
+        if row is None:
+            out.append({})
+        elif isinstance(row, (list, tuple)):
+            obj: Dict[str, Any] = {}
+            for i, val in enumerate(row):
+                col_name = (
+                    str(cols[i])
+                    if (i < len(cols) and cols[i] is not None and str(cols[i]).strip() != "")
+                    else f"col_{i}"
+                )
+                obj[col_name] = val
+            out.append(obj)
+        elif isinstance(row, dict):
+            out.append(dict(row))
+        else:
+            col_name = str(cols[0]) if (cols and cols[0]) else "col_0"
+            out.append({col_name: row})
+    return out
+
+
+@dataclass
+class DataProfile:
+    """Exact Python mirror of `DataProfile` in `yukti/frontend/src/charts/compat.ts`."""
+
+    rows: List[Dict[str, Any]]
+    columns: List[str]
+    dim_key: str
+    measures: List[str]
+    primary: str
+    shape: str
+    has_negative: bool
+    has_target: bool
+    ordinal: bool
+    people: bool
+    groupable: List[str]
+    n: int
+
+    @property
+    def dimKey(self) -> str:
+        return self.dim_key
+
+    @property
+    def hasNegative(self) -> bool:
+        return self.has_negative
+
+    @property
+    def hasTarget(self) -> bool:
+        return self.has_target
+
+
+def profile(visual: Optional[Dict[str, Any]] = None) -> DataProfile:
+    """Profile the data behind a visual (mirror of `profile(visual)` in `yukti/frontend/src/charts/compat.ts`)."""
+    vis = visual if isinstance(visual, dict) else {}
+    src = vis.get("source") if isinstance(vis.get("source"), dict) else {}
+    tbl = vis.get("table") if isinstance(vis.get("table"), dict) else {}
+    chart = vis.get("chart") if isinstance(vis.get("chart"), dict) else {}
+
+    columns0 = src.get("columns") or tbl.get("columns")
+    raw_rows = src.get("rows") or tbl.get("rows") or chart.get("data") or []
+    rows = _normalize_rows(columns0, raw_rows)
+    columns = (
+        list(columns0)
+        if (isinstance(columns0, list) and len(columns0) > 0)
+        else (list(rows[0].keys()) if rows else [])
+    )
+    n = len(rows)
+
+    def is_num(k: str) -> bool:
+        if n <= 0:
+            return False
+        c = sum(1 for r in rows if _to_number(r.get(k)) is not None)
+        return c >= math.ceil(n * 0.8)
+
+    numeric = [
+        k for k in columns if is_num(k) and not _HELPER_RE.search(k) and not _ID_LIKE_RE.search(k)
+    ]
+    text = [k for k in columns if not is_num(k)]
+    has_target = any(bool(_TARGET_RE.search(k)) for k in columns) or (
+        chart.get("target") is not None
+    )
+
+    dim_key: Optional[str] = None
+    for cand in (chart.get("category"), chart.get("x")):
+        if cand and cand in columns and (cand in text or bool(_TIME_KEY_RE.search(str(cand)))):
+            dim_key = str(cand)
+            break
+    if not dim_key:
+        dim_key = next((k for k in text if not _STATUS_TYPE_UNIT_RE.search(k)), None)
+    if not dim_key:
+        dim_key = text[0] if text else (columns[0] if columns else "label")
+
+    measures = [
+        k
+        for k in numeric
+        if not _TARGET_RE.search(k) and not _TIME_KEY_RE.search(k) and k != dim_key
+    ]
+    primary: Optional[str] = None
+    for cand in (chart.get("value"), chart.get("y")):
+        if cand and cand in measures:
+            primary = str(cand)
+            break
+    if not primary:
+        primary = measures[0] if measures else "value"
+
+    labels = [str(r.get(dim_key) if r.get(dim_key) is not None else "") for r in rows]
+
+    def frac(pat: re.Pattern[str]) -> float:
+        if not labels:
+            return 0.0
+        return sum(1 for lbl in labels if pat.search(lbl.strip())) / max(1, len(labels))
+
+    groupable: List[str] = []
+    for k in text:
+        if k == dim_key and n <= 40:
+            continue
+        d = len({r.get(k) for r in rows})
+        if 2 <= d <= 12 and d < n:
+            groupable.append(k)
+
+    has_negative = any((_to_number(r.get(primary)) or 0.0) < 0 for r in rows)
+    names_like = bool(_NAMES_DIM_RE.search(dim_key)) or any(
+        bool(_NAMES_COL_RE.search(c)) for c in columns
+    )
+    unique_dim = n > 0 and len(set(labels)) == n
+    row_grain = unique_dim and n > 60 and len(measures) <= 2 and len(text) >= 3
+
+    if n <= 1:
+        shape = "single"
+    elif names_like or row_grain:
+        shape = "records"
+    elif (
+        bool(_TIME_KEY_RE.search(dim_key))
+        or frac(_TIME_RE) >= 0.7
+        or frac(_TIME_SPAN_RE) >= 0.7
+    ) and n >= 3:
+        shape = "time"
+    elif bool(_BIN_KEY_RE.search(dim_key)) or frac(_BIN_SPAN_RE) >= 0.6:
+        shape = "distribution"
+    elif len(measures) >= 2:
+        shape = "multi_measure"
+    elif frac(_ORDINAL_RE) >= 0.7:
+        shape = "ordinal"
+    else:
+        shape = "categorical"
+
+    ordinal = shape == "ordinal" or (shape == "multi_measure" and frac(_ORDINAL_RE) >= 0.7)
+    return DataProfile(
+        rows=rows,
+        columns=columns,
+        dim_key=dim_key,
+        measures=measures,
+        primary=primary,
+        shape=shape,
+        has_negative=has_negative,
+        has_target=has_target,
+        ordinal=ordinal,
+        people=names_like,
+        groupable=groupable,
+        n=n,
+    )
+
+
+def compatibility(p: DataProfile, kind: str) -> Dict[str, Any]:
+    """Compatibility of every chart kind for a DataProfile (exact mirror of `compatibility(p, kind)` in `compat.ts`)."""
+    if kind == "table":
+        return {"status": "native"}
+    if p.n == 0:
+        return {
+            "status": "alternative",
+            "alternative": "table",
+            "note": "There is no data to chart.",
+        }
+
+    text_cols = [
+        c
+        for c in p.columns
+        if c not in p.measures
+        and c != p.dim_key
+        and any(isinstance(r.get(c), str) for r in p.rows)
+    ]
+
+    if kind == "combo":
+        if len(p.measures) >= 2 and p.shape != "single":
+            return {"status": "native"}
+        return {
+            "status": "alternative",
+            "alternative": "line" if p.shape == "time" else "bar",
+            "note": "A combo chart needs two measures (e.g. a value and a %); showing the closest view.",
+        }
+
+    if kind == "stacked_100":
+        if len(p.measures) >= 2 and not p.has_negative and p.shape != "single":
+            return {"status": "native"}
+        return {
+            "status": "alternative",
+            "alternative": "table" if p.shape == "single" else "bar",
+            "note": (
+                "A 100% stacked bar cannot show negative values."
+                if p.has_negative
+                else "A 100% stacked bar needs two or more parts per category."
+            ),
+        }
+
+    if kind == "heatmap":
+        if (len(text_cols) >= 1 and len(p.measures) >= 1) or (
+            p.shape == "records" and len(p.groupable) >= 2
+        ):
+            return {"status": "native"}
+        return {
+            "status": "alternative",
+            "alternative": "bar",
+            "note": "A heatmap needs two categories and a measure (e.g. work centre × month).",
+        }
+
+    if kind == "box":
+        pre = all(k in p.columns for k in ("min", "q1", "median", "q3", "max"))
+        repeated = len({r.get(p.dim_key) for r in p.rows}) < p.n
+        if (
+            pre
+            or (p.shape == "records" and len(p.measures) >= 1)
+            or (repeated and len(p.measures) >= 1)
+            or (
+                p.n >= 10
+                and len(p.measures) >= 1
+                and (len(text_cols) >= 1 or len(p.groupable) >= 1)
+            )
+        ):
+            return {"status": "native"}
+        return {
+            "status": "alternative",
+            "alternative": "bar",
+            "note": "A box plot needs individual records per group; showing the summary instead.",
+        }
+
+    if kind == "gauge":
+        if p.shape == "single" and p.has_target:
+            return {"status": "native"}
+        return {
+            "status": "alternative",
+            "alternative": "bullet" if p.has_target else "table",
+            "note": "A gauge shows one value against a target.",
+        }
+
+    if kind == "scatter" and len(p.measures) < 2:
+        return {
+            "status": "alternative",
+            "alternative": "line" if p.shape == "time" else "bar",
+            "note": "A scatter plot needs two measures per item; showing the closest view.",
+        }
+
+    if kind in PART_OF_WHOLE and p.has_negative:
+        return {
+            "status": "alternative",
+            "alternative": "hbar",
+            "note": "Shares cannot show losses; showing gains and losses as bars.",
+        }
+
+    if kind in ("pie", "donut") and p.shape == "time":
+        return {
+            "status": "alternative",
+            "alternative": "bar",
+            "note": "A pie cannot show change over time; showing columns over time.",
+        }
+
+    if kind in ("line", "area") and p.shape == "categorical" and not p.ordinal:
+        return {
+            "status": "alternative",
+            "alternative": "bar",
+            "note": "A line implies an order; these categories are shown as bars.",
+        }
+
+    if kind == "histogram" and p.shape == "time":
+        return {
+            "status": "alternative",
+            "alternative": "line",
+            "note": "A histogram is for distributions; this time series is shown as a line.",
+        }
+
+    if kind == "histogram" and p.shape == "categorical" and p.n < 30:
+        return {
+            "status": "alternative",
+            "alternative": "hbar",
+            "note": "Too few values for a distribution; showing them ranked.",
+        }
+
+    if kind in ("funnel", "waterfall") and p.shape == "categorical" and not p.has_negative:
+        return {
+            "status": "alternative",
+            "alternative": "hbar",
+            "note": (
+                "These categories are not stages; showing them ranked."
+                if kind == "funnel"
+                else "A waterfall needs gains and losses; showing the values ranked."
+            ),
+        }
+
+    if p.shape == "single":
+        if len(p.measures) >= 1:
+            return {"status": "transform"}
+        return {"status": "alternative", "alternative": "table"}
+
+    if p.shape == "records":
+        num = len(p.measures) > 0
+        grp = len(p.groupable) > 0
+        if kind == "histogram":
+            return {"status": "transform"} if num else {"status": "native"}
+        if kind in PART_OF_WHOLE or kind in ("bar", "hbar", "waterfall", "line", "area"):
+            if grp or num:
+                return {"status": "transform"}
+        return {"status": "native"}
+
+    if p.shape == "distribution":
+        if kind in ("pie", "donut"):
+            return {"status": "transform"}
+        return {"status": "native"}
+
+    if p.shape == "time":
+        return {"status": "native"}
+
+    if kind in PART_OF_WHOLE and p.shape == "multi_measure":
+        return {"status": "transform"}
+    if kind == "histogram" and not p.ordinal:
+        return {"status": "transform"}
+    return {"status": "native"}
+
+
+def kinds_for(visual: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    """Mirror of `kindsFor(visual)` in `yukti/frontend/src/charts/compat.ts`."""
+    p = profile(visual)
+    out: List[Dict[str, Any]] = []
+    for k in ALL_KINDS:
+        c = compatibility(p, k)
+        item: Dict[str, Any] = {"kind": k, "status": c["status"]}
+        if "alternative" in c:
+            item["alternative"] = c["alternative"]
+        if "note" in c:
+            item["note"] = c["note"]
+        out.append(item)
+    return out
+
+
 def select_chart_kind(
     columns: List[str],
     rows: List[Dict[str, Any]],
@@ -360,7 +792,7 @@ def select_chart_kind(
 
     1. Explicit chart kind in `voice_override` or `utterance` (always wins).
     2. Question type (`policy`, `document`, `refusal`).
-    3. Data-shape default.
+    3. Data-shape default (including P4.4 combo for value + % time series and gauge for 1-row target).
     """
     if voice_override and voice_override in CHART_KINDS:
         return voice_override
@@ -379,16 +811,26 @@ def select_chart_kind(
     num_rows = len(rows)
     num_cols = len(columns)
 
-    if num_rows == 1 and num_cols <= 3:
-        return "kpi"
-
     col_lower = [c.lower() for c in columns]
+
+    if num_rows == 1:
+        if any(bool(_TARGET_RE.search(c)) for c in col_lower):
+            return "gauge"
+        if num_cols <= 3:
+            return "kpi"
 
     if any(k in col_lower for k in ["bucket", "bin", "age_band", "tenure_band", "salary_band", "bracket"]):
         return "histogram"
 
     if any(k in col_lower for k in ["month", "year", "fiscal_year", "quarter", "date", "period", "fy"]):
         if num_rows >= 2:
+            # P4.4 (SPEC-09 §4.5 #11): value + % time series defaults to combo
+            p = profile({"type": "table", "table": {"columns": columns, "rows": rows}})
+            if len(p.measures) >= 2:
+                has_pct = any(bool(_PCT_MEASURE_RE.search(m)) for m in p.measures)
+                has_val = any(not bool(_PCT_MEASURE_RE.search(m)) for m in p.measures)
+                if has_pct and has_val:
+                    return "combo"
             return "line"
 
     if any(k in " ".join(col_lower) for k in ["delta", "variance", "impact", "bridge", "shock", "change_cr"]):
