@@ -17,6 +17,7 @@ import { dispatchUi, labelOf, parseUiCommands, UiCommand, useUiCommands } from '
 import { cleanText } from '@/charts/format';
 import { BargeInDetector, micGateOpen, PLAYBACK_TAIL_MS, SpeakTracker } from '@/services/voiceGate';
 import { AlertTriangle, MicOff, RefreshCw, X } from 'lucide-react';
+import { EdgeAura } from '@/components/EdgeAura';
 
 type Backend = 'checking' | 'online' | 'offline';
 
@@ -1110,6 +1111,7 @@ export default function YuktiApp() {
           />
         </main>
 
+        <EdgeAura state={orbState} />
         <FloatingConversationPanel
           panelMode={panelMode}
           onModeChange={setPanelMode}
