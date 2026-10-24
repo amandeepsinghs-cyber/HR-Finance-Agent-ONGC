@@ -14865,71 +14865,12 @@
           ]
         },
         "asset_wc_id": {
-          "distinct": 15,
-          "nulls": 0,
-          "type": "STRING",
-          "value_counts": {
-            "WC-AHM": 60,
-            "WC-ANK": 40,
-            "WC-ASM": 40,
-            "WC-BAS": 50,
-            "WC-BOK": 20,
-            "WC-CAM": 20,
-            "WC-CAU": 30,
-            "WC-EAS": 10,
-            "WC-JOR": 30,
-            "WC-MEH": 70,
-            "WC-MUM": 20,
-            "WC-NEH": 50,
-            "WC-RAJ": 40,
-            "WC-RAJ-BSN": 10,
-            "WC-TRI": 40
-          },
-          "values": [
-            "WC-MEH",
-            "WC-AHM",
-            "WC-BAS",
-            "WC-NEH",
-            "WC-ANK",
-            "WC-ASM",
-            "WC-RAJ",
-            "WC-TRI",
-            "WC-CAU",
-            "WC-JOR",
-            "WC-BOK",
-            "WC-CAM",
-            "WC-MUM",
-            "WC-EAS",
-            "WC-RAJ-BSN"
-          ]
+          "type": "STRING"
         },
         "basin": {
-          "distinct": 7,
-          "nulls": 0,
-          "type": "STRING",
-          "value_counts": {
-            "Assam & Assam-Arakan Basin": 110,
-            "Cauvery Basin": 30,
-            "Jodhpur (Rajasthan) Basin": 10,
-            "KG-PG Basin": 50,
-            "MBA Basin (Mahanadi-Bengal-Andaman)": 20,
-            "Western Offshore Basin": 120,
-            "Western Onshore Basin": 190
-          },
-          "values": [
-            "Western Onshore Basin",
-            "Western Offshore Basin",
-            "Assam & Assam-Arakan Basin",
-            "KG-PG Basin",
-            "Cauvery Basin",
-            "MBA Basin (Mahanadi-Bengal-Andaman)",
-            "Jodhpur (Rajasthan) Basin"
-          ]
+          "type": "STRING"
         },
         "boe_per_employee": {
-          "max": 101287.46,
-          "min": 0.0,
-          "nulls": 0,
           "type": "NUMERIC"
         },
         "condensate_production_mt": {
@@ -15223,33 +15164,7 @@
           "type": "NUMERIC"
         },
         "fiscal_year": {
-          "distinct": 10,
-          "nulls": 0,
-          "type": "STRING",
-          "value_counts": {
-            "FY17": 53,
-            "FY18": 53,
-            "FY19": 53,
-            "FY20": 53,
-            "FY21": 53,
-            "FY22": 53,
-            "FY23": 53,
-            "FY24": 53,
-            "FY25": 53,
-            "FY26": 53
-          },
-          "values": [
-            "FY17",
-            "FY18",
-            "FY19",
-            "FY20",
-            "FY21",
-            "FY22",
-            "FY23",
-            "FY24",
-            "FY25",
-            "FY26"
-          ]
+          "type": "STRING"
         },
         "gas_production_mmscm": {
           "max": 10622.4636,
@@ -15288,9 +15203,6 @@
           "type": "BOOL"
         },
         "lifting_cost_per_boe_usd": {
-          "max": 6547600000.0,
-          "min": 5.01,
-          "nulls": 0,
           "type": "NUMERIC"
         },
         "manpower_cost_per_boe_usd": {
@@ -15300,18 +15212,12 @@
           "type": "NUMERIC"
         },
         "maturity": {
-          "distinct": 3,
-          "nulls": 0,
           "type": "STRING",
-          "value_counts": {
-            "growth": 20,
-            "mature": 440,
-            "plateau": 70
-          },
           "values": [
             "mature",
             "plateau",
-            "growth"
+            "growth",
+            "developing"
           ]
         },
         "net_revenue_inr_cr": {
@@ -15456,9 +15362,6 @@
           "type": "NUMERIC"
         },
         "water_cut_pct": {
-          "max": 94.25,
-          "min": 4.9,
-          "nulls": 0,
           "type": "NUMERIC"
         },
         "well_downtime_hours": {
@@ -15474,11 +15377,348 @@
           "type": "INT64"
         },
         "cost_expensed_production_inr": {
+          "type": "NUMERIC"
+        },
+        "object_id": {
+          "type": "STRING"
+        },
+        "object_name": {
+          "type": "STRING"
+        },
+        "object_type": {
+          "type": "STRING",
+          "values": [
+            "field",
+            "jv_share",
+            "plant",
+            "exploration",
+            "hq",
+            "company_nonop"
+          ]
+        },
+        "state": {
+          "type": "STRING"
+        },
+        "segment": {
+          "type": "STRING",
+          "values": [
+            "Offshore",
+            "Onshore",
+            "Unallocated"
+          ]
+        },
+        "operatorship": {
+          "type": "STRING",
+          "values": [
+            "ONGC_OPERATED",
+            "JV_NON_OPERATED"
+          ]
+        },
+        "pi_share": {
+          "type": "NUMERIC"
+        },
+        "hydrocarbon": {
+          "type": "STRING",
+          "values": [
+            "oil",
+            "gas",
+            "both",
+            "none"
+          ]
+        },
+        "data_label": {
+          "type": "STRING"
+        },
+        "prod_basis": {
+          "type": "STRING",
+          "values": [
+            "ONGC",
+            "JV_SHARE"
+          ]
+        },
+        "oil_prod_mt": {
+          "type": "NUMERIC"
+        },
+        "condensate_prod_mt": {
+          "type": "NUMERIC"
+        },
+        "gas_prod_mmscm": {
+          "type": "NUMERIC"
+        },
+        "oil_sales_mt": {
+          "type": "NUMERIC"
+        },
+        "gas_sales_mmscm": {
+          "type": "NUMERIC"
+        },
+        "vap_sales_kt": {
+          "type": "NUMERIC"
+        },
+        "gas_internal_use_mmscm": {
+          "type": "NUMERIC"
+        },
+        "gas_flared_mmscm": {
+          "type": "NUMERIC"
+        },
+        "water_produced_m3": {
+          "type": "NUMERIC"
+        },
+        "water_injected_m3": {
+          "type": "NUMERIC"
+        },
+        "active_producers": {
           "type": "INT64"
+        },
+        "active_injectors": {
+          "type": "INT64"
+        },
+        "installations_count": {
+          "type": "INT64"
+        },
+        "wells_drilled_dev": {
+          "type": "INT64"
+        },
+        "prod_boe": {
+          "type": "NUMERIC"
+        },
+        "realised_price_crude_inr_t": {
+          "type": "NUMERIC"
+        },
+        "realised_price_gas_inr_scm": {
+          "type": "NUMERIC"
+        },
+        "realised_price_crude_usd_bbl": {
+          "type": "NUMERIC"
+        },
+        "rev_crude": {
+          "type": "NUMERIC"
+        },
+        "rev_gas": {
+          "type": "NUMERIC"
+        },
+        "rev_vap": {
+          "type": "NUMERIC"
+        },
+        "rev_other_operating": {
+          "type": "NUMERIC"
+        },
+        "revenue_from_operations": {
+          "type": "NUMERIC"
+        },
+        "field_revenue_cr": {
+          "type": "NUMERIC"
+        },
+        "other_income_segment": {
+          "type": "NUMERIC"
+        },
+        "other_income_total": {
+          "type": "NUMERIC"
+        },
+        "royalty": {
+          "type": "NUMERIC"
+        },
+        "oidb_cess": {
+          "type": "NUMERIC"
+        },
+        "nccd": {
+          "type": "NUMERIC"
+        },
+        "excise_saed": {
+          "type": "NUMERIC"
+        },
+        "port_trust": {
+          "type": "NUMERIC"
+        },
+        "other_levies": {
+          "type": "NUMERIC"
+        },
+        "levies_total": {
+          "type": "NUMERIC"
+        },
+        "staff_expenditure": {
+          "type": "NUMERIC"
+        },
+        "workover_ops": {
+          "type": "NUMERIC"
+        },
+        "water_injection_desalting": {
+          "type": "NUMERIC"
+        },
+        "consumption_stores_spares": {
+          "type": "NUMERIC"
+        },
+        "pollution_control": {
+          "type": "NUMERIC"
+        },
+        "transport_expenditure": {
+          "type": "NUMERIC"
+        },
+        "insurance": {
+          "type": "NUMERIC"
+        },
+        "power_fuel": {
+          "type": "NUMERIC"
+        },
+        "repairs_maintenance": {
+          "type": "NUMERIC"
+        },
+        "contractual_hire": {
+          "type": "NUMERIC"
+        },
+        "other_production_exp": {
+          "type": "NUMERIC"
+        },
+        "transport_freight_products": {
+          "type": "NUMERIC"
+        },
+        "r_and_d": {
+          "type": "NUMERIC"
+        },
+        "gae": {
+          "type": "NUMERIC"
+        },
+        "csr": {
+          "type": "NUMERIC"
+        },
+        "exchange_loss": {
+          "type": "NUMERIC"
+        },
+        "misc_exp": {
+          "type": "NUMERIC"
+        },
+        "fv_loss": {
+          "type": "NUMERIC"
+        },
+        "opex_total": {
+          "type": "NUMERIC"
+        },
+        "opex_operating": {
+          "type": "NUMERIC"
+        },
+        "opex_lifting": {
+          "type": "NUMERIC"
+        },
+        "opex_operating_excl_corporate": {
+          "type": "NUMERIC"
+        },
+        "expl_survey_wo": {
+          "type": "NUMERIC"
+        },
+        "expl_wells_wo": {
+          "type": "NUMERIC"
+        },
+        "depletion": {
+          "type": "NUMERIC"
+        },
+        "depreciation": {
+          "type": "NUMERIC"
+        },
+        "amortisation": {
+          "type": "NUMERIC"
+        },
+        "dda_total": {
+          "type": "NUMERIC"
+        },
+        "impairment_net": {
+          "type": "NUMERIC"
+        },
+        "provisions_writeoffs": {
+          "type": "NUMERIC"
+        },
+        "inventory_change": {
+          "type": "NUMERIC"
+        },
+        "purchases_traded": {
+          "type": "NUMERIC"
+        },
+        "exceptional_items": {
+          "type": "NUMERIC"
+        },
+        "finance_cost": {
+          "type": "NUMERIC"
+        },
+        "interest_dividend_income": {
+          "type": "NUMERIC"
+        },
+        "ebitdax": {
+          "type": "NUMERIC"
+        },
+        "ebitda": {
+          "type": "NUMERIC"
+        },
+        "field_ebitda_cr": {
+          "type": "NUMERIC"
+        },
+        "field_ebitda_margin_pct": {
+          "type": "NUMERIC"
+        },
+        "segment_result_contrib": {
+          "type": "NUMERIC"
+        },
+        "pbt_contrib": {
+          "type": "NUMERIC"
+        },
+        "field_pbt_cr": {
+          "type": "NUMERIC"
+        },
+        "field_pbt_margin_pct": {
+          "type": "NUMERIC"
+        },
+        "capex_dev": {
+          "type": "NUMERIC"
+        },
+        "capex_facilities": {
+          "type": "NUMERIC"
+        },
+        "capex_exploration": {
+          "type": "NUMERIC"
+        },
+        "capex_total": {
+          "type": "NUMERIC"
+        },
+        "headcount_direct": {
+          "type": "NUMERIC"
+        },
+        "headcount_allocated_fte": {
+          "type": "NUMERIC"
+        },
+        "employee_cost_total": {
+          "type": "NUMERIC"
+        },
+        "contractor_headcount": {
+          "type": "NUMERIC"
+        },
+        "inr_usd_fx_rate": {
+          "type": "NUMERIC"
+        },
+        "opex_per_boe_inr": {
+          "type": "NUMERIC"
+        },
+        "opex_per_boe_usd": {
+          "type": "NUMERIC"
+        },
+        "employee_cost_per_boe": {
+          "type": "NUMERIC"
+        },
+        "levies_pct_revenue": {
+          "type": "NUMERIC"
+        },
+        "revenue_per_employee_field_cr": {
+          "type": "NUMERIC"
+        },
+        "breakeven_crude_usd_bbl": {
+          "type": "NUMERIC"
+        },
+        "capex_intensity_usd_boe": {
+          "type": "NUMERIC"
+        },
+        "month_start": {
+          "type": "DATE"
+        },
+        "build_run_id": {
+          "type": "STRING"
         }
-      },
-      "kind": "BASE TABLE",
-      "row_count": 530
+      }
     },
     "hrfin_gold.ssot_work_centre_360": {
       "columns": {
@@ -38967,6 +39207,843 @@
     "hrfin_gold.recon_checks": {
       "columns": {
         "emp_id": {
+          "type": "STRING"
+        }
+      }
+    },
+    "hrfin_gold.fact_financial_statement_line": {
+      "columns": {
+        "fy": {
+          "type": "STRING"
+        },
+        "line_code": {
+          "type": "STRING"
+        },
+        "consolidation": {
+          "type": "STRING"
+        },
+        "value_inr_crore": {
+          "type": "NUMERIC"
+        }
+      }
+    },
+    "hrfin_gold.v_field_economics_fy": {
+      "columns": {
+        "fiscal_year": {
+          "type": "STRING"
+        },
+        "object_id": {
+          "type": "STRING"
+        },
+        "object_name": {
+          "type": "STRING"
+        },
+        "object_type": {
+          "type": "STRING",
+          "values": [
+            "field",
+            "jv_share",
+            "plant",
+            "exploration",
+            "hq",
+            "company_nonop"
+          ]
+        },
+        "asset_wc_id": {
+          "type": "STRING"
+        },
+        "basin": {
+          "type": "STRING"
+        },
+        "state": {
+          "type": "STRING"
+        },
+        "segment": {
+          "type": "STRING",
+          "values": [
+            "Offshore",
+            "Onshore",
+            "Unallocated"
+          ]
+        },
+        "operatorship": {
+          "type": "STRING",
+          "values": [
+            "ONGC_OPERATED",
+            "JV_NON_OPERATED"
+          ]
+        },
+        "pi_share": {
+          "type": "NUMERIC"
+        },
+        "maturity": {
+          "type": "STRING",
+          "values": [
+            "mature",
+            "plateau",
+            "growth",
+            "developing"
+          ]
+        },
+        "hydrocarbon": {
+          "type": "STRING",
+          "values": [
+            "oil",
+            "gas",
+            "both",
+            "none"
+          ]
+        },
+        "data_label": {
+          "type": "STRING"
+        },
+        "prod_basis": {
+          "type": "STRING",
+          "values": [
+            "ONGC",
+            "JV_SHARE"
+          ]
+        },
+        "oil_prod_mt": {
+          "type": "NUMERIC"
+        },
+        "condensate_prod_mt": {
+          "type": "NUMERIC"
+        },
+        "gas_prod_mmscm": {
+          "type": "NUMERIC"
+        },
+        "oil_sales_mt": {
+          "type": "NUMERIC"
+        },
+        "gas_sales_mmscm": {
+          "type": "NUMERIC"
+        },
+        "vap_sales_kt": {
+          "type": "NUMERIC"
+        },
+        "gas_internal_use_mmscm": {
+          "type": "NUMERIC"
+        },
+        "gas_flared_mmscm": {
+          "type": "NUMERIC"
+        },
+        "water_produced_m3": {
+          "type": "NUMERIC"
+        },
+        "water_injected_m3": {
+          "type": "NUMERIC"
+        },
+        "water_cut_pct": {
+          "type": "NUMERIC"
+        },
+        "active_producers": {
+          "type": "INT64"
+        },
+        "active_injectors": {
+          "type": "INT64"
+        },
+        "installations_count": {
+          "type": "INT64"
+        },
+        "wells_drilled_dev": {
+          "type": "INT64"
+        },
+        "prod_boe": {
+          "type": "NUMERIC"
+        },
+        "realised_price_crude_inr_t": {
+          "type": "NUMERIC"
+        },
+        "realised_price_gas_inr_scm": {
+          "type": "NUMERIC"
+        },
+        "realised_price_crude_usd_bbl": {
+          "type": "NUMERIC"
+        },
+        "rev_crude": {
+          "type": "NUMERIC"
+        },
+        "rev_gas": {
+          "type": "NUMERIC"
+        },
+        "rev_vap": {
+          "type": "NUMERIC"
+        },
+        "rev_other_operating": {
+          "type": "NUMERIC"
+        },
+        "revenue_from_operations": {
+          "type": "NUMERIC"
+        },
+        "field_revenue_cr": {
+          "type": "NUMERIC"
+        },
+        "other_income_segment": {
+          "type": "NUMERIC"
+        },
+        "other_income_total": {
+          "type": "NUMERIC"
+        },
+        "royalty": {
+          "type": "NUMERIC"
+        },
+        "oidb_cess": {
+          "type": "NUMERIC"
+        },
+        "nccd": {
+          "type": "NUMERIC"
+        },
+        "excise_saed": {
+          "type": "NUMERIC"
+        },
+        "port_trust": {
+          "type": "NUMERIC"
+        },
+        "other_levies": {
+          "type": "NUMERIC"
+        },
+        "levies_total": {
+          "type": "NUMERIC"
+        },
+        "staff_expenditure": {
+          "type": "NUMERIC"
+        },
+        "cost_expensed_production_inr": {
+          "type": "NUMERIC"
+        },
+        "workover_ops": {
+          "type": "NUMERIC"
+        },
+        "water_injection_desalting": {
+          "type": "NUMERIC"
+        },
+        "consumption_stores_spares": {
+          "type": "NUMERIC"
+        },
+        "pollution_control": {
+          "type": "NUMERIC"
+        },
+        "transport_expenditure": {
+          "type": "NUMERIC"
+        },
+        "insurance": {
+          "type": "NUMERIC"
+        },
+        "power_fuel": {
+          "type": "NUMERIC"
+        },
+        "repairs_maintenance": {
+          "type": "NUMERIC"
+        },
+        "contractual_hire": {
+          "type": "NUMERIC"
+        },
+        "other_production_exp": {
+          "type": "NUMERIC"
+        },
+        "transport_freight_products": {
+          "type": "NUMERIC"
+        },
+        "r_and_d": {
+          "type": "NUMERIC"
+        },
+        "gae": {
+          "type": "NUMERIC"
+        },
+        "csr": {
+          "type": "NUMERIC"
+        },
+        "exchange_loss": {
+          "type": "NUMERIC"
+        },
+        "misc_exp": {
+          "type": "NUMERIC"
+        },
+        "fv_loss": {
+          "type": "NUMERIC"
+        },
+        "opex_total": {
+          "type": "NUMERIC"
+        },
+        "opex_operating": {
+          "type": "NUMERIC"
+        },
+        "opex_lifting": {
+          "type": "NUMERIC"
+        },
+        "opex_operating_excl_corporate": {
+          "type": "NUMERIC"
+        },
+        "expl_survey_wo": {
+          "type": "NUMERIC"
+        },
+        "expl_wells_wo": {
+          "type": "NUMERIC"
+        },
+        "depletion": {
+          "type": "NUMERIC"
+        },
+        "depreciation": {
+          "type": "NUMERIC"
+        },
+        "amortisation": {
+          "type": "NUMERIC"
+        },
+        "dda_total": {
+          "type": "NUMERIC"
+        },
+        "impairment_net": {
+          "type": "NUMERIC"
+        },
+        "provisions_writeoffs": {
+          "type": "NUMERIC"
+        },
+        "inventory_change": {
+          "type": "NUMERIC"
+        },
+        "purchases_traded": {
+          "type": "NUMERIC"
+        },
+        "exceptional_items": {
+          "type": "NUMERIC"
+        },
+        "finance_cost": {
+          "type": "NUMERIC"
+        },
+        "interest_dividend_income": {
+          "type": "NUMERIC"
+        },
+        "ebitdax": {
+          "type": "NUMERIC"
+        },
+        "ebitda": {
+          "type": "NUMERIC"
+        },
+        "field_ebitda_cr": {
+          "type": "NUMERIC"
+        },
+        "field_ebitda_margin_pct": {
+          "type": "NUMERIC"
+        },
+        "segment_result_contrib": {
+          "type": "NUMERIC"
+        },
+        "pbt_contrib": {
+          "type": "NUMERIC"
+        },
+        "field_pbt_cr": {
+          "type": "NUMERIC"
+        },
+        "field_pbt_margin_pct": {
+          "type": "NUMERIC"
+        },
+        "capex_dev": {
+          "type": "NUMERIC"
+        },
+        "capex_facilities": {
+          "type": "NUMERIC"
+        },
+        "capex_exploration": {
+          "type": "NUMERIC"
+        },
+        "capex_total": {
+          "type": "NUMERIC"
+        },
+        "headcount_direct": {
+          "type": "NUMERIC"
+        },
+        "headcount_allocated_fte": {
+          "type": "NUMERIC"
+        },
+        "employee_cost_total": {
+          "type": "NUMERIC"
+        },
+        "contractor_headcount": {
+          "type": "NUMERIC"
+        },
+        "inr_usd_fx_rate": {
+          "type": "NUMERIC"
+        },
+        "opex_per_boe_inr": {
+          "type": "NUMERIC"
+        },
+        "opex_per_boe_usd": {
+          "type": "NUMERIC"
+        },
+        "lifting_cost_per_boe_usd": {
+          "type": "NUMERIC"
+        },
+        "employee_cost_per_boe": {
+          "type": "NUMERIC"
+        },
+        "levies_pct_revenue": {
+          "type": "NUMERIC"
+        },
+        "revenue_per_employee_field_cr": {
+          "type": "NUMERIC"
+        },
+        "boe_per_employee": {
+          "type": "NUMERIC"
+        },
+        "breakeven_crude_usd_bbl": {
+          "type": "NUMERIC"
+        },
+        "capex_intensity_usd_boe": {
+          "type": "NUMERIC"
+        }
+      }
+    },
+    "ongc-hr-finance-agent.hrfin_gold.v_field_economics_fy": {
+      "columns": {
+        "fiscal_year": {
+          "type": "STRING"
+        },
+        "object_id": {
+          "type": "STRING"
+        },
+        "object_name": {
+          "type": "STRING"
+        },
+        "object_type": {
+          "type": "STRING",
+          "values": [
+            "field",
+            "jv_share",
+            "plant",
+            "exploration",
+            "hq",
+            "company_nonop"
+          ]
+        },
+        "asset_wc_id": {
+          "type": "STRING"
+        },
+        "basin": {
+          "type": "STRING"
+        },
+        "state": {
+          "type": "STRING"
+        },
+        "segment": {
+          "type": "STRING",
+          "values": [
+            "Offshore",
+            "Onshore",
+            "Unallocated"
+          ]
+        },
+        "operatorship": {
+          "type": "STRING",
+          "values": [
+            "ONGC_OPERATED",
+            "JV_NON_OPERATED"
+          ]
+        },
+        "pi_share": {
+          "type": "NUMERIC"
+        },
+        "maturity": {
+          "type": "STRING",
+          "values": [
+            "mature",
+            "plateau",
+            "growth",
+            "developing"
+          ]
+        },
+        "hydrocarbon": {
+          "type": "STRING",
+          "values": [
+            "oil",
+            "gas",
+            "both",
+            "none"
+          ]
+        },
+        "data_label": {
+          "type": "STRING"
+        },
+        "prod_basis": {
+          "type": "STRING",
+          "values": [
+            "ONGC",
+            "JV_SHARE"
+          ]
+        },
+        "oil_prod_mt": {
+          "type": "NUMERIC"
+        },
+        "condensate_prod_mt": {
+          "type": "NUMERIC"
+        },
+        "gas_prod_mmscm": {
+          "type": "NUMERIC"
+        },
+        "oil_sales_mt": {
+          "type": "NUMERIC"
+        },
+        "gas_sales_mmscm": {
+          "type": "NUMERIC"
+        },
+        "vap_sales_kt": {
+          "type": "NUMERIC"
+        },
+        "gas_internal_use_mmscm": {
+          "type": "NUMERIC"
+        },
+        "gas_flared_mmscm": {
+          "type": "NUMERIC"
+        },
+        "water_produced_m3": {
+          "type": "NUMERIC"
+        },
+        "water_injected_m3": {
+          "type": "NUMERIC"
+        },
+        "water_cut_pct": {
+          "type": "NUMERIC"
+        },
+        "active_producers": {
+          "type": "INT64"
+        },
+        "active_injectors": {
+          "type": "INT64"
+        },
+        "installations_count": {
+          "type": "INT64"
+        },
+        "wells_drilled_dev": {
+          "type": "INT64"
+        },
+        "prod_boe": {
+          "type": "NUMERIC"
+        },
+        "realised_price_crude_inr_t": {
+          "type": "NUMERIC"
+        },
+        "realised_price_gas_inr_scm": {
+          "type": "NUMERIC"
+        },
+        "realised_price_crude_usd_bbl": {
+          "type": "NUMERIC"
+        },
+        "rev_crude": {
+          "type": "NUMERIC"
+        },
+        "rev_gas": {
+          "type": "NUMERIC"
+        },
+        "rev_vap": {
+          "type": "NUMERIC"
+        },
+        "rev_other_operating": {
+          "type": "NUMERIC"
+        },
+        "revenue_from_operations": {
+          "type": "NUMERIC"
+        },
+        "field_revenue_cr": {
+          "type": "NUMERIC"
+        },
+        "other_income_segment": {
+          "type": "NUMERIC"
+        },
+        "other_income_total": {
+          "type": "NUMERIC"
+        },
+        "royalty": {
+          "type": "NUMERIC"
+        },
+        "oidb_cess": {
+          "type": "NUMERIC"
+        },
+        "nccd": {
+          "type": "NUMERIC"
+        },
+        "excise_saed": {
+          "type": "NUMERIC"
+        },
+        "port_trust": {
+          "type": "NUMERIC"
+        },
+        "other_levies": {
+          "type": "NUMERIC"
+        },
+        "levies_total": {
+          "type": "NUMERIC"
+        },
+        "staff_expenditure": {
+          "type": "NUMERIC"
+        },
+        "cost_expensed_production_inr": {
+          "type": "NUMERIC"
+        },
+        "workover_ops": {
+          "type": "NUMERIC"
+        },
+        "water_injection_desalting": {
+          "type": "NUMERIC"
+        },
+        "consumption_stores_spares": {
+          "type": "NUMERIC"
+        },
+        "pollution_control": {
+          "type": "NUMERIC"
+        },
+        "transport_expenditure": {
+          "type": "NUMERIC"
+        },
+        "insurance": {
+          "type": "NUMERIC"
+        },
+        "power_fuel": {
+          "type": "NUMERIC"
+        },
+        "repairs_maintenance": {
+          "type": "NUMERIC"
+        },
+        "contractual_hire": {
+          "type": "NUMERIC"
+        },
+        "other_production_exp": {
+          "type": "NUMERIC"
+        },
+        "transport_freight_products": {
+          "type": "NUMERIC"
+        },
+        "r_and_d": {
+          "type": "NUMERIC"
+        },
+        "gae": {
+          "type": "NUMERIC"
+        },
+        "csr": {
+          "type": "NUMERIC"
+        },
+        "exchange_loss": {
+          "type": "NUMERIC"
+        },
+        "misc_exp": {
+          "type": "NUMERIC"
+        },
+        "fv_loss": {
+          "type": "NUMERIC"
+        },
+        "opex_total": {
+          "type": "NUMERIC"
+        },
+        "opex_operating": {
+          "type": "NUMERIC"
+        },
+        "opex_lifting": {
+          "type": "NUMERIC"
+        },
+        "opex_operating_excl_corporate": {
+          "type": "NUMERIC"
+        },
+        "expl_survey_wo": {
+          "type": "NUMERIC"
+        },
+        "expl_wells_wo": {
+          "type": "NUMERIC"
+        },
+        "depletion": {
+          "type": "NUMERIC"
+        },
+        "depreciation": {
+          "type": "NUMERIC"
+        },
+        "amortisation": {
+          "type": "NUMERIC"
+        },
+        "dda_total": {
+          "type": "NUMERIC"
+        },
+        "impairment_net": {
+          "type": "NUMERIC"
+        },
+        "provisions_writeoffs": {
+          "type": "NUMERIC"
+        },
+        "inventory_change": {
+          "type": "NUMERIC"
+        },
+        "purchases_traded": {
+          "type": "NUMERIC"
+        },
+        "exceptional_items": {
+          "type": "NUMERIC"
+        },
+        "finance_cost": {
+          "type": "NUMERIC"
+        },
+        "interest_dividend_income": {
+          "type": "NUMERIC"
+        },
+        "ebitdax": {
+          "type": "NUMERIC"
+        },
+        "ebitda": {
+          "type": "NUMERIC"
+        },
+        "field_ebitda_cr": {
+          "type": "NUMERIC"
+        },
+        "field_ebitda_margin_pct": {
+          "type": "NUMERIC"
+        },
+        "segment_result_contrib": {
+          "type": "NUMERIC"
+        },
+        "pbt_contrib": {
+          "type": "NUMERIC"
+        },
+        "field_pbt_cr": {
+          "type": "NUMERIC"
+        },
+        "field_pbt_margin_pct": {
+          "type": "NUMERIC"
+        },
+        "capex_dev": {
+          "type": "NUMERIC"
+        },
+        "capex_facilities": {
+          "type": "NUMERIC"
+        },
+        "capex_exploration": {
+          "type": "NUMERIC"
+        },
+        "capex_total": {
+          "type": "NUMERIC"
+        },
+        "headcount_direct": {
+          "type": "NUMERIC"
+        },
+        "headcount_allocated_fte": {
+          "type": "NUMERIC"
+        },
+        "employee_cost_total": {
+          "type": "NUMERIC"
+        },
+        "contractor_headcount": {
+          "type": "NUMERIC"
+        },
+        "inr_usd_fx_rate": {
+          "type": "NUMERIC"
+        },
+        "opex_per_boe_inr": {
+          "type": "NUMERIC"
+        },
+        "opex_per_boe_usd": {
+          "type": "NUMERIC"
+        },
+        "lifting_cost_per_boe_usd": {
+          "type": "NUMERIC"
+        },
+        "employee_cost_per_boe": {
+          "type": "NUMERIC"
+        },
+        "levies_pct_revenue": {
+          "type": "NUMERIC"
+        },
+        "revenue_per_employee_field_cr": {
+          "type": "NUMERIC"
+        },
+        "boe_per_employee": {
+          "type": "NUMERIC"
+        },
+        "breakeven_crude_usd_bbl": {
+          "type": "NUMERIC"
+        },
+        "capex_intensity_usd_boe": {
+          "type": "NUMERIC"
+        }
+      }
+    },
+    "hrfin_gold.v_field_economics_company_bridge": {
+      "columns": {
+        "fiscal_year": {
+          "type": "STRING"
+        },
+        "line_code": {
+          "type": "STRING"
+        },
+        "ssot_value": {
+          "type": "NUMERIC"
+        },
+        "reference_value": {
+          "type": "NUMERIC"
+        },
+        "delta": {
+          "type": "NUMERIC"
+        },
+        "delta_pct": {
+          "type": "NUMERIC"
+        },
+        "check_status": {
+          "type": "STRING"
+        }
+      }
+    },
+    "hrfin_gold.fact_field_alloc_audit": {
+      "columns": {
+        "fy": {
+          "type": "STRING"
+        },
+        "segment": {
+          "type": "STRING"
+        },
+        "nature": {
+          "type": "STRING"
+        },
+        "seed": {
+          "type": "NUMERIC"
+        },
+        "ras_factor": {
+          "type": "FLOAT64"
+        },
+        "final": {
+          "type": "NUMERIC"
+        }
+      }
+    },
+    "hrfin_gold.dim_cost_object": {
+      "columns": {
+        "object_id": {
+          "type": "STRING"
+        },
+        "object_name": {
+          "type": "STRING"
+        },
+        "object_type": {
+          "type": "STRING"
+        },
+        "segment": {
+          "type": "STRING"
+        },
+        "asset_wc_id": {
+          "type": "STRING"
+        },
+        "wc_id": {
+          "type": "STRING"
+        },
+        "basin": {
+          "type": "STRING"
+        },
+        "state": {
+          "type": "STRING"
+        },
+        "operatorship": {
+          "type": "STRING"
+        },
+        "pi_share": {
+          "type": "NUMERIC"
+        },
+        "maturity": {
+          "type": "STRING"
+        },
+        "hydrocarbon": {
           "type": "STRING"
         }
       }

@@ -1,562 +1,637 @@
-config { type: 'view', schema: 'hrfin_gold', name: 'recon_field_economics' }
+config {
+  type: "table",
+  schema: "hrfin_stage",
+  name: "recon_field_economics",
+  description: "Field Economics-360 reconciliation checks FLD-R01 through FLD-R17 against standalone AR targets (SPEC-05 §7)."
+}
 
-WITH target_data AS (
-  SELECT fiscal_year, line_code, value AS reference_value, unit, source_doc AS reference_source_doc, page AS reference_page, text_line AS reference_text_line
-  FROM hrfin_gold.fact_financial_statement_line
-),
-fld_agg AS (
-  SELECT fiscal_year,
-    SUM(revenue_from_operations) AS rev,
-    0.0 AS rev_prod, 0.0 AS seg_rev, 0.0 AS n35, 0.0 AS staff_exp, 0.0 AS dda, 0.0 AS seg_dda, 0.0 AS seg_res, 0.0 AS pbt, 0.0 AS ras, 0.0 AS prod, 0.0 AS qty, 0.0 AS capex, 0.0 AS sum, 0.0 AS neg, 0.0 AS price, 0.0 AS rank
-  FROM hrfin_gold.ssot_field_economics_360
+WITH fld_fy AS (
+  SELECT
+    fiscal_year,
+    SUM(revenue_from_operations) AS rev_ops_mn,
+    SUM(rev_crude) AS rev_crude_mn,
+    SUM(rev_gas) AS rev_gas_mn,
+    SUM(rev_vap) AS rev_vap_mn,
+    SUM(rev_other_operating) AS rev_other_op_mn,
+    SUM(IF(segment = 'Offshore', revenue_from_operations, 0)) AS seg_rev_off_mn,
+    SUM(IF(segment = 'Onshore', revenue_from_operations, 0)) AS seg_rev_on_mn,
+    SUM(workover_ops) AS n35_workover_mn,
+    SUM(water_injection_desalting) AS n35_water_inj_mn,
+    SUM(consumption_stores_spares) AS n35_stores_mn,
+    SUM(pollution_control) AS n35_pollution_mn,
+    SUM(transport_expenditure) AS n35_transport_mn,
+    SUM(insurance) AS n35_insurance_mn,
+    SUM(power_fuel) AS n35_power_fuel_mn,
+    SUM(subcontracting) AS n35_subcontract_mn,
+    SUM(repair_maintenance) AS n35_repair_mn,
+    SUM(contractual_hire) AS n35_contractual_mn,
+    SUM(other_production_exp) AS n35_other_prod_mn,
+    SUM(royalty) AS n35_royalty_mn,
+    SUM(oidb_cess) AS n35_oidb_cess_mn,
+    SUM(nccd) AS n35_nccd_mn,
+    SUM(excise_saed) AS n35_excise_saed_mn,
+    SUM(port_trust_pipeline) AS n35_port_pipe_mn,
+    SUM(staff_expenditure) AS n35_staff_exp_mn,
+    SUM(general_admin) AS n35_gen_admin_mn,
+    SUM(exchange_loss) AS n35_exch_loss_mn,
+    SUM(pol_consumption) AS n35_pol_mn,
+    SUM(octroi_other_levies) AS n35_octroi_mn,
+    SUM(services_received) AS n35_services_mn,
+    SUM(misc_expenditure) AS n35_misc_mn,
+    SUM(note35_total) AS n35_total_mn,
+    SUM(expl_survey_cost) AS pl_expl_survey_mn,
+    SUM(expl_wells_written_off) AS pl_expl_wells_mn,
+    SUM(dda_total) AS pl_dda_mn,
+    SUM(impairment_net) AS n37_impairment_mn,
+    SUM(provisions_writeoffs) AS pl_provisions_mn,
+    SUM(finance_cost_unwinding + finance_cost_interest) AS pl_fin_cost_mn,
+    SUM(IF(segment = 'Offshore', dda_total, 0)) AS seg_dda_off_mn,
+    SUM(IF(segment = 'Onshore', dda_total, 0)) AS seg_dda_on_mn,
+    SUM(IF(segment = 'Unallocated', dda_total, 0)) AS seg_dda_unalloc_mn,
+    SUM(IF(segment = 'Offshore', expl_survey_cost + expl_wells_written_off, 0)) AS seg_wo_off_mn,
+    SUM(IF(segment = 'Onshore', expl_survey_cost + expl_wells_written_off, 0)) AS seg_wo_on_mn,
+    SUM(IF(segment = 'Offshore', segment_result_contrib, 0)) AS seg_res_off_mn,
+    SUM(IF(segment = 'Onshore', segment_result_contrib, 0)) AS seg_res_on_mn,
+    SUM(IF(object_id = 'CO-HQ', segment_result_contrib, 0)) AS seg_unalloc_mn,
+    SUM(pbt_contrib) AS pl_pbt_mn,
+    SUM(IF(operatorship = 'Operated', prod_crude_mt + prod_condensate_mt, 0)) / 1e6 AS prod_crude_ongc_mmt,
+    SUM(IF(operatorship = 'JV', prod_crude_mt + prod_condensate_mt, 0)) / 1e6 AS prod_crude_jv_mmt,
+    SUM(IF(operatorship = 'Operated', prod_gas_mmscm, 0)) / 1e3 AS prod_gas_ongc_bcm,
+    SUM(IF(operatorship = 'JV', prod_gas_mmscm, 0)) / 1e3 AS prod_gas_jv_bcm,
+    SUM(sales_crude_mt) / 1e6 AS qty_crude_sold_mmt,
+    SUM(sales_gas_mmscm) / 1e3 AS qty_gas_sold_bcm,
+    SUM(sales_vap_kt) AS qty_vap_sold_kt,
+    CAST(COUNTIF(
+      (object_type = 'producing_field' AND (
+        revenue_from_operations < 0 OR royalty < 0 OR oidb_cess < 0
+        OR staff_expenditure < 0 OR dda_total < 0
+        OR expl_survey_cost != 0 OR expl_wells_written_off != 0 OR rev_vap != 0
+      ))
+      OR (object_type != 'exploration' AND (expl_survey_cost != 0 OR expl_wells_written_off != 0))
+      OR (object_type != 'plant' AND rev_vap != 0)
+    ) AS FLOAT64) AS domain_negativity_violations,
+    CAST(COUNTIF(
+      ABS((revenue_from_operations + other_income_alloc - opex_total) - ebitda) > 0.01
+    ) AS FLOAT64) AS month_identity_violations,
+    ABS(
+      SUM(segment_result_contrib)
+      + SUM(IF(object_id = 'CO-FIN', pbt_contrib, 0))
+      + SUM(IF(object_id = 'CO-TREASURY', pbt_contrib, 0))
+      + SUM(IF(object_id = 'CO-EXCEP', pbt_contrib, 0))
+      - SUM(pbt_contrib)
+    ) AS pbt_bridge_residual_mn,
+    SAFE_DIVIDE(
+      SUM(IF(object_type = 'producing_field', lifting_cost, 0)) * 1e6 / 84.5,
+      NULLIF(SUM(IF(object_type = 'producing_field', prod_boe, 0)), 0)
+    ) AS lifting_cost_usd_boe,
+    SAFE_DIVIDE(
+      SUM(IF(object_id = 'FLD-MUMBAI-HIGH', prod_crude_mt, 0)) * 100.0,
+      NULLIF(SUM(IF(operatorship = 'Operated', prod_crude_mt, 0)), 0)
+    ) AS mh_crude_share_pct
+  FROM ${ref("ssot_field_economics_360")}
+  WHERE month_start >= DATE '2016-04-01'
   GROUP BY fiscal_year
 ),
-fys AS (
-  SELECT 'FY17' AS fiscal_year UNION ALL SELECT 'FY18' UNION ALL SELECT 'FY19' UNION ALL SELECT 'FY20' UNION ALL SELECT 'FY21' UNION ALL SELECT 'FY22' UNION ALL SELECT 'FY23' UNION ALL SELECT 'FY24' UNION ALL SELECT 'FY25' UNION ALL SELECT 'FY26'
+emp_staff_fy AS (
+  SELECT
+    fiscal_year,
+    SUM(cost_expensed_production_inr) / 1e6 AS emp_prod_staff_mn
+  FROM ${ref("ssot_employee_360")}
+  WHERE month_start >= DATE '2016-04-01'
+  GROUP BY fiscal_year
 ),
-checks AS (
+audit_fy AS (
+  SELECT
+    fy AS fiscal_year,
+    CAST(COUNTIF(ras_factor < 0.33 OR ras_factor > 3.0) AS FLOAT64) AS ras_factor_violations
+  FROM ${ref("fact_field_alloc_audit")}
+  GROUP BY fy
+),
+targets AS (
+  SELECT
+    fiscal_year,
+    line_code,
+    CAST(value AS FLOAT64) AS value,
+    unit,
+    source_doc
+  FROM ${ref("int_fe_targets_fy")}
+),
+n35_unpivoted AS (
+  SELECT fiscal_year, 'N35.WORKOVER' AS line_code, CAST(n35_workover_mn AS FLOAT64) AS ssot_val FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.WATER_INJECTION', CAST(n35_water_inj_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.STORES_SPARES', CAST(n35_stores_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.POLLUTION', CAST(n35_pollution_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.TRANSPORT', CAST(n35_transport_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.INSURANCE', CAST(n35_insurance_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.POWER_FUEL', CAST(n35_power_fuel_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.SUBCONTRACTING', CAST(n35_subcontract_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.REPAIR_MAINT', CAST(n35_repair_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.CONTRACTUAL_HIRE', CAST(n35_contractual_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.OTHER_PROD', CAST(n35_other_prod_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.ROYALTY', CAST(n35_royalty_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.OIDB_CESS', CAST(n35_oidb_cess_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.NCCD', CAST(n35_nccd_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.EXCISE_SAED', CAST(n35_excise_saed_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.PORT_PIPELINE', CAST(n35_port_pipe_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.STAFF_EXPENDITURE', CAST(n35_staff_exp_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.GEN_ADMIN', CAST(n35_gen_admin_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.EXCHANGE_LOSS', CAST(n35_exch_loss_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.POL', CAST(n35_pol_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.OCTROI', CAST(n35_octroi_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.SERVICES', CAST(n35_services_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.MISC', CAST(n35_misc_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+  UNION ALL SELECT fiscal_year, 'N35.TOTAL', CAST(n35_total_mn AS FLOAT64) FROM fld_fy WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+),
+raw_checks AS (
+  -- FLD-R01: Revenue from operations (FY17-FY26)
   SELECT
     'FLD-R01' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Revenue' AS metric,
-    CAST(fld_agg.rev AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('PL.REV_OPS' AS STRING) AS reference_line_code,
-    CAST((fld_agg.rev) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.rev) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    f.fiscal_year,
+    'FY' AS level,
+    'ALL' AS dimension_key,
+    'PL.REV_OPS' AS metric,
+    CAST(f.rev_ops_mn AS FLOAT64) AS ssot_value,
+    t.value AS reference_value,
+    'INR_MN' AS unit,
+    0.01 AS tolerance_abs,
+    CAST(NULL AS FLOAT64) AS tolerance_pct,
     'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.rev) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((fld_agg.rev) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PL.REV_OPS'
+    COALESCE(t.source_doc, 'ONGC_AR') AS reference_source_doc,
+    249 AS reference_page,
+    1 AS reference_text_line,
+    'PL.REV_OPS' AS reference_line_code,
+    'Standalone Revenue from Operations (P&L Line I)' AS notes
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.REV_OPS'
+
   UNION ALL
+  -- FLD-R02a: Crude revenue (FY21-FY26)
   SELECT
-    'FLD-R02' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Revenue by product' AS metric,
-    CAST(fld_agg.rev_prod AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('REV.PROD' AS STRING) AS reference_line_code,
-    CAST((fld_agg.rev_prod) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.rev_prod) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(1.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.rev_prod) - IFNULL(t.reference_value, 0)) <= 1.0 OR 
-        ABS(SAFE_DIVIDE((fld_agg.rev_prod) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'REV.PROD'
+    'FLD-R02', f.fiscal_year, 'PRODUCT', 'CRUDE', 'REV.CRUDE',
+    CAST(f.rev_crude_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 294, 1, 'REV.CRUDE',
+    'Note 32 crude oil revenue'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'REV.CRUDE'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R02b: Gas revenue (FY21-FY26)
   SELECT
-    'FLD-R03' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Segment Revenue' AS metric,
-    CAST(fld_agg.seg_rev AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('SEG.REV' AS STRING) AS reference_line_code,
-    CAST((fld_agg.seg_rev) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.seg_rev) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS((fld_agg.seg_rev) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((fld_agg.seg_rev) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.REV'
+    'FLD-R02', f.fiscal_year, 'PRODUCT', 'GAS', 'REV.GAS',
+    CAST(f.rev_gas_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 294, 2, 'REV.GAS',
+    'Note 32 natural gas revenue'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'REV.GAS'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R02c: VAP revenue (FY21-FY26)
   SELECT
-    'FLD-R04' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Note 35' AS metric,
-    CAST(fld_agg.n35 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N35' AS STRING) AS reference_line_code,
-    CAST((fld_agg.n35) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.n35) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS((fld_agg.n35) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((fld_agg.n35) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35'
+    'FLD-R02', f.fiscal_year, 'PRODUCT', 'VAP', 'REV.VAP',
+    CAST(f.rev_vap_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 294, 3, 'REV.VAP',
+    'Note 32 value-added products revenue'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'REV.VAP'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R02d: Other operating revenue (FY21-FY26)
   SELECT
-    'FLD-R05' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Staff Exp' AS metric,
-    CAST(fld_agg.staff_exp AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N35.STAFF' AS STRING) AS reference_line_code,
-    CAST((fld_agg.staff_exp) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.staff_exp) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS((fld_agg.staff_exp) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((fld_agg.staff_exp) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35.STAFF'
+    'FLD-R02', f.fiscal_year, 'PRODUCT', 'OTHER_OP', 'REV.OTHER_OP',
+    CAST(f.rev_other_op_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 294, 4, 'REV.OTHER_OP',
+    'Note 32 other operating revenue'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'REV.OTHER_OP'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R03a: Segment revenue Offshore (FY21-FY26)
   SELECT
-    'FLD-R06' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'DDA/Writeoffs' AS metric,
-    CAST(fld_agg.dda AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('PL.DDA' AS STRING) AS reference_line_code,
-    CAST((fld_agg.dda) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.dda) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.dda) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((fld_agg.dda) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PL.DDA'
+    'FLD-R03', f.fiscal_year, 'SEGMENT', 'Offshore', 'SEG.REV.OFF',
+    CAST(f.seg_rev_off_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 317, 1, 'SEG.REV.OFF',
+    'Note 44 Offshore E&P external segment revenue'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.REV.OFF'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R03b: Segment revenue Onshore (FY21-FY26)
   SELECT
-    'FLD-R07' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Segment DDA' AS metric,
-    CAST(fld_agg.seg_dda AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('SEG.DDA' AS STRING) AS reference_line_code,
-    CAST((fld_agg.seg_dda) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.seg_dda) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS((fld_agg.seg_dda) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((fld_agg.seg_dda) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.DDA'
+    'FLD-R03', f.fiscal_year, 'SEGMENT', 'Onshore', 'SEG.REV.ON',
+    CAST(f.seg_rev_on_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 317, 2, 'SEG.REV.ON',
+    'Note 44 Onshore E&P external segment revenue'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.REV.ON'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R04: All 23 Note 35 lines + N35.TOTAL (FY21-FY26)
   SELECT
-    'FLD-R08' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Segment Result' AS metric,
-    CAST(fld_agg.seg_res AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('SEG.RES' AS STRING) AS reference_line_code,
-    CAST((fld_agg.seg_res) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.seg_res) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS((fld_agg.seg_res) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((fld_agg.seg_res) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.RES'
+    'FLD-R04', u.fiscal_year, 'NOTE35', u.line_code, u.line_code,
+    u.ssot_val, t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 297, 1, u.line_code,
+    CONCAT('Note 35 production/corporate expense line ', u.line_code)
+  FROM n35_unpivoted u
+  LEFT JOIN targets t ON u.fiscal_year = t.fiscal_year AND t.line_code = u.line_code
+
   UNION ALL
+  -- FLD-R05: Cross-domain Staff Expenditure (Field Economics vs Employee 360)
   SELECT
-    'FLD-R09' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'PBT' AS metric,
-    CAST(fld_agg.pbt AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('PL.PBT' AS STRING) AS reference_line_code,
-    CAST((fld_agg.pbt) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.pbt) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.pbt) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((fld_agg.pbt) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PL.PBT'
+    'FLD-R05', f.fiscal_year, 'CROSS_DOMAIN', 'N35.STAFF_EXPENDITURE', 'staff_expenditure_cross_domain',
+    CAST(f.n35_staff_exp_mn AS FLOAT64),
+    CAST(e.emp_prod_staff_mn AS FLOAT64), 'INR_MN',
+    0.10, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 297, 17, 'N35.STAFF_EXPENDITURE',
+    'Cross-domain identity: SUM(ssot_field_economics_360.staff_expenditure) = SUM(ssot_employee_360.cost_expensed_production_inr)/1e6'
+  FROM fld_fy f
+  LEFT JOIN emp_staff_fy e ON f.fiscal_year = e.fiscal_year
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'N35.STAFF_EXPENDITURE'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R06a: Exploration survey cost (FY21-FY26)
   SELECT
-    'FLD-R10' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'RAS Factors' AS metric,
-    CAST(fld_agg.ras AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('RAS' AS STRING) AS reference_line_code,
-    CAST((fld_agg.ras) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.ras) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.ras) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((fld_agg.ras) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'RAS'
+    'FLD-R06', f.fiscal_year, 'FY', 'PL.EXPL_SURVEY', 'PL.EXPL_SURVEY',
+    CAST(f.pl_expl_survey_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 249, 10, 'PL.EXPL_SURVEY',
+    'Exploration costs - Survey expenditure'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.EXPL_SURVEY'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R06b: Exploratory wells written off (FY21-FY26)
   SELECT
-    'FLD-R11' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Production' AS metric,
-    CAST(fld_agg.prod AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('PROD' AS STRING) AS reference_line_code,
-    CAST((fld_agg.prod) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.prod) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.001 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.prod) - IFNULL(t.reference_value, 0)) <= 0.001 OR 
-        ABS(SAFE_DIVIDE((fld_agg.prod) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PROD'
+    'FLD-R06', f.fiscal_year, 'FY', 'PL.EXPL_WELLS', 'PL.EXPL_WELLS',
+    CAST(f.pl_expl_wells_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 249, 11, 'PL.EXPL_WELLS',
+    'Exploration costs - Exploratory wells written off'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.EXPL_WELLS'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R06c: Total DD&A (FY21-FY26)
   SELECT
-    'FLD-R12' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Sales Qty' AS metric,
-    CAST(fld_agg.qty AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('QTY' AS STRING) AS reference_line_code,
-    CAST((fld_agg.qty) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.qty) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.qty) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((fld_agg.qty) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'QTY'
+    'FLD-R06', f.fiscal_year, 'FY', 'PL.DDA', 'PL.DDA',
+    CAST(f.pl_dda_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 299, 1, 'PL.DDA',
+    'Note 37 Depletion, Depreciation and Amortisation total'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.DDA'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R06d: Impairment net (FY21-FY26)
   SELECT
-    'FLD-R13' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Capex' AS metric,
-    CAST(fld_agg.capex AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('CAPEX' AS STRING) AS reference_line_code,
-    CAST((fld_agg.capex) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.capex) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(1.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.capex) - IFNULL(t.reference_value, 0)) <= 1.0 OR 
-        ABS(SAFE_DIVIDE((fld_agg.capex) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'CAPEX'
+    'FLD-R06', f.fiscal_year, 'FY', 'N37.IMPAIRMENT_NET', 'N37.IMPAIRMENT_NET',
+    CAST(f.n37_impairment_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 299, 5, 'N37.IMPAIRMENT_NET',
+    'Note 37 Impairment and write-offs (net)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'N37.IMPAIRMENT_NET'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R06e: Provisions and write-offs (FY21-FY26)
   SELECT
-    'FLD-R14' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Month Sum' AS metric,
-    CAST(fld_agg.sum AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('SUM' AS STRING) AS reference_line_code,
-    CAST((fld_agg.sum) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.sum) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.sum) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((fld_agg.sum) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'SUM'
+    'FLD-R06', f.fiscal_year, 'FY', 'PL.PROVISIONS', 'PL.PROVISIONS',
+    CAST(f.pl_provisions_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 299, 6, 'PL.PROVISIONS',
+    'Note 37 Provisions and other write-offs'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.PROVISIONS'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R06f: Finance costs (FY21-FY26)
   SELECT
-    'FLD-R15' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Negative' AS metric,
-    CAST(fld_agg.neg AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('NEG' AS STRING) AS reference_line_code,
-    CAST((fld_agg.neg) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.neg) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.neg) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((fld_agg.neg) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'NEG'
+    'FLD-R06', f.fiscal_year, 'FY', 'PL.FIN_COST', 'PL.FIN_COST',
+    CAST(f.pl_fin_cost_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 298, 1, 'PL.FIN_COST',
+    'Note 36 Finance costs total'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.FIN_COST'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R07a: Segment DD&A Offshore (FY21-FY26)
   SELECT
-    'FLD-R16' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Price' AS metric,
-    CAST(fld_agg.price AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('PRICE' AS STRING) AS reference_line_code,
-    CAST((fld_agg.price) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.price) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.03 AS NUMERIC) AS tolerance_pct,
-    'WARN' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.price) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((fld_agg.price) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.03, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PRICE'
+    'FLD-R07', f.fiscal_year, 'SEGMENT', 'Offshore', 'SEG.DDA.OFF',
+    CAST(f.seg_dda_off_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 317, 10, 'SEG.DDA.OFF',
+    'Note 44 Offshore segment DD&A'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.DDA.OFF'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
   UNION ALL
+  -- FLD-R07b: Segment DD&A Onshore (FY21-FY26)
   SELECT
-    'FLD-R17' AS check_id,
-    'SPEC-05' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Opex Rank' AS metric,
-    CAST(fld_agg.rank AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('RANK' AS STRING) AS reference_line_code,
-    CAST((fld_agg.rank) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((fld_agg.rank) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'WARN' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((fld_agg.rank) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((fld_agg.rank) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN fld_agg ON fys.fiscal_year = fld_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'RANK'
+    'FLD-R07', f.fiscal_year, 'SEGMENT', 'Onshore', 'SEG.DDA.ON',
+    CAST(f.seg_dda_on_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 317, 11, 'SEG.DDA.ON',
+    'Note 44 Onshore segment DD&A'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.DDA.ON'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R07c: Segment DD&A Unallocated (FY21-FY26)
+  SELECT
+    'FLD-R07', f.fiscal_year, 'SEGMENT', 'Unallocated', 'SEG.DDA.UNALLOC',
+    CAST(f.seg_dda_unalloc_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 317, 12, 'SEG.DDA.UNALLOC',
+    'Note 44 Unallocated corporate DD&A'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.DDA.UNALLOC'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R07d: Segment Exploration Write-Off Offshore (FY21-FY26)
+  SELECT
+    'FLD-R07', f.fiscal_year, 'SEGMENT', 'Offshore', 'SEG.WO.OFF',
+    CAST(f.seg_wo_off_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 317, 13, 'SEG.WO.OFF',
+    'Note 44 Offshore exploratory wells written off + survey'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.WO.OFF'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R07e: Segment Exploration Write-Off Onshore (FY21-FY26)
+  SELECT
+    'FLD-R07', f.fiscal_year, 'SEGMENT', 'Onshore', 'SEG.WO.ON',
+    CAST(f.seg_wo_on_mn AS FLOAT64), t.value, 'INR_MN',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 317, 14, 'SEG.WO.ON',
+    'Note 44 Onshore exploratory wells written off + survey'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.WO.ON'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R08a: Segment result Offshore (FY21-FY26)
+  SELECT
+    'FLD-R08', f.fiscal_year, 'SEGMENT', 'Offshore', 'SEG.RES.OFF',
+    CAST(f.seg_res_off_mn AS FLOAT64), t.value, 'INR_MN',
+    0.10, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 317, 5, 'SEG.RES.OFF',
+    'Note 44 Offshore E&P segment result'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.RES.OFF'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R08b: Segment result Onshore (FY21-FY26)
+  SELECT
+    'FLD-R08', f.fiscal_year, 'SEGMENT', 'Onshore', 'SEG.RES.ON',
+    CAST(f.seg_res_on_mn AS FLOAT64), t.value, 'INR_MN',
+    0.10, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 317, 6, 'SEG.RES.ON',
+    'Note 44 Onshore E&P segment result'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.RES.ON'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R08c: Unallocated corporate net expense on CO-HQ (FY21-FY26)
+  SELECT
+    'FLD-R08', f.fiscal_year, 'OBJECT', 'CO-HQ', 'SEG.UNALLOC',
+    CAST(f.seg_unalloc_mn AS FLOAT64), t.value, 'INR_MN',
+    0.10, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 317, 8, 'SEG.UNALLOC',
+    'Note 44 Unallocated corporate net expense on CO-HQ'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'SEG.UNALLOC'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R09: Company PBT across all 72 cost objects (FY17-FY26)
+  SELECT
+    'FLD-R09', f.fiscal_year, 'FY', 'ALL', 'PL.PBT',
+    CAST(f.pl_pbt_mn AS FLOAT64), t.value, 'INR_MN',
+    0.10, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 249, 20, 'PL.PBT',
+    'Standalone Profit Before Tax across all cost objects (including corporate bridge)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.PBT'
+
+  UNION ALL
+  -- FLD-R10a: Operated crude oil + condensate production MMT (FY21-FY26)
+  SELECT
+    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'Operated', 'PROD.CRUDE_ONGC',
+    CAST(f.prod_crude_ongc_mmt AS FLOAT64), t.value, 'MMT',
+    0.005, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 28, 1, 'PROD.CRUDE_ONGC',
+    'ONGC operated crude oil + condensate production (MMT)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PROD.CRUDE_ONGC'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R10b: JV share crude oil production MMT (FY21-FY26)
+  SELECT
+    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'JV', 'PROD.CRUDE_JV',
+    CAST(f.prod_crude_jv_mmt AS FLOAT64), t.value, 'MMT',
+    0.005, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 28, 2, 'PROD.CRUDE_JV',
+    'PSC-JV share crude oil production (MMT)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PROD.CRUDE_JV'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R10c: Operated natural gas production BCM (FY21-FY26)
+  SELECT
+    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'Operated', 'PROD.GAS_ONGC',
+    CAST(f.prod_gas_ongc_bcm AS FLOAT64), t.value, 'BCM',
+    0.005, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 28, 3, 'PROD.GAS_ONGC',
+    'ONGC operated natural gas production (BCM)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PROD.GAS_ONGC'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R10d: JV share natural gas production BCM (FY21-FY26)
+  SELECT
+    'FLD-R10', f.fiscal_year, 'OPERATORSHIP', 'JV', 'PROD.GAS_JV',
+    CAST(f.prod_gas_jv_bcm AS FLOAT64), t.value, 'BCM',
+    0.005, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 28, 4, 'PROD.GAS_JV',
+    'PSC-JV share natural gas production (BCM)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PROD.GAS_JV'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R11a: Crude oil sales volume MMT (FY21-FY26)
+  SELECT
+    'FLD-R11', f.fiscal_year, 'PRODUCT', 'CRUDE', 'QTY.CRUDE_SOLD',
+    CAST(f.qty_crude_sold_mmt AS FLOAT64), t.value, 'MMT',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 294, 5, 'QTY.CRUDE_SOLD',
+    'Note 32 crude oil sales quantity (MMT)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'QTY.CRUDE_SOLD'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R11b: Natural gas sales volume BCM (FY21-FY26)
+  SELECT
+    'FLD-R11', f.fiscal_year, 'PRODUCT', 'GAS', 'QTY.GAS_SOLD',
+    CAST(f.qty_gas_sold_bcm AS FLOAT64), t.value, 'BCM',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 294, 6, 'QTY.GAS_SOLD',
+    'Note 32 natural gas sales quantity (BCM)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'QTY.GAS_SOLD'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R11c: VAP sales volume KT (FY21-FY26)
+  SELECT
+    'FLD-R11', f.fiscal_year, 'PRODUCT', 'VAP', 'QTY.VAP_SOLD',
+    CAST(f.qty_vap_sold_kt AS FLOAT64), t.value, 'KT',
+    0.01, CAST(NULL AS FLOAT64), 'BLOCK',
+    COALESCE(t.source_doc, 'ONGC_AR'), 294, 7, 'QTY.VAP_SOLD',
+    'Note 32 VAP sales quantity (KT)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'QTY.VAP_SOLD'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R12: RAS scaling factor in [0.33, 3.0] for every cell
+  SELECT
+    'FLD-R12', f.fiscal_year, 'FY', 'ALL', 'ras_factor_bounds_violations',
+    COALESCE(a.ras_factor_violations, 0.0),
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    'SPEC05_S6_3', 1, 1, 'ras_factor_bounds_violations',
+    'Zero RAS audit cells with ras_factor outside [0.33, 3.0]'
+  FROM fld_fy f
+  LEFT JOIN audit_fy a ON f.fiscal_year = a.fiscal_year
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.REV_OPS'
+  WHERE f.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26')
+
+  UNION ALL
+  -- FLD-R13: Domain and non-negativity rules on producing fields, exploration, and plants
+  SELECT
+    'FLD-R13', f.fiscal_year, 'FY', 'ALL', 'negativity_and_domain_violations',
+    f.domain_negativity_violations,
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    'SPEC05_S7_2', 1, 1, 'negativity_and_domain_violations',
+    'Zero rows violating non-negativity or object_type domain constraints'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.REV_OPS'
+
+  UNION ALL
+  -- FLD-R14: Object-month P&L roll-up identity violations
+  SELECT
+    'FLD-R14', f.fiscal_year, 'FY', 'ALL', 'month_sum_identity_violations',
+    f.month_identity_violations,
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    'SPEC05_S7_2', 1, 1, 'month_sum_identity_violations',
+    'Zero rows violating object-month revenue + other_income - opex = ebitda identity'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.REV_OPS'
+
+  UNION ALL
+  -- FLD-R15: Company bridge residual = 0
+  SELECT
+    'FLD-R15', f.fiscal_year, 'FY', 'BRIDGE', 'pbt_bridge_residual',
+    CAST(f.pbt_bridge_residual_mn AS FLOAT64),
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'INR_MN',
+    0.10, CAST(NULL AS FLOAT64), 'BLOCK',
+    'SPEC05_S4_3', 1, 1, 'pbt_bridge_residual',
+    'Segment results + corporate bridge objects reconcile exactly to company PBT'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.PBT'
+
+  UNION ALL
+  -- FLD-R16: Lifting cost per BOE in [$8, $16] (WARN)
+  SELECT
+    'FLD-R16', f.fiscal_year, 'FY', 'PRODUCING', 'lifting_cost_usd_boe',
+    CAST(f.lifting_cost_usd_boe AS FLOAT64),
+    IF(t.value IS NOT NULL, 12.0, CAST(NULL AS FLOAT64)), 'USD_BOE',
+    4.0, CAST(NULL AS FLOAT64), 'WARN',
+    'SPEC05_S7_2', 1, 1, 'lifting_cost_usd_boe',
+    'Average lifting cost per BOE within [$8.0, $16.0]/BOE (12.0 +/- 4.0)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.REV_OPS'
+  WHERE f.fiscal_year = 'FY26'
+
+  UNION ALL
+  -- FLD-R17: Mumbai High share of operated crude in [30%, 45%] (WARN)
+  SELECT
+    'FLD-R17', f.fiscal_year, 'OBJECT', 'FLD-MUMBAI-HIGH', 'mumbai_high_crude_share_pct',
+    CAST(f.mh_crude_share_pct AS FLOAT64),
+    IF(t.value IS NOT NULL, 37.5, CAST(NULL AS FLOAT64)), 'PCT',
+    7.5, CAST(NULL AS FLOAT64), 'WARN',
+    'SPEC05_S7_2', 1, 1, 'mumbai_high_crude_share_pct',
+    'Mumbai High share of operated crude in [30.0%, 45.0%] (37.5 +/- 7.5 pp)'
+  FROM fld_fy f
+  LEFT JOIN targets t ON f.fiscal_year = t.fiscal_year AND t.line_code = 'PL.REV_OPS'
+  WHERE f.fiscal_year = 'FY26'
 )
-SELECT * FROM checks
+
+SELECT
+  'v3_recon_run' AS run_id,
+  CURRENT_TIMESTAMP() AS run_ts,
+  'FLD' AS domain,
+  'SPEC-05' AS spec,
+  check_id,
+  fiscal_year,
+  fiscal_year AS period,
+  level,
+  dimension_key,
+  metric,
+  metric AS metric_name,
+  ssot_value,
+  reference_value,
+  unit,
+  ssot_value - reference_value AS delta,
+  SAFE_DIVIDE(ABS(ssot_value - reference_value) * 100.0, NULLIF(ABS(reference_value), 0)) AS delta_pct,
+  ABS(ssot_value - reference_value) AS abs_diff,
+  SAFE_DIVIDE(ABS(ssot_value - reference_value) * 100.0, NULLIF(ABS(reference_value), 0)) AS pct_diff,
+  tolerance_abs,
+  tolerance_pct,
+  severity,
+  CASE
+    WHEN reference_value IS NULL OR ssot_value IS NULL THEN 'FAIL'
+    WHEN tolerance_abs IS NOT NULL AND ABS(ssot_value - reference_value) <= tolerance_abs THEN 'PASS'
+    WHEN tolerance_pct IS NOT NULL AND SAFE_DIVIDE(ABS(ssot_value - reference_value) * 100.0, NULLIF(ABS(reference_value), 0)) <= tolerance_pct THEN 'PASS'
+    ELSE 'FAIL'
+  END AS status,
+  reference_source_doc,
+  reference_page,
+  reference_text_line,
+  reference_line_code,
+  notes
+FROM raw_checks

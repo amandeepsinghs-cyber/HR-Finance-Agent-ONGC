@@ -94,19 +94,23 @@ def grounding_violations(text: str, allowed: Set[float]) -> List[str]:
 
 def compose_spoken(headline: str, insights: List[Insight], allowed: Set[float], max_sentences: int = 4) -> Dict[str, Any]:
     """Headline + up to two insight sentences, 2–4 sentences, every number grounded."""
-    base = [s for s in _SENT.split(headline.strip()) if s and "on screen" not in s.lower()]
-    sentences = base[:2]
+    base = [s.strip() for s in _SENT.split(headline.strip()) if s.strip() and "on screen" not in s.lower()]
+    sentences = list(base[: max(1, max_sentences - 2)])
     for ins in insights:
         if len(sentences) >= max_sentences - 1:
             break
-        if ins.type == "headline":
-            continue  # restates the headline value; shown as an insight card, not spoken twice
-        if ins.text and ins.text not in sentences and not any(ins.text[:30] in s for s in sentences):
-            sentences.append(ins.text)
+        if ins.type in ("headline", "causal_rag"):
+            continue  # headline restates value; multi-sentence causal_rag card stays on screen
+        ins_sents = [s.strip() for s in _SENT.split((ins.text or "").strip()) if s.strip()]
+        if not ins_sents or len(sentences) + len(ins_sents) > max_sentences - 1:
+            continue
+        if ins.text not in sentences and not any(ins.text[:30] in s for s in sentences):
+            sentences.extend(ins_sents)
+    sentences = sentences[: max(1, max_sentences - 1)]
     sentences.append("Details are on screen.")
     text = " ".join(s.strip() for s in sentences)
     bad = grounding_violations(text, allowed)
     if bad:  # fall back to the deterministic headline only
-        text = " ".join(base[:2] + ["Details are on screen."])
+        text = " ".join(base[: max(1, max_sentences - 1)] + ["Details are on screen."])
         bad = grounding_violations(text, allowed)
     return {"text": text, "ungrounded": bad, "sentences": len([s for s in _SENT.split(text) if s])}

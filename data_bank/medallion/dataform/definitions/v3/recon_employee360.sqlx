@@ -1,1032 +1,725 @@
-config { type: 'view', schema: 'hrfin_gold', name: 'recon_employee360' }
+config {
+  type: "table",
+  schema: "hrfin_stage",
+  name: "recon_employee360",
+  description: "Employee-360 reconciliation checks EMP-R01 through EMP-R30 against real AR/BRSR/DPE targets (SPEC-04 §7)."
+}
 
-WITH target_data AS (
-  SELECT fiscal_year, line_code, value AS reference_value, unit, source_doc AS reference_source_doc, page AS reference_page, text_line AS reference_text_line
-  FROM hrfin_gold.fact_financial_statement_line
-),
-emp_agg AS (
-  SELECT fiscal_year,
-    SUM(cost_total_inr) AS cost_total_inr,
-    SUM(cost_note35_a_inr) AS cost_note35_a_inr,
-    SUM(cost_note35_b_inr) AS cost_note35_b_inr,
-    SUM(cost_note35_c_inr) AS cost_note35_c_inr,
-    SUM(cost_note35_d_inr) AS cost_note35_d_inr,
-    SUM(cost_note35_e_inr) AS cost_note35_e_inr,
-    SUM(cost_note35_f_inr) AS cost_note35_f_inr,
-    COUNT(DISTINCT IF(is_month_end_active AND fy_month_no = 12, emp_id, NULL)) AS headcount_fy_end,
-    COUNT(DISTINCT IF(is_month_end_active AND fy_month_no = 12 AND cadre='executive', emp_id, NULL)) AS headcount_exec,
-    COUNT(DISTINCT IF(is_month_end_active AND fy_month_no = 12 AND gender='F', emp_id, NULL)) AS headcount_women,
-    COUNT(DISTINCT IF(is_month_end_active AND fy_month_no = 12 AND pwd_flag, emp_id, NULL)) AS headcount_pwd,
-    SUM(cost_expensed_production_inr) AS cost_expensed_production_inr,
-    0.0 AS headcount_sc, 0.0 AS headcount_age, 0.0 AS median_rem, 0.0 AS separations, 0.0 AS hires, 0.0 AS training, 0.0 AS wage_women, 0.0 AS ctc_e1, 0.0 AS sup_cap, 0.0 AS caf_cap, 0.0 AS pyramid, 0.0 AS age, 0.0 AS names, 0.0 AS delhi, 0.0 AS identity, 0.0 AS avg_age
-  FROM hrfin_gold.ssot_employee_360
+WITH emp_fy AS (
+  SELECT
+    fiscal_year,
+    SUM(cost_total_inr) / 1e6 AS ind_total_mn,
+    SUM(cost_note35_a_inr) / 1e6 AS ind_a_mn,
+    SUM(cost_note35_b_inr) / 1e6 AS ind_b_mn,
+    SUM(cost_note35_c_inr) / 1e6 AS ind_c_mn,
+    SUM(cost_note35_d_inr) / 1e6 AS ind_d_mn,
+    SUM(cost_note35_e_inr) / 1e6 AS ind_e_mn,
+    SUM(cost_note35_f_inr) / 1e6 AS ind_f_mn,
+    SUM(cost_expensed_production_inr) / 1e6 AS ind_prod_staff_mn,
+    CAST(COUNTIF(fy_month_no = 12 AND is_month_end_active) AS FLOAT64) AS hc_fy_end,
+    CAST(COUNTIF(fy_month_no = 12 AND is_month_end_active AND cadre IN ('executive', 'board')) AS FLOAT64) AS hc_exec,
+    CAST(COUNTIF(fy_month_no = 12 AND is_month_end_active AND cadre = 'non_executive') AS FLOAT64) AS hc_nonexec,
+    CAST(COUNTIF(fy_month_no = 12 AND is_month_end_active AND gender IN ('F', 'Female')) AS FLOAT64) AS hc_women,
+    CAST(COUNTIF(fy_month_no = 12 AND is_month_end_active AND pwd_flag) AS FLOAT64) AS hc_pwd,
+    SAFE_DIVIDE(
+      COUNTIF(fy_month_no = 12 AND is_month_end_active AND social_category = 'SC') * 100.0,
+      NULLIF(COUNTIF(fy_month_no = 12 AND is_month_end_active), 0)
+    ) AS sc_share_pct,
+    SAFE_DIVIDE(
+      COUNTIF(fy_month_no = 12 AND is_month_end_active AND social_category = 'ST') * 100.0,
+      NULLIF(COUNTIF(fy_month_no = 12 AND is_month_end_active), 0)
+    ) AS st_share_pct,
+    SAFE_DIVIDE(
+      COUNTIF(fy_month_no = 12 AND is_month_end_active AND age_band_brsr = '<30') * 100.0,
+      NULLIF(COUNTIF(fy_month_no = 12 AND is_month_end_active), 0)
+    ) AS age_lt30_pct,
+    SAFE_DIVIDE(
+      COUNTIF(fy_month_no = 12 AND is_month_end_active AND age_band_brsr = '30-50') * 100.0,
+      NULLIF(COUNTIF(fy_month_no = 12 AND is_month_end_active), 0)
+    ) AS age_30_50_pct,
+    SAFE_DIVIDE(
+      COUNTIF(fy_month_no = 12 AND is_month_end_active AND age_band_brsr = '>50') * 100.0,
+      NULLIF(COUNTIF(fy_month_no = 12 AND is_month_end_active), 0)
+    ) AS age_gt50_pct,
+    CAST(COUNTIF(joined_in_month_flag) AS FLOAT64) AS hires_total,
+    SAFE_DIVIDE(
+      COUNTIF(joined_in_month_flag AND gender IN ('F', 'Female')) * 100.0,
+      NULLIF(COUNTIF(joined_in_month_flag), 0)
+    ) AS hires_women_pct,
+    SAFE_DIVIDE(
+      COUNTIF(joined_in_month_flag AND age_band_brsr = '<30') * 100.0,
+      NULLIF(COUNTIF(joined_in_month_flag), 0)
+    ) AS hires_age_lt30_pct,
+    CAST(COUNTIF(separated_in_month_flag) AS FLOAT64) AS seps_total,
+    CAST(COUNTIF(separated_in_month_flag AND cadre IN ('executive', 'board')) AS FLOAT64) AS seps_exec,
+    CAST(COUNTIF(separated_in_month_flag AND cadre = 'non_executive') AS FLOAT64) AS seps_nonexec,
+    SAFE_DIVIDE(
+      SUM(training_hours),
+      NULLIF(COUNTIF(fy_month_no = 12 AND is_month_end_active), 0)
+    ) AS training_hours_per_emp,
+    SAFE_DIVIDE(
+      SUM(IF(gender IN ('F', 'Female'), gross_earnings_inr, 0)) * 100.0,
+      NULLIF(SUM(gross_earnings_inr), 0)
+    ) AS women_wage_share_pct,
+    AVG(IF(grade_id = 'E1' AND joined_in_month_flag, ctc_annualised_inr / 1e5, NULL)) AS entry_e1_ctc_lakhs,
+    CAST(COUNTIF(superannuation_pct_bp_da > 0.3001) AS FLOAT64) AS superann_cap_violations,
+    CAST(COUNTIF(
+      SAFE_DIVIDE(cafeteria_allowance_inr, NULLIF(basic_pay_inr, 0)) > 0.3501
+      OR (hra_inr > 0 AND ROUND(SAFE_DIVIDE(hra_inr, NULLIF(basic_pay_inr, 0)), 2) NOT IN (0.08, 0.09, 0.10, 0.16, 0.18, 0.20, 0.24, 0.27, 0.30))
+      OR basic_pay_inr < pay_scale_min_inr - 1.0
+      OR basic_pay_inr > GREATEST(pay_scale_max_inr, IF(grade_id = 'E0', 160000.0, pay_scale_max_inr)) * 1.092727 + 100.0
+    ) AS FLOAT64) AS pay_rule_violations,
+    APPROX_QUANTILES(
+      IF(fy_month_no = 12 AND is_month_end_active AND grade_id = 'E1', total_service_years, NULL),
+      100 IGNORE NULLS
+    )[OFFSET(50)] AS e1_median_tenure_years,
+    CAST(COUNTIF(
+      fy_month_no = 12 AND is_month_end_active
+      AND (
+        age_years > 60.0
+        OR (age_years - total_service_years) < 18.0
+        OR (age_years - total_service_years) > 45.0
+      )
+    ) AS FLOAT64) AS age_rule_violations,
+    CAST(COUNT(DISTINCT full_name) AS FLOAT64) AS distinct_names_count,
+    CAST(COUNTIF(fy_month_no = 12 AND is_month_end_active AND wc_id = 'WC-DEL') AS FLOAT64) AS delhi_hq_hc,
+    CAST(COUNTIF(
+      ABS(gross_earnings_inr - total_deductions_inr - net_pay_inr) > 0.01
+      OR ABS((cost_note35_a_inr + cost_note35_b_inr + cost_note35_c_inr + cost_note35_d_inr + cost_note35_e_inr + cost_note35_f_inr) - cost_total_inr) > 0.01
+      OR ABS((cost_capitalised_inr + cost_expensed_inr) - cost_total_inr) > 0.01
+    ) AS FLOAT64) AS row_identity_violations,
+    AVG(IF(fy_month_no = 12 AND is_month_end_active, age_years, NULL)) AS avg_age_years
+  FROM ${ref("ssot_employee_360")}
+  WHERE month_start >= DATE '2016-04-01'
   GROUP BY fiscal_year
 ),
-pool_agg AS (
-  SELECT fiscal_year,
-    SUM(amount_inr) AS pool_total,
-    SUM(IF(note35_line='a', amount_inr, 0)) AS pool_a,
-    SUM(IF(note35_line='b', amount_inr, 0)) AS pool_b,
-    SUM(IF(note35_line='c', amount_inr, 0)) AS pool_c,
-    SUM(IF(note35_line='d', amount_inr, 0)) AS pool_d,
-    SUM(IF(note35_line='e', amount_inr, 0)) AS pool_e,
-    SUM(IF(note35_line='f', amount_inr, 0)) AS pool_f,
-    SUM(IF(basis='residual', amount_inr, 0)) AS pool_residual
-  FROM hrfin_gold.fact_employee_cost_pool
+pool_fy AS (
+  SELECT
+    fiscal_year,
+    SUM(amount_inr) / 1e6 AS pool_total_mn,
+    SUM(IF(note35_line = 'a', amount_inr, 0)) / 1e6 AS pool_a_mn,
+    SUM(IF(note35_line = 'b', amount_inr, 0)) / 1e6 AS pool_b_mn,
+    SUM(IF(note35_line = 'c', amount_inr, 0)) / 1e6 AS pool_c_mn,
+    SUM(IF(note35_line = 'd', amount_inr, 0)) / 1e6 AS pool_d_mn,
+    SUM(IF(note35_line = 'e', amount_inr, 0)) / 1e6 AS pool_e_mn,
+    SUM(IF(note35_line = 'f', amount_inr, 0)) / 1e6 AS pool_f_mn,
+    SUM(IF(pool_code LIKE 'POOL_RESIDUAL%', amount_inr, 0)) / 1e6 AS resid_only_mn
+  FROM ${ref("fact_employee_cost_pool")}
+  WHERE month_start >= DATE '2016-04-01'
   GROUP BY fiscal_year
 ),
-fys AS (
-  SELECT 'FY17' AS fiscal_year UNION ALL SELECT 'FY18' UNION ALL SELECT 'FY19' UNION ALL SELECT 'FY20' UNION ALL SELECT 'FY21' UNION ALL SELECT 'FY22' UNION ALL SELECT 'FY23' UNION ALL SELECT 'FY24' UNION ALL SELECT 'FY25' UNION ALL SELECT 'FY26'
+combined_fy AS (
+  SELECT
+    e.*,
+    LAG(e.hc_fy_end) OVER (ORDER BY e.fiscal_year) AS prev_hc_fy_end,
+    LAG(e.hc_exec) OVER (ORDER BY e.fiscal_year) AS prev_hc_exec,
+    LAG(e.hc_nonexec) OVER (ORDER BY e.fiscal_year) AS prev_hc_nonexec,
+    COALESCE(p.pool_total_mn, 0.0) AS pool_total_mn,
+    COALESCE(p.pool_a_mn, 0.0) AS pool_a_mn,
+    COALESCE(p.pool_b_mn, 0.0) AS pool_b_mn,
+    COALESCE(p.pool_c_mn, 0.0) AS pool_c_mn,
+    COALESCE(p.pool_d_mn, 0.0) AS pool_d_mn,
+    COALESCE(p.pool_e_mn, 0.0) AS pool_e_mn,
+    COALESCE(p.pool_f_mn, 0.0) AS pool_f_mn,
+    COALESCE(p.resid_only_mn, 0.0) AS resid_only_mn
+  FROM emp_fy e
+  LEFT JOIN pool_fy p USING (fiscal_year)
 ),
-checks AS (
+emp_annual_rem AS (
+  SELECT
+    fiscal_year,
+    emp_id,
+    IF(cadre IN ('executive', 'board'), 'executive', 'non_executive') AS cadre_group,
+    IF(gender IN ('F', 'Female'), 'F', 'M') AS gender_norm,
+    SUM(gross_earnings_inr + employer_cpf_inr) AS annual_rem_inr,
+    COUNT(*) AS months_count
+  FROM ${ref("ssot_employee_360")}
+  WHERE month_start >= DATE '2025-04-01'
+    AND fiscal_year = 'FY26'
+  GROUP BY fiscal_year, emp_id, cadre_group, gender_norm
+  HAVING COUNT(*) = 12
+),
+median_rem_fy26 AS (
+  SELECT
+    fiscal_year,
+    APPROX_QUANTILES(IF(cadre_group = 'executive' AND gender_norm = 'M', annual_rem_inr, NULL), 100 IGNORE NULLS)[OFFSET(50)] AS med_exec_m,
+    APPROX_QUANTILES(IF(cadre_group = 'executive' AND gender_norm = 'F', annual_rem_inr, NULL), 100 IGNORE NULLS)[OFFSET(50)] AS med_exec_f,
+    APPROX_QUANTILES(IF(cadre_group = 'non_executive' AND gender_norm = 'M', annual_rem_inr, NULL), 100 IGNORE NULLS)[OFFSET(50)] AS med_nonexec_m,
+    APPROX_QUANTILES(IF(cadre_group = 'non_executive' AND gender_norm = 'F', annual_rem_inr, NULL), 100 IGNORE NULLS)[OFFSET(50)] AS med_nonexec_f
+  FROM emp_annual_rem
+  GROUP BY fiscal_year
+),
+namesake_wc_fy26 AS (
+  SELECT
+    fiscal_year,
+    MAX(name_cnt) AS max_wc_namesakes
+  FROM (
+    SELECT
+      fiscal_year,
+      wc_id,
+      full_name,
+      COUNT(*) AS name_cnt
+    FROM ${ref("ssot_employee_360")}
+    WHERE month_start >= DATE '2025-04-01'
+      AND fiscal_year = 'FY26'
+      AND fy_month_no = 12
+      AND is_month_end_active
+    GROUP BY fiscal_year, wc_id, full_name
+  )
+  GROUP BY fiscal_year
+),
+targets AS (
+  SELECT
+    fiscal_year,
+    metric AS metric_code,
+    CAST(value AS FLOAT64) AS value,
+    unit,
+    source_doc,
+    CAST(source_page AS INT64) AS source_page,
+    CAST(source_text_line AS INT64) AS source_text_line,
+    CAST(NULL AS STRING) AS notes
+  FROM ${ref("employee_targets_fy")}
+),
+raw_checks AS (
+  -- EMP-R01: Note 35.1 total employee benefit expense (FY17-FY26)
   SELECT
     'EMP-R01' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Expenditure on Employees' AS metric,
-    CAST((IFNULL(emp_agg.cost_total_inr, 0) + IFNULL(pool_agg.pool_total, 0))/1000000.0 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N351.EMP_TOTAL' AS STRING) AS reference_line_code,
-    CAST(((IFNULL(emp_agg.cost_total_inr, 0) + IFNULL(pool_agg.pool_total, 0))/1000000.0) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE(((IFNULL(emp_agg.cost_total_inr, 0) + IFNULL(pool_agg.pool_total, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.1 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
+    c.fiscal_year,
+    'FY' AS level,
+    'ALL' AS dimension_key,
+    'employee_cost_total' AS metric,
+    CAST(c.ind_total_mn + c.pool_total_mn AS FLOAT64) AS ssot_value,
+    t.value AS reference_value,
+    'INR_MN' AS unit,
+    0.1 AS tolerance_abs,
+    CAST(NULL AS FLOAT64) AS tolerance_pct,
     'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS(((IFNULL(emp_agg.cost_total_inr, 0) + IFNULL(pool_agg.pool_total, 0))/1000000.0) - IFNULL(t.reference_value, 0)) <= 0.1 OR 
-        ABS(SAFE_DIVIDE(((IFNULL(emp_agg.cost_total_inr, 0) + IFNULL(pool_agg.pool_total, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N351.EMP_TOTAL'
+    t.source_doc AS reference_source_doc,
+    t.source_page AS reference_page,
+    t.source_text_line AS reference_text_line,
+    'employee_cost_total' AS reference_line_code,
+    COALESCE(t.notes, 'Note 35.1 total employee benefit expense') AS notes
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'employee_cost_total'
+
   UNION ALL
+  -- EMP-R02: Note 35.1(a) salaries, wages, bonus, ex-gratia (FY21-FY26)
   SELECT
-    'EMP-R02' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Note 35.1(a)' AS metric,
-    CAST((IFNULL(emp_agg.cost_note35_a_inr, 0) + IFNULL(pool_agg.pool_a, 0))/1000000.0 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N35.a' AS STRING) AS reference_line_code,
-    CAST(((IFNULL(emp_agg.cost_note35_a_inr, 0) + IFNULL(pool_agg.pool_a, 0))/1000000.0) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_a_inr, 0) + IFNULL(pool_agg.pool_a, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.1 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS(((IFNULL(emp_agg.cost_note35_a_inr, 0) + IFNULL(pool_agg.pool_a, 0))/1000000.0) - IFNULL(t.reference_value, 0)) <= 0.1 OR 
-        ABS(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_a_inr, 0) + IFNULL(pool_agg.pool_a, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35.a'
+    'EMP-R02', c.fiscal_year, 'FY', '35.1(a)', 'note35_1_a',
+    CAST(c.ind_a_mn + c.pool_a_mn AS FLOAT64), t.value, 'INR_MN',
+    0.1, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'note35_1_a',
+    COALESCE(t.notes, 'Note 35.1(a) salaries and wages')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'note35_1_a'
+  WHERE c.fiscal_year IN ('FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26')
+
   UNION ALL
+  -- EMP-R03: Note 35.1(b) contribution to PF and other funds (FY21-FY26)
   SELECT
-    'EMP-R03' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Note 35.1(b)' AS metric,
-    CAST((IFNULL(emp_agg.cost_note35_b_inr, 0) + IFNULL(pool_agg.pool_b, 0))/1000000.0 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N35.b' AS STRING) AS reference_line_code,
-    CAST(((IFNULL(emp_agg.cost_note35_b_inr, 0) + IFNULL(pool_agg.pool_b, 0))/1000000.0) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_b_inr, 0) + IFNULL(pool_agg.pool_b, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.1 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS(((IFNULL(emp_agg.cost_note35_b_inr, 0) + IFNULL(pool_agg.pool_b, 0))/1000000.0) - IFNULL(t.reference_value, 0)) <= 0.1 OR 
-        ABS(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_b_inr, 0) + IFNULL(pool_agg.pool_b, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35.b'
+    'EMP-R03', c.fiscal_year, 'FY', '35.1(b)', 'note35_1_b',
+    CAST(c.ind_b_mn + c.pool_b_mn AS FLOAT64), t.value, 'INR_MN',
+    0.1, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'note35_1_b',
+    COALESCE(t.notes, 'Note 35.1(b) provident and other funds')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'note35_1_b'
+  WHERE c.fiscal_year IN ('FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26')
+
   UNION ALL
+  -- EMP-R04: Note 35.1(c) gratuity (FY21-FY26)
   SELECT
-    'EMP-R04' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Note 35.1(c)' AS metric,
-    CAST((IFNULL(emp_agg.cost_note35_c_inr, 0) + IFNULL(pool_agg.pool_c, 0))/1000000.0 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N35.c' AS STRING) AS reference_line_code,
-    CAST(((IFNULL(emp_agg.cost_note35_c_inr, 0) + IFNULL(pool_agg.pool_c, 0))/1000000.0) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_c_inr, 0) + IFNULL(pool_agg.pool_c, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.1 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS(((IFNULL(emp_agg.cost_note35_c_inr, 0) + IFNULL(pool_agg.pool_c, 0))/1000000.0) - IFNULL(t.reference_value, 0)) <= 0.1 OR 
-        ABS(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_c_inr, 0) + IFNULL(pool_agg.pool_c, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35.c'
+    'EMP-R04', c.fiscal_year, 'FY', '35.1(c)', 'note35_1_c',
+    CAST(c.ind_c_mn + c.pool_c_mn AS FLOAT64), t.value, 'INR_MN',
+    0.1, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'note35_1_c',
+    COALESCE(t.notes, 'Note 35.1(c) gratuity')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'note35_1_c'
+  WHERE c.fiscal_year IN ('FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26')
+
   UNION ALL
+  -- EMP-R05: Note 35.1(d) leave benefits (FY21-FY26)
   SELECT
-    'EMP-R05' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Note 35.1(d)' AS metric,
-    CAST((IFNULL(emp_agg.cost_note35_d_inr, 0) + IFNULL(pool_agg.pool_d, 0))/1000000.0 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N35.d' AS STRING) AS reference_line_code,
-    CAST(((IFNULL(emp_agg.cost_note35_d_inr, 0) + IFNULL(pool_agg.pool_d, 0))/1000000.0) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_d_inr, 0) + IFNULL(pool_agg.pool_d, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.1 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS(((IFNULL(emp_agg.cost_note35_d_inr, 0) + IFNULL(pool_agg.pool_d, 0))/1000000.0) - IFNULL(t.reference_value, 0)) <= 0.1 OR 
-        ABS(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_d_inr, 0) + IFNULL(pool_agg.pool_d, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35.d'
+    'EMP-R05', c.fiscal_year, 'FY', '35.1(d)', 'note35_1_d',
+    CAST(c.ind_d_mn + c.pool_d_mn AS FLOAT64), t.value, 'INR_MN',
+    0.1, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'note35_1_d',
+    COALESCE(t.notes, 'Note 35.1(d) leave benefits')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'note35_1_d'
+  WHERE c.fiscal_year IN ('FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26')
+
   UNION ALL
+  -- EMP-R06: Note 35.1(e) PRMB and terminal benefits (FY21-FY26)
   SELECT
-    'EMP-R06' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Note 35.1(e)' AS metric,
-    CAST((IFNULL(emp_agg.cost_note35_e_inr, 0) + IFNULL(pool_agg.pool_e, 0))/1000000.0 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N35.e' AS STRING) AS reference_line_code,
-    CAST(((IFNULL(emp_agg.cost_note35_e_inr, 0) + IFNULL(pool_agg.pool_e, 0))/1000000.0) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_e_inr, 0) + IFNULL(pool_agg.pool_e, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.1 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS(((IFNULL(emp_agg.cost_note35_e_inr, 0) + IFNULL(pool_agg.pool_e, 0))/1000000.0) - IFNULL(t.reference_value, 0)) <= 0.1 OR 
-        ABS(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_e_inr, 0) + IFNULL(pool_agg.pool_e, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35.e'
+    'EMP-R06', c.fiscal_year, 'FY', '35.1(e)', 'note35_1_e',
+    CAST(c.ind_e_mn + c.pool_e_mn AS FLOAT64), t.value, 'INR_MN',
+    0.1, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'note35_1_e',
+    COALESCE(t.notes, 'Note 35.1(e) PRMB and terminal benefits')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'note35_1_e'
+  WHERE c.fiscal_year IN ('FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26')
+
   UNION ALL
+  -- EMP-R07: Note 35.1(f) staff welfare expenses (FY21-FY26)
   SELECT
-    'EMP-R07' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Note 35.1(f)' AS metric,
-    CAST((IFNULL(emp_agg.cost_note35_f_inr, 0) + IFNULL(pool_agg.pool_f, 0))/1000000.0 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N35.f' AS STRING) AS reference_line_code,
-    CAST(((IFNULL(emp_agg.cost_note35_f_inr, 0) + IFNULL(pool_agg.pool_f, 0))/1000000.0) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_f_inr, 0) + IFNULL(pool_agg.pool_f, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.1 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS(((IFNULL(emp_agg.cost_note35_f_inr, 0) + IFNULL(pool_agg.pool_f, 0))/1000000.0) - IFNULL(t.reference_value, 0)) <= 0.1 OR 
-        ABS(SAFE_DIVIDE(((IFNULL(emp_agg.cost_note35_f_inr, 0) + IFNULL(pool_agg.pool_f, 0))/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35.f'
+    'EMP-R07', c.fiscal_year, 'FY', '35.1(f)', 'note35_1_f',
+    CAST(c.ind_f_mn + c.pool_f_mn AS FLOAT64), t.value, 'INR_MN',
+    0.1, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'note35_1_f',
+    COALESCE(t.notes, 'Note 35.1(f) staff welfare')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'note35_1_f'
+  WHERE c.fiscal_year IN ('FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26')
+
   UNION ALL
+  -- EMP-R08: POOL-RESID share of Note 35.1 total <= 3.0% (FY17-FY26)
   SELECT
-    'EMP-R08' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Residual Pool %' AS metric,
-    CAST(ABS(IFNULL(pool_agg.pool_residual, 0)) / NULLIF((IFNULL(emp_agg.cost_total_inr, 0) + IFNULL(pool_agg.pool_total, 0)), 0) AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N351.EMP_TOTAL' AS STRING) AS reference_line_code,
-    CAST((ABS(IFNULL(pool_agg.pool_residual, 0)) / NULLIF((IFNULL(emp_agg.cost_total_inr, 0) + IFNULL(pool_agg.pool_total, 0)), 0)) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((ABS(IFNULL(pool_agg.pool_residual, 0)) / NULLIF((IFNULL(emp_agg.cost_total_inr, 0) + IFNULL(pool_agg.pool_total, 0)), 0)) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.03 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((ABS(IFNULL(pool_agg.pool_residual, 0)) / NULLIF((IFNULL(emp_agg.cost_total_inr, 0) + IFNULL(pool_agg.pool_total, 0)), 0)) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((ABS(IFNULL(pool_agg.pool_residual, 0)) / NULLIF((IFNULL(emp_agg.cost_total_inr, 0) + IFNULL(pool_agg.pool_total, 0)), 0)) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.03, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N351.EMP_TOTAL'
+    'EMP-R08', c.fiscal_year, 'FY', 'POOL-RESID', 'pool_resid_share_pct',
+    SAFE_DIVIDE(c.resid_only_mn * 100.0, NULLIF(t.value, 0)),
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'PCT',
+    3.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'employee_cost_total',
+    'POOL-RESID share of Note 35.1 total <= 3.0%'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'employee_cost_total'
+
   UNION ALL
+  -- EMP-R09: Individual rows cover >= 96% of 35.1(a) before pool (FY21-FY26)
   SELECT
-    'EMP-R09' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Individual (a) vs AR' AS metric,
-    CAST(IFNULL(emp_agg.cost_note35_a_inr, 0)/1000000.0 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N35.a' AS STRING) AS reference_line_code,
-    CAST((IFNULL(emp_agg.cost_note35_a_inr, 0)/1000000.0) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((IFNULL(emp_agg.cost_note35_a_inr, 0)/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.04 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS((IFNULL(emp_agg.cost_note35_a_inr, 0)/1000000.0) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((IFNULL(emp_agg.cost_note35_a_inr, 0)/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.04, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35.a'
+    'EMP-R09', c.fiscal_year, 'FY', '35.1(a)', 'ind_cost_a_vs_target_pct',
+    CAST(c.ind_a_mn AS FLOAT64), t.value, 'INR_MN',
+    CAST(NULL AS FLOAT64), 4.0, 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'note35_1_a',
+    'Individual payroll covers >= 96% of Note 35.1(a) before pool'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'note35_1_a'
+  WHERE c.fiscal_year IN ('FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26')
+
   UNION ALL
+  -- EMP-R10: FY-end active headcount (FY17-FY26)
   SELECT
-    'EMP-R10' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Headcount' AS metric,
-    CAST(emp_agg.headcount_fy_end AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('HC' AS STRING) AS reference_line_code,
-    CAST((emp_agg.headcount_fy_end) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.headcount_fy_end) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.headcount_fy_end) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.headcount_fy_end) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'HC'
+    'EMP-R10', c.fiscal_year, 'FY', 'ALL', 'headcount_fy_end',
+    c.hc_fy_end, t.value, 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'headcount_fy_end',
+    COALESCE(t.notes, 'FY-end active headcount')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'headcount_fy_end'
+
   UNION ALL
+  -- EMP-R11a: FY26 BRSR executive count
   SELECT
-    'EMP-R11' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Exec/NonExec' AS metric,
-    CAST(emp_agg.headcount_exec AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('HC.EXEC' AS STRING) AS reference_line_code,
-    CAST((emp_agg.headcount_exec) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.headcount_exec) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.headcount_exec) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.headcount_exec) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'HC.EXEC'
+    'EMP-R11', c.fiscal_year, 'CADRE', 'executive', 'brsr_exec_count',
+    c.hc_exec, t.value, 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_exec_count',
+    COALESCE(t.notes, 'BRSR Sec A Q20(a) permanent employees (executive)')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_exec_count'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R11b: FY26 BRSR non-executive count
   SELECT
-    'EMP-R12' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Women' AS metric,
-    CAST(emp_agg.headcount_women AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('HC.WOMEN' AS STRING) AS reference_line_code,
-    CAST((emp_agg.headcount_women) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.headcount_women) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.01 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.headcount_women) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.headcount_women) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.01, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'HC.WOMEN'
+    'EMP-R11', c.fiscal_year, 'CADRE', 'non_executive', 'brsr_nonexec_count',
+    c.hc_nonexec, t.value, 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_nonexec_count',
+    COALESCE(t.notes, 'BRSR Sec A Q20(a) permanent workers (non-executive)')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_nonexec_count'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R12: FY26 active women count
   SELECT
-    'EMP-R13' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'PwD' AS metric,
-    CAST(emp_agg.headcount_pwd AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('HC.PWD' AS STRING) AS reference_line_code,
-    CAST((emp_agg.headcount_pwd) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.headcount_pwd) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.02 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.headcount_pwd) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.headcount_pwd) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.02, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'HC.PWD'
+    'EMP-R12', c.fiscal_year, 'FY', 'F', 'brsr_women_total',
+    c.hc_women, t.value, 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_women_total',
+    COALESCE(t.notes, 'BRSR total women employees (1,377 exec + 508 workers)')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_women_total'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R13: FY26 active PwD count
   SELECT
-    'EMP-R14' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'SC/ST' AS metric,
-    CAST(emp_agg.headcount_sc AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('HC.SC' AS STRING) AS reference_line_code,
-    CAST((emp_agg.headcount_sc) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.headcount_sc) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.005 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.headcount_sc) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.headcount_sc) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.005, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'HC.SC'
+    'EMP-R13', c.fiscal_year, 'FY', 'PWD', 'brsr_pwd_total',
+    c.hc_pwd, t.value, 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_pwd_total',
+    COALESCE(t.notes, 'BRSR differently-abled employees (313 exec + 210 workers)')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_pwd_total'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R14a: FY26 SC share %
   SELECT
-    'EMP-R15' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Age Band' AS metric,
-    CAST(emp_agg.headcount_age AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('HC.AGE' AS STRING) AS reference_line_code,
-    CAST((emp_agg.headcount_age) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.headcount_age) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.015 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.headcount_age) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.headcount_age) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.015, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'HC.AGE'
+    'EMP-R14', c.fiscal_year, 'CATEGORY', 'SC', 'sc_share_pct',
+    c.sc_share_pct, t.value, 'PCT',
+    0.5, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'sc_share_pct',
+    COALESCE(t.notes, 'SC share of permanent workforce')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'sc_share_pct'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R14b: FY26 ST share %
   SELECT
-    'EMP-R16' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Median Remuneration' AS metric,
-    CAST(emp_agg.median_rem AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('REM.MEDIAN' AS STRING) AS reference_line_code,
-    CAST((emp_agg.median_rem) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.median_rem) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.1 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.median_rem) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.median_rem) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.1, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'REM.MEDIAN'
+    'EMP-R14', c.fiscal_year, 'CATEGORY', 'ST', 'st_share_pct',
+    c.st_share_pct, t.value, 'PCT',
+    0.5, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'st_share_pct',
+    COALESCE(t.notes, 'ST share of permanent workforce')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'st_share_pct'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R15a: FY26 age band <30 share %
   SELECT
-    'EMP-R17' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Separations' AS metric,
-    CAST(emp_agg.separations AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('SEP' AS STRING) AS reference_line_code,
-    CAST((emp_agg.separations) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.separations) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.015 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.separations) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.separations) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.015, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'SEP'
+    'EMP-R15', c.fiscal_year, 'AGE_BAND', '<30', 'brsr_age_lt30_pct',
+    c.age_lt30_pct, t.value, 'PCT',
+    1.5, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_age_lt30_pct',
+    COALESCE(t.notes, 'BRSR age band <30 share')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_age_lt30_pct'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R15b: FY26 age band 30-50 share %
   SELECT
-    'EMP-R18' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Hires' AS metric,
-    CAST(emp_agg.hires AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('HIRES' AS STRING) AS reference_line_code,
-    CAST((emp_agg.hires) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.hires) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.03 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.hires) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.hires) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.03, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'HIRES'
+    'EMP-R15', c.fiscal_year, 'AGE_BAND', '30-50', 'brsr_age_30_50_pct',
+    c.age_30_50_pct, t.value, 'PCT',
+    1.5, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_age_30_50_pct',
+    COALESCE(t.notes, 'BRSR age band 30-50 share')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_age_30_50_pct'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R15c: FY26 age band >50 share %
   SELECT
-    'EMP-R19' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Training Hours' AS metric,
-    CAST(emp_agg.training AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('TRN' AS STRING) AS reference_line_code,
-    CAST((emp_agg.training) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.training) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.5 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'WARN' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.training) - IFNULL(t.reference_value, 0)) <= 0.5 OR 
-        ABS(SAFE_DIVIDE((emp_agg.training) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'TRN'
+    'EMP-R15', c.fiscal_year, 'AGE_BAND', '>50', 'brsr_age_gt50_pct',
+    c.age_gt50_pct, t.value, 'PCT',
+    1.5, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_age_gt50_pct',
+    COALESCE(t.notes, 'BRSR age band >50 share')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_age_gt50_pct'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R16a: FY26 median remuneration exec male
   SELECT
-    'EMP-R20' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Women Wage Share' AS metric,
-    CAST(emp_agg.wage_women AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('WAGE.WOMEN' AS STRING) AS reference_line_code,
-    CAST((emp_agg.wage_women) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.wage_women) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.005 AS NUMERIC) AS tolerance_pct,
-    'WARN' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.wage_women) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.wage_women) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.005, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'WAGE.WOMEN'
+    'EMP-R16', m.fiscal_year, 'COHORT', 'exec_M', 'brsr_median_remuneration_exec_male',
+    CAST(m.med_exec_m AS FLOAT64), t.value, 'INR',
+    CAST(NULL AS FLOAT64), 10.0, 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_median_remuneration_exec_male',
+    COALESCE(t.notes, 'BRSR P5 EI-3(b) median remuneration executive male')
+  FROM median_rem_fy26 m
+  LEFT JOIN targets t ON m.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_median_remuneration_exec_male'
+
   UNION ALL
+  -- EMP-R16b: FY26 median remuneration exec female
   SELECT
-    'EMP-R21' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'E1 CTC' AS metric,
-    CAST(emp_agg.ctc_e1 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('CTC.E1' AS STRING) AS reference_line_code,
-    CAST((emp_agg.ctc_e1) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.ctc_e1) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.12 AS NUMERIC) AS tolerance_pct,
-    'WARN' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.ctc_e1) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.ctc_e1) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.12, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'CTC.E1'
+    'EMP-R16', m.fiscal_year, 'COHORT', 'exec_F', 'brsr_median_remuneration_exec_female',
+    CAST(m.med_exec_f AS FLOAT64), t.value, 'INR',
+    CAST(NULL AS FLOAT64), 10.0, 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_median_remuneration_exec_female',
+    COALESCE(t.notes, 'BRSR P5 EI-3(b) median remuneration executive female')
+  FROM median_rem_fy26 m
+  LEFT JOIN targets t ON m.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_median_remuneration_exec_female'
+
   UNION ALL
+  -- EMP-R16c: FY26 median remuneration non-exec male
   SELECT
-    'EMP-R22' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Superannuation Cap' AS metric,
-    CAST(emp_agg.sup_cap AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('CAP.SUP' AS STRING) AS reference_line_code,
-    CAST((emp_agg.sup_cap) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.sup_cap) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.sup_cap) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.sup_cap) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'CAP.SUP'
+    'EMP-R16', m.fiscal_year, 'COHORT', 'nonexec_M', 'brsr_median_remuneration_nonexec_male',
+    CAST(m.med_nonexec_m AS FLOAT64), t.value, 'INR',
+    CAST(NULL AS FLOAT64), 10.0, 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_median_remuneration_nonexec_male',
+    COALESCE(t.notes, 'BRSR P5 EI-3(b) median remuneration non-executive male')
+  FROM median_rem_fy26 m
+  LEFT JOIN targets t ON m.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_median_remuneration_nonexec_male'
+
   UNION ALL
+  -- EMP-R16d: FY26 median remuneration non-exec female
   SELECT
-    'EMP-R23' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Cafeteria Cap' AS metric,
-    CAST(emp_agg.caf_cap AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('CAP.CAF' AS STRING) AS reference_line_code,
-    CAST((emp_agg.caf_cap) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.caf_cap) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.caf_cap) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.caf_cap) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'CAP.CAF'
+    'EMP-R16', m.fiscal_year, 'COHORT', 'nonexec_F', 'brsr_median_remuneration_nonexec_female',
+    CAST(m.med_nonexec_f AS FLOAT64), t.value, 'INR',
+    CAST(NULL AS FLOAT64), 10.0, 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_median_remuneration_nonexec_female',
+    COALESCE(t.notes, 'BRSR P5 EI-3(b) median remuneration non-executive female')
+  FROM median_rem_fy26 m
+  LEFT JOIN targets t ON m.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_median_remuneration_nonexec_female'
+
   UNION ALL
+  -- EMP-R17a: FY26 HC roll-forward identity
   SELECT
-    'EMP-R24' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Pyramid' AS metric,
-    CAST(emp_agg.pyramid AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('PYRAMID' AS STRING) AS reference_line_code,
-    CAST((emp_agg.pyramid) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.pyramid) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.pyramid) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.pyramid) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'PYRAMID'
+    'EMP-R17', c.fiscal_year, 'FY', 'ROLL_FORWARD', 'hc_roll_forward_diff',
+    CAST((c.prev_hc_fy_end + c.hires_total - c.seps_total) - c.hc_fy_end AS FLOAT64),
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'headcount_fy_end',
+    'HC(t-1) + Hires(t) - Seps(t) = HC(t) identity'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'headcount_fy_end'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R17b: FY26 BRSR executive turnover rate %
   SELECT
-    'EMP-R25' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Age' AS metric,
-    CAST(emp_agg.age AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('AGE' AS STRING) AS reference_line_code,
-    CAST((emp_agg.age) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.age) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.age) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.age) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'AGE'
+    'EMP-R17', c.fiscal_year, 'CADRE', 'executive', 'brsr_turnover_exec_pct',
+    SAFE_DIVIDE(c.seps_exec * 100.0, NULLIF((c.prev_hc_exec + c.hc_exec) / 2.0, 0)),
+    t.value, 'PCT',
+    1.5, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_turnover_exec_pct',
+    COALESCE(t.notes, 'BRSR Sec A Q22 turnover rate permanent employees')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_turnover_exec_pct'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R17c: FY26 BRSR non-executive turnover rate %
   SELECT
-    'EMP-R26' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Names' AS metric,
-    CAST(emp_agg.names AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('NAMES' AS STRING) AS reference_line_code,
-    CAST((emp_agg.names) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.names) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.names) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.names) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'NAMES'
+    'EMP-R17', c.fiscal_year, 'CADRE', 'non_executive', 'brsr_turnover_nonexec_pct',
+    SAFE_DIVIDE(c.seps_nonexec * 100.0, NULLIF((c.prev_hc_nonexec + c.hc_nonexec) / 2.0, 0)),
+    t.value, 'PCT',
+    1.5, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_turnover_nonexec_pct',
+    COALESCE(t.notes, 'BRSR Sec A Q22 turnover rate permanent workers')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_turnover_nonexec_pct'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R18a: FY26 hires total
   SELECT
-    'EMP-R27' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Delhi Active' AS metric,
-    CAST(emp_agg.delhi AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('DELHI' AS STRING) AS reference_line_code,
-    CAST((emp_agg.delhi) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.delhi) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.05 AS NUMERIC) AS tolerance_pct,
-    'WARN' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.delhi) - IFNULL(t.reference_value, 0)) <= 0.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.delhi) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.05, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'DELHI'
+    'EMP-R18', c.fiscal_year, 'FY', 'ALL', 'brsr_hires_total',
+    c.hires_total, t.value, 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_hires_total',
+    COALESCE(t.notes, 'FY26 total new hires')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_hires_total'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R18b: FY26 hires women share %
   SELECT
-    'EMP-R28' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Row Identity' AS metric,
-    CAST(emp_agg.identity AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('IDENTITY' AS STRING) AS reference_line_code,
-    CAST((emp_agg.identity) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.identity) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.01 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.identity) - IFNULL(t.reference_value, 0)) <= 0.01 OR 
-        ABS(SAFE_DIVIDE((emp_agg.identity) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'IDENTITY'
+    'EMP-R18', c.fiscal_year, 'FY', 'F', 'brsr_hires_women_pct',
+    c.hires_women_pct, t.value, 'PCT',
+    3.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_hires_women_pct',
+    COALESCE(t.notes, 'FY26 women share of new hires')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_hires_women_pct'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R18c: FY26 hires <30 share % (WARN)
   SELECT
-    'EMP-R29' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Production Expensed' AS metric,
-    CAST(emp_agg.cost_expensed_production_inr/1000000.0 AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('N35.STAFF' AS STRING) AS reference_line_code,
-    CAST((emp_agg.cost_expensed_production_inr/1000000.0) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.cost_expensed_production_inr/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(0.1 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'BLOCK' AS severity,
-    IF(fys.fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26'), 
-      IF(
-        ABS((emp_agg.cost_expensed_production_inr/1000000.0) - IFNULL(t.reference_value, 0)) <= 0.1 OR 
-        ABS(SAFE_DIVIDE((emp_agg.cost_expensed_production_inr/1000000.0) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'N35.STAFF'
+    'EMP-R18', c.fiscal_year, 'FY', '<30', 'brsr_hires_lt30_pct',
+    c.hires_age_lt30_pct, t.value, 'PCT',
+    3.0, CAST(NULL AS FLOAT64), 'WARN',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_hires_lt30_pct',
+    COALESCE(t.notes, 'FY26 <30 share of new hires')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_hires_lt30_pct'
+  WHERE c.fiscal_year = 'FY26'
+
   UNION ALL
+  -- EMP-R19: FY26 training hours per active employee (WARN)
   SELECT
-    'EMP-R30' AS check_id,
-    'SPEC-04' AS spec,
-    fys.fiscal_year,
-    'company' AS level,
-    CAST(NULL AS STRING) AS dimension_key,
-    'Average Age' AS metric,
-    CAST(emp_agg.avg_age AS NUMERIC) AS ssot_value,
-    CAST(IFNULL(t.reference_value, 0) AS NUMERIC) AS reference_value,
-    CAST(IFNULL(t.unit, 'unit') AS STRING) AS unit,
-    CAST(IFNULL(t.reference_source_doc, 'doc') AS STRING) AS reference_source_doc,
-    CAST(IFNULL(t.reference_page, 1) AS INT64) AS reference_page,
-    CAST(IFNULL(t.reference_text_line, 1) AS INT64) AS reference_text_line,
-    CAST('AGE.AVG' AS STRING) AS reference_line_code,
-    CAST((emp_agg.avg_age) - IFNULL(t.reference_value, 0) AS NUMERIC) AS delta,
-    CAST(SAFE_DIVIDE((emp_agg.avg_age) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1)) AS NUMERIC) AS delta_pct,
-    CAST(1.0 AS NUMERIC) AS tolerance_abs,
-    CAST(0.0 AS NUMERIC) AS tolerance_pct,
-    'WARN' AS severity,
-    IF(TRUE, 
-      IF(
-        ABS((emp_agg.avg_age) - IFNULL(t.reference_value, 0)) <= 1.0 OR 
-        ABS(SAFE_DIVIDE((emp_agg.avg_age) - IFNULL(t.reference_value, 0), IFNULL(t.reference_value, 1))) <= 0.0, 
-        'PASS', 'FAIL'
-      ),
-      'NOT_AVAILABLE'
-    ) AS status,
-    '' AS notes
-  FROM fys
-  LEFT JOIN emp_agg ON fys.fiscal_year = emp_agg.fiscal_year
-  LEFT JOIN pool_agg ON fys.fiscal_year = pool_agg.fiscal_year
-  LEFT JOIN target_data t ON fys.fiscal_year = t.fiscal_year AND t.line_code = 'AGE.AVG'
+    'EMP-R19', c.fiscal_year, 'FY', 'ALL', 'brsr_avg_training_hours',
+    c.training_hours_per_emp, t.value, 'HOURS',
+    0.5, CAST(NULL AS FLOAT64), 'WARN',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_avg_training_hours',
+    COALESCE(t.notes, 'FY26 average training hours per active employee')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_avg_training_hours'
+  WHERE c.fiscal_year = 'FY26'
+
+  UNION ALL
+  -- EMP-R20: FY26 women share of gross wages (WARN)
+  SELECT
+    'EMP-R20', c.fiscal_year, 'FY', 'F', 'brsr_women_wage_share_pct',
+    c.women_wage_share_pct, t.value, 'PCT',
+    1.0, CAST(NULL AS FLOAT64), 'WARN',
+    t.source_doc, t.source_page, t.source_text_line, 'brsr_women_wage_share_pct',
+    COALESCE(t.notes, 'BRSR P5 EI-2 women wages as % of total gross wages')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'brsr_women_wage_share_pct'
+  WHERE c.fiscal_year = 'FY26'
+
+  UNION ALL
+  -- EMP-R21: FY26 entry E1 annualised CTC vs ~Rs 24-25 L (WARN)
+  SELECT
+    'EMP-R21', c.fiscal_year, 'GRADE', 'E1', 'e1_entry_ctc_target_inr',
+    CAST(c.entry_e1_ctc_lakhs * 1e5 AS FLOAT64),
+    t.value, 'INR',
+    CAST(NULL AS FLOAT64), 12.0, 'WARN',
+    t.source_doc, t.source_page, t.source_text_line, 'e1_entry_ctc_target_inr',
+    'Entry E1 annualised run-rate CTC vs recruitment advertisement benchmark'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'e1_entry_ctc_target_inr'
+  WHERE c.fiscal_year = 'FY26'
+
+  UNION ALL
+  -- EMP-R22: Superannuation ceiling <= 30% of BP+DA (FY17-FY26)
+  SELECT
+    'EMP-R22', c.fiscal_year, 'FY', 'ALL', 'superannuation_cap_violations',
+    c.superann_cap_violations,
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    'DPE_OM_3AUG2017_P12', 12, 1, 'superannuation_cap_violations',
+    'Zero rows with superannuation_pct_bp_da > 30% (DPE 3rd PRC para 12)'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'employee_cost_total'
+
+  UNION ALL
+  -- EMP-R23: Cafeteria <= 35% BP, HRA tier in allowed set, basic pay within scale bounds (FY18-FY26)
+  SELECT
+    'EMP-R23', c.fiscal_year, 'FY', 'ALL', 'pay_rule_violations',
+    c.pay_rule_violations,
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    'DPE_OM_3AUG2017', 1, 1, 'pay_rule_violations',
+    'Zero rows violating cafeteria <= 35% BP, HRA rate tier, or pay scale bounds'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'employee_cost_total'
+  WHERE c.fiscal_year IN ('FY18', 'FY19', 'FY20', 'FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26')
+
+  UNION ALL
+  -- EMP-R24: Active E1 median tenure <= 4 yrs (fixes BUG-32)
+  SELECT
+    'EMP-R24', c.fiscal_year, 'GRADE', 'E1', 'e1_median_tenure_years',
+    CAST(c.e1_median_tenure_years AS FLOAT64),
+    IF(t.value IS NOT NULL, 2.0, CAST(NULL AS FLOAT64)), 'YEARS',
+    2.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    'SPEC04_S6_1', 1, 1, 'e1_median_tenure_years',
+    'Active E1 median tenure <= 4.0 years (2.0 +/- 2.0 yrs; fixes BUG-32)'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'headcount_fy_end'
+  WHERE c.fiscal_year = 'FY26'
+
+  UNION ALL
+  -- EMP-R25: Entry age in [18, 45] and active age <= 60 (fixes BUG-31)
+  SELECT
+    'EMP-R25', c.fiscal_year, 'FY', 'ALL', 'age_rule_violations',
+    c.age_rule_violations,
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    'ONGC_SR_1995_R24', 1, 1, 'age_rule_violations',
+    'Zero active rows with age > 60 or entry age outside [18, 45] (fixes BUG-31)'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'headcount_fy_end'
+  WHERE c.fiscal_year = 'FY26'
+
+  UNION ALL
+  -- EMP-R26: Distinct employee names >= 15,000 and max WC namesakes <= 3 (fixes BUG-28)
+  SELECT
+    'EMP-R26', c.fiscal_year, 'FY', 'ALL', 'name_uniqueness_violations',
+    CAST(IF(c.distinct_names_count < 15000 OR COALESCE(nw.max_wc_namesakes, 0) > 3, 1.0, 0.0) AS FLOAT64),
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    'SPEC04_S6_3', 1, 1, 'name_uniqueness_violations',
+    CONCAT('Distinct names = ', CAST(CAST(c.distinct_names_count AS INT64) AS STRING), ' (>=15000), max WC namesakes = ', CAST(COALESCE(nw.max_wc_namesakes, 0) AS STRING), ' (<=3)')
+  FROM combined_fy c
+  LEFT JOIN namesake_wc_fy26 nw ON c.fiscal_year = nw.fiscal_year
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'headcount_fy_end'
+  WHERE c.fiscal_year = 'FY26'
+
+  UNION ALL
+  -- EMP-R27: Delhi HQ (WC-DEL) active headcount vs 943 +/- 5% (fixes BUG-36)
+  SELECT
+    'EMP-R27', c.fiscal_year, 'WC', 'WC-DEL', 'delhi_active_target',
+    c.delhi_hq_hc,
+    t.value, 'COUNT',
+    CAST(NULL AS FLOAT64), 5.0, 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'delhi_active_target',
+    'Delhi HQ (WC-DEL) active headcount vs 943 +/- 5% (fixes BUG-36)'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'delhi_active_target'
+  WHERE c.fiscal_year = 'FY26'
+
+  UNION ALL
+  -- EMP-R28: Row-level payroll and accounting identities (FY17-FY26)
+  SELECT
+    'EMP-R28', c.fiscal_year, 'FY', 'ALL', 'row_identity_violations',
+    c.row_identity_violations,
+    IF(t.value IS NOT NULL, 0.0, CAST(NULL AS FLOAT64)), 'COUNT',
+    0.0, CAST(NULL AS FLOAT64), 'BLOCK',
+    'SPEC04_S5_4', 1, 1, 'row_identity_violations',
+    'Zero rows violating gross - deductions = net or sum(cost_note35_a..f) = cost_total = cap + exp'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'employee_cost_total'
+
+  UNION ALL
+  -- EMP-R29: Production expensed staff cost vs Note 35 Staff Expenditure (FY21-FY26)
+  SELECT
+    'EMP-R29', c.fiscal_year, 'FY', 'PRODUCTION', 'staff_expenditure_note35',
+    CAST(c.ind_prod_staff_mn AS FLOAT64), t.value, 'INR_MN',
+    0.1, CAST(NULL AS FLOAT64), 'BLOCK',
+    t.source_doc, t.source_page, t.source_text_line, 'staff_expenditure_note35',
+    COALESCE(t.notes, 'Note 35 Staff Expenditure cross-domain link to Field Economics')
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'staff_expenditure_note35'
+  WHERE c.fiscal_year IN ('FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26')
+
+  UNION ALL
+  -- EMP-R30: Average age of active employees vs ~43 +/- 1 yr (WARN)
+  SELECT
+    'EMP-R30', c.fiscal_year, 'FY', 'ALL', 'avg_age_target_years',
+    CAST(c.avg_age_years AS FLOAT64),
+    t.value, 'YEARS',
+    1.0, CAST(NULL AS FLOAT64), 'WARN',
+    t.source_doc, t.source_page, t.source_text_line, 'avg_age_target_years',
+    'Average age of active employees vs ~43.0 +/- 1.0 years'
+  FROM combined_fy c
+  LEFT JOIN targets t ON c.fiscal_year = t.fiscal_year AND t.metric_code = 'avg_age_target_years'
+  WHERE c.fiscal_year = 'FY26'
 )
-SELECT * FROM checks
+
+SELECT
+  'v3_recon_run' AS run_id,
+  CURRENT_TIMESTAMP() AS run_ts,
+  'EMP' AS domain,
+  'SPEC-04' AS spec,
+  check_id,
+  fiscal_year,
+  fiscal_year AS period,
+  level,
+  dimension_key,
+  metric,
+  metric AS metric_name,
+  ssot_value,
+  reference_value,
+  unit,
+  ssot_value - reference_value AS delta,
+  SAFE_DIVIDE(ABS(ssot_value - reference_value) * 100.0, NULLIF(ABS(reference_value), 0)) AS delta_pct,
+  ABS(ssot_value - reference_value) AS abs_diff,
+  SAFE_DIVIDE(ABS(ssot_value - reference_value) * 100.0, NULLIF(ABS(reference_value), 0)) AS pct_diff,
+  tolerance_abs,
+  tolerance_pct,
+  severity,
+  CASE
+    WHEN reference_value IS NULL OR ssot_value IS NULL THEN 'FAIL'
+    WHEN tolerance_abs IS NOT NULL AND ABS(ssot_value - reference_value) <= tolerance_abs THEN 'PASS'
+    WHEN tolerance_pct IS NOT NULL AND SAFE_DIVIDE(ABS(ssot_value - reference_value) * 100.0, NULLIF(ABS(reference_value), 0)) <= tolerance_pct THEN 'PASS'
+    ELSE 'FAIL'
+  END AS status,
+  reference_source_doc,
+  reference_page,
+  reference_text_line,
+  reference_line_code,
+  notes
+FROM raw_checks

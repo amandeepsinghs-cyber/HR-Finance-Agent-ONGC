@@ -1,8 +1,8 @@
 config {
   type: "view",
-  schema: "hrfin_stage",
+  schema: "hrfin_gold",
   name: "v_employee_pay_component_long",
-  description: "Unpivoted components."
+  description: "Unpivoted employee pay and benefit components at employee-month-component grain."
 }
 WITH unpivoted AS (
   SELECT emp_id, month_start, fiscal_year, grade_id, wc_id, component_code, amount_inr
@@ -17,16 +17,23 @@ WITH unpivoted AS (
     insurance_premium_inr, welfare_allocation_inr, employer_cost_noncash_inr
   ))
 )
-SELECT u.*, 
-       CASE 
-         WHEN component_code = 'basic_pay_inr' THEN 'basic'
-         WHEN component_code = 'da_inr' THEN 'da'
-         WHEN component_code = 'hra_inr' THEN 'hra'
-         WHEN component_code LIKE '%allowance%' THEN 'allowances'
-         WHEN component_code IN ('employer_cpf_inr', 'employer_prbs_inr', 'employer_prmb_inr') THEN 'employer_benefits'
-         ELSE 'other'
-       END AS component_group,
-       COALESCE(dim_all.allowance_name, dim_ben.scheme_name, u.component_code) AS component_name
+SELECT
+  u.emp_id,
+  u.month_start,
+  u.fiscal_year,
+  u.grade_id,
+  u.wc_id,
+  u.component_code,
+  u.amount_inr,
+  CASE
+    WHEN u.component_code = 'basic_pay_inr' THEN 'basic'
+    WHEN u.component_code = 'da_inr' THEN 'da'
+    WHEN u.component_code = 'hra_inr' THEN 'hra'
+    WHEN u.component_code LIKE '%allowance%' THEN 'allowances'
+    WHEN u.component_code IN ('employer_cpf_inr', 'employer_prbs_inr', 'employer_prmb_inr', 'csss_employer_inr', 'gratuity_accrual_inr', 'leave_provision_accrual_inr') THEN 'employer_benefits'
+    ELSE 'other'
+  END AS component_group,
+  COALESCE(dim_all.rule_desc, u.component_code) AS component_name
 FROM unpivoted u
-LEFT JOIN ${ref("dim_allowance_rule")} dim_all ON u.component_code = dim_all.allowance_code AND u.wc_id = dim_all.wc_id
-LEFT JOIN ${ref("dim_benefit_scheme")} dim_ben ON u.component_code = dim_ben.scheme_code AND u.grade_id = dim_ben.grade_id
+LEFT JOIN ${ref("dim_allowance_rule")} dim_all
+  ON UPPER(u.component_code) = dim_all.allowance_id

@@ -1305,7 +1305,7 @@ tables:
     source_type: sap
     source_file: gs://ongc-hr-finance-agent-landing/sap/20261020/CO_PA_v3.csv
     local_path: landing/sap/CO_PA_v3.csv
-    row_count: 112680
+    row_count: 279551
     column_count: 6
     columns:
     - fy
@@ -1318,7 +1318,7 @@ tables:
     source_type: sap
     source_file: gs://ongc-hr-finance-agent-landing/sap/20261020/field_alloc_audit.csv
     local_path: landing/sap/field_alloc_audit.csv
-    row_count: 450
+    row_count: 745
     column_count: 6
     columns:
     - fy

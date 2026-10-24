@@ -1,6 +1,6 @@
 config {
   type: "view",
-  schema: "hrfin_stage",
+  schema: "hrfin_gold",
   name: "v_employee_360_current",
   description: "Latest month view."
 }

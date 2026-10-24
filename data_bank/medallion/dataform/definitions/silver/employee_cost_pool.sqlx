@@ -2,24 +2,24 @@ config {
   type: "table",
   schema: "hrfin_silver",
   name: "employee_cost_pool",
-  description: "Employee cost pool"
+  description: "Company-level Note 35 employee cost pools (actuarial true-ups, provisions, welfare pools)."
 }
 
 WITH raw AS (
   SELECT
     _ingest_ts,
     TRIM(`fiscal_year`) AS fiscal_year,
-    TRIM(`month_start`) AS month_start,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`month_start`), ''), 1, 10)) AS month_start,
     TRIM(`pool_code`) AS pool_code,
     TRIM(`note35_line`) AS note35_line,
-    TRIM(`amount_inr`) AS amount_inr,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`amount_inr`), ''), ',', ''), '₹', '') AS NUMERIC) AS amount_inr,
     TRIM(`allocation_basis`) AS allocation_basis,
     TRIM(`cost_destination`) AS cost_destination,
     TRIM(`segment`) AS segment,
     TRIM(`basis`) AS basis
   FROM ${ref("sap_employee_cost_pool")}
-  WHERE TRUE
+  WHERE NULLIF(TRIM(`fiscal_year`), '') IS NOT NULL AND NULLIF(TRIM(`pool_code`), '') IS NOT NULL AND NULLIF(TRIM(`note35_line`), '') IS NOT NULL
 )
 SELECT * EXCEPT(_ingest_ts)
 FROM raw
-
+QUALIFY ROW_NUMBER() OVER (PARTITION BY fiscal_year, pool_code, note35_line ORDER BY _ingest_ts DESC) = 1

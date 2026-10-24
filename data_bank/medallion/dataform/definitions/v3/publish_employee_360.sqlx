@@ -2,7 +2,10 @@ config {
   type: "operations",
   schema: "hrfin_gold",
   name: "publish_employee_360",
-  dependencies: ["assert_recon_block_pass"]
+  dependencies: ["assert_recon_block_pass", "ssot_employee_360", "fact_employee_cost_pool"]
 }
--- Mart published when assertion passes
-SELECT 1;
+CREATE OR REPLACE TABLE `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+COPY `ongc-hr-finance-agent.hrfin_stage.ssot_employee_360`;
+
+CREATE OR REPLACE TABLE `ongc-hr-finance-agent.hrfin_gold.fact_employee_cost_pool`
+COPY `ongc-hr-finance-agent.hrfin_stage.fact_employee_cost_pool`;

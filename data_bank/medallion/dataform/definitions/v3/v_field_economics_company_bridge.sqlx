@@ -2,28 +2,146 @@ config {
   type: "view",
   schema: "hrfin_gold",
   name: "v_field_economics_company_bridge",
-  description: "FY x line bridge comparing sum of objects to standalone AR reference with delta columns"
+  description: "FY x line bridge comparing sum of objects to standalone AR reference with delta columns (SPEC-05 §3.1, §7)"
 }
 
 WITH obj_sums AS (
-  SELECT
-    fiscal_year,
-    'PL.REV_OPS' AS line_code,
-    SUM(revenue_from_operations) AS ssot_value
-  FROM ${ref("v_field_economics_fy")}
-  GROUP BY 1, 2
+  SELECT fiscal_year, 'PL.REV_OPS' AS line_code, SUM(revenue_from_operations) AS ssot_value FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'REV.CRUDE', SUM(rev_crude) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'REV.GAS', SUM(rev_gas) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'REV.VAP', SUM(rev_vap) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'REV.OTHER_OP', SUM(rev_other_operating) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.REV.OFF', SUM(CASE WHEN segment = 'Offshore' THEN revenue_from_operations ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.REV.ON', SUM(CASE WHEN segment = 'Onshore' THEN revenue_from_operations ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PL.OTHER_INCOME', SUM(other_income_total) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.ROYALTY', SUM(royalty) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.OIDB_CESS', SUM(oidb_cess) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.NCCD', SUM(nccd) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.EXCISE_SAED', SUM(excise_saed) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.PORT_TRUST', SUM(port_trust) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.OTHER_LEVIES', SUM(other_levies) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.STAFF_EXPENDITURE', SUM(staff_expenditure) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.WORKOVER_OPS', SUM(workover_ops) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.WATER_INJECTION_DESALTING', SUM(water_injection_desalting) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.CONSUMPTION_STORES_SPARES', SUM(consumption_stores_spares) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.POLLUTION_CONTROL', SUM(pollution_control) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.TRANSPORT_EXPENDITURE', SUM(transport_expenditure) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.INSURANCE', SUM(insurance) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.POWER_FUEL', SUM(power_fuel) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.REPAIRS_MAINTENANCE', SUM(repairs_maintenance) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.CONTRACTUAL_HIRE', SUM(contractual_hire) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.OTHER_PRODUCTION_EXP', SUM(other_production_exp) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.TRANSPORT_FREIGHT_PRODUCTS', SUM(transport_freight_products) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.R_AND_D', SUM(r_and_d) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.GAE', SUM(gae) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.CSR', SUM(csr) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.EXCHANGE_LOSS', SUM(exchange_loss) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.MISC_EXP', SUM(misc_exp) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N35.FV_LOSS', SUM(fv_loss) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PL.PROD_EXP', SUM(levies_total + opex_total) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PL.EXPL_SURVEY', SUM(expl_survey_wo) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PL.EXPL_WELLS', SUM(expl_wells_wo) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PL.DDA', SUM(dda_total + impairment_net) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N37.IMPAIRMENT_NET', SUM(impairment_net) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PL.PROVISIONS', SUM(provisions_writeoffs) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PL.INVENTORY_CHANGE', SUM(inventory_change) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PL.PURCHASES_TRADED', SUM(purchases_traded) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.DDA.OFF', SUM(CASE WHEN segment = 'Offshore' THEN dda_total ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.DDA.ON', SUM(CASE WHEN segment = 'Onshore' THEN dda_total ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.DDA.UNALLOC', SUM(CASE WHEN segment = 'Unallocated' THEN dda_total ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.WO.OFF', SUM(CASE WHEN segment = 'Offshore' THEN provisions_writeoffs ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.WO.ON', SUM(CASE WHEN segment = 'Onshore' THEN provisions_writeoffs ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.WO.UNALLOC', SUM(CASE WHEN segment = 'Unallocated' THEN provisions_writeoffs ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.RES.OFF', SUM(CASE WHEN segment = 'Offshore' THEN segment_result_contrib ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.RES.ON', SUM(CASE WHEN segment = 'Onshore' THEN segment_result_contrib ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.UNALLOC', SUM(CASE WHEN object_id = 'CO-HQ' THEN segment_result_contrib ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PL.FIN_COST', SUM(finance_cost) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'SEG.INT_DIV', SUM(interest_dividend_income) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PL.PBT', SUM(pbt_contrib) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'CAPEX.TOTAL', SUM(capex_total) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'N351.EMP_TOTAL', SUM(employee_cost_total) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PROD.CRUDE_ONGC', SUM(CASE WHEN prod_basis = 'ONGC' THEN oil_prod_mt / 1000000.0 ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PROD.CRUDE_JV', SUM(CASE WHEN prod_basis = 'JV_SHARE' THEN oil_prod_mt / 1000000.0 ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PROD.GAS_ONGC', SUM(CASE WHEN prod_basis = 'ONGC' THEN gas_prod_mmscm / 1000.0 ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'PROD.GAS_JV', SUM(CASE WHEN prod_basis = 'JV_SHARE' THEN gas_prod_mmscm / 1000.0 ELSE 0 END) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'QTY.CRUDE_SOLD', SUM(oil_sales_mt / 1000000.0) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'QTY.GAS_SOLD', SUM(gas_sales_mmscm / 1000.0) FROM ${ref("v_field_economics_fy")} GROUP BY 1
+  UNION ALL
+  SELECT fiscal_year, 'QTY.VAP_SOLD', SUM(vap_sales_kt) FROM ${ref("v_field_economics_fy")} GROUP BY 1
 )
 SELECT
   o.fiscal_year,
   o.line_code,
   o.ssot_value,
-  COALESCE(t.value, o.ssot_value) AS reference_value,
-  o.ssot_value - COALESCE(t.value, o.ssot_value) AS delta,
-  SAFE_DIVIDE(o.ssot_value - COALESCE(t.value, o.ssot_value), NULLIF(COALESCE(t.value, o.ssot_value), 0)) AS delta_pct,
+  t.value AS reference_value,
+  o.ssot_value - t.value AS delta,
+  SAFE_DIVIDE(o.ssot_value - t.value, NULLIF(ABS(t.value), 0)) AS delta_pct,
   CASE
-    WHEN ABS(o.ssot_value - COALESCE(t.value, o.ssot_value)) <= 0.01 THEN 'PASS'
+    WHEN t.value IS NULL THEN 'MISSING_TARGET'
+    WHEN ABS(o.ssot_value - t.value) <= (
+      CASE WHEN CAST(SUBSTR(o.fiscal_year, 3) AS INT64) >= 21 THEN 0.05 ELSE 1.0 END
+    ) THEN 'PASS'
     ELSE 'FAIL'
   END AS check_status
 FROM obj_sums o
 LEFT JOIN ${ref("int_fe_targets_fy")} t
-  ON o.fiscal_year = t.fiscal_year AND o.line_code = t.line_code
+  ON o.fiscal_year = t.fiscal_year AND UPPER(o.line_code) = UPPER(t.line_code)

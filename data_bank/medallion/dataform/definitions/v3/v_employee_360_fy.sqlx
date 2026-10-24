@@ -1,6 +1,6 @@
 config {
   type: "view",
-  schema: "hrfin_stage",
+  schema: "hrfin_gold",
   name: "v_employee_360_fy",
   description: "FY rolled up view."
 }
@@ -73,6 +73,7 @@ SELECT
   SUM(cost_note35_e_inr) AS cost_note35_e_inr,
   SUM(cost_note35_f_inr) AS cost_note35_f_inr,
   SUM(cost_total_inr) AS cost_total_inr,
+  SUM(cost_total_inr) AS cost_total_fy,
   SUM(cost_capitalised_inr) AS cost_capitalised_inr,
   SUM(cost_expensed_inr) AS cost_expensed_inr,
   SUM(cost_expensed_production_inr) AS cost_expensed_production_inr,

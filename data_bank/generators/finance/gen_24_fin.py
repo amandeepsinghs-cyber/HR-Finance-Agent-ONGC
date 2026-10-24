@@ -871,7 +871,9 @@ if len(_cam_idx) > 0 and len(_mh_idx) > 0:
     if _cam_boe > 0 and _mh_boe > 0 and (_cam_mp / _cam_boe) <= (_mh_mp / _mh_boe):
         _diff = (_mh_mp / _mh_boe) * _cam_boe - _cam_mp + 1.0
         pnl_df.at[_cam_idx[0], "allocated_manpower_cost_inr_cr"] += _diff
-        pnl_df.at[_cam_idx[0], "oil_revenue_inr_cr"] += _diff
+        # Reclassify from contractor cost (OPEX-neutral) instead of grossing up
+        # revenue, so SUM(gross_revenue) stays anchored to AR revenue.
+        pnl_df.at[_cam_idx[0], "contractor_cost_inr_cr"] -= _diff
         _recalc_copa_row(_cam_idx[0])
 
 for _ in range(50):
@@ -884,7 +886,44 @@ for _ in range(50):
                 pnl_df.at[_idx, _h] = 0.1
                 _pos = [x for x in _opex_heads if pnl_df.at[_idx, x] > 0 and x != _h]
                 if not _pos:
-                    pnl_df.at[_idx, "oil_revenue_inr_cr"] += _amt
+                    # No positive OPEX head left on this row (e.g. the FY26
+                    # reconciliation row after the onshore PBT/BOR/ADI calibration
+                    # drove its contractor_cost negative). Do NOT gross up revenue
+                    # here: that drifts SUM(gross_revenue) away from the AR
+                    # revenue-from-operations anchor. Instead absorb the cost
+                    # by scaling down the non-manpower OPEX heads of the other
+                    # field rows in the same FY and segment (manpower stays as
+                    # calibrated), which keeps segment PBT and gross revenue intact.
+                    _same_fy = pnl_df["fiscal_year"] == pnl_df.at[_idx, "fiscal_year"]
+                    if _on_mask.at[_idx]:
+                        _seg = _on_mask
+                    elif _off_mask.at[_idx]:
+                        _seg = _off_mask
+                    else:
+                        _seg = _same_fy
+                    _donor_idx = pnl_df[_seg & _same_fy & (pnl_df["line_type"] == "field")
+                                        & ~pnl_df["field_id"].isin(["FLD-BOR", "FLD-ADI"])
+                                        & (pnl_df.index != _idx)].index
+                    _nm_heads = [x for x in _opex_heads if x != "allocated_manpower_cost_inr_cr"]
+                    _pool = float(pnl_df.loc[_donor_idx, _nm_heads].clip(lower=0).sum().sum()) if len(_donor_idx) else 0.0
+                    if _pool <= 2.0 * _amt:
+                        pnl_df.at[_idx, "oil_revenue_inr_cr"] += _amt
+                    else:
+                        _k = 1.0 - _amt / _pool
+                        _taken = 0.0
+                        for _d in _donor_idx:
+                            for _x in _nm_heads:
+                                _old = pnl_df.at[_d, _x]
+                                if _old > 0:
+                                    _new = round(_old * _k, 2)
+                                    pnl_df.at[_d, _x] = _new
+                                    _taken += _old - _new
+                        # put the rounding residual on the single largest donor head
+                        _big = max(((_d, _x) for _d in _donor_idx for _x in _nm_heads),
+                                   key=lambda t: pnl_df.at[t[0], t[1]])
+                        pnl_df.at[_big[0], _big[1]] = round(pnl_df.at[_big[0], _big[1]] - (_amt - _taken), 2)
+                        for _d in _donor_idx:
+                            _recalc_copa_row(_d)
                 else:
                     _best_h = max(_pos, key=lambda x: pnl_df.at[_idx, x])
                     pnl_df.at[_idx, _best_h] -= _amt

@@ -2,18 +2,21 @@ config {
   type: "table",
   schema: "hrfin_stage",
   name: "fact_employee_cost_pool",
-  description: "Non-individual employee cost pools.",
+  description: "Non-individual employee cost pools reconciling Note 35 lines (a)-(f).",
   bigquery: {
-    partitionBy: "DATE(month_start)",
+    partitionBy: "month_start",
     clusterBy: ["fiscal_year", "pool_code"]
   }
 }
 
 SELECT
-  CAST(month_start AS DATE) AS month_start,
+  month_start,
   fiscal_year,
   pool_code,
   note35_line,
-  CAST(amount_inr AS NUMERIC) AS amount_inr,
-  allocation_basis
-FROM ${ref("sap_employee_cost_pool")}
+  amount_inr,
+  allocation_basis,
+  cost_destination,
+  segment,
+  basis
+FROM ${ref("employee_cost_pool")}

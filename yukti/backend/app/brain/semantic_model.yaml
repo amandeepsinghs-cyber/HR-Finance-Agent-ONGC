@@ -1516,17 +1516,162 @@ subjects:
         label: "Employee cost per employee (\u20B9 lakh)"
         data_class: general_hr
   field_econ:
-    domain: hr
-    table: hrfin_gold.ssot_field_economics_360
-    description: Field
-    fields: {}
+    domain: finance
+    table: hrfin_gold.v_field_economics_fy
+    description: "Specialized RAS cost-object Field Economics-360 rollup (hrfin_gold.v_field_economics_fy) for per-BOE unit economics, Note 35 opex by nature, breakeven crude price, capex intensity, and company bridge. For standard field revenue, profit/loss (PBT), EBITDA, and lifting cost rankings/trends, use field_pnl."
+    period: fiscal_year
+    default_fy: FY26
+    fields:
+      fy:
+        column: fiscal_year
+        kind: fy
+      object_id:
+        column: object_id
+        kind: entity:field
+        label: cost object
+      object_name:
+        column: object_name
+        kind: categorical
+        label: object name
+      object_type:
+        column: object_type
+        kind: categorical
+        label: object type
+      field:
+        column: object_id
+        kind: entity:field
+        label: field
+      asset:
+        column: asset_wc_id
+        kind: entity:wc
+        label: asset
+      basin:
+        column: basin
+        kind: categorical
+        label: basin
+      state:
+        column: state
+        kind: categorical
+        label: state
+      segment:
+        column: segment
+        kind: categorical
+        label: segment
+      operatorship:
+        column: operatorship
+        kind: categorical
+        label: operatorship
+      maturity:
+        column: maturity
+        kind: categorical
+        label: maturity
+      hydrocarbon:
+        column: hydrocarbon
+        kind: categorical
+        label: hydrocarbon
+      prod_basis:
+        column: prod_basis
+        kind: categorical
+        label: production basis
+    dimension_fallbacks:
+      wc: asset
     metrics:
-      employee_cost_per_boe:
-        expr: SUM(cost_expensed_production_inr)/1
+      field_revenue_cr:
+        expr: ROUND(SUM(revenue_from_operations) / 10.0, 2)
+        aggregation: sum
+        unit: inr_cr
+        label: "RAS cost-object revenue from operations (\u20B9 cr) \u2014 Modelled (use revenue_cr for standard field revenue)"
+        data_class: fin_internal
+      opex_per_boe_inr:
+        expr: ROUND(SUM(opex_operating_excl_corporate) * 1000000.0 / NULLIF(SUM(prod_boe), 0), 2)
         aggregation: ratio
-        unit: inr_lakh
-        label: Modelled
-        data_class: general_hr
+        unit: inr_per_boe
+        label: "Operating expenditure per BOE (\u20B9/BOE) \u2014 Modelled"
+        data_class: fin_internal
+      opex_per_boe_usd:
+        expr: ROUND((SUM(opex_operating_excl_corporate) * 1000000.0 / NULLIF(SUM(prod_boe), 0)) / NULLIF(AVG(inr_usd_fx_rate), 0), 2)
+        aggregation: ratio
+        unit: usd_per_boe
+        label: "Operating expenditure per BOE ($/BOE) \u2014 Modelled"
+        data_class: fin_internal
+      lifting_cost_per_boe_usd:
+        expr: ROUND((SUM(opex_lifting) * 1000000.0 / NULLIF(SUM(prod_boe), 0)) / NULLIF(AVG(inr_usd_fx_rate), 0), 2)
+        aggregation: ratio
+        unit: usd_per_boe
+        label: "RAS cost-object lifting cost per BOE ($/BOE) \u2014 Modelled (use lifting_cost_usd_per_boe for standard lifting cost)"
+        data_class: fin_internal
+      employee_cost_per_boe:
+        expr: ROUND(SUM(staff_expenditure) * 1000000.0 / NULLIF(SUM(prod_boe), 0), 2)
+        aggregation: ratio
+        unit: inr_per_boe
+        label: "Employee cost per BOE (\u20B9/BOE) \u2014 Modelled (total Real)"
+        data_class: fin_internal
+      field_ebitda_cr:
+        expr: ROUND(SUM(ebitda) / 10.0, 2)
+        aggregation: sum
+        unit: inr_cr
+        label: "RAS cost-object field EBITDA (\u20B9 cr) \u2014 Modelled (use ebitda_cr for standard field EBITDA)"
+        data_class: fin_internal
+      field_ebitda_margin_pct:
+        expr: ROUND(100.0 * SUM(ebitda) / NULLIF(SUM(revenue_from_operations), 0), 2)
+        aggregation: ratio
+        unit: pct
+        label: "RAS cost-object field EBITDA margin (%) \u2014 Modelled (use ebitda_margin_pct for standard field margin)"
+        data_class: fin_internal
+      field_pbt_cr:
+        expr: ROUND(SUM(pbt_contrib) / 10.0, 2)
+        aggregation: sum
+        unit: inr_cr
+        label: "RAS cost-object field PBT contribution (\u20B9 cr) \u2014 Modelled (use pbt_cr for standard field PBT)"
+        data_class: fin_internal
+      levies_pct_revenue:
+        expr: ROUND(100.0 * SUM(levies_total) / NULLIF(SUM(revenue_from_operations), 0), 2)
+        aggregation: ratio
+        unit: pct
+        label: "Statutory levies as % of revenue \u2014 Modelled (total Real)"
+        data_class: fin_internal
+      revenue_per_employee_field_cr:
+        expr: ROUND((SUM(revenue_from_operations) / 10.0) / NULLIF(AVG(headcount_direct) + AVG(headcount_allocated_fte), 0), 2)
+        aggregation: ratio
+        unit: inr_cr
+        label: "Revenue per employee by field (\u20B9 cr) \u2014 Modelled"
+        data_class: fin_internal
+      boe_per_employee:
+        expr: ROUND(SUM(prod_boe) / NULLIF(AVG(headcount_direct) + AVG(headcount_allocated_fte), 0), 2)
+        aggregation: ratio
+        unit: boe
+        label: "Production BOE per employee \u2014 Modelled"
+        data_class: fin_internal
+      breakeven_crude_usd_bbl:
+        expr: ROUND(((SUM(rev_crude) - SUM(pbt_contrib)) * 1000000.0 / NULLIF(SUM(oil_sales_mt), 0)) / (7.33 * NULLIF(AVG(inr_usd_fx_rate), 0)), 2)
+        aggregation: ratio
+        unit: usd_per_boe
+        label: "Breakeven crude price ($/bbl) \u2014 Modelled"
+        data_class: fin_internal
+      capex_intensity_usd_boe:
+        expr: ROUND((SUM(capex_total) * 1000000.0 / NULLIF(SUM(prod_boe), 0)) / NULLIF(AVG(inr_usd_fx_rate), 0), 2)
+        aggregation: ratio
+        unit: usd_per_boe
+        label: "Capex intensity ($/BOE) \u2014 Modelled"
+        data_class: fin_internal
+      offshore_vs_onshore_revenue_cr:
+        expr: ROUND(SUM(CASE WHEN segment IN ('Offshore', 'Onshore') THEN revenue_from_operations ELSE 0 END) / 10.0, 2)
+        aggregation: sum
+        unit: inr_cr
+        label: "Offshore vs Onshore segment revenue (\u20B9 cr) \u2014 Real"
+        data_class: general_fin
+      offshore_vs_onshore_result_cr:
+        expr: ROUND(SUM(CASE WHEN segment IN ('Offshore', 'Onshore') THEN segment_result_contrib ELSE 0 END) / 10.0, 2)
+        aggregation: sum
+        unit: inr_cr
+        label: "Offshore vs Onshore segment profit (\u20B9 cr) \u2014 Real"
+        data_class: general_fin
+      company_bridge:
+        expr: ROUND(SUM(pbt_contrib) / 10.0, 2)
+        aggregation: sum
+        unit: inr_cr
+        label: "Company bridge reconciled PBT total (\u20B9 cr) \u2014 Real vs Modelled"
+        data_class: general_fin
 templates:
   headcount_change:
     domain: hr

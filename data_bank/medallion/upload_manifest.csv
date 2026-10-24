@@ -1602,6 +1602,6 @@ landing/sap/headcount_monthly_snapshot.csv,gs://ongc-hr-finance-agent-landing/sa
 landing/sap/project_milestones.csv,gs://ongc-hr-finance-agent-landing/sap/20261019/project_milestones.csv,117940,0c231708f6cbbea12f9b4e5d1182ace5
 landing/sap/vigilance_cases_confidential.csv,gs://ongc-hr-finance-agent-landing/sap/20261019/vigilance_cases_confidential.csv,14798,6059013f85ad53a78f50686d06bf14fa
 sap_employee_cost_pool,landing/sap/employee_cost_pool.csv,gs://ongc-hr-finance-agent-landing/sap/20261020/employee_cost_pool.csv,7542,320613f7f0d67ac864d02af56dca902d
-landing/sap/CO_PA_v3.csv,gs://ongc-hr-finance-agent-landing/sap/20261020/CO_PA_v3.csv,0,md5
-landing/sap/field_alloc_audit.csv,gs://ongc-hr-finance-agent-landing/sap/20261020/field_alloc_audit.csv,0,md5
+landing/sap/CO_PA_v3.csv,gs://ongc-hr-finance-agent-landing/sap/20261020/CO_PA_v3.csv,12888949,13252712592efa2c025ea419d0c6568c
+landing/sap/field_alloc_audit.csv,gs://ongc-hr-finance-agent-landing/sap/20261020/field_alloc_audit.csv,42851,b0749bcf2977c0b6724399e13c78e5aa
 sap_payroll_policy_fy,landing/sap/payroll_policy_fy.csv,gs://ongc-hr-finance-agent-landing/sap/20261020/payroll_policy_fy.csv,217,80f65e7858fecc14e165591c6f0b4708

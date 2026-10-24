@@ -1,13 +1,10 @@
 config {
-  type: "incremental",
+  type: "table",
   schema: "hrfin_gold",
   name: "recon_checks",
-  uniqueKey: ["run_id", "check_id", "fiscal_year", "level", "dimension_key", "metric"]
+  description: "Unified reconciliation audit table (Employee-360 EMP-R01..R30 + Field Economics-360 FLD-R01..R17)."
 }
 
-SELECT GENERATE_UUID() AS run_id, CURRENT_TIMESTAMP() AS run_ts, *
-FROM (
-  SELECT * FROM ${ref("recon_employee360")}
-  UNION ALL
-  SELECT * FROM ${ref("recon_field_economics")}
-)
+SELECT * FROM ${ref("recon_employee360")}
+UNION ALL
+SELECT * FROM ${ref("recon_field_economics")}

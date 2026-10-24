@@ -9,16 +9,16 @@ WITH raw AS (
   SELECT
     _ingest_ts,
     TRIM(`separation_id`) AS separation_id,
-    TRIM(`PERNR`) AS PERNR,
-    TRIM(`BEGDA`) AS BEGDA,
+    TRIM(`PERNR`) AS emp_id,
+    SAFE.PARSE_DATE('%Y-%m-%d', SUBSTR(NULLIF(TRIM(`BEGDA`), ''), 1, 10)) AS separation_date,
     TRIM(`fiscal_year`) AS fiscal_year,
-    TRIM(`MASSN`) AS MASSN,
+    TRIM(`MASSN`) AS separation_type,
     TRIM(`last_grade_id`) AS last_grade_id,
     TRIM(`discipline_id`) AS discipline_id,
     TRIM(`last_wc_id`) AS last_wc_id,
     SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`age_at_separation`), ''), ',', ''), '₹', '') AS NUMERIC) AS age_at_separation,
     SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`total_service_years`), ''), ',', ''), '₹', '') AS NUMERIC) AS total_service_years,
-    TRIM(`MASSG`) AS MASSG,
+    TRIM(`MASSG`) AS exit_interview_reason,
     TRIM(`target_company_or_sector`) AS target_company_or_sector
   FROM ${ref("sap_pa0000_separations")}
   WHERE NULLIF(TRIM(`separation_id`), '') IS NOT NULL

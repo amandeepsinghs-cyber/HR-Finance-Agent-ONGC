@@ -1,7 +1,10 @@
 config {
   type: "assertion",
-  schema: "hrfin_gold",
-  name: "assert_recon_block_pass"
+  schema: "hrfin_stage",
+  name: "assert_recon_block_pass",
+  description: "Blocking assertion: fails if any BLOCK reconciliation check in recon_checks has status = FAIL."
 }
-SELECT * FROM ${ref("recon_checks")}
+
+SELECT *
+FROM ${ref("recon_checks")}
 WHERE severity = 'BLOCK' AND status = 'FAIL'

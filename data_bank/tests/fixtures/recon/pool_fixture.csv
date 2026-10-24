@@ -1,0 +1,13 @@
+fiscal_year,month_start,pool_code,note35_line,amount_inr,allocation_basis,basis
+FY25,2025-03-01,POOL_RESIDUAL_A,a,10000.0,AR line a minus modelled active,residual
+FY25,2025-03-01,POOL_RESIDUAL_B,b,5000.0,AR line b minus modelled active,residual
+FY25,2025-03-01,POOL_ACTUARIAL_TRUEUP,c,2000.0,AR line c minus modelled active,real_total_modelled_split
+FY25,2025-03-01,POOL_ACTUARIAL_TRUEUP,d,1000.0,AR line d minus modelled active,real_total_modelled_split
+FY25,2025-03-01,POOL_RETIREE_PRMB,e,3000.0,AR line e minus modelled active,real_total_modelled_split
+FY25,2025-03-01,POOL_WELFARE_INFRA,f,1500.0,AR line f minus modelled active,real_total_modelled_split
+FY26,2026-03-01,POOL_RESIDUAL_A,a,10000.0,AR line a minus modelled active,residual
+FY26,2026-03-01,POOL_RESIDUAL_B,b,5000.0,AR line b minus modelled active,residual
+FY26,2026-03-01,POOL_ACTUARIAL_TRUEUP,c,2000.0,AR line c minus modelled active,real_total_modelled_split
+FY26,2026-03-01,POOL_ACTUARIAL_TRUEUP,d,1000.0,AR line d minus modelled active,real_total_modelled_split
+FY26,2026-03-01,POOL_RETIREE_PRMB,e,3000.0,AR line e minus modelled active,real_total_modelled_split
+FY26,2026-03-01,POOL_WELFARE_INFRA,f,1500.0,AR line f minus modelled active,real_total_modelled_split

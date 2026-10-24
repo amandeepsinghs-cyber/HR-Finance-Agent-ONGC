@@ -4294,8 +4294,9 @@ queries:
   - my
   - leave
   - balance
-  parameterized_sql: SELECT emp_id, sum(leave_balance) as balance FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id GROUP BY emp_id
+  parameterized_sql: SELECT emp_id, month_start, el_balance_days, hpl_balance_days,
+    cl_balance_days, el_encashable_days FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    WHERE emp_id = @self_emp_id ORDER BY month_start DESC LIMIT 12
   params:
     self_emp_id:
       type: STRING
@@ -4312,8 +4313,9 @@ queries:
   - my
   - posting
   - history
-  parameterized_sql: SELECT emp_id, work_centre, month_start FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE emp_id = @self_emp_id
+  parameterized_sql: SELECT emp_id, wc_id, wc_name, grade_id, functional_designation,
+    current_station_since, station_tenure_continuous_years, month_start FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    WHERE emp_id = @self_emp_id ORDER BY month_start DESC
   params:
     self_emp_id:
       type: STRING
@@ -4330,8 +4332,11 @@ queries:
   - entry
   - pay
   - grade
-  parameterized_sql: SELECT grade, AVG(entry_pay_monthly) as pay FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    GROUP BY grade
+  parameterized_sql: SELECT grade_id, grade_designation, MIN(pay_scale_min_inr) AS
+    pay_scale_min_inr, MAX(pay_scale_max_inr) AS pay_scale_max_inr, ROUND(AVG(basic_pay_inr),
+    2) AS avg_basic_pay_inr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    WHERE is_fy_end = TRUE AND is_month_end_active = TRUE GROUP BY grade_id, grade_designation,
+    grade_level_order ORDER BY grade_level_order
   params: {}
   visual_kind: bar
   unit: inr
@@ -4344,8 +4349,10 @@ queries:
   - ctc
   - grade
   - average
-  parameterized_sql: SELECT grade, AVG(ctc_annualised) as ctc FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    GROUP BY grade
+  parameterized_sql: SELECT grade_id, grade_designation, ROUND(AVG(ctc_annualised_inr)
+    / 100000, 2) AS avg_ctc_lakh FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    WHERE is_fy_end = TRUE AND is_month_end_active = TRUE GROUP BY grade_id, grade_designation,
+    grade_level_order ORDER BY grade_level_order
   params: {}
   visual_kind: bar
   unit: inr_lakh
@@ -4359,8 +4366,9 @@ queries:
   - component
   - mix
   - grade
-  parameterized_sql: SELECT grade, component_name, sum(amount) as total FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_pay_component_long`
-    GROUP BY grade, component_name
+  parameterized_sql: SELECT grade_id, component_group, component_name, ROUND(SUM(amount_inr)
+    / 10000000, 2) AS total_inr_cr FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_pay_component_long`
+    GROUP BY grade_id, component_group, component_name
   params: {}
   visual_kind: stacked_bar
   unit: inr_cr
@@ -4373,9 +4381,9 @@ queries:
   - cost
   - employee
   - trend
-  parameterized_sql: SELECT fiscal_year, sum(cost_total_inr) / count(distinct emp_id)
-    as cost_per_emp FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` GROUP
-    BY fiscal_year
+  parameterized_sql: SELECT fiscal_year, ROUND((SUM(cost_total_inr) / NULLIF(COUNTIF(is_month_end_active),
+    0)) / 100000, 2) AS cost_per_emp_lakh FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy`
+    GROUP BY fiscal_year ORDER BY fiscal_year
   params: {}
   visual_kind: line
   unit: inr_lakh
@@ -4388,9 +4396,11 @@ queries:
   - revenue
   - employee
   - trend
-  parameterized_sql: SELECT fiscal_year, (sum(revenue_operations) / sum(headcount_fy_end))
-    as rev_per_emp FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` GROUP
-    BY fiscal_year
+  parameterized_sql: SELECT e.fiscal_year, ROUND(SAFE_DIVIDE(MAX(f.value_inr_crore),
+    NULLIF(COUNTIF(e.is_month_end_active), 0)), 2) AS rev_per_emp_cr FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy`
+    e LEFT JOIN `ongc-hr-finance-agent.hrfin_gold.fact_financial_statement_line` f
+    ON e.fiscal_year = f.fy AND f.line_code = 'REV_FROM_OPS' AND f.consolidation =
+    'STANDALONE' GROUP BY e.fiscal_year ORDER BY e.fiscal_year
   params: {}
   visual_kind: line
   unit: inr_cr
@@ -4403,8 +4413,9 @@ queries:
   - overtime
   - work centre
   - wc
-  parameterized_sql: SELECT work_centre, sum(overtime_amount) as ot FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    GROUP BY work_centre
+  parameterized_sql: SELECT wc_id, wc_name, ROUND(SUM(overtime_amount_inr) / 100000,
+    2) AS overtime_lakh, SUM(overtime_hours) AS overtime_hours FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    GROUP BY wc_id, wc_name ORDER BY overtime_lakh DESC
   params: {}
   visual_kind: bar
   unit: inr_lakh
@@ -4417,9 +4428,9 @@ queries:
   - medical
   - cost
   - trend
-  parameterized_sql: SELECT fiscal_year, sum(medical_scheme_cost_inr + medical_reimbursement)
-    as med_cost FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` GROUP BY
-    fiscal_year
+  parameterized_sql: SELECT fiscal_year, ROUND(SUM(medical_scheme_cost_inr + medical_reimbursement_inr)
+    / 10000000, 2) AS med_cost_cr FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy`
+    GROUP BY fiscal_year ORDER BY fiscal_year
   params: {}
   visual_kind: line
   unit: inr_cr
@@ -4433,8 +4444,10 @@ queries:
   - overdue
   - cohort
   - cost
-  parameterized_sql: SELECT sum(ctc_annualised) as cost FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-    WHERE delhi_overdue_flag = TRUE
+  parameterized_sql: SELECT COUNT(DISTINCT emp_id) AS overdue_executives, ROUND(SUM(ctc_annualised_inr)
+    / 10000000, 2) AS annualised_ctc_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
+    WHERE is_fy_end = TRUE AND fiscal_year = 'FY26' AND is_month_end_active = TRUE
+    AND cadre = 'executive' AND delhi_overdue_flag = TRUE
   params: {}
   visual_kind: kpi
   unit: inr_cr

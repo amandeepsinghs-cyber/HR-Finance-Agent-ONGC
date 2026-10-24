@@ -332,6 +332,224 @@ def get_table_schema(table_name: str) -> List[bigquery.SchemaField]:
     return []
 
 
+def build_grade_pay_scales() -> List[Dict[str, Any]]:
+    grades_data = load_yaml("grades.yaml")["grades"]
+    rules_data = load_yaml("allowance_rules.yaml")
+    scales_2017 = rules_data.get("pay_scales_2017", {})
+    scales_2007 = rules_data.get("pay_scales_2007", {})
+    records: List[Dict[str, Any]] = []
+    for g in grades_data:
+        gid = str(g["grade_id"])
+        s17 = scales_2017.get(gid, {})
+        records.append({
+            "grade_id": gid,
+            "scale_version": "2017",
+            "pay_scale_min_inr": float(s17.get("min_inr", g["pay_scale_min_inr"])),
+            "pay_scale_max_inr": float(s17.get("max_inr", g["pay_scale_max_inr"])),
+            "increment_pct": 3.0,
+            "prp_ceiling_pct_bp": float(s17.get("prp_ceiling_pct", 40.0)),
+            "source": str(s17.get("source_doc", g.get("scale_source", "DPE OM 3-Aug-2017"))),
+        })
+        if gid in scales_2007:
+            s07 = scales_2007[gid]
+            records.append({
+                "grade_id": gid,
+                "scale_version": "2007",
+                "pay_scale_min_inr": float(s07["min_inr"]),
+                "pay_scale_max_inr": float(s07["max_inr"]),
+                "increment_pct": 3.0,
+                "prp_ceiling_pct_bp": float(s17.get("prp_ceiling_pct", 40.0)),
+                "source": "DPE OM 3-Aug-2017 Annex I (2007 scale)",
+            })
+    return records
+
+
+def build_ida_rates() -> List[Dict[str, Any]]:
+    data = load_yaml("ida_rates.yaml")["ida_rates"]
+    records: List[Dict[str, Any]] = []
+    for r in data:
+        records.append({
+            "effective_date": str(r["effective_date"]),
+            "scale_version": str(r["scale_version"]),
+            "ida_pct": float(r["ida_pct"]),
+            "status": str(r.get("status", "real")),
+            "source_doc": str(r.get("source_doc", "DPE OM")),
+        })
+    return records
+
+
+def build_hra_rates() -> List[Dict[str, Any]]:
+    data = load_yaml("hra_rates.yaml")["hra_rates"]
+    records: List[Dict[str, Any]] = []
+    for r in data:
+        records.append({
+            "city_class": str(r["city_class"]),
+            "population_band": str(r["population_band"]),
+            "hra_pct_ida_lt_25": float(r["hra_pct_ida_lt_25"]),
+            "hra_pct_ida_25_to_50": float(r["hra_pct_ida_25_to_50"]),
+            "hra_pct_ida_ge_50": float(r["hra_pct_ida_ge_50"]),
+            "hrr_pct_bp": float(r["hrr_pct_bp"]),
+            "status": str(r.get("status", "real")),
+            "source_doc": str(r.get("source_doc", "DPE OM 4-Aug-2017")),
+        })
+    return records
+
+
+def build_allowance_rules() -> List[Dict[str, Any]]:
+    data = load_yaml("allowance_rules.yaml")["allowance_rules"]
+    records: List[Dict[str, Any]] = []
+    for r in data:
+        cap = r.get("cap_pct_bp", r.get("cap_pct_bp_plus_da"))
+        records.append({
+            "allowance_id": str(r["allowance_code"]),
+            "rule_desc": str(r["rule"]),
+            "ceiling_pct_bp": float(cap) if cap is not None else None,
+            "status": str(r.get("status", "real")),
+            "source_doc": str(r.get("source_doc", "DPE Guidelines")),
+        })
+    return records
+
+
+def build_payroll_policy_fy() -> List[Dict[str, Any]]:
+    csv_path = BASE_DIR / "landing" / "sap" / "payroll_policy_fy.csv"
+    df = pd.read_csv(csv_path)
+    records: List[Dict[str, Any]] = []
+    for _, row in df.iterrows():
+        arr_month = row.get("arrears_month")
+        notes_val = row.get("notes")
+        records.append({
+            "fiscal_year": str(row["fiscal_year"]),
+            "da_q1_pct": float(row["da_q1_pct"]),
+            "da_q2_pct": float(row["da_q2_pct"]),
+            "da_q3_pct": float(row["da_q3_pct"]),
+            "da_q4_pct": float(row["da_q4_pct"]),
+            "da_fy_avg_pct": float(row["da_fy_avg_pct"]),
+            "prp_pool_factor": float(row["prp_pool_factor"]),
+            "increment_rate_pct": float(row["Increment_rate_pct"]),
+            "arrears_factor": float(row["arrears_factor"]),
+            "arrears_month": str(arr_month) if pd.notna(arr_month) and str(arr_month) != "None" else None,
+            "prbs_rate_pct": float(row["prbs_rate_pct"]),
+            "u_fy": float(row["u_fy"]),
+            "k_fy": float(row["k_fy"]),
+            "ot_fy": float(row["ot_fy"]),
+            "residual_pool_pct": float(row["residual_pool_pct"]),
+            "notes": str(notes_val) if pd.notna(notes_val) else None,
+        })
+    return records
+
+
+def build_field_econ_targets_fy() -> List[Dict[str, Any]]:
+    csv_path = REFERENCE_DIR / "real_targets" / "field_econ_targets_fy.csv"
+    df = pd.read_csv(csv_path)
+    records: List[Dict[str, Any]] = []
+    for _, row in df.iterrows():
+        records.append({
+            "fiscal_year": str(row["fiscal_year"]),
+            "line_code": str(row["line_code"]),
+            "value": float(row["value"]),
+            "unit": str(row["unit"]),
+            "source_doc": str(row["source_doc"]),
+            "source_page": int(row["source_page"]),
+            "source_text_line": int(row["source_text_line"]),
+            "verified": bool(row["verified"]),
+        })
+    return records
+
+
+def load_hrfin_ref_dims(client: bigquery.Client | None = None) -> None:
+    if client is None:
+        client = bigquery.Client(project=PROJECT_ID)
+    dataset_ref = f"{PROJECT_ID}.hrfin_ref"
+
+    schema_grade = [
+        bigquery.SchemaField("grade_id", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("scale_version", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("pay_scale_min_inr", "NUMERIC"),
+        bigquery.SchemaField("pay_scale_max_inr", "NUMERIC"),
+        bigquery.SchemaField("increment_pct", "NUMERIC"),
+        bigquery.SchemaField("prp_ceiling_pct_bp", "NUMERIC"),
+        bigquery.SchemaField("source", "STRING"),
+    ]
+
+    schema_ida = [
+        bigquery.SchemaField("effective_date", "DATE", mode="REQUIRED"),
+        bigquery.SchemaField("scale_version", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("ida_pct", "NUMERIC"),
+        bigquery.SchemaField("status", "STRING"),
+        bigquery.SchemaField("source_doc", "STRING"),
+    ]
+
+    schema_hra = [
+        bigquery.SchemaField("city_class", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("population_band", "STRING"),
+        bigquery.SchemaField("hra_pct_ida_lt_25", "NUMERIC"),
+        bigquery.SchemaField("hra_pct_ida_25_to_50", "NUMERIC"),
+        bigquery.SchemaField("hra_pct_ida_ge_50", "NUMERIC"),
+        bigquery.SchemaField("hrr_pct_bp", "NUMERIC"),
+        bigquery.SchemaField("status", "STRING"),
+        bigquery.SchemaField("source_doc", "STRING"),
+    ]
+
+    schema_allowance = [
+        bigquery.SchemaField("allowance_id", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("rule_desc", "STRING"),
+        bigquery.SchemaField("ceiling_pct_bp", "NUMERIC"),
+        bigquery.SchemaField("status", "STRING"),
+        bigquery.SchemaField("source_doc", "STRING"),
+    ]
+
+    schema_policy = [
+        bigquery.SchemaField("fiscal_year", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("da_q1_pct", "NUMERIC"),
+        bigquery.SchemaField("da_q2_pct", "NUMERIC"),
+        bigquery.SchemaField("da_q3_pct", "NUMERIC"),
+        bigquery.SchemaField("da_q4_pct", "NUMERIC"),
+        bigquery.SchemaField("da_fy_avg_pct", "NUMERIC"),
+        bigquery.SchemaField("prp_pool_factor", "NUMERIC"),
+        bigquery.SchemaField("increment_rate_pct", "NUMERIC"),
+        bigquery.SchemaField("arrears_factor", "NUMERIC"),
+        bigquery.SchemaField("arrears_month", "STRING"),
+        bigquery.SchemaField("prbs_rate_pct", "NUMERIC"),
+        bigquery.SchemaField("u_fy", "NUMERIC"),
+        bigquery.SchemaField("k_fy", "NUMERIC"),
+        bigquery.SchemaField("ot_fy", "NUMERIC"),
+        bigquery.SchemaField("residual_pool_pct", "NUMERIC"),
+        bigquery.SchemaField("notes", "STRING"),
+    ]
+
+    schema_fe_targets = [
+        bigquery.SchemaField("fiscal_year", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("line_code", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("value", "NUMERIC"),
+        bigquery.SchemaField("unit", "STRING"),
+        bigquery.SchemaField("source_doc", "STRING"),
+        bigquery.SchemaField("source_page", "INT64"),
+        bigquery.SchemaField("source_text_line", "INT64"),
+        bigquery.SchemaField("verified", "BOOL"),
+    ]
+
+    ref_tables_to_load = [
+        ("dim_grade_pay_scale", build_grade_pay_scales(), schema_grade),
+        ("dim_ida_rate", build_ida_rates(), schema_ida),
+        ("dim_hra_rate", build_hra_rates(), schema_hra),
+        ("dim_allowance_rule", build_allowance_rules(), schema_allowance),
+        ("dim_payroll_policy_fy", build_payroll_policy_fy(), schema_policy),
+        ("field_econ_targets_fy", build_field_econ_targets_fy(), schema_fe_targets),
+    ]
+
+    for tbl_name, rows, schema_fields in ref_tables_to_load:
+        tbl_id = f"{dataset_ref}.{tbl_name}"
+        print(f"Loading {tbl_name} ({len(rows)} rows) into {tbl_id}...")
+        job_config = bigquery.LoadJobConfig(
+            schema=schema_fields,
+            write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
+            labels=JOB_LABELS,
+        )
+        job = client.load_table_from_json(rows, tbl_id, job_config=job_config)
+        job.result()
+        print(f"  Successfully loaded {tbl_name} to {tbl_id}")
+
+
 def main():
     client = bigquery.Client(project=PROJECT_ID)
     tables_to_load = [
@@ -361,59 +579,8 @@ def main():
         job.result()
         print(f"  Successfully loaded {tbl_name} to {tbl_id}")
 
+    load_hrfin_ref_dims(client)
 
-
-def load_hrfin_ref_dims():
-    client = bigquery.Client(project=PROJECT_ID)
-    dataset_ref = f"{PROJECT_ID}.hrfin_ref"
-    
-    # 1. dim_grade_pay_scale
-    schema_grade = [
-        bigquery.SchemaField("grade_id", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("scale_version", "STRING"),
-        bigquery.SchemaField("pay_scale_min_inr", "NUMERIC"),
-        bigquery.SchemaField("pay_scale_max_inr", "NUMERIC"),
-        bigquery.SchemaField("increment_pct", "NUMERIC"),
-        bigquery.SchemaField("prp_ceiling_pct_bp", "NUMERIC"),
-        bigquery.SchemaField("source", "STRING")
-    ]
-    # We pretend to load from CSVs/YAMLs
-    
-    # 2. dim_benefit_scheme
-    schema_benefit = [
-        bigquery.SchemaField("scheme_id", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("scheme_name", "STRING"),
-        bigquery.SchemaField("employer_contribution_pct", "NUMERIC")
-    ]
-    
-    # 3. dim_insurance_plan
-    schema_insurance = [
-        bigquery.SchemaField("plan_id", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("plan_name", "STRING"),
-        bigquery.SchemaField("premium_inr", "NUMERIC")
-    ]
-    
-    # 4. dim_allowance_rule
-    schema_allowance = [
-        bigquery.SchemaField("allowance_id", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("rule_desc", "STRING"),
-        bigquery.SchemaField("ceiling_pct_bp", "NUMERIC")
-    ]
-    
-    # 5. dim_payroll_policy_fy
-    schema_policy = [
-        bigquery.SchemaField("fiscal_year", "STRING", mode="REQUIRED"),
-        bigquery.SchemaField("prp_kitty_factor", "NUMERIC"),
-        bigquery.SchemaField("cafeteria_utilisation", "NUMERIC"),
-        bigquery.SchemaField("ot_intensity", "NUMERIC")
-    ]
-    
-    # Note: actual loading logic would go here.
-    pass
-
-if __name__ == "__main__":
-    # If the file runs this block, we should make sure we don't break existing execution.
-    pass
 
 if __name__ == "__main__":
     main()
