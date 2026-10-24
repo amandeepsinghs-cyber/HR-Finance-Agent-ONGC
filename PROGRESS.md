@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:03 UTC · branch `v3/P0-stabilise` @ `62133c0`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 24-Oct-2026 04:06 UTC · branch `v3/P0-stabilise` @ `9bb439d`
 
 > [!IMPORTANT]
-> **Overall: 32% complete (weighted)** — 18/62 steps ✅ done, 6 in flight, 38 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 1 warning(s).
+> **Overall: 33% complete (weighted)** — 18/62 steps ✅ done, 7 in flight, 37 to do, 0 blocked. **12 blocker bugs open.** Integrity: 0 error(s), 1 warning(s).
 
 ## 1. Phase progress
 
@@ -11,7 +11,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
 | **P1** | Real finance SSOT | `██████████░░░░░░░░░░` 52% | 5 | 1 | 0 | 2 | 4 | 0 | 12 |
-| **P2H** | HR: personas, V19, Employee-360 | `█░░░░░░░░░░░░░░░░░░░` 3% | 0 | 0 | 0 | 1 | 7 | 0 | 8 |
+| **P2H** | HR: personas, V19, Employee-360 | `██░░░░░░░░░░░░░░░░░░` 12% | 0 | 1 | 0 | 1 | 6 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 6 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `░░░░░░░░░░░░░░░░░░░░` 0% | 0 | 0 | 0 | 0 | 10 | 0 | 10 |
 | **P4** | Visual 9/10 + exports (V21) | `██████░░░░░░░░░░░░░░` 28% | 2 | 0 | 0 | 2 | 5 | 0 | 9 |
@@ -26,7 +26,8 @@
 | P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
 | P1.6 | 🔄 In progress | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; | O (+F gates, FL evidence) | Complete build + evidence |
 | P1.7 | 🔍 In review | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | Apply review findings / approve |
-| P2H.1 | 🔄 In progress | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Complete build + evidence |
+| P2H.1 | 🔍 In review | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | Apply review findings / approve |
+| P2H.2 | 🔄 In progress | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | Complete build + evidence |
 | P4.1 | 🔄 In progress | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-va | O→F | Complete build + evidence |
 | P4.2 | 🔄 In progress | `visual.type=statement` contract + presenter emit (multi-FY) | O | Complete build + evidence |
 
@@ -125,8 +126,8 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | BUG-02 | open | BS/CF/ratios wrong (FY24 total assets 4,22,820 vs AR 4,46,021; FY25 CFO 63,180 vs 73,010;  | P0.3, P1.10b, P1.2 | P0.3:✅ P1.10b:⬜ P1.2:✅ |
 | BUG-03 | open | Same metric, three values (FY17 royalty 7,635 / 8,548 / AR 11,575) | P1.10b, P1.6 | P1.10b:⬜ P1.6:🔄 |
 | BUG-05 | in_progress | feedback4: "data only up to 2026… balance sheet for 2024 not available" → apology/flip loo | P1.10a, P1.11, P5.1, P5.3 | P1.10a:⬜ P1.11:⬜ P5.1:⬜ P5.3:⬜ |
-| BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:⬜ |
-| BUG-07 | open | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:🔄 |
+| BUG-06 | in_progress | E2_HR says "switch role to CMD" → becomes CMD (verified by curl) | P0.4, P2H.2 | P0.4:✅ P2H.2:🔄 |
+| BUG-07 | open | Every junior sees Pooja Verma's (EMP-102451) leave/transfer data | P2H.1 | P2H.1:🔍 |
 | BUG-08 | open | "Express this as a waterfall" → Total ≈ 3× revenue | P4.1 | P4.1:🔄 |
 | BUG-09 | open | Waterfall invents EBITDA (`rev*0.68`, `(rev+pbt)/2`) | P4.1 | P4.1:🔄 |
 | BUG-10 | open | "Can you export this as an Excel file" not understood | P2H.4 | P2H.4:⬜ |
@@ -139,6 +140,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Commit | Date | Message |
 |---|---|---|
+| `7105556` | 2026-10-24 | P2H.2 (pre-G4) frontend part 1: 11-persona directory (src/personas.ts, fictional identities per D-60), PersonaPicker 'Sign in as…' |
 | `785e01d` | 2026-10-24 | P2H.1 (pre-G4): 11 personas, dim_app_user, function-scoped RBAC v2, self scope & junior aggregate pay |
 | `8ae11eb` | 2026-10-24 | P4.9 (G4 r2 fix) M1: restore white rgba() colour strings in VoiceOrb core/feather gradients (regex rename had turned string litera |
 | `d023473` | 2026-10-24 | P4.3 (pre-G4): skip redundant single-section header (screenshot review) |
@@ -153,7 +155,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | `aa1ae08` | 2026-10-23 | P1.8 (G4 r2 fixes): BigQuery re-tag applied (8,712 rows to chunker v2; 61 section moves), evidence §8.1 |
 | `d639520` | 2026-10-23 | P1.5 (pre-G4) beta weekly pull: NSE last-trading-day weekly closes ONGC + NIFTY 50, 104 wks 2024-10-25..2026-10-16 (214 req, 0 blo |
 | `1a885ee` | 2026-10-23 | P1.8 (G4 r2 fixes): C1 held-out paraphrase eval (18 Q, LEXICAL_WEIGHT frozen: hybrid 7/18, vector 8/18) + leakage/skew/in-sample d |
-| `7b3047e` | 2026-10-23 | P1.3 (pre-G4): deterministic AR statement parser (BS/P&L/CF, standalone+consolidated, FY17-19 + FY22-26 own ARs; 5,062 rows, 957/9 |
 
 ## 8. Integrity checks
 
