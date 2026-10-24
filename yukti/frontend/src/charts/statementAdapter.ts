@@ -68,7 +68,7 @@ export function legacyStatementFromTable(table: TableSpec | undefined, opts: { m
     unit: 'INR_crore',
     periods: hasPrior ? [fy, prior] : [fy],
     show_yoy: cols.includes('yoy_change_pct') && hasPrior,
-    sections: [{ id: 'all', label: kind === 'pnl' ? 'Statement of Profit and Loss' : kind === 'balance_sheet' ? 'Balance Sheet' : 'Cash Flows', rows }],
+    sections: [{ id: 'all', label: kind === 'pnl' ? 'Statement of Profit and Loss' : kind === 'balance_sheet' ? 'Balance Sheet' : 'Cash Flow Statement', rows }],
     footnotes: ['Legacy snapshot layout: line hierarchy approximated until verified annual-report rows are available.'],
   };
 }

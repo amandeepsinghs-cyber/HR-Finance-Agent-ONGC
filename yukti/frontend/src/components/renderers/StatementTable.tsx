@@ -77,11 +77,14 @@ export function StatementTable({ statement, onWhy }: StatementTableProps) {
           <tbody>
             {statement.sections.map((sec) => (
               <React.Fragment key={sec.id}>
+                {/* a single section whose label repeats the statement name adds nothing: skip the header row */}
+                {!(statement.sections.length === 1 && sec.label === (STATEMENT_LABEL[statement.statement] || '')) && (
                 <tr className="yk-statement__section" data-testid="statement-section">
                   <th scope="rowgroup" colSpan={1 + periods.length + (showYoy ? 1 : 0)} className="yk-statement__label-cell text-left">
                     {sec.label}
                   </th>
                 </tr>
+                )}
                 {sec.rows.map((r, i) => {
                   const kindClass = r.kind === 'total' ? 'yk-statement__row--total' : r.kind === 'subtotal' ? 'yk-statement__row--subtotal' : 'yk-statement__row--line';
                   const why = onWhy && r.kind === 'line' ? () => onWhy(r) : undefined;
