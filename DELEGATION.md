@@ -144,3 +144,4 @@ If the Flash first-pass approval rate drops below 70% in a phase, Opus tightens 
 | When (UTC) | Event | From → To | Reason |
 |---|---|---|---|
 | 24-Oct 05:04 | P1.7 two-strike escalation | Flash worker `anchors` (`gemini-3.8-flash-high`) → `anchors2` on **Gemini 3.1 Pro** (`gemini-3.1-pro-high`) | G4 r1 + r2 both CHANGES REQUESTED (hard-coded literals, mis-cited lines, duplicate rows). Rule says escalate to A, but the A cap (3: rbac, bridge-be, finssot) is full and Argon quota is 40%, so it goes to the A-alternate pool. Reviewer stays `reviewer-p17` (Argon) for continuity |
+| 24-Oct 05:56 | Argon pool at **8 %** (rule threshold 20 %) | `rbac`, `bridge-be`, `finssot` → **Gemini 3.1 Pro** (`gemini-3.1-pro-high`), each as soon as it is waiting (the swarm `model` switch keeps its conversation). New A reviews also go to 3.1 Pro or Opus-medium until the Argon reset at 23:23 UTC | quota rule (4) |
