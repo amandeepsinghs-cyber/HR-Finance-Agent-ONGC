@@ -1,0 +1,1356 @@
+# Golden Evaluation Cases: Finance Domain (SPEC-11 §8.2, BEH-03)
+# Truth rule (absolute): copy every number EXACTLY from SPEC-11 §8.2 / BEH-03.
+# Never compute, round, or invent a value. If a value is not in the spec, write expect_value: TODO_SPEC_GAP.
+
+- id: F01
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "What was revenue from operations in FY24?"
+    - "Tell me ONGC's revenue from operations for FY24."
+    - "FY24 mein revenue kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.REV_OPS
+        fy: FY24
+        scope: standalone
+        value_inr_cr: 138402.13
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2023-24.pdf
+      page_label: "245"
+
+- id: F02
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Profit after tax 2023-24"
+    - "What was the profit after tax for FY24?"
+    - "2023-24 ka PAT kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.PAT
+        fy: FY24
+        scope: standalone
+        value_inr_cr: 40525.97
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2023-24.pdf
+      page_label: "245"
+
+- id: F03
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "How much tax did ONGC pay in FY25? (tax expense)"
+    - "What was the total tax expense in FY25?"
+    - "FY25 mein ONGC ka tax expense kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.TAX_EXPENSE
+        fy: FY25
+        scope: standalone
+        value_inr_cr: 11149.50
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2024-25.pdf
+      page_label: "271"
+
+- id: F04
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "FY26 profit before tax"
+    - "Show me profit before tax for FY26."
+    - "FY26 ka profit before tax kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.PBT
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 42414.89
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "295"
+
+- id: F05
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "EPS last year (context: latest FY26)"
+    - "What was the basic EPS last year in FY25?"
+    - "Pichhle saal ka EPS kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.EPS_BASIC
+        fy: FY25
+        scope: standalone
+        value_inr: 28.31
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2024-25.pdf
+      page_label: "271"
+
+- id: F06
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Can you show me the balance sheet for 2024?"
+    - "Show me the FY24 balance sheet."
+    - "2024 ki balance sheet dikhao"
+  expect:
+    visual_type: statement
+    values:
+      - line_code: BS.TOTAL_ASSETS
+        fy: FY24
+        scope: standalone
+        value_inr_cr: 446020.89
+        tol: 0.05
+      - line_code: BS.TOTAL_EQUITY
+        fy: FY24
+        scope: standalone
+        value_inr_cr: 305976.51
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2023-24.pdf
+      page_label: "243"
+
+- id: F07
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Total assets as of March 2026"
+    - "What were the total assets at the end of March 2026?"
+    - "March 2026 tak total assets kitne the?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: BS.TOTAL_ASSETS
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 461276.20
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "293"
+
+- id: F08
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Cash flow from operations FY25"
+    - "What was the operating cash flow in FY25?"
+    - "FY25 mein operating cash flow kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: CF.CFO
+        fy: FY25
+        scope: standalone
+        value_inr_cr: 73010.24
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2024-25.pdf
+      page_label: "276"
+
+- id: F09
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Operating cash flow FY24"
+    - "How much cash flow from operations did ONGC generate in FY24?"
+    - "FY24 ka cash flow from operations kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: CF.CFO
+        fy: FY24
+        scope: standalone
+        value_inr_cr: 65335.52
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2023-24.pdf
+      page_label: "248"
+
+- id: F10
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "FY26 CFO"
+    - "What was cash flow from operations for FY26?"
+    - "FY26 ka CFO kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: CF.CFO
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 69272.39
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "298"
+
+- id: F11
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Closing cash and cash equivalents FY26"
+    - "What was the ending cash and cash equivalents in FY26?"
+    - "FY26 mein closing cash and cash equivalents kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: BS.CASH_EQUIV
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 83.51
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "293"
+
+- id: F12
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "Show me the income statement"
+    - "Can I see ONGC's income statement?"
+    - "Income statement dikhao"
+  expect:
+    visual_type: clarify
+    clarify:
+      slot: fiscal_period
+      options:
+        - "FY26 (latest)"
+        - "FY25 (last year)"
+        - "Last 5 years"
+        - "Last 10 years"
+    expected_rows: 0
+    provenance: verified_ar
+    cite:
+      spec: "SPEC-08 §3"
+
+- id: F13
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Revenue trend for the last 10 years"
+    - "Show me how revenue moved over ten years."
+    - "Pichhle 10 saal ka revenue dikhao"
+  expect:
+    visual_type: chart:line
+    series:
+      line_code: PL.REV_OPS
+      scope: standalone
+      vintage: latest
+      values:
+        FY17: 77907.8
+        FY18: 85004.1
+        FY19: 109654.6
+        FY20: 96213.6
+        FY21: 68141.1
+        FY22: 110345.4
+        FY23: 155517.3
+        FY24: 138402.1
+        FY25: 137846.3
+        FY26: 132508.1
+      tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F14
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "PAT for the last 5 years"
+    - "Show me the profit after tax trend for 5 years."
+    - "Pichhle 5 saal ka PAT dikhao"
+  expect:
+    visual_type: chart:line
+    series:
+      line_code: PL.PAT
+      scope: standalone
+      vintage: latest
+      values:
+        FY22: 40305.7
+        FY23: 40096.5
+        FY24: 40526.0
+        FY25: 35610.3
+        FY26: 32894.0
+      tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F15
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "ROCE in FY23"
+    - "What was the return on capital employed in FY23?"
+    - "FY23 mein ROCE kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: RATIO.ROCE
+        fy: FY23
+        scope: standalone
+        value_pct: 39.82
+        value_pct_incl_exceptional: 33.84
+        tol: 0.05
+    provenance: derived_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "22"
+
+- id: F16
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "ROCE trend 5 years"
+    - "Show me the ROCE trend for the last 5 years."
+    - "Pichhle 5 saal ka ROCE trend dikhao"
+  expect:
+    visual_type: chart:line
+    series:
+      line_code: RATIO.ROCE
+      scope: standalone
+      values:
+        FY22: 29.01
+        FY23: 39.82
+        FY24: 30.60
+        FY25: 26.54
+        FY26: 22.46
+      tol: 0.1
+    provenance: derived_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "22"
+
+- id: F17
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Royalty paid in FY17"
+    - "What was the royalty payment in FY17?"
+    - "FY17 mein royalty kitni pay ki thi?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: EXP.ROYALTY
+        fy: FY17
+        scope: standalone
+        value_inr_cr: 11574.8
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F18
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Statutory levies FY24"
+    - "What were the total statutory levies in FY24?"
+    - "FY24 mein statutory levies kitne the?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: EXP.STATUTORY_LEVIES
+        fy: FY24
+        scope: standalone
+        value_inr_cr: 36797.5
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F19
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Other levies incl. SAED, FY25 vs FY26"
+    - "Compare other levies including SAED between FY25 and FY26."
+    - "FY25 aur FY26 ke SAED levies compare karo"
+  expect:
+    visual_type: comparison
+    values:
+      - line_code: EXP.OTHER_LEVIES_SAED
+        fy: FY25
+        value_inr_cr: 4032.4
+        tol: 0.1
+      - line_code: EXP.OTHER_LEVIES_SAED
+        fy: FY26
+        value_inr_cr: 63.0
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F20
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Capex in FY25"
+    - "What was ONGC's capital expenditure in FY25?"
+    - "FY25 ka capex kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: CF.CAPEX
+        fy: FY25
+        scope: standalone
+        value_inr_cr: 62057.3
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F21
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Capex last 10 years"
+    - "Show me capital expenditure for the last 10 years."
+    - "Pichhle 10 saal ka capex trend dikhao"
+  expect:
+    visual_type: chart:line
+    series:
+      line_code: CF.CAPEX
+      scope: standalone
+      values:
+        FY17: 28006.4
+        FY18: 72901.6
+        FY19: 29449.8
+        FY20: 29538.5
+        FY21: 26859.3
+        FY22: 27741.3
+        FY23: 30208.4
+        FY24: 37494.2
+        FY25: 62057.3
+        FY26: 35878.4
+      tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F22
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Dividend declared for FY26"
+    - "What was the dividend declared in FY26?"
+    - "FY26 mein kitna dividend declare hua?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: DIVIDEND_DECLARED
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 16668.9
+        dividend_pct: 265.0
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F23
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Debt-equity ratio FY26"
+    - "What was the debt to equity ratio for FY26?"
+    - "FY26 ka debt equity ratio kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: RATIO.DEBT_EQUITY
+        fy: FY26
+        scope: standalone
+        value_ratio: 0.02
+        ratio_str: "0.02 : 1"
+        tol: 0.01
+    provenance: derived_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "22"
+
+- id: F24
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Borrowings and lease liabilities FY26"
+    - "Show me borrowings and lease liabilities for FY26."
+    - "FY26 ki borrowings aur lease liabilities kitni hain?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: BS.BORROWINGS
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 7823.4
+        tol: 0.1
+      - line_code: BS.LEASE_LIABILITIES
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 25821.8
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F25
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Exploration write-offs FY25"
+    - "What were the exploration write-offs in FY25?"
+    - "FY25 mein exploration write-offs kitne the?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: EXP.EXPLORATION_WRITEOFF_TOTAL
+        fy: FY25
+        scope: standalone
+        value_inr_cr: 9825.8
+        tol: 0.1
+      - line_code: EXP.EXPLORATION_SURVEY
+        fy: FY25
+        scope: standalone
+        value_inr_cr: 2345.8
+        tol: 0.1
+      - line_code: EXP.EXPLORATORY_WELLS
+        fy: FY25
+        scope: standalone
+        value_inr_cr: 7480.0
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F26
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "DD&A FY26"
+    - "What was the depreciation, depletion, and amortisation in FY26?"
+    - "FY26 ka DD&A kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.DDA
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 25133.82
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "295"
+
+- id: F27
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Finance cost FY24"
+    - "What was the finance cost in FY24?"
+    - "FY24 mein finance cost kitni thi?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.FIN_COST
+        fy: FY24
+        scope: standalone
+        value_inr_cr: 4081.31
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2023-24.pdf
+      page_label: "245"
+
+- id: F28
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Other income FY24 (single FY, as reported)"
+    - "What was other income as reported in FY24?"
+    - "FY24 mein reported other income kitni thi?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.OTHER_INCOME
+        fy: FY24
+        scope: standalone
+        vintage: as_reported
+        value_inr_cr: 10778.19
+        tol: 0.05
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2023-24.pdf
+      page_label: "245"
+
+- id: F29
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Other income last 3 years (trend)"
+    - "Show me other income for the last 3 years."
+    - "Pichhle 3 saal ki other income dikhao"
+  expect:
+    visual_type: chart:line
+    series:
+      line_code: PL.OTHER_INCOME
+      scope: standalone
+      vintage: latest
+      values:
+        FY24: 10735.5
+        FY25: 10479.4
+        FY26: 10355.8
+      footnotes:
+        FY24: "Restated in AR FY25 p.271; originally 10,778.19"
+      tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F30
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "PAT FY19 (single FY)"
+    - "What was profit after tax for FY19 as reported?"
+    - "FY19 ka reported PAT kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.PAT
+        fy: FY19
+        scope: standalone
+        vintage: as_reported
+        value_inr_cr: 26715.8
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2018-19.pdf
+      page_label: TODO_SPEC_GAP
+
+- id: F31
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "PAT trend 10 years, FY19 point"
+    - "Show me the 10-year PAT trend restated point for FY19."
+    - "10-year trend mein FY19 ka PAT kitna hai?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.PAT
+        fy: FY19
+        scope: standalone
+        vintage: latest
+        value_inr_cr: 26764.6
+        footnote_marker: "†"
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F32
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "Why did revenue fall in FY23?"
+    - "What caused the drop in revenue in FY23?"
+    - "FY23 mein revenue kyu gira?"
+  expect:
+    visual_type: explanation
+    premise_correction: "revenue rose 45171.9 cr (+40.9%) to 155517.3"
+    values:
+      delta_inr_cr: 45171.9
+      pct_change: 40.9
+      fy23_rev_inr_cr: 155517.3
+    forbidden_content:
+      - "Mumbai High"
+      - "Bassein"
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F33
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "Why did PBT fall in FY26?"
+    - "What was the root cause of the profit before tax decline in FY26?"
+    - "FY26 mein PBT kyu gira?"
+  expect:
+    visual_type: chart:waterfall
+    bridge:
+      start_line: PL.PBT
+      start_fy: FY25
+      start_value_inr_cr: 46759.8
+      end_line: PL.PBT
+      end_fy: FY26
+      end_value_inr_cr: 42414.9
+      delta_inr_cr: -4344.9
+      drivers:
+        - name: "Revenue"
+          impact_inr_cr: -5338.2
+        - name: "Statutory levies"
+          impact_inr_cr: 4820.4
+        - name: "Exchange loss"
+          impact_inr_cr: -1931.7
+        - name: "Provisions & write-offs"
+          impact_inr_cr: -1142.4
+        - name: "DD&A"
+          impact_inr_cr: -781.4
+        - name: "Operating expenses"
+          impact_inr_cr: -730.1
+        - name: "Other expenses"
+          impact_inr_cr: 710.4
+        - name: "Other income"
+          impact_inr_cr: -123.7
+        - name: "Exploration write-offs"
+          impact_inr_cr: 97.0
+        - name: "Finance costs"
+          impact_inr_cr: 74.7
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F34
+  gate: P2F
+  persona: DIR_FIN
+  phrasings:
+    - "WACC for the last 10 years"
+    - "Show me ONGC's weighted average cost of capital over ten years."
+    - "Pichhle 10 saal ka WACC dikhao"
+  expect:
+    visual_type: chart:line
+    oracle_sql: "SELECT fiscal_year, wacc_pct, ke_pct, kd_used_pct FROM `ongc-hr-finance-agent.hrfin_gold.fact_wacc_annual` WHERE fiscal_year BETWEEN 'FY17' AND 'FY26' ORDER BY fiscal_year"
+    provenance: modelled
+    cite:
+      spec: "SPEC-02"
+
+- id: F35
+  gate: P2F
+  persona: DIR_FIN
+  phrasings:
+    - "Why was WACC high in FY23?"
+    - "What drove the higher WACC in FY23?"
+    - "FY23 mein WACC zyada kyu tha?"
+  expect:
+    visual_type: chart:waterfall
+    oracle_sql: "SELECT input_code, marginal_contribution_pct FROM `ongc-hr-finance-agent.hrfin_gold.fact_wacc_shapley` WHERE fiscal_year = 'FY23' ORDER BY ABS(marginal_contribution_pct) DESC"
+    provenance: modelled
+    cite:
+      spec: "SPEC-02 §5.3"
+
+- id: F36
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "Top 5 actions for FY26"
+    - "Give me five recommended actions for FY26."
+    - "FY26 ke liye top 5 actions kya hain?"
+  expect:
+    visual_type: actions
+    max_items: 5
+    required_actions:
+      - id: "L02"
+        metric: "debtor_days"
+        fy26_val: 32
+        fy25_val: 29
+      - id: "L08"
+        metric: "exchange_loss_inr_cr"
+        fy26_val: 2698.9
+        fy25_val: 767.2
+    provenance: modelled
+    cite:
+      spec: "SPEC-08 §7"
+
+- id: F37
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Consolidated revenue FY26"
+    - "What was the consolidated revenue from operations for FY26?"
+    - "FY26 ka consolidated revenue kitna tha?"
+  expect:
+    visual_type: kpi
+    oracle_sql: "SELECT value_inr_cr FROM `ongc-hr-finance-agent.hrfin_gold.fact_financial_statement_line` WHERE scope = 'consolidated' AND line_code = 'PL.REV_OPS' AND fiscal_year = 'FY26' AND period_type = 'annual' AND is_latest_vintage = TRUE LIMIT 1"
+    scope: consolidated
+    provenance: verified_ar
+    cite:
+      spec: "SPEC-01"
+
+- id: F39
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Number of employees FY26"
+    - "What was ONGC's total employee headcount in FY26?"
+    - "FY26 mein kitne employees the?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: HR.HEADCOUNT
+        fy: FY26
+        scope: standalone
+        value_headcount: 23117
+        tol: 0
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F40
+  gate: P1
+  persona: DIR_HR
+  phrasings:
+    - "Employees 10 years ago"
+    - "How many employees were there ten years ago in FY17?"
+    - "10 saal pehle kitne employees the?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: HR.HEADCOUNT
+        fy: FY17
+        scope: standalone
+        value_headcount: 33660
+        tol: 0
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F41
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Expenditure on employees FY26"
+    - "What was the total expenditure on employees in FY26?"
+    - "FY26 mein employee expenditure kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: EXP.EMPLOYEE_BENEFIT
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 10210.7
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F42
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Revenue per employee FY26"
+    - "What was the revenue generated per employee in FY26?"
+    - "FY26 mein per employee revenue kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: RATIO.REV_PER_EMPLOYEE
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 5.581
+        formula: "132508.14 / avg(24368, 23117) = 132508.14 / 23742.5 = 5.581"
+        revenue_inr_cr: 132508.14
+        headcount_fy25: 24368
+        headcount_fy26: 23117
+        avg_headcount: 23742.5
+        tol: 0.01
+    provenance: derived_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F43
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Crude oil production FY26"
+    - "How much crude oil was produced in FY26 including joint ventures?"
+    - "FY26 mein crude oil production kitna hua?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PROD.CRUDE_TOTAL
+        fy: FY26
+        value_mmt: 20.501
+        components:
+          ongc_standalone_mmt: 19.332
+          jv_mmt: 1.170
+        tol: 0.01
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "9"
+
+- id: F44
+  gate: P1
+  persona: DIR_FIN
+  phrasings:
+    - "Gas sold FY24"
+    - "What was the volume of natural gas sold in FY24?"
+    - "FY24 mein kitni gas bechi gayi?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PROD.GAS_SOLD
+        fy: FY24
+        value_bcm: 15.927
+        tol: 0.01
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F45
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "Contribution to exchequer FY23"
+    - "What was ONGC's total contribution to the exchequer in FY23?"
+    - "FY23 mein exchequer ko kitna contribute kiya?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: EXCHEQUER_CONTRIBUTION
+        fy: FY23
+        value_inr_cr: 74639.5
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F46
+  gate: P1
+  persona: CMD
+  phrasings:
+    - "CSR spend FY26"
+    - "How much did ONGC spend on CSR activities in FY26?"
+    - "FY26 mein CSR spend kitna tha?"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: CSR_SPEND
+        fy: FY26
+        value_inr_cr: 948.9
+        tol: 0.1
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: F47
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "What data do you have?"
+    - "Which years and datasets do you have access to?"
+    - "Aapke paas kaun sa data available hai?"
+  expect:
+    visual_type: coverage
+    coverage:
+      statements: "FY17–FY26"
+      summary: "FY13–FY26"
+    provenance: verified_ar
+    cite:
+      spec: "SPEC-11 §5"
+
+- id: F48
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "Do you have the balance sheet for 2024?"
+    - "Can I access the 2024 balance sheet?"
+    - "Kya 2024 ki balance sheet mil sakti hai?"
+  expect:
+    visual_type: coverage
+    answer_prefix: "Yes"
+    forbidden_content:
+      - "only up to 2026"
+    provenance: verified_ar
+    cite:
+      spec: "SPEC-11 §5"
+
+- id: F51
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "FY26 mein ONGC ka PAT kitna tha?"
+    - "What was ONGC's PAT in FY26?"
+    - "FY26 profit after tax bataiye"
+  expect:
+    visual_type: kpi
+    values:
+      - line_code: PL.PAT
+        fy: FY26
+        scope: standalone
+        value_inr_cr: 32894.02
+        tol: 0.05
+    language: hi
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "295"
+
+- id: F52
+  gate: P2F
+  persona: DIR_FIN
+  phrasings:
+    - "Express this as a waterfall (after F33's table)"
+    - "Show the PBT bridge as a waterfall chart."
+    - "Isko waterfall chart mein express karo"
+  expect:
+    visual_type: chart:waterfall
+    values:
+      - line_code: PL.PBT
+        fy: FY26
+        end_value_inr_cr: 42414.9
+        tol: 0.1
+    forbidden_content:
+      - "EBITDA"
+    provenance: verified_ar
+    cite:
+      spec: "SPEC-08 §6.5"
+
+- id: BEH-03.01
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "Can I see the income statement?"
+    - "Show me ONGC's income statement"
+    - "Income statement dikhao"
+  expect:
+    visual_type: none
+    clarify:
+      slot: fiscal_period
+      options:
+        - "FY26 (latest)"
+        - "FY25 (last year)"
+        - "Last 5 years"
+        - "Last 10 years"
+    expected_rows: 0
+    spoken_summary: "Which year would you like: FY26, FY25, or the last five or ten years?"
+    provenance: verified_ar
+    cite:
+      spec: "BEH-03.01"
+
+- id: BEH-03.02
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "the present year"
+    - "show the present year"
+    - "is saal ka dikhao"
+  expect:
+    visual_type: statement
+    columns:
+      - "FY26"
+      - "FY25"
+    values:
+      - line_code: PL.REV_OPS
+        fy: FY26
+        value_inr_cr: 132508.14
+        tol: 0.05
+      - line_code: PL.PBT
+        fy: FY26
+        value_inr_cr: 42414.89
+        tol: 0.05
+      - line_code: PL.TAX_EXPENSE
+        fy: FY26
+        value_inr_cr: 9520.87
+        tol: 0.05
+      - line_code: PL.PAT
+        fy: FY26
+        value_inr_cr: 32894.02
+        tol: 0.05
+      - line_code: PL.EPS_BASIC
+        fy: FY26
+        value_inr: 26.15
+        tol: 0.05
+      - line_code: PL.REV_OPS
+        fy: FY25
+        value_inr_cr: 137846.29
+        tol: 0.05
+      - line_code: PL.PAT
+        fy: FY25
+        value_inr_cr: 35610.32
+        tol: 0.05
+    footer: "Source: ONGC Integrated Annual Report FY2025-26, Standalone Statement of Profit and Loss, p.295"
+    badge: "Verified · Annual Report"
+    spoken_summary: "Here is ONGC's standalone income statement for FY26. Revenue from operations was ₹1,32,508 crore, down 3.9% on FY25, and profit after tax was ₹32,894 crore."
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "295"
+
+- id: BEH-03.03
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "last 5 years"
+    - "show me the last 5 years"
+    - "pichhle 5 saal ka dikhao"
+  expect:
+    visual_type: statement
+    columns:
+      - "FY26"
+      - "FY25"
+      - "FY24"
+      - "FY23"
+      - "FY22"
+    values:
+      - line_code: PL.REV_OPS
+        scope: standalone
+        values:
+          FY26: 132508.1
+          FY25: 137846.3
+          FY24: 138402.1
+          FY23: 155517.3
+          FY22: 110345.4
+        tol: 0.1
+      - line_code: PL.PAT
+        scope: standalone
+        values:
+          FY26: 32894.0
+          FY25: 35610.3
+          FY24: 40526.0
+          FY23: 40096.5
+          FY22: 40305.7
+        tol: 0.1
+      - line_code: PL.OTHER_INCOME
+        fy: FY24
+        value_inr_cr: 10735.5
+        footnote: "Restated in AR FY25 p.271; originally ₹10,778.19 cr (AR FY24 p.245)"
+    spoken_summary: "Here is the standalone income statement for FY22 to FY26. Revenue peaked at ₹1,55,517 crore in FY23 and was ₹1,32,508 crore in FY26; profit after tax was ₹32,894 crore in FY26."
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: BEH-03.04
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "pichhle saal ka dikhao"
+    - "show me last year"
+    - "previous year please"
+  expect:
+    visual_type: statement
+    columns:
+      - "FY25"
+      - "FY24"
+    language: hi-en
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2024-25.pdf
+      page_label: "271"
+
+- id: BEH-03.05
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "What was the weighted average cost of capital for the past 10 years?"
+    - "Show me WACC for the last 10 years"
+    - "Pichhle 10 saal ka WACC kya tha?"
+  expect:
+    visual_type: chart:line
+    oracle_sql: "SELECT fiscal_year, wacc_pct, ke_pct, kd_used_pct FROM `ongc-hr-finance-agent.hrfin_gold.fact_wacc_annual` WHERE fiscal_year BETWEEN 'FY17' AND 'FY26' ORDER BY fiscal_year"
+    badge: "Modelled"
+    provenance: modelled
+    cite:
+      spec: "SPEC-02"
+
+- id: BEH-03.06
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "Why was it high in FY23?"
+    - "Why was WACC higher in FY23?"
+    - "FY23 mein WACC zyada kyu tha?"
+  expect:
+    visual_type: chart:waterfall
+    oracle_sql: "SELECT input_code, marginal_contribution_pct FROM `ongc-hr-finance-agent.hrfin_gold.fact_wacc_shapley` WHERE fiscal_year = 'FY23' ORDER BY ABS(marginal_contribution_pct) DESC"
+    badge: "Modelled"
+    provenance: modelled
+    cite:
+      spec: "SPEC-02 §5.3"
+
+- id: BEH-03.07
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "Why did profit fall in FY26?"
+    - "What caused the profit drop in FY26?"
+    - "FY26 mein profit kyu gira?"
+  expect:
+    visual_type: chart:waterfall
+    bridge:
+      start_fy: FY25
+      start_value_inr_cr: 46759.8
+      end_fy: FY26
+      end_value_inr_cr: 42414.9
+      delta_inr_cr: -4344.9
+      drivers:
+        - name: "Revenue"
+          impact_inr_cr: -5338.2
+        - name: "Statutory levies"
+          impact_inr_cr: 4820.4
+        - name: "Exchange loss"
+          impact_inr_cr: -1931.7
+        - name: "Provisions & write-offs"
+          impact_inr_cr: -1142.4
+        - name: "DD&A"
+          impact_inr_cr: -781.4
+        - name: "Operating expenses"
+          impact_inr_cr: -730.1
+        - name: "Other expenses"
+          impact_inr_cr: 710.4
+        - name: "Other income"
+          impact_inr_cr: -123.7
+        - name: "Exploration write-offs"
+          impact_inr_cr: 97.0
+        - name: "Finance costs"
+          impact_inr_cr: 74.7
+    pat_fall_inr_cr: 2716.3
+    badge: "Verified · Annual Report"
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2025-26.pdf
+      page_label: "21"
+
+- id: BEH-03.08
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "express this as a waterfall"
+    - "show this as waterfall chart"
+    - "isko waterfall chart mein dikhao"
+  expect:
+    visual_type: chart:waterfall
+    ending_value_inr_cr: 32894.02
+    forbidden_content:
+      - "EBITDA"
+    provenance: verified_ar
+    cite:
+      spec: "SPEC-09"
+
+- id: BEH-03.09
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "What are the top 5 actions?"
+    - "Give me the top five actions for FY26"
+    - "Top 5 actions kya hain?"
+  expect:
+    visual_type: actions
+    max_items: 5
+    required_actions:
+      - "L02"
+      - "L08"
+      - "L09"
+    badge: "Modelled estimate"
+    provenance: modelled
+    cite:
+      spec: "SPEC-08 §7"
+
+- id: BEH-03.10
+  gate: P2F
+  persona: DIR_FIN
+  phrasings:
+    - "What are the top 5 actions for Director Finance?"
+    - "Show top 5 actions prioritizing finance"
+    - "Director Finance ke liye top 5 actions dikhao"
+  expect:
+    visual_type: actions
+    max_items: 5
+    first_owner: DIR_FIN
+    provenance: modelled
+    cite:
+      spec: "SPEC-08 §7.4"
+
+- id: BEH-03.11
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "balance sheet for 2024"
+    - "show me balance sheet for 2024 from snapshot"
+    - "2024 ki balance sheet dikhao"
+  expect:
+    visual_type: statement
+    values:
+      - line_code: BS.TOTAL_ASSETS
+        fy: FY24
+        value_inr_cr: 446020.89
+        tol: 0.05
+      - line_code: BS.TOTAL_EQUITY
+        fy: FY24
+        value_inr_cr: 305976.51
+        tol: 0.05
+    badge: "Local snapshot"
+    provenance: local_snapshot
+    cite:
+      doc: ONGC_AR_FY2023-24.pdf
+      page_label: "243"
+
+- id: BEH-03.12
+  gate: P2F
+  persona: CMD
+  phrasings:
+    - "when you say up to 2026, is 2024 before 2026? then show it to me"
+    - "is 2024 available? show it"
+    - "kya 2024 ka data hai? dikhao mujhe"
+  expect:
+    visual_type: statement
+    values:
+      - line_code: PL.REV_OPS
+        fy: FY24
+        value_inr_cr: 138402.13
+        tol: 0.05
+    forbidden_content:
+      - "only up to 2026"
+    provenance: verified_ar
+    cite:
+      doc: ONGC_AR_FY2023-24.pdf
+      page_label: "245"

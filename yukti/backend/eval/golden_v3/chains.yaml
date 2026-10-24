@@ -1,0 +1,144 @@
+# Multi-turn Golden Evaluation Chains (SPEC-11 §8.4, BEH-03)
+# Chain V20: BEH-03 steps 01 -> 03 -> 05 -> 06 -> 07 -> 09 in one continuous session
+
+- id: V20
+  name: "V20 Finance Chain (BEH-03: Income statement -> Year clarify -> 5-year table -> WACC -> WACC why -> Profit fall waterfall -> Top 5 actions)"
+  gate: P2F
+  persona: CMD
+  fresh_session: true
+  description: "Six-step diagnostic journey for CMD resolving income statement, multi-year performance, capital cost, and driver attribution to actionable management levers."
+  steps:
+    - step: 1
+      ref: BEH-03.01
+      phrasing: "Can I see the income statement?"
+      expect:
+        visual_type: none
+        clarify:
+          slot: fiscal_period
+          options:
+            - "FY26 (latest)"
+            - "FY25 (last year)"
+            - "Last 5 years"
+            - "Last 10 years"
+        expected_rows: 0
+        spoken_summary: "Which year would you like: FY26, FY25, or the last five or ten years?"
+        provenance: verified_ar
+        cite:
+          spec: "BEH-03.01"
+
+    - step: 2
+      ref: BEH-03.03
+      phrasing: "last 5 years"
+      expect:
+        visual_type: statement
+        columns:
+          - "FY26"
+          - "FY25"
+          - "FY24"
+          - "FY23"
+          - "FY22"
+        values:
+          - line_code: PL.REV_OPS
+            scope: standalone
+            values:
+              FY26: 132508.1
+              FY25: 137846.3
+              FY24: 138402.1
+              FY23: 155517.3
+              FY22: 110345.4
+            tol: 0.1
+          - line_code: PL.PAT
+            scope: standalone
+            values:
+              FY26: 32894.0
+              FY25: 35610.3
+              FY24: 40526.0
+              FY23: 40096.5
+              FY22: 40305.7
+            tol: 0.1
+          - line_code: PL.OTHER_INCOME
+            fy: FY24
+            value_inr_cr: 10735.5
+            footnote: "Restated in AR FY25 p.271; originally ₹10,778.19 cr (AR FY24 p.245)"
+        provenance: verified_ar
+        cite:
+          doc: ONGC_AR_FY2025-26.pdf
+          page_label: "21"
+
+    - step: 3
+      ref: BEH-03.05
+      phrasing: "What was the weighted average cost of capital for the past 10 years?"
+      expect:
+        visual_type: chart:line
+        points: 10
+        fy_range: "FY17-FY26"
+        oracle_sql: "SELECT fiscal_year, wacc_pct, ke_pct, kd_used_pct FROM `ongc-hr-finance-agent.hrfin_gold.fact_wacc_annual` WHERE fiscal_year BETWEEN 'FY17' AND 'FY26' ORDER BY fiscal_year"
+        badge: "Modelled"
+        provenance: modelled
+        cite:
+          spec: "SPEC-02"
+
+    - step: 4
+      ref: BEH-03.06
+      phrasing: "Why was it high in FY23?"
+      expect:
+        visual_type: chart:waterfall
+        oracle_sql: "SELECT input_code, marginal_contribution_pct FROM `ongc-hr-finance-agent.hrfin_gold.fact_wacc_shapley` WHERE fiscal_year = 'FY23' ORDER BY ABS(marginal_contribution_pct) DESC"
+        badge: "Modelled"
+        provenance: modelled
+        cite:
+          spec: "SPEC-02 §5.3"
+
+    - step: 5
+      ref: BEH-03.07
+      phrasing: "Why did profit fall in FY26?"
+      expect:
+        visual_type: chart:waterfall
+        bridge:
+          start_fy: FY25
+          start_value_inr_cr: 46759.8
+          end_fy: FY26
+          end_value_inr_cr: 42414.9
+          delta_inr_cr: -4344.9
+          drivers:
+            - name: "Revenue"
+              impact_inr_cr: -5338.2
+            - name: "Statutory levies"
+              impact_inr_cr: 4820.4
+            - name: "Exchange loss"
+              impact_inr_cr: -1931.7
+            - name: "Provisions & write-offs"
+              impact_inr_cr: -1142.4
+            - name: "DD&A"
+              impact_inr_cr: -781.4
+            - name: "Operating expenses"
+              impact_inr_cr: -730.1
+            - name: "Other expenses"
+              impact_inr_cr: 710.4
+            - name: "Other income"
+              impact_inr_cr: -123.7
+            - name: "Exploration write-offs"
+              impact_inr_cr: 97.0
+            - name: "Finance costs"
+              impact_inr_cr: 74.7
+        pat_fall_inr_cr: 2716.3
+        badge: "Verified · Annual Report"
+        provenance: verified_ar
+        cite:
+          doc: ONGC_AR_FY2025-26.pdf
+          page_label: "21"
+
+    - step: 6
+      ref: BEH-03.09
+      phrasing: "What are the top 5 actions?"
+      expect:
+        visual_type: actions
+        max_items: 5
+        required_actions:
+          - "L02"
+          - "L08"
+          - "L09"
+        badge: "Modelled estimate"
+        provenance: modelled
+        cite:
+          spec: "SPEC-08 §7"
