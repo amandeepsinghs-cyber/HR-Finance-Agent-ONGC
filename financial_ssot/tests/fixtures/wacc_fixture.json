@@ -1,0 +1,40 @@
+{
+  "base_fixture": {
+    "rf_gsec_pct": 7.0,
+    "rf_used_pct": 7.0,
+    "default_spread_pct": 0.0,
+    "beta_raw": 1.2,
+    "erp_pct": 7.0,
+    "kd_pretax_pct": 6.0,
+    "tax_rate_pct": 25.17,
+    "equity_mv": 900.0,
+    "debt_bv": 100.0,
+    "expected_beta_adj_blume": 1.134,
+    "expected_ke_pct": 15.40,
+    "expected_kd_after_tax_pct": 4.4898,
+    "expected_wacc_pct": 14.3090
+  },
+  "sensitivity_fixture": {
+    "rf_gsec_pct": 7.0,
+    "default_spread_pct": 2.0,
+    "rf_used_pct": 5.0,
+    "beta_raw": 1.2,
+    "erp_pct": 7.0,
+    "kd_pretax_pct": 6.0,
+    "tax_rate_pct": 25.17,
+    "equity_mv": 900.0,
+    "debt_bv": 100.0,
+    "expected_ke_pct": 13.40,
+    "expected_kd_after_tax_pct": 4.4898,
+    "expected_wacc_alt_gsec_less_spread_pct": 12.5090
+  },
+  "fy26_kd_reference": {
+    "finance_costs_fy26_mn": 45292.61,
+    "decom_unwind_fy26_mn": 30539.42,
+    "borrowings_fy25_mn": 84077.0,
+    "lease_liab_fy25_mn": 294393.02,
+    "borrowings_fy26_mn": 78234.0,
+    "lease_liab_fy26_mn": 258218.02,
+    "expected_kd_pretax_pct": 4.127
+  }
+}
