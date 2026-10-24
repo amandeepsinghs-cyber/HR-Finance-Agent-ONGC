@@ -5,7 +5,7 @@
 > [!IMPORTANT]
 > **BLUF:** 62 v3 steps across P0–P5 (incl. hotfix P0.10); live counts in [`PROGRESS.md`](PROGRESS.md). Step IDs match the packet files in `docs/delegation/packets/v3/` one-to-one (**51 packets**; indexes: `_INDEX_P0_P2H1-4_P4.md`, `_INDEX_P1_P2F_P3.md`, `_INDEX_P2H5-8.md`). Critical path: **P0 → P1 (real finance SSOT) → P2F → P3 (DCF)**. P2H (personas, V19, Employee-360) and P4 (visuals) run in parallel after P0. Every data step needs numeric acceptance (BUILD §4.3).
 
-**Legend (step lifecycle):** ⬜ To do → 🔄 In progress → 🔨 Built (committed, pre-G4) → 🔍 In review → ✅ Done (only with a `docs/reviews/<step>.md` APPROVE) · ⛔ Blocked · **Owner:** O = Opus lead · F = Flash (needs a packet) · FL = Flash-lite runner · S = Sponsor · `O→F` = Opus spec/skeleton, Flash completes
+**Owners (v3.1, D-59):** `O` = **A** (Gemini 4 Argon) on backend/data steps, **L** (lead, Opus) on frontend steps; see [`DELEGATION.md`](DELEGATION.md) v3.1. **Legend (step lifecycle):** ⬜ To do → 🔄 In progress → 🔨 Built (committed, pre-G4) → 🔍 In review → ✅ Done (only with a `docs/reviews/<step>.md` APPROVE) · ⛔ Blocked · **Owner:** O = Opus lead · F = Flash (needs a packet) · FL = Flash-lite runner · S = Sponsor · `O→F` = Opus spec/skeleton, Flash completes
 
 > [!TIP]
 > **Live dashboard:** [`PROGRESS.md`](PROGRESS.md) is generated from this file + `BUG_REGISTER.md` + feature list + packets + reviews + git. **Update rule (every completion):** change the Status cell here → close linked bugs in `BUG_REGISTER.md` → run `python3 scripts/progress/build_progress.py` (regenerate) + `--check` (validate) → commit all three together.
