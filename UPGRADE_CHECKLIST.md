@@ -76,7 +76,7 @@
 | P2H.2 | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | 017 | SPEC-06 §4.4, §4.6 | 06 (UI) | Picker issues token; refusals suggest an allowed alternative | [P2H.2](docs/delegation/packets/v3/P2H.2.md) | ✅ |
 | P2H.3 | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | 023, 006 | SPEC-07 §4.1–4.3, BEH-02 | 34 | Exact counts per definition (executives default, all-cadres toggle) | [P2H.3](docs/delegation/packets/v3/P2H.3.md) | ✅ |
 | P2H.4 | V19 turns 4–5: export intent + columns + xlsx link; email agent (.eml/.docx/mailto); delete canned proposal | O→F | 023, 027 | SPEC-07 §4.4–4.5, SPEC-10, BEH-02 | 10, 11, 12 | BEH-02 steps 4–5 pass for 10 phrasings; email counts = roster | [P2H.4](docs/delegation/packets/v3/P2H.4.md) | ✅ |
-| P2H.5 | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | 021 | SPEC-04 §5–§7 | 26, 29, 30 | SPEC-04 §7.4 EMP-R01 (employee cost = AR) and EMP-R10 (FY-end headcount 23,117) pass; realism checks + calibrated marginals = AR/BRSR | [P2H.5](docs/delegation/packets/v3/P2H.5_employee360_generator.md) | 🔄 |
+| P2H.5 | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | 021 | SPEC-04 §5–§7 | 26, 29, 30 | SPEC-04 §7.4 EMP-R01 (employee cost = AR) and EMP-R10 (FY-end headcount 23,117) pass; realism checks + calibrated marginals = AR/BRSR | [P2H.5](docs/delegation/packets/v3/P2H.5_employee360_generator.md) | ✅ |
 | P2H.6 | Employee-360 Dataform build, semantic model (pay components, KPIs, entry pay), certified queries | O→F (O: certified SQL; F: Dataform wiring) | 021, 008 | SPEC-04 §3, §4, §8, §9, BEH-06 | 26, 29 | Dataform green; BEH-06 values exact | [P2H.6](docs/delegation/packets/v3/P2H.6_employee360_dataform.md) | 🔄 |
 | P2H.7 | Field Economics-360: production recalibration, RAS allocation engine, Dataform | O | 022 | SPEC-05 | — | Σ fields + CO-HQ = AR lines; segments = AR; production = AR by basis | [P2H.7](docs/delegation/packets/v3/P2H.7_field_economics_recon.md) | 🔄 |
 | P2H.8 | Reconciliation gates: `recon_checks` (30 EMP-R + 17 FLD-R), assertions, offline tests, golden eval | O→F (O: recon rules/SQL + BLOCK assertion; F: tests) | 021, 022, 030 | SPEC-04 §7, SPEC-05 | — | 100% PASS; a deliberately broken input fails the build | [P2H.8](docs/delegation/packets/v3/P2H.8_reconciliation_tests.md) | 🔄 |
@@ -125,11 +125,11 @@
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Status |
 |---|---|---|---|---|---|---|---|
-| P5.1 | Remove fast-paths/hard-coded answers (disposition list in SPEC-11); legacy ADK path behind the coordinator only | O | 030, 009 | SPEC-11 | 05, 12, 21 | 0 hard-coded numbers in `turn_runner.py`; golden set unchanged or better | ⬜ |
-| P5.2 | Voice: speak `spoken_summary` verbatim (EN/HI), `speak_id` dedupe, barge-in fix | O | 030, 013 | SPEC-11, BEH-07 | 17, 18, 19 | BEH-07.30–.35 (feedback regressions) pass | ⬜ |
-| P5.3 | Coverage manifest ("what data do you have") deterministic | O | 030 | SPEC-11 | 05 | feedback4 turns answer correctly | ⬜ |
-| P5.4 | Numeric golden eval (~60 Q + V19/V20/V22 chains + voice smoke); replace `run_30x4_stress_test.py` criteria | O→F | 030, 014 | SPEC-11 | — | ≥ 95% exact | ⬜ |
-| P5.5 | Full gate run + review | FL→O | 014 | — | — | Scorecard vs BUILD §6 targets | ⬜ |
+| P5.1 | Remove fast-paths/hard-coded answers (disposition list in SPEC-11); legacy ADK path behind the coordinator only | O | 030, 009 | SPEC-11 | 05, 12, 21 | 0 hard-coded numbers in `turn_runner.py`; golden set unchanged or better | ✅ |
+| P5.2 | Voice: speak `spoken_summary` verbatim (EN/HI), `speak_id` dedupe, barge-in fix | O | 030, 013 | SPEC-11, BEH-07 | 17, 18, 19 | BEH-07.30–.35 (feedback regressions) pass | ✅ |
+| P5.3 | Coverage manifest ("what data do you have") deterministic | O | 030 | SPEC-11 | 05 | feedback4 turns answer correctly | ✅ |
+| P5.4 | Numeric golden eval (~60 Q + V19/V20/V22 chains + voice smoke); replace `run_30x4_stress_test.py` criteria | O→F | 030, 014 | SPEC-11 | — | ≥ 95% exact | ✅ |
+| P5.5 | Full gate run + review | FL→O | 014 | — | — | Scorecard vs BUILD §6 targets | ✅ |
 | P5.6 | Cloud Run redeploy from the green tree (sponsor go-ahead) | O + S | 014 | — | 13 | Revision serves BEH-02/03/05 live | ⬜ |
 
 ---
