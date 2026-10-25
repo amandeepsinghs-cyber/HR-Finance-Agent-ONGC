@@ -212,3 +212,50 @@ def test_profile_of_someone_else_is_not_a_role_switch():
     for q in ("update the profile of Rajesh", "change the user's email in HRMS", "How do I update my profile photo?"):
         assert not auth.is_role_switch_request(q), q
     assert auth.is_role_switch_request("switch my profile to CMD")
+
+
+def test_ws_live_cloud_run_rs256_bearer_falls_back_to_yk_session_cookie(monkeypatch):
+    """P5.6 S1: Cloud Run RS256 bearer + valid yk_session cookie on /ws/live -> accepted as cookie persona; bad cookie -> 4401."""
+    from starlette.websockets import WebSocketDisconnect
+
+    class _StubLiveSessionManager:
+        def __init__(self, websocket, session_id, persona, model_name, voice, language, principal):
+            self.websocket = websocket
+            self.persona = persona
+            self.principal = principal
+
+        async def run(self):
+            await self.websocket.send_json({"type": "ready", "persona": self.persona, "emp_id": self.principal.emp_id})
+
+    monkeypatch.setattr("app.main.LiveSessionManager", _StubLiveSessionManager)
+
+    rs256_claims = {"sub": "cloudrun-proxy", "iss": "https://accounts.google.com", "iat": int(time.time()), "exp": int(time.time()) + 3600}
+    rs256_bearer = f"{_b64({'alg': 'RS256', 'typ': 'JWT'})}.{_b64(rs256_claims)}.fakesig"
+    valid_cookie = auth.issue_token("DIR_FIN")
+
+    c = _client()
+    with c.websocket_connect(
+        "/ws/live",
+        headers={
+            "Authorization": f"Bearer {rs256_bearer}",
+            "Cookie": f"{auth.COOKIE_NAME}={valid_cookie}",
+        },
+    ) as ws:
+        msg = ws.receive_json()
+        assert msg["type"] == "ready"
+        assert msg["persona"] == "DIR_FIN"
+
+    # Bad cookie with RS256 bearer -> rejected with 4401
+    with c.websocket_connect(
+        "/ws/live",
+        headers={
+            "Authorization": f"Bearer {rs256_bearer}",
+            "Cookie": f"{auth.COOKIE_NAME}=forged.bad.cookie",
+        },
+    ) as ws_bad:
+        err_msg = ws_bad.receive_json()
+        assert err_msg["type"] == "error"
+        with pytest.raises(WebSocketDisconnect) as exc_info:
+            ws_bad.receive_json()
+        assert exc_info.value.code == 4401
+

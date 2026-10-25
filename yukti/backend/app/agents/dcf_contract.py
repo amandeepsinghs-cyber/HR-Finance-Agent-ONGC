@@ -2,29 +2,44 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, Optional
 
-from app.finance.dcf.inputs import load_fy26_market_price_default, load_fy26_wacc_default
+from app.finance.dcf.inputs import (
+    DCFInputMissingError,
+    load_fy26_market_price_default,
+    load_fy26_wacc_default,
+    load_ssot_snapshot_rows,
+)
+
 
 def build_dcf_proposal(persona: str, session: Any, overrides: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     overrides = overrides or {}
-    default_wacc_pct, wacc_source, wacc_meta = load_fy26_wacc_default()
-    default_mkt_px, mkt_source, mkt_meta = load_fy26_market_price_default()
+    try:
+        snapshot_rows = load_ssot_snapshot_rows()
+        verified_snapshot_rows = [r for r in snapshot_rows if r.get("verified", False)]
+        if not verified_snapshot_rows:
+            raise DCFInputMissingError("fact_snapshot")
+        default_wacc_pct, wacc_source, wacc_meta = load_fy26_wacc_default()
+        default_mkt_px, mkt_source, mkt_meta = load_fy26_market_price_default()
+    except DCFInputMissingError as exc:
+        missing_input = exc.missing_input
+        return {
+            "proposed_action": None,
+            "answer": (
+                f"Cannot run the DCF valuation because required input `{missing_input}` is missing or "
+                f"the FY26 cash-flow / WACC data hasn't passed verification yet. See coverage."
+            ),
+            "access": {
+                "status": "refused",
+                "reason": "SSOT-UNVERIFIED",
+                "missing_input": missing_input,
+            },
+        }
 
     # Defaults and sources from SSOT fact_wacc_annual FY26 and NSE market_prices_seed.csv
     wacc_pct = float(overrides.get("wacc_pct", default_wacc_pct))
     g_pct = float(overrides.get("terminal_g_pct", 3.0))
-    
-    # Check for degraded cases (market price stale or SSOT lines unverified)
-    # BEH-05.09: No market price in last 10 trading days -> proposal disabled
-    # Let's assume we have a mock check or default to false for now, but we need to support the payload shape
-    market_stale = getattr(session, "market_stale", False)
-    ssot_unverified = getattr(session, "ssot_unverified", False)
-    
-    if ssot_unverified:
-        return {
-            "proposed_action": None,
-            "answer": "The FY26 cash-flow data hasn't passed verification yet. See coverage.",
-            "access": {"status": "refused", "reason": "SSOT-UNVERIFIED"}
-        }
+
+    # BEH-05.09: degraded market-price staleness check
+    market_stale = getattr(session, "market_stale", False) if session is not None else False
 
     inputs = {
         "wacc_pct": wacc_pct,

@@ -923,7 +923,7 @@ async def websocket_live_endpoint(
             try:
                 principal = yauth.verify_token(tok or "")
             except yauth.AuthError:
-                cookie_tok = websocket.cookies.get(yauth.SESSION_COOKIE_NAME)
+                cookie_tok = websocket.cookies.get(yauth.COOKIE_NAME)
                 if cookie_tok and cookie_tok != tok:
                     principal = yauth.verify_token(cookie_tok)
                 else:

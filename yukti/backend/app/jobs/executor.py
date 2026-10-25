@@ -109,6 +109,8 @@ class JobExecutor:
             "id": job_id,
             "proposed_action_id": proposed_action_id,
             "session_id": session_id,
+            "owner_persona": proposed_action.get("owner_persona"),
+            "owner_emp_id": proposed_action.get("owner_emp_id"),
             "agent": agent_id,
             "status": "queued",
             "progress": 0.0,
@@ -186,63 +188,92 @@ class JobExecutor:
             disclaimer = "Illustrative valuation, not investment advice."
             if agent_id == "dcf_agent":
                 from app.agents.dcf_agent import build_dcf_assumptions_from_inputs
-                from app.finance.dcf.inputs import load_fy26_market_price_default, load_fy26_wacc_default
-                from app.finance.dcf.run import run_dcf
+                from app.finance.dcf.inputs import (
+                    DCFInputMissingError,
+                    load_fy26_market_price_default,
+                    load_fy26_wacc_default,
+                )
+                from app.finance.dcf.run import build_dcf_model_spec, run_dcf
 
                 inputs = proposed_action.get("inputs") or {}
-                asm = build_dcf_assumptions_from_inputs(job_id, inputs)
-                dcf_res = run_dcf(asm)
-                iv = dcf_res["per_share"]["intrinsic_inr"]
-                px = dcf_res["per_share"]["market_inr"]
-                upside = dcf_res["per_share"]["upside_pct"]
-                verdict = dcf_res["per_share"]["verdict"]
-                _, _, wacc_meta = load_fy26_wacc_default()
-                _, _, px_meta = load_fy26_market_price_default()
-                spoken = (
-                    f"The DCF valuation is ready. Intrinsic value is ₹{iv:.2f} per share against a market price of ₹{px:.2f} "
-                    f"(as of {px_meta.get('date', '2026-03-30')}), so the model suggests ONGC is {verdict} by {abs(upside):.1f}%. "
-                    f"{disclaimer}"
-                )
-                result = {
-                    "contract_version": 3,
-                    "turn_id": f"job:{job_id}",
-                    "language": "en",
-                    "spoken_summary": spoken,
-                    "display_text": spoken,
-                    "visual": {
-                        "type": "dcf_model",
-                        "mode": "replace",
-                        "title": "ONGC Standalone DCF Valuation (Illustrative)",
-                        "model_id": dcf_res.get("model_id") or f"dcf_{job_id}",
-                        "as_of": dcf_res["as_of"],
-                        "disclaimer": dcf_res["disclaimer"],
-                        "assumptions": dcf_res["assumptions"],
-                        "wacc_build": dcf_res["wacc_build"],
-                        "forecast": dcf_res["forecast"],
-                        "terminal": dcf_res["terminal"],
-                        "bridge": dcf_res["bridge"],
-                        "per_share": dcf_res["per_share"],
-                        "sensitivity": dcf_res["sensitivity"],
-                        "tornado": dcf_res["tornado"],
-                        "lineage_refs": dcf_res["lineage_refs"],
-                    },
-                    "access": {"status": "allowed"},
-                    "sources": [
-                        {
-                            "kind": "data",
-                            "object": wacc_meta.get("object", "hrfin_gold.fact_wacc_annual"),
-                            "title": f"ONGC WACC SSOT FY26 ({asm.wacc_pct.value:.4f}%)",
+                try:
+                    asm = build_dcf_assumptions_from_inputs(job_id, inputs)
+                    dcf_res = run_dcf(asm)
+                    _, _, wacc_meta = load_fy26_wacc_default()
+                    _, _, px_meta = load_fy26_market_price_default()
+                except DCFInputMissingError as exc:
+                    refusal_msg = (
+                        f"Cannot run the DCF valuation because required input `{exc.missing_input}` is missing or "
+                        f"the FY26 cash-flow / WACC data hasn't passed verification yet. See coverage."
+                    )
+                    result = {
+                        "contract_version": 3,
+                        "turn_id": f"job:{job_id}",
+                        "language": "en",
+                        "spoken_summary": refusal_msg,
+                        "display_text": refusal_msg,
+                        "visual": {"type": "none", "mode": "replace"},
+                        "access": {
+                            "status": "refused",
+                            "reason": "SSOT-UNVERIFIED",
+                            "missing_input": exc.missing_input,
                         },
-                        {
-                            "kind": "data",
-                            "object": px_meta.get("source_doc", "market_prices_seed.csv"),
-                            "title": f"NSE ONGC.NS Close ({px_meta.get('date', '2026-03-30')}: ₹{px:.2f})",
+                        "sources": [],
+                        "provenance": {"label": "illustrative", "detail": refusal_msg},
+                    }
+                else:
+                    dcf_model = build_dcf_model_spec(dcf_res, asm)
+                    iv = dcf_res["per_share"]["intrinsic_inr"]
+                    px = dcf_res["per_share"]["market_inr"]
+                    upside = dcf_res["per_share"]["upside_pct"]
+                    verdict = dcf_res["per_share"]["verdict"]
+                    spoken = (
+                        f"The DCF valuation is ready. Intrinsic value is ₹{iv:.2f} per share against a market price of ₹{px:.2f} "
+                        f"(as of {px_meta.get('date', '2026-03-30')}), so the model suggests ONGC is {verdict} by {abs(upside):.1f}%. "
+                        f"{disclaimer}"
+                    )
+                    result = {
+                        "contract_version": 3,
+                        "turn_id": f"job:{job_id}",
+                        "language": "en",
+                        "spoken_summary": spoken,
+                        "display_text": spoken,
+                        "visual": {
+                            "type": "dcf_model",
+                            "mode": "replace",
+                            "title": "ONGC Standalone DCF Valuation (Illustrative)",
+                            "dcf_model": dcf_model,
+                            "model_id": dcf_res.get("model_id") or f"dcf_{job_id}",
+                            "as_of": dcf_res["as_of"],
+                            "disclaimer": dcf_res["disclaimer"],
+                            "assumptions": dcf_res["assumptions"],
+                            "wacc_build": dcf_res["wacc_build"],
+                            "forecast": dcf_model["forecast"],
+                            "terminal": dcf_model["terminal"],
+                            "bridge": dcf_res["bridge"],
+                            "per_share": dcf_res["per_share"],
+                            "sensitivity": dcf_res["sensitivity"],
+                            "sensitivity_grid": dcf_model["sensitivity_grid"],
+                            "tornado": dcf_model["tornado"],
+                            "lineage_refs": dcf_res["lineage_refs"],
                         },
-                    ],
-                    "export_options": ["xlsx", "pdf"],
-                    "caveat": disclaimer,
-                    "provenance": {"label": "illustrative", "detail": disclaimer},
-                }
+                        "access": {"status": "allowed"},
+                        "sources": [
+                            {
+                                "kind": "data",
+                                "object": wacc_meta.get("object", "hrfin_gold.fact_wacc_annual"),
+                                "title": f"ONGC WACC SSOT FY26 ({asm.wacc_pct.value:.4f}%)",
+                            },
+                            {
+                                "kind": "data",
+                                "object": px_meta.get("source_doc", "market_prices_seed.csv"),
+                                "title": f"NSE ONGC.NS Close ({px_meta.get('date', '2026-03-30')}: ₹{px:.2f})",
+                            },
+                        ],
+                        "export_options": ["xlsx", "pdf"],
+                        "caveat": disclaimer,
+                        "provenance": {"label": "illustrative", "detail": disclaimer},
+                    }
             else:
                 spoken = "Background agent completed."
                 result = {

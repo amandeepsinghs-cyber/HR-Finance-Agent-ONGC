@@ -154,24 +154,6 @@ def rewrite_dataset_sql(sql: str) -> str:
                 "WHERE field_id IS NOT NULL",
                 "WHERE field_id IS NOT NULL AND LOWER(line_type) = 'field'",
             )
-        # Route continuous_from_date queries on hrfin_gold_v3.ssot_workforce_employee through v_continuous_stay + employee_master
-        wf_tbl = f"`{GCP_PROJECT}.hrfin_gold_v3.ssot_workforce_employee`"
-        if f"FROM {wf_tbl}" in out and "continuous_from_date" in out and "v_continuous_stay" not in out:
-            wf_subq = (
-                f"FROM (SELECT e.* EXCEPT(employment_status, continuous_from_date, continuous_stay_months, continuous_stay_years, is_continuous_5yr_plus), "
-                f"COALESCE(em.employment_status, e.employment_status) AS employment_status, "
-                f"COALESCE(cs.continuous_from_date, e.continuous_from_date) AS continuous_from_date, "
-                f"COALESCE(cs.continuous_stay_months, e.continuous_stay_months) AS continuous_stay_months, "
-                f"COALESCE(cs.continuous_stay_years, e.continuous_stay_years) AS continuous_stay_years, "
-                f"COALESCE(cs.is_continuous_5yr_plus, e.is_continuous_5yr_plus) AS is_continuous_5yr_plus "
-                f"FROM {wf_tbl} e "
-                f"LEFT JOIN `{GCP_PROJECT}.hrfin_silver_v3.employee_master` em ON e.emp_id = em.emp_id "
-                f"LEFT JOIN (SELECT emp_id, wc_id, continuous_from_date, continuous_stay_months, continuous_stay_years, is_continuous_5yr_plus "
-                f"FROM `{GCP_PROJECT}.hrfin_gold_v3.v_continuous_stay` WHERE is_current_stay = TRUE "
-                f"QUALIFY ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY continuous_from_date DESC) = 1) cs "
-                f"ON e.emp_id = cs.emp_id AND e.wc_id = cs.wc_id)"
-            )
-            out = out.replace(f"FROM {wf_tbl}", wf_subq)
     return out
 
 

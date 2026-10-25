@@ -1,10 +1,114 @@
 # run.py
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from app.finance.dcf.assumptions import DCFAssumptions
 from app.finance.dcf.wacc import compute_wacc
 from app.finance.dcf.fcff import compute_fcff
 from app.finance.dcf.valuation import compute_valuation
 from app.finance.dcf.sensitivity import compute_sensitivity, compute_tornado
+
+
+def build_dcf_model_spec(dcf_res: Dict[str, Any], assumptions: Optional[DCFAssumptions] = None) -> Dict[str, Any]:
+    """Formats run_dcf output into the SPEC-03 / DcfModelCard `visual.dcf_model` schema."""
+    raw_fc = dcf_res.get("forecast", [])
+    if isinstance(raw_fc, list):
+        years = [str(r.get("period", f"FY{27 + i}")) for i, r in enumerate(raw_fc)]
+        lines: Dict[str, Any] = {
+            "fcff": [round(float(r.get("fcff", 0.0)), 2) for r in raw_fc],
+            "discount_factor": [round(float(r.get("discount_factor", 0.0)), 4) for r in raw_fc],
+            "pv_fcff": [round(float(r.get("pv_fcff", 0.0)), 2) for r in raw_fc],
+        }
+        if any("rev" in r for r in raw_fc):
+            lines["revenue"] = [round(float(r.get("rev", 0.0)), 2) for r in raw_fc]
+        if any("ebit" in r for r in raw_fc):
+            lines["ebit"] = [round(float(r.get("ebit", 0.0)), 2) for r in raw_fc]
+        forecast_spec: Dict[str, Any] = {"years": years, "lines": lines}
+    else:
+        forecast_spec = dict(raw_fc)
+
+    raw_term = dict(dcf_res.get("terminal") or {})
+    g_pct = (
+        float(assumptions.terminal_g_pct.value)
+        if assumptions is not None and hasattr(assumptions, "terminal_g_pct")
+        else float(raw_term.get("g_pct", 3.0))
+    )
+    exit_mult = (
+        float(assumptions.exit_ev_ebitda.value)
+        if assumptions is not None and hasattr(assumptions, "exit_ev_ebitda")
+        else float(raw_term.get("exit_multiple", 4.5))
+    )
+    raw_warn = raw_term.get("warning")
+    warn_str = (
+        "Gordon growth vs exit multiple divergence > 30%"
+        if raw_warn is True
+        else (raw_warn if isinstance(raw_warn, str) else None)
+    )
+    terminal_spec = {
+        "method": str(raw_term.get("method") or "gordon"),
+        "g_pct": g_pct,
+        "tv_inr_cr": round(float(raw_term.get("tv_inr_cr", 0.0)), 2),
+        "pv_tv_inr_cr": round(float(raw_term.get("pv_tv_inr_cr", 0.0)), 2),
+        "exit_multiple": exit_mult,
+        "tv_exit_inr_cr": round(float(raw_term.get("tv_exit_inr_cr", 0.0)), 2),
+        "implied_g_pct": round(float(raw_term.get("implied_g_pct", 0.0)), 2),
+        "warning": warn_str,
+    }
+
+    sens = dcf_res.get("sensitivity") or {}
+    w_axis = [round(float(x), 4) for x in (sens.get("wacc_axis_pct") or [])]
+    g_axis = [round(float(x), 4) for x in (sens.get("g_axis_pct") or [])]
+    cells = [
+        [round(float(c), 2) if c is not None else None for c in row]
+        for row in (sens.get("values_inr") or [])
+    ]
+    sensitivity_grid_spec = {
+        "row_input": {"name": "WACC", "unit": "%", "values": w_axis},
+        "col_input": {"name": "Terminal g", "unit": "%", "values": g_axis},
+        "output": {"name": "Value per share", "unit": "INR"},
+        "cells": cells,
+        "base": {"row_idx": len(w_axis) // 2, "col_idx": len(g_axis) // 2},
+        "source": "SPEC-02 §8 DCF Engine",
+    }
+
+    iv = float((dcf_res.get("per_share") or {}).get("intrinsic_inr", 0.0))
+    raw_tornado = dcf_res.get("tornado") or []
+    if isinstance(raw_tornado, list):
+        tornado_bars = [
+            {
+                "driver": str(b.get("driver", "")),
+                "low_input": str(b.get("low_input") or "low"),
+                "high_input": str(b.get("high_input") or "high"),
+                "low_inr": round(float(b.get("low_inr", 0.0)), 2),
+                "high_inr": round(float(b.get("high_inr", 0.0)), 2),
+            }
+            for b in raw_tornado
+        ]
+        tornado_spec = {
+            "output": {"name": "Intrinsic value per share", "unit": "INR", "base": round(iv, 2)},
+            "bars": tornado_bars,
+            "source": "SPEC-02 §8 DCF Engine",
+        }
+    else:
+        tornado_spec = dict(raw_tornado)
+
+    return {
+        "run_id": str(dcf_res.get("run_id") or "dcf_run"),
+        "engine_version": str(dcf_res.get("engine_version") or "3.0"),
+        "as_of": str(dcf_res.get("as_of") or ""),
+        "scope": str(dcf_res.get("scope") or "standalone_sotp"),
+        "assumptions": dcf_res.get("assumptions", {}),
+        "per_share": dcf_res.get("per_share", {}),
+        "wacc_build": dcf_res.get("wacc_build", {}),
+        "forecast": forecast_spec,
+        "terminal": terminal_spec,
+        "bridge": dcf_res.get("bridge", []),
+        "sensitivity": sens,
+        "sensitivity_grid": sensitivity_grid_spec,
+        "tornado": tornado_spec,
+        "lineage_refs": dcf_res.get("lineage_refs", []),
+        "provenance_label": str(dcf_res.get("provenance_label") or "illustrative"),
+        "disclaimer": str(dcf_res.get("disclaimer") or "Illustrative valuation, not investment advice."),
+    }
+
 
 def run_dcf(assumptions: DCFAssumptions, fixture=None) -> Dict[str, Any]:
     wacc_build = compute_wacc(assumptions, fixture)

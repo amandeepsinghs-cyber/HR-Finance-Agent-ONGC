@@ -3,9 +3,10 @@ import os
 from typing import Dict, Any, Callable, Awaitable
 
 from app.jobs.executor import get_executor
-from app.finance.dcf.run import run_dcf
+from app.finance.dcf.run import build_dcf_model_spec, run_dcf
 from app.finance.dcf.assumptions import DCFAssumptions, AssumptionField, defaults_from_ssot
 from app.finance.dcf.inputs import (
+    DCFInputMissingError,
     load_fy26_market_price_default,
     load_fy26_wacc_default,
     load_ssot_snapshot_rows,
@@ -57,10 +58,30 @@ async def dcf_job_runner(
     await asyncio.sleep(0.05)
 
     inputs = payload.get("inputs", {})
-    asm = build_dcf_assumptions_from_inputs(job_id, inputs)
-
-    await emit_progress("wacc_build", "Building WACC", 0.2)
-    res = run_dcf(asm)
+    try:
+        asm = build_dcf_assumptions_from_inputs(job_id, inputs)
+        await emit_progress("wacc_build", "Building WACC", 0.2)
+        res = run_dcf(asm)
+    except DCFInputMissingError as exc:
+        refusal_msg = (
+            f"Cannot run the DCF valuation because required input `{exc.missing_input}` is missing or "
+            f"the FY26 cash-flow / WACC data hasn't passed verification yet. See coverage."
+        )
+        return {
+            "contract_version": 3,
+            "turn_id": f"job:{job_id}",
+            "language": "en",
+            "spoken_summary": refusal_msg,
+            "display_text": refusal_msg,
+            "visual": {"type": "none", "mode": "replace"},
+            "access": {
+                "status": "refused",
+                "reason": "SSOT-UNVERIFIED",
+                "missing_input": exc.missing_input,
+            },
+            "sources": [],
+            "provenance": {"label": "illustrative", "detail": refusal_msg},
+        }
     await emit_progress("forecast", "Forecasting FCFF", 0.4)
     await emit_progress("valuation", "Computing valuation", 0.5)
     await emit_progress("sensitivity_grid", "Computing sensitivity", 0.7)
@@ -98,7 +119,7 @@ async def dcf_job_runner(
             "type": "dcf_model",
             "mode": "replace",
             "title": "ONGC Standalone DCF Valuation (Illustrative)",
-            "dcf_model": res,
+            "dcf_model": build_dcf_model_spec(res, asm),
         },
         "access": {"status": "allowed"},
         "sources": [

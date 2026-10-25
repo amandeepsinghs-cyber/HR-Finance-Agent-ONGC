@@ -69,6 +69,9 @@ class SessionState:
             self.last_rows.clear()
             self.last_columns.clear()
             self.spec_history.clear()
+            self.pending_actions.clear()
+            self.jobs.clear()
+            self.last_agent_result = None
         if persona:
             self.persona = persona
         if eff_emp:
