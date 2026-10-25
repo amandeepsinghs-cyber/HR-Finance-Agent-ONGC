@@ -40,7 +40,7 @@ def sanitize_fictional_names(text: str) -> str:
 
 DOCUMENT_TEMPLATES = {
     "board_note": {
-        "title": "Board Note: Operational Turnaround Strategy for Marginal Fields",
+        "title": "Board Note: Operational & Financial Review",
         "doc_type": "board_note",
         "template_id": "template_board_note.docx",
         "default_markdown": """# OIL AND NATURAL GAS CORPORATION LIMITED
@@ -48,62 +48,46 @@ DOCUMENT_TEMPLATES = {
 **STRICTLY CONFIDENTIAL — FOR BOARD CONSIDERATION ONLY**
 
 ### 1. Proposal & Executive Summary
-This memorandum seeks approval from the Board of Directors for targeted operational and financial interventions in mature onshore fields experiencing negative operating margins under prevailing crude realisations.
+This memorandum presents an operational and financial assessment grounded in the active session records from the ONGC Single Source of Truth (SSOT).
 
-### 2. Operational Performance & Field Profile
-Field **Champang** (FLD-CHP, Assam Asset) registered a standalone loss of -₹4.93 Crore in FY26, despite generating positive operating cash flow of ₹26.25 Crore, due to elevated statutory levies and lifting costs.
+### 2. Operational & Financial Context
+No active cohort or table rows were selected prior to drafting. Run an analytical query first to populate the grounded data table in this memorandum.
 
-### 3. Financial Analysis & Break-Even Economics
-| Field Name | Asset / Basin | FY26 Net Revenue (₹ Cr) | FY26 Opex (₹ Cr) | EBITDA (₹ Cr) | PBT (₹ Cr) |
-|---|---|---|---|---|---|
-| Champang | Assam Asset | 14.20 | 18.90 | +26.25 | -4.93 |
-| Borholla | Assam Asset | 28.50 | 31.20 | +12.10 | +3.40 |
-| Khoraghat | Assam Asset | 42.10 | 41.80 | +18.30 | +5.10 |
-
-*Sensitivity Analysis:* Under an extreme $60/bbl Brent scenario, Champang, Borholla, and Khoraghat face negative operating cash flow, requiring Capex rationalisation.
-
-### 4. Strategic Options Evaluated
-1. **Option A: Production Enhancement Contract (PEC):** Inducting Technical Service Partners under a revenue-sharing model (MOPNG PEC Guidelines).
+### 3. Strategic Options Evaluated
+1. **Option A: Production Enhancement Contract (PEC):** Inducting Technical Service Partners under a revenue-sharing model (MoPNG PEC Guidelines).
 2. **Option B: Capex Rationalisation & Artificial Lift Overhaul:** Optimising water-handling and well servicing to compress lifting costs.
-3. **Option C: Asset Farm-Out:** Monetisation under Discovered Small Field (DSF) framework.
+3. **Option C: Workforce & Cadre Redeployment:** Aligning rotational transfers with operational priorities under JRTP Rev. 4 guidelines.
 
-### 5. Recommendation & Decision Sought
-The Board is requested to approve:
-1. In-principle authorization to initiate **Production Enhancement Contract (PEC)** bidding for Champang field.
-2. Phased redeployment of engineering staff to high-pressure drilling campaigns in Tripura and Western Offshore.
+### 4. Recommendation & Decision Sought
+The Board is requested to review the grounded SSOT indicators and accord in-principle approval for the recommended intervention.
 
 *Prepared by:* Corporate Strategy & Asset Economics Group  
 *Submitted for Approval:* Chairman & Managing Director (CMD)
 """
     },
     "parliament_reply": {
-        "title": "Parliament Question Reply: Executive Vacancies in North-East Work Centres",
+        "title": "Parliament Question Reply: Workforce & Vacancy Review",
         "doc_type": "parliament_reply",
         "template_id": "template_parliament_reply_format.docx",
         "default_markdown": """# GOVERNMENT OF INDIA
 ## MINISTRY OF PETROLEUM AND NATURAL GAS
-### RAJYA SABHA | UNSTARRED QUESTION NO. 142
-**TO BE ANSWERED ON 28TH OCTOBER 2026**
+### PARLIAMENT QUESTION BRIEFING DRAFT
 
-**SUBJECT:** Executive Vacancies in ONGC North-East Work Centres  
+**SUBJECT:** Workforce & Operational Review across ONGC Work Centres  
 **QUESTIONED BY:** Shri Anand Swaroop, Hon. M.P.
 
 ---
 
-### (a) Whether it is a fact that technical executive positions in ONGC operational work centres in the North East are currently vacant?
+### (a) Position of Sanctioned and In-Position Strength
 **ANSWER (MINISTER OF STATE IN THE MINISTRY OF PETROLEUM AND NATURAL GAS):**  
-(a) Yes, Sir. Across ONGC operational work centres situated in the North-Eastern States (Assam and Tripura), there are a total of **143 executive vacancies** against 4,548 sanctioned posts for FY26:
-- **Tripura Asset (Agartala):** Sanctioned 957; In-Position 844; **Vacancies: 113**.
-- **Assam Asset (Nazira/Sivasagar):** Sanctioned 1,848; In-Position 1,822; **Vacancies: 26**.
-- **Assam & Assam Arakan Basin (A&AA):** Sanctioned 123; In-Position 119; **Vacancies: 4**.
-- **Jorhat Asset, Silchar, INBIGS:** Fully staffed (Zero executive vacancies).
+(a) The work-centre-wise sanctioned strength, in-position strength, and vacancy position are compiled from the ONGC Single Source of Truth (SSOT) records in the active session table.
 
 ### (b) Steps being taken to fill vacancies and incentivize deployments?
 **ANSWER:**  
 (b) The Corporation has initiated the following measures:
-1. **Special Recruitment Drives:** 15 executive vacancies are currently notified under dedicated Special Recruitment Drives for SC/ST/OBC categories.
-2. **Rotational Transfer Redeployment:** Mid-level executive engineers (E3–E5) are being redeployed from corporate headquarters (Delhi/Dehradun) to field installations under the Annual General Transfer (AGT) cycle.
-3. **Graduate Trainee Inductions:** Fresh Graduate Trainees in core technical disciplines selected through GATE are currently undergoing foundational training with mandatory initial postings in North-East operational assets.
+1. **Special Recruitment Drives:** Dedicated recruitment drives for notified categories against sanctioned vacancies.
+2. **Rotational Transfer Redeployment:** Executive officers are redeployed across field installations under the Annual General Transfer (AGT) cycle pursuant to JRTP guidelines.
+3. **Graduate Trainee Inductions:** Fresh Graduate Trainees in core technical disciplines undergo foundational training with initial postings in operational assets.
 """
     }
 }
@@ -161,13 +145,7 @@ class DocumentDraftingEngine:
         ctx_title = ctx.get("title") or ""
         wc_profile = ctx.get("wc_profile") or {}
 
-        is_canonical_template_request = (
-            ("parliament" in q_l and not ctx_rows)
-            or ("marginal" in q_l or "champang" in q_l)
-            or ("annual general transfer" in q_l or "agt" in q_l)
-        )
-
-        if (ctx_rows or wc_profile) and not is_canonical_template_request:
+        if ctx_rows or wc_profile:
             wc_name = wc_profile.get("wc_name") or ctx.get("wc_name") or "ONGC Enterprise Operations"
             wc_id = wc_profile.get("wc_id") or ctx.get("wc_id") or "CORP-ALL"
             doc_heading = "OFFICE MEMORANDUM & EXECUTIVE BRIEFING NOTE"

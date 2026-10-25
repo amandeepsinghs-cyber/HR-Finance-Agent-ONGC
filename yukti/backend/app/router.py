@@ -208,14 +208,18 @@ class SemanticRouter:
         for entry in all_queries:
             qid = entry["id"]
             ref_vec = self.embeddings.get(qid)
+            lex_sim = self._keyword_overlap(query, entry)
             if query_vec and ref_vec:
                 sem_sim = _cosine_similarity(query_vec, ref_vec)
+                # Hybrid score: primary semantic similarity with keyword reinforcement
+                hybrid_score = max(sem_sim, 0.75 * sem_sim + 0.25 * lex_sim)
             else:
-                sem_sim = 0.0
-
-            lex_sim = self._keyword_overlap(query, entry)
-            # Hybrid score: primary semantic similarity with keyword reinforcement
-            hybrid_score = max(sem_sim, 0.75 * sem_sim + 0.25 * lex_sim)
+                cq = (entry.get("canonical_question") or "").strip().lower()
+                ql = query.strip().lower()
+                if cq and (ql == cq or (len(ql) >= 20 and ql in cq)):
+                    hybrid_score = 0.92
+                else:
+                    hybrid_score = lex_sim
 
             if hybrid_score > best_score:
                 best_score = hybrid_score

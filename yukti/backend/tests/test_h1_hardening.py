@@ -319,10 +319,36 @@ async def test_h1_1_async_no_event_loop_blocking_under_3_concurrent_sessions():
                 max_loop_stall_ms = stall_ms
             last = now
 
+    def slow_blocking_compile_run(sql: str, params: Any = None) -> Any:
+        # Simulate a 200ms synchronous BigQuery query execution inside Compiler._run_sync
+        from app.brain.compiler import QueryResult
+        time.sleep(0.20)
+        return QueryResult(
+            columns=["grade", "headcount"],
+            rows=[{"grade": "E4", "headcount": 120}, {"grade": "E3", "headcount": 95}],
+            total_bytes=1024,
+            latency_ms=200.0,
+            dry_run_bytes=1024,
+        )
+
+    async def fast_plan_call(prompt: str) -> Dict[str, Any]:
+        await asyncio.sleep(0)
+        return {"intent": "data", "metric": "headcount", "dimensions": ["grade"]}
+
+    from app.brain.compiler import get_compiler
+    from app.brain.planner import catalog_summary, get_planner
+
+    catalog_summary()
+    get_planner()
+    get_compiler()
+
     monitor_task = asyncio.create_task(loop_lag_monitor())
     try:
-        with patch("app.turn_runner.planner_enabled", return_value=False):
-            with patch("app.tools.query_data.query_data", side_effect=slow_blocking_query):
+        # Updated for One-Brain architecture (SPEC-11 §3/§4, D-64): the legacy non-planner canned SQL
+        # branch in turn_runner.py was retired; verify off-event-loop execution on the One-Brain
+        # planner/compiler path (Compiler.execute -> asyncio.to_thread(self._run_sync, ...)).
+        with patch("app.brain.planner.Planner._call", side_effect=fast_plan_call):
+            with patch("app.brain.compiler.Compiler._run_sync", side_effect=slow_blocking_compile_run):
                 t_start = time.perf_counter()
                 results = await asyncio.gather(
                     runner.execute_turn_async("How many employees are in Ahmedabad?", session_id="conc-1", persona="CMD"),

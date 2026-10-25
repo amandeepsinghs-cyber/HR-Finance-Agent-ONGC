@@ -83,8 +83,7 @@ async def roster_ids_from_spec_history(session_state: Any) -> List[str]:
         data.update({"grain": "row", "dimensions": [], "period": None, "limit": 2000})
         # a side-by-side comparison selects everyone in the compared work centres
         cq = get_compiler().compile(QuerySpec.model_validate(data))
-        import asyncio
-        res = await asyncio.to_thread(get_compiler()._run_sync, cq.sql)
+        res = await get_compiler().execute(cq)
         return [r["emp_id"] for r in res.rows if isinstance(r.get("emp_id"), str)]
     return []
 
@@ -123,9 +122,20 @@ async def transfer_note_contract(query: str, session_state: Any, persona: str, t
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2), "contract_version": 2,
         }
     compiler = get_compiler()
-    import asyncio
+    from app.brain.compiler import CompiledQuery
     sql = _roster_sql(ids, names)
-    result = await asyncio.to_thread(compiler._run_sync, sql)
+    result = await compiler.execute(
+        CompiledQuery(
+            sql=sql,
+            subject="workforce",
+            metric="headcount",
+            metric_label="Employees",
+            unit="employees",
+            source="generated",
+            tables=["hrfin_gold.ssot_workforce_employee"],
+            grain="row",
+        )
+    )
     rows = result.rows
     if not rows:
         return None

@@ -36,20 +36,25 @@ def get_bp_for_month(doj_dt, snap_dt, grade_id, grades, bundle, gender="Male"):
     if is_exec:
         t_norm = min(1.0, tenure_yrs / 34.0)
         if grade_id in ("E5", "E6", "E7", "E8", "E9", "DIR", "CMD"):
-            u_pos = 0.03 + 0.38 * t_norm + 0.10 * u_i
+            if gender == "Female":
+                u_pos = 0.01 + 0.15 * t_norm + 0.05 * u_i
+            else:
+                u_pos = 0.03 + 0.38 * t_norm + 0.10 * u_i
         else:
             if gender == "Female":
-                u_pos = 0.525 + 0.34 * t_norm + 0.12 * u_i
+                u_pos = 0.59 + 0.06 * t_norm + 0.08 * u_i
             else:
                 u_pos = 0.165 + 0.485 * t_norm + 0.12 * u_i
+        vet_boost = 0.0 if gender == "Female" else 0.06 * max(0.0, (tenure_yrs - 21.0) / 10.0)
     else:
         t_norm = min(1.0, tenure_yrs / 30.0)
         if gender == "Female":
-            u_pos = 0.52 + 0.33 * t_norm + 0.10 * u_i
+            u_pos = 0.60 + 0.35 * t_norm + 0.08 * u_i
+            vet_boost = 0.0
         else:
-            u_pos = 0.81 + 0.19 * t_norm + 0.02 * u_i
+            u_pos = 0.97 + 0.03 * t_norm
+            vet_boost = 0.0
 
-    vet_boost = 0.06 * max(0.0, (tenure_yrs - 21.0) / 10.0)
     u_pos = max(0.0, min(1.0, u_pos + vet_boost))
     if is_2007:
         u_pos = min(1.09, u_pos + 0.65)

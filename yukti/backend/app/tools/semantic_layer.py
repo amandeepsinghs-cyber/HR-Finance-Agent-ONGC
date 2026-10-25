@@ -99,7 +99,6 @@ BIGQUERY ENTERPRISE SCHEMAS & EXACT COLUMN CATALOG (Project: {GCP_PROJECT}):
    • `hrfin_gold.v_field_pnl` (Standalone Field P&L Economics):
      - Exact Columns: field_id, field_name, basin, onshore_offshore, asset_wc_id, asset_name, fiscal_year, oil_revenue_inr_cr, gas_revenue_inr_cr, recomputed_gross_revenue_inr_cr, statutory_royalty_inr_cr, statutory_cess_inr_cr, statutory_windfall_tax_saed_inr_cr, recomputed_net_revenue_inr_cr, allocated_manpower_cost_inr_cr, total_opex_inr_cr, recomputed_ebitda_inr_cr, recomputed_ebitda_margin_pct, dda_depreciation_inr_cr, recomputed_pbt_inr_cr, total_production_boe, lifting_cost_per_boe_usd, manpower_cost_per_boe_usd, boe_per_employee, is_loss_making_3yr_consecutive, is_divestment_candidate, pec_monetisation_potential_flag, root_cause_loss_code.
      - MANDATORY: Always filter `field_id IS NOT NULL` to exclude non-field corporate reconciling lines (plants/VAP/corporate).
-     - In FY26, Champang (`field_id = 'FLD-CHP'`, PBT -₹4.93 Cr) is the only loss-making field.
      - Baseline fiscal year: `fiscal_year IN ('FY26', '2026')`.
 
    • `hrfin_gold.mart_field_economics` (Field Performance, Water Cut, Lifting Costs):
@@ -192,7 +191,7 @@ BIGQUERY ENTERPRISE SCHEMAS & EXACT COLUMN CATALOG (Project: {GCP_PROJECT}):
      - Offshore Regions: Western Offshore includes Mumbai High Asset (`WC-MUM`; fields `FLD-MHN`, `FLD-MHS`), Neelam & Heera (`WC-NEH`), and Bassein & Satellite (`WC-BAS`). Eastern Offshore is the Eastern Offshore Asset at Kakinada (`WC-EAS`, KG-DWN-98/2 field `FLD-KG982`). Do not label Eastern Offshore as Western Offshore.
      - Gujarat Onshore: use `state = 'Gujarat'` or `wc_id IN ('WC-AHM', 'WC-ANK', 'WC-MEH', 'WC-CAM')`. Never invent 'gujarat asset'.
      - Assam Onshore: use `state = 'Assam'` or `wc_id IN ('WC-ASM', 'WC-JOR')`.
-     - North-East (NE): `sector = 'NE'` in `dim_work_centre` / `ssot_work_centre_360`, i.e. `wc_id IN ('WC-ASM', 'WC-TRI', 'WC-AAB', 'WC-JOR', 'WC-SIL', 'WC-INB')`. DO NOT equate NE with hard_station_cat='C'. Total FY26 NE executive vacancies = 143.
+     - North-East (NE): `sector = 'NE'` in `dim_work_centre` / `ssot_work_centre_360`, i.e. `wc_id IN ('WC-ASM', 'WC-TRI', 'WC-AAB', 'WC-JOR', 'WC-SIL', 'WC-INB')`. DO NOT equate NE with hard_station_cat='C'.
      - Never make unverified causal claims; cite data drivers (such as water cut or mature field age) only when present in query results.
    Rule 4: Multi-Tool Policy + Data Turns: If an inquiry involves both corporate policy rules and quantitative employee numbers (e.g. P11 retention beyond 10-year cluster cap, pre-retirement exemptions, transfer eligibility), call BOTH `search_policy` to retrieve the clause AND `query_data` to fetch exact headcounts.
    Rule 5: Rank not threshold: never use arbitrary hardcoded cutoff filters that risk returning 0 rows; use dynamic quantiles, `ORDER BY ... DESC LIMIT 10`.

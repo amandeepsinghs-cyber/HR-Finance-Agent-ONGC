@@ -416,7 +416,7 @@ class Planner:
         except Exception as e:  # planner failure => try deterministic guards in to_plan first before legacy fallback
             logger.warning(f"planner call failed: {e}")
             det_plan = self.to_plan(question, {}, prev, fy_hint)
-            if det_plan.intent in ("data", "replot") and det_plan.spec is not None:
+            if (det_plan.intent in ("data", "replot") and det_plan.spec is not None) or det_plan.intent in ("what_if", "document", "policy", "why"):
                 det_plan.notes.append(f"recovered from llm error via deterministic guard: {str(e)[:80]}")
                 det_plan.latency_ms = round((time.perf_counter() - t0) * 1000, 1)
                 return det_plan
@@ -464,6 +464,12 @@ class Planner:
                 and not re.search(r"\b(table|tabular)\b", ql_early)
             )
         )
+        if prev is not None:
+            from app.brain.chart_rules import is_pure_replot_request
+            is_replot_req, replot_k = is_pure_replot_request(question)
+            if is_replot_req and replot_k:
+                intent = "replot"
+                chart = replot_k
         if intent == "replot" and prev is not None:
             raw_m = raw.get("metric")
             explicit_visual = bool(
@@ -619,14 +625,30 @@ class Planner:
         ):
             return Plan(intent="what_if", raw=raw)
 
+        # Document drafting guard ("Draft a transfer note...", "Draft a board note...")
+        if re.search(
+            r"^\s*(?:please\s+)?(?:draft|prepare|write|generate|create|compose)\b.*\b(?:note|memo|reply|letter|proposal|report|brief|order|document|minutes|email)\b",
+            ql_early,
+        ):
+            return Plan(intent="document", raw=raw)
+
+        # Policy rule guard ("What is the minimum tenure at a station as per the transfer policy?")
+        if re.search(
+            r"\b(?:as\s+per\s+(?:the\s+)?(?:transfer|leave|hr|jrtp)?\s*policy|minimum\s+tenure|maximum\s+tenure|what\s+is\s+the\s+rule)\b",
+            ql_early,
+        ) and not re.search(r"\b(how\s+many|kitne|count|list|names?)\b", ql_early):
+            return Plan(intent="policy", is_followup=False, raw=dict(raw, intent="policy"))
+
         # Deterministic Financial Causal & Action Guard ("Why did X happen?", "What action should the Finance Director take?")
         fin_kw = re.search(
             r"\b(wacc|weighted\s+average\s+cost\s+of\s+capital|"
+            r"p\s*&\s*l|pnl|profit\s+and\s+loss|income\s+statement\w*|"
             r"pat|profit|pbt|revenue|ebitda|levies|royalty|oidb|saed|windfall|exploration|dry\s+well|survey\s+cost|"
             r"dd&a|dda|depreciation|depletion|impairment|115baa|deferred\s+tax|cwip|opal|hpcl|mrpl|ovl|otpc|subsidiar\w*|"
             r"borrowing\w*|debt|net\s+debt|lease\s+liabilit\w*|ind[- ]?as|abandonment|aro|site\s+restoration|"
-            r"cash\s*flow|ocf|fcf|free\s+cash|capex|dividend\w*|buyback|roce|roe|roa|margin\w*|realisation|crude|gas|"
-            r"lifting\s+cost|pec|new\s+well\s+gas|nwng|note\s+\d+|finance\s+director|director\s+finance)\b",
+            r"cash\s*flow|ocf|fcf|free\s+cash|capex|under[- ]?invest\w*|reserves?|mou|exchequer|dividend\w*|buyback|roce|roe|roa|margin\w*|realisation|crude|gas|"
+            r"lifting\s+cost|water\s+cut|pec|new\s+well\s+gas|nwng|note\s+\d+|finance\s+director|director\s+finance|"
+            r"lost\s+money|made\s+loss\w*|loss[- ]making\s+field\w*)\b",
             ql_early,
         )
         prev_is_fin = bool(prev is not None and (prev.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios") or prev_is_wacc))
@@ -639,6 +661,21 @@ class Planner:
                 if is_wacc_q or (prev_is_wacc and re.search(r"\b(why|what|driver\w*|reason\w*|cause\w*|high\w*|low\w*)\b", ql_early)):
                     inferred_m = "wacc_change_attribution"
                     chart = "waterfall"
+                elif re.search(r"\b(revenue\s+per\s+employee)\b", ql_early):
+                    inferred_m = "revenue_per_employee_cr"
+                elif re.search(r"\b(exchequer|contribution\s+to\s+exchequer)\b", ql_early):
+                    inferred_m = "exchequer_contribution_cr"
+                elif re.search(r"\b(under[- ]?invest\w*)\b", ql_early) or (re.search(r"\bcapex\b", ql_early) and re.search(r"\breserves?\b", ql_early)):
+                    inferred_m = "capex_vs_reserves"
+                elif re.search(r"\bcapex\b", ql_early):
+                    inferred_m = "capex_actual_cr"
+                    dims_capex = ["asset", "fy"] if re.search(r"\b(year[- ]?wise|by\s+(?:fiscal\s+)?year)\b", ql_early) else ["asset"]
+                    if not raw.get("dimensions"):
+                        raw = dict(raw, set_dimensions=True, dimensions=dims_capex)
+                elif re.search(r"\bmou\b", ql_early):
+                    inferred_m = "mou_scorecard"
+                    if not raw.get("fy") and not (fy_hint and fy_hint.get("fy")):
+                        raw = dict(raw, fy="FY27")
                 elif re.search(r"\b(saed|windfall|statutory\s+levies|note\s+28|note\s+26)\b", ql_early):
                     inferred_m = "statutory_levies_cr"
                 elif re.search(r"\b(exploration|dry\s+well\w*|note\s+32)\b", ql_early):
@@ -659,12 +696,30 @@ class Planner:
                     inferred_m = "cwip_cr"
                 elif re.search(r"\b(free\s+cash\s+flow|fcf|operating\s+cash\s+flow|ocf|cash\s*flow)\b", ql_early):
                     inferred_m = "cash_flow_statement"
+                elif re.search(r"\b(roce)\b", ql_early) and not re.search(r"\b(ratio\w*|scorecard)\b", ql_early):
+                    inferred_m = "roce_pct"
                 elif re.search(r"\b(roce|roe|roa|current\s+ratio|interest\s+coverage|debt[- ]to[- ]equity|eps|ratio\w*)\b", ql_early):
                     inferred_m = "financial_ratios"
                 elif re.search(r"\b(lifting\s+cost)\b", ql_early):
                     inferred_m = "lifting_cost_usd_per_boe"
-                elif re.search(r"\b(loss[- ]making\s+field\w*|pec|field\s+profit\w*)\b", ql_early):
+                    if not raw.get("dimensions"):
+                        if re.search(r"\bby\s+asset\b", ql_early):
+                            raw = dict(raw, dimensions=["asset"])
+                        elif re.search(r"\bfield\w*\b", ql_early):
+                            raw = dict(raw, dimensions=["field"])
+                elif re.search(r"\b(loss[- ]making\s+field\w*|lost\s+money|made\s+loss\w*|pec|field\s+profit\w*)\b", ql_early):
                     inferred_m = "pbt_cr"
+                    if not raw.get("dimensions"):
+                        raw = dict(raw, dimensions=["field"])
+                    if re.search(r"\b(lost\s+money|loss[- ]making\s+field\w*)\b", ql_early) and not re.search(r"\b(most\s+profitable|profitable\s+and)\b", ql_early):
+                        f_loss = list(raw.get("filters") or [])
+                        if not any(isinstance(x, dict) and x.get("field") == "pbt_cr" for x in f_loss):
+                            f_loss.append({"field": "pbt_cr", "op": "<", "values": ["0"]})
+                        raw = dict(raw, filters=f_loss)
+                elif re.search(r"\brevenue\b", ql_early) and re.search(r"\b(each\s+field|by\s+field|fields)\b", ql_early):
+                    inferred_m = "revenue_cr"
+                    if not raw.get("dimensions"):
+                        raw = dict(raw, dimensions=["field", "fy"] if (fy_hint and fy_hint.get("from")) else ["field"])
                 elif self.ents.resolve_field(question):
                     inferred_m = "pbt_cr"
                 elif re.search(r"\b(pbt|before\s+tax)\b", ql_early) and no_sub_entity:
@@ -680,7 +735,8 @@ class Planner:
                 else:
                     inferred_m = "pnl_statement"
             intent = "data"
-            raw = dict(raw, intent="data", metric=inferred_m, is_followup=bool(prev_is_fin and inferred_m == (prev.metric if prev else None)))
+            is_fu_fin = bool(prev_is_fin and (inferred_m == (prev.metric if prev else None) or re.search(r"\b(same|these|those)\b", ql_early)))
+            raw = dict(raw, intent="data", metric=inferred_m, is_followup=is_fu_fin)
 
         # SPEC-06 §4.3 / BUG-28: deterministic entry / starting pay scale guard -> pay_scale_min_inr
         is_entry_pay = bool(
@@ -776,16 +832,14 @@ class Planner:
             )
             and not re.search(r"\b(minimum|maximum|policy\s+clause|what\s+is\s+the\s+rule)\b", ql_early)
         )
-        asks_names_followup = bool(
-            prev is not None
-            and (
-                re.search(
-                    r"\b(give\s+me\s+(?:the\s+)?names?|show\s+(?:the\s+)?names?|list\s+them|who\s+are\s+they|their\s+names?)\b",
-                    ql_early,
-                )
-                or re.search(r"(?:उनके|इनके|उन\s+कर्मचारियों\s+के)?\s*नाम.*(?:बताओ|दिखाओ|दे\s+दो)", question)
+        asks_names = bool(
+            re.search(
+                r"\b(give\s+me\s+(?:the\s+)?names?|show\s+(?:the\s+)?names?|list\s+them|who\s+are\s+they|their\s+names?)\b",
+                ql_early,
             )
+            or re.search(r"(?:उनके|इनके|उन\s+कर्मचारियों\s+के)?\s*नाम.*(?:बताओ|दिखाओ|दे\s+दो)", question)
         )
+        asks_names_followup = bool(prev is not None and asks_names and not asks_gt5_tenure)
 
         if asks_names_followup and prev is not None:
             intent = "data"
@@ -810,6 +864,7 @@ class Planner:
                 and (
                     bool(raw.get("is_followup"))
                     or bool(re.search(r"\b(these|those|them|out\s+of\s+these|of\s+these|more\s+than\s+5\s+years\s+in\s+delhi)\b|इनमें|उनमें|ये|इन", ql_early))
+                    or asks_names
                 )
             )
             f_list = [
@@ -827,22 +882,39 @@ class Planner:
             wants_all_cadres = bool(re.search(r"\b(all\s+cadres|including\s+non[- ]?executives?|non[- ]?executives?)\b|सभी\s+कैडर", ql_early))
             if not wants_all_cadres and not any(isinstance(x, dict) and x.get("field") == "cadre" for x in f_list):
                 f_list.append({"field": "cadre", "op": "=", "values": ["executive"]})
-            dims_gt5 = list(raw.get("dimensions") or [])
-            if not dims_gt5:
-                dims_gt5 = ["grade"]
-            if not chart or chart in ("bar", "histogram", "donut", "pie"):
-                chart = "column"
-            intent = "data"
-            raw = dict(
-                raw,
-                intent="data",
-                is_followup=is_fu_gt5,
-                metric=raw.get("metric") or (prev.metric if is_fu_gt5 and prev else "headcount"),
-                grain=raw.get("grain") or "aggregate",
-                set_dimensions=True,
-                dimensions=dims_gt5,
-                filters=f_list,
-            )
+            if asks_names:
+                sort_col = "delhi_tenure_years" if re.search(r"\bdelhi\b|दिल्ली", ql_early) else (raw.get("sort_by") or "station_tenure_years")
+                chart = "table"
+                intent = "data"
+                raw = dict(
+                    raw,
+                    intent="data",
+                    is_followup=is_fu_gt5,
+                    metric=raw.get("metric") or (prev.metric if is_fu_gt5 and prev else "headcount"),
+                    grain="row",
+                    set_dimensions=True,
+                    dimensions=[],
+                    filters=f_list,
+                    sort_by=sort_col,
+                    sort_dir="desc",
+                )
+            else:
+                dims_gt5 = list(raw.get("dimensions") or [])
+                if not dims_gt5:
+                    dims_gt5 = ["grade"]
+                if not chart or chart in ("bar", "histogram", "donut", "pie"):
+                    chart = "column"
+                intent = "data"
+                raw = dict(
+                    raw,
+                    intent="data",
+                    is_followup=is_fu_gt5,
+                    metric=raw.get("metric") or (prev.metric if is_fu_gt5 and prev else "headcount"),
+                    grain=raw.get("grain") or "aggregate",
+                    set_dimensions=True,
+                    dimensions=dims_gt5,
+                    filters=f_list,
+                )
         elif asks_level_breakdown and not is_self_hr:
             dims_lvl = list(raw.get("dimensions") or [])
             if "grade" not in dims_lvl and "grade_id" not in dims_lvl:
@@ -868,6 +940,79 @@ class Planner:
                 dimensions=dims_lvl,
                 filters=f_list,
             )
+        elif (intent != "data" or not raw.get("metric")) and not is_self_hr:
+            if prev is not None and re.search(r"\b(break\s+it\s+down\s+by|breakdown\s+by|by\s+discipline)\b", ql_early):
+                dim_fu = "discipline" if "discipline" in ql_early else ("grade" if "grade" in ql_early else "wc")
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=True, metric=prev.metric, grain="aggregate", set_dimensions=True, dimensions=[dim_fu])
+            elif prev is not None and re.search(r"\bcompare\s+with\b", ql_early) and self.ents.resolve_wcs(question):
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=True, metric=prev.metric, grain="aggregate", compare_field="wc", compare_values=self.ents.resolve_wcs(question))
+            elif prev is not None and re.search(r"\bonly\s+(e[1-9])\s+and\s+above\b", ql_early):
+                m_ge = re.search(r"\bonly\s+(e[1-9])\s+and\s+above\b", ql_early)
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=True, metric=prev.metric, filters=[{"field": "grade", "op": ">=", "values": [m_ge.group(1).upper()]}])
+            elif prev is not None and re.search(r"^\s*what\s+about\s+last\s+year\b", ql_early):
+                prev_fy = prev.period.fy if (prev.period and prev.period.fy) else None
+                target_fy = f"FY{int(prev_fy[2:]) - 1:02d}" if (prev_fy and prev_fy.startswith("FY") and prev_fy[2:].isdigit()) else "FY26"
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=True, metric=prev.metric, fy=target_fy)
+            elif prev is not None and re.search(r"^\s*what\s+about\b", ql_early) and self.ents.resolve_wcs(question):
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=True, metric=prev.metric, filters=[{"field": "wc", "op": "=", "values": [self.ents.resolve_wcs(question)[0]]}])
+            elif re.search(r"\bcapex\s+invested\b", ql_early):
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=False, metric="capex_actual_cr", grain="aggregate", dimensions=["asset"], fy_from="FY22", fy_to="FY26")
+            elif re.search(r"\b(?:salary|apar)\b", ql_early) and re.search(r"\b(?:emp[- ]?)?(\d{5,6})\b", ql_early):
+                m_emp = re.search(r"\b(?:emp[- ]?)?(\d{5,6})\b", ql_early)
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=False, metric="avg_gross_salary_lakh", grain="row", dimensions=[], filters=[{"field": "emp_id", "op": "=", "values": [f"EMP-{m_emp.group(1)}"]}])
+            elif re.search(r"\b(?:average|avg)\s+(?:gross\s+)?salary\b", ql_early):
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=False, metric="avg_gross_salary_lakh", grain="aggregate", dimensions=["grade"])
+            elif re.search(r"\bdetails?\s+of\s+employee\b", ql_early) and re.search(r"\b(?:emp[- ]?)?(\d{5,6})\b", ql_early):
+                m_emp = re.search(r"\b(?:emp[- ]?)?(\d{5,6})\b", ql_early)
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=False, metric="headcount", grain="row", dimensions=[], filters=[{"field": "emp_id", "op": "=", "values": [f"EMP-{m_emp.group(1)}"]}])
+            elif re.search(r"\bcompare\s+executives?\b", ql_early) and len(self.ents.resolve_wcs(question)) >= 2:
+                dims_cmp = ["wc", "grade"] if "grade" in ql_early else ["wc"]
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=False, metric="headcount", grain="aggregate", dimensions=dims_cmp, filters=[{"field": "wc", "op": "in", "values": self.ents.resolve_wcs(question)}, {"field": "cadre", "op": "=", "values": ["executive"]}])
+            elif re.search(r"\bvacanc(?:y|ies)\b", ql_early):
+                dims_vac = ["wc", "discipline"] if "discipline" in ql_early else ["wc"]
+                f_vac = [{"field": "region", "op": "=", "values": ["NE"]}] if re.search(r"\bnorth[- ]?east\b", ql_early) else []
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=False, metric="vacancies", grain="aggregate", dimensions=dims_vac, filters=f_vac)
+            elif re.search(r"\bwomen\b", ql_early) and re.search(r"\b(work\s+centre|each\s+work\s+centre)\b", ql_early):
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=False, metric="headcount", grain="aggregate", dimensions=["wc"], filters=[{"field": "gender", "op": "=", "values": ["F"]}])
+            elif re.search(r"\bretire\w*\b", ql_early) and re.search(r"\b3\s+years?\b", ql_early):
+                f_ret = [{"field": "grade", "op": "=", "values": ["E7"]}] if re.search(r"\bgm\w*\b", ql_early) else []
+                dims_ret = ["discipline"] if "discipline" in ql_early else []
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=False, metric="retiring_within_3yr", grain="aggregate", dimensions=dims_ret, filters=f_ret)
+            elif re.search(r"\b(?:average|avg)\s+age\b", ql_early):
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=False, metric="avg_age", grain="aggregate", dimensions=[])
+            elif re.search(r"\btraining\s+hours?\b", ql_early):
+                f_trn = [{"field": "cadre", "op": "=", "values": ["executive"]}] if re.search(r"\bexecutive\w*\b", ql_early) else []
+                dims_trn = ["discipline"] if "discipline" in ql_early else []
+                intent = "data"
+                raw = dict(raw, intent="data", is_followup=False, metric="training_hours_per_employee", grain="aggregate", dimensions=dims_trn, filters=f_trn)
+            elif re.search(
+                r"\b(how\s+many\s+(?:employees?|executives?|officers?|staff|people|personnel)|headcount|kitne\s+(?:employees?|executives?|officers?))\b|कितने\s+(?:कर्मचारी|अधिकारी)",
+                ql_early,
+            ):
+                intent = "data"
+                raw = dict(
+                    raw,
+                    intent="data",
+                    is_followup=False,
+                    metric="headcount",
+                    grain="aggregate",
+                    dimensions=list(raw.get("dimensions") or (["wc"] if len(self.ents.resolve_wcs(question)) >= 2 else ["grade"])),
+                    filters=list(raw.get("filters") or []),
+                )
 
         if intent != "data":
             return Plan(intent=intent, raw=raw)

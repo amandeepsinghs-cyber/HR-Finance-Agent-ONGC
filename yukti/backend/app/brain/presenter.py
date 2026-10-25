@@ -1019,14 +1019,20 @@ def narrate(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], rows: 
         return (f"{compiled.metric_label} moved from {fmt_num(first.get(val), compiled.unit)} in {first.get(dim)} to "
                 f"{fmt_num(last.get(val), compiled.unit)} in {last.get(dim)}" + (f" ({scope})." if scope else ".")
                 + " The trend is on screen.")
+    neg = [r for r in rows if isinstance(r.get(val), (int, float)) and r.get(val) < 0]
     s = ""
     if additive:
         total = n_total if n_total is not None else sum(_num(r.get(val)) for r in rows)
         s = f"{fmt_num(total, compiled.unit)}" + (f" {unit_word}" if unit_word and compiled.unit not in ("inr_cr", "inr_lakh") else "") + f" across {len(rows)} {plural}"
-        s += f" ({scope}). " if scope else ". "
+        if neg and len(neg) == len(rows):
+            worst = sorted(neg, key=lambda r: _num(r.get(val)))[:3]
+            s += (f" ({scope}), led by " if scope else ", led by ") + ", ".join(
+                f"{r.get(dim)} ({fmt_num(r.get(val), compiled.unit)})" for r in worst
+            ) + ". "
+        else:
+            s += f" ({scope}). " if scope else ". "
     top = ranked[:2]
     s += "Highest: " + " and ".join(f"{r.get(dim)} ({fmt_num(r.get(val), compiled.unit)})" for r in top) + "."
-    neg = [r for r in rows if isinstance(r.get(val), (int, float)) and r.get(val) < 0]
     if "change" in (val or ""):
         flat = [r for r in rows if _num(r.get(val)) <= 0]
         s += f" {len(flat)} of {len(rows)} {plural} saw no increase."

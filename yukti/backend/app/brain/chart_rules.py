@@ -279,7 +279,7 @@ def is_pure_replot_request(query: str) -> Tuple[bool, Optional[str]]:
     # "इसे वॉटरफॉल में दिखाओ", "एसेट डेटा को डोनट चार्ट में बदलो")
     is_en_pronoun_replot = bool(
         re.match(
-            r"^(?:can\s+you\s+|could\s+you\s+|please\s+)*(?:show|view|plot|draw|switch|make|express|display|convert|change|turn|present|redraw)\s+(?:this|it|that|current\s+(?:data|view|chart|table))\b",
+            r"^(?:can\s+you\s+|could\s+you\s+|please\s+)*(?:show|view|plot|draw|switch|make|express|display|convert|change|turn|present|redraw|give)\s+(?:this|it|that|current\s+(?:data|view|chart|table))\b",
             q,
         )
     )
@@ -309,7 +309,7 @@ def is_pure_replot_request(query: str) -> Tuple[bool, Optional[str]]:
 
     kind = resolve_kind(q)
     if kind and len(q.split()) <= 8 and any(
-        v in q for v in ["plot", "show", "switch", "view", "make", "change", "display", "convert", "draw", "express", "दिखाओ", "बदलो", "बनाओ"]
+        v in q for v in ["plot", "show", "switch", "view", "make", "change", "display", "convert", "draw", "express", "give", "दिखाओ", "बदलो", "बनाओ"]
     ):
         return True, kind
 

@@ -36,7 +36,7 @@ async def test_mumbai_hinglish_case():
 
     # 2. Language & Script Mirroring
     assert not re.search(r"[\u0900-\u097F]", spoken), f"Devanagari characters leaked in Roman Hinglish response: {spoken}"
-    assert "Details screen par hain" in spoken or "560" in spoken, f"Expected Hinglish response, got: {spoken}"
+    assert "Details screen par hain" in spoken, f"Expected Hinglish closing line, got: {spoken}"
 
     # 3. Canvas Title and Subtitle (Human names only - zero technical codes)
     assert "Mumbai" in title or "Mumbai" in subtitle

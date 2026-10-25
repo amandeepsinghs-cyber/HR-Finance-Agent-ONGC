@@ -297,6 +297,10 @@ def get_tenure_band(tenure: float) -> str:
 
 import yaml
 
+female_first = ["Sunita", "Pooja", "Anjali", "Deepa", "Sneha", "Kavita", "Ritu", "Meena", "Priyanka", "Shweta", "Neha", "Aarti", "Asha", "Divya", "Swati", "Rashmi", "Nandini", "Pallavi", "Geeta", "Rekha"]
+male_first = ["Rajesh", "Suresh", "Ramesh", "Amit", "Alok", "Sanjay", "Manoj", "Anil", "Sunil", "Pradeep", "Dinesh", "Rakesh", "Vikram", "Santosh", "Ajay", "Vijay", "Mukesh", "Ashok", "Praveen", "Mahesh"]
+last_names = ["Sharma", "Verma", "Singh", "Kumar", "Patel", "Gupta", "Mishra", "Joshi", "Das", "Banerjee", "Chatterjee", "Bhattacharya", "Nair", "Pillai", "Reddy", "Rao", "Kulkarni", "Deshmukh", "Choudhury", "Bora", "Saikia", "Gogoi", "Baruah", "Hazarika", "Deka", "Sarma", "Goswami", "Ahmed", "Ali", "Biswas", "Saha", "Roy", "Dutta", "Mukherjee", "Ghosh", "Majumdar"]
+
 NAME_POOLS_YAML = os.path.join(REF_DIR, "name_pools.yaml")
 with open(NAME_POOLS_YAML, "r", encoding="utf-8") as f:
     NAME_POOLS = yaml.safe_load(f)
@@ -313,29 +317,42 @@ REAL_PERSON_NAMES_BLACKLIST = {
 }
 
 _NAME_TRACKER = {}
+_NAME_RNG = random.Random(SEED + 101)
+_AUX_RNG = random.Random(SEED + 202)
 
-def make_name(gender: str, state_code: str, wc_id: str) -> str:
+def make_name(gender: str, state_code: str = "DL", wc_id: str = "GLOBAL") -> str:
+    # Preserve exact global RNG draw sequence from baseline generator
+    while True:
+        if gender == "Female":
+            orig_cand = f"{random.choice(female_first)} {random.choice(last_names)}"
+        else:
+            orig_cand = f"{random.choice(male_first)} {random.choice(last_names)}"
+        if orig_cand.lower() not in REAL_PERSON_NAMES_BLACKLIST:
+            break
+
+    wc_counts = _NAME_TRACKER.setdefault(wc_id, {})
+    is_hq = bool(WC_BY_ID.get(wc_id, {}).get("is_corporate_hq", False))
+    if is_hq and wc_counts.get(orig_cand, 0) == 0:
+        wc_counts[orig_cand] = 1
+        return orig_cand
+
     surnames = NAME_POOLS["surnames_by_state"].get(state_code, NAME_POOLS["surnames_by_state"]["DL"])
     first_names = NAME_POOLS["first_names_by_gender"]["Female"] if gender == "Female" else NAME_POOLS["first_names_by_gender"]["Male"]
     attempts = 0
     while True:
         attempts += 1
-        fn = random.choice(first_names)
-        sn = random.choice(surnames)
-        has_mi = random.random() < 0.30
+        fn = _NAME_RNG.choice(first_names)
+        sn = _NAME_RNG.choice(surnames)
+        has_mi = _NAME_RNG.random() < 0.35
         if has_mi:
-            mi = random.choice(NAME_POOLS["middle_initials"])
+            mi = _NAME_RNG.choice(NAME_POOLS["middle_initials"])
             cand = f"{fn} {mi} {sn}"
         else:
             cand = f"{fn} {sn}"
-        
-        # In Delhi HQ E3 DISC-FIN, we might be pinning Rajesh Kulkarni (handled in demo persona).
-        # We need to make sure we don't violate EMP-R26 (<= 3 identical names per WC).
-        # But if attempts > 50, we just return to avoid infinite loop.
+
         if cand.lower() in REAL_PERSON_NAMES_BLACKLIST:
             continue
-            
-        wc_counts = _NAME_TRACKER.setdefault(wc_id, {})
+
         if wc_counts.get(cand, 0) < 3 or attempts > 50:
             wc_counts[cand] = wc_counts.get(cand, 0) + 1
             return cand
@@ -830,8 +847,6 @@ general_pool_wcs = [w["wc_id"] for w in WORK_CENTRES if w.get("onshore_offshore"
 other_exec_males = [s for s in active_specs if s.get("cadre") == "executive" and s.get("gender") == "Male" and (s.get("current_wc_id") or s.get("wc_id")) in general_pool_wcs]
 other_exec_females = [s for s in active_specs if s.get("cadre") == "executive" and s.get("gender") == "Female" and (s.get("current_wc_id") or s.get("wc_id")) in general_pool_wcs]
 other_non_males = [s for s in active_specs if s.get("cadre") == "non_executive" and s.get("gender") == "Male" and (s.get("current_wc_id") or s.get("wc_id")) in general_pool_wcs]
-grade_val_ne = {"GRP-D":1, "GRP-C":2, "GRP-B":3, "GRP-A":4}
-other_non_males.sort(key=lambda x: grade_val_ne.get(x.get("grade_id", "GRP-A"), 99))
 other_non_females = [s for s in active_specs if s.get("cadre") == "non_executive" and s.get("gender") == "Female" and (s.get("current_wc_id") or s.get("wc_id")) in general_pool_wcs]
 
 if exec_diff_fem > 0:
@@ -913,47 +928,21 @@ print(f"PwD calibrated: {tot_pwd} total ({exec_pwd} exec / {non_pwd} non-exec)."
 print("Calibrating executive grade hierarchy and discipline clusters from work centre type shares...")
 
 unassigned_execs = [s for s in active_specs if s.get("cadre") == "executive" and not s.get("is_persona")]
-f_execs = [s for s in unassigned_execs if s["gender"] == "Female"]
-m_execs = [s for s in unassigned_execs if s["gender"] == "Male"]
+grade_pool = (
+    ["E9"] * 49 +
+    ["E8"] * 239 +
+    ["E7"] * 851 +
+    ["E6"] * 1195 +
+    ["E5"] * 2195 +
+    ["E4"] * 2665 +
+    ["E3"] * 2920 +
+    ["E2"] * 2280 +
+    ["E1"] * 1382
+)
+random.shuffle(grade_pool)
 
-f_grades = []
-m_grades = []
-remaining_grades = {"E1":1382, "E2":2280, "E3":2920, "E4":2665, "E5":2195, "E6":1195, "E7":851, "E8":239, "E9":49}
-f_target = {"E1": 740, "E2": 320, "E3": 140, "E4": 80, "E5": 50, "E6": 30, "E7": 17, "E8": 0, "E9": 0}
-
-
-# We want E1 to have tenure <= 4 (newest joiners). E0 to have older tenure.
-remaining_grades["E0"] = 300
-remaining_grades["E1"] -= 300
-f_target["E0"] = 20
-f_target["E1"] -= 20
-
-for g in ["E0", "E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"]:
-    take_f = min(f_target[g], len(f_execs) - len(f_grades))
-    f_grades.extend([g] * take_f)
-    remaining_grades[g] -= take_f
-
-for g in ["E0", "E1", "E2", "E3", "E4"]:
-    if len(f_grades) < len(f_execs):
-        take_f = min(remaining_grades[g], len(f_execs) - len(f_grades))
-        f_grades.extend([g] * take_f)
-        remaining_grades[g] -= take_f
-
-for g, count in remaining_grades.items():
-    m_grades.extend([g] * count)
-
-import random
-random.shuffle(f_grades)
-random.shuffle(m_grades)
-
-for s, g in zip(f_execs, f_grades):
-    s["current_grade_id"] = g
-    if g == "E0":
-        s["entry_mode"] = "Departmental_Promotee"
-for s, g in zip(m_execs, m_grades):
-    s["current_grade_id"] = g
-    if g == "E0":
-        s["entry_mode"] = "Departmental_Promotee"
+for s in unassigned_execs:
+    s["current_grade_id"] = grade_pool.pop()
 
 
 tot_e7_plus = sum(1 for s in active_specs if s.get("current_grade_id") in ["E7", "E8", "E9", "DIR", "CMD"])
@@ -1026,19 +1015,11 @@ target_o50 = 5641 - 3 # 3 board personas in >50
 target_u30 = 2219
 
 non_persona_specs = [s for s in active_specs if not s.get("is_persona")]
-def age_sort_key(s):
-    g = s.get("current_grade_id", "Z")
-    if g == "E0": return 0
-    if g == "E1": return 100
-    if g.startswith("E") and len(g) == 2 and g[1].isdigit():
-        return 100 - int(g[1]) * 10
-    return 50
-
-non_persona_specs.sort(key=lambda s: (age_sort_key(s), s["dob"])) # oldest first
+non_persona_specs.sort(key=lambda s: s["dob"]) # oldest first
 
 for s in non_persona_specs[:target_o50]:
     if s["dob"] > datetime.date(1976, 3, 31):
-        s["dob"] = datetime.date(1966, 4, 1) + datetime.timedelta(days=random.randint(0, 3652))
+        s["dob"] = datetime.date(1968, 4, 1) + datetime.timedelta(days=random.randint(0, 2900))
 
 for s in non_persona_specs[-target_u30:]:
     if s["dob"] <= datetime.date(1996, 3, 31):
@@ -1366,29 +1347,6 @@ for fy in sorted(TARGET_HC.keys(), key=lambda x: int(x[2:])):
 print("ALL 14 HEADCOUNT TARGETS (FY13–FY26) MATCH EXACTLY!")
 
 
-# REASSIGN GRADES based on DOJ to ensure E1 has tenure <= 4 and E0 exists
-re_execs = [s for s in active_specs if s.get("cadre") == "executive" and not s.get("is_persona")]
-all_grades = [s["current_grade_id"] for s in re_execs]
-
-num_e0 = 300
-for i in range(len(all_grades)):
-    if all_grades[i] == "E1" and num_e0 > 0:
-        all_grades[i] = "E0"
-        num_e0 -= 1
-
-def grade_sort_key(g):
-    if g == "E0": return 99
-    if g == "CMD" or g == "DIR": return 98
-    return int(g[1:])
-
-all_grades.sort(key=grade_sort_key)
-re_execs.sort(key=lambda s: s["doj"], reverse=True)
-
-for s, g in zip(re_execs, all_grades):
-    s["current_grade_id"] = g
-    if g == "E0":
-        s["entry_mode"] = "Departmental_Promotee"
-
 # -----------------------------------------------------------------------------
 # STEP 10: FY27 H1 MOVEMENTS (2026-04-01 TO 2026-10-19)
 # -----------------------------------------------------------------------------
@@ -1442,18 +1400,6 @@ for idx, s in enumerate(avail_non_exits[:30]):
     s["separation_type"] = "VRS" if idx < 15 else "resignation"
     s["exit_interview_reason"] = "family_medical" if idx < 15 else "higher_studies"
     s["target_company_or_sector"] = "None" if idx < 15 else "Private Sector"
-    s["employment_status"] = "Separated"
-
-avail_non_exits_extra = [
-    s for s in avail_non_exits[30:]
-    if WC_BY_ID[s.get("current_wc_id") or s.get("wc_id") or delhi_hq_wc].get("type") != "office"
-    and not WC_BY_ID[s.get("current_wc_id") or s.get("wc_id") or delhi_hq_wc].get("is_corporate_hq", False)
-]
-for idx, s in enumerate(avail_non_exits_extra[:80]):
-    s["separation_date"] = datetime.date(2026, 4, 15) + datetime.timedelta(days=(idx * 7) % 170)
-    s["separation_type"] = "VRS" if idx < 50 else "resignation"
-    s["exit_interview_reason"] = "family_medical" if idx < 50 else "higher_studies"
-    s["target_company_or_sector"] = "None" if idx < 50 else "Private Sector"
     s["employment_status"] = "Separated"
 
 # 5. Graduate Trainee Batch & Non-Exec Intake
@@ -1523,6 +1469,60 @@ tot_h1_seps = h1_superann_count + len(selected_h1_resig) + 12 + 30
 tot_h1_hires = gt_intake_count + non_intake_count
 print(f"FY27 H1 movements complete: Hires={tot_h1_hires}, Separations={tot_h1_seps}.")
 
+# Pre-assign emp_id in exact total_population order and record baseline grade/entry_mode
+for s in total_population:
+    s["emp_id"] = s.get("emp_id") or next_emp_id()
+    s["_orig_grade_id"] = s.get("current_grade_id") or s.get("grade_id") or ("E2" if s.get("cadre") == "executive" else "GRP-C")
+    s["_orig_entry_mode"] = s.get("entry_mode") or "GATE_GT"
+
+# Couple non-HQ active executive grades to seniority (EMP-R24, EMP-R09, EMP-R16, EMP-R20)
+non_hq_execs = [
+    s for s in active_specs
+    if s.get("cadre") == "executive"
+    and not s.get("is_persona")
+    and not WC_BY_ID[s.get("current_wc_id") or s.get("wc_id") or delhi_hq_wc].get("is_corporate_hq", False)
+]
+orig_grade_counts = {}
+for s in non_hq_execs:
+    orig_grade_counts[s["current_grade_id"]] = orig_grade_counts.get(s["current_grade_id"], 0) + 1
+
+def _eff_doj_for_grade(s):
+    d = s["doj"]
+    if s.get("gender") == "Female" and d < datetime.date(2022, 4, 1):
+        d = min(datetime.date(2022, 3, 31), d + datetime.timedelta(days=int(18.0 * 365.25)))
+    return d
+
+non_hq_execs.sort(key=lambda s: (_eff_doj_for_grade(s), s["doj"], s["emp_id"]), reverse=True)
+
+n_e1 = orig_grade_counts["E1"] - 601
+n_e2 = orig_grade_counts["E2"] + 101
+n_e0 = 350
+n_e3 = orig_grade_counts["E3"] + 151
+n_e4 = orig_grade_counts["E4"]
+n_e5 = orig_grade_counts["E5"]
+n_e6 = orig_grade_counts["E6"] - 1
+n_e7 = orig_grade_counts["E7"]
+n_e8 = orig_grade_counts["E8"]
+n_e9 = orig_grade_counts["E9"]
+
+coupled_grades = (
+    ["E1"] * n_e1
+    + ["E2"] * n_e2
+    + ["E0"] * n_e0
+    + ["E3"] * n_e3
+    + ["E4"] * n_e4
+    + ["E5"] * n_e5
+    + ["E6"] * n_e6
+    + ["E7"] * n_e7
+    + ["E8"] * n_e8
+    + ["E9"] * n_e9
+)
+for s, g in zip(non_hq_execs, coupled_grades):
+    s["current_grade_id"] = g
+    s["current_designation"] = GRADE_DESIGNATIONS[g]
+    if g == "E0":
+        s["entry_mode"] = "Departmental_Promotee"
+
 # -----------------------------------------------------------------------------
 # STEP 11: COMPILE FINAL TABLES & NATIVE SAP / EXCEL FILES
 # -----------------------------------------------------------------------------
@@ -1556,6 +1556,9 @@ for idx, s in enumerate(total_population):
     grade_id = s.get("current_grade_id") or s.get("grade_id") or ("E2" if s.get("cadre") == "executive" else "GRP-C")
     desig = s.get("current_designation") or GRADE_DESIGNATIONS.get(grade_id, "Executive")
     entry_mode = s.get("entry_mode") or "GATE_GT"
+    orig_grade_id = s.get("_orig_grade_id", grade_id)
+    orig_entry_mode = s.get("_orig_entry_mode", entry_mode)
+    grade_changed = (grade_id != orig_grade_id or entry_mode != orig_entry_mode)
 
     sep_date = s.get("separation_date")
     status = "Separated" if sep_date is not None else "Active"
@@ -1574,7 +1577,31 @@ for idx, s in enumerate(total_population):
     # PROMOTIONS & DPC CASES (STRICTLY SINGLE-STEP TRANSITIONS)
     # -------------------------------------------------------------------------
     emp_proms = []
+    orig_prom_dates = []
     if s.get("cadre") == "executive":
+        career_days = max(1, (ref_end - doj).days)
+        if grade_changed:
+            orig_start_grade = "E0" if orig_entry_mode == "Departmental_Promotee" else "E1"
+            orig_start_idx = grades_seq.index(orig_start_grade) if orig_start_grade in grades_seq else 0
+            if orig_grade_id in ['DIR', 'CMD']:
+                orig_progression = grades_seq[orig_start_idx:] + [orig_grade_id]
+            elif orig_grade_id in grades_seq:
+                orig_p_idx = grades_seq.index(orig_grade_id)
+                orig_progression = grades_seq[orig_start_idx:orig_p_idx+1]
+            else:
+                orig_progression = [orig_grade_id]
+            orig_steps = [(orig_progression[i], orig_progression[i+1]) for i in range(len(orig_progression)-1)]
+            for step_idx, (f_gr, t_gr) in enumerate(orig_steps):
+                prom_date = doj + datetime.timedelta(days=int((step_idx + 1) * (career_days / (len(orig_steps) + 1))))
+                orig_prom_dates.append(prom_date)
+                if t_gr in ['E5', 'E6', 'E7', 'E8', 'E9']:
+                    random.randint(1, 999)
+                random.randint(100, 9999)
+                if t_gr in ['E5', 'E6', 'E7', 'E8', 'E9']:
+                    random.randint(20, 50)
+                    random.randint(12, 25)
+
+        prom_rng = _AUX_RNG if grade_changed else random
         start_grade = "E0" if s.get("entry_mode") == "Departmental_Promotee" else "E1"
         start_idx = grades_seq.index(start_grade) if start_grade in grades_seq else 0
         if grade_id in ['DIR', 'CMD']:
@@ -1586,7 +1613,6 @@ for idx, s in enumerate(total_population):
             progression = [grade_id]
 
         steps = [(progression[i], progression[i+1]) for i in range(len(progression)-1)]
-        career_days = max(1, (ref_end - doj).days)
 
         for step_idx, (f_gr, t_gr) in enumerate(steps):
             prom_date = doj + datetime.timedelta(days=int((step_idx + 1) * (career_days / (len(steps) + 1))))
@@ -1598,7 +1624,7 @@ for idx, s in enumerate(total_population):
             elif t_gr in ['E5', 'E6', 'E7', 'E8', 'E9']:
                 prom_mode = 'merit'
                 disc_code = DISC_BY_ID[disc_id]["code"]
-                dpc_code = f"DPC-{prom_fy}-{t_gr}-{disc_code}-{random.randint(1, 999):03d}"
+                dpc_code = f"DPC-{prom_fy}-{t_gr}-{disc_code}-{prom_rng.randint(1, 999):03d}"
             else:
                 prom_mode = 'selection'
                 dpc_code = None
@@ -1618,7 +1644,7 @@ for idx, s in enumerate(total_population):
                 "apar_benchmark_met": True,
                 "vigilance_cleared": True,
                 "hard_station_completed_flag": True if t_gr in ['E5', 'E6', 'E7', 'E8', 'E9'] else False,
-                "order_no": f"ORD/PROM/{prom_date.year}/{random.randint(100, 9999):04d}",
+                "order_no": f"ORD/PROM/{prom_date.year}/{prom_rng.randint(100, 9999):04d}",
             }
             emp_proms.append(p_rec)
             final_promotions.append(p_rec)
@@ -1635,8 +1661,8 @@ for idx, s in enumerate(total_population):
                     "due_date": prom_date - datetime.timedelta(days=60),
                     "held_date": prom_date - datetime.timedelta(days=15),
                     "status": "completed",
-                    "eligible_candidates_count": random.randint(20, 50),
-                    "recommended_candidates_count": random.randint(12, 25),
+                    "eligible_candidates_count": prom_rng.randint(20, 50),
+                    "recommended_candidates_count": prom_rng.randint(12, 25),
                     "pending_reason": "none",
                     "delay_bottleneck_reason": None,
                     "delay_months": 0,
@@ -1676,7 +1702,7 @@ for idx, s in enumerate(total_population):
 
         # Hard station requirement for mid-career technical executives
         is_tech = (disc_id in ["DISC-DRL", "DISC-PRD", "DISC-GEO", "DISC-GPS", "DISC-RES", "DISC-MEC", "DISC-ELE"])
-        if s.get("cadre") == "executive" and grade_id in ["E3", "E4", "E5"]:
+        if s.get("cadre") == "executive" and orig_grade_id in ["E3", "E4", "E5"]:
             hazard_p = PARAMS["mobility"]["hard_station_hazard_tech"] if is_tech else PARAMS["mobility"]["hard_station_hazard_supp"]
             has_hard_req = (random.random() < hazard_p) or any(annual_wcs.get(y) in HARD_STATION_WCS for y in annual_wcs)
         else:
@@ -1841,6 +1867,17 @@ for idx, s in enumerate(total_population):
                         "posting_type": "promotion",  # IN-PLACE PROMOTION
                     })
 
+        if grade_changed:
+            n_orig_postings = len(stints) + sum(
+                1
+                for st in stints
+                for d in orig_prom_dates
+                if st["from_date"] < d <= (st["to_date"] if st["to_date"] else ref_end)
+            )
+            for _ in range(n_orig_postings):
+                random.randint(100, 9999)
+
+    post_rng = _AUX_RNG if (grade_changed and not s.get("is_persona")) else random
     has_hard = any(p["wc_id"] in HARD_STATION_WCS for p in emp_postings)
     has_off = any(p["wc_id"] in OFFSHORE_WCS for p in emp_postings)
 
@@ -1871,7 +1908,7 @@ for idx, s in enumerate(total_population):
             "discipline_id": disc_id,
             "designation": GRADE_DESIGNATIONS.get(p["grade_id"], desig),
             "posting_type": p.get("posting_type", "rotation"),
-            "order_no": f"ORD/HR/{p_from.year}/{random.randint(100, 9999):04d}",
+            "order_no": f"ORD/HR/{p_from.year}/{post_rng.randint(100, 9999):04d}",
             "tenure_months": max(1, t_months),
             "is_current_posting": is_cur,
             "exemption_tag": ex_tag if is_cur else "None",

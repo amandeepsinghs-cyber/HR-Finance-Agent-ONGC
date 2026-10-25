@@ -78,5 +78,97 @@ async def route_turn(query: str, persona: str, session: Any = None) -> Dict[str,
             session.pending_actions[pa["id"]] = pa
         return prop
 
+    # 4. SPEC-03 / SPEC-11 §2 row 10: Board notes & document drafting route through doc_export / email_agent after RBAC
+    q_low = (query or "").lower()
+    is_doc_draft = bool(
+        re.search(
+            r"^\s*(?:please\s+)?(?:draft|prepare|write|generate|create|compose)\b.*\b(?:board\s+note|agenda\s+note|briefing(?:\s+note)?|parliament(?:\s+reply)?|memo|memorandum|note|reply|document)\b",
+            query or "",
+            re.I,
+        )
+        and not re.search(r"\b(?:transfer\s+note|email|letter|excel|xlsx|csv)\b", q_low)
+    )
+    if is_doc_draft:
+        from app.brain.rbac import decide
+        from app.answer_composer import build_refusal_contract
+        from app.tools.draft_document import DocumentDraftingEngine
+        import asyncio
+        import time
+
+        data_cls = ["board_confidential"] if "board" in q_low else ["general_fin"]
+        pol = decide(persona, data_cls, query)
+        if pol.action == "refuse":
+            ref_c = build_refusal_contract(
+                code=pol.code or "R-BOARD",
+                persona=persona,
+                turn_id=f"turn-doc-refusal-{int(time.time())}",
+                language="en",
+                rule_ref=pol.rule_ref,
+                latency_ms=1.0,
+            )
+            return {"contract": ref_c}
+
+        last_turn = session.turns[-1] if (session and getattr(session, "turns", None)) else {}
+        last_vis = (last_turn.get("visual") or {}) if isinstance(last_turn, dict) else {}
+        ctx_rows = (getattr(session, "last_rows", None) if session else None) or (last_vis.get("table") or {}).get("rows") or []
+        ctx_cols = (getattr(session, "last_columns", None) if session else None) or (last_vis.get("table") or {}).get("columns") or []
+        ctx_title = last_vis.get("title") or ""
+        ctx_summary = last_turn.get("spoken_summary") if isinstance(last_turn, dict) else ""
+        doc_type_req = "parliament_reply" if any(w in q_low for w in ("parliament", "rajya sabha", "lok sabha")) else "board_note"
+        doc_res = await asyncio.to_thread(
+            DocumentDraftingEngine().draft,
+            doc_type=doc_type_req,
+            query=query,
+            version=1,
+            context_data={
+                "rows": ctx_rows,
+                "columns": ctx_cols,
+                "title": ctx_title,
+                "summary_text": ctx_summary,
+            },
+        )
+        doc_title = doc_res.get("title", "Executive Briefing Note")
+        spoken_doc = (
+            f"I have drafted the official document '{doc_title}' grounded in ONGC's Single Source of Truth data. "
+            f"You can review the full formatted memorandum on screen and export it directly to Word, PDF, or Excel."
+        )
+        doc_vis: Dict[str, Any] = {
+            "type": "document",
+            "mode": "replace",
+            "title": doc_title,
+            "subtitle": "Drafted from SSOT · Ready for .docx, .pdf & .xlsx Export",
+            "document": {
+                "doc_type": doc_res.get("doc_type", "board_note"),
+                "title": doc_title,
+                "markdown": doc_res.get("markdown", ""),
+                "template_id": doc_res.get("template_id", "template_board_note.docx"),
+                "version": 1,
+            },
+        }
+        if ctx_rows and ctx_cols:
+            doc_vis["table"] = {"columns": ctx_cols, "rows": ctx_rows[:25]}
+        doc_contract = {
+            "turn_id": f"turn-doc-{int(time.time())}",
+            "language": getattr(session, "language", "en") if session else "en",
+            "persona": persona,
+            "spoken_summary": spoken_doc,
+            "display_text": spoken_doc,
+            "visual": doc_vis,
+            "insights": [
+                f"Official draft prepared: {doc_title}",
+                "1-click export enabled for Word (.docx), PDF (.pdf), and Excel (.xlsx)",
+            ],
+            "sources": [{"kind": "document", "title": doc_res.get("template_id", "template_board_note.docx")}],
+            "suggestions": [
+                "Make it shorter and more concise",
+                "Translate this note to Hindi",
+                "Show the underlying data as a bar chart",
+            ],
+            "access": {"status": "allowed"},
+            "export_options": ["word", "pdf", "xlsx", "docs"],
+            "status_events": [f"Drafted official document via doc_export_agent: {doc_title}"],
+        }
+        return {"contract": doc_contract}
+
     # For non-confirmation-gated agents, delegate to the One-Brain planner pipeline
     return {"delegate_to": agent_id}

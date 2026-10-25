@@ -269,76 +269,6 @@ async def run_planner_turn(
             )
             return {"contract": contract, "meta": None}
 
-        # 3. Check general document drafting (board note, briefing, parliament reply)
-        if _DOC_RE.search(query or ""):
-            from app.tools.draft_document import DocumentDraftingEngine
-            q_low = (query or "").lower()
-            last_turn = session_state.turns[-1] if getattr(session_state, "turns", None) else {}
-            last_vis = (last_turn.get("visual") or {}) if isinstance(last_turn, dict) else {}
-            ctx_rows = getattr(session_state, "last_rows", None) or (last_vis.get("table") or {}).get("rows") or []
-            ctx_cols = getattr(session_state, "last_columns", None) or (last_vis.get("table") or {}).get("columns") or []
-            ctx_title = last_vis.get("title") or ""
-            ctx_summary = last_turn.get("spoken_summary") if isinstance(last_turn, dict) else ""
-            doc_type_req = "board_note"
-            if any(w in q_low for w in ["parliament", "rajya sabha", "lok sabha"]):
-                doc_type_req = "parliament_reply"
-            elif any(w in q_low for w in ["transfer", "agt", "redeployment"]):
-                doc_type_req = "transfer_proposal"
-            doc_res = await asyncio.to_thread(
-                DocumentDraftingEngine().draft,
-                doc_type=doc_type_req,
-                query=query,
-                version=1,
-                context_data={
-                    "rows": ctx_rows,
-                    "columns": ctx_cols,
-                    "title": ctx_title,
-                    "summary_text": ctx_summary,
-                },
-            )
-            doc_title = doc_res.get("title", "Executive Briefing Note")
-            spoken_doc = (
-                f"I have drafted the official document '{doc_title}' grounded in ONGC's Single Source of Truth data. "
-                f"You can review the full formatted memorandum on screen and export it directly to Word, PDF, or Excel."
-            )
-            doc_vis: Dict[str, Any] = {
-                "type": "document",
-                "mode": "replace",
-                "title": doc_title,
-                "subtitle": "Drafted from SSOT · Ready for .docx, .pdf & .xlsx Export",
-                "document": {
-                    "doc_type": doc_res.get("doc_type", "board_note"),
-                    "title": doc_title,
-                    "markdown": doc_res.get("markdown", ""),
-                    "template_id": doc_res.get("template_id", "template_board_note.docx"),
-                    "version": 1,
-                },
-            }
-            if ctx_rows and ctx_cols:
-                doc_vis["table"] = {"columns": ctx_cols, "rows": ctx_rows[:25]}
-            doc_contract = {
-                "turn_id": turn_id,
-                "language": language,
-                "persona": persona,
-                "spoken_summary": spoken_doc,
-                "display_text": spoken_doc,
-                "visual": doc_vis,
-                "insights": [
-                    f"Official draft prepared: {doc_title}",
-                    "1-click export enabled for Word (.docx), PDF (.pdf), and Excel (.xlsx)",
-                ],
-                "sources": [{"kind": "document", "title": doc_res.get("template_id", "template_board_note.docx")}],
-                "suggestions": [
-                    "Make it shorter and more concise",
-                    "Translate this note to Hindi",
-                    "Show the underlying data as a bar chart",
-                ],
-                "access": {"status": "allowed"},
-                "export_options": ["word", "pdf", "xlsx", "docs"],
-                "status_events": [f"Drafted official document: {doc_title}"],
-            }
-            return {"contract": doc_contract, "meta": None}
-
         return None
     history = [t.get("user_query") for t in getattr(session_state, "turns", []) if t.get("user_query")]
     prev = None
@@ -362,6 +292,7 @@ async def run_planner_turn(
                     chart_kind=patch_override.chart_kind if patch_override else None)
         status.append("Applied drill-down spec patch")
     else:
+        await asyncio.sleep(0)
         plan = await get_planner().plan(query, prev, history)
         status.append(f"Planner: {plan.intent}{' (follow-up patch)' if plan.is_followup else ''} in {plan.latency_ms} ms")
     if plan.patch is not None and plan.patch.is_presentation_only() and prev is not None and session_state.last_rows:
@@ -388,8 +319,23 @@ async def run_planner_turn(
         return await run_why_turn(query, plan, prev, session_state, persona, turn_id, language, t0)
 
     if plan.intent == "what_if":
+        # M-B4 / SPEC-11 §2 row 17: what_if runs after RBAC (finance personas only) using grounded numbers from ssot_field_economics_360
+        from app.brain.rbac import persona_function
+        from app.answer_composer import build_refusal_contract
         from app.tools.what_if import run_what_if_simulation
         from app.tools.chart_rules import build_chart_spec
+
+        if persona_function(persona) not in ("EXEC", "FIN"):
+            ref_wi = build_refusal_contract(
+                code="R-FUNC",
+                persona=persona,
+                turn_id=turn_id,
+                language=language,
+                rule_ref="D-43",
+                latency_ms=round((time.perf_counter() - t0) * 1000, 2),
+            )
+            return {"contract": ref_wi, "meta": {"spec": None}}
+
         m_price = re.search(r"\$\s*(\d+(?:\.\d+)?)", query or "")
         brent_val = float(m_price.group(1)) if m_price else 60.0
         sim_res = await asyncio.to_thread(
@@ -402,19 +348,22 @@ async def run_planner_turn(
         columns = sim_res.get("columns") or []
         sql = sim_res.get("sql") or ""
         neg_fields = [str(r.get("field_name")) for r in rows if r.get("is_ebitda_negative") or r.get("is_pbt_negative")]
+        price_lbl = int(brent_val) if brent_val == int(brent_val) else brent_val
         if any(k in (query or "").lower() for k in ("brent", "crude", "price")):
-            price_lbl = int(brent_val) if brent_val == int(brent_val) else brent_val
             if neg_fields:
-                spoken_wi = (
+                headline_wi = (
                     f"At a simulated Brent crude price of ${price_lbl} per barrel, {len(neg_fields)} fields "
-                    f"({', '.join(neg_fields[:3])}) turn negative on PBT/cash margin. Details are on screen."
+                    f"({', '.join(neg_fields[:3])}) turn negative on PBT or cash margin."
                 )
             else:
-                spoken_wi = f"At a simulated Brent crude price of ${price_lbl} per barrel, field profitability across {len(rows)} assets has been simulated. Details are on screen."
+                headline_wi = f"At a simulated Brent crude price of ${price_lbl} per barrel, field profitability across {len(rows)} assets has been simulated."
             title_wi = f"What-If: Brent ${price_lbl}/bbl Oil Price Shock Sensitivity"
         else:
-            spoken_wi = f"Simulated scenario across {len(rows)} records. Details are on screen."
+            headline_wi = f"Simulated scenario across {len(rows)} records."
             title_wi = "What-If Scenario Simulation"
+        allowed_wi = allowed_numbers(rows, [], QuerySpec(metric="pbt_cr"), extra=[ float(price_lbl), float(len(neg_fields)), float(len(rows)) ])
+        told_wi = compose_spoken(headline_wi, [], allowed_wi, language=language)
+        spoken_wi = told_wi["text"]
         chart_spec = build_chart_spec(kind="hbar", columns=columns, rows=rows, title=title_wi) if rows and len(columns) >= 2 else None
         vis_wi: Dict[str, Any] = {
             "type": "chart" if chart_spec else "table",
@@ -432,11 +381,11 @@ async def run_planner_turn(
             "display_text": spoken_wi,
             "visual": vis_wi,
             "insights": [spoken_wi],
-            "sources": [{"kind": "data", "object": "hrfin_silver.field_pnl_annual", "sql": sql}],
+            "sources": [{"kind": "data", "object": "hrfin_gold.ssot_field_economics_360", "sql": sql}],
             "suggestions": ["Draft a board note on this", "Show as a table"],
             "access": {"status": "allowed"},
             "export_options": ["pdf", "xlsx"],
-            "status_events": ["Executed What-If simulation"],
+            "status_events": ["Executed What-If simulation on hrfin_gold.ssot_field_economics_360"],
             "tool_called": "what_if",
         }
         return {"contract": wi_contract, "meta": None}
@@ -605,6 +554,7 @@ async def run_planner_turn(
     breakdown = None
     if compiled.grain == "aggregate" and (not compiled.dims or len(rows) == 1) and rows and (not junior or compiled.definition_id):
         breakdown = await _companion_breakdown(spec, compiled, compiler, junior=junior)
+    await asyncio.sleep(0)
     visual = build_visual(spec, compiled, columns, rows, plan.chart_kind, title, subtitle, mode, n_total,
                           breakdown=breakdown, persona=persona, query=query, raw_rows=raw_rows_before_k5)
     val_col = compiled.value_columns[0] if compiled.value_columns else None
@@ -626,6 +576,7 @@ async def run_planner_turn(
     # B4: deterministic insights (+ previous-FY comparison where the subject has fiscal years),
     # drill-down chips, and a narrator limited to computed facts with a numeric-grounding check.
     prev_rows = await _previous_period_rows(spec, compiled, compiler)
+    await asyncio.sleep(0)
     insights = compute_insights(build_insight_context(spec, compiled, insight_rows, raw_total, prev_rows,
                                                       scope_phrases(spec, compiled), query=query))
     extra_nums = derived_numbers(compiled, insight_rows, n_total)
@@ -1172,7 +1123,13 @@ def _replot(plan: Plan, prev: QuerySpec, session_state: Any, persona: str, turn_
         if not (isinstance(last.get("chart"), dict) and last["chart"].get("kind") == kind and last["chart"].get("data")):
             last["chart"] = build_chart_spec(kind=kind, columns=cols, rows=rows, title=last.get("title"))
     last["mode"] = "refine"
-    spoken = f"Here is the same data as a {kind.replace('_', ' ')}."
+    spoken = f"Here is the same data as a {kind.replace('_', ' ')}. Details are on screen."
+    if language == "hi":
+        from app.brain.narrator import translate_to_hindi
+        spoken = translate_to_hindi(spoken)
+    elif language == "hi-en":
+        from app.brain.narrator import translate_to_hinglish
+        spoken = translate_to_hinglish(spoken)
     from app.brain.insight_context import table_insights
     rep_ins = table_insights(cols, rows)
     contract = {

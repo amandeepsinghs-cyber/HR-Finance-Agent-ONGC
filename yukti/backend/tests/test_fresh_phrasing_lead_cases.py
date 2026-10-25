@@ -33,7 +33,7 @@ async def test_dehradun_officers_hinglish_resolves_and_returns_facts():
 
     # 2. Language & Script Mirroring
     assert not re.search(r"[\u0900-\u097F]", spoken), f"Devanagari leaked in Roman Hinglish: {spoken}"
-    assert "Details screen par hain" in spoken or "455" in spoken, f"Missing Hinglish response: {spoken}"
+    assert "Details screen par hain" in spoken, f"Missing Hinglish closing line: {spoken}"
 
     # 3. Templated title & human-only subtitle
     assert ("Dehradun" in title or "Dehradun" in subtitle) and ("≥5" in title or ">= 5" in title)
@@ -53,7 +53,7 @@ async def test_cmd_lost_money_gets_answer_e2_gets_refusal_no_cache_poisoning():
     res_cmd = await runner.execute_turn_async(q, session_id="test-lost-money-cmd-suite", persona="CMD")
     assert res_cmd.get("access", {}).get("status") == "allowed"
     assert res_cmd.get("visual", {}).get("type") in ("table", "chart")
-    assert any(f in res_cmd.get("spoken_summary", "") for f in ("Champang", "Mandapeta", "25"))
+    assert any(f in res_cmd.get("spoken_summary", "") for f in ("Champang", "Mandapeta", "Khoraghat", "Geleki"))
     assert "WC-" not in res_cmd.get("visual", {}).get("subtitle", "")
 
     # 2. E2 must get refusal
@@ -64,4 +64,4 @@ async def test_cmd_lost_money_gets_answer_e2_gets_refusal_no_cache_poisoning():
     res_cmd2 = await runner.execute_turn_async(q, session_id="test-lost-money-cmd2-suite", persona="CMD")
     assert res_cmd2.get("access", {}).get("status") == "allowed"
     assert res_cmd2.get("visual", {}).get("type") in ("table", "chart")
-    assert any(f in res_cmd2.get("spoken_summary", "") for f in ("Champang", "Mandapeta", "25"))
+    assert any(f in res_cmd2.get("spoken_summary", "") for f in ("Champang", "Mandapeta", "Khoraghat", "Geleki"))
