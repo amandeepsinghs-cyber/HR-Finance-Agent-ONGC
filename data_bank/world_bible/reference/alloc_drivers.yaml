@@ -1,0 +1,274 @@
+# SPEC-05 §4, §6.2, §6.3 Structured Driver Prior Table for Field Economics-360
+unit_conversions:
+  crude_bbl_per_mt: 7.33
+  gas_scm_per_toe: 1000.0
+  bbl_per_t: 7.33
+  scm_per_toe: 1000
+  status: "convention, verify"
+
+conversions:
+  bbl_per_t: 7.33
+  bbl_per_tonne: 7.33
+  scm_per_toe: 1000
+  status: "convention, verify"
+
+price_factors:
+  crude:
+    Offshore: 1.00
+    Onshore: 1.00
+  gas:
+    Offshore: 1.05
+    Onshore: 0.90
+  vap:
+    Offshore: 1.00
+    Onshore: 1.00
+  other_operating:
+    Offshore: 1.00
+    Onshore: 1.00
+  onshore_gas: 0.90
+  offshore_gas: 1.05
+  crude_default: 1.00
+  convention: "verify"
+
+maturity_factors:
+  mature: 1.15
+  plateau: 1.00
+  growth: 0.85
+  developing: 1.00
+
+drivers:
+  # Revenue & Volume lines
+  "PL.REV_OPS":
+    driver: "revenue_composite"
+    opex_bucket: "revenue"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+  "REV.CRUDE":
+    driver: "oil_sales_mt"
+    opex_bucket: "revenue"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+  "REV.GAS":
+    driver: "gas_sales_mmscm"
+    opex_bucket: "revenue"
+    onshore_prior: 0.90
+    offshore_prior: 1.05
+    unallocated_prior: 0.00
+  "REV.VAP":
+    driver: "plant_vap_capacity"
+    opex_bucket: "revenue"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+  "REV.OTHER_OP":
+    driver: "production_boe"
+    opex_bucket: "revenue"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+
+  # Statutory Levies (Note 35, SPEC-05 §4.D)
+  "N35.ROYALTY":
+    driver: "wellhead_value"
+    opex_bucket: "statutory_levies"
+    onshore_prior: 0.20
+    offshore_prior: 0.10
+    unallocated_prior: 0.00
+    note: "public statutory rates, verify (crude onshore 20%, offshore 10%; gas 10%)"
+  "N35.OIDB_CESS":
+    driver: "oil_sales_mt"
+    opex_bucket: "statutory_levies"
+    onshore_prior: 0.20
+    offshore_prior: 0.20
+    unallocated_prior: 0.00
+    note: "20% ad valorem on nomination crude, verify"
+  "N35.NCCD":
+    driver: "oil_production_mt"
+    opex_bucket: "statutory_levies"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+  "N35.EXCISE_SAED":
+    driver: "oil_production_mt"
+    opex_bucket: "statutory_levies"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+  "N35.PORT_TRUST":
+    driver: "oil_production_mt"
+    opex_bucket: "statutory_levies"
+    onshore_prior: 0.15
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+  "N35.OTHER_LEVIES":
+    driver: "production_boe"
+    opex_bucket: "statutory_levies"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+
+  # Operating Expenditure by Nature (Note 35, SPEC-05 §4.E)
+  "N35.STAFF_EXPENDITURE":
+    driver: "py_cluster_exp_staff"
+    opex_bucket: "employee_cost"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+    pinned: true
+  "N35.WORKOVER_OPS":
+    driver: "active_producing_wells"
+    opex_bucket: "contract_services"
+    onshore_prior: 1.00
+    offshore_prior: 3.00
+    unallocated_prior: 0.00
+  "N35.WATER_INJECTION_DESALTING":
+    driver: "water_produced_m3"
+    opex_bucket: "other_production"
+    onshore_prior: 1.00
+    offshore_prior: 1.25
+    unallocated_prior: 0.00
+  "N35.CONSUMPTION_STORES_SPARES":
+    driver: "production_boe"
+    opex_bucket: "consumables"
+    onshore_prior: 1.00
+    offshore_prior: 1.20
+    unallocated_prior: 0.00
+  "N35.POLLUTION_CONTROL":
+    driver: "water_and_flare"
+    opex_bucket: "other_production"
+    onshore_prior: 1.00
+    offshore_prior: 1.10
+    unallocated_prior: 0.00
+  "N35.TRANSPORT_EXPENDITURE":
+    driver: "production_boe"
+    opex_bucket: "logistics_marine_aviation"
+    onshore_prior: 0.40
+    offshore_prior: 1.80
+    unallocated_prior: 0.00
+  "N35.INSURANCE":
+    driver: "production_boe"
+    opex_bucket: "insurance"
+    onshore_prior: 0.50
+    offshore_prior: 1.60
+    unallocated_prior: 0.00
+  "N35.POWER_FUEL":
+    driver: "liquids_handled"
+    opex_bucket: "power_fuel"
+    onshore_prior: 1.10
+    offshore_prior: 0.95
+    unallocated_prior: 0.00
+  "N35.REPAIRS_MAINTENANCE":
+    driver: "production_boe"
+    opex_bucket: "repairs_maintenance"
+    onshore_prior: 0.90
+    offshore_prior: 1.40
+    unallocated_prior: 0.00
+  "N35.CONTRACTUAL_HIRE":
+    driver: "production_boe"
+    opex_bucket: "contract_services"
+    onshore_prior: 0.85
+    offshore_prior: 1.35
+    unallocated_prior: 0.00
+  "N35.OTHER_PRODUCTION_EXP":
+    driver: "production_boe"
+    opex_bucket: "other_production"
+    onshore_prior: 1.00
+    offshore_prior: 1.15
+    unallocated_prior: 0.00
+  "N35.TRANSPORT_FREIGHT_PRODUCTS":
+    driver: "sales_boe"
+    opex_bucket: "logistics_marine_aviation"
+    onshore_prior: 1.00
+    offshore_prior: 1.10
+    unallocated_prior: 0.00
+  "N35.R_AND_D":
+    driver: "revenue_share_plus_hq"
+    opex_bucket: "corporate_other"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.35
+  "N35.GAE":
+    driver: "revenue_share_plus_hq"
+    opex_bucket: "corporate_other"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.35
+  "N35.CSR":
+    driver: "revenue_share_plus_hq"
+    opex_bucket: "corporate_other"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.35
+  "N35.EXCHANGE_LOSS":
+    driver: "revenue_share_plus_hq"
+    opex_bucket: "corporate_other"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.20
+  "N35.MISC_EXP":
+    driver: "revenue_share_plus_hq"
+    opex_bucket: "corporate_other"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.35
+  "N35.FV_LOSS":
+    driver: "revenue_share_plus_hq"
+    opex_bucket: "corporate_other"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.35
+
+  # Exploration, DD&A, Impairment, Provisions (SPEC-05 §4.F)
+  "PL.EXPL_SURVEY":
+    driver: "exploration_basin_weight"
+    opex_bucket: "exploration"
+    onshore_prior: 1.00
+    offshore_prior: 1.30
+    unallocated_prior: 0.00
+  "PL.EXPL_WELLS":
+    driver: "exploration_basin_weight"
+    opex_bucket: "exploration"
+    onshore_prior: 1.00
+    offshore_prior: 1.50
+    unallocated_prior: 0.00
+  "PL.DDA":
+    driver: "production_boe"
+    opex_bucket: "dda"
+    onshore_prior: 1.00
+    offshore_prior: 1.25
+    unallocated_prior: 0.01
+    pinned_by_segment: true
+  "N37.IMPAIRMENT_NET":
+    driver: "production_boe"
+    opex_bucket: "impairment"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+    pinned_by_segment: true
+  "PL.PROVISIONS":
+    driver: "production_boe"
+    opex_bucket: "provisions"
+    onshore_prior: 1.00
+    offshore_prior: 1.15
+    unallocated_prior: 0.01
+    pinned_by_segment: true
+  "PL.INVENTORY_CHANGE":
+    driver: "oil_production_mt"
+    opex_bucket: "inventory"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+  "PL.PURCHASES_TRADED":
+    driver: "plant_vap_capacity"
+    opex_bucket: "purchases"
+    onshore_prior: 1.00
+    offshore_prior: 1.00
+    unallocated_prior: 0.00
+  "CAPEX.TOTAL":
+    driver: "production_boe"
+    opex_bucket: "capex"
+    onshore_prior: 0.90
+    offshore_prior: 1.35
+    unallocated_prior: 0.02

@@ -1,0 +1,16 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "fact_field_alloc_audit",
+  description: "RAS biproportional scaling audit table per FY x segment x nature (SPEC-05 §3.1, §6.3)"
+}
+
+SELECT
+  TRIM(fy) AS fy,
+  TRIM(segment) AS segment,
+  TRIM(nature) AS nature,
+  SAFE_CAST(seed AS NUMERIC) AS seed,
+  SAFE_CAST(ras_factor AS FLOAT64) AS ras_factor,
+  SAFE_CAST(final AS NUMERIC) AS final
+FROM ${ref("sap_field_alloc_audit")}
+WHERE NULLIF(TRIM(fy), '') IS NOT NULL

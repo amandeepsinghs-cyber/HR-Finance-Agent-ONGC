@@ -32,7 +32,7 @@ logger = logging.getLogger("yukti.brain.pipeline")
 
 
 def planner_enabled() -> bool:
-    return os.getenv("YUKTI_PLANNER", "0").lower() in ("1", "true", "yes")
+    return os.getenv("YUKTI_PLANNER", "1").lower() not in ("0", "false", "no")
 
 
 _DOC_RE = re.compile(r"^\s*(please\s+)?(draft|prepare|write|generate|create|compose|send|export|download)\b.*\b(note|memo|reply|letter|"
@@ -141,7 +141,7 @@ async def run_planner_turn(
             }
             
             is_aggregate = persona == "DIR_FIN" or persona.startswith("E")
-            filename = build_export_filename("delhi_gt5y_roster", "wc-del", "asof-20261019", persona.lower(), "xlsx", is_aggregate=is_aggregate)
+            filename = build_export_filename("delhi_gt5y_roster", "WC-DEL".lower(), "asof-20261019", persona.lower(), "xlsx", is_aggregate=is_aggregate)
             
             caveat_msg = None
             if is_aggregate:
@@ -269,6 +269,76 @@ async def run_planner_turn(
             )
             return {"contract": contract, "meta": None}
 
+        # 3. Check general document drafting (board note, briefing, parliament reply)
+        if _DOC_RE.search(query or ""):
+            from app.tools.draft_document import DocumentDraftingEngine
+            q_low = (query or "").lower()
+            last_turn = session_state.turns[-1] if getattr(session_state, "turns", None) else {}
+            last_vis = (last_turn.get("visual") or {}) if isinstance(last_turn, dict) else {}
+            ctx_rows = getattr(session_state, "last_rows", None) or (last_vis.get("table") or {}).get("rows") or []
+            ctx_cols = getattr(session_state, "last_columns", None) or (last_vis.get("table") or {}).get("columns") or []
+            ctx_title = last_vis.get("title") or ""
+            ctx_summary = last_turn.get("spoken_summary") if isinstance(last_turn, dict) else ""
+            doc_type_req = "board_note"
+            if any(w in q_low for w in ["parliament", "rajya sabha", "lok sabha"]):
+                doc_type_req = "parliament_reply"
+            elif any(w in q_low for w in ["transfer", "agt", "redeployment"]):
+                doc_type_req = "transfer_proposal"
+            doc_res = await asyncio.to_thread(
+                DocumentDraftingEngine().draft,
+                doc_type=doc_type_req,
+                query=query,
+                version=1,
+                context_data={
+                    "rows": ctx_rows,
+                    "columns": ctx_cols,
+                    "title": ctx_title,
+                    "summary_text": ctx_summary,
+                },
+            )
+            doc_title = doc_res.get("title", "Executive Briefing Note")
+            spoken_doc = (
+                f"I have drafted the official document '{doc_title}' grounded in ONGC's Single Source of Truth data. "
+                f"You can review the full formatted memorandum on screen and export it directly to Word, PDF, or Excel."
+            )
+            doc_vis: Dict[str, Any] = {
+                "type": "document",
+                "mode": "replace",
+                "title": doc_title,
+                "subtitle": "Drafted from SSOT · Ready for .docx, .pdf & .xlsx Export",
+                "document": {
+                    "doc_type": doc_res.get("doc_type", "board_note"),
+                    "title": doc_title,
+                    "markdown": doc_res.get("markdown", ""),
+                    "template_id": doc_res.get("template_id", "template_board_note.docx"),
+                    "version": 1,
+                },
+            }
+            if ctx_rows and ctx_cols:
+                doc_vis["table"] = {"columns": ctx_cols, "rows": ctx_rows[:25]}
+            doc_contract = {
+                "turn_id": turn_id,
+                "language": language,
+                "persona": persona,
+                "spoken_summary": spoken_doc,
+                "display_text": spoken_doc,
+                "visual": doc_vis,
+                "insights": [
+                    f"Official draft prepared: {doc_title}",
+                    "1-click export enabled for Word (.docx), PDF (.pdf), and Excel (.xlsx)",
+                ],
+                "sources": [{"kind": "document", "title": doc_res.get("template_id", "template_board_note.docx")}],
+                "suggestions": [
+                    "Make it shorter and more concise",
+                    "Translate this note to Hindi",
+                    "Show the underlying data as a bar chart",
+                ],
+                "access": {"status": "allowed"},
+                "export_options": ["word", "pdf", "xlsx", "docs"],
+                "status_events": [f"Drafted official document: {doc_title}"],
+            }
+            return {"contract": doc_contract, "meta": None}
+
         return None
     history = [t.get("user_query") for t in getattr(session_state, "turns", []) if t.get("user_query")]
     prev = None
@@ -316,6 +386,60 @@ async def run_planner_turn(
     if is_why:
         from app.agents.fin_diagnostics.why import run_why_turn
         return await run_why_turn(query, plan, prev, session_state, persona, turn_id, language, t0)
+
+    if plan.intent == "what_if":
+        from app.tools.what_if import run_what_if_simulation
+        from app.tools.chart_rules import build_chart_spec
+        m_price = re.search(r"\$\s*(\d+(?:\.\d+)?)", query or "")
+        brent_val = float(m_price.group(1)) if m_price else 60.0
+        sim_res = await asyncio.to_thread(
+            run_what_if_simulation,
+            scenario=query,
+            brent_price=brent_val,
+            persona=persona,
+        )
+        rows = sim_res.get("rows") or []
+        columns = sim_res.get("columns") or []
+        sql = sim_res.get("sql") or ""
+        neg_fields = [str(r.get("field_name")) for r in rows if r.get("is_ebitda_negative") or r.get("is_pbt_negative")]
+        if any(k in (query or "").lower() for k in ("brent", "crude", "price")):
+            price_lbl = int(brent_val) if brent_val == int(brent_val) else brent_val
+            if neg_fields:
+                spoken_wi = (
+                    f"At a simulated Brent crude price of ${price_lbl} per barrel, {len(neg_fields)} fields "
+                    f"({', '.join(neg_fields[:3])}) turn negative on PBT/cash margin. Details are on screen."
+                )
+            else:
+                spoken_wi = f"At a simulated Brent crude price of ${price_lbl} per barrel, field profitability across {len(rows)} assets has been simulated. Details are on screen."
+            title_wi = f"What-If: Brent ${price_lbl}/bbl Oil Price Shock Sensitivity"
+        else:
+            spoken_wi = f"Simulated scenario across {len(rows)} records. Details are on screen."
+            title_wi = "What-If Scenario Simulation"
+        chart_spec = build_chart_spec(kind="hbar", columns=columns, rows=rows, title=title_wi) if rows and len(columns) >= 2 else None
+        vis_wi: Dict[str, Any] = {
+            "type": "chart" if chart_spec else "table",
+            "mode": "replace",
+            "title": title_wi,
+            "table": {"columns": columns, "rows": rows[:25]},
+        }
+        if chart_spec:
+            vis_wi["chart"] = chart_spec
+        wi_contract = {
+            "turn_id": turn_id,
+            "language": language,
+            "persona": persona,
+            "spoken_summary": spoken_wi,
+            "display_text": spoken_wi,
+            "visual": vis_wi,
+            "insights": [spoken_wi],
+            "sources": [{"kind": "data", "object": "hrfin_silver.field_pnl_annual", "sql": sql}],
+            "suggestions": ["Draft a board note on this", "Show as a table"],
+            "access": {"status": "allowed"},
+            "export_options": ["pdf", "xlsx"],
+            "status_events": ["Executed What-If simulation"],
+            "tool_called": "what_if",
+        }
+        return {"contract": wi_contract, "meta": None}
 
     if plan.intent != "data" or plan.spec is None:
         logger.info(f"planner -> legacy ({plan.intent}; {plan.notes})")

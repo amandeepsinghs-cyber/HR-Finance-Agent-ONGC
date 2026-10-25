@@ -1,10 +1,5 @@
 """Builds the 4 authoritative BigQuery Single Source of Truth (SSOT) 360° tables in `hrfin_gold`:
-1. `hrfin_gold.ssot_workforce_employee` (1 row per employee `emp_id`)
-2. `hrfin_gold.ssot_work_centre_360` (1 row per work centre `wc_id`)
-3. `hrfin_gold.ssot_field_economics_360` (1 row per `field_id` × `fiscal_year`)
-4. `hrfin_gold.ssot_corporate_annual_360` (1 row per `fiscal_year`)
-
-Also cleans grain fan-out in `hrfin_gold.mart_workforce`.
+[DEPRECATED] This script is deprecated in v3. Use Dataform definitions instead.
 """
 
 from google.cloud import bigquery
@@ -12,6 +7,8 @@ from app.config import BQ_LOCATION, GCP_PROJECT, JOB_LABELS
 
 
 def main() -> None:
+    print("DEPRECATED: Use Dataform v3 for ssot_employee_360 and ssot_workforce_employee. Exiting.")
+    return
     client = bigquery.Client(
         project=GCP_PROJECT,
         location=BQ_LOCATION,

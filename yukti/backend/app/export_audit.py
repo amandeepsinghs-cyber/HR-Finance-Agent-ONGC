@@ -629,6 +629,22 @@ def register_turn_contract(
             _TURN_STORE.pop(oldest, None)
 
 
+def _emp_ids_compatible(
+    stored_emp_id: str,
+    stored_persona: str,
+    principal_emp_id: str,
+    principal_persona: str,
+) -> bool:
+    if not stored_emp_id or not principal_emp_id:
+        return False
+    if stored_emp_id == principal_emp_id:
+        return True
+    p_norm = (principal_persona or stored_persona or "").upper()
+    if p_norm and stored_emp_id.upper() == f"DEMO-{p_norm}":
+        return True
+    return False
+
+
 def resolve_turn_contract(
     turn_id: str,
     principal_emp_id: str,
@@ -643,7 +659,7 @@ def resolve_turn_contract(
     with _REGISTRY_LOCK:
         entry = _TURN_STORE.get(turn_id)
     if entry is not None:
-        if (entry.emp_id and principal_emp_id and entry.emp_id != principal_emp_id) or (
+        if (entry.emp_id and principal_emp_id and not _emp_ids_compatible(entry.emp_id, entry.persona, principal_emp_id, principal_persona)) or (
             entry.persona and principal_persona and entry.persona.upper() != principal_persona.upper()
         ):
             raise TurnOwnershipError(f"Turn {turn_id} belongs to another principal")
@@ -659,7 +675,7 @@ def resolve_turn_contract(
                 if t.get("turn_id") == turn_id:
                     t_emp_id = str(t.get("emp_id") or getattr(sess, "emp_id", "") or "")
                     t_persona = str(t.get("persona") or sess.persona or "").upper()
-                    if not t_emp_id or (principal_emp_id and t_emp_id != principal_emp_id):
+                    if not t_emp_id or (principal_emp_id and not _emp_ids_compatible(t_emp_id, t_persona, principal_emp_id, principal_persona)):
                         raise TurnOwnershipError(f"Turn {turn_id} belongs to another principal")
                     if t_persona and principal_persona and t_persona != principal_persona.upper():
                         raise TurnOwnershipError(f"Turn {turn_id} belongs to persona {t_persona}")
@@ -799,7 +815,7 @@ def verify_artifact_access(
             _ARTIFACT_STORE.pop(export_id, None)
         return None
 
-    if (rec.emp_id and principal_emp_id and rec.emp_id != principal_emp_id) or (
+    if (rec.emp_id and principal_emp_id and not _emp_ids_compatible(rec.emp_id, rec.persona, principal_emp_id, principal_persona)) or (
         rec.persona and principal_persona and rec.persona.upper() != principal_persona.upper()
     ):
         raise TurnOwnershipError(f"Export {export_id} belongs to another principal")

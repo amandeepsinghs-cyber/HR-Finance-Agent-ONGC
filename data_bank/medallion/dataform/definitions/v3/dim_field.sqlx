@@ -1,0 +1,18 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "dim_field_v3",
+  description: "Field dimension for Field Economics-360"
+}
+
+SELECT
+  field_id,
+  name AS field_name,
+  basin_name,
+  asset_wc_id,
+  state_code,
+  onshore_offshore,
+  field_category,
+  hydrocarbon_type,
+  discovery_year
+FROM ${ref("hrfin_silver", "dim_field")}

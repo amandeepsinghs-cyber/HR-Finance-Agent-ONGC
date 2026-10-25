@@ -78,7 +78,7 @@ field_attributes:
   name: Mukta
   asset_wc_id: WC-NEH
   basin: Western Offshore Basin
-  operatorship: joint_venture
+  operatorship: operated
   terrain: shallow_offshore
   maturity: mature
   hydrocarbon: oil
@@ -93,7 +93,7 @@ field_attributes:
   name: Panna
   asset_wc_id: WC-NEH
   basin: Western Offshore Basin
-  operatorship: joint_venture
+  operatorship: operated
   terrain: shallow_offshore
   maturity: mature
   hydrocarbon: both
@@ -794,3 +794,63 @@ field_attributes:
   active_injection_wells_count: 0
   base_water_cut_pct: 5.0
   decline_rate_annual: 0.008
+- field_id: JV-RJ-ON-90/1
+  name: JV-RJ-ON-90/1
+  asset_wc_id: WC-JV
+  basin: Jodhpur (Rajasthan) Basin
+  operatorship: joint_venture
+  terrain: onshore
+  maturity: mature
+  hydrocarbon: oil
+  discovery_year: 1990
+  in_place_oil_mmt: 20.0
+  in_place_gas_bcm: 0.0
+  active_wells_count: 20
+  active_injection_wells_count: 5
+  base_water_cut_pct: 50.0
+  decline_rate_annual: 0.05
+- field_id: JV-RAVVA
+  name: JV-RAVVA
+  asset_wc_id: WC-JV
+  basin: KG-PG Basin
+  operatorship: joint_venture
+  terrain: shallow_offshore
+  maturity: mature
+  hydrocarbon: both
+  discovery_year: 1990
+  in_place_oil_mmt: 20.0
+  in_place_gas_bcm: 15.0
+  active_wells_count: 20
+  active_injection_wells_count: 5
+  base_water_cut_pct: 50.0
+  decline_rate_annual: 0.05
+- field_id: JV-CB-OS/2
+  name: JV-CB-OS/2
+  asset_wc_id: WC-JV
+  basin: Western Offshore Basin
+  operatorship: joint_venture
+  terrain: shallow_offshore
+  maturity: mature
+  hydrocarbon: oil
+  discovery_year: 1990
+  in_place_oil_mmt: 20.0
+  in_place_gas_bcm: 0.0
+  active_wells_count: 20
+  active_injection_wells_count: 5
+  base_water_cut_pct: 50.0
+  decline_rate_annual: 0.05
+- field_id: JV-OTHER
+  name: JV-OTHER
+  asset_wc_id: WC-JV
+  basin: Western Offshore Basin
+  operatorship: joint_venture
+  terrain: shallow_offshore
+  maturity: mature
+  hydrocarbon: both
+  discovery_year: 1990
+  in_place_oil_mmt: 20.0
+  in_place_gas_bcm: 15.0
+  active_wells_count: 20
+  active_injection_wells_count: 5
+  base_water_cut_pct: 50.0
+  decline_rate_annual: 0.05

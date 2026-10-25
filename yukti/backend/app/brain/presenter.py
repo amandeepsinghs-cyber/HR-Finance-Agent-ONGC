@@ -183,10 +183,10 @@ def order_workforce_grade_rows(
 
 UNIT_WORDS = {"employees": "employees", "posts": "posts", "workers": "contract workers", "inr_cr": "₹ crore",
               "inr_lakh": "₹ lakh", "usd_per_boe": "$/BOE", "inr_per_boe": "₹/BOE", "pct": "%", "years": "years", "hours": "hours",
-              "boe": "BOE", "mmtoe": "MMTOE", "incidents": "incidents", "ratio": "", "score": "", "parameters": "parameters"}
+              "boe": "BOE", "mmtoe": "MMTOE", "mmt": "MMT", "bcm": "BCM", "incidents": "incidents", "ratio": "", "score": "", "parameters": "parameters"}
 CHART_UNIT = {"employees": "employees", "posts": "employees", "workers": "employees", "inr_cr": "₹ Cr",
               "inr_lakh": "₹ Lakh", "usd_per_boe": "$/BOE", "inr_per_boe": "₹/BOE", "pct": "%", "years": "years",
-              "hours": "hours", "boe": "BOE", "mmtoe": "MMTOE"}
+              "hours": "hours", "boe": "BOE", "mmtoe": "MMTOE", "mmt": "MMT", "bcm": "BCM"}
 DIM_PLURAL = {"discipline": "disciplines", "work_centre": "work centres", "grade": "grades", "field": "fields",
               "asset": "assets", "fiscal_year": "years", "fy": "years", "cadre": "cadres", "gender": "groups"}
 

@@ -1,0 +1,32 @@
+config {
+  type: "table",
+  schema: "hrfin_silver",
+  name: "payroll_policy_fy",
+  description: "Fiscal year payroll policy rates and calibration factors (DA, PRP, increment, arrears)."
+}
+
+WITH raw AS (
+  SELECT
+    _ingest_ts,
+    TRIM(`fiscal_year`) AS fiscal_year,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`da_q1_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS da_q1_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`da_q2_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS da_q2_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`da_q3_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS da_q3_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`da_q4_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS da_q4_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`da_fy_avg_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS da_fy_avg_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`prp_pool_factor`), ''), ',', ''), '₹', '') AS NUMERIC) AS prp_pool_factor,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`Increment_rate_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS Increment_rate_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`arrears_factor`), ''), ',', ''), '₹', '') AS NUMERIC) AS arrears_factor,
+    TRIM(`arrears_month`) AS arrears_month,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`prbs_rate_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS prbs_rate_pct,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`u_fy`), ''), ',', ''), '₹', '') AS NUMERIC) AS u_fy,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`k_fy`), ''), ',', ''), '₹', '') AS NUMERIC) AS k_fy,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`ot_fy`), ''), ',', ''), '₹', '') AS NUMERIC) AS ot_fy,
+    SAFE_CAST(REPLACE(REPLACE(NULLIF(TRIM(`residual_pool_pct`), ''), ',', ''), '₹', '') AS NUMERIC) AS residual_pool_pct,
+    TRIM(`notes`) AS notes
+  FROM ${ref("sap_payroll_policy_fy")}
+  WHERE NULLIF(TRIM(`fiscal_year`), '') IS NOT NULL
+)
+SELECT * EXCEPT(_ingest_ts)
+FROM raw
+QUALIFY ROW_NUMBER() OVER (PARTITION BY fiscal_year ORDER BY _ingest_ts DESC) = 1

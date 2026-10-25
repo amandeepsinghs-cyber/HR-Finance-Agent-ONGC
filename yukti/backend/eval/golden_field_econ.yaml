@@ -1,0 +1,106 @@
+scenarios:
+  - id: BEH-06.16
+    persona: DIR_FIN
+    utterance: "Rank our assets and basins by employee cost in FY26, and show the split between expensed field manpower, capitalised drilling/survey manpower, and asset-office G&A."
+    expected:
+      visual_type: stacked_column
+      rbac: allow
+      values: [10210.71, 2652.12, 7558.59]
+      recompute_sql: "SELECT asset_id, ROUND(SUM(cost_expensed_production_inr)/1e7, 2) AS prod_staff_exp_cr, ROUND(SUM(cost_capitalised_inr)/1e7, 2) AS cap_drilling_survey_cr, ROUND(SUM(cost_expensed_gae_inr)/1e7, 2) AS gae_staff_cr, ROUND(SUM(cost_total_inr)/1e7, 2) AS total_emp_cost_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26' GROUP BY asset_id ORDER BY total_emp_cost_cr DESC"
+      tolerance_pct: 1.0
+      citations:
+        - "ONGC AR FY2025-26 Note 35 p.297 (Staff Expenditure Rs 2,652.12 Cr) & Note 35.1 p.298 (Total Rs 10,210.71 Cr)"
+
+  - id: BEH-06.17
+    persona: CMD
+    utterance: "Which producing fields have the highest and lowest employee cost per BOE and per employee in FY26?"
+    expected:
+      visual_type: bar
+      rbac: allow
+      recompute_sql: "SELECT object_id, object_name, segment, ROUND(SUM(staff_expenditure) / 10.0, 2) AS staff_exp_cr, ROUND(SAFE_DIVIDE(SUM(staff_expenditure) * 1e6, NULLIF(SUM(prod_boe), 0)), 2) AS emp_cost_per_boe_inr FROM `ongc-hr-finance-agent.hrfin_gold.v_field_economics_fy` WHERE fiscal_year = 'FY26' AND object_type = 'field' GROUP BY object_id, object_name, segment ORDER BY emp_cost_per_boe_inr DESC"
+      tolerance_pct: 5.0
+      citations:
+        - "ONGC AR FY2025-26 Note 35 p.297 (Staff Expenditure Rs 2,652.12 Cr) & SPEC-05 §6.3"
+
+  - id: BEH-06.18
+    persona: DIR_FIN
+    utterance: "Show the full cost stack per BOE for our top 10 producing fields in FY26 — statutory levies, staff, workover, water injection, power & fuel, OSV/transport, other OPEX, and DD&A."
+    expected:
+      visual_type: stacked_column
+      rbac: allow
+      values: [14842.06, 13479.82, 2652.12, 57055.05, 25197.49]
+      recompute_sql: "SELECT object_id, object_name, ROUND(SAFE_DIVIDE(SUM(levies_total)*1e6, NULLIF(SUM(prod_boe),0)), 2) AS levies_per_boe_inr, ROUND(SAFE_DIVIDE(SUM(staff_expenditure)*1e6, NULLIF(SUM(prod_boe),0)), 2) AS staff_per_boe_inr, ROUND(SAFE_DIVIDE(SUM(opex_lifting - staff_expenditure)*1e6, NULLIF(SUM(prod_boe),0)), 2) AS other_lifting_per_boe_inr, ROUND(SAFE_DIVIDE(SUM(dda_total)*1e6, NULLIF(SUM(prod_boe),0)), 2) AS dda_per_boe_inr FROM `ongc-hr-finance-agent.hrfin_gold.v_field_economics_fy` WHERE fiscal_year = 'FY26' AND object_type = 'field' GROUP BY object_id, object_name, prod_boe ORDER BY prod_boe DESC LIMIT 10"
+      tolerance_pct: 5.0
+      citations:
+        - "ONGC AR FY2025-26 Note 35 p.297 (Total Rs 57,055.05 Cr) & Note 37 p.299 (DD&A Rs 25,197.49 Cr)"
+
+  - id: BEH-06.19
+    persona: CMD
+    utterance: "Give me the FY26 P&L waterfall for Mumbai High and compare its margins with Bassein, Neelam-Heera and KG-DWN-98/2."
+    expected:
+      visual_type: waterfall
+      rbac: allow
+      recompute_sql: "SELECT object_id, object_name, ROUND(SUM(revenue_from_operations)/10.0, 2) AS rev_cr, ROUND(SUM(levies_total)/10.0, 2) AS levies_cr, ROUND(SUM(opex_lifting)/10.0, 2) AS lifting_cr, ROUND(SUM(ebitda)/10.0, 2) AS ebitda_cr, ROUND(SUM(dda_total)/10.0, 2) AS dda_cr, ROUND(SUM(segment_result_contrib)/10.0, 2) AS seg_result_cr FROM `ongc-hr-finance-agent.hrfin_gold.v_field_economics_fy` WHERE fiscal_year = 'FY26' AND object_id IN ('FLD-MHN','FLD-MHS','FLD-BAS','FLD-NEE','FLD-HEE','FLD-KG982') GROUP BY object_id, object_name ORDER BY rev_cr DESC"
+      tolerance_pct: 5.0
+      citations:
+        - "ONGC AR FY2025-26 Note 44 p.317 (Offshore E&P Revenue Rs 92,406.31 Cr, Result Rs 34,384.65 Cr)"
+
+  - id: BEH-06.20
+    persona: CMD
+    utterance: "Compare Offshore and Onshore revenue, operating cost, DD&A, segment result and employee productivity in FY26."
+    expected:
+      visual_type: column
+      rbac: allow
+      values: [92406.31, 40101.83, 34384.65, 6245.70, 18829.61, 6367.43]
+      recompute_sql: "SELECT segment, ROUND(SUM(revenue_from_operations)/10.0, 2) AS rev_cr, ROUND(SUM(dda_total)/10.0, 2) AS dda_cr, ROUND(SUM(segment_result_contrib)/10.0, 2) AS seg_result_cr FROM `ongc-hr-finance-agent.hrfin_gold.v_field_economics_fy` WHERE fiscal_year = 'FY26' AND segment IN ('Offshore','Onshore') GROUP BY segment ORDER BY segment"
+      tolerance_pct: 0.1
+      citations:
+        - "ONGC AR FY2025-26 Note 44 Segment Reporting p.317"
+
+  - id: BEH-06.21
+    persona: DIR_FIN
+    utterance: "Show the exact bridge from the sum of our 58 field P&Ls to ONGC's audited standalone Profit Before Tax of Rs 42,414.89 Cr in FY26."
+    expected:
+      visual_type: waterfall
+      rbac: allow
+      values: [34384.65, 6245.70, -2543.83, -4529.26, 8857.63, 42414.89]
+      recompute_sql: "SELECT ROUND(SUM(IF(segment = 'Offshore', segment_result_contrib, 0))/10.0, 2) AS offshore_res_cr, ROUND(SUM(IF(segment = 'Onshore', segment_result_contrib, 0))/10.0, 2) AS onshore_res_cr, ROUND(SUM(IF(object_id = 'CO-HQ', segment_result_contrib, 0))/10.0, 2) AS unalloc_hq_cr, ROUND(SUM(IF(object_id = 'CO-FIN', pbt_contrib, 0))/10.0, 2) AS fin_cost_cr, ROUND(SUM(IF(object_id = 'CO-TREASURY', pbt_contrib, 0))/10.0, 2) AS int_div_cr, ROUND(SUM(pbt_contrib)/10.0, 2) AS company_pbt_cr FROM `ongc-hr-finance-agent.hrfin_gold.v_field_economics_fy` WHERE fiscal_year = 'FY26'"
+      tolerance_pct: 0.1
+      citations:
+        - "ONGC AR FY2025-26 Note 44 p.317 & Standalone P&L p.249 (PBT Rs 42,414.89 Cr)"
+
+  - id: BEH-06.22
+    persona: DIR_FIN
+    utterance: "How did statutory levies (Royalty, OIDB Cess, Windfall/SAED) evolve from FY21 to FY26, and which fields bore the burden?"
+    expected:
+      visual_type: stacked_column
+      rbac: allow
+      values: [14842.06, 13479.82, 0.0, 28321.88, 2761.89]
+      recompute_sql: "SELECT fiscal_year, ROUND(SUM(royalty)/10.0, 2) AS royalty_cr, ROUND(SUM(oidb_cess)/10.0, 2) AS oidb_cess_cr, ROUND(SUM(excise_saed)/10.0, 2) AS saed_cr, ROUND(SUM(levies_total)/10.0, 2) AS total_levies_cr FROM `ongc-hr-finance-agent.hrfin_gold.v_field_economics_fy` WHERE fiscal_year IN ('FY21','FY22','FY23','FY24','FY25','FY26') GROUP BY fiscal_year ORDER BY fiscal_year"
+      tolerance_pct: 0.1
+      citations:
+        - "ONGC AR FY2025-26 Note 35 p.297 (Royalty Rs 14,842.06 Cr, OIDB Cess Rs 13,479.82 Cr, SAED Rs 0 Cr in FY26 vs Rs 2,761.89 Cr in FY25)"
+
+  - id: BEH-06.23
+    persona: CMD
+    utterance: "Compare our mature fields, marginal fields and new developments on production, lifting cost, staff cost and CAPEX intensity in FY26."
+    expected:
+      visual_type: column
+      rbac: allow
+      values: [19.332, 1.170, 20.501, 19.533, 0.434, 19.966]
+      recompute_sql: "SELECT maturity, COUNT(DISTINCT object_id) AS field_count, ROUND(SUM(prod_boe)/1e6, 2) AS prod_mmboe, ROUND(SUM(opex_lifting)/10.0, 2) AS lifting_cost_cr, ROUND(SUM(staff_expenditure)/10.0, 2) AS staff_exp_cr FROM `ongc-hr-finance-agent.hrfin_gold.v_field_economics_fy` WHERE fiscal_year = 'FY26' AND object_type = 'field' GROUP BY maturity ORDER BY prod_mmboe DESC"
+      tolerance_pct: 5.0
+      citations:
+        - "ONGC AR FY2025-26 Operations Table p.28 (Crude 20.501 MMT, Gas 19.966 BCM)"
+
+  - id: BEH-06.24
+    persona: DIR_FIN
+    utterance: "Show the economics of our PSC-JV fields (Panna-Mukta, Ravva, RJ-ON-90/1, CB-OS/2) vs ONGC-operated fields in FY26."
+    expected:
+      visual_type: table
+      rbac: allow
+      values: [19.332, 1.170, 19.533, 0.434]
+      recompute_sql: "SELECT operatorship, ROUND(SUM(oil_prod_mt)/1e6, 3) AS crude_mmt, ROUND(SUM(gas_prod_mmscm)/1e3, 3) AS gas_bcm, ROUND(SUM(revenue_from_operations)/10.0, 2) AS rev_cr, ROUND(SUM(ebitda)/10.0, 2) AS ebitda_cr FROM `ongc-hr-finance-agent.hrfin_gold.v_field_economics_fy` WHERE fiscal_year = 'FY26' AND object_type IN ('field','jv_share') GROUP BY operatorship ORDER BY operatorship"
+      tolerance_pct: 1.0
+      citations:
+        - "ONGC AR FY2025-26 Operations Table p.28 (Operated Crude 19.332 MMT, JV Crude 1.170 MMT; Operated Gas 19.533 BCM, JV Gas 0.434 BCM)"

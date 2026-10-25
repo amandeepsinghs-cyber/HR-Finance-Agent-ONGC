@@ -1,0 +1,39 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "v_employee_pay_component_long",
+  description: "Unpivoted employee pay and benefit components at employee-month-component grain."
+}
+WITH unpivoted AS (
+  SELECT emp_id, month_start, fiscal_year, grade_id, wc_id, component_code, amount_inr
+  FROM ${ref("ssot_employee_360")}
+  UNPIVOT(amount_inr FOR component_code IN (
+    basic_pay_inr, da_inr, hra_inr, cafeteria_allowances_inr,
+    mining_offshore_allowance_inr, shift_allowance_inr, other_allowances_inr,
+    overtime_amount_inr, prp_inr, leave_encashment_paid_inr, transfer_grant_inr,
+    employer_cpf_inr, employer_prbs_inr, employer_prmb_inr, csss_employer_inr,
+    gratuity_accrual_inr, leave_provision_accrual_inr, medical_scheme_cost_inr,
+    medical_reimbursement_inr, canteen_subsidy_inr, transport_subsidy_inr,
+    insurance_premium_inr, welfare_allocation_inr, employer_cost_noncash_inr
+  ))
+)
+SELECT
+  u.emp_id,
+  u.month_start,
+  u.fiscal_year,
+  u.grade_id,
+  u.wc_id,
+  u.component_code,
+  u.amount_inr,
+  CASE
+    WHEN u.component_code = 'basic_pay_inr' THEN 'basic'
+    WHEN u.component_code = 'da_inr' THEN 'da'
+    WHEN u.component_code = 'hra_inr' THEN 'hra'
+    WHEN u.component_code LIKE '%allowance%' THEN 'allowances'
+    WHEN u.component_code IN ('employer_cpf_inr', 'employer_prbs_inr', 'employer_prmb_inr', 'csss_employer_inr', 'gratuity_accrual_inr', 'leave_provision_accrual_inr') THEN 'employer_benefits'
+    ELSE 'other'
+  END AS component_group,
+  COALESCE(dim_all.rule_desc, u.component_code) AS component_name
+FROM unpivoted u
+LEFT JOIN ${ref("dim_allowance_rule")} dim_all
+  ON UPPER(u.component_code) = dim_all.allowance_id

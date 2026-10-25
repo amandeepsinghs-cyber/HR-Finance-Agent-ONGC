@@ -22,9 +22,9 @@ from app.config import DATA_BANK_DIR, ROOT_DIR
 
 
 AS_OF = date(2026, 10, 19)
-_CAND_PA = DATA_BANK_DIR / "landing" / "sap" / "PA0002_PA0001.csv"
+_CAND_PA = ROOT_DIR.parent / "HR and Finance_ONGC" / "data_bank" / "landing" / "sap" / "PA0002_PA0001.csv"
 if not _CAND_PA.exists():
-    _CAND_PA = ROOT_DIR.parent / "HR and Finance_ONGC" / "data_bank" / "landing" / "sap" / "PA0002_PA0001.csv"
+    _CAND_PA = DATA_BANK_DIR / "landing" / "sap" / "PA0002_PA0001.csv"
 PA_CSV = _CAND_PA
 PA0001_CSV = PA_CSV.parent / "PA0001.csv"
 

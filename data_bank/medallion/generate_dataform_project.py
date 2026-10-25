@@ -63,7 +63,7 @@ def write_sources_js():
         "excel_icc_committees", "excel_reserves_annual", "excel_price_fx", "excel_treasury_forex_hedges",
         "excel_actuarial_benefit_liabilities", "excel_energy_transition_progress", "excel_cag_paras_register", "excel_board_agenda_index",
         # 4 Addendum bronze tables
-        "db_exports_env_incident_log", "excel_posh_register", "sap_apprentice_ledger", "sap_ekko_channel"
+        "db_exports_env_incident_log", "excel_posh_register", "sap_apprentice_ledger", "sap_ekko_channel", "sap_employee_cost_pool", "sap_payroll_policy_fy", "sap_co_pa_v3", "sap_field_alloc_audit"
     ]
 
     ref_dims = [
@@ -90,6 +90,19 @@ refDims.forEach(tableName => {
   declare({
     database: "ongc-hr-finance-agent",
     schema: "hrfin_silver",
+    name: tableName,
+  });
+});
+
+// hrfin_ref dims
+const hrfinRefDims = [
+  "dim_grade_pay_scale", "dim_ida_rate", "dim_hra_rate", "dim_allowance_rule", "dim_payroll_policy_fy", "dim_benefit_scheme", "dim_insurance_plan", "field_econ_targets_fy"
+];
+
+hrfinRefDims.forEach(tableName => {
+  declare({
+    database: "ongc-hr-finance-agent",
+    schema: "hrfin_ref",
     name: tableName,
   });
 });
@@ -209,7 +222,7 @@ def generate_silver_models():
         "env_incidents": "db_exports_env_incident_log",
         "posh_cases": "excel_posh_register",
         "apprentices": "sap_apprentice_ledger",
-        "po_channel": "sap_ekko_channel",
+        "po_channel": "sap_ekko_channel", "employee_cost_pool": "sap_employee_cost_pool", "payroll_policy_fy": "sap_payroll_policy_fy",
     }
 
     excel_column_positions = {
@@ -427,10 +440,12 @@ def generate_silver_models():
             for col_def in t["columns"]:
                 cname = col_def["name"]
                 ctype = col_def["type"]
-                sap_orig = inv_sap.get(cname)
-                if cname in b_cols:
+                sap_orig = col_def.get("source_col") or inv_sap.get(cname)
+                if sap_orig and sap_orig in b_cols:
+                    src_col = f"`{sap_orig}`"
+                elif cname in b_cols:
                     src_col = f"`{cname}`"
-                elif sap_orig and sap_orig in b_cols:
+                elif sap_orig:
                     src_col = f"`{sap_orig}`"
                 else:
                     src_col = f"`{cname}`"
@@ -2209,3 +2224,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

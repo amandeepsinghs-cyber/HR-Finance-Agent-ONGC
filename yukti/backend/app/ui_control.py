@@ -299,10 +299,11 @@ def detect_ui_control_intent(query: str) -> Optional[Dict[str, str]]:
         return {"action": "panel", "value": "minimise"}
 
     # 3. Chart / Visual morphing (ONLY when it is a pure re-plot of current screen data, not a new data query)
-    from app.tools.chart_rules import is_pure_replot_request
-    is_replot, replot_kind = is_pure_replot_request(q)
-    if is_replot and replot_kind:
-        return {"action": "chart_kind", "value": replot_kind}
+    if not re.search(r"\b(excel|xlsx|xls|spreadsheet|csv|pdf|word|docx|export|download)\b", q, re.I):
+        from app.tools.chart_rules import is_pure_replot_request
+        is_replot, replot_kind = is_pure_replot_request(q)
+        if is_replot and replot_kind:
+            return {"action": "chart_kind", "value": replot_kind}
 
     # 4. Export
     if any(p in q for p in ["export to pdf", "download pdf", "export pdf", "save as pdf"]):

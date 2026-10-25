@@ -1,0 +1,274 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "ssot_field_economics_360",
+  description: "Cost-object x month SSOT Field Economics-360 table (SPEC-05 §4)",
+  bigquery: {
+    partitionBy: "month_start",
+    clusterBy: ["segment", "object_type", "object_id"]
+  }
+}
+
+WITH copa_pivoted AS (
+  SELECT
+    TRIM(c.fy) AS fiscal_year,
+    TRIM(c.month) AS month_str,
+    SAFE.PARSE_DATE('%Y-%m-%d', CONCAT(TRIM(c.month), '-01')) AS month_start,
+    TRIM(c.object_id) AS object_id,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) IN ('PROD.CRUDE_ONGC', 'PROD.CRUDE_JV') THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) * 1000000.0 ELSE 0 END) AS oil_prod_mt,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) IN ('PROD.GAS_ONGC', 'PROD.GAS_JV') THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) * 1000.0 ELSE 0 END) AS gas_prod_mmscm,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'QTY.CRUDE_SOLD' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) * 1000000.0 ELSE 0 END) AS oil_sales_mt,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'QTY.GAS_SOLD' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) * 1000.0 ELSE 0 END) AS gas_sales_mmscm,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'QTY.VAP_SOLD' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS vap_sales_kt,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'REV.CRUDE' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS rev_crude,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'REV.GAS' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS rev_gas,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'REV.VAP' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS rev_vap,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'REV.OTHER_OP' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS rev_other_operating,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.REV_OPS' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS revenue_from_operations,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'OTHER_INCOME_SEGMENT' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS other_income_segment,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.OTHER_INCOME' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS other_income_total,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.ROYALTY' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS royalty,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.OIDB_CESS' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS oidb_cess,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.NCCD' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS nccd,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.EXCISE_SAED' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS excise_saed,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.PORT_TRUST' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS port_trust,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.OTHER_LEVIES' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS other_levies,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.STAFF_EXPENDITURE' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS staff_expenditure,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.WORKOVER_OPS' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS workover_ops,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.WATER_INJECTION_DESALTING' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS water_injection_desalting,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.CONSUMPTION_STORES_SPARES' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS consumption_stores_spares,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.POLLUTION_CONTROL' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS pollution_control,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.TRANSPORT_EXPENDITURE' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS transport_expenditure,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.INSURANCE' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS insurance,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.POWER_FUEL' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS power_fuel,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.REPAIRS_MAINTENANCE' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS repairs_maintenance,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.CONTRACTUAL_HIRE' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS contractual_hire,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.OTHER_PRODUCTION_EXP' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS other_production_exp,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.TRANSPORT_FREIGHT_PRODUCTS' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS transport_freight_products,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.R_AND_D' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS r_and_d,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.GAE' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS gae,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.CSR' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS csr,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.EXCHANGE_LOSS' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS exchange_loss,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.MISC_EXP' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS misc_exp,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N35.FV_LOSS' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS fv_loss,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.EXPL_SURVEY' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS expl_survey_wo,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.EXPL_WELLS' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS expl_wells_wo,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.DDA' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS dda_total,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N37.IMPAIRMENT_NET' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS impairment_net,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.PROVISIONS' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS provisions_writeoffs,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.INVENTORY_CHANGE' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS inventory_change,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.PURCHASES_TRADED' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS purchases_traded,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.EXCEPTIONAL' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS exceptional_items,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.FIN_COST' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS finance_cost,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'SEG.INT_DIV' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS interest_dividend_income,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'SEGMENT_RESULT_CONTRIB' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS segment_result_contrib,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'PL.PBT' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS pbt_contrib,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'CAPEX.TOTAL' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS capex_total,
+    SUM(CASE WHEN UPPER(TRIM(c.line_code)) = 'N351.EMP_TOTAL' THEN SAFE_CAST(c.amount_inr_mn AS NUMERIC) ELSE 0 END) AS employee_cost_total
+  FROM ${ref("sap_co_pa_v3")} c
+  WHERE NULLIF(TRIM(c.fy), '') IS NOT NULL
+  GROUP BY 1, 2, 3, 4
+),
+prod_drivers AS (
+  SELECT
+    TRIM(fiscal_year) AS fiscal_year,
+    TRIM(month) AS month_str,
+    TRIM(field_id) AS object_id,
+    SUM(SAFE_CAST(condensate_production_mt AS NUMERIC)) AS condensate_prod_mt,
+    SUM(SAFE_CAST(gas_internal_consumption_mmscm AS NUMERIC)) AS gas_internal_use_mmscm,
+    SUM(SAFE_CAST(gas_flared_mmscm AS NUMERIC)) AS gas_flared_mmscm,
+    SUM(SAFE_CAST(water_produced_m3 AS NUMERIC)) AS water_produced_m3,
+    AVG(SAFE_CAST(water_cut_pct AS NUMERIC)) AS water_cut_pct,
+    SUM(SAFE_CAST(active_producing_wells AS INT64)) AS active_producers,
+    SUM(SAFE_CAST(active_injection_wells AS INT64)) AS active_injectors
+  FROM ${ref("production_monthly")}
+  GROUP BY 1, 2, 3
+),
+fx_monthly AS (
+  SELECT
+    TRIM(month) AS month_str,
+    AVG(SAFE_CAST(inr_usd_fx_rate AS NUMERIC)) AS inr_usd_fx_rate
+  FROM ${ref("price_fx_monthly")}
+  GROUP BY 1
+),
+hc_by_wc AS (
+  SELECT
+    month_start,
+    wc_id,
+    COUNTIF(is_month_end_active) AS active_hc
+  FROM ${ref("ssot_employee_360")}
+  GROUP BY 1, 2
+)
+SELECT
+  p.month_start,
+  p.fiscal_year,
+  p.object_id,
+  d.object_name,
+  d.object_type,
+  d.asset_wc_id,
+  d.basin,
+  d.state,
+  d.segment,
+  d.operatorship,
+  d.pi_share,
+  d.maturity,
+  d.hydrocarbon,
+  CONCAT('Modelled field split — totals reconcile to ONGC AR ', p.fiscal_year, ' (standalone)') AS data_label,
+  'v3_ras_run' AS build_run_id,
+  p.oil_prod_mt,
+  COALESCE(pd.condensate_prod_mt, CAST(0 AS NUMERIC)) AS condensate_prod_mt,
+  p.gas_prod_mmscm,
+  CASE WHEN d.object_type = 'jv_share' THEN 'JV_SHARE' ELSE 'ONGC' END AS prod_basis,
+  p.oil_sales_mt,
+  p.gas_sales_mmscm,
+  p.vap_sales_kt,
+  COALESCE(pd.gas_internal_use_mmscm, CAST(0 AS NUMERIC)) AS gas_internal_use_mmscm,
+  COALESCE(pd.gas_flared_mmscm, CAST(0 AS NUMERIC)) AS gas_flared_mmscm,
+  COALESCE(pd.water_produced_m3, CAST(0 AS NUMERIC)) AS water_produced_m3,
+  COALESCE(pd.water_produced_m3 * CAST(0.85 AS NUMERIC), CAST(0 AS NUMERIC)) AS water_injected_m3,
+  COALESCE(pd.water_cut_pct, CAST(0 AS NUMERIC)) AS water_cut_pct,
+  COALESCE(pd.active_producers, 0) AS active_producers,
+  COALESCE(pd.active_injectors, 0) AS active_injectors,
+  CASE WHEN d.segment = 'Offshore' THEN 12 WHEN d.object_type IN ('field', 'plant') THEN 4 ELSE 1 END AS installations_count,
+  CASE WHEN d.object_type = 'field' THEN 2 ELSE 0 END AS wells_drilled_dev,
+  (p.oil_prod_mt + p.gas_prod_mmscm * CAST(1000.0 AS NUMERIC)) * CAST(7.33 AS NUMERIC) AS prod_boe,
+  SAFE_DIVIDE(p.rev_crude * CAST(1000000.0 AS NUMERIC), NULLIF(p.oil_sales_mt, 0)) AS realised_price_crude_inr_t,
+  SAFE_DIVIDE(p.rev_gas, NULLIF(p.gas_sales_mmscm, 0)) AS realised_price_gas_inr_scm,
+  SAFE_DIVIDE(
+    SAFE_DIVIDE(p.rev_crude * CAST(1000000.0 AS NUMERIC), NULLIF(p.oil_sales_mt, 0)),
+    CAST(7.33 AS NUMERIC) * COALESCE(NULLIF(fx.inr_usd_fx_rate, 0), CAST(83.5 AS NUMERIC))
+  ) AS realised_price_crude_usd_bbl,
+  p.rev_crude,
+  p.rev_gas,
+  p.rev_vap,
+  p.rev_other_operating,
+  p.revenue_from_operations,
+  p.other_income_segment,
+  p.other_income_total,
+  p.royalty,
+  p.oidb_cess,
+  p.nccd,
+  p.excise_saed,
+  p.port_trust,
+  p.other_levies,
+  (p.royalty + p.oidb_cess + p.nccd + p.excise_saed + p.port_trust + p.other_levies) AS levies_total,
+  p.staff_expenditure,
+  p.staff_expenditure * CAST(1000000.0 AS NUMERIC) AS cost_expensed_production_inr,
+  p.workover_ops,
+  p.water_injection_desalting,
+  p.consumption_stores_spares,
+  p.pollution_control,
+  p.transport_expenditure,
+  p.insurance,
+  p.power_fuel,
+  p.repairs_maintenance,
+  p.contractual_hire,
+  p.other_production_exp,
+  p.transport_freight_products,
+  p.r_and_d,
+  p.gae,
+  p.csr,
+  p.exchange_loss,
+  p.misc_exp,
+  p.fv_loss,
+  (
+    p.staff_expenditure + p.workover_ops + p.water_injection_desalting +
+    p.consumption_stores_spares + p.pollution_control + p.transport_expenditure +
+    p.insurance + p.power_fuel + p.repairs_maintenance + p.contractual_hire +
+    p.other_production_exp + p.transport_freight_products + p.r_and_d +
+    p.gae + p.csr + p.exchange_loss + p.misc_exp + p.fv_loss
+  ) AS opex_total,
+  (
+    p.staff_expenditure + p.workover_ops + p.water_injection_desalting +
+    p.consumption_stores_spares + p.pollution_control + p.transport_expenditure +
+    p.insurance + p.power_fuel + p.repairs_maintenance + p.contractual_hire +
+    p.other_production_exp + p.transport_freight_products + p.r_and_d +
+    p.gae + p.csr + p.misc_exp + p.fv_loss
+  ) AS opex_operating,
+  (
+    p.staff_expenditure + p.workover_ops + p.water_injection_desalting +
+    p.consumption_stores_spares + p.pollution_control + p.transport_expenditure +
+    p.insurance + p.power_fuel + p.repairs_maintenance + p.contractual_hire +
+    p.other_production_exp
+  ) AS opex_lifting,
+  (
+    p.staff_expenditure + p.workover_ops + p.water_injection_desalting +
+    p.consumption_stores_spares + p.pollution_control + p.transport_expenditure +
+    p.insurance + p.power_fuel + p.repairs_maintenance + p.contractual_hire +
+    p.other_production_exp + p.transport_freight_products
+  ) AS opex_operating_excl_corporate,
+  p.expl_survey_wo,
+  p.expl_wells_wo,
+  ROUND(p.dda_total * CAST(0.65 AS NUMERIC), 2) AS depletion,
+  ROUND(p.dda_total * CAST(0.30 AS NUMERIC), 2) AS depreciation,
+  p.dda_total - ROUND(p.dda_total * CAST(0.65 AS NUMERIC), 2) - ROUND(p.dda_total * CAST(0.30 AS NUMERIC), 2) AS amortisation,
+  p.dda_total,
+  p.impairment_net,
+  p.provisions_writeoffs,
+  p.inventory_change,
+  p.purchases_traded,
+  p.exceptional_items,
+  p.finance_cost,
+  p.interest_dividend_income,
+  (
+    p.revenue_from_operations + p.other_income_segment
+    - (p.royalty + p.oidb_cess + p.nccd + p.excise_saed + p.port_trust + p.other_levies)
+    - (
+      p.staff_expenditure + p.workover_ops + p.water_injection_desalting +
+      p.consumption_stores_spares + p.pollution_control + p.transport_expenditure +
+      p.insurance + p.power_fuel + p.repairs_maintenance + p.contractual_hire +
+      p.other_production_exp + p.transport_freight_products + p.r_and_d +
+      p.gae + p.csr + p.exchange_loss + p.misc_exp + p.fv_loss
+    )
+    - p.purchases_traded - p.inventory_change
+  ) AS ebitdax,
+  (
+    p.revenue_from_operations + p.other_income_segment
+    - (p.royalty + p.oidb_cess + p.nccd + p.excise_saed + p.port_trust + p.other_levies)
+    - (
+      p.staff_expenditure + p.workover_ops + p.water_injection_desalting +
+      p.consumption_stores_spares + p.pollution_control + p.transport_expenditure +
+      p.insurance + p.power_fuel + p.repairs_maintenance + p.contractual_hire +
+      p.other_production_exp + p.transport_freight_products + p.r_and_d +
+      p.gae + p.csr + p.exchange_loss + p.misc_exp + p.fv_loss
+    )
+    - p.purchases_traded - p.inventory_change
+    - p.expl_survey_wo - p.expl_wells_wo
+  ) AS ebitda,
+  p.segment_result_contrib,
+  p.pbt_contrib,
+  SAFE_DIVIDE(p.pbt_contrib, NULLIF(p.revenue_from_operations, 0)) * CAST(100.0 AS NUMERIC) AS field_pbt_margin_pct,
+  SAFE_DIVIDE(
+    (
+      p.revenue_from_operations + p.other_income_segment
+      - (p.royalty + p.oidb_cess + p.nccd + p.excise_saed + p.port_trust + p.other_levies)
+      - (
+        p.staff_expenditure + p.workover_ops + p.water_injection_desalting +
+        p.consumption_stores_spares + p.pollution_control + p.transport_expenditure +
+        p.insurance + p.power_fuel + p.repairs_maintenance + p.contractual_hire +
+        p.other_production_exp + p.transport_freight_products + p.r_and_d +
+        p.gae + p.csr + p.exchange_loss + p.misc_exp + p.fv_loss
+      )
+      - p.purchases_traded - p.inventory_change
+      - p.expl_survey_wo - p.expl_wells_wo
+    ),
+    NULLIF(p.revenue_from_operations, 0)
+  ) * CAST(100.0 AS NUMERIC) AS field_ebitda_margin_pct,
+  ROUND(p.capex_total * CAST(0.55 AS NUMERIC), 2) AS capex_dev,
+  ROUND(p.capex_total * CAST(0.30 AS NUMERIC), 2) AS capex_facilities,
+  p.capex_total - ROUND(p.capex_total * CAST(0.55 AS NUMERIC), 2) - ROUND(p.capex_total * CAST(0.30 AS NUMERIC), 2) AS capex_exploration,
+  p.capex_total,
+  CAST(COALESCE(hc.active_hc, 120) AS NUMERIC) * CAST(0.25 AS NUMERIC) AS headcount_direct,
+  CAST(COALESCE(hc.active_hc, 120) AS NUMERIC) * CAST(0.10 AS NUMERIC) AS headcount_allocated_fte,
+  p.employee_cost_total,
+  CAST(COALESCE(hc.active_hc, 120) AS NUMERIC) * CAST(0.40 AS NUMERIC) AS contractor_headcount,
+  COALESCE(NULLIF(fx.inr_usd_fx_rate, 0), CAST(83.5 AS NUMERIC)) AS inr_usd_fx_rate
+FROM copa_pivoted p
+JOIN ${ref("dim_cost_object")} d
+  ON p.object_id = d.object_id
+LEFT JOIN prod_drivers pd
+  ON p.fiscal_year = pd.fiscal_year AND p.month_str = pd.month_str AND p.object_id = pd.object_id
+LEFT JOIN fx_monthly fx
+  ON p.month_str = fx.month_str
+LEFT JOIN hc_by_wc hc
+  ON p.month_start = hc.month_start AND d.asset_wc_id = hc.wc_id

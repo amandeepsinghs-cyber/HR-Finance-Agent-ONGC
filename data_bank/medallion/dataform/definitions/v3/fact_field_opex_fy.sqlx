@@ -1,0 +1,24 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "fact_field_opex_fy",
+  description: "Annual field operating expenditure breakdown by fiscal year"
+}
+
+SELECT
+  pnl_id,
+  fiscal_year,
+  field_id,
+  asset_wc_id,
+  line_type,
+  allocated_manpower_cost_inr_cr,
+  contractor_cost_inr_cr,
+  power_fuel_cost_inr_cr,
+  workover_repairs_cost_inr_cr,
+  water_handling_cost_inr_cr,
+  logistics_osv_chopper_cost_inr_cr,
+  chemicals_consumables_cost_inr_cr,
+  other_opex_inr_cr,
+  total_opex_inr_cr,
+  dda_depreciation_inr_cr
+FROM ${ref("field_pnl_annual")}

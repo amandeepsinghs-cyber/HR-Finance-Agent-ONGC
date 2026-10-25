@@ -1,0 +1,10 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "recon_checks",
+  description: "Unified reconciliation audit table (Employee-360 EMP-R01..R30 + Field Economics-360 FLD-R01..R17)."
+}
+
+SELECT * FROM ${ref("recon_employee360")}
+UNION ALL
+SELECT * FROM ${ref("recon_field_economics")}

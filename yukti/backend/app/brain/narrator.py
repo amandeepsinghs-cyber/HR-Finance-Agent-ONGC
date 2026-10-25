@@ -284,20 +284,24 @@ def compose_spoken(
     language: str = "en",
     allow_coverage_claims: bool = False,
 ) -> Dict[str, Any]:
-    """Headline + up to two insight sentences, 2-4 sentences, every number grounded."""
-    base = [s for s in _SENT.split((headline or "").strip()) if s and "on screen" not in s.lower()]
-    sentences = base[:2]
+    """Headline + up to two insight sentences, 2–4 sentences, every number grounded."""
+    base = [s.strip() for s in _SENT.split((headline or "").strip()) if s.strip() and "on screen" not in s.lower()]
+    sentences = list(base[: max(1, max_sentences - 2)])
     for ins in insights:
         if len(sentences) >= max_sentences - 1:
             break
-        if ins.type == "headline":
+        if ins.type in ("headline", "causal_rag"):
+            continue  # headline restates value; multi-sentence causal_rag card stays on screen
+        ins_sents = [s.strip() for s in _SENT.split((ins.text or "").strip()) if s.strip()]
+        if not ins_sents or len(sentences) + len(ins_sents) > max_sentences - 1:
             continue
-        if ins.text and ins.text not in sentences and not any(ins.text[:30] in s for s in sentences):
-            sentences.append(ins.text)
+        if ins.text not in sentences and not any(ins.text[:30] in s for s in sentences):
+            sentences.extend(ins_sents)
+    sentences = sentences[: max(1, max_sentences - 1)]
     sentences.append("Details are on screen.")
     text = " ".join(s.strip() for s in sentences)
 
-    fallback = " ".join(base[:2] + ["Details are on screen."])
+    fallback = " ".join(base[: max(1, max_sentences - 1)] + ["Details are on screen."])
     text, dropped = check_numeric_grounding(
         text,
         allowed,

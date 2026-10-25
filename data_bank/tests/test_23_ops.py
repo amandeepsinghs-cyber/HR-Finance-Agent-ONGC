@@ -121,18 +121,19 @@ def test_row_counts_and_schemas(price_fx, production, reserves, wells):
     ]
     assert list(price_fx.columns) == expected_pfx_cols
 
-    assert len(production) == 6678
+    assert len(production) == 7182
     expected_prod_cols = [
-        "prod_id", "month", "fiscal_year", "field_id", "asset_wc_id", "operatorship",
+        "prod_id", "month", "fiscal_year", "field_id", "asset_wc_id", "operatorship", "prod_basis",
         "oil_production_mt", "gas_production_mmscm", "condensate_production_mt",
         "total_production_boe", "water_cut_pct", "water_produced_m3",
-        "gas_sales_mmscm", "gas_flared_mmscm", "gas_internal_consumption_mmscm",
+        "oil_sales_mt", "gas_sales_mmscm", "vap_sales_kt",
+        "gas_flared_mmscm", "gas_internal_consumption_mmscm",
         "gas_utilisation_pct", "active_producing_wells", "active_injection_wells",
         "well_downtime_hours", "operational_uptime_pct"
     ]
     assert list(production.columns) == expected_prod_cols
 
-    assert len(reserves) == 530
+    assert len(reserves) == 570
     expected_res_cols = [
         "reserve_id", "fiscal_year", "field_id", "asset_wc_id", "basin_name",
         "onshore_offshore", "inplace_oil_mmt", "inplace_gas_bcm", "inplace_total_mmtoe",
@@ -168,8 +169,8 @@ def test_primary_keys(price_fx, production, reserves, wells):
 # 4. FOREIGN KEYS & RELATIONAL INTEGRITY
 # ==============================================================================
 def test_foreign_keys(production, reserves, wells, ref_fields, ref_wcs, price_fx):
-    valid_field_ids = {f["field_id"] for f in ref_fields}
-    valid_wc_ids = {w["wc_id"] for w in ref_wcs}
+    valid_field_ids = {f["field_id"] for f in ref_fields} | {"JV-RJ-ON-90/1", "JV-RAVVA", "JV-CB-OS/2", "JV-OTHER"}
+    valid_wc_ids = {w["wc_id"] for w in ref_wcs} | {"WC-JV"}
     valid_months = set(price_fx["month"])
 
     assert set(production["field_id"]).issubset(valid_field_ids)
@@ -183,6 +184,8 @@ def test_foreign_keys(production, reserves, wells, ref_fields, ref_wcs, price_fx
     assert set(production["month"]).issubset(valid_months)
 
     field_to_wc = {f["field_id"]: f["asset_wc_id"] for f in ref_fields}
+    for jv in ["JV-RJ-ON-90/1", "JV-RAVVA", "JV-CB-OS/2", "JV-OTHER"]:
+        field_to_wc[jv] = "WC-JV"
     for _, row in production.iterrows():
         assert row["asset_wc_id"] == field_to_wc[row["field_id"]]
     for _, row in reserves.iterrows():
@@ -252,10 +255,10 @@ def test_derived_columns_recomputation(price_fx, production, reserves):
 # ==============================================================================
 def test_field_attributes_derivation_proven(derived_fields, ref_fields):
     """Prove that all 53 fields have derived physical attributes generated without per-field literals."""
-    assert len(derived_fields) == 53
+    assert len(derived_fields) == 57
     ref_ids = {f["field_id"] for f in ref_fields}
     derived_ids = {f["field_id"] for f in derived_fields}
-    assert ref_ids == derived_ids
+    assert derived_ids == ref_ids | {"JV-RJ-ON-90/1", "JV-RAVVA", "JV-CB-OS/2", "JV-OTHER"}
 
     # Check valid non-zero physical attributes
     for f in derived_fields:

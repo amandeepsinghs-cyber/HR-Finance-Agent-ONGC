@@ -131,7 +131,7 @@ def build_email_draft(
     from app.tools.export_tool import DocumentExporter
     import time
     export_id = f"exp_{uuid.uuid4().hex}"
-    filename = build_export_filename("delhi_gt5y_roster", "wc-del", "asof-20261019", persona.lower(), "xlsx", is_aggregate=is_aggregate)
+    filename = build_export_filename("delhi_gt5y_roster", "WC-DEL".lower(), "asof-20261019", persona.lower(), "xlsx", is_aggregate=is_aggregate)
     
     exporter = DocumentExporter()
     disk_filename = f"{export_id}.xlsx"

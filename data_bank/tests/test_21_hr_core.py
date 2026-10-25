@@ -678,17 +678,17 @@ def test_story_s38_demo_personas(duck_con):
     cmd = duck_con.execute("""
         SELECT name, current_designation, current_grade_id, current_wc_id FROM employee_master WHERE emp_id = 'EMP-000001'
     """).fetchone()
-    assert cmd == ("Chairman & CEO", "Chairman & Chief Executive Officer", "CMD", "WC-DEL")
+    assert cmd == ("Arun Mehra", "Chairman & Managing Director", "CMD", "WC-DEL")
 
     dir_hr = duck_con.execute("""
         SELECT name, current_designation, current_grade_id, discipline_id, current_wc_id FROM employee_master WHERE emp_id = 'EMP-000002'
     """).fetchone()
-    assert dir_hr == ("Director (HR)", "Director (Human Resources)", "DIR", "DISC-HR", "WC-DEL")
+    assert dir_hr == ("Manish Deshpande", "Director (HR)", "DIR", "DISC-HR", "WC-DEL")
 
     dir_fin = duck_con.execute("""
         SELECT name, current_designation, current_grade_id, discipline_id, current_wc_id FROM employee_master WHERE emp_id = 'EMP-000003'
     """).fetchone()
-    assert dir_fin == ("Director (Finance)", "Director (Finance)", "DIR", "DISC-FIN", "WC-DEL")
+    assert dir_fin == ("Vivek Rao", "Director (Finance)", "DIR", "DISC-FIN", "WC-DEL")
 
 
 # ==============================================================================

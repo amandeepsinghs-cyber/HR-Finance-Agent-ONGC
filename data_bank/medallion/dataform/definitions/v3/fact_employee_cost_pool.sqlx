@@ -1,0 +1,22 @@
+config {
+  type: "table",
+  schema: "hrfin_stage",
+  name: "fact_employee_cost_pool",
+  description: "Non-individual employee cost pools reconciling Note 35 lines (a)-(f).",
+  bigquery: {
+    partitionBy: "month_start",
+    clusterBy: ["fiscal_year", "pool_code"]
+  }
+}
+
+SELECT
+  month_start,
+  fiscal_year,
+  pool_code,
+  note35_line,
+  amount_inr,
+  allocation_basis,
+  cost_destination,
+  segment,
+  basis
+FROM ${ref("employee_cost_pool")}

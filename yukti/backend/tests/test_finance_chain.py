@@ -70,7 +70,9 @@ def test_data_answers_have_insights_chips_and_grounding(chain, i):
 
 def test_t1_profit_and_loss_numbers(chain):
     rows = {r["field"]: r for r in chain[0]["visual"]["table"]["rows"]}
-    assert rows["Mumbai High South"]["pbt_cr"] == 7132.1 and rows["Champang"]["pbt_cr"] == -4.93
+    # Recalibrated synthetic field FY26 PBT in hrfin_gold.agg_field_pnl_summary / ssot_field_economics_360
+    # after top-down Schedule III corporate reconciliation (`financial_build/scripts/load_and_reconcile_bq.py`, commit e7de82f).
+    assert rows["Mumbai High South"]["pbt_cr"] == 7753.84 and rows["Champang"]["pbt_cr"] == -183.27
     assert any(i["kind"] == "risk" and "Champang" in i["text"] for i in chain[0]["insights_v2"])
 
 

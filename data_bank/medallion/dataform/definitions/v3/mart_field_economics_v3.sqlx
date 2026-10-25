@@ -1,0 +1,27 @@
+config {
+  type: "view",
+  schema: "hrfin_gold",
+  name: "mart_field_economics_v3",
+  description: "Compatibility view over v_field_economics_fy with v2 and v3 column projections"
+}
+
+SELECT
+  v.*,
+  v.object_id AS field_id,
+  v.object_name AS field_name,
+  v.object_type AS line_type,
+  v.prod_boe AS total_production_boe,
+  v.field_revenue_cr AS gross_revenue_inr_cr,
+  v.rev_crude / 10.0 AS oil_revenue_inr_cr,
+  v.rev_gas / 10.0 AS gas_revenue_inr_cr,
+  v.royalty / 10.0 AS statutory_royalty_inr_cr,
+  v.oidb_cess / 10.0 AS statutory_cess_inr_cr,
+  v.excise_saed / 10.0 AS statutory_windfall_tax_saed_inr_cr,
+  v.opex_total / 10.0 AS total_opex_inr_cr,
+  v.dda_total / 10.0 AS dda_depreciation_inr_cr,
+  v.field_ebitda_cr AS ebitda_inr_cr,
+  v.field_ebitda_margin_pct AS ebitda_margin_pct,
+  v.field_pbt_cr AS pbt_inr_cr,
+  v.lifting_cost_per_boe_usd AS unit_lifting_cost_usd_per_boe,
+  v.opex_per_boe_inr AS unit_lifting_cost_inr_per_boe
+FROM ${ref("v_field_economics_fy")} v

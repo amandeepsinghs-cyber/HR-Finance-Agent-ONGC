@@ -1597,6 +1597,7 @@ tables:
     type: STRING
     nullable: false
     description: Unique Employee Identifier / CPF Number (e.g. EMP-104523)
+    source_col: PERNR
   - name: name
     type: STRING
     nullable: false
@@ -1608,14 +1609,17 @@ tables:
     accepted_values:
     - Male
     - Female
+    source_col: GESCH
   - name: dob
     type: DATE
     nullable: false
     description: Date of birth
+    source_col: GBDAT
   - name: doj
     type: DATE
     nullable: false
     description: Date of initial joining in ONGC
+    source_col: BEGDA
   - name: fiscal_year_joined
     type: STRING
     nullable: false
@@ -1630,6 +1634,7 @@ tables:
     - SC
     - ST
     - EWS
+    source_col: VDSK1
   - name: pwd_flag
     type: BOOL
     nullable: false
@@ -1660,11 +1665,13 @@ tables:
     nullable: false
     description: Current active job grade
     fk: dim_grade.grade_id
+    source_col: PERSK
   - name: current_wc_id
     type: STRING
     nullable: false
     description: Current primary posted work centre
     fk: dim_work_centre.wc_id
+    source_col: WERKS
   - name: current_designation
     type: STRING
     nullable: false
@@ -1689,6 +1696,7 @@ tables:
     - On_Deputation
     - Study_Leave
     - Suspended
+    source_col: STAT2
   - name: separation_date
     type: DATE
     nullable: true
@@ -1811,19 +1819,23 @@ tables:
     nullable: false
     description: Employee CPF Number
     fk: employee_master.emp_id
+    source_col: PERNR
   - name: wc_id
     type: STRING
     nullable: false
     description: Posted work centre
     fk: dim_work_centre.wc_id
+    source_col: WERKS
   - name: from_date
     type: DATE
     nullable: false
     description: Posting start date
+    source_col: BEGDA
   - name: to_date
     type: DATE
     nullable: true
     description: Posting end date (null for active posting)
+    source_col: ENDDA
   - name: fiscal_year
     type: STRING
     nullable: false
@@ -1833,6 +1845,7 @@ tables:
     nullable: false
     description: Job grade at time of posting
     fk: dim_grade.grade_id
+    source_col: PERSK
   - name: discipline_id
     type: STRING
     nullable: false
@@ -1854,6 +1867,7 @@ tables:
     - hard_station
     - deputation
     - compassionate
+    source_col: MASSN
   - name: order_no
     type: STRING
     nullable: false
@@ -1880,6 +1894,7 @@ tables:
     type: STRING
     nullable: true
     description: SAP HR administrative reason code (e.g. EX-RET3Y, EX-MED, EX-SPOUSE)
+    source_col: MASSG
   - name: exemption_approved_by
     type: STRING
     nullable: true
@@ -2181,10 +2196,12 @@ tables:
     nullable: false
     description: Employee CPF Number
     fk: employee_master.emp_id
+    source_col: PERNR
   - name: separation_date
     type: DATE
     nullable: false
     description: Effective separation date
+    source_col: BEGDA
   - name: fiscal_year
     type: STRING
     nullable: false
@@ -2200,6 +2217,7 @@ tables:
     - death
     - removal
     - medical_invalidation
+    source_col: MASSN
   - name: last_grade_id
     type: STRING
     nullable: false
@@ -2235,6 +2253,7 @@ tables:
     - higher_studies
     - retirement_age
     - other
+    source_col: MASSG
   - name: target_company_or_sector
     type: STRING
     nullable: true
@@ -2545,10 +2564,17 @@ tables:
     nullable: false
     description: Employee CPF Number
     fk: employee_master.emp_id
+    source_col: PERNR
   - name: month
     type: STRING
     nullable: false
     description: Payroll month (YYYY-MM)
+    source_col: FPPER
+  - name: pay_period
+    type: STRING
+    nullable: false
+    source_col: FPPER
+    description: Payroll period (YYYY-MM)
   - name: fiscal_year
     type: STRING
     nullable: false
@@ -2577,10 +2603,12 @@ tables:
     type: NUMERIC
     nullable: false
     description: Monthly basic pay in INR
+    source_col: LGART_1001
   - name: da_inr
     type: NUMERIC
     nullable: false
     description: Dearness Allowance amount in INR
+    source_col: LGART_1002
   - name: cafeteria_allowances_inr
     type: NUMERIC
     nullable: false
@@ -2621,6 +2649,7 @@ tables:
     type: NUMERIC
     nullable: false
     description: Total gross monthly earnings
+    source_col: LGART_9001
   - name: income_tax_tds_inr
     type: NUMERIC
     nullable: false
@@ -2629,10 +2658,311 @@ tables:
     type: NUMERIC
     nullable: false
     description: Net salary credited to employee account
+    source_col: LGART_9002
   - name: superannuation_benefit_pct
     type: NUMERIC
     nullable: false
     description: Total retirement benefit percentage against basic+DA (DPE 30% cap)
+  - name: cafeteria_allowance_inr_base
+    type: NUMERIC
+    nullable: false
+    source_col: cafeteria_allowance_inr_base
+    description: SPEC-04 payroll column cafeteria_allowance_inr_base
+  - name: overtime_amount_inr_base
+    type: NUMERIC
+    nullable: false
+    source_col: overtime_amount_inr_base
+    description: SPEC-04 payroll column overtime_amount_inr_base
+  - name: prp_accrual_inr_base
+    type: NUMERIC
+    nullable: false
+    source_col: prp_accrual_inr_base
+    description: SPEC-04 payroll column prp_accrual_inr_base
+  - name: gratuity_accrual_inr
+    type: NUMERIC
+    nullable: false
+    source_col: gratuity_accrual_inr
+    description: SPEC-04 payroll column gratuity_accrual_inr
+  - name: leave_provision_accrual_inr
+    type: NUMERIC
+    nullable: false
+    source_col: leave_provision_accrual_inr
+    description: SPEC-04 payroll column leave_provision_accrual_inr
+  - name: employer_cost_noncash_inr
+    type: NUMERIC
+    nullable: false
+    source_col: employer_cost_noncash_inr
+    description: SPEC-04 payroll column employer_cost_noncash_inr
+  - name: medical_scheme_cost_inr
+    type: NUMERIC
+    nullable: false
+    source_col: medical_scheme_cost_inr
+    description: SPEC-04 payroll column medical_scheme_cost_inr
+  - name: group_insurance_premium_inr
+    type: NUMERIC
+    nullable: false
+    source_col: group_insurance_premium_inr
+    description: SPEC-04 payroll column group_insurance_premium_inr
+  - name: accident_insurance_premium_inr
+    type: NUMERIC
+    nullable: false
+    source_col: accident_insurance_premium_inr
+    description: SPEC-04 payroll column accident_insurance_premium_inr
+  - name: housing_cost_inr
+    type: NUMERIC
+    nullable: false
+    source_col: housing_cost_inr
+    description: SPEC-04 payroll column housing_cost_inr
+  - name: canteen_subsidy_inr
+    type: NUMERIC
+    nullable: false
+    source_col: canteen_subsidy_inr
+    description: SPEC-04 payroll column canteen_subsidy_inr
+  - name: transport_subsidy_inr
+    type: NUMERIC
+    nullable: false
+    source_col: transport_subsidy_inr
+    description: SPEC-04 payroll column transport_subsidy_inr
+  - name: staff_welfare_alloc_inr
+    type: NUMERIC
+    nullable: false
+    source_col: staff_welfare_alloc_inr
+    description: SPEC-04 payroll column staff_welfare_alloc_inr
+  - name: training_cost_inr
+    type: NUMERIC
+    nullable: false
+    source_col: training_cost_inr
+    description: SPEC-04 payroll column training_cost_inr
+  - name: csss_contribution_inr
+    type: NUMERIC
+    nullable: false
+    source_col: csss_contribution_inr
+    description: SPEC-04 payroll column csss_contribution_inr
+  - name: cost_expensed_production_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_expensed_production_inr
+    description: SPEC-04 payroll column cost_expensed_production_inr
+  - name: caf_conveyance_inr
+    type: NUMERIC
+    nullable: false
+    source_col: caf_conveyance_inr
+    description: SPEC-04 payroll column caf_conveyance_inr
+  - name: caf_children_edu_inr
+    type: NUMERIC
+    nullable: false
+    source_col: caf_children_edu_inr
+    description: SPEC-04 payroll column caf_children_edu_inr
+  - name: caf_professional_dev_inr
+    type: NUMERIC
+    nullable: false
+    source_col: caf_professional_dev_inr
+    description: SPEC-04 payroll column caf_professional_dev_inr
+  - name: caf_other_perks_inr
+    type: NUMERIC
+    nullable: false
+    source_col: caf_other_perks_inr
+    description: SPEC-04 payroll column caf_other_perks_inr
+  - name: hardship_offshore_inr
+    type: NUMERIC
+    nullable: false
+    source_col: hardship_offshore_inr
+    description: SPEC-04 payroll column hardship_offshore_inr
+  - name: field_duty_allowance_inr
+    type: NUMERIC
+    nullable: false
+    source_col: field_duty_allowance_inr
+    description: SPEC-04 payroll column field_duty_allowance_inr
+  - name: location_comp_allowance_inr
+    type: NUMERIC
+    nullable: false
+    source_col: location_comp_allowance_inr
+    description: SPEC-04 payroll column location_comp_allowance_inr
+  - name: hard_station_allowance_inr
+    type: NUMERIC
+    nullable: false
+    source_col: hard_station_allowance_inr
+    description: SPEC-04 payroll column hard_station_allowance_inr
+  - name: shift_allowance_inr
+    type: NUMERIC
+    nullable: false
+    source_col: shift_allowance_inr
+    description: SPEC-04 payroll column shift_allowance_inr
+  - name: night_duty_allowance_inr
+    type: NUMERIC
+    nullable: false
+    source_col: night_duty_allowance_inr
+    description: SPEC-04 payroll column night_duty_allowance_inr
+  - name: npa_inr
+    type: NUMERIC
+    nullable: false
+    source_col: npa_inr
+    description: SPEC-04 payroll column npa_inr
+  - name: special_allowance_inr
+    type: NUMERIC
+    nullable: false
+    source_col: special_allowance_inr
+    description: SPEC-04 payroll column special_allowance_inr
+  - name: prp_paid_inr
+    type: NUMERIC
+    nullable: false
+    source_col: prp_paid_inr
+    description: SPEC-04 payroll column prp_paid_inr
+  - name: leave_encashment_paid_inr
+    type: NUMERIC
+    nullable: false
+    source_col: leave_encashment_paid_inr
+    description: SPEC-04 payroll column leave_encashment_paid_inr
+  - name: ltc_inr
+    type: NUMERIC
+    nullable: false
+    source_col: ltc_inr
+    description: SPEC-04 payroll column ltc_inr
+  - name: medical_reimbursement_inr
+    type: NUMERIC
+    nullable: false
+    source_col: medical_reimbursement_inr
+    description: SPEC-04 payroll column medical_reimbursement_inr
+  - name: ex_gratia_other_inr
+    type: NUMERIC
+    nullable: false
+    source_col: ex_gratia_other_inr
+    description: SPEC-04 payroll column ex_gratia_other_inr
+  - name: employee_pf_inr
+    type: NUMERIC
+    nullable: false
+    source_col: employee_pf_inr
+    description: SPEC-04 payroll column employee_pf_inr
+  - name: vpf_inr
+    type: NUMERIC
+    nullable: false
+    source_col: vpf_inr
+    description: SPEC-04 payroll column vpf_inr
+  - name: professional_tax_inr
+    type: NUMERIC
+    nullable: false
+    source_col: professional_tax_inr
+    description: SPEC-04 payroll column professional_tax_inr
+  - name: hrr_recovery_inr
+    type: NUMERIC
+    nullable: false
+    source_col: hrr_recovery_inr
+    description: SPEC-04 payroll column hrr_recovery_inr
+  - name: loan_recoveries_inr
+    type: NUMERIC
+    nullable: false
+    source_col: loan_recoveries_inr
+    description: SPEC-04 payroll column loan_recoveries_inr
+  - name: other_recoveries_inr
+    type: NUMERIC
+    nullable: false
+    source_col: other_recoveries_inr
+    description: SPEC-04 payroll column other_recoveries_inr
+  - name: capitalised_share
+    type: NUMERIC
+    nullable: false
+    source_col: capitalised_share
+    description: SPEC-04 payroll column capitalised_share
+  - name: cost_capitalised_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_capitalised_inr
+    description: SPEC-04 payroll column cost_capitalised_inr
+  - name: cost_expensed_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_expensed_inr
+    description: SPEC-04 payroll column cost_expensed_inr
+  - name: cost_expensed_gae_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_expensed_gae_inr
+    description: SPEC-04 payroll column cost_expensed_gae_inr
+  - name: cost_expensed_exploration_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_expensed_exploration_inr
+    description: SPEC-04 payroll column cost_expensed_exploration_inr
+  - name: field_id
+    type: STRING
+    nullable: true
+    source_col: field_id
+    description: SPEC-04 payroll column field_id
+  - name: fixed_note35a
+    type: NUMERIC
+    nullable: false
+    source_col: fixed_note35a
+    description: SPEC-04 payroll column fixed_note35a
+  - name: adjustable_note35a_base
+    type: NUMERIC
+    nullable: false
+    source_col: adjustable_note35a_base
+    description: SPEC-04 payroll column adjustable_note35a_base
+  - name: cost_note35_b_base
+    type: NUMERIC
+    nullable: false
+    source_col: cost_note35_b_base
+    description: SPEC-04 payroll column cost_note35_b_base
+  - name: u_fy
+    type: NUMERIC
+    nullable: false
+    source_col: u_fy
+    description: SPEC-04 payroll column u_fy
+  - name: k_fy
+    type: NUMERIC
+    nullable: false
+    source_col: k_fy
+    description: SPEC-04 payroll column k_fy
+  - name: ot_fy
+    type: NUMERIC
+    nullable: false
+    source_col: ot_fy
+    description: SPEC-04 payroll column ot_fy
+  - name: arrears_inr
+    type: NUMERIC
+    nullable: false
+    source_col: arrears_inr
+    description: SPEC-04 payroll column arrears_inr
+  - name: cost_allocated_ew_dd_survey_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_allocated_ew_dd_survey_inr
+    description: SPEC-04 payroll column cost_allocated_ew_dd_survey_inr
+  - name: cost_expensed_pnl_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_expensed_pnl_inr
+    description: SPEC-04 payroll column cost_expensed_pnl_inr
+  - name: cost_note35_a_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_note35_a_inr
+    description: SPEC-04 payroll column cost_note35_a_inr
+  - name: cost_note35_b_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_note35_b_inr
+    description: SPEC-04 payroll column cost_note35_b_inr
+  - name: cost_note35_c_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_note35_c_inr
+    description: SPEC-04 payroll column cost_note35_c_inr
+  - name: cost_note35_d_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_note35_d_inr
+    description: SPEC-04 payroll column cost_note35_d_inr
+  - name: cost_note35_e_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_note35_e_inr
+    description: SPEC-04 payroll column cost_note35_e_inr
+  - name: cost_note35_f_inr
+    type: NUMERIC
+    nullable: false
+    source_col: cost_note35_f_inr
+    description: SPEC-04 payroll column cost_note35_f_inr
   source_system: SAP Payroll Cluster
   source_format: CSV
   source_table: PY_CLUSTER_EXP.csv
@@ -3163,6 +3493,7 @@ tables:
     nullable: false
     description: Employee CPF Number
     fk: employee_master.emp_id
+    source_col: PERNR
   - name: wc_id
     type: STRING
     nullable: false
@@ -3185,6 +3516,7 @@ tables:
     - Maternity_Leave
     - Paternity_Leave
     - Commuted_Leave
+    source_col: SUBTY
   - name: transaction_type
     type: STRING
     nullable: false
@@ -3199,18 +3531,22 @@ tables:
     type: DATE
     nullable: true
     description: Leave start date if leave taken
+    source_col: BEGDA
   - name: to_date
     type: DATE
     nullable: true
     description: Leave end date if leave taken
+    source_col: ENDDA
   - name: days_count
     type: NUMERIC
     nullable: false
     description: Number of days debited or credited
+    source_col: ABWTG
   - name: closing_balance_days
     type: NUMERIC
     nullable: false
     description: Cumulative closing balance of leave days remaining
+    source_col: ANZHL
   - name: encashable_balance_days
     type: NUMERIC
     nullable: false
@@ -6619,3 +6955,168 @@ tables:
   - access_decision
   questions_served:
   - M5
+- table_name: employee_cost_pool
+  spec_id: H21
+  description: Company-level Note 35 employee cost pools (actuarial true-ups, provisions, welfare pools).
+  grain: One row per fiscal_year x pool_code x note35_line
+  primary_key:
+  - fiscal_year
+  - pool_code
+  - note35_line
+  source_system: SAP HCM / Finance Note 35 Consolidation
+  source_format: CSV
+  source_table: employee_cost_pool.csv
+  sap_field_map: null
+  scd_type: Append-only
+  columns:
+  - name: fiscal_year
+    type: STRING
+    nullable: false
+    description: Fiscal year (FY17-FY26)
+  - name: month_start
+    type: DATE
+    nullable: false
+    description: Pool booking month start date
+  - name: pool_code
+    type: STRING
+    nullable: false
+    description: Cost pool identifier
+  - name: note35_line
+    type: STRING
+    nullable: false
+    description: Note 35 sub-line code (a-f)
+  - name: amount_inr
+    type: NUMERIC
+    nullable: false
+    description: Pool amount in INR
+  - name: allocation_basis
+    type: STRING
+    nullable: false
+    description: Allocation basis description
+  - name: cost_destination
+    type: STRING
+    nullable: false
+    description: Target cost object or HQ
+  - name: segment
+    type: STRING
+    nullable: false
+    description: Operating segment
+  - name: basis
+    type: STRING
+    nullable: false
+    description: Data derivation basis
+- table_name: payroll_policy_fy
+  spec_id: H22
+  description: Fiscal year payroll policy rates and calibration factors (DA, PRP, increment, arrears).
+  grain: One row per fiscal year
+  primary_key:
+  - fiscal_year
+  source_system: HR Policy / DPE Guidelines
+  source_format: CSV
+  source_table: payroll_policy_fy.csv
+  sap_field_map: null
+  scd_type: SCD1
+  columns:
+  - name: fiscal_year
+    type: STRING
+    nullable: false
+    description: Fiscal year
+  - name: da_q1_pct
+    type: NUMERIC
+    nullable: false
+    description: Q1 IDA rate percentage
+  - name: da_q2_pct
+    type: NUMERIC
+    nullable: false
+    description: Q2 IDA rate percentage
+  - name: da_q3_pct
+    type: NUMERIC
+    nullable: false
+    description: Q3 IDA rate percentage
+  - name: da_q4_pct
+    type: NUMERIC
+    nullable: false
+    description: Q4 IDA rate percentage
+  - name: da_fy_avg_pct
+    type: NUMERIC
+    nullable: false
+    description: FY average IDA percentage
+  - name: prp_pool_factor
+    type: NUMERIC
+    nullable: false
+    description: PRP pool multiplier factor
+  - name: Increment_rate_pct
+    type: NUMERIC
+    nullable: false
+    description: Annual basic increment percentage
+  - name: arrears_factor
+    type: NUMERIC
+    nullable: false
+    description: 3rd PRC arrears factor
+  - name: arrears_month
+    type: STRING
+    nullable: true
+    description: Arrears disbursement month
+  - name: prbs_rate_pct
+    type: NUMERIC
+    nullable: false
+    description: PRBS employer contribution rate pct
+  - name: u_fy
+    type: NUMERIC
+    nullable: false
+    description: Note 35(a) wage uplift calibration factor
+  - name: k_fy
+    type: NUMERIC
+    nullable: false
+    description: PRP calibration factor
+  - name: ot_fy
+    type: NUMERIC
+    nullable: false
+    description: Overtime calibration factor
+  - name: residual_pool_pct
+    type: NUMERIC
+    nullable: false
+    description: Residual pool share percentage
+  - name: notes
+    type: STRING
+    nullable: true
+    description: Calibration notes
+- table_name: field_econ
+  spec_id: FLDECON
+  description: Monthly field and cost-object economics ledger (CO-PA v3).
+  grain: One row per fiscal year x month x cost object x line code
+  primary_key:
+  - fy
+  - month
+  - object_id
+  - line_code
+  source_system: SAP CO-PA v3
+  source_format: CSV
+  source_table: CO_PA_v3.csv
+  sap_field_map: null
+  scd_type: Append-only
+  columns:
+  - name: fy
+    type: STRING
+    nullable: false
+    description: Fiscal year (e.g. FY26)
+  - name: month
+    type: STRING
+    nullable: false
+    description: Calendar month (YYYY-MM)
+  - name: object_id
+    type: STRING
+    nullable: false
+    description: Canonical field or cost object identifier
+  - name: line_code
+    type: STRING
+    nullable: false
+    description: P&L, segment, Note 35, or production line code
+  - name: amount_inr_mn
+    type: NUMERIC
+    nullable: false
+    description: Amount in INR million (or physical quantity for PROD/QTY lines)
+  - name: basis
+    type: STRING
+    nullable: false
+    description: Derivation basis code (R, M, D, A)

@@ -201,6 +201,11 @@ def handle_coverage_query(
     }
 
 
+_SOURCE_INQUIRY_RE = re.compile(
+    r"(?i)\b(where\s+is\s+(?:this|that|it)\s+from|what(?:'s|\s+is)\s+the\s+source|source\s+of\s+(?:this|that))\b"
+)
+
+
 def handle_coverage(
     query: str,
     session_state: Any,
@@ -209,6 +214,31 @@ def handle_coverage(
     turn_id: str,
     t0: float,
 ) -> Optional[AnswerContract]:
+    if _SOURCE_INQUIRY_RE.search(query or ""):
+        spoken = "This figure comes from ONGC's verified enterprise data bank and posting records."
+        vis = {"type": "none", "mode": "keep"}
+        if session_state and getattr(session_state, "visual_history", None):
+            last_vis = session_state.visual_history[-1]
+            if isinstance(last_vis, dict) and last_vis.get("type") not in (None, "none"):
+                vis = dict(last_vis)
+                vis["mode"] = "keep"
+        return {
+            "contract_version": 3,
+            "turn_id": turn_id,
+            "intent": "coverage",
+            "confidence": "high",
+            "language": det_lang if det_lang in ("en", "hi", "hi-en") else "en",
+            "persona": norm_persona,
+            "spoken_summary": spoken,
+            "display_text": spoken,
+            "visual": vis,
+            "insights": [],
+            "sources": [{"kind": "data", "object": "ONGC Enterprise Data Bank"}],
+            "suggestions": ["What data do you have?"],
+            "access": {"status": "allowed"},
+            "export_options": [],
+            "status_events": ["Resolved source attribution"],
+        }
     if not is_coverage_query(query):
         return None
     return handle_coverage_query(

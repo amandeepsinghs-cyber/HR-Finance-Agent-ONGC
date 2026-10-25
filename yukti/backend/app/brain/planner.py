@@ -95,13 +95,36 @@ def catalog_summary() -> str:
     ents = get_entities()
     from app.semantic.normalize import categorical_values
 
+    # Auxiliary v3 schema subjects (employee_360 / employee_month / employee_fy) are served via
+    # certified HR_E360_* queries and carry provenance tags ("Real"/"Synthetic") as labels that
+    # shadow `workforce` in the LLM prompt. For `field_econ`, omit metrics that duplicate
+    # canonical `field_pnl` / `lifting` metrics unless explicitly requested.
+    skip_subjects = {"employee_360", "employee_month", "employee_fy"}
+    shadow_field_econ_metrics = {
+        "field_revenue_cr",
+        "field_pbt_cr",
+        "field_ebitda_cr",
+        "field_ebitda_margin_pct",
+        "lifting_cost_per_boe_usd",
+    }
+
     lines: List[str] = ["SUBJECTS, METRICS AND FIELDS (use these names exactly):"]
     for s in m.subjects.values():
+        if s.name in skip_subjects:
+            continue
+        metrics_items = [
+            (mn, md) for mn, md in s.metrics.items()
+            if not (s.name == "field_econ" and mn in shadow_field_econ_metrics)
+        ]
+        if not metrics_items:
+            continue
         lines.append(f"- subject {s.name} [{s.domain}; period={s.period}{'; default ' + s.default_fy if s.default_fy else ''}]: {s.description}")
-        lines.append("  metrics: " + "; ".join(f"{mn} = {md.label}" for mn, md in s.metrics.items()))
+        lines.append("  metrics: " + "; ".join(f"{mn} = {md.label}" for mn, md in metrics_items))
         vals = categorical_values([s.table])
         fdesc = []
         for fn, fd in s.fields.items():
+            if fn in ("delhi_tenure_years", "grade_level_order"):
+                continue
             if fd.entity:
                 fdesc.append(f"{fn} (code of {fd.entity})")
             elif fd.kind == "categorical":
@@ -222,10 +245,16 @@ class Planner:
         resp = None
         for attempt in range(3):
             try:
-                resp = await self.client.aio.models.generate_content(model=self.model, contents=prompt, config=cfg)
+                resp = await asyncio.wait_for(
+                    self.client.aio.models.generate_content(model=self.model, contents=prompt, config=cfg),
+                    timeout=12,
+                )
                 break
             except Exception as e:
-                if attempt < 2 and ("429" in str(e) or "RESOURCE_EXHAUSTED" in str(e)):
+                is_transient = isinstance(e, (asyncio.TimeoutError, TimeoutError)) or any(
+                    tok in str(e) for tok in ("429", "RESOURCE_EXHAUSTED", "503", "UNAVAILABLE", "Deadline")
+                )
+                if attempt < 2 and is_transient:
                     await asyncio.sleep(1.5 * (attempt + 1))
                     continue
                 raise
@@ -383,7 +412,7 @@ class Planner:
                 det_plan.latency_ms = round((time.perf_counter() - t0) * 1000, 1)
                 return det_plan
         try:
-            raw = await asyncio.wait_for(self._call(self._prompt(question, prev, history or [], fy_hint)), timeout=12)
+            raw = await asyncio.wait_for(self._call(self._prompt(question, prev, history or [], fy_hint)), timeout=30)
         except Exception as e:  # planner failure => try deterministic guards in to_plan first before legacy fallback
             logger.warning(f"planner call failed: {e}")
             det_plan = self.to_plan(question, {}, prev, fy_hint)
@@ -436,12 +465,24 @@ class Planner:
             )
         )
         if intent == "replot" and prev is not None:
-            if prev.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios", "wacc_pct", "wacc_components", "wacc_change_attribution"):
+            raw_m = raw.get("metric")
+            explicit_visual = bool(
+                chart
+                or wants_waterfall
+                or re.search(
+                    r"\b(chart|plot|graph|pie|donut|bar|hbar|line|area|table|tabular|waterfall|bridge|treemap|heatmap|scatter|gauge|bullet|funnel|histogram|box|visual\w*)\b",
+                    ql_early,
+                )
+            )
+            if (raw_m and raw_m != prev.metric) or not explicit_visual:
+                intent = "data"
+            elif prev.metric in ("pnl_statement", "balance_sheet", "cash_flow_statement", "financial_ratios", "wacc_pct", "wacc_components", "wacc_change_attribution"):
                 ck = "waterfall" if wants_waterfall else (chart or "table")
                 spec = prev.model_copy(update={"chart_kind": ck})
                 return Plan(intent="data", is_followup=True, spec=spec, patch=SpecPatch(chart_kind=ck), chart_kind=ck, raw=raw)
-            patch = SpecPatch(chart_kind=chart or "table")
-            return Plan(intent="replot", is_followup=True, spec=prev, patch=patch, chart_kind=patch.chart_kind, raw=raw)
+            else:
+                patch = SpecPatch(chart_kind=chart or "table")
+                return Plan(intent="replot", is_followup=True, spec=prev, patch=patch, chart_kind=patch.chart_kind, raw=raw)
         no_sub_entity = (
             not self.ents.resolve_wcs(question)
             and not self.ents.resolve_field(question)
@@ -571,6 +612,13 @@ class Planner:
                     raw["fy_from"] = "FY22"
                     raw["fy_to"] = "FY26"
 
+        # Hypothetical simulation guard ("If Brent falls to $60...", "What if crude drops...")
+        if re.search(
+            r"\b(?:what[- ]if|if\s+(?:brent|crude|oil|gas|fx|rupee|usd|realisation)(?:\s+price)?\s+(?:falls?|drops?|rises?|goes|reaches|hits|were|is)\s+(?:to|below|above|by))\b",
+            ql_early,
+        ):
+            return Plan(intent="what_if", raw=raw)
+
         # Deterministic Financial Causal & Action Guard ("Why did X happen?", "What action should the Finance Director take?")
         fin_kw = re.search(
             r"\b(wacc|weighted\s+average\s+cost\s+of\s+capital|"
@@ -585,7 +633,7 @@ class Planner:
         if not prev_is_fin and prev is not None:
             psubj, _, ptdef = self._subject_for(prev.metric)
             prev_is_fin = bool((psubj and psubj.domain == "finance") or (ptdef and ptdef.domain == "finance"))
-        if (intent != "data" or not raw.get("metric")) and (fin_kw or (prev_is_fin and re.search(r"\b(why|what\s+happened|action|recommend\w*|interven\w*|improv\w*|explain|driver\w*|reason\w*|cause\w*|how)\b", ql_early))):
+        if intent not in ("what_if", "document", "policy", "replot") and (intent != "data" or not raw.get("metric")) and (fin_kw or (prev_is_fin and re.search(r"\b(why|what\s+happened|action|recommend\w*|interven\w*|improv\w*|explain|driver\w*|reason\w*|cause\w*|how)\b", ql_early))):
             inferred_m = raw.get("metric")
             if not inferred_m or not any(self._subject_for(inferred_m)):
                 if is_wacc_q or (prev_is_wacc and re.search(r"\b(why|what|driver\w*|reason\w*|cause\w*|high\w*|low\w*)\b", ql_early)):
@@ -617,6 +665,12 @@ class Planner:
                     inferred_m = "lifting_cost_usd_per_boe"
                 elif re.search(r"\b(loss[- ]making\s+field\w*|pec|field\s+profit\w*)\b", ql_early):
                     inferred_m = "pbt_cr"
+                elif self.ents.resolve_field(question):
+                    inferred_m = "pbt_cr"
+                elif re.search(r"\b(pbt|before\s+tax)\b", ql_early) and no_sub_entity:
+                    inferred_m = "pbt_corporate_cr"
+                elif re.search(r"\b(profit|munafa|pat)\b", ql_early) and not re.search(r"\b(p\s*&\s*l|pnl|profit\s+and\s+loss|statement)\b", ql_early) and no_sub_entity:
+                    inferred_m = "pat_cr"
                 elif prev_is_wacc and prev is not None:
                     inferred_m = "wacc_change_attribution" if re.search(r"\b(why|what|driver\w*|reason\w*|cause\w*)\b", ql_early) else prev.metric
                     if inferred_m == "wacc_change_attribution":
@@ -820,6 +874,24 @@ class Planner:
 
         is_fu = bool(raw.get("is_followup")) and prev is not None
         metric = raw.get("metric") or (prev.metric if is_fu else None)
+        # Guard against field_econ shadowing standard field_pnl / lifting metrics unless RAS/cost-object/field-econ is explicitly asked
+        field_econ_to_canonical = {
+            "field_revenue_cr": "revenue_cr",
+            "field_pbt_cr": "pbt_cr",
+            "field_ebitda_cr": "ebitda_cr",
+            "field_ebitda_margin_pct": "ebitda_margin_pct",
+            "lifting_cost_per_boe_usd": "lifting_cost_usd_per_boe",
+        }
+        if metric in field_econ_to_canonical and not re.search(
+            r"\b(ras|cost\s+object|note\s+35|field\s+ebitda|field\s+economics|company\s+bridge)\b",
+            ql_early,
+        ):
+            notes.append(f"canonicalized {metric} -> {field_econ_to_canonical[metric]}")
+            metric = field_econ_to_canonical[metric]
+        named_field = self.ents.resolve_field(question)
+        if metric == "pnl_statement" and named_field:
+            notes.append("canonicalized pnl_statement -> pbt_cr for named field")
+            metric = "pbt_cr"
         subject, mdef, tdef = self._subject_for(metric) if metric else (None, None, None)
         if metric and not (mdef or tdef):
             if is_fu:
@@ -831,11 +903,22 @@ class Planner:
             return Plan(intent="other", notes=["no metric"], raw=raw)
 
         filters = [f for f in (self._coerce_filter(x, subject, notes) for x in raw.get("filters") or []) if f]
+        if named_field and subject is not None and "field" in subject.fields and not any(f.field == "field" for f in filters):
+            filters.append(Filter(field="field", op="=", value=named_field))
+            notes.append(f"entity guard added field={named_field}")
         from app.brain.compiler import WC_ATTRIBUTE_FIELDS
         if any(f.field in ("wc", "asset") for f in filters):
-            # A named work centre makes state/sector/city filters redundant (and often wrong).
-            dropped_attr = [f.field for f in filters if f.field in WC_ATTRIBUTE_FIELDS and subject is not None
-                            and f.field not in subject.fields]
+            # A named work centre makes state/sector/city/onshore_offshore filters redundant (and often wrong).
+            dropped_attr = [
+                f.field for f in filters
+                if (
+                    (f.field in WC_ATTRIBUTE_FIELDS and subject is not None and f.field not in subject.fields)
+                    or (
+                        f.field in ("onshore_offshore", "sector", "state")
+                        and not re.search(r"\b(onshore|offshore|sector|state)\b", ql_early)
+                    )
+                )
+            ]
             filters = [f for f in filters if f.field not in dropped_attr]
             if dropped_attr:
                 notes.append(f"dropped redundant {dropped_attr}")
@@ -869,15 +952,30 @@ class Planner:
         if subject is not None:
             wc_field = "wc" if "wc" in subject.fields else ("asset" if "asset" in subject.fields else None)
         named_wcs = self.ents.resolve_wcs(question)
-        has_wc = any(f.field in ("wc", "asset", "region") for f in filters) or bool(raw.get("compare_field"))
+        has_wc = any(f.field in ("wc", "asset", "region") for f in filters) or (
+            bool(raw.get("compare_field")) and raw.get("compare_field") not in WC_ATTRIBUTE_FIELDS
+        )
         if wc_field and len(named_wcs) == 1 and not has_wc and not self.ents.resolve_region(question):
             filters.append(Filter(field=wc_field, op="=", value=named_wcs[0]))
             notes.append(f"entity guard added {wc_field}={named_wcs[0]}")
+            if not re.search(r"\b(onshore|offshore|sector|state)\b", ql_early):
+                filters = [f for f in filters if f.field not in ("onshore_offshore", "sector", "state")]
 
         # Entity guard (multi): "Compare Delhi and Mumbai" named as states/cities instead of work centres.
-        if wc_field and len(named_wcs) >= 2 and not any(f.field in ("wc", "asset") for f in filters) \
-                and not raw.get("compare_field") and not self.ents.resolve_region(question):
-            filters = [f for f in filters if f.field not in WC_ATTRIBUTE_FIELDS or f.field in subject.fields]
+        if (
+            wc_field
+            and len(named_wcs) >= 2
+            and not any(f.field in ("wc", "asset") for f in filters)
+            and (not raw.get("compare_field") or raw.get("compare_field") in WC_ATTRIBUTE_FIELDS)
+            and not self.ents.resolve_region(question)
+        ):
+            filters = [
+                f for f in filters
+                if (f.field not in WC_ATTRIBUTE_FIELDS or f.field in subject.fields)
+                and (f.field not in ("onshore_offshore", "sector", "state") or re.search(r"\b(onshore|offshore|sector|state)\b", ql_early))
+            ]
+            dims = [wc_field if d in ("state", "sector", "onshore_offshore") else d for d in dims]
+            dims = list(dict.fromkeys(dims))
             raw = dict(raw, compare_field=wc_field, compare_values=named_wcs[:4])
             notes.append(f"entity guard: compare {wc_field} {named_wcs[:4]}")
 
@@ -890,6 +988,20 @@ class Planner:
                     filters[i] = Filter(field=f.field, op="=", value=named_wcs[0])
         # (b) years at a place are station tenure unless total service is asked for.
         ql = question.lower()
+        filters = [
+            Filter(field="station_tenure_years", op=f.op, value=f.value)
+            if f.field == "delhi_tenure_years" and subject is not None and "station_tenure_years" in subject.fields
+            else f
+            for f in filters
+        ]
+        g_code_match = re.search(r"\b(e[0-9])\b", ql, re.I)
+        if g_code_match and subject is not None and "grade" in subject.fields:
+            filters = [
+                Filter(field="grade", op=f.op, value=g_code_match.group(1).upper())
+                if f.field == "grade_level_order"
+                else f
+                for f in filters
+            ]
         if named_wcs and not re.search(r"\b(service|with ongc|in ongc|of service|career|joined|total tenure|total)\b", ql):
             filters = [Filter(field="station_tenure_years", op=f.op, value=f.value)
                        if f.field == "total_tenure_years" and subject is not None and "station_tenure_years" in subject.fields
@@ -979,9 +1091,15 @@ class Planner:
                     filters.append(Filter(field=cf, op="=", value=vals[0]))
 
         if is_fu:
+            rem_filters = [r for r in raw.get("remove_filters") or [] if isinstance(r, str)]
+            if "station_tenure_years" in rem_filters and metric != "long_stay_share_pct" and not re.search(
+                r"\b(all\s+tenures?|any\s+tenure|regardless|without\s+tenure|everyone|retention|share)\b",
+                ql,
+            ):
+                rem_filters = [r for r in rem_filters if r != "station_tenure_years"]
             patch = SpecPatch(
                 add_filters=filters,
-                remove_filters=[r for r in raw.get("remove_filters") or [] if isinstance(r, str)],
+                remove_filters=rem_filters,
                 dimensions=dims if (raw.get("set_dimensions") or bool(dims)) else None,
                 period=period if (period and (fy_hint or raw.get("fy") or raw.get("fy_from") or raw.get("fy_to"))) else None,
                 grain=grain if grain and grain != prev.grain else None,

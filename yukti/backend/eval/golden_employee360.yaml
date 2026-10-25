@@ -1,0 +1,375 @@
+scenarios:
+  - id: BEH-06.01
+    persona: CMD
+    utterance: "What is the entry pay and pay scale for an E1 officer, and how does basic pay progress across E0 to E9, Director and CMD?"
+    expected:
+      visual_type: table
+      rbac: allow
+      values: [50000, 60000, 70000, 80000, 90000, 100000, 120000, 120000, 120000, 150000, 180000, 200000]
+      recompute_sql: "SELECT grade_id, MIN(pay_scale_min_inr) AS scale_min_inr, MAX(pay_scale_max_inr) AS scale_max_inr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start = DATE '2026-03-01' AND is_month_end_active GROUP BY grade_id, grade_level_order ORDER BY grade_level_order"
+      tolerance_pct: 0.0
+      citations:
+        - "DPE OM W-02/0028/2017-DPE(WC)-GL-XIII/17 dated 03-Aug-2017 Annex I (Schedule A CPSE)"
+        - "ONGC Recruitment Advt. No. 2/2025 (GATE-2025 E1 scale Rs 60,000-1,80,000)"
+
+  - id: BEH-06.02
+    persona: DIR_HR
+    utterance: "Decompose the monthly gross pay and annualised CTC of an E1 officer at entry basic (Rs 60,000) in Delhi in Q4 FY26."
+    expected:
+      visual_type: waterfall
+      rbac: allow
+      values: [60000, 33780, 18000, 21000, 132780]
+      recompute_sql: "SELECT ROUND(AVG(basic_pay_inr), 0) AS basic_pay_inr, ROUND(AVG(ida_inr), 0) AS ida_inr, ROUND(AVG(hra_inr), 0) AS hra_inr, ROUND(AVG(cafeteria_allowance_inr), 0) AS cafeteria_inr, ROUND(AVG(ctc_annualised_inr), 0) AS ctc_annualised_inr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start = DATE '2026-03-01' AND grade_id = 'E1' AND wc_id = 'WC-DEL' AND is_month_end_active"
+      tolerance_pct: 1.0
+      citations:
+        - "DPE OM 03-Aug-2017 paras 3, 4, 7, 12 & Annex IV"
+        - "DPE IDA Circular Q4 FY26 (Jan-2026: 56.3%)"
+
+  - id: BEH-06.03
+    persona: DIR_HR
+    utterance: "Compare total annualised CTC and gross cash across E1 to E9 in FY26 — median, P25 and P75."
+    expected:
+      visual_type: box
+      rbac: allow
+      recompute_sql: "SELECT grade_id, APPROX_QUANTILES(ctc_annualised_inr, 100)[OFFSET(25)] AS p25_ctc_inr, APPROX_QUANTILES(ctc_annualised_inr, 100)[OFFSET(50)] AS median_ctc_inr, APPROX_QUANTILES(ctc_annualised_inr, 100)[OFFSET(75)] AS p75_ctc_inr FROM `ongc-hr-finance-agent.hrfin_gold.v_employee_360_fy` WHERE fiscal_year = 'FY26' AND is_fy_end_active AND grade_id IN ('E1','E2','E3','E4','E5','E6','E7','E8','E9') GROUP BY grade_id ORDER BY grade_id"
+      tolerance_pct: 5.0
+      citations:
+        - "DPE OM 03-Aug-2017 Annex I & Annex IV"
+        - "ONGC AR FY2025-26 BRSR Sec C P5 EI-3(b) p.175"
+
+  - id: BEH-06.04
+    persona: E1_HR
+    utterance: "Show my payslip and CTC breakdown for March 2026."
+    expected:
+      visual_type: payslip
+      rbac: self
+      recompute_sql: "SELECT basic_pay_inr, ida_inr, hra_inr, cafeteria_allowance_inr, gross_earnings_inr, total_deductions_inr, net_pay_inr, ctc_monthly_inr, ctc_annualised_inr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start = DATE '2026-03-01' AND is_persona_identity = 'E1_HR'"
+      tolerance_pct: 0.01
+      citations:
+        - "DPE OM 03-Aug-2017 (3rd PRC pay slip rules)"
+
+  - id: BEH-06.05
+    persona: E1_HR
+    utterance: "Show me the salary and payslip of my batchmate Ankit Sharma in E1."
+    expected:
+      visual_type: refusal
+      rbac: refuse
+      values: [60000, 180000]
+      tolerance_pct: 0.0
+      refusal_code: RBAC_DENY_PEER_PAY
+      safe_redirect_metric: "E1 grade pay scale (Rs 60,000-1,80,000) and E1 cohort median CTC"
+      citations:
+        - "RBAC Policy SPEC-04 §9 (Peer individual payroll restricted at E1-E3)"
+
+  - id: BEH-06.06
+    persona: E4_HR
+    utterance: "Show the current compensation, grade tenure and last 3 APAR grades of the officers reporting to me."
+    expected:
+      visual_type: table
+      rbac: allow
+      recompute_sql: "SELECT e.emp_id, e.full_name, e.grade_id, e.grade_tenure_years, e.basic_pay_inr, e.gross_earnings_inr, e.ctc_annualised_inr, e.apar_grade FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` e JOIN (SELECT emp_id FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start = DATE '2026-03-01' AND is_persona_identity = 'E4_HR') m ON e.reporting_manager_emp_id = m.emp_id WHERE e.month_start = DATE '2026-03-01' AND e.is_month_end_active"
+      tolerance_pct: 1.0
+      citations:
+        - "RBAC Policy SPEC-04 §9 (E4+ manager direct-report scope)"
+
+  - id: BEH-06.07
+    persona: CMD
+    utterance: "Show ONGC's total employee benefit expense from FY17 to FY26."
+    expected:
+      visual_type: combo
+      rbac: allow
+      values: [11068.90, 9912.60, 10226.20, 9669.20, 6606.84, 7386.66, 6949.68, 7094.28, 7958.47, 7558.59]
+      recompute_sql: "SELECT fiscal_year, ROUND((SUM(cost_total_inr) + COALESCE(MAX(p.pool_inr), 0)) / 1e7, 2) AS total_emp_benefit_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` e LEFT JOIN (SELECT fiscal_year, SUM(IF(allocation_basis IN ('residual','real_total_modelled_split'), amount_inr, 0)) AS pool_inr FROM `ongc-hr-finance-agent.hrfin_stage.fact_employee_cost_pool` WHERE month_start >= DATE '2016-04-01' GROUP BY fiscal_year) p USING (fiscal_year) WHERE e.month_start >= DATE '2016-04-01' GROUP BY fiscal_year ORDER BY fiscal_year"
+      tolerance_pct: 0.1
+      citations:
+        - "ONGC AR FY2025-26 Note 35.1 p.298 & 10-Year Financial Statistics"
+        - "ONGC AR FY2021-22 Note 35.1 (FY17-FY20 3rd PRC & gratuity ceiling transition)"
+
+  - id: BEH-06.08
+    persona: DIR_FIN
+    utterance: "What is our average employee cost per employee over the last 10 years?"
+    expected:
+      visual_type: combo
+      rbac: allow
+      values: [32.94, 30.73, 32.92, 32.09, 46.96, 40.91, 41.97, 41.32, 43.37, 43.01]
+      recompute_sql: "SELECT fiscal_year, ROUND(SAFE_DIVIDE(SUM(cost_total_inr), COUNTIF(fy_month_no = 12 AND is_month_end_active)) / 1e5, 2) AS avg_cost_per_emp_lakhs FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2016-04-01' GROUP BY fiscal_year ORDER BY fiscal_year"
+      tolerance_pct: 1.0
+      citations:
+        - "ONGC AR FY2025-26 Note 35.1 p.298 & BRSR Sec A Q20(a) p.141"
+
+  - id: BEH-06.09
+    persona: CMD
+    utterance: "How much of the per-employee cost in FY26 is cash salary vs retirement benefits vs medical and welfare?"
+    expected:
+      visual_type: stacked_column
+      rbac: allow
+      values: [32.03, 4.35, 1.09, 0.65, 3.68, 1.19, 43.01, 34.18]
+      recompute_sql: "SELECT ROUND(SUM(cost_note35_a_inr)/1e7, 2) AS line_a_cr, ROUND(SUM(cost_note35_b_inr)/1e7, 2) AS line_b_cr, ROUND(SUM(cost_note35_c_inr)/1e7, 2) AS line_c_cr, ROUND(SUM(cost_note35_d_inr)/1e7, 2) AS line_d_cr, ROUND(SUM(cost_note35_e_inr)/1e7, 2) AS line_e_cr, ROUND(SUM(cost_note35_f_inr)/1e7, 2) AS line_f_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26'"
+      tolerance_pct: 1.0
+      citations:
+        - "ONGC AR FY2025-26 Note 35.1 p.298 (Gross Rs 10,210.71 Cr / 23,742.5 avg HC = Rs 43.01 L)"
+
+  - id: BEH-06.10
+    persona: DIR_FIN
+    utterance: "Give me the full Note 35.1 employee benefit expense breakdown from FY21 to FY26."
+    expected:
+      visual_type: stacked_column
+      rbac: allow
+      values: [7605.51, 1033.66, 259.26, 155.04, 874.12, 283.12, 10210.71]
+      recompute_sql: "SELECT fiscal_year, ROUND(SUM(cost_note35_a_inr)/1e7, 2) AS sal_wages_cr, ROUND(SUM(cost_note35_b_inr)/1e7, 2) AS pf_funds_cr, ROUND(SUM(cost_note35_c_inr)/1e7, 2) AS gratuity_cr, ROUND(SUM(cost_note35_d_inr)/1e7, 2) AS leave_cr, ROUND(SUM(cost_note35_e_inr)/1e7, 2) AS prmb_cr, ROUND(SUM(cost_note35_f_inr)/1e7, 2) AS welfare_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2020-04-01' GROUP BY fiscal_year ORDER BY fiscal_year"
+      tolerance_pct: 0.1
+      citations:
+        - "ONGC AR FY2025-26 Note 35.1 p.298"
+        - "ONGC AR FY2023-24 Note 35.1 p.280"
+        - "ONGC AR FY2021-22 Note 35.1 p.272"
+
+  - id: BEH-06.11
+    persona: DIR_FIN
+    utterance: "Does the sum of individual employee costs in our HR database match the audited Note 35.1 in the Annual Report?"
+    expected:
+      visual_type: waterfall
+      rbac: allow
+      values: [10210.71, 0.0]
+      recompute_sql: "SELECT check_id, fiscal_year, metric_name, ssot_value, reference_value, abs_diff, status FROM `ongc-hr-finance-agent.hrfin_gold.recon_checks` WHERE domain = 'EMP' AND check_id IN ('EMP-R01','EMP-R02','EMP-R03','EMP-R04','EMP-R05','EMP-R06','EMP-R07','EMP-R08') AND fiscal_year = 'FY26' ORDER BY check_id"
+      tolerance_pct: 0.01
+      citations:
+        - "ONGC AR FY2025-26 Note 35.1 p.298 & Note 43 p.310"
+
+  - id: BEH-06.12
+    persona: DIR_FIN
+    utterance: "What is our gratuity, leave and PRMB cost and obligation in FY26, and are we within the DPE 30% superannuation ceiling?"
+    expected:
+      visual_type: combo
+      rbac: allow
+      values: [259.26, 155.04, 874.12, 1033.66, 12113.0, 30.0]
+      recompute_sql: "SELECT ROUND(SUM(cost_note35_c_inr)/1e7, 2) AS gratuity_cr, ROUND(SUM(cost_note35_d_inr)/1e7, 2) AS leave_cr, ROUND(SUM(cost_note35_e_inr)/1e7, 2) AS prmb_cr, ROUND(SUM(cost_note35_b_inr)/1e7, 2) AS pf_prbs_cr, MAX(superannuation_pct_bp_da) * 100.0 AS max_superann_pct_bp_da, COUNTIF(superannuation_pct_bp_da > 0.3001) AS cap_violations FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26'"
+      tolerance_pct: 0.1
+      citations:
+        - "ONGC AR FY2025-26 Note 35.1 p.298 & Note 43 (PRMB obligation Rs 12,113 Cr)"
+        - "DPE OM 03-Aug-2017 para 12 (30% of Basic + DA superannuation ceiling)"
+
+  - id: BEH-06.13
+    persona: DIR_FIN
+    utterance: "Why does the P&L show Rs 7,559 Cr of employee benefit expense when Note 35.1 says Rs 10,211 Cr, and where does Note 35's Rs 2,652 Cr of Staff Expenditure fit in?"
+    expected:
+      visual_type: waterfall
+      rbac: allow
+      values: [10210.71, 2652.12, 7558.59]
+      recompute_sql: "SELECT ROUND(SUM(cost_total_inr)/1e7, 2) AS gross_note35_1_cr, ROUND(SUM(cost_capitalised_inr)/1e7, 2) AS capitalised_ew_dd_cr, ROUND(SUM(cost_expensed_inr)/1e7, 2) AS expensed_pnl_cr, ROUND(SUM(cost_expensed_production_inr)/1e7, 2) AS prod_staff_exp_note35_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26'"
+      tolerance_pct: 0.1
+      citations:
+        - "ONGC AR FY2025-26 P&L p.249, Note 35 p.297 (Rs 2,652.12 Cr), Note 35.1 p.298 (Rs 10,210.71 Cr)"
+
+  - id: BEH-06.14
+    persona: CMD
+    utterance: "Compare revenue per employee and profit per employee against employee cost per employee from FY17 to FY26."
+    expected:
+      visual_type: combo
+      rbac: allow
+      values: [33660, 23117, 5.73, 1.58, 0.43]
+      recompute_sql: "SELECT fiscal_year, COUNTIF(fy_month_no = 12 AND is_month_end_active) AS hc_fy_end, ROUND(SUM(cost_total_inr) / COUNTIF(fy_month_no = 12 AND is_month_end_active) / 1e7, 4) AS emp_cost_per_emp_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2016-04-01' GROUP BY fiscal_year ORDER BY fiscal_year"
+      tolerance_pct: 1.0
+      citations:
+        - "ONGC AR FY2025-26 P&L p.249 (Revenue Rs 1,32,508.14 Cr, PAT Rs 36,599.13 Cr) & BRSR p.141 (23,117 employees)"
+
+  - id: BEH-06.15
+    persona: DIR_HR
+    utterance: "What is our male vs female median remuneration for executives and non-executives, and what share of total wages goes to women in FY26?"
+    expected:
+      visual_type: column
+      rbac: allow
+      values: [43.30, 37.55, 21.97, 19.02, 7.73]
+      recompute_sql: "WITH rem AS (SELECT emp_id, IF(cadre IN ('executive','board'), 'executive', 'non_executive') AS cadre_grp, gender, SUM(gross_earnings_inr + employer_cpf_inr) AS annual_rem FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26' GROUP BY emp_id, cadre_grp, gender HAVING COUNT(*) = 12) SELECT cadre_grp, gender, ROUND(APPROX_QUANTILES(annual_rem, 100)[OFFSET(50)] / 1e5, 2) AS median_rem_lakhs FROM rem GROUP BY cadre_grp, gender ORDER BY cadre_grp, gender"
+      tolerance_pct: 10.0
+      citations:
+        - "ONGC AR FY2025-26 BRSR Sec C P5 EI-2 & EI-3(b) pp.174-175"
+
+  - id: BEH-06.25
+    persona: DIR_HR
+    utterance: "What is our overtime bill in FY26, which work centres and disciplines drive it, and are any executives being paid overtime?"
+    expected:
+      visual_type: bar
+      rbac: allow
+      recompute_sql: "SELECT wc_id, wc_name, ROUND(SUM(overtime_amount_inr)/1e7, 2) AS ot_amount_cr, SUM(overtime_hours) AS ot_hours, COUNTIF(cadre IN ('executive','board') AND overtime_amount_inr > 0) AS exec_ot_violations FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26' GROUP BY wc_id, wc_name ORDER BY ot_amount_cr DESC LIMIT 10"
+      tolerance_pct: 5.0
+      citations:
+        - "DPE OM 03-Aug-2017 (Executives ineligible for overtime; workmen only)"
+
+  - id: BEH-06.26
+    persona: DIR_HR
+    utterance: "Break down our field, offshore, hardship and shift allowances in FY26 by location type and work centre."
+    expected:
+      visual_type: stacked_column
+      rbac: allow
+      recompute_sql: "SELECT location_type, ROUND(SUM(hardship_offshore_inr)/1e7, 2) AS offshore_hardship_cr, ROUND(SUM(field_duty_allowance_inr)/1e7, 2) AS field_duty_cr, ROUND(SUM(location_comp_allowance_inr)/1e7, 2) AS lca_cr, ROUND(SUM(hard_station_allowance_inr)/1e7, 2) AS hard_station_cr, ROUND(SUM(shift_allowance_inr + night_duty_allowance_inr)/1e7, 2) AS shift_night_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26' GROUP BY location_type ORDER BY offshore_hardship_cr DESC"
+      tolerance_pct: 5.0
+      citations:
+        - "DPE OM 04-Aug-2017 & DPE OM 07-Sep-2017 (Offshore hardship <=12% BP; NE/Ladakh/A&N LCA)"
+
+  - id: BEH-06.27
+    persona: DIR_FIN
+    utterance: "How much Performance Related Pay (PRP) did we accrue in FY26 by grade band, and how does it compare with the DPE Annex IV ceilings?"
+    expected:
+      visual_type: combo
+      rbac: allow
+      values: [40, 40, 40, 50, 50, 60, 70, 80, 90, 125, 150]
+      recompute_sql: "SELECT grade_id, ROUND(SUM(prp_accrual_inr)/1e7, 2) AS prp_accrual_cr, ROUND(SAFE_DIVIDE(SUM(prp_accrual_inr), SUM(basic_pay_inr)) * 100.0, 2) AS effective_pct_bp FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26' AND cadre IN ('executive','board') GROUP BY grade_id, grade_level_order ORDER BY grade_level_order"
+      tolerance_pct: 5.0
+      citations:
+        - "DPE OM 03-Aug-2017 Annex IV (PRP grade ceilings: E0-E3 40%, E4-E5 50%, E6 60%, E7 70%, E8 80%, E9 90%, DIR 125%, CMD 150%)"
+
+  - id: BEH-06.28
+    persona: DIR_FIN
+    utterance: "How are employees using the 35% cafeteria basket, and what is our housing cost across HRA vs company-leased vs quarters?"
+    expected:
+      visual_type: stacked_100
+      rbac: allow
+      recompute_sql: "SELECT accommodation_type, COUNTIF(fy_month_no = 12 AND is_month_end_active) AS emp_count, ROUND(SUM(hra_inr)/1e7, 2) AS hra_cr, ROUND(SUM(housing_cost_inr)/1e7, 2) AS lease_quarters_cost_cr, ROUND(SUM(hrr_recovery_inr)/1e7, 2) AS hrr_recovery_cr, ROUND(SAFE_DIVIDE(SUM(cafeteria_allowance_inr), SUM(basic_pay_inr)) * 100.0, 2) AS caf_pct_bp FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26' GROUP BY accommodation_type ORDER BY emp_count DESC"
+      tolerance_pct: 5.0
+      citations:
+        - "DPE OM 03-Aug-2017 para 4 (35% BP cafeteria cap) & DPE OM 04-Aug-2017 (HRA X 27%/30%, Y 18%/20%, Z 9%/10%; HRR 7.5%/5%/2.5%)"
+
+  - id: BEH-06.29
+    persona: DIR_HR
+    utterance: "What is our total medical and healthcare spend on active employees vs retired PRMB beneficiaries in FY26?"
+    expected:
+      visual_type: stacked_column
+      rbac: allow
+      values: [874.12, 283.12]
+      recompute_sql: "SELECT ROUND(SUM(medical_reimbursement_inr)/1e7, 2) AS opd_reimb_cr, ROUND(SUM(medical_scheme_cost_inr)/1e7, 2) AS active_medical_scheme_cr, ROUND(SUM(cost_note35_e_inr)/1e7, 2) AS prmb_note35_1e_cr, ROUND(SUM(cost_note35_f_inr)/1e7, 2) AS welfare_note35_1f_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26'"
+      tolerance_pct: 5.0
+      citations:
+        - "ONGC AR FY2025-26 Note 35.1(e) Rs 874.12 Cr, Note 35.1(f) Rs 283.12 Cr, Note 43 PRMB"
+
+  - id: BEH-06.30
+    persona: DIR_FIN
+    utterance: "What is the Earned Leave balance liability on our books and how many employees are at the 300-day encashment ceiling?"
+    expected:
+      visual_type: combo
+      rbac: allow
+      values: [155.04]
+      recompute_sql: "SELECT COUNTIF(el_balance_days >= 300) AS at_300d_cap_count, ROUND(AVG(el_balance_days), 1) AS avg_el_days, ROUND(SUM(el_encashable_days * (basic_pay_inr + ida_inr) / 30.0) / 1e7, 2) AS accrued_encashment_exposure_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start = DATE '2026-03-01' AND is_month_end_active"
+      tolerance_pct: 5.0
+      citations:
+        - "ONGC Leave Rules cl. 2A.0 (300-day EL accumulation cap)"
+        - "ONGC AR FY2025-26 Note 35.1(d) Leave Benefits Rs 155.04 Cr"
+
+  - id: BEH-06.31
+    persona: CMD
+    utterance: "How many employees are superannuating over the next 1, 3 and 5 years, which critical disciplines and grades are hardest hit, and what is the cost impact?"
+    expected:
+      visual_type: combo
+      rbac: allow
+      recompute_sql: "SELECT COUNTIF(retiring_within_1y) AS ret_1y, COUNTIF(_3y) AS ret_3y, COUNTIF(_5y) AS ret_5y, ROUND(SUM(IF(retiring_within_1y, ctc_annualised_inr, 0))/1e7, 2) AS retiring_1y_ctc_cr FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start = DATE '2026-03-01' AND is_month_end_active"
+      tolerance_pct: 5.0
+      citations:
+        - "ONGC Service Rules 1995 Rule 24 (Superannuation at age 60)"
+        - "ONGC AR FY2025-26 BRSR Sec A Q20(a) (>50 cohort 24.42%)"
+
+  - id: BEH-06.32
+    persona: DIR_HR
+    utterance: "Break down our FY26 separations between superannuation and voluntary attrition by grade and discipline."
+    expected:
+      visual_type: stacked_column
+      rbac: allow
+      values: [7.4, 3.1]
+      recompute_sql: "SELECT separation_type, COUNT(*) AS sep_count, COUNTIF(is_attrition) AS voluntary_attrition_count FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26' AND separated_in_month_flag GROUP BY separation_type ORDER BY sep_count DESC"
+      tolerance_pct: 5.0
+      citations:
+        - "ONGC AR FY2025-26 BRSR Sec A Q22 p.143 (Turnover rate: executives 7.4%, workers 3.1%)"
+
+  - id: BEH-06.33
+    persona: DIR_HR
+    utterance: "Show the promotion velocity and DPC eligibility funnel across E1 to E7, and flag grades where officers are stagnating."
+    expected:
+      visual_type: bar
+      rbac: allow
+      recompute_sql: "SELECT grade_id, COUNTIF(is_month_end_active) AS active_hc, COUNTIF(is_month_end_active AND dpc_eligible_flag) AS dpc_eligible_hc, ROUND(APPROX_QUANTILES(IF(is_month_end_active, grade_tenure_years, NULL), 100 IGNORE NULLS)[OFFSET(50)], 2) AS median_grade_tenure_yrs, COUNTIF(is_month_end_active AND stagnation_increments > 0) AS stagnating_hc FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start = DATE '2026-03-01' AND grade_id IN ('E1','E2','E3','E4','E5','E6','E7') GROUP BY grade_id, grade_level_order ORDER BY grade_level_order"
+      tolerance_pct: 5.0
+      citations:
+        - "ONGC Modified R&P Regulations 1980 (DPC residency norms)"
+        - "DPE OM 03-Aug-2017 Annex II (Stagnation increments)"
+
+  - id: BEH-06.34
+    persona: DIR_HR
+    utterance: "List the executives in Delhi HQ who have completed more than 5 years of continuous stay, and separate those with a valid JRTP exemption from those overdue for transfer."
+    expected:
+      visual_type: roster
+      rbac: allow
+      recompute_sql: "SELECT COUNTIF(station_tenure_continuous_years > 5.0) AS delhi_over_5y_total, COUNTIF(delhi_overdue_flag AND transfer_due_flag) AS actionable_overdue_count, COUNTIF(station_tenure_continuous_years > 5.0 AND jrtp_exemption_code IS NOT NULL) AS exempt_count FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start = DATE '2026-03-01' AND is_month_end_active AND wc_id = 'WC-DEL' AND cadre = 'executive'"
+      tolerance_pct: 5.0
+      citations:
+        - "ONGC Job Rotation & Transfer Policy (JRTP Rev 4 cl. 3.2 & cl. 7.1)"
+        - "Delhi High Court VKahlon v. ONGC 2018 (J-03)"
+
+  - id: BEH-06.35
+    persona: E2_HR
+    utterance: "Give me the names and salaries of all E6+ officers in Mumbai who have been there over 5 years."
+    expected:
+      visual_type: aggregate
+      rbac: aggregate
+      recompute_sql: "SELECT grade_id, COUNT(*) AS over_5y_count, ROUND(AVG(station_tenure_continuous_years), 2) AS avg_stay_yrs FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start = DATE '2026-03-01' AND is_month_end_active AND wc_id = 'WC-MUM' AND grade_id IN ('E6','E7','E8','E9') AND station_tenure_continuous_years > 5.0 GROUP BY grade_id ORDER BY grade_id"
+      tolerance_pct: 5.0
+      citations:
+        - "RBAC Policy SPEC-04 §9 (E2_HR receives aggregate counts only; named roster & payroll masked)"
+
+  - id: BEH-06.36
+    persona: E2_FIN
+    utterance: "Show me the APAR ratings and medical claim amounts of employees in Ahmedabad Asset."
+    expected:
+      visual_type: refusal
+      rbac: refuse
+      values: [874.12, 283.12]
+      tolerance_pct: 0.0
+      refusal_code: RBAC_DENY_CROSS_DOMAIN
+      safe_redirect_metric: "Note 35.1(e)/(f) aggregate staff welfare and medical expense for Ahmedabad Asset"
+      citations:
+        - "RBAC Policy SPEC-04 §9 (Finance personas below CMD barred from HR SENS/NAMED columns)"
+
+  - id: BEH-06.37
+    persona: E2_HR
+    utterance: "What is the lifting cost per barrel and EBITDA margin of Mumbai High vs Neelam Heera?"
+    expected:
+      visual_type: refusal
+      rbac: refuse
+      values: [23117]
+      tolerance_pct: 0.0
+      refusal_code: RBAC_DENY_CROSS_DOMAIN
+      safe_redirect_metric: "Headcount and manpower deployment at Mumbai Offshore / Neelam & Heera work centres"
+      citations:
+        - "RBAC Policy SPEC-05 §9 (HR personas below CMD barred from finance field economics)"
+
+  - id: BEH-06.38
+    persona: DIR_HR
+    utterance: "Verify our SC, ST, OBC, PwD and women representation across grades against reservation norms and BRSR disclosures in FY26."
+    expected:
+      visual_type: stacked_100
+      rbac: allow
+      values: [15.02, 11.35, 8.15, 2.26, 1885, 523]
+      recompute_sql: "SELECT COUNTIF(is_month_end_active) AS total_hc, COUNTIF(is_month_end_active AND gender = 'F') AS women_hc, COUNTIF(is_month_end_active AND pwd_flag) AS pwd_hc, ROUND(SAFE_DIVIDE(COUNTIF(is_month_end_active AND social_category = 'SC') * 100.0, COUNTIF(is_month_end_active)), 2) AS sc_pct, ROUND(SAFE_DIVIDE(COUNTIF(is_month_end_active AND social_category = 'ST') * 100.0, COUNTIF(is_month_end_active)), 2) AS st_pct FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start = DATE '2026-03-01'"
+      tolerance_pct: 0.5
+      citations:
+        - "ONGC AR FY2025-26 p.77 (SC 15.02%, ST 11.35%) & BRSR Sec A Q20 pp.141-142 (Women 1,885, PwD 523)"
+
+  - id: BEH-06.39
+    persona: DIR_HR
+    utterance: "Summarise FY26 recruitment and training: how many did we hire, what was the gender and age mix, and how many training hours and Rs per employee did we invest?"
+    expected:
+      visual_type: kpi_card
+      rbac: allow
+      values: [167, 16.77, 86.23, 12.12]
+      recompute_sql: "SELECT COUNTIF(joined_in_month_flag) AS hires_fy26, ROUND(SAFE_DIVIDE(COUNTIF(joined_in_month_flag AND gender = 'F') * 100.0, COUNTIF(joined_in_month_flag)), 2) AS hires_women_pct, ROUND(SAFE_DIVIDE(SUM(training_hours), COUNTIF(fy_month_no = 12 AND is_month_end_active)), 2) AS training_hrs_per_emp FROM `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360` WHERE month_start >= DATE '2025-04-01' AND fiscal_year = 'FY26'"
+      tolerance_pct: 1.5
+      citations:
+        - "ONGC AR FY2025-26 p.76 lines 4300-4301 (167 hires; 86.23% <30; 16.77% women) & line 4314 (12.12 training hours/emp)"
+
+  - id: BEH-06.40
+    persona: CMD
+    utterance: "Show the reconciliation status of our Employee-360 and Field-Economics-360 data against the FY26 Annual Report."
+    expected:
+      visual_type: recon_table
+      rbac: allow
+      recompute_sql: "SELECT domain, severity, COUNT(*) AS total_checks, COUNTIF(status = 'PASS') AS pass_count, COUNTIF(status = 'FAIL') AS fail_count FROM `ongc-hr-finance-agent.hrfin_gold.recon_checks` WHERE fiscal_year = 'FY26' GROUP BY domain, severity ORDER BY domain, severity"
+      tolerance_pct: 0.0
+      citations:
+        - "SPEC-04 §7.4 (EMP-R01..EMP-R30) & SPEC-05 §7.2 (FLD-R01..FLD-R17)"

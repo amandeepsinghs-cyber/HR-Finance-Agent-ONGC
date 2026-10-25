@@ -1,0 +1,23 @@
+config {
+  type: "table",
+  schema: "hrfin_gold",
+  name: "fact_field_revenue_fy",
+  description: "Annual field revenue and statutory levies breakdown by fiscal year"
+}
+
+SELECT
+  pnl_id,
+  fiscal_year,
+  field_id,
+  asset_wc_id,
+  line_type,
+  oil_revenue_inr_cr,
+  gas_revenue_inr_cr,
+  gross_revenue_inr_cr,
+  statutory_royalty_inr_cr,
+  statutory_cess_inr_cr,
+  statutory_windfall_tax_saed_inr_cr,
+  net_revenue_inr_cr,
+  ebitda_inr_cr,
+  pbt_inr_cr
+FROM ${ref("field_pnl_annual")}

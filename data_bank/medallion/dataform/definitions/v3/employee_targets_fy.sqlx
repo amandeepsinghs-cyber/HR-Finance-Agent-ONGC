@@ -1,0 +1,7 @@
+config {
+  type: "declaration",
+  database: "ongc-hr-finance-agent",
+  schema: "hrfin_ref",
+  name: "employee_targets_fy",
+  description: "Real AR/BRSR targets per FY x metric for Employee-360 reconciliation"
+}

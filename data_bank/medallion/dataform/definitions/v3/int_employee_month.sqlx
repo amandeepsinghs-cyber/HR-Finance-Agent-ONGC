@@ -1,0 +1,640 @@
+config {
+  type: "table",
+  schema: "hrfin_stage",
+  name: "int_employee_month",
+  description: "Intermediate joining silver payroll, master, posting, leave, training, APAR, separations at emp-month grain.",
+  columns: {
+    "month_start": "First day of payroll month; partition key [AGG][D]",
+    "fiscal_year": "`FY27` for Apr-2026…Mar-2027 [AGG][D]",
+    "fy_month_no": "1 = April … 12 = March [AGG][D]",
+    "emp_id": "`EMP-nnnnnn` (PERNR) [NAMED][S]",
+    "roll_status": "`active` / `joined` / `separated` (in month) [AGG][D]",
+    "is_month_end_active": "On roll on the last day of the month; FY-end headcount = rows with March and TRUE [AGG][C]",
+    "days_on_roll": "Calendar days on roll in the month (FTE basis) [AGG][D]",
+    "data_label": "Constant `\"Synthetic employee record — calibrated to ONGC AR/BRSR aggregates\"` [PUB][—]",
+    "build_run_id": "Joins to `recon_checks.run_id` [PUB][—]",
+    "full_name": "First + optional middle initial + surname; surname drawn by `home_state_code` (§6.3) [NAMED][S]",
+    "first_name": "Components of `full_name` [NAMED][S]",
+    "last_name": "Components of `full_name` [NAMED][S]",
+    "gender": "`M`/`F`/`O`; women share = BRSR (FY26 1,885 = 8.15 %) [AGG][C]",
+    "date_of_birth": "Consistent with entry age + DOJ (§6.2) [NAMED][S]",
+    "age_years": "At month end [AGG][D]",
+    "age_band_brsr": "`<30` / `30-50` / `>50` (fixes BUG-30) [AGG][C]",
+    "age_band_10y": "`<25`, `25-34`, `35-44`, `45-54`, `55-60` [AGG][D]",
+    "social_category": "`SC`/`ST`/`OBC`/`EWS`/`GEN`; SC 15.02 %, ST 11.35 % (AR26); OBC/EWS assumed [SENS (row) / AGG (cohort)][C]",
+    "pwd_flag": "FY26 total 523 (313 exec + 210 workers, BRSR p.141) [SENS (row) / AGG][C]",
+    "ex_serviceman_flag": "≈ 1–2 % of workmen [AGG][S]",
+    "home_state_code": "ISO-like state code; drives the surname pool [AGG][S]",
+    "marital_status": "Age-conditioned [NAMED][S]",
+    "dependants_count": "Dependants covered by the medical scheme (spouse, children, dependent parents) [SENS][S]",
+    "grade_id": "`E0`…`E9`, `DIR`, `CMD`, `GRP-B`, `GRP-C`, `GRP-D` [AGG][C]",
+    "grade_level_order": "Sort key (fixes BUG-34 ordering) [AGG][R]",
+    "cadre": "`executive` / `non_executive` / `board`; exec 13,781 / non-exec 9,336 (FY26 BRSR p.141) [AGG][C]",
+    "group_class": "Group A / B / C / D [AGG][R]",
+    "grade_designation": "Generic grade title (e.g. \"Chief Manager\") [AGG][R]",
+    "functional_designation": "e.g. \"Chief Manager (HR) – Corporate ER\", \"Dy. Manager (F&A)\" [NAMED][S]",
+    "discipline_id": "From `dim_discipline` (Drilling, Production, Geology, Geophysics, Reservoir, Mechanical, Electrical, Chemistry, MM, F&A, HR, Legal, IT, Medical, Civil, Marine, HSE, …) [AGG][S]",
+    "discipline_name": "From `dim_discipline` (Drilling, Production, Geology, Geophysics, Reservoir, Mechanical, Electrical, Chemistry, MM, F&A, HR, Legal, IT, Medical, Civil, Marine, HSE, …) [AGG][S]",
+    "function_code": "`HR`/`FIN`/`DRL`/`PRD`/`EXP`/`ENG`/`MM`/`IT`/`HSE`/`MED`/`LEG`/`CORP`/`LOG` [AGG][S]",
+    "department": "HQ: Corporate HR, Corporate ER, Corporate Finance, Corp. Planning, Corporate Accounts, Vigilance… [AGG][S]",
+    "section": "HQ: Corporate HR, Corporate ER, Corporate Finance, Corp. Planning, Corporate Accounts, Vigilance… [AGG][S]",
+    "wc_id": "Work centre (46 in `work_centres.yaml`); type office / asset / basin / plant / service / institute [AGG][S]",
+    "wc_name": "Work centre (46 in `work_centres.yaml`); type office / asset / basin / plant / service / institute [AGG][S]",
+    "wc_type": "Work centre (46 in `work_centres.yaml`); type office / asset / basin / plant / service / institute [AGG][S]",
+    "asset_id": "Asset/basin of the WC [AGG][S]",
+    "basin_id": "Asset/basin of the WC [AGG][S]",
+    "field_id": "Primary field for field-attached staff (NULL for HQ/services); see §7.5 [AGG][S]",
+    "location_type": "`office` / `onshore_field` / `offshore_installation` / `plant` / `rig` [AGG][S]",
+    "offshore_rotation_flag": "14-on/14-off rotation staff [AGG][S]",
+    "hard_station_flag": "Posting at a station classified hard (illustrative list) [AGG][S]",
+    "city_name": "Of the WC [AGG][S]",
+    "state_of_posting": "Of the WC [AGG][S]",
+    "city_class_hra": "`X`/`Y`/`Z` (DPE census-2011 classification; Delhi, Mumbai = X; Dehradun, Vadodara, Ahmedabad = Y/X; field towns mostly Z) [PUB][R/S]",
+    "lca_zone": "Location-based compensatory allowance zone (`NE`, `AN`, `SPECIAL_A..D`, NULL) [PUB][R]",
+    "reporting_manager_emp_id": "Valid active employee of a higher grade in the same WC/function [NAMED][S]",
+    "direct_reports_count": "Span of control [AGG][D]",
+    "cost_centre_id": "From `cost_centres.yaml`; profit centre = field/asset or `PC-HQ` [AGG][S]",
+    "profit_centre_id": "From `cost_centres.yaml`; profit centre = field/asset or `PC-HQ` [AGG][S]",
+    "cost_destination": "Dominant destination: `production_opex`, `gae`, `exploration`, `dev_drilling_capex`, `capital_jobs`, `recoverable` [AGG][S]",
+    "union_member_flag": "Workmen only [SENS][S]",
+    "doj": "Date of joining ONGC [NAMED][S]",
+    "entry_mode": "`GATE_GT`, `CAMPUS`, `LATERAL`, `PROMOTEE_NONEXEC`, `APPRENTICE_ABSORB`, `COMPASSIONATE`, `NONEXEC_DIRECT` [AGG][S]",
+    "entry_grade": "Grade at DOJ [AGG][S]",
+    "total_service_years": "(month_end − doj)/365.25 [AGG][D]",
+    "grade_since": "Date of entering the current grade [AGG][D]",
+    "grade_tenure_years": "Date of entering the current grade [AGG][D]",
+    "last_promotion_date": "From `promotion_history` [AGG][S]",
+    "promotions_count": "From `promotion_history` [AGG][S]",
+    "current_station_since": "Start of the current continuous island at `wc_id` [AGG][D]",
+    "station_tenure_continuous_years": "Continuous stay at the current WC (V19 \"Delhi tenure\") [AGG][D]",
+    "station_tenure_cumulative_years": "Σ of all stays at the current WC [AGG][D]",
+    "cluster_tenure_cumulative_years": "Σ stays in the WC cluster (JRTP 4.1, illustrative) [AGG][D]",
+    "last_transfer_date": "From `posting_history` with `transfer_reason` [AGG][S]",
+    "transfers_count": "From `posting_history` with `transfer_reason` [AGG][S]",
+    "transfer_due_flag": "`station_tenure_continuous_years > 5` AND NOT exempt (**JRTP Rev 4 cl. 3.2 — Illustrative**; real anchor Delhi HC 2018 J-03) [AGG][D]",
+    "jrtp_exemption_code": "`PRE_RETIREMENT` (≤ 2 yrs to superannuation, cl. 7.1), `MEDICAL`, `SPOUSE`, `CHILD_X_XII`, `UNION_OFFICE`, `PROJECT_CRITICAL`; 3–5 % of the overdue cohort [SENS][S]",
+    "exemption_valid_until": "`PRE_RETIREMENT` (≤ 2 yrs to superannuation, cl. 7.1), `MEDICAL`, `SPOUSE`, `CHILD_X_XII`, `UNION_OFFICE`, `PROJECT_CRITICAL`; 3–5 % of the overdue cohort [SENS][S]",
+    "superannuation_date": "Last day of the month of turning **60** [NAMED][R]",
+    "years_to_superannuation": "— [AGG][D]",
+    "retiring_within_1y": "— [AGG][D]",
+    "_3y": "— [AGG][D]",
+    "_5y": "— [AGG][D]",
+    "pay_scale_version": "`2007` (to Dec-2016) / `2017` (3rd PRC, from Jan-2017); workmen `WS2007`/`WS2017` [PUB][R]",
+    "pay_scale_min_inr": "From `dim_grade_pay_scale` [PUB][R/S]",
+    "pay_scale_max_inr": "From `dim_grade_pay_scale` [PUB][R/S]",
+    "increments_count": "Annual increments since the last fixation [PAY][D]",
+    "stagnation_increments": "≤ 3, one per 2 yrs at scale max (DPE OM 3-Aug-2017 Annex II) [PAY][R]",
+    "ida_pct": "From `dim_ida_rate` for the quarter [PUB][R/S]",
+    "hra_rate_pct": "From `dim_hra_rate` (class × IDA band) [PUB][R]",
+    "accommodation_type": "`HRA` / `LEASED` / `COMPANY_QUARTERS` / `TOWNSHIP` / `OFFSHORE_CAMP` [AGG][S]",
+    "basic_pay_inr": "Scale min + increments (3 %) + fitment (§6.4) [PAY][R rule / S path]",
+    "ida_inr": "`basic × ida_pct` [PAY][D]",
+    "hra_inr": "`basic × hra_rate_pct` if `accommodation_type='HRA'`, else 0 [PAY][D]",
+    "cafeteria_allowance_inr": "`basic × 35 % × caf_utilisation` (= Σ `caf_*` sub-items) [PAY][R cap / C]",
+    "caf_conveyance_inr": "Cafeteria sub-items; leased-accommodation perquisite (50 % loaded) included in `caf_other_perks_inr` [PAY][S]",
+    "caf_children_edu_inr": "Cafeteria sub-items; leased-accommodation perquisite (50 % loaded) included in `caf_other_perks_inr` [PAY][S]",
+    "caf_professional_dev_inr": "Cafeteria sub-items; leased-accommodation perquisite (50 % loaded) included in `caf_other_perks_inr` [PAY][S]",
+    "caf_other_perks_inr": "Cafeteria sub-items; leased-accommodation perquisite (50 % loaded) included in `caf_other_perks_inr` [PAY][S]",
+    "hardship_offshore_inr": "≤ 12 % BP for days actually at offshore sites (DPE OM 4-Aug-2017; outside the 35 % ceiling) [PAY][R cap / S]",
+    "field_duty_allowance_inr": "Onshore field/rig/drill-site duty (ONGC-specific; **illustrative** 4–8 % BP) [PAY][S]",
+    "location_comp_allowance_inr": "NE/Ladakh 10 % BP; A&N 10/16/20 %; special areas 3–8 % BP (DPE OM 7-Sep-2017) [PAY][R]",
+    "hard_station_allowance_inr": "Illustrative flat amount for hard stations [PAY][S]",
+    "shift_allowance_inr": "Plant/process and rig shift staff (illustrative rates) [PAY][S]",
+    "night_duty_allowance_inr": "Plant/process and rig shift staff (illustrative rates) [PAY][S]",
+    "npa_inr": "Non-practising allowance, medical officers only (DPE OM 7-Sep-2017) [PAY][R]",
+    "special_allowance_inr": "Personal pay, officiating, stagnation [PAY][S]",
+    "overtime_hours": "Workmen only (executives = 0) [AGG][S]",
+    "overtime_amount_inr": "`OT_hours × 2 × (basic + ida) / 208` (illustrative double-rate rule) [PAY][S]",
+    "prp_accrual_inr": "Monthly accrual of the expected PRP: `basic × PRP ceiling(grade) × k_fy × apar_factor / 12` (DPE Annex IV; ceilings §5.1) [PAY][R cap / C]",
+    "prp_paid_inr": "Lump-sum payment month (FY+1, Sep–Nov) [PAY][C]",
+    "arrears_inr": "Pay revision (3rd PRC Jan-2017 → implementation), IDA and promotion arrears [PAY][C]",
+    "leave_encashment_paid_inr": "EL encashment (in service, LTC-linked, at separation) [PAY][S]",
+    "ltc_inr": "LTC/LLTC reimbursement in the claim month [PAY][S]",
+    "medical_reimbursement_inr": "OPD reimbursement paid (from `medical_claims`) [SENS][S]",
+    "ex_gratia_other_inr": "Long-service awards, honoraria [PAY][S]",
+    "gross_earnings_inr": "Σ of all cash items above except `prp_accrual_inr` [PAY][D]",
+    "employer_cpf_inr": "12 % × (basic + ida) (EPF Act rate; ONGC CPF Trust, AR26 Note 43) [PAY][R]",
+    "employer_prbs_inr": "Defined-contribution pension (PRBS); rate = superannuation headroom (illustrative ≈ 9–10 %) [PAY][S]",
+    "gratuity_accrual_inr": "Allocated share of the actuarial gratuity cost (§7.2); ceiling ₹20 L +25 % per 50 % IDA (DPE OM para 12.1) [PAY][C]",
+    "employer_prmb_inr": "PRMB contribution, active employees (illustrative 3 % of BP+DA, per `gen_22_hr_sat.py:84`) [PAY][S]",
+    "csss_contribution_inr": "Composite Social Security Scheme (AR26 Note 43.1.4); illustrative flat [PAY][S]",
+    "superannuation_total_inr": "CPF + PRBS + gratuity + PRMB [PAY][D]",
+    "superannuation_pct_bp_da": "`superannuation_total / (basic + ida)` [PAY][D]",
+    "superannuation_cap_ok": "`≤ 30 %` (DPE 3rd PRC para 12) [PUB][R]",
+    "leave_provision_accrual_inr": "Allocated actuarial leave cost (§7.2) [PAY][C]",
+    "medical_scheme_cost_inr": "In-patient + empanelled hospital + company-hospital per-capita cost for the employee and dependants (ONGC is self-insured; there is no commercial premium) [SENS][S]",
+    "group_insurance_premium_inr": "GTLI/EDLI-type life cover [PAY][S]",
+    "accident_insurance_premium_inr": "Offshore/field personal-accident cover [PAY][S]",
+    "housing_cost_inr": "Company lease rent paid or quarters maintenance cost [PAY][S]",
+    "canteen_subsidy_inr": "Per-capita subsidy at the WC [PAY][S]",
+    "transport_subsidy_inr": "Per-capita subsidy at the WC [PAY][S]",
+    "staff_welfare_alloc_inr": "Allocated share of Note 35.1(f) staff welfare [PAY][C]",
+    "training_cost_inr": "Course fees + travel for training this month [PAY][S]",
+    "employer_cost_noncash_inr": "Σ of family G money columns [PAY][D]",
+    "employee_pf_inr": "12 % × (basic + ida) [PAY][R]",
+    "vpf_inr": "Voluntary PF (≈ 20 % of employees) [PAY][S]",
+    "tds_inr": "Income-tax TDS (new/old regime by employee choice; simplified slab engine) [PAY][S]",
+    "professional_tax_inr": "State-specific (Delhi 0; Maharashtra ₹200/₹300 Feb; Gujarat ₹200; Assam ₹208) [PAY][R]",
+    "hrr_recovery_inr": "House-rent recovery for leased/company accommodation: X 7.5 / Y 5 / Z 2.5 % BP (DPE OM 4-Aug-2017) [PAY][R]",
+    "loan_recoveries_inr": "HBA, vehicle advance, society, LIC [PAY][S]",
+    "other_recoveries_inr": "HBA, vehicle advance, society, LIC [PAY][S]",
+    "total_deductions_inr": "Σ family H [PAY][D]",
+    "net_pay_inr": "`gross_earnings − total_deductions` (row identity, check EMP-R28) [PAY][D]",
+    "ctc_monthly_inr": "`gross_earnings − arrears − leave_encashment_paid + prp_accrual − prp_paid + employer_cost_noncash` (run-rate CTC) [PAY][D]",
+    "ctc_annualised_inr": "`ctc_monthly × 12` (shown with the label \"run-rate\") [PAY][D]",
+    "cost_note35_a_inr": "→ AR Note 35.1(a) \"Salaries, Wages, Ex-gratia etc.\" = gross cash pay items [PAY][D]",
+    "cost_note35_b_inr": "→ 35.1(b) \"Contribution to Provident and other funds\" = CPF + PRBS + CSSS [PAY][D]",
+    "cost_note35_c_inr": "→ 35.1(c) gratuity = `gratuity_accrual` [PAY][D]",
+    "cost_note35_d_inr": "→ 35.1(d) leave = `leave_provision_accrual` (encashment paid is settled against the provision) [PAY][D]",
+    "cost_note35_e_inr": "→ 35.1(e) PRMB & terminal benefits (active share) [PAY][D]",
+    "cost_note35_f_inr": "→ 35.1(f) staff welfare = medical scheme + canteen + transport + welfare alloc + insurance [PAY][D]",
+    "cost_total_inr": "Σ `cost_note35_*`: the accounting employee cost that reconciles to AR [PAY][D]",
+    "capitalised_share": "Share of the cost allocated to exploration/drilling/capital jobs (by function × WC key, §7.5) [AGG][S]",
+    "cost_capitalised_inr": "Split of `cost_total_inr` [PAY][D]",
+    "cost_expensed_inr": "Split of `cost_total_inr` [PAY][D]",
+    "cost_expensed_production_inr": "Expensed destinations; Σ production = AR Note 35 \"Staff Expenditure\" (check EMP-R29) [PAY][C]",
+    "cost_expensed_gae_inr": "Expensed destinations; Σ production = AR Note 35 \"Staff Expenditure\" (check EMP-R29) [PAY][C]",
+    "cost_expensed_exploration_inr": "Expensed destinations; Σ production = AR Note 35 \"Staff Expenditure\" (check EMP-R29) [PAY][C]",
+    "el_balance_days": "Month-end balance (fixes BUG-29 mapping `Earned_Leave_EL`, `Half_Pay_Leave_HPL`) [AGG][S]",
+    "hpl_balance_days": "Month-end balance (fixes BUG-29 mapping `Earned_Leave_EL`, `Half_Pay_Leave_HPL`) [AGG][S]",
+    "cl_balance_days": "Calendar-year CL (12 days; Leave Rules cl. 2A.0) [AGG][R/S]",
+    "el_availed_days": "In the month (maternity, paternity, study, special casual) [AGG][S]",
+    "hpl_availed_days": "In the month (maternity, paternity, study, special casual) [AGG][S]",
+    "cl_availed_days": "In the month (maternity, paternity, study, special casual) [AGG][S]",
+    "other_leave_days": "In the month (maternity, paternity, study, special casual) [AGG][S]",
+    "el_encashable_days": "Accumulation cap 300 days (illustrative) [AGG][S]",
+    "working_days": "Attendance [AGG][S]",
+    "days_present": "Attendance [AGG][S]",
+    "unauthorised_absence_days": "Attendance [AGG][S]",
+    "scheduled_hours": "8 h/day office; 12 h/day × 14 days offshore [AGG][S]",
+    "offshore_days": "8 h/day office; 12 h/day × 14 days offshore [AGG][S]",
+    "training_hours": "FY26 average = **12.12 h** per employee (AR26 p.76, line 4314) [AGG][C]",
+    "training_hours_fytd": "FY26 average = **12.12 h** per employee (AR26 p.76, line 4314) [AGG][C]",
+    "mandatory_training_done": "HSE/vigilance/POSH modules [AGG][S]",
+    "apar_fy": "Latest APAR (Outstanding/Very Good/Good/Average; Excellent ≤ 15 % per DPE PRP note) [SENS][S]",
+    "apar_grade": "Latest APAR (Outstanding/Very Good/Good/Average; Excellent ≤ 15 % per DPE PRP note) [SENS][S]",
+    "apar_score": "Latest APAR (Outstanding/Very Good/Good/Average; Excellent ≤ 15 % per DPE PRP note) [SENS][S]",
+    "dpc_eligible_flag": "Residency met (§6.1) [AGG][D]",
+    "dpc_due_date": "Residency met (§6.1) [AGG][D]",
+    "promoted_in_month_flag": "— [AGG][S]",
+    "promotion_from_grade": "— [AGG][S]",
+    "succession_pool_flag": "E7+ succession list [SENS][S]",
+    "joined_in_month_flag": "FY26 hires = **167** (86.23 % < 30; 16.77 % women; AR26 p.76, lines 4300-4301) [AGG][C]",
+    "recruitment_fy": "FY26 hires = **167** (86.23 % < 30; 16.77 % women; AR26 p.76, lines 4300-4301) [AGG][C]",
+    "recruitment_channel": "FY26 hires = **167** (86.23 % < 30; 16.77 % women; AR26 p.76, lines 4300-4301) [AGG][C]",
+    "separated_in_month_flag": "— [AGG][C]",
+    "separation_date": "— [AGG][C]",
+    "separation_type": "`SUPERANNUATION`, `VRS`, `RESIGNATION`, `DEATH`, `TERMINATION`, `DISMISSAL` (BRSR definition) [AGG][C]",
+    "separation_reason_detail": "Free-text category (better offer, family, health, disciplinary…) [SENS][S]",
+    "is_attrition": "Separation other than superannuation and death [AGG][D]",
+    "delhi_overdue_flag": "`wc_id='WC-DEL'` AND `station_tenure_continuous_years > 5` (definition D-V19; executives filter applied in queries) [AGG][D]",
+    "is_persona_identity": "`persona_id` if the row is one of the 11 `dim_app_user` identities [NAMED][S]",
+    "dq_flags": "Row-level warnings (e.g. `scale_max_reached`) [PUB][D]"
+  }
+}
+
+WITH g_dim AS (
+  SELECT
+    *,
+    `group` AS group_class
+  FROM ${ref("dim_grade")}
+),
+d_dim AS (
+  SELECT
+    *,
+    code AS function_code
+  FROM ${ref("dim_discipline")}
+),
+posting_islands AS (
+  SELECT
+    ph.emp_id,
+    ph.wc_id,
+    wc_ph.cluster_id,
+    ph.from_date,
+    COALESCE(ph.to_date, DATE '2026-03-31') AS to_date,
+    ph.posting_type,
+    ph.is_current_posting,
+    NULLIF(ph.exemption_tag, 'None') AS exemption_tag,
+    NULLIF(ph.exemption_reason_code, 'None') AS exemption_reason_code,
+    ph.exemption_valid_until,
+    COALESCE(ph.transfer_grant_inr, 0.0) AS transfer_grant_inr,
+    ROW_NUMBER() OVER (PARTITION BY ph.emp_id ORDER BY ph.from_date, ph.posting_id)
+      - ROW_NUMBER() OVER (PARTITION BY ph.emp_id, ph.wc_id ORDER BY ph.from_date, ph.posting_id) AS island_id
+  FROM ${ref("posting_history")} ph
+  LEFT JOIN ${ref("dim_work_centre")} wc_ph ON ph.wc_id = wc_ph.wc_id
+),
+pos_emp_wc AS (
+  SELECT
+    emp_id,
+    wc_id,
+    MIN(CASE WHEN is_current_posting THEN from_date ELSE from_date END) AS current_station_since,
+    ROUND(SUM(DATE_DIFF(to_date, from_date, DAY)) / 365.25, 2) AS station_tenure_cumulative_years,
+    MAX(CASE WHEN posting_type != 'initial' THEN from_date END) AS last_transfer_date,
+    COUNTIF(posting_type != 'initial') AS transfers_count,
+    MAX(COALESCE(exemption_reason_code, exemption_tag)) AS jrtp_exemption_code,
+    MAX(exemption_valid_until) AS exemption_valid_until,
+    SUM(transfer_grant_inr) AS transfer_grant_inr
+  FROM posting_islands
+  GROUP BY emp_id, wc_id
+),
+pos_cluster AS (
+  SELECT
+    emp_id,
+    cluster_id,
+    ROUND(SUM(DATE_DIFF(to_date, from_date, DAY)) / 365.25, 2) AS cluster_tenure_cumulative_years
+  FROM posting_islands
+  GROUP BY emp_id, cluster_id
+),
+leave_fy AS (
+  SELECT
+    emp_id,
+    fiscal_year,
+    MAX(CASE WHEN leave_type = 'Earned_Leave_EL' THEN closing_balance_days END) AS el_balance_days,
+    MAX(CASE WHEN leave_type = 'Half_Pay_Leave_HPL' THEN closing_balance_days END) AS hpl_balance_days,
+    MAX(CASE WHEN leave_type = 'Casual_Leave_CL' THEN closing_balance_days END) AS cl_balance_days,
+    SUM(CASE WHEN leave_type = 'Earned_Leave_EL' AND transaction_type = 'leave_taken' THEN days_count ELSE 0.0 END) / 12.0 AS el_availed_days,
+    SUM(CASE WHEN leave_type = 'Half_Pay_Leave_HPL' AND transaction_type = 'leave_taken' THEN days_count ELSE 0.0 END) / 12.0 AS hpl_availed_days,
+    SUM(CASE WHEN leave_type = 'Casual_Leave_CL' AND transaction_type = 'leave_taken' THEN days_count ELSE 0.0 END) / 12.0 AS cl_availed_days,
+    SUM(CASE WHEN leave_type NOT IN ('Earned_Leave_EL', 'Half_Pay_Leave_HPL', 'Casual_Leave_CL') AND transaction_type = 'leave_taken' THEN days_count ELSE 0.0 END) / 12.0 AS other_leave_days,
+    MAX(CASE WHEN leave_type = 'Earned_Leave_EL' THEN encashable_balance_days END) AS el_encashable_days
+  FROM ${ref("leave_ledger")}
+  GROUP BY emp_id, fiscal_year
+),
+training_m AS (
+  SELECT
+    emp_id,
+    FORMAT_DATE('%Y-%m', start_date) AS month,
+    SUM(training_hours) AS training_hours_month
+  FROM ${ref("training_records")}
+  GROUP BY emp_id, month
+),
+training_fy AS (
+  SELECT
+    emp_id,
+    fiscal_year,
+    SUM(training_hours) AS training_hours_fy,
+    LOGICAL_OR(category = 'safety_hse' AND completion_status IN ('completed', 'certified')) AS mandatory_training_done
+  FROM ${ref("training_records")}
+  GROUP BY emp_id, fiscal_year
+),
+apar_dedup AS (
+  SELECT
+    emp_id,
+    fiscal_year,
+    final_rating,
+    numerical_score,
+    is_dpc_eligible,
+    reporting_officer_emp_id
+  FROM ${ref("apar_ratings")}
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY emp_id, fiscal_year ORDER BY apar_id DESC) = 1
+),
+prom_emp AS (
+  SELECT
+    emp_id,
+    MAX(effective_date) AS last_promotion_date,
+    COUNT(*) AS promotions_count,
+    MIN_BY(from_grade_id, effective_date) AS entry_grade
+  FROM ${ref("promotion_history")}
+  GROUP BY emp_id
+),
+prom_month AS (
+  SELECT
+    emp_id,
+    FORMAT_DATE('%Y-%m', effective_date) AS month,
+    MAX_BY(from_grade_id, effective_date) AS promotion_from_grade
+  FROM ${ref("promotion_history")}
+  GROUP BY emp_id, month
+),
+med_month AS (
+  SELECT
+    emp_id,
+    FORMAT_DATE('%Y-%m', COALESCE(settlement_date, submission_date)) AS month,
+    SUM(approved_amount_inr) AS medical_reimbursement_claim_inr
+  FROM ${ref("medical_claims")}
+  GROUP BY emp_id, month
+),
+dpc_fy AS (
+  SELECT
+    emp_id,
+    fiscal_year,
+    MAX(due_date) AS dpc_due_date,
+    LOGICAL_OR(status IN ('completed', 'scheduled')) AS dpc_eligible_flag
+  FROM ${ref("dpc_cases")}
+  GROUP BY emp_id, fiscal_year
+),
+sep_dedup AS (
+  SELECT
+    emp_id,
+    separation_date,
+    separation_type,
+    exit_interview_reason
+  FROM ${ref("separations")}
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY separation_date DESC) = 1
+)
+SELECT
+  -- Family A: Grain, keys & audit (9 cols + is_fy_end)
+  PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01')) AS month_start,
+  p.fiscal_year,
+  MOD(EXTRACT(MONTH FROM PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))) + 8, 12) + 1 AS fy_month_no,
+  (RIGHT(p.month, 2) = '03') AS is_fy_end,
+  p.emp_id,
+  CASE
+    WHEN sep.separation_date IS NOT NULL
+      AND p.month IN (
+        FORMAT_DATE('%Y-%m', sep.separation_date),
+        FORMAT_DATE('%Y-%m', DATE_SUB(DATE_TRUNC(sep.separation_date, MONTH), INTERVAL 1 MONTH))
+      ) THEN 'separated'
+    WHEN FORMAT_DATE('%Y-%m', m.doj) = p.month THEN 'joined'
+    ELSE 'active'
+  END AS roll_status,
+  (sep.separation_date IS NULL OR sep.separation_date > LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01')))) AS is_month_end_active,
+  EXTRACT(DAY FROM LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01')))) AS days_on_roll,
+  'Synthetic employee record — calibrated to ONGC AR/BRSR aggregates' AS data_label,
+  CONCAT('v3-p2h6-', p.fiscal_year) AS build_run_id,
+
+  -- Family B: Identity & demographics (14 cols)
+  m.name AS full_name,
+  SPLIT(m.name, ' ')[SAFE_OFFSET(0)] AS first_name,
+  SPLIT(m.name, ' ')[SAFE_OFFSET(ARRAY_LENGTH(SPLIT(m.name, ' ')) - 1)] AS last_name,
+  m.gender,
+  m.dob AS date_of_birth,
+  ROUND(DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), m.dob, DAY) / 365.25, 2) AS age_years,
+  CASE
+    WHEN DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), m.dob, DAY) / 365.25 < 30 THEN '<30'
+    WHEN DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), m.dob, DAY) / 365.25 <= 50 THEN '30-50'
+    ELSE '>50'
+  END AS age_band_brsr,
+  CASE
+    WHEN DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), m.dob, DAY) / 365.25 < 25 THEN '<25'
+    WHEN DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), m.dob, DAY) / 365.25 < 35 THEN '25-34'
+    WHEN DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), m.dob, DAY) / 365.25 < 45 THEN '35-44'
+    WHEN DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), m.dob, DAY) / 365.25 < 55 THEN '45-54'
+    ELSE '55-60'
+  END AS age_band_10y,
+  m.category AS social_category,
+  COALESCE(m.pwd_flag, FALSE) AS pwd_flag,
+  (g.cadre = 'non_executive' AND MOD(ABS(FARM_FINGERPRINT(p.emp_id)), 50) = 0) AS ex_serviceman_flag,
+  m.home_state_code,
+  IF(DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), m.dob, DAY) / 365.25 >= 27, 'Married', 'Single') AS marital_status,
+  CAST(1 + MOD(ABS(FARM_FINGERPRINT(p.emp_id)), 4) AS INT64) AS dependants_count,
+
+  -- Family C: Organisation, grade, posting & location (30 cols)
+  p.grade_id,
+  g.level_order AS grade_level_order,
+  g.cadre,
+  g.group_class,
+  g.designation AS grade_designation,
+  COALESCE(m.current_designation, g.designation) AS functional_designation,
+  p.discipline_id,
+  d.name AS discipline_name,
+  d.function_code,
+  COALESCE(cc.hierarchy_area, d.function) AS department,
+  COALESCE(cc.name, d.name) AS section,
+  p.wc_id,
+  wc.name AS wc_name,
+  wc.type AS wc_type,
+  wc.sector AS asset_id,
+  wc.cluster_id AS basin_id,
+  COALESCE(NULLIF(p.field_id, ''), cc.field_id) AS field_id,
+  CASE
+    WHEN wc.onshore_offshore = 'offshore' THEN 'offshore_installation'
+    WHEN wc.type = 'plant' THEN 'plant'
+    WHEN wc.type IN ('asset', 'basin') THEN 'onshore_field'
+    ELSE 'office'
+  END AS location_type,
+  (wc.onshore_offshore = 'offshore' OR COALESCE(m.has_offshore_tenure, FALSE)) AS offshore_rotation_flag,
+  (wc.hard_station_cat IN ('C', 'Special_Hardship', 'Offshore') OR COALESCE(m.has_hard_station_tenure, FALSE)) AS hard_station_flag,
+  wc.city AS city_name,
+  wc.state_code AS state_of_posting,
+  CASE
+    WHEN wc.state_code = 'DL' OR wc.city IN ('New Delhi', 'Mumbai', 'Chennai', 'Kolkata', 'Bengaluru', 'Hyderabad', 'Ahmedabad') THEN 'X'
+    WHEN wc.city IN ('Dehradun', 'Vadodara', 'Surat', 'Anand', 'Rajahmundry', 'Kakinada', 'Jorhat', 'Silchar', 'Agartala', 'Jodhpur', 'Bokaro') THEN 'Y'
+    ELSE 'Z'
+  END AS city_class_hra,
+  CASE
+    WHEN wc.sector = 'North-East' THEN 'NE'
+    WHEN wc.hard_station_cat = 'Special_Hardship' THEN 'SPECIAL_A'
+    WHEN wc.hard_station_cat = 'C' THEN 'SPECIAL_C'
+    ELSE CAST(NULL AS STRING)
+  END AS lca_zone,
+  apar.reporting_officer_emp_id AS reporting_manager_emp_id,
+  CAST(CASE WHEN g.level_order >= 7 THEN 6 WHEN g.level_order >= 4 THEN 3 ELSE 0 END AS INT64) AS direct_reports_count,
+  p.cost_centre_id,
+  COALESCE(cc.profit_centre_id, 'PC-HQ') AS profit_centre_id,
+  CASE
+    WHEN p.cost_capitalised_inr > p.cost_expensed_inr THEN 'dev_drilling_capex'
+    WHEN p.cost_expensed_exploration_inr > 0 THEN 'exploration'
+    WHEN p.cost_expensed_production_inr >= p.cost_expensed_gae_inr THEN 'production_opex'
+    ELSE 'gae'
+  END AS cost_destination,
+  (g.cadre = 'non_executive') AS union_member_flag,
+
+  -- Family D: Career & tenure dates (22 cols)
+  m.doj,
+  m.entry_mode,
+  COALESCE(pr_e.entry_grade, p.grade_id) AS entry_grade,
+  ROUND(DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), m.doj, DAY) / 365.25, 2) AS total_service_years,
+  COALESCE(pr_e.last_promotion_date, m.doj) AS grade_since,
+  GREATEST(0.0, ROUND(DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), COALESCE(pr_e.last_promotion_date, m.doj), DAY) / 365.25, 2)) AS grade_tenure_years,
+  pr_e.last_promotion_date,
+  COALESCE(pr_e.promotions_count, 0) AS promotions_count,
+  COALESCE(pos.current_station_since, m.doj) AS current_station_since,
+  GREATEST(0.0, ROUND(DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), COALESCE(pos.current_station_since, m.doj), DAY) / 365.25, 2)) AS station_tenure_continuous_years,
+  COALESCE(pos.station_tenure_cumulative_years, GREATEST(0.0, ROUND(DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), m.doj, DAY) / 365.25, 2))) AS station_tenure_cumulative_years,
+  COALESCE(p_cl.cluster_tenure_cumulative_years, pos.station_tenure_cumulative_years, 0.0) AS cluster_tenure_cumulative_years,
+  pos.last_transfer_date,
+  COALESCE(pos.transfers_count, 0) AS transfers_count,
+  (
+    GREATEST(0.0, ROUND(DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), COALESCE(pos.current_station_since, m.doj), DAY) / 365.25, 2)) > 5.0
+    AND COALESCE(pos.jrtp_exemption_code, NULLIF(m.exemption_reason_code, 'None'), NULLIF(m.exemption_tag, 'None')) IS NULL
+  ) AS transfer_due_flag,
+  COALESCE(pos.jrtp_exemption_code, NULLIF(m.exemption_reason_code, 'None'), NULLIF(m.exemption_tag, 'None')) AS jrtp_exemption_code,
+  pos.exemption_valid_until,
+  m.retirement_date AS superannuation_date,
+  ROUND(DATE_DIFF(m.retirement_date, LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), DAY) / 365.25, 2) AS years_to_superannuation,
+  (DATE_DIFF(m.retirement_date, LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), DAY) / 365.25 <= 1.0) AS retiring_within_1y,
+  (DATE_DIFF(m.retirement_date, LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), DAY) / 365.25 <= 3.0) AS _3y,
+  (DATE_DIFF(m.retirement_date, LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), DAY) / 365.25 <= 5.0) AS _5y,
+
+  -- Family E: Pay-scale & entitlement anchors (8 cols + compat entry_pay aliases)
+  CASE
+    WHEN p.month < '2017-01' THEN IF(g.cadre = 'non_executive', 'WS2007', '2007')
+    ELSE IF(g.cadre = 'non_executive', 'WS2017', '2017')
+  END AS pay_scale_version,
+  g.pay_scale_min_inr,
+  g.pay_scale_max_inr,
+  g.pay_scale_min_inr AS entry_pay_basic_inr,
+  ROUND(g.pay_scale_min_inr * 2.15, 2) AS entry_pay_ctc_inr,
+  CAST(GREATEST(0, FLOOR(DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), COALESCE(pr_e.last_promotion_date, m.doj), DAY) / 365.25)) AS INT64) AS increments_count,
+  CAST(IF(p.basic_pay_inr >= g.pay_scale_max_inr, 1, 0) AS INT64) AS stagnation_increments,
+  ROUND(SAFE_DIVIDE(p.da_inr, NULLIF(p.basic_pay_inr, 0)) * 100, 2) AS ida_pct,
+  ROUND(SAFE_DIVIDE(p.hra_inr, NULLIF(p.basic_pay_inr, 0)) * 100, 2) AS hra_rate_pct,
+  CASE
+    WHEN wc.onshore_offshore = 'offshore' THEN 'OFFSHORE_CAMP'
+    WHEN p.hra_inr > 0 THEN 'HRA'
+    WHEN p.hrr_recovery_inr > 0 THEN 'COMPANY_QUARTERS'
+    ELSE 'TOWNSHIP'
+  END AS accommodation_type,
+
+  -- Family F: Monthly earnings — cash / payslip (26 cols + compat aliases)
+  p.basic_pay_inr,
+  p.da_inr AS ida_inr,
+  p.da_inr,
+  p.hra_inr,
+  p.cafeteria_allowances_inr AS cafeteria_allowance_inr,
+  p.cafeteria_allowances_inr,
+  p.caf_conveyance_inr,
+  p.caf_children_edu_inr,
+  p.caf_professional_dev_inr,
+  p.caf_other_perks_inr,
+  p.hardship_offshore_inr,
+  p.field_duty_allowance_inr,
+  p.location_comp_allowance_inr,
+  p.hard_station_allowance_inr,
+  p.mining_offshore_allowance_inr,
+  p.shift_allowance_inr,
+  p.night_duty_allowance_inr,
+  p.npa_inr,
+  p.special_allowance_inr,
+  (p.field_duty_allowance_inr + p.location_comp_allowance_inr + p.hard_station_allowance_inr + p.night_duty_allowance_inr + p.npa_inr + p.special_allowance_inr) AS other_allowances_inr,
+  p.overtime_hours,
+  p.overtime_amount_inr,
+  p.prp_inr AS prp_accrual_inr,
+  p.prp_inr,
+  p.prp_paid_inr,
+  p.arrears_inr,
+  p.leave_encashment_paid_inr,
+  COALESCE(pos.transfer_grant_inr, 0.0) AS transfer_grant_inr,
+  p.ltc_inr,
+  COALESCE(NULLIF(p.medical_reimbursement_inr, 0.0), med.medical_reimbursement_claim_inr, 0.0) AS medical_reimbursement_inr,
+  p.ex_gratia_other_inr,
+  p.gross_salary_inr AS gross_earnings_inr,
+
+  -- Family G: Employer contributions, retirement provisions & welfare (18 cols + compat aliases)
+  p.employer_cpf_inr,
+  p.employer_prbs_inr,
+  p.gratuity_accrual_inr,
+  p.employer_prmb_inr,
+  p.csss_contribution_inr,
+  p.csss_contribution_inr AS csss_employer_inr,
+  (p.employer_cpf_inr + p.employer_prbs_inr + p.gratuity_accrual_inr + p.employer_prmb_inr) AS superannuation_total_inr,
+  p.superannuation_benefit_pct AS superannuation_pct_bp_da,
+  (p.superannuation_benefit_pct <= 30.0) AS superannuation_cap_ok,
+  p.leave_provision_accrual_inr,
+  p.medical_scheme_cost_inr,
+  p.group_insurance_premium_inr,
+  p.accident_insurance_premium_inr,
+  (p.group_insurance_premium_inr + p.accident_insurance_premium_inr) AS insurance_premium_inr,
+  p.housing_cost_inr,
+  p.canteen_subsidy_inr,
+  p.transport_subsidy_inr,
+  p.staff_welfare_alloc_inr,
+  p.staff_welfare_alloc_inr AS welfare_allocation_inr,
+  p.training_cost_inr,
+  p.employer_cost_noncash_inr,
+
+  -- Family H: Employee deductions & net pay (9 cols + compat aliases)
+  p.employee_pf_inr,
+  p.employee_pf_inr AS cpf_employee_contribution_inr,
+  0.0 AS csss_employee_contribution_inr,
+  p.vpf_inr,
+  p.income_tax_tds_inr AS tds_inr,
+  p.income_tax_tds_inr,
+  p.professional_tax_inr,
+  p.hrr_recovery_inr,
+  p.loan_recoveries_inr,
+  p.other_recoveries_inr,
+  (p.gross_salary_inr - p.net_salary_inr) AS total_deductions_inr,
+  p.net_salary_inr AS net_pay_inr,
+
+  -- Family I: CTC, accounting employee cost & Note 35 / segment mapping (15 cols + extra audit cols)
+  -- Note: gross_salary_inr (LGART_9001) already includes prp_inr (gen_22_hr_payroll.py:334)
+  (p.gross_salary_inr - p.arrears_inr - p.leave_encashment_paid_inr - p.prp_paid_inr + p.employer_cost_noncash_inr) AS ctc_monthly_inr,
+  (p.gross_salary_inr - p.arrears_inr - p.leave_encashment_paid_inr - p.prp_paid_inr + p.employer_cost_noncash_inr) * 12 AS ctc_annualised_inr,
+  p.cost_note35_a_inr,
+  p.cost_note35_b_inr,
+  p.cost_note35_c_inr,
+  p.cost_note35_d_inr,
+  p.cost_note35_e_inr,
+  p.cost_note35_f_inr,
+  (p.cost_note35_a_inr + p.cost_note35_b_inr + p.cost_note35_c_inr + p.cost_note35_d_inr + p.cost_note35_e_inr + p.cost_note35_f_inr) AS cost_total_inr,
+  p.capitalised_share,
+  p.cost_capitalised_inr,
+  p.cost_expensed_inr,
+  p.cost_expensed_production_inr,
+  p.cost_expensed_gae_inr,
+  p.cost_expensed_exploration_inr,
+  p.cost_allocated_ew_dd_survey_inr,
+  p.cost_expensed_pnl_inr,
+
+  -- Family J: Leave, attendance & shift pattern (13 cols)
+  COALESCE(lv.el_balance_days, 120.0) AS el_balance_days,
+  COALESCE(lv.hpl_balance_days, 60.0) AS hpl_balance_days,
+  COALESCE(lv.cl_balance_days, 6.0) AS cl_balance_days,
+  COALESCE(lv.el_availed_days, 1.5) AS el_availed_days,
+  COALESCE(lv.hpl_availed_days, 0.5) AS hpl_availed_days,
+  COALESCE(lv.cl_availed_days, 0.5) AS cl_availed_days,
+  COALESCE(lv.other_leave_days, 0.0) AS other_leave_days,
+  LEAST(300.0, COALESCE(lv.el_encashable_days, lv.el_balance_days, 120.0)) AS el_encashable_days,
+  CAST(22 AS INT64) AS working_days,
+  CAST(GREATEST(0, 22 - CAST(ROUND(COALESCE(lv.el_availed_days, 0) + COALESCE(lv.cl_availed_days, 0)) AS INT64)) AS INT64) AS days_present,
+  CAST(0 AS INT64) AS unauthorised_absence_days,
+  IF(wc.onshore_offshore = 'offshore', 168.0, 176.0) AS scheduled_hours,
+  IF(wc.onshore_offshore = 'offshore', 14.0, 0.0) AS offshore_days,
+
+  -- Family K: Training, APAR, DPC & succession (11 cols)
+  COALESCE(trn_m.training_hours_month, ROUND(COALESCE(trn_fy.training_hours_fy, 12.12) / 12.0, 2)) AS training_hours,
+  COALESCE(trn_fy.training_hours_fy, 12.12) AS training_hours_fytd,
+  COALESCE(trn_fy.mandatory_training_done, TRUE) AS mandatory_training_done,
+  p.fiscal_year AS apar_fy,
+  COALESCE(apar.final_rating, 'Very_Good') AS apar_grade,
+  COALESCE(apar.numerical_score, 82.0) AS apar_score,
+  COALESCE(dpc.dpc_eligible_flag, apar.is_dpc_eligible, TRUE) AS dpc_eligible_flag,
+  COALESCE(dpc.dpc_due_date, DATE_ADD(COALESCE(pr_e.last_promotion_date, m.doj), INTERVAL g.typical_residency_years YEAR)) AS dpc_due_date,
+  (pr_m.emp_id IS NOT NULL) AS promoted_in_month_flag,
+  pr_m.promotion_from_grade,
+  (g.level_order >= 8) AS succession_pool_flag,
+
+  -- Family L: Lifecycle events in the month — joins & separations (9 cols)
+  -- Separated employees have no payroll row in their separation month (active_emp_mask requires sep_dt > snap_dt),
+  -- so flag their final payroll row (month M-1) as well as any row in separation month M.
+  (FORMAT_DATE('%Y-%m', m.doj) = p.month) AS joined_in_month_flag,
+  m.fiscal_year_joined AS recruitment_fy,
+  m.entry_mode AS recruitment_channel,
+  (
+    sep.separation_date IS NOT NULL
+    AND p.month IN (
+      FORMAT_DATE('%Y-%m', sep.separation_date),
+      FORMAT_DATE('%Y-%m', DATE_SUB(DATE_TRUNC(sep.separation_date, MONTH), INTERVAL 1 MONTH))
+    )
+  ) AS separated_in_month_flag,
+  sep.separation_date,
+  UPPER(sep.separation_type) AS separation_type,
+  sep.exit_interview_reason AS separation_reason_detail,
+  (sep.separation_date IS NOT NULL AND LOWER(sep.separation_type) NOT IN ('superannuation', 'death')) AS is_attrition,
+
+  -- Family M: Analytic convenience flags (3 cols)
+  (
+    p.wc_id = 'WC-DEL'
+    AND GREATEST(0.0, ROUND(DATE_DIFF(LAST_DAY(PARSE_DATE('%Y-%m-%d', CONCAT(p.month, '-01'))), COALESCE(pos.current_station_since, m.doj), DAY) / 365.25, 2)) > 5.0
+  ) AS delhi_overdue_flag,
+  CAST(NULL AS STRING) AS is_persona_identity,
+  IF(p.basic_pay_inr >= g.pay_scale_max_inr, ['scale_max_reached'], ARRAY<STRING>[]) AS dq_flags
+
+FROM ${ref("payroll_monthly")} p
+LEFT JOIN ${ref("employee_master")} m ON p.emp_id = m.emp_id
+LEFT JOIN g_dim g ON p.grade_id = g.grade_id
+LEFT JOIN d_dim d ON p.discipline_id = d.discipline_id
+LEFT JOIN ${ref("dim_work_centre")} wc ON p.wc_id = wc.wc_id
+LEFT JOIN ${ref("dim_cost_centre")} cc ON p.cost_centre_id = cc.cost_centre_id
+LEFT JOIN pos_emp_wc pos ON p.emp_id = pos.emp_id AND p.wc_id = pos.wc_id
+LEFT JOIN pos_cluster p_cl ON p.emp_id = p_cl.emp_id AND wc.cluster_id = p_cl.cluster_id
+LEFT JOIN sep_dedup sep ON p.emp_id = sep.emp_id
+LEFT JOIN leave_fy lv ON p.emp_id = lv.emp_id AND p.fiscal_year = lv.fiscal_year
+LEFT JOIN training_m trn_m ON p.emp_id = trn_m.emp_id AND p.month = trn_m.month
+LEFT JOIN training_fy trn_fy ON p.emp_id = trn_fy.emp_id AND p.fiscal_year = trn_fy.fiscal_year
+LEFT JOIN apar_dedup apar ON p.emp_id = apar.emp_id AND p.fiscal_year = apar.fiscal_year
+LEFT JOIN prom_emp pr_e ON p.emp_id = pr_e.emp_id
+LEFT JOIN prom_month pr_m ON p.emp_id = pr_m.emp_id AND p.month = pr_m.month
+LEFT JOIN med_month med ON p.emp_id = med.emp_id AND p.month = med.month
+LEFT JOIN dpc_fy dpc ON p.emp_id = dpc.emp_id AND p.fiscal_year = dpc.fiscal_year
