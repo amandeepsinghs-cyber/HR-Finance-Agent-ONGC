@@ -117,6 +117,20 @@ const Greeting: React.FC<{
         </h1>
         <p className="mt-2 text-body text-[var(--ink-2)]">I&apos;m Yukti, your HR &amp; Finance agent. Ask by voice or type below.</p>
 
+        {/* FEAT-004 / V12: centre-stage aurora voice orb on the greeting (restored; dropped in the 23-Oct WIP snapshot).
+            Tap to talk; it reflects listening / thinking / speaking via orbState + the live audio engine. */}
+        <div className="mt-8 relative flex flex-col items-center" data-testid="greeting-talk">
+          <VoiceOrb
+            state={orbState}
+            isDark={isDark}
+            size={orbPx}
+            onClick={onTalk}
+            audioEngine={audioEngine}
+            label={orbState === 'speaking' ? 'Stop Yukti speaking' : isMicActive ? 'Stop listening' : 'Start talking to Yukti'}
+            pressed={!!isMicActive}
+          />
+        </div>
+
         {liveInterimText ? (
           <p className="mt-5 text-body text-[var(--ink-2)] max-w-[44rem] animate-pulse">&ldquo;{liveInterimText}&rdquo;</p>
         ) : lastTurn ? (

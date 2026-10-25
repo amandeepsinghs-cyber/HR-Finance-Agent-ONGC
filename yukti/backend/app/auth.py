@@ -479,15 +479,15 @@ def requested_persona(query: str) -> Optional[str]:
     table = [
         (r"\b(e1[\s_-]?hr|hr[\s_-]?e1|dinesh\s+deshmukh)\b", "E1_HR"),
         (r"\b(e2[\s_-]?hr|hr[\s_-]?e2|pooja\s+verma|pooja)\b", "E2_HR"),
-        (r"\b(e3[\s_-]?hr|hr[\s_-]?e3|pooja\s+pillai)\b", "E3_HR"),
-        (r"\b(e4[\s_-]?hr|hr[\s_-]?e4|aarti\s+saikia)\b", "E4_HR"),
+        (r"\b(e3[\s_-]?hr|hr[\s_-]?e3|lokesh\s+verma|lokesh)\b", "E3_HR"),
+        (r"\b(e4[\s_-]?hr|hr[\s_-]?e4|umesh\s+(?:d\.?\s+)?bhatia|umesh)\b", "E4_HR"),
         (r"\b(e1[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e1|ajay\s+deshmukh)\b", "E1_FIN"),
         (r"\b(e2[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e2|praveen\s+nair)\b", "E2_FIN"),
-        (r"\b(e3[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e3|asha\s+mishra|rajesh\s+kulkarni|rajesh)\b", "E3_FIN"),
+        (r"\b(e3[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e3|shailesh\s+(?:e\.?\s+)?kapoor|shailesh|rajesh\s+kulkarni|rajesh)\b", "E3_FIN"),
         (r"\b(e4[\s_-]?fin(?:ance)?|fin(?:ance)?[\s_-]?e4|santosh\s+banerjee)\b", "E4_FIN"),
-        (r"\b(dir(ector)?[\s_-]*(\()?(fin|finance)|finance\s+director|cfo|vivek\s+rao)\b", "DIR_FIN"),
-        (r"\b(dir(ector)?[\s_-]*(\()?hr|hr\s+director|director\s+human\s+resources|manish\s+deshpande)\b", "DIR_HR"),
-        (r"\b(cmd|c\.m\.d|chairman|ceo|arun\s+mehra)\b", "CMD"),
+        (r"\b(dir(ector)?[\s_-]*(\()?(fin|finance)|finance\s+director|cfo|anupam\s+agarwal|anupam)\b", "DIR_FIN"),
+        (r"\b(dir(ector)?[\s_-]*(\()?hr|hr\s+director|director\s+human\s+resources|manish\s+patil)\b", "DIR_HR"),
+        (r"\b(cmd|c\.m\.d|chairman|ceo|arun\s+kumar\s+singh)\b", "CMD"),
     ]
     for pat, pid in table:
         if re.search(pat, q):

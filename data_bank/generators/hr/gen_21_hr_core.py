@@ -425,7 +425,7 @@ def apply_demo_personas():
     personas_list = [
         {
             "emp_id": "EMP-000001",
-            "name": "Arun Mehra",
+            "name": "Arun Kumar Singh",
             "cadre": "executive",
             "gender": "Male",
             "dob": datetime.date(1967, 8, 15),
@@ -437,13 +437,13 @@ def apply_demo_personas():
             "discipline_id": "DISC-PRD",
             "current_grade_id": "CMD",
             "current_wc_id": delhi_hq_wc,
-            "current_designation": "Chairman & Managing Director",
+            "current_designation": "Chairman & CEO",
             "entry_mode": "GATE_GT",
             "current_posting_from": datetime.date(2023, 1, 1),
         },
         {
             "emp_id": "EMP-000002",
-            "name": "Manish Deshpande",
+            "name": "Manish Patil",
             "cadre": "executive",
             "gender": "Male",
             "dob": datetime.date(1968, 5, 20),
@@ -455,13 +455,13 @@ def apply_demo_personas():
             "discipline_id": "DISC-HR",
             "current_grade_id": "DIR",
             "current_wc_id": delhi_hq_wc,
-            "current_designation": "Director (HR)",
+            "current_designation": "Director (Human Resources)",
             "entry_mode": "Campus_Placement",
             "current_posting_from": datetime.date(2023, 6, 1),
         },
         {
             "emp_id": "EMP-000003",
-            "name": "Vivek Rao",
+            "name": "Anupam Agarwal",
             "cadre": "executive",
             "gender": "Male",
             "dob": datetime.date(1968, 11, 10),
@@ -2160,5 +2160,13 @@ print("Wrote DPC_tracker.xlsx")
 for obsolete_file in [LANDING_SAP / "PA0002.csv", LANDING_SAP / "PA0000.csv"]:
     if obsolete_file.exists():
         obsolete_file.unlink()
+
+# Keep dim_app_user.csv and app_users.yaml synchronized with PA0002_PA0001.csv whenever downstream SAP tables exist
+if all((LANDING_SAP / fn).exists() for fn in ("PY_CLUSTER_EXP.csv", "PA2001_PA2006.csv", "eAPAR_ratings.csv")):
+    import sys as _sys
+    if str(DATA_BANK_DIR) not in _sys.path:
+        _sys.path.insert(0, str(DATA_BANK_DIR))
+    from generators.hr.gen_app_users import main as _sync_app_users
+    _sync_app_users([])
 
 print("SUCCESS: HR Lifecycle Simulator finished cleanly.")

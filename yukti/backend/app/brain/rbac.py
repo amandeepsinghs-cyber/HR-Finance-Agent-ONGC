@@ -175,6 +175,204 @@ def topic_classes(question: str) -> List[str]:
 
 _EMP_ID_LITERAL_RE = re.compile(r"\b(EMP-\d{4,6})\b", re.IGNORECASE)
 
+# D-66: Real ONGC office-holder names on EMP-000001..3 require synthetic HR record labels
+# and an absolute refusal on APAR and medical records for every persona (including self and CMD).
+OFFICE_HOLDER_EMP_IDS: tuple[str, ...] = ("EMP-000001", "EMP-000002", "EMP-000003")
+OFFICE_HOLDER_PERSONAS: tuple[str, ...] = ("CMD", "DIR_HR", "DIR_FIN")
+OFFICE_HOLDER_NAMES: tuple[str, ...] = (
+    "arun kumar singh",
+    "manish patil",
+    "anupam agarwal",
+)
+OFFICE_HOLDER_SYNTHETIC_LABEL: str = "Illustrative HR record (synthetic)"
+OFFICE_HOLDER_REFUSAL_COPY: str = "Not shown: illustrative records are not displayed for named office-holders."
+
+_OFFICE_HOLDER_APAR_RE = re.compile(
+    r"(?:\b(?:apar|eapar|appraisal|performance\s+rating\w*|performance\s+score\w*|annual\s+appraisal\w*)\b|एपार|मूल्यांकन)",
+    re.IGNORECASE,
+)
+_OFFICE_HOLDER_MEDICAL_RE = re.compile(
+    r"(?:\b(?:medical|health\s+record\w*|medical\s+record\w*|medical\s+claim\w*|medical\s+reimbursement\w*|"
+    r"hospitali[sz]ation\w*|health\s+claim\w*|treatment\s+record\w*|medical\s+history|medical\s+bill\w*)\b|"
+    r"मेडिकल|चिकित्सा|स्वास्थ्य\s*रिकॉर्ड)",
+    re.IGNORECASE,
+)
+_OFFICE_HOLDER_TITLE_TARGET_RE = re.compile(
+    r"\b(?:the\s+cmd|cmd's|chairman(?:'s|\s+&\s+ceo|\s+and\s+ceo)?|"
+    r"director\s*\(?\s*(?:hr|human\s+resources|finance|fin)\s*\)?(?:'s)?)\b",
+    re.IGNORECASE,
+)
+
+
+def is_office_holder_apar_or_medical(
+    persona: Optional[str],
+    question: str = "",
+    data_classes: Optional[List[str]] = None,
+    spec: Optional[QuerySpec] = None,
+    self_emp_id: Optional[str] = None,
+) -> Optional[str]:
+    """D-66: Return `'R-APAR'` or `'R-SENS'` when `question`/`spec` asks for APAR or medical
+    records of `EMP-000001..3` (Arun Kumar Singh, Manish Patil, Anupam Agarwal), for EVERY
+    persona including themselves (`self`) and `CMD`. Returns `None` otherwise.
+    """
+    q = (question or "").strip()
+    if q and is_policy_process_question(q):
+        return None
+    q_low = q.lower()
+    in_classes = list(data_classes or [])
+    canon = _canon_or_raw(persona or "") or (persona or "").strip().upper()
+
+    spec_metric = getattr(spec, "metric", None) if spec is not None else None
+    is_apar = (
+        "apar" in in_classes
+        or spec_metric in ("apar", "apar_score")
+        or bool(_OFFICE_HOLDER_APAR_RE.search(q_low))
+    )
+    is_medical = (
+        spec_metric in ("medical_claims", "medical_spend")
+        or bool(_OFFICE_HOLDER_MEDICAL_RE.search(q_low))
+    )
+    if not (is_apar or is_medical):
+        return None
+
+    targets_office_holder = False
+    # 1. Explicit mention of EMP-000001..3 or the 3 office-holder names in the question
+    if any(eid.lower() in q_low for eid in OFFICE_HOLDER_EMP_IDS):
+        targets_office_holder = True
+    elif any(name in q_low for name in OFFICE_HOLDER_NAMES) or "arun singh" in q_low:
+        targets_office_holder = True
+    elif _OFFICE_HOLDER_TITLE_TARGET_RE.search(q_low) and not re.search(
+        r"\b(?:restricted\s+to|approved\s+by|notification\s+by|pending\s+formal\s+approval)\b",
+        q_low,
+    ):
+        targets_office_holder = True
+
+    # 2. Check QuerySpec filters for EMP-000001..3 or office-holder names
+    if not targets_office_holder and spec is not None:
+        for f in spec.filters or []:
+            vals = f.value if isinstance(f.value, list) else [f.value]
+            for v in vals:
+                v_str = str(v or "").strip()
+                if v_str.upper() in OFFICE_HOLDER_EMP_IDS or v_str.lower() in OFFICE_HOLDER_NAMES:
+                    targets_office_holder = True
+                    break
+
+    # 3. Self-scope when caller is CMD, DIR_HR, or DIR_FIN
+    if not targets_office_holder and canon in OFFICE_HOLDER_PERSONAS:
+        if (self_emp_id or "").strip().upper() in OFFICE_HOLDER_EMP_IDS:
+            targets_office_holder = True
+        elif spec is not None and spec.self_scope:
+            targets_office_holder = True
+        elif "self" in in_classes:
+            targets_office_holder = True
+        elif re.search(
+            r"(?<![a-z])(?:my|mine|myself|mera|meri|mere|i\s+have|am\s+i)(?![a-z])|मेरा|मेरी|मेरे|अपना|अपनी|अपने",
+            q_low,
+        ) and not re.search(
+            r"\b(?:my\s+(?:team|colleague\w*|peer\w*|subordinate\w*|reporting\s+officer|boss|manager|department|division|section|unit))\b",
+            q_low,
+        ):
+            targets_office_holder = True
+
+    if not targets_office_holder:
+        return None
+    return "R-APAR" if is_apar else "R-SENS"
+
+
+def apply_office_holder_safeguard(
+    contract: Dict[str, Any],
+    persona: Optional[str],
+    query: str = "",
+) -> Dict[str, Any]:
+    """D-66: Any self-scope or named answer exposing personal HR fields for `EMP-000001..3`
+    must be labelled `'Illustrative HR record (synthetic)'` in `contract['provenance']`
+    and as a visible caveat line (`contract['caveat']` and `contract['display_text']`).
+    """
+    if not isinstance(contract, dict):
+        return contract
+    access = contract.get("access") or {}
+    if access.get("status") == "refused":
+        return contract
+
+    canon = _canon_or_raw(persona or "") or str(contract.get("persona") or persona or "").strip().upper()
+    q_low = (query or "").strip().lower()
+    qspec = contract.get("query_spec") if isinstance(contract.get("query_spec"), dict) else {}
+    sql_str = str(contract.get("generated_sql") or "")
+    vis = contract.get("visual") if isinstance(contract.get("visual"), dict) else {}
+    tbl = vis.get("table") if isinstance(vis.get("table"), dict) else {}
+    rows = tbl.get("rows") if isinstance(tbl.get("rows"), list) else []
+
+    is_oh_hr = False
+    # 1. Self-scoped answer for CMD / DIR_HR / DIR_FIN
+    self_id = str(access.get("self_emp_id") or "").strip().upper()
+    if self_id in OFFICE_HOLDER_EMP_IDS:
+        is_oh_hr = True
+    elif canon in OFFICE_HOLDER_PERSONAS and (
+        bool(qspec.get("self_scope"))
+        or "self" in (access.get("data_classes") or [])
+        or "emp_id = @self_emp_id" in sql_str
+    ):
+        is_oh_hr = True
+    elif canon in OFFICE_HOLDER_PERSONAS and q_low:
+        from app.access_control import is_self_question
+
+        if is_self_question(query, canon):
+            is_oh_hr = True
+
+    # 2. Named query / filter / SQL / small table targeting EMP-000001..3
+    if not is_oh_hr:
+        if any(eid in sql_str.upper() for eid in OFFICE_HOLDER_EMP_IDS):
+            is_oh_hr = True
+        elif q_low and (
+            any(eid.lower() in q_low for eid in OFFICE_HOLDER_EMP_IDS)
+            or any(nm in q_low for nm in OFFICE_HOLDER_NAMES)
+            or "arun singh" in q_low
+        ):
+            is_oh_hr = True
+        elif isinstance(qspec.get("filters"), list):
+            for f in qspec.get("filters") or []:
+                if isinstance(f, dict):
+                    fval = str(f.get("value") or "").strip()
+                    if fval.upper() in OFFICE_HOLDER_EMP_IDS or fval.lower() in OFFICE_HOLDER_NAMES:
+                        is_oh_hr = True
+                        break
+        if not is_oh_hr and 0 < len(rows) <= 10:
+            for r in rows:
+                if isinstance(r, dict):
+                    r_eid = str(r.get("emp_id") or r.get("PERNR") or "").strip().upper()
+                    r_name = str(r.get("name") or "").strip().lower()
+                    if r_eid in OFFICE_HOLDER_EMP_IDS or r_name in OFFICE_HOLDER_NAMES:
+                        is_oh_hr = True
+                        break
+
+    if not is_oh_hr:
+        return contract
+
+    prev_prov = contract.get("provenance") if isinstance(contract.get("provenance"), dict) else {}
+    prov_new: Dict[str, Any] = {
+        "label": "synthetic",
+        "detail": OFFICE_HOLDER_SYNTHETIC_LABEL,
+        "badge": OFFICE_HOLDER_SYNTHETIC_LABEL,
+    }
+    if prev_prov.get("snapshot_date"):
+        prov_new["snapshot_date"] = prev_prov["snapshot_date"]
+    contract["provenance"] = prov_new
+
+    existing_caveat = str(contract.get("caveat") or "").strip()
+    if OFFICE_HOLDER_SYNTHETIC_LABEL not in existing_caveat:
+        contract["caveat"] = (
+            f"{OFFICE_HOLDER_SYNTHETIC_LABEL}; {existing_caveat}"[:300]
+            if existing_caveat
+            else OFFICE_HOLDER_SYNTHETIC_LABEL
+        )
+
+    disp = str(contract.get("display_text") or contract.get("spoken_summary") or "").strip()
+    if OFFICE_HOLDER_SYNTHETIC_LABEL not in disp:
+        suffix = f"\n{OFFICE_HOLDER_SYNTHETIC_LABEL}"
+        contract["display_text"] = (disp[: 600 - len(suffix)] + suffix) if disp else OFFICE_HOLDER_SYNTHETIC_LABEL
+
+    return contract
+
 _V2_AGG_PAY_RE = re.compile(
     r"(?:"
     r"\b("
@@ -624,6 +822,29 @@ def decide(
             target_function="ANY",
         )
 
+    # 1b. D-66: APAR and medical records for EMP-000001..3 are refused for EVERY persona (including self & CMD)
+    oh_code = is_office_holder_apar_or_medical(
+        canon,
+        question=question,
+        data_classes=in_classes,
+        spec=spec,
+        self_emp_id=self_emp_id,
+    )
+    if oh_code:
+        trig = "apar" if oh_code == "R-APAR" else "sensitive"
+        return PolicyDecision(
+            action="refuse",
+            persona_class=pc,
+            data_classes=[trig],
+            trigger=trig,
+            rule_ref="D-66",
+            reason=OFFICE_HOLDER_REFUSAL_COPY,
+            code=oh_code,
+            persona=canon,
+            function=p_func,
+            target_function="HR",
+        )
+
     # 2. Self-scope check (M3 / SPEC-06 §4.2 & §5.3: granted ONLY when compiled spec/data_classes carry `self`)
     detected_self_id = _detect_self_emp_id(canon, question, in_classes, explicit_self_emp_id=self_emp_id, spec=spec)
     if detected_self_id:
@@ -898,6 +1119,7 @@ def enforce_contract(
     persona: str,
     *,
     director_function_scope: Optional[bool] = None,
+    query: str = "",
 ) -> Dict[str, Any]:
     """Post-query guard on any contract (planner or legacy). Idempotent.
 
@@ -930,6 +1152,9 @@ def enforce_contract(
                 },
             )
         return c
+
+    # D-66: stamp synthetic HR label on any allowed/partial contract exposing EMP-000001..3 personal HR fields
+    apply_office_holder_safeguard(c, canon or persona, query=query)
 
     if pc == "leadership":
         return c

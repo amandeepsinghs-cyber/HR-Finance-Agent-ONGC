@@ -55,34 +55,35 @@ CANONICAL_PERSONA_ORDER: list[str] = [
     "E4_FIN",
 ]
 
-# Decision D-60: fictional surnames for senior personas so synthetic pay/APAR are
-# never attributed to real ONGC office-holders.
+# Decision D-66 (option A): Leadership personas use the actual ONGC office-holders
+# verified on ongcindia.com -> About ONGC -> Board of Directors (retrieved 25-Oct-2026);
+# their personal HR records remain synthetic and safeguarded.
 SENIOR_OVERRIDES: dict[str, dict[str, str]] = {
     "CMD": {
         "emp_id": "EMP-000001",
-        "display_name": "Arun Mehra",
+        "display_name": "Arun Kumar Singh",
         "grade": "CMD",
         "function": "EXEC",
         "discipline_id": "DISC-PRD",
         "wc_id": HQ_WC_ID,
         "work_centre": HQ_WC_NAME,
-        "functional_designation": "Chairman & Managing Director",
+        "functional_designation": "Chairman & CEO",
         "tier": "cmd",
     },
     "DIR_HR": {
         "emp_id": "EMP-000002",
-        "display_name": "Manish Deshpande",
+        "display_name": "Manish Patil",
         "grade": "DIR",
         "function": "HR",
         "discipline_id": "DISC-HR",
         "wc_id": HQ_WC_ID,
         "work_centre": HQ_WC_NAME,
-        "functional_designation": "Director (HR)",
+        "functional_designation": "Director (Human Resources)",
         "tier": "director",
     },
     "DIR_FIN": {
         "emp_id": "EMP-000003",
-        "display_name": "Vivek Rao",
+        "display_name": "Anupam Agarwal",
         "grade": "DIR",
         "function": "FIN",
         "discipline_id": "DISC-FIN",
@@ -99,6 +100,7 @@ JUNIOR_POOL_SPECS: dict[str, dict[str, str]] = {
         "grade": "E1",
         "function": "HR",
         "functional_designation": "HR Officer (E1)",
+        "pinned_emp_id": "EMP-100151",
     },
     "E2_HR": {
         "discipline_id": "DISC-HR",
@@ -112,36 +114,42 @@ JUNIOR_POOL_SPECS: dict[str, dict[str, str]] = {
         "grade": "E3",
         "function": "HR",
         "functional_designation": "Senior HR Executive (E3)",
+        "pinned_emp_id": "EMP-100144",
     },
     "E4_HR": {
         "discipline_id": "DISC-HR",
         "grade": "E4",
         "function": "HR",
         "functional_designation": "Dy. Manager HR (E4)",
+        "pinned_emp_id": "EMP-100178",
     },
     "E1_FIN": {
         "discipline_id": "DISC-FIN",
         "grade": "E1",
         "function": "FIN",
         "functional_designation": "Accounts Officer (E1)",
+        "pinned_emp_id": "EMP-100150",
     },
     "E2_FIN": {
         "discipline_id": "DISC-FIN",
         "grade": "E2",
         "function": "FIN",
         "functional_designation": "Finance Executive (E2)",
+        "pinned_emp_id": "EMP-100152",
     },
     "E3_FIN": {
         "discipline_id": "DISC-FIN",
         "grade": "E3",
         "function": "FIN",
         "functional_designation": "Finance Officer (E3)",
+        "pinned_emp_id": "EMP-100146",
     },
     "E4_FIN": {
         "discipline_id": "DISC-FIN",
         "grade": "E4",
         "function": "FIN",
         "functional_designation": "Dy. Manager Finance (E4)",
+        "pinned_emp_id": "EMP-100145",
     },
 }
 
@@ -352,10 +360,12 @@ def compute_users_from_sap(sap_dir: Path) -> list[dict[str, Any]]:
         emp_id = meta["emp_id"]
         if emp_id not in emp_by_id:
             raise RuntimeError(f"Senior persona {pid} ({emp_id}) missing from PA0002_PA0001.csv")
+        emp_row = emp_by_id[emp_id]
+        csv_name = emp_row.get("name") or emp_row.get("ENAME") or meta["display_name"]
         records[pid] = _build_record(
             persona_id=pid,
             emp_id=emp_id,
-            display_name=meta["display_name"],
+            display_name=csv_name,
             grade=meta["grade"],
             function=meta["function"],
             discipline_id=meta["discipline_id"],
@@ -365,13 +375,11 @@ def compute_users_from_sap(sap_dir: Path) -> list[dict[str, Any]]:
             tier=meta["tier"],
         )
 
-    # Juniors (E1_HR..E4_HR, E1_FIN..E4_FIN)
+    # Juniors (E1_HR..E4_HR, E1_FIN..E4_FIN): display_name ALWAYS comes from PA0002_PA0001.csv
     for pid, spec in JUNIOR_POOL_SPECS.items():
         pinned = spec.get("pinned_emp_id")
-        if pinned:
-            emp_row = emp_by_id.get(pinned)
-            if not emp_row:
-                raise RuntimeError(f"Pinned persona {pid} ({pinned}) missing from PA0002_PA0001.csv")
+        if pinned and pinned in emp_by_id:
+            emp_row = emp_by_id[pinned]
             selected_emp_id = pinned
             selected_name = emp_row.get("name") or emp_row.get("ENAME", "")
         else:
@@ -427,7 +435,7 @@ def write_outputs(rows: list[dict[str, Any]], out_csv: Path = DEFAULT_OUT_CSV, o
     out_yaml.parent.mkdir(parents=True, exist_ok=True)
     yaml_payload = {
         "version": 2,
-        "decision_refs": ["D-41", "D-43", "D-60", "SPEC-06"],
+        "decision_refs": ["D-41", "D-43", "D-60", "D-66", "SPEC-06"],
         "completeness_gate_sql": COMPLETENESS_GATE_SQL,
         "personas": {r["persona_id"]: r for r in rows},
         "demo_admin": DEMO_ADMIN_ENTRY,
@@ -436,8 +444,8 @@ def write_outputs(rows: list[dict[str, Any]], out_csv: Path = DEFAULT_OUT_CSV, o
         yaml.safe_dump(yaml_payload, f, sort_keys=False, allow_unicode=True)
 
 
-def verify_records(rows: list[dict[str, Any]]) -> None:
-    """Verify all 11 persona records satisfy P2H.1 / SPEC-06 / D-60 invariants."""
+def verify_records(rows: list[dict[str, Any]], sap_dir: Path | None = None) -> None:
+    """Verify all 11 persona records satisfy P2H.1 / SPEC-06 / D-60 / D-66 invariants."""
     if len(rows) != 11:
         raise AssertionError(f"Expected 11 personas, got {len(rows)}")
     seen_ids = [r["persona_id"] for r in rows]
@@ -447,12 +455,24 @@ def verify_records(rows: list[dict[str, Any]]) -> None:
     if len(set(emp_ids)) != 11:
         raise AssertionError(f"Duplicate emp_id in dim_app_user: {emp_ids}")
 
+    pa_names: dict[str, str] = {}
+    if sap_dir is not None and (sap_dir / "PA0002_PA0001.csv").exists():
+        with (sap_dir / "PA0002_PA0001.csv").open(newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                pernr = row.get("emp_id") or row.get("PERNR", "")
+                if pernr:
+                    pa_names[pernr] = row.get("name") or row.get("ENAME", "")
+
     for r in rows:
         pid = r["persona_id"]
         if not re.match(r"^EMP-\d{6}$", str(r["emp_id"])):
             raise AssertionError(f"{pid}: invalid emp_id {r['emp_id']!r}")
         if not r["display_name"] or r["display_name"] in FORBIDDEN_DISPLAY_NAMES:
             raise AssertionError(f"{pid}: forbidden or empty display_name {r['display_name']!r}")
+        if pa_names and r["emp_id"] in pa_names and r["display_name"] != pa_names[r["emp_id"]]:
+            raise AssertionError(
+                f"{pid} ({r['emp_id']}): display_name {r['display_name']!r} != PA0002_PA0001 {pa_names[r['emp_id']]!r}"
+            )
         if r["wc_id"] != HQ_WC_ID:
             raise AssertionError(f"{pid}: expected wc_id={HQ_WC_ID!r}, got {r['wc_id']!r}")
         if r.get("synthetic") is not True:
@@ -471,7 +491,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sap_dir = resolve_sap_landing_dir()
     rows = compute_users_from_sap(sap_dir)
-    verify_records(rows)
+    verify_records(rows, sap_dir=sap_dir)
     out_csv = args.out_csv or DEFAULT_OUT_CSV
     out_yaml = args.out_yaml or DEFAULT_OUT_YAML
     if not args.check or args.out_csv is not None or args.out_yaml is not None:

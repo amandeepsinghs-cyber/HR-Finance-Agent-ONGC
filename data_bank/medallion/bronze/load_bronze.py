@@ -35,7 +35,9 @@ from google.cloud import bigquery
 
 PROJECT_ID = os.getenv("GCP_PROJECT", "ongc-hr-finance-agent")
 ALLOWED_BRONZE_DATASETS = {"hrfin_bronze", "hrfin_bronze_v3"}
-DATASET_ID = os.getenv("YUKTI_BRONZE_DATASET", "hrfin_bronze").strip()
+_BQ_SFX = os.getenv("BQ_DATASET_SUFFIX", os.getenv("YUKTI_DATASET_SUFFIX", "")).strip().lstrip("_")
+_DEFAULT_BRONZE_DS = f"hrfin_bronze_{_BQ_SFX}" if _BQ_SFX else "hrfin_bronze"
+DATASET_ID = os.getenv("YUKTI_BRONZE_DATASET", _DEFAULT_BRONZE_DS).strip()
 if DATASET_ID not in ALLOWED_BRONZE_DATASETS:
     raise ValueError(f"Disallowed YUKTI_BRONZE_DATASET={DATASET_ID!r}; must be in {sorted(ALLOWED_BRONZE_DATASETS)}")
 LANDING_BUCKET = "ongc-hr-finance-agent-landing"
@@ -292,14 +294,32 @@ def load_excel_table(client: bigquery.Client, item: Dict[str, Any], ingest_ts: d
 
 
 def main():
-    print(f"[{time.strftime('%X')}] Scanning structured landing files for Bronze ingestion...")
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Load structured landing files into BigQuery hrfin_bronze")
+    parser.add_argument(
+        "--only",
+        nargs="+",
+        help="Reload only the specified bronze table names (e.g. sap_pa0002_pa0001 sap_dim_app_user)",
+    )
+    args = parser.parse_args()
+    only_tables = (
+        {t.strip().lower() for arg in args.only for t in arg.split(",") if t.strip()}
+        if args.only
+        else None
+    )
+
+    print(f"[{time.strftime('%X')}] Scanning structured landing files for Bronze ingestion into {DATASET_ID}...")
     csv_items = get_csv_files()
-    excel_items = get_excel_files()
+    excel_items = get_excel_files() if not only_tables or any(t.startswith("excel_") for t in only_tables) else []
+    if only_tables:
+        csv_items = [it for it in csv_items if it["table_name"] in only_tables]
+        excel_items = [it for it in excel_items if it["table_name"] in only_tables]
     all_items = csv_items + excel_items
     print(f"Discovered {len(csv_items)} CSV files and {len(excel_items)} Excel files (Total: {len(all_items)} tables)")
 
     total_expected_rows = sum(it["expected_rows"] for it in all_items)
-    print(f"Total expected rows across all 45 tables: {total_expected_rows}")
+    print(f"Total expected rows across {len(all_items)} table(s): {total_expected_rows}")
 
     client = bigquery.Client(project=PROJECT_ID)
     ingest_ts = datetime.datetime.now(datetime.timezone.utc)
@@ -323,23 +343,28 @@ def main():
                 print(f"  [OK] {tname:35}: {res['rows']:10d} rows, {res['cols']} cols")
 
     # 2. Load Excel tables sequentially (memory-safe and fast)
-    print(f"[{time.strftime('%X')}] Loading {len(excel_items)} Excel workbooks...")
-    for item in excel_items:
-        res = load_excel_table(client, item, ingest_ts)
-        tname = res["table_name"]
-        table_results[tname] = res
-        if res["status"] == "failed":
-            failed.append(tname)
-            print(f"  [FAIL] {tname}: {res['error']}")
-        else:
-            print(f"  [OK] {tname:35}: {res['rows']:10d} rows, {res['cols']} cols")
+    if excel_items:
+        print(f"[{time.strftime('%X')}] Loading {len(excel_items)} Excel workbooks...")
+        for item in excel_items:
+            res = load_excel_table(client, item, ingest_ts)
+            tname = res["table_name"]
+            table_results[tname] = res
+            if res["status"] == "failed":
+                failed.append(tname)
+                print(f"  [FAIL] {tname}: {res['error']}")
+            else:
+                print(f"  [OK] {tname:35}: {res['rows']:10d} rows, {res['cols']} cols")
 
     elapsed = time.time() - start_time
-    print(f"[{time.strftime('%X')}] Ingestion finished in {elapsed:.1f}s. Success: {len(table_results) - len(failed)}/45, Failed: {len(failed)}")
+    print(f"[{time.strftime('%X')}] Ingestion finished in {elapsed:.1f}s. Success: {len(table_results) - len(failed)}/{len(all_items)}, Failed: {len(failed)}")
 
     if failed:
         print(f"Ingestion failed on tables: {failed}")
         sys.exit(1)
+
+    if only_tables:
+        print("Selective Bronze reload completed successfully.")
+        return
 
     # 3. Write bronze_tables.yaml
     yaml_data: Dict[str, Any] = {

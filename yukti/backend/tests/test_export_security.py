@@ -25,16 +25,16 @@ from app.tools.export_tool import DOCS_TOAST, SHEETS_TOAST, DocumentExporter
 FIXTURES_DIR = Path(__file__).resolve().parent.parent.parent / "contracts" / "fixtures" / "export"
 
 ALL_11_PERSONAS = {
-    "CMD": {"emp_id": "EMP-000001", "display_name": "Arun Mehra", "designation": "CMD", "function": "EXEC", "grade": "CMD"},
-    "DIR_HR": {"emp_id": "EMP-000002", "display_name": "Manish Deshpande", "designation": "Director (HR)", "function": "HR", "grade": "DIR"},
-    "DIR_FIN": {"emp_id": "EMP-000003", "display_name": "Vivek Rao", "designation": "Director (Finance)", "function": "FIN", "grade": "DIR"},
+    "CMD": {"emp_id": "EMP-000001", "display_name": "Arun Kumar Singh", "designation": "Chairman & CEO", "function": "EXEC", "grade": "CMD"},
+    "DIR_HR": {"emp_id": "EMP-000002", "display_name": "Manish Patil", "designation": "Director (Human Resources)", "function": "HR", "grade": "DIR"},
+    "DIR_FIN": {"emp_id": "EMP-000003", "display_name": "Anupam Agarwal", "designation": "Director (Finance)", "function": "FIN", "grade": "DIR"},
     "E1_HR": {"emp_id": "EMP-100151", "display_name": "Dinesh Deshmukh", "designation": "HR Officer (E1)", "function": "HR", "grade": "E1"},
     "E2_HR": {"emp_id": "EMP-102451", "display_name": "Pooja Verma", "designation": "HR Executive (E2)", "function": "HR", "grade": "E2"},
-    "E3_HR": {"emp_id": "EMP-100144", "display_name": "Pooja Pillai", "designation": "Senior HR Executive (E3)", "function": "HR", "grade": "E3"},
-    "E4_HR": {"emp_id": "EMP-100178", "display_name": "Aarti Saikia", "designation": "Dy. Manager HR (E4)", "function": "HR", "grade": "E4"},
+    "E3_HR": {"emp_id": "EMP-100144", "display_name": "Lokesh Verma", "designation": "Senior HR Executive (E3)", "function": "HR", "grade": "E3"},
+    "E4_HR": {"emp_id": "EMP-100178", "display_name": "Umesh D. Bhatia", "designation": "Dy. Manager HR (E4)", "function": "HR", "grade": "E4"},
     "E1_FIN": {"emp_id": "EMP-100150", "display_name": "Ajay Deshmukh", "designation": "Accounts Officer (E1)", "function": "FIN", "grade": "E1"},
     "E2_FIN": {"emp_id": "EMP-100152", "display_name": "Praveen Nair", "designation": "Finance Executive (E2)", "function": "FIN", "grade": "E2"},
-    "E3_FIN": {"emp_id": "EMP-100146", "display_name": "Asha Mishra", "designation": "Finance Officer (E3)", "function": "FIN", "grade": "E3"},
+    "E3_FIN": {"emp_id": "EMP-100146", "display_name": "Shailesh E. Kapoor", "designation": "Finance Officer (E3)", "function": "FIN", "grade": "E3"},
     "E4_FIN": {"emp_id": "EMP-100145", "display_name": "Santosh Banerjee", "designation": "Dy. Manager Finance (E4)", "function": "FIN", "grade": "E4"},
 }
 

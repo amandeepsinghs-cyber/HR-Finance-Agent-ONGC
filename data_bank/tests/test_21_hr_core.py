@@ -210,7 +210,7 @@ def test_landing_files_strictly_schema_declared():
 
 
 def test_no_real_person_names(duck_con):
-    """Assert that no employee record contains real Board members, KMPs or public figures."""
+    """Assert that no non-leadership employee record contains real Board members, KMPs or public figures (D-66)."""
     real_person_names_blacklist = {
         "arun kumar singh", "arun singh", "arun kumar",
         "manish patil", "vikram saxena", "om prakash sinha", "om sinha",
@@ -221,9 +221,13 @@ def test_no_real_person_names(duck_con):
         "alka mittal", "shashi shanker", "dinesh k sarraf", "dinesh sarraf",
         "r s sharma", "subir raha",
     }
-    all_names = set(duck_con.execute("SELECT DISTINCT LOWER(name) AS clean_name FROM employee_master").df()["clean_name"].tolist())
+    all_names = set(
+        duck_con.execute(
+            "SELECT DISTINCT LOWER(name) AS clean_name FROM employee_master WHERE emp_id NOT IN ('EMP-000001', 'EMP-000002', 'EMP-000003')"
+        ).df()["clean_name"].tolist()
+    )
     matched = all_names.intersection(real_person_names_blacklist)
-    assert not matched, f"Found real Board/KMP names in employee_master: {matched}"
+    assert not matched, f"Found real Board/KMP names in non-leadership employee_master rows: {matched}"
 
 
 # ==============================================================================
@@ -678,17 +682,37 @@ def test_story_s38_demo_personas(duck_con):
     cmd = duck_con.execute("""
         SELECT name, current_designation, current_grade_id, current_wc_id FROM employee_master WHERE emp_id = 'EMP-000001'
     """).fetchone()
-    assert cmd == ("Arun Mehra", "Chairman & Managing Director", "CMD", "WC-DEL")
+    assert cmd == ("Arun Kumar Singh", "Chairman & CEO", "CMD", "WC-DEL")
 
     dir_hr = duck_con.execute("""
         SELECT name, current_designation, current_grade_id, discipline_id, current_wc_id FROM employee_master WHERE emp_id = 'EMP-000002'
     """).fetchone()
-    assert dir_hr == ("Manish Deshpande", "Director (HR)", "DIR", "DISC-HR", "WC-DEL")
+    assert dir_hr == ("Manish Patil", "Director (Human Resources)", "DIR", "DISC-HR", "WC-DEL")
 
     dir_fin = duck_con.execute("""
         SELECT name, current_designation, current_grade_id, discipline_id, current_wc_id FROM employee_master WHERE emp_id = 'EMP-000003'
     """).fetchone()
-    assert dir_fin == ("Vivek Rao", "Director (Finance)", "DIR", "DISC-FIN", "WC-DEL")
+    assert dir_fin == ("Anupam Agarwal", "Director (Finance)", "DIR", "DISC-FIN", "WC-DEL")
+
+
+def test_app_users_display_name_equals_employee360(duck_con):
+    """D-66: Every persona's display_name in app_users.yaml must equal the Employee-360 record name for its emp_id."""
+    app_users_path = DATA_BANK_DIR.parent / "yukti" / "backend" / "app" / "brain" / "app_users.yaml"
+    assert app_users_path.exists(), f"Missing {app_users_path}"
+    with app_users_path.open("r", encoding="utf-8") as f:
+        app_users = yaml.safe_load(f)
+    personas = app_users.get("personas") or {}
+    assert len(personas) == 11
+    for pid, meta in personas.items():
+        emp_id = meta["emp_id"]
+        display_name = meta["display_name"]
+        row = duck_con.execute(
+            "SELECT name FROM employee_master WHERE emp_id = ?", [emp_id]
+        ).fetchone()
+        assert row is not None, f"Persona {pid} emp_id={emp_id} not found in employee_master"
+        assert display_name == row[0], (
+            f"Persona {pid} ({emp_id}): app_users.yaml display_name={display_name!r} != Employee-360 name={row[0]!r}"
+        )
 
 
 # ==============================================================================

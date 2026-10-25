@@ -295,7 +295,7 @@ class AgentTurnRunner:
         else:
             persona_eff = req_persona
             contract["persona"] = req_persona
-        contract = enforce_contract(contract, persona_eff)
+        contract = enforce_contract(contract, persona_eff, query=query)
         if (
             persona_class(persona_eff) == "junior"
             or persona_eff == "DIR_FIN"

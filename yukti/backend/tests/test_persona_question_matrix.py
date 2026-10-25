@@ -426,9 +426,9 @@ def test_m5_dir_fin_function_scope_mixed_query_and_director_enforce_contract():
         "turn_id": "t-m5",
         "language": "en",
         "persona": "DIR_FIN",
-        "spoken_summary": "Pooja Pillai scored 8.5 and Asha Mishra scored 9.1.",
-        "display_text": "Pooja Pillai scored 8.5 and Asha Mishra scored 9.1.",
-        "insights": ["Pooja Pillai 8.5", "Asha Mishra 9.1"],
+        "spoken_summary": "Lokesh Verma scored 8.5 and Shailesh E. Kapoor scored 9.1.",
+        "display_text": "Lokesh Verma scored 8.5 and Shailesh E. Kapoor scored 9.1.",
+        "insights": ["Lokesh Verma 8.5", "Shailesh E. Kapoor 9.1"],
         "sources": [{"kind": "data"}],
         "access": {"status": "allowed"},
         "visual": {
@@ -437,8 +437,8 @@ def test_m5_dir_fin_function_scope_mixed_query_and_director_enforce_contract():
             "table": {
                 "columns": ["emp_id", "name", "discipline_id", "apar_score"],
                 "rows": [
-                    {"emp_id": "EMP-100144", "name": "Pooja Pillai", "discipline_id": "DISC-HR", "apar_score": 8.5},
-                    {"emp_id": "EMP-100146", "name": "Asha Mishra", "discipline_id": "DISC-FIN", "apar_score": 9.1},
+                    {"emp_id": "EMP-100144", "name": "Lokesh Verma", "discipline_id": "DISC-HR", "apar_score": 8.5},
+                    {"emp_id": "EMP-100146", "name": "Shailesh E. Kapoor", "discipline_id": "DISC-FIN", "apar_score": 9.1},
                 ],
                 "total_rows": 2,
             },
@@ -448,7 +448,7 @@ def test_m5_dir_fin_function_scope_mixed_query_and_director_enforce_contract():
     rows_df = out_df["visual"]["table"]["rows"]
     assert len(rows_df) == 1
     assert rows_df[0]["emp_id"] == "EMP-100146"
-    assert "Pooja Pillai" not in str(out_df)
+    assert "Lokesh Verma" not in str(out_df)
     assert out_df["access"]["status"] == "partial"
     assert out_df["access"]["code"] == "R-APAR"
 

@@ -1,9 +1,10 @@
 /**
- * Persona directory for the UI (P2H.2; D-41 eleven personas, D-60 fictional identities).
+ * Persona directory for the UI (P2H.2; D-41 eleven personas, D-60 identities; D-66 real leadership names).
  *
  * The SERVER is the source of truth: the picker loads `/api/auth/personas` and the banner reads `/api/auth/me`.
  * This static mirror of `backend/app/brain/app_users.yaml` is only a fallback for labels when the directory has not
- * loaded yet (and for tests). All identities are synthetic/illustrative.
+ * loaded yet (and for tests). Leadership names are the actual ONGC office-holders; their HR records in the
+ * data bank are synthetic and labelled as such. E1–E4 identities are synthetic/illustrative.
  */
 import type { PersonaType } from '@/contracts/answerContract';
 
@@ -22,16 +23,18 @@ export interface PersonaInfo {
 }
 
 export const PERSONA_DIRECTORY: PersonaInfo[] = [
-  { id: 'CMD', short: 'CMD', display_name: 'Arun Mehra', designation: 'Chairman & Managing Director', group: 'Leadership', tier: 'cmd', address: 'Arun' },
-  { id: 'DIR_HR', short: 'Director HR', display_name: 'Manish Deshpande', designation: 'Director (HR)', group: 'Leadership', tier: 'director', address: 'Manish' },
-  { id: 'DIR_FIN', short: 'Director Finance', display_name: 'Vivek Rao', designation: 'Director (Finance)', group: 'Leadership', tier: 'director', address: 'Vivek' },
+  // Leadership = actual ONGC office-holders (ongcindia.com Board of Directors, retrieved 25-Oct-2026; D-66).
+  { id: 'CMD', short: 'CMD', display_name: 'Arun Kumar Singh', designation: 'Chairman & CEO', group: 'Leadership', tier: 'cmd', address: 'Mr. Singh' },
+  { id: 'DIR_HR', short: 'Director HR', display_name: 'Manish Patil', designation: 'Director (Human Resources)', group: 'Leadership', tier: 'director', address: 'Mr. Patil' },
+  { id: 'DIR_FIN', short: 'Director Finance', display_name: 'Anupam Agarwal', designation: 'Director (Finance)', group: 'Leadership', tier: 'director', address: 'Mr. Agarwal' },
+  // E1–E4 = synthetic employees; names must equal the Employee-360 record for the same emp_id.
   { id: 'E1_HR', short: 'E1 · HR', display_name: 'Dinesh Deshmukh', designation: 'HR Officer (E1)', group: 'HR', tier: 'junior', address: 'Dinesh' },
   { id: 'E2_HR', short: 'E2 · HR', display_name: 'Pooja Verma', designation: 'HR Executive (E2)', group: 'HR', tier: 'junior', address: 'Pooja' },
-  { id: 'E3_HR', short: 'E3 · HR', display_name: 'Pooja Pillai', designation: 'Senior HR Executive (E3)', group: 'HR', tier: 'junior', address: 'Pooja' },
-  { id: 'E4_HR', short: 'E4 · HR', display_name: 'Aarti Saikia', designation: 'Dy. Manager HR (E4)', group: 'HR', tier: 'junior', address: 'Aarti' },
+  { id: 'E3_HR', short: 'E3 · HR', display_name: 'Lokesh Verma', designation: 'Senior HR Executive (E3)', group: 'HR', tier: 'junior', address: 'Lokesh' },
+  { id: 'E4_HR', short: 'E4 · HR', display_name: 'Umesh D. Bhatia', designation: 'Dy. Manager HR (E4)', group: 'HR', tier: 'junior', address: 'Umesh' },
   { id: 'E1_FIN', short: 'E1 · Finance', display_name: 'Ajay Deshmukh', designation: 'Accounts Officer (E1)', group: 'Finance', tier: 'junior', address: 'Ajay' },
   { id: 'E2_FIN', short: 'E2 · Finance', display_name: 'Praveen Nair', designation: 'Finance Executive (E2)', group: 'Finance', tier: 'junior', address: 'Praveen' },
-  { id: 'E3_FIN', short: 'E3 · Finance', display_name: 'Asha Mishra', designation: 'Finance Officer (E3)', group: 'Finance', tier: 'junior', address: 'Asha' },
+  { id: 'E3_FIN', short: 'E3 · Finance', display_name: 'Shailesh E. Kapoor', designation: 'Finance Officer (E3)', group: 'Finance', tier: 'junior', address: 'Shailesh' },
   { id: 'E4_FIN', short: 'E4 · Finance', display_name: 'Santosh Banerjee', designation: 'Dy. Manager Finance (E4)', group: 'Finance', tier: 'junior', address: 'Santosh' },
 ];
 

@@ -47,7 +47,7 @@ PERSONA_ALIASES = {
     "ceo": "CMD",
     "cmd_exec": "CMD",
     "arun": "CMD",
-    "arun mehra": "CMD",
+    "arun kumar singh": "CMD",
     # DIR_HR
     "dir hr": "DIR_HR",
     "dir-hr": "DIR_HR",
@@ -58,7 +58,7 @@ PERSONA_ALIASES = {
     "director (human resources)": "DIR_HR",
     "dir_hr": "DIR_HR",
     "manish": "DIR_HR",
-    "manish deshpande": "DIR_HR",
+    "manish patil": "DIR_HR",
     # DIR_FIN
     "dir fin": "DIR_FIN",
     "dir-fin": "DIR_FIN",
@@ -69,8 +69,8 @@ PERSONA_ALIASES = {
     "director (fin)": "DIR_FIN",
     "cfo": "DIR_FIN",
     "dir_fin": "DIR_FIN",
-    "vivek": "DIR_FIN",
-    "vivek rao": "DIR_FIN",
+    "anupam": "DIR_FIN",
+    "anupam agarwal": "DIR_FIN",
     # E1_HR
     "e1_hr": "E1_HR",
     "e1-hr": "E1_HR",
@@ -108,7 +108,7 @@ PERSONA_ALIASES = {
     "e3 hr executive": "E3_HR",
     "senior hr executive (e3)": "E3_HR",
     "sr. hr executive (e3)": "E3_HR",
-    "pooja pillai": "E3_HR",
+    "lokesh verma": "E3_HR",
     # E4_HR
     "e4_hr": "E4_HR",
     "e4-hr": "E4_HR",
@@ -121,7 +121,8 @@ PERSONA_ALIASES = {
     "e4 hr executive": "E4_HR",
     "dy. manager hr (e4)": "E4_HR",
     "deputy manager hr (e4)": "E4_HR",
-    "aarti saikia": "E4_HR",
+    "umesh d. bhatia": "E4_HR",
+    "umesh bhatia": "E4_HR",
     # E1_FIN
     "e1_fin": "E1_FIN",
     "e1-fin": "E1_FIN",
@@ -161,7 +162,8 @@ PERSONA_ALIASES = {
     "e3 finance executive": "E3_FIN",
     "finance officer": "E3_FIN",
     "finance officer (e3)": "E3_FIN",
-    "asha mishra": "E3_FIN",
+    "shailesh e. kapoor": "E3_FIN",
+    "shailesh kapoor": "E3_FIN",
     "rajesh kulkarni": "E3_FIN",
     "e1–e4 officer (finance)": "E3_FIN",
     # E4_FIN
@@ -527,6 +529,21 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
     Returns an AccessDecision object.
     """
     normalized_persona = normalize_persona(persona)
+
+    # 0. D-66: APAR and medical records for EMP-000001..3 are refused for EVERY persona (including self & CMD)
+    if query:
+        from app.brain.rbac import OFFICE_HOLDER_REFUSAL_COPY, is_office_holder_apar_or_medical
+
+        oh_code = is_office_holder_apar_or_medical(normalized_persona, question=query)
+        if oh_code:
+            return AccessDecision(
+                status="refused",
+                reason=OFFICE_HOLDER_REFUSAL_COPY,
+                rule_ref="D-66",
+                alternative="Aggregate workforce and policy metrics.",
+                refusal_id="D-66",
+                code=oh_code,
+            )
 
     # 1. Check if entry_id corresponds to a known refusal first (S1)
     root_id = entry_id.split("__")[0] if entry_id else None

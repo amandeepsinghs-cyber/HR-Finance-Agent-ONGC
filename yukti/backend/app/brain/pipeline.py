@@ -432,6 +432,17 @@ async def run_planner_turn(
         }
         return {"contract": wi_contract, "meta": None}
 
+    # D-66: APAR and medical records for EMP-000001..3 are refused for EVERY persona (even when plan.intent != 'data')
+    from app.brain.rbac import apply_office_holder_safeguard, is_office_holder_apar_or_medical
+
+    oh_ref_code = is_office_holder_apar_or_medical(persona, question=query, spec=plan.spec)
+    if oh_ref_code:
+        try:
+            pol_oh = decide(persona, ["apar"] if oh_ref_code == "R-APAR" else ["sensitive"], query, spec=plan.spec)
+        except UnknownPersona:
+            pol_oh = decide("E1_HR", ["apar"] if oh_ref_code == "R-APAR" else ["sensitive"], query, spec=plan.spec)
+        return {"contract": _refusal_contract(pol_oh, plan.spec, persona, turn_id, language, t0), "meta": {"spec": None}}
+
     if plan.intent != "data" or plan.spec is None:
         logger.info(f"planner -> legacy ({plan.intent}; {plan.notes})")
         return None
@@ -1007,6 +1018,9 @@ async def run_planner_turn(
         if actions:
             tbl["row_actions"] = actions
 
+    # D-66: stamp synthetic HR label on any allowed/partial contract exposing EMP-000001..3 personal HR fields
+    apply_office_holder_safeguard(contract, persona, query=query)
+
     # B3/B4 hooks (RBAC masking, insights, drill-downs) are applied by the caller via `postprocess`.
     meta = {"compiled": compiled, "result": result, "columns": columns, "rows": rows, "code_maps": code_maps,
             "plan": plan, "spec": spec, "policy": policy}
@@ -1131,7 +1145,7 @@ async def _previous_period_rows(spec: QuerySpec, compiled, compiler) -> Optional
         return None
 
 
-def _refusal_contract(policy, spec: QuerySpec, persona: str, turn_id: str, language: str, t0: float) -> Dict[str, Any]:
+def _refusal_contract(policy, spec: Optional[QuerySpec], persona: str, turn_id: str, language: str, t0: float) -> Dict[str, Any]:
     """Refusal card for a planner question the policy refuses (SPEC-06 §4.6 / P2H.2); never ships granular data."""
     from app.answer_composer import build_refusal_contract
 
@@ -1142,7 +1156,7 @@ def _refusal_contract(policy, spec: QuerySpec, persona: str, turn_id: str, langu
         turn_id=turn_id,
         language=language,
         rule_ref=policy.rule_ref,
-        query_spec=spec.to_contract(),
+        query_spec=spec.to_contract() if spec is not None else None,
         latency_ms=round((time.perf_counter() - t0) * 1000, 2),
     )
 

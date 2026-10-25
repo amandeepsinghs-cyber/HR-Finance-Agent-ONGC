@@ -143,23 +143,40 @@ def test_dim_app_user_csv_and_yaml_completeness():
     csv_by_id = {r["persona_id"]: r for r in csv_rows}
     assert set(csv_by_id.keys()) == set(CANONICAL_11)
 
-    # D-60 specific identity checks
+    # D-66 specific identity checks
     assert csv_by_id["CMD"]["emp_id"] == "EMP-000001"
-    assert csv_by_id["CMD"]["display_name"] == "Arun Mehra"
+    assert csv_by_id["CMD"]["display_name"] == "Arun Kumar Singh"
+    assert csv_by_id["CMD"]["functional_designation"] == "Chairman & CEO"
     assert csv_by_id["DIR_HR"]["emp_id"] == "EMP-000002"
-    assert csv_by_id["DIR_HR"]["display_name"] == "Manish Deshpande"
+    assert csv_by_id["DIR_HR"]["display_name"] == "Manish Patil"
+    assert csv_by_id["DIR_HR"]["functional_designation"] == "Director (Human Resources)"
     assert csv_by_id["DIR_FIN"]["emp_id"] == "EMP-000003"
-    assert csv_by_id["DIR_FIN"]["display_name"] == "Vivek Rao"
+    assert csv_by_id["DIR_FIN"]["display_name"] == "Anupam Agarwal"
+    assert csv_by_id["DIR_FIN"]["functional_designation"] == "Director (Finance)"
     assert csv_by_id["E2_HR"]["emp_id"] == "EMP-102451"
     assert csv_by_id["E2_HR"]["display_name"] == "Pooja Verma"
+    assert csv_by_id["E3_HR"]["emp_id"] == "EMP-100144"
+    assert csv_by_id["E3_HR"]["display_name"] == "Lokesh Verma"
+    assert csv_by_id["E4_HR"]["emp_id"] == "EMP-100178"
+    assert csv_by_id["E4_HR"]["display_name"] == "Umesh D. Bhatia"
     assert csv_by_id["E3_FIN"]["emp_id"] == "EMP-100146"
-    assert csv_by_id["E3_FIN"]["display_name"] == "Asha Mishra"
+    assert csv_by_id["E3_FIN"]["display_name"] == "Shailesh E. Kapoor"
+
+    pa_csv = REPO_ROOT / "data_bank" / "landing" / "sap" / "PA0002_PA0001.csv"
+    pa_names = {}
+    if pa_csv.exists():
+        with pa_csv.open("r", encoding="utf-8") as f:
+            pa_names = {row["PERNR"]: row["name"] for row in csv.DictReader(f)}
 
     for pid in CANONICAL_11:
         r = csv_by_id[pid]
         y = yaml_personas[pid]
         assert r["emp_id"] == y["emp_id"] == PERSONA_DIRECTORY[pid]["emp_id"]
         assert r["display_name"] == y["display_name"] == PERSONA_DIRECTORY[pid]["display_name"]
+        if pa_names:
+            assert y["display_name"] == pa_names[y["emp_id"]], (
+                f"{pid} ({y['emp_id']}): display_name {y['display_name']!r} != Employee-360 {pa_names[y['emp_id']]!r}"
+            )
         assert r["wc_id"] == "WC-DEL"
         assert str(r["synthetic"]).lower() == "true"
         assert y["synthetic"] is True
@@ -172,3 +189,101 @@ def test_dim_app_user_csv_and_yaml_completeness():
         for ok_flag in ("ok_pay", "ok_leave", "ok_posting", "ok_apar"):
             assert str(r[ok_flag]).lower() == "true", f"{pid} CSV completeness flag {ok_flag} is not true"
             assert y[ok_flag] is True, f"{pid} YAML completeness flag {ok_flag} is not True"
+
+
+@pytest.mark.asyncio
+async def test_d66_cmd_self_leave_balance_carries_synthetic_label():
+    """D-66: CMD asks 'my leave balance' -> answer carries 'Illustrative HR record (synthetic)' in provenance and visible caveat."""
+    import time
+    from app.answer_composer import validate_and_repair_contract
+    from app.brain.pipeline import run_planner_turn
+    from app.brain.rbac import OFFICE_HOLDER_SYNTHETIC_LABEL, enforce_contract
+    from app.session_memory import get_session_manager
+
+    sess = get_session_manager().get_or_create("s-d66-cmd-leave", persona="CMD", language="en", emp_id="EMP-000001")
+    planned = await run_planner_turn(
+        query="my leave balance",
+        session_state=sess,
+        persona="CMD",
+        turn_id="t-d66-cmd-leave",
+        language="en",
+        t0=time.perf_counter(),
+    )
+    assert planned is not None and "contract" in planned
+    contract = enforce_contract(planned["contract"], "CMD", query="my leave balance")
+    contract = validate_and_repair_contract(contract)
+
+    assert contract["access"]["status"] == "allowed"
+    assert contract.get("provenance", {}).get("label") == "synthetic"
+    assert OFFICE_HOLDER_SYNTHETIC_LABEL in str(contract.get("provenance", {}).get("detail", ""))
+    assert OFFICE_HOLDER_SYNTHETIC_LABEL in str(contract.get("caveat", ""))
+    assert OFFICE_HOLDER_SYNTHETIC_LABEL in str(contract.get("display_text", ""))
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("persona_id", CANONICAL_11)
+@pytest.mark.parametrize(
+    "query,expected_code",
+    [
+        ("Show Arun Kumar Singh's APAR rating", "R-APAR"),
+        ("Show Arun Kumar Singh's medical records", "R-SENS"),
+        ("What is Manish Patil's APAR score?", "R-APAR"),
+        ("Show Anupam Agarwal's medical claim history", "R-SENS"),
+    ],
+)
+async def test_d66_office_holder_apar_and_medical_refused_for_every_persona(
+    persona_id: str, query: str, expected_code: str
+):
+    """D-66: Any persona (including CMD and self) asking for Arun Kumar Singh / Manish Patil / Anupam Agarwal APAR or medical is refused."""
+    import time
+    from app.access_control import check_access
+    from app.answer_composer import build_refusal_contract, validate_and_repair_contract
+    from app.brain.pipeline import run_planner_turn
+    from app.brain.rbac import OFFICE_HOLDER_REFUSAL_COPY, decide
+    from app.session_memory import get_session_manager
+
+    pol = decide(persona_id, question=query)
+    assert pol.action == "refuse"
+    assert pol.code == expected_code
+    assert pol.rule_ref == "D-66"
+    assert pol.reason == OFFICE_HOLDER_REFUSAL_COPY
+
+    acc = check_access(persona_id, query=query)
+    assert acc.status == "refused"
+    assert acc.code == expected_code
+    assert acc.rule_ref == "D-66"
+    assert acc.reason == OFFICE_HOLDER_REFUSAL_COPY
+
+    sess = get_session_manager().get_or_create(f"s-d66-{persona_id}", persona=persona_id, language="en")
+    planned = await run_planner_turn(
+        query=query,
+        session_state=sess,
+        persona=persona_id,
+        turn_id=f"t-d66-{persona_id}",
+        language="en",
+        t0=time.perf_counter(),
+    )
+    assert planned is not None and "contract" in planned
+    c = validate_and_repair_contract(planned["contract"])
+    assert c["access"]["status"] == "refused"
+    assert c["access"]["code"] == expected_code
+    assert c["access"]["rule_ref"] == "D-66"
+    assert c["access"]["reason"] == OFFICE_HOLDER_REFUSAL_COPY
+    assert c["spoken_summary"] == OFFICE_HOLDER_REFUSAL_COPY
+    assert c["display_text"] == OFFICE_HOLDER_REFUSAL_COPY
+
+    # Also check self-queries for office-holder personas
+    if persona_id in ("CMD", "DIR_HR", "DIR_FIN"):
+        for self_q, self_code in [("What is my APAR rating?", "R-APAR"), ("Show my medical records", "R-SENS")]:
+            self_pol = decide(persona_id, question=self_q)
+            assert self_pol.action == "refuse"
+            assert self_pol.code == self_code
+            assert self_pol.rule_ref == "D-66"
+            assert self_pol.reason == OFFICE_HOLDER_REFUSAL_COPY
+            self_acc = check_access(persona_id, query=self_q)
+            assert self_acc.status == "refused"
+            assert self_acc.reason == OFFICE_HOLDER_REFUSAL_COPY
+            ref_c = validate_and_repair_contract(
+                build_refusal_contract(code=self_code, persona=persona_id, turn_id="t-self-d66", rule_ref="D-66")
+            )
+            assert ref_c["spoken_summary"] == OFFICE_HOLDER_REFUSAL_COPY

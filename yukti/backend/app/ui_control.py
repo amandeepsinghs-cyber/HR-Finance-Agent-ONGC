@@ -166,8 +166,11 @@ _ALIASES: Dict[Tuple[str, str], Tuple[str, str]] = {
     ("persona", "director_finance"): ("persona", "DIR_FIN"),
     ("persona", "finance_director"): ("persona", "DIR_FIN"),
     ("persona", "cfo"): ("persona", "DIR_FIN"),
-    ("persona", "vivek"): ("persona", "DIR_FIN"),
+    ("persona", "anupam"): ("persona", "DIR_FIN"),
     ("persona", "pooja"): ("persona", "E2_HR"),
+    ("persona", "lokesh"): ("persona", "E3_HR"),
+    ("persona", "umesh"): ("persona", "E4_HR"),
+    ("persona", "shailesh"): ("persona", "E3_FIN"),
     ("persona", "asha"): ("persona", "E3_FIN"),
     # Language aliases
     ("language", "english"): ("language", "en"),

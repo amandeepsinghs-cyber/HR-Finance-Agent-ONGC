@@ -40,22 +40,22 @@ personas:
     function: EXEC
     grade: CMD
     emp_id: EMP-000001
-    display_name: "Arun Mehra"
-    label: "CMD (Arun Mehra)"
+    display_name: "Arun Kumar Singh"
+    label: "Chairman & CEO (Arun Kumar Singh)"
   DIR_HR:
     tier: director
     function: HR
     grade: DIR
     emp_id: EMP-000002
-    display_name: "Manish Deshpande"
-    label: "Director (HR) — Manish Deshpande"
+    display_name: "Manish Patil"
+    label: "Director (Human Resources) — Manish Patil"
   DIR_FIN:
     tier: director
     function: FIN
     grade: DIR
     emp_id: EMP-000003
-    display_name: "Vivek Rao"
-    label: "Director (Finance) — Vivek Rao"
+    display_name: "Anupam Agarwal"
+    label: "Director (Finance) — Anupam Agarwal"
   E1_HR:
     tier: junior
     function: HR
@@ -75,15 +75,15 @@ personas:
     function: HR
     grade: E3
     emp_id: EMP-100144
-    display_name: "Pooja Pillai"
-    label: "E3 Sr. HR Executive (Pooja Pillai)"
+    display_name: "Lokesh Verma"
+    label: "E3 Sr. HR Executive (Lokesh Verma)"
   E4_HR:
     tier: junior
     function: HR
     grade: E4
     emp_id: EMP-100178
-    display_name: "Aarti Saikia"
-    label: "E4 Dy. Manager HR (Aarti Saikia)"
+    display_name: "Umesh D. Bhatia"
+    label: "E4 Dy. Manager HR (Umesh D. Bhatia)"
   E1_FIN:
     tier: junior
     function: FIN
@@ -103,8 +103,8 @@ personas:
     function: FIN
     grade: E3
     emp_id: EMP-100146
-    display_name: "Asha Mishra"
-    label: "E3 Finance Officer (Asha Mishra)"
+    display_name: "Shailesh E. Kapoor"
+    label: "E3 Finance Officer (Shailesh E. Kapoor)"
   E4_FIN:
     tier: junior
     function: FIN

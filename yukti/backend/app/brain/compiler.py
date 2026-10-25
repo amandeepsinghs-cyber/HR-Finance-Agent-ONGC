@@ -3385,6 +3385,8 @@ ORDER BY line_order ASC"""
                         elif m_emp_in:
                             eids_in = {x.strip().strip("'") for x in m_emp_in.group(1).split(",")}
                             emps = [e for e in emps if e["emp_id"] in eids_in]
+                        elif "emp_id = @self_emp_id" in compiled.sql and compiled.self_emp_id:
+                            emps = [e for e in emps if e["emp_id"] == str(compiled.self_emp_id)]
                         m_wc_eq = re.search(r"wc_id\s*=\s*'([^']+)'", compiled.sql)
                         m_wc_in = re.search(r"wc_id\s+IN\s*\(([^)]+)\)", compiled.sql)
                         if m_wc_eq:

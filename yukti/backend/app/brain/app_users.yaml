@@ -3,6 +3,7 @@ decision_refs:
 - D-41
 - D-43
 - D-60
+- D-66
 - SPEC-06
 completeness_gate_sql: "WITH\n  has_pay AS (\n    SELECT emp_id, COUNT(DISTINCT pay_period)\
   \ AS months\n    FROM `hrfin_gold.fact_payroll_monthly`\n    WHERE fiscal_year =\
@@ -23,13 +24,13 @@ personas:
   CMD:
     persona_id: CMD
     emp_id: EMP-000001
-    display_name: Arun Mehra
+    display_name: Arun Kumar Singh
     grade: CMD
     function: EXEC
     discipline_id: DISC-PRD
     wc_id: WC-DEL
-    work_centre: Delhi HQ
-    functional_designation: Chairman & Managing Director
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
+    functional_designation: Chairman & CEO
     tier: cmd
     is_admin: false
     synthetic: true
@@ -50,13 +51,13 @@ personas:
   DIR_HR:
     persona_id: DIR_HR
     emp_id: EMP-000002
-    display_name: Manish Deshpande
+    display_name: Manish Patil
     grade: DIR
     function: HR
     discipline_id: DISC-HR
     wc_id: WC-DEL
-    work_centre: Delhi HQ
-    functional_designation: Director (HR)
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
+    functional_designation: Director (Human Resources)
     tier: director
     is_admin: false
     synthetic: true
@@ -77,12 +78,12 @@ personas:
   DIR_FIN:
     persona_id: DIR_FIN
     emp_id: EMP-000003
-    display_name: Vivek Rao
+    display_name: Anupam Agarwal
     grade: DIR
     function: FIN
     discipline_id: DISC-FIN
     wc_id: WC-DEL
-    work_centre: Delhi HQ
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
     functional_designation: Director (Finance)
     tier: director
     is_admin: false
@@ -109,7 +110,7 @@ personas:
     function: HR
     discipline_id: DISC-HR
     wc_id: WC-DEL
-    work_centre: Delhi HQ
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
     functional_designation: HR Officer (E1)
     tier: junior
     is_admin: false
@@ -136,7 +137,7 @@ personas:
     function: HR
     discipline_id: DISC-HR
     wc_id: WC-DEL
-    work_centre: Delhi HQ
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
     functional_designation: HR Executive (E2)
     tier: junior
     is_admin: false
@@ -158,12 +159,12 @@ personas:
   E3_HR:
     persona_id: E3_HR
     emp_id: EMP-100144
-    display_name: Pooja Pillai
+    display_name: Lokesh Verma
     grade: E3
     function: HR
     discipline_id: DISC-HR
     wc_id: WC-DEL
-    work_centre: Delhi HQ
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
     functional_designation: Senior HR Executive (E3)
     tier: junior
     is_admin: false
@@ -185,12 +186,12 @@ personas:
   E4_HR:
     persona_id: E4_HR
     emp_id: EMP-100178
-    display_name: Aarti Saikia
+    display_name: Umesh D. Bhatia
     grade: E4
     function: HR
     discipline_id: DISC-HR
     wc_id: WC-DEL
-    work_centre: Delhi HQ
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
     functional_designation: Dy. Manager HR (E4)
     tier: junior
     is_admin: false
@@ -217,7 +218,7 @@ personas:
     function: FIN
     discipline_id: DISC-FIN
     wc_id: WC-DEL
-    work_centre: Delhi HQ
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
     functional_designation: Accounts Officer (E1)
     tier: junior
     is_admin: false
@@ -244,7 +245,7 @@ personas:
     function: FIN
     discipline_id: DISC-FIN
     wc_id: WC-DEL
-    work_centre: Delhi HQ
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
     functional_designation: Finance Executive (E2)
     tier: junior
     is_admin: false
@@ -266,12 +267,12 @@ personas:
   E3_FIN:
     persona_id: E3_FIN
     emp_id: EMP-100146
-    display_name: Asha Mishra
+    display_name: Shailesh E. Kapoor
     grade: E3
     function: FIN
     discipline_id: DISC-FIN
     wc_id: WC-DEL
-    work_centre: Delhi HQ
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
     functional_designation: Finance Officer (E3)
     tier: junior
     is_admin: false
@@ -298,7 +299,7 @@ personas:
     function: FIN
     discipline_id: DISC-FIN
     wc_id: WC-DEL
-    work_centre: Delhi HQ
+    work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
     functional_designation: Dy. Manager Finance (E4)
     tier: junior
     is_admin: false
@@ -325,7 +326,7 @@ demo_admin:
   function: EXEC
   discipline_id: DISC-PRD
   wc_id: WC-DEL
-  work_centre: Delhi HQ
+  work_centre: Corporate HQ Delhi (Deendayal Urja Bhawan)
   functional_designation: Demo Admin — Switchable
   tier: cmd
   is_admin: true

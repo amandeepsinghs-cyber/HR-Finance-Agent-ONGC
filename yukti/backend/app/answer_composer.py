@@ -189,18 +189,29 @@ def render_refusal_copy(
     raw_alt = entry.get("alternative")
     alt_out: Optional[Dict[str, str]] = None
     if isinstance(raw_alt, dict):
-        lbl_tpl = raw_alt.get("label_hi" if is_hi and raw_alt.get("label_hi") else "label") or ""
-        q_tpl = raw_alt.get("question_hi" if is_hi and raw_alt.get("question_hi") else "question") or ""
-        alt_out = {
-            "label": lbl_tpl.format(display_name=disp, designation=desig, n=n_val, grade_num=n_val),
-            "question": q_tpl.format(display_name=disp, designation=desig, n=n_val, grade_num=n_val),
-        }
+        # D-66: APAR is not displayed for named office-holders (CMD, DIR_HR, DIR_FIN),
+        # so offer their own leave balance as the safe self-service chip instead of self APAR.
+        if norm_code == "R-APAR" and p_info.get("persona_id") in ("CMD", "DIR_HR", "DIR_FIN"):
+            alt_out = (
+                {"label": "मेरी छुट्टी का बैलेंस", "question": "मेरी छुट्टी कितनी बची है?"}
+                if is_hi
+                else {"label": "My leave balance", "question": "What is my leave balance?"}
+            )
+        else:
+            lbl_tpl = raw_alt.get("label_hi" if is_hi and raw_alt.get("label_hi") else "label") or ""
+            q_tpl = raw_alt.get("question_hi" if is_hi and raw_alt.get("question_hi") else "question") or ""
+            alt_out = {
+                "label": lbl_tpl.format(display_name=disp, designation=desig, n=n_val, grade_num=n_val),
+                "question": q_tpl.format(display_name=disp, designation=desig, n=n_val, grade_num=n_val),
+            }
 
     alts_out: List[Dict[str, str]] = []
     seen_labels = {(alt_out["label"].strip().lower()) for _ in [1] if alt_out}
     seen_questions = {(alt_out["question"].strip().lower()) for _ in [1] if alt_out}
     for item in entry.get("alternatives") or []:
         if isinstance(item, dict):
+            if norm_code == "R-APAR" and p_info.get("persona_id") in ("CMD", "DIR_HR", "DIR_FIN"):
+                continue
             lbl_en = (item.get("label") or "").format(display_name=disp, designation=desig, n=n_val, grade_num=n_val)
             lbl_hi = (item.get("label_hi") or lbl_en).format(display_name=disp, designation=desig, n=n_val, grade_num=n_val)
             q_en = (item.get("question") or "").format(display_name=disp, designation=desig, n=n_val, grade_num=n_val)
@@ -254,8 +265,11 @@ def build_refusal_contract(
         display_name=display_name,
         designation=designation,
     )
+    from app.brain.rbac import OFFICE_HOLDER_REFUSAL_COPY
+
     eff_rule_ref = rule_ref or rendered["rule_ref"]
-    headline = rendered["text"]
+    is_d66 = "D-66" in str(eff_rule_ref or "")
+    headline = OFFICE_HOLDER_REFUSAL_COPY if is_d66 else rendered["text"]
     alt = rendered["alternative"]
     alts = rendered["alternatives"]
 
@@ -413,18 +427,30 @@ def validate_and_repair_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
     # P2H.2 (M1): ensure every refusal carries SPEC-06 copy, access.code, access.rule_ref, and non-duplicate alternatives
     access = contract["access"]
     if access.get("status") == "refused":
+        from app.brain.rbac import OFFICE_HOLDER_REFUSAL_COPY
+
+        is_d66 = (
+            "D-66" in str(access.get("rule_ref") or "")
+            or OFFICE_HOLDER_REFUSAL_COPY.lower() in str(access.get("reason") or "").lower()
+            or OFFICE_HOLDER_REFUSAL_COPY.lower() in str(contract.get("spoken_summary") or "").lower()
+        )
         code = _infer_refusal_code(access)
         rendered = render_refusal_copy(code, lang=contract.get("language", "en"), persona=contract.get("persona"))
         access["code"] = code
-        access.setdefault("rule_ref", rendered["rule_ref"])
-        access["reason"] = rendered["text"]
+        if is_d66:
+            access["rule_ref"] = "D-66"
+            eff_text = OFFICE_HOLDER_REFUSAL_COPY
+        else:
+            access.setdefault("rule_ref", rendered["rule_ref"])
+            eff_text = rendered["text"]
+        access["reason"] = eff_text
         if not isinstance(access.get("alternative"), dict) and rendered["alternative"] is not None:
             access["alternative"] = rendered["alternative"]
         access["alternatives"] = rendered["alternatives"]
         
         # Overwrite refusal headlines / titles that leak rule IDs (BEH-01.60) or miss standard translation
-        contract["spoken_summary"] = rendered["text"]
-        contract["display_text"] = rendered["text"][:600]
+        contract["spoken_summary"] = eff_text
+        contract["display_text"] = eff_text[:600]
         contract["suggestions"] = []
         
         if isinstance(vis, dict):
@@ -434,7 +460,13 @@ def validate_and_repair_contract(contract: Dict[str, Any]) -> Dict[str, Any]:
             elif not vis.get("title") or vis.get("type") == "none":
                 vis["title"] = "Access restricted"
             vis.setdefault("code", code)
-            vis.setdefault("rule_ref", rendered["rule_ref"])
+            if is_d66:
+                vis["rule_ref"] = "D-66"
+                if isinstance(vis.get("table"), dict) and isinstance(vis["table"].get("masking"), dict):
+                    vis["table"]["masking"]["reason"] = eff_text
+                    vis["table"]["masking"]["rule_ref"] = "D-66"
+            else:
+                vis.setdefault("rule_ref", rendered["rule_ref"])
             vis.setdefault("alternative", rendered["alternative"])
             vis.setdefault("alternatives", rendered["alternatives"])
             vis.setdefault("rule_ref", access["rule_ref"])

@@ -102,7 +102,7 @@ def test_session_cookie_flags_and_me():
     assert sc.startswith("yk_session=") and "HttpOnly" in sc and "Secure" in sc and "SameSite=strict" in sc.replace("Strict", "strict")
     tok = sc.split(";", 1)[0].split("=", 1)[1]
     me = c.get("/api/auth/me", headers={"Authorization": f"Bearer {tok}"}).json()["principal"]
-    assert me["persona"] == "E3_FIN" and me["display_name"] == "Asha Mishra" and "jti" not in me
+    assert me["persona"] == "E3_FIN" and me["display_name"] == "Shailesh E. Kapoor" and "jti" not in me
     assert r.json()["principal"]["persona"] == "E3_FIN" and "token" not in r.json()
 
 
