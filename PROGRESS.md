@@ -1,16 +1,16 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 25-Oct-2026 13:52 UTC · branch `v3/P0-stabilise` @ `07d11ba`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 25-Oct-2026 14:26 UTC · branch `v3/P0-stabilise` @ `be71f01`
 
 > [!IMPORTANT]
-> **Overall: 97% complete (weighted)** — 60/62 steps ✅ done, 1 in flight, 1 to do, 0 blocked. **2 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 98% complete (weighted)** — 61/62 steps ✅ done, 0 in flight, 1 to do, 0 blocked. **2 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
 | Phase | Name | Progress | ✅ | 🔍 | 🔨 | 🔄 | ⬜ | ⛔ | Steps |
 |---|---|---|---|---|---|---|---|---|---|
 | **P0** | Stabilise | `████████████████████` 100% | 11 | 0 | 0 | 0 | 0 | 0 | 11 |
-| **P1** | Real finance SSOT | `███████████████████░` 94% | 11 | 0 | 0 | 1 | 0 | 0 | 12 |
+| **P1** | Real finance SSOT | `████████████████████` 100% | 12 | 0 | 0 | 0 | 0 | 0 | 12 |
 | **P2H** | HR: personas, V19, Employee-360 | `████████████████████` 100% | 8 | 0 | 0 | 0 | 0 | 0 | 8 |
 | **P2F** | Finance diagnostics (V20) | `████████████████████` 100% | 6 | 0 | 0 | 0 | 0 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `████████████████████` 100% | 10 | 0 | 0 | 0 | 0 | 0 | 10 |
@@ -19,17 +19,11 @@
 
 ## 2. Next actionable steps (all dependencies ✅)
 
-**In flight — finish these first:**
-
-| Step | Status | Task | Owner | Next action |
-|---|---|---|---|---|
-| P1.1 | 🔄 In progress | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | Complete build + evidence |
-
 **Ready to start:**
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
-| — | Nothing is unblocked: finish the in-flight steps above (G4 reviews) first. | | |
+| P5.6 | Cloud Run redeploy from the green tree (sponsor go-ahead) | O + S | phase gates met |
 
 ## 3. Sponsor action items
 
@@ -59,18 +53,18 @@
 | V15 | FEAT-015, FEAT-026 | ✅ ✅ |  | ✅ |
 | V16 | FEAT-016 | ✅ |  | ✅ |
 | V17 | FEAT-017, FEAT-031 | ✅ ✅ |  | ✅ |
-| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🟡 🟡 ✅ ✅ ✅ | P1.1 | 🟡 |
+| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | ✅ ✅ ✅ ✅ ✅ |  | ✅ |
 | V19 | FEAT-021, FEAT-023 | ✅ ✅ |  | ✅ |
-| V20 | FEAT-019, FEAT-020, FEAT-024 | 🟡 ✅ 🟡 | P1.1 | 🟡 |
+| V20 | FEAT-019, FEAT-020, FEAT-024 | ✅ ✅ ✅ |  | ✅ |
 | V21 | FEAT-025, FEAT-026, FEAT-027 | ✅ ✅ ✅ |  | ✅ |
-| V22 | FEAT-019, FEAT-028, FEAT-029 | 🟡 ✅ 🟡 | P1.1 | 🟡 |
+| V22 | FEAT-019, FEAT-028, FEAT-029 | ✅ ✅ ✅ |  | ✅ |
 | V23 | FEAT-021, FEAT-022, FEAT-032 | ✅ ✅ ✅ |  | ✅ |
 
 _Not mapped to a feature (process / question-bank / naming verbatims, tracked in UPGRADE_CHECKLIST Part A and docs/question_bank.md): V1, V4, V5, V9, V10._
 
 ## 5. Features (v3 status from the feature list)
 
-✅ 26 · 🟡 6 · 🔴 0 · ⛔ 0 = 32
+✅ 30 · 🟡 2 · 🔴 0 · ⛔ 0 = 32
 
 | Feature | Status | Steps done / total |
 |---|---|---|
@@ -91,18 +85,18 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-015 Any-chart re-presentation & chart excellence | ✅ | 0/0 |
 | FEAT-016 AI aura visual language | ✅ | 1/1 |
 | FEAT-017 Eleven-persona matrix + function split + `self` scope | ✅ | 2/2 |
-| FEAT-018 Real financial SSOT with page lineage + verification gates | 🟡 | 7/8 |
-| FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | 🟡 | 1/2 |
+| FEAT-018 Real financial SSOT with page lineage + verification gates | ✅ | 8/8 |
+| FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ✅ | 2/2 |
 | FEAT-020 Knowledge RAG over real AR text | ✅ | 1/1 |
 | FEAT-021 Employee-360 enterprise table (realistic, reconciled) | ✅ | 4/4 |
 | FEAT-022 Field economics-360 reconciled to company AR totals | ✅ | 3/3 |
 | FEAT-023 V19 transfer workflow: Excel intent + Email agent | ✅ | 2/2 |
-| FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | 🟡 | 7/7 |
+| FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ✅ | 7/7 |
 | FEAT-025 Financial statement table visual | ✅ | 4/4 |
 | FEAT-026 Chart portfolio completion + correct waterfall | ✅ | 4/4 |
 | FEAT-027 Export suite | ✅ | 4/4 |
 | FEAT-028 Coordinator + agent registry + jobs + permission UX | ✅ | 6/6 |
-| FEAT-029 DCF valuation agent | 🟡 | 4/4 |
+| FEAT-029 DCF valuation agent | ✅ | 4/4 |
 | FEAT-030 One-brain consolidation + numeric golden eval | ✅ | 8/8 |
 | FEAT-031 Identity & security hardening | ✅ | 3/3 |
 | FEAT-032 Provenance honesty & degraded-mode transparency | ✅ | 4/4 |
