@@ -225,12 +225,14 @@ def run_certified_query(
 
     # Execute query
     try:
+        from app.config import BQ_SILVER_DATASET, rewrite_dataset_sql
+        raw_sql = rewrite_dataset_sql(raw_sql)
         client = bigquery.Client(
             project=GCP_PROJECT,
             location=BQ_LOCATION,
         )
         job_config = bigquery.QueryJobConfig(
-            default_dataset=f"{GCP_PROJECT}.hrfin_silver",
+            default_dataset=f"{GCP_PROJECT}.{BQ_SILVER_DATASET}",
             query_parameters=bq_params,
             labels=JOB_LABELS,
             maximum_bytes_billed=MAX_BYTES_BILLED,

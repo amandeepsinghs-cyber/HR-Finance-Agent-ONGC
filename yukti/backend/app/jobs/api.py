@@ -84,8 +84,19 @@ async def create_job(req: CreateJobRequest, request: Request):
     if _is_expired(pa.get("expires_at")):
         raise HTTPException(status_code=410, detail="Proposal expired")
 
-    # Server-side RBAC re-check: persona comes strictly from server session (never request body)
+    # Server-side RBAC re-check: persona comes strictly from server session or verified auth token (never request body)
     server_persona = str(getattr(session, "persona", "E2_HR") or "E2_HR").upper()
+    if (
+        request.cookies.get("yk_session")
+        or request.headers.get("authorization")
+        or request.headers.get("x-goog-iap-jwt-assertion")
+    ):
+        from app.auth import AuthError, principal_from_request
+        try:
+            principal = principal_from_request(request)
+            server_persona = principal.persona.upper()
+        except AuthError:
+            pass
     requires_role = [str(r).upper() for r in (pa.get("requires_role") or [])]
     if requires_role and server_persona not in requires_role:
         logger.warning(

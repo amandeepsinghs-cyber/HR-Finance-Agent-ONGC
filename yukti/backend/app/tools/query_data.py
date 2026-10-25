@@ -224,8 +224,10 @@ def query_data(
             return res_copy
 
     # 4. Direct Execution with default_dataset and maximum_bytes_billed cap
+    from app.config import BQ_SILVER_DATASET, rewrite_dataset_sql
+    safe_sql = rewrite_dataset_sql(safe_sql)
     job_config = bigquery.QueryJobConfig(
-        default_dataset=f"{GCP_PROJECT}.hrfin_silver",
+        default_dataset=f"{GCP_PROJECT}.{BQ_SILVER_DATASET}",
         labels=JOB_LABELS,
         maximum_bytes_billed=MAX_BYTES_BILLED,
     )

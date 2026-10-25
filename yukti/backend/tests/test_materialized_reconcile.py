@@ -7,8 +7,14 @@ Verifies exact mathematical alignment against underlying views and silver tables
 """
 
 from decimal import Decimal
+import os
+from pathlib import Path
+import sys
 from google.cloud import bigquery
 import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from app.config import BQ_GOLD_DATASET, BQ_SILVER_DATASET, JOB_LABELS
 
 PROJECT_ID = "ongc-hr-finance-agent"
 LOCATION = "asia-south1"
@@ -16,7 +22,11 @@ LOCATION = "asia-south1"
 
 @pytest.fixture(scope="module")
 def bq_client():
-    return bigquery.Client(project=PROJECT_ID, location=LOCATION)
+    return bigquery.Client(
+        project=PROJECT_ID,
+        location=LOCATION,
+        default_query_job_config=bigquery.QueryJobConfig(labels=JOB_LABELS),
+    )
 
 
 def test_reconcile_headcount_tenure(bq_client):
@@ -27,7 +37,7 @@ def test_reconcile_headcount_tenure(bq_client):
         SUM(exempt_retiring_3yr) as exempt,
         SUM(exempt_valid_tag) as exempt_tag,
         SUM(non_exempt_due_transfer) as non_exempt
-    FROM `{PROJECT_ID}.hrfin_gold.agg_headcount_tenure_summary`
+    FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.agg_headcount_tenure_summary`
     WHERE wc_id = 'WC-DEL' AND continuous_stay_months >= 60 AND grade_id LIKE 'E%';
     """
     row_agg = list(bq_client.query(sql_agg).result())[0]
@@ -51,14 +61,14 @@ def test_reconcile_field_pnl(bq_client):
     # Check Champang
     sql_champang_agg = f"""
     SELECT recomputed_pbt_inr_cr
-    FROM `{PROJECT_ID}.hrfin_gold.agg_field_pnl_summary`
+    FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.agg_field_pnl_summary`
     WHERE fiscal_year = 'FY26' AND field_name = 'Champang';
     """
     pbt_agg = list(bq_client.query(sql_champang_agg).result())[0]["recomputed_pbt_inr_cr"]
 
     sql_champang_ssot = f"""
     SELECT recomputed_pbt_inr_cr
-    FROM `{PROJECT_ID}.hrfin_gold.ssot_field_economics_360`
+    FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.ssot_field_economics_360`
     WHERE fiscal_year = 'FY26' AND field_name = 'Champang';
     """
     pbt_ssot = list(bq_client.query(sql_champang_ssot).result())[0]["recomputed_pbt_inr_cr"]
@@ -73,7 +83,7 @@ def test_reconcile_field_pnl(bq_client):
         ROUND(SUM(recomputed_gross_revenue_inr_cr), 2) as sum_rev,
         ROUND(SUM(recomputed_ebitda_inr_cr), 2) as sum_ebitda,
         ROUND(SUM(recomputed_pbt_inr_cr), 2) as sum_pbt
-    FROM `{PROJECT_ID}.hrfin_gold.agg_field_pnl_summary`
+    FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.agg_field_pnl_summary`
     WHERE fiscal_year = 'FY26';
     """
     sums_agg = list(bq_client.query(sql_sums_agg).result())[0]
@@ -84,7 +94,7 @@ def test_reconcile_field_pnl(bq_client):
         ROUND(SUM(recomputed_gross_revenue_inr_cr), 2) as sum_rev,
         ROUND(SUM(recomputed_ebitda_inr_cr), 2) as sum_ebitda,
         ROUND(SUM(recomputed_pbt_inr_cr), 2) as sum_pbt
-    FROM `{PROJECT_ID}.hrfin_gold.ssot_field_economics_360`
+    FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.ssot_field_economics_360`
     WHERE fiscal_year = 'FY26' AND field_id IS NOT NULL;
     """
     sums_ssot = list(bq_client.query(sql_sums_ssot).result())[0]
@@ -101,7 +111,7 @@ def test_reconcile_lifting_cost(bq_client):
     SELECT
         ROUND(SUM(total_opex_inr_cr * 10000000.0) / NULLIF(SUM(total_production_boe), 0), 2) as lifting_cost_inr_boe,
         ROUND(SUM(total_opex_inr_cr * 10000000.0 / 88.33) / NULLIF(SUM(total_production_boe), 0), 2) as lifting_cost_usd_boe
-    FROM `{PROJECT_ID}.hrfin_gold.agg_lifting_cost_summary`
+    FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.agg_lifting_cost_summary`
     WHERE fiscal_year = 'FY26';
     """
     res_agg = list(bq_client.query(sql_agg).result())[0]
@@ -110,7 +120,7 @@ def test_reconcile_lifting_cost(bq_client):
     SELECT
         ROUND(SUM(total_opex_inr_cr * 10000000.0) / NULLIF(SUM(total_production_boe), 0), 2) as lifting_cost_inr_boe,
         ROUND(SUM(total_opex_inr_cr * 10000000.0 / 88.33) / NULLIF(SUM(total_production_boe), 0), 2) as lifting_cost_usd_boe
-    FROM `{PROJECT_ID}.hrfin_gold.v_lifting_cost`
+    FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.v_lifting_cost`
     WHERE fiscal_year = 'FY26';
     """
     res_view = list(bq_client.query(sql_view).result())[0]
@@ -130,7 +140,7 @@ def test_reconcile_vacancies(bq_client):
         SUM(total_sanctioned) as sum_sanctioned,
         SUM(total_in_position) as sum_in_position,
         SUM(total_vacancies) as sum_vacancies
-    FROM `{PROJECT_ID}.hrfin_gold.agg_vacancies_summary`
+    FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.agg_vacancies_summary`
     GROUP BY fiscal_year
     ORDER BY fiscal_year DESC;
     """
@@ -142,7 +152,7 @@ def test_reconcile_vacancies(bq_client):
         SUM(sanctioned_strength) as sum_sanctioned,
         SUM(in_position_strength) as sum_in_position,
         SUM(vacancy_count) as sum_vacancies
-    FROM `{PROJECT_ID}.hrfin_silver.sanctioned_posts`
+    FROM `{PROJECT_ID}.{BQ_SILVER_DATASET}.sanctioned_posts`
     GROUP BY fiscal_year
     ORDER BY fiscal_year DESC;
     """

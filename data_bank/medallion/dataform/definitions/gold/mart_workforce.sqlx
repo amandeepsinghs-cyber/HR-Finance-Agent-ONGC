@@ -91,7 +91,7 @@ SELECT
   COALESCE(app.apprentice_technical_count, 0) AS apprentice_technical_count
 FROM ${ref("employee_master")} e
 LEFT JOIN ${ref("dim_work_centre")} w ON e.current_wc_id = w.wc_id
-LEFT JOIN ${ref("dim_grade")} g ON e.current_grade_id = g.grade_id
+LEFT JOIN ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_grade")} g ON e.current_grade_id = g.grade_id
 LEFT JOIN ${ref("dim_discipline")} d ON e.discipline_id = d.discipline_id
 LEFT JOIN ${ref("succession_plan")} sp ON e.emp_id = sp.incumbent_emp_id
 LEFT JOIN ${ref("separations")} sep ON e.emp_id = sep.emp_id

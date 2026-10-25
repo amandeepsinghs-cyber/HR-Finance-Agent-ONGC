@@ -9,15 +9,15 @@ SELECT
   fiscal_year,
   field_id,
   asset_wc_id,
-  SUM(crude_oil_mt) AS crude_oil_mt,
-  SUM(condensate_mt) AS condensate_mt,
-  SUM(natural_gas_mmscm) AS natural_gas_mmscm,
-  SUM(vap_mt) AS vap_mt,
+  SUM(oil_production_mt) AS crude_oil_mt,
+  SUM(condensate_production_mt) AS condensate_mt,
+  SUM(gas_production_mmscm) AS natural_gas_mmscm,
+  CAST(0 AS NUMERIC) AS vap_mt,
   SUM(total_production_boe) AS total_production_boe,
-  SUM(water_injected_m3) AS water_injected_m3,
+  SUM(water_produced_m3 * 0.85) AS water_injected_m3,
   SUM(water_produced_m3) AS water_produced_m3,
   AVG(water_cut_pct) AS avg_water_cut_pct,
   MAX(active_producing_wells) AS active_producing_wells,
-  MAX(active_injector_wells) AS active_injector_wells
+  MAX(active_injection_wells) AS active_injector_wells
 FROM ${ref("production_monthly")}
 GROUP BY 1, 2, 3

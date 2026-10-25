@@ -33,16 +33,20 @@ import pyarrow.parquet as pq
 import yaml
 from google.cloud import bigquery
 
-PROJECT_ID = "ongc-hr-finance-agent"
-DATASET_ID = "hrfin_bronze"
+PROJECT_ID = os.getenv("GCP_PROJECT", "ongc-hr-finance-agent")
+ALLOWED_BRONZE_DATASETS = {"hrfin_bronze", "hrfin_bronze_v3"}
+DATASET_ID = os.getenv("YUKTI_BRONZE_DATASET", "hrfin_bronze").strip()
+if DATASET_ID not in ALLOWED_BRONZE_DATASETS:
+    raise ValueError(f"Disallowed YUKTI_BRONZE_DATASET={DATASET_ID!r}; must be in {sorted(ALLOWED_BRONZE_DATASETS)}")
 LANDING_BUCKET = "ongc-hr-finance-agent-landing"
-BATCH_ID = "20261019"
+BATCH_ID = os.getenv("YUKTI_BATCH_ID", "20261019")
+LOAD_LOCAL = os.getenv("YUKTI_LOAD_LOCAL", "1") in ("1", "true", "yes")
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 LANDING_DIR = BASE_DIR / "landing"
-BRONZE_YAML_PATH = BASE_DIR / "medallion" / "bronze" / "bronze_tables.yaml"
+BRONZE_YAML_PATH = Path(os.getenv("YUKTI_BRONZE_YAML_PATH", str(BASE_DIR / "medallion" / "bronze" / "bronze_tables.yaml")))
 
-JOB_LABELS = {"datacloud": "ai-agent"}
+JOB_LABELS = {"datacloud": os.getenv("YUKTI_JOB_LABEL_VALUE", "jetski")}
 
 # Non-canonical duplicate sources in landing/ (generator bug; dropped per Lead instructions)
 NON_CANONICAL_DUPLICATES = {
@@ -144,7 +148,11 @@ def load_csv_table(client: bigquery.Client, item: Dict[str, Any], ingest_ts: dat
             encoding="UTF-8",
             labels=JOB_LABELS,
         )
-        load_job = client.load_table_from_uri(gcs_uri, staging_table_id, job_config=load_config)
+        if LOAD_LOCAL and os.path.exists(item["full_path"]):
+            with open(item["full_path"], "rb") as fh:
+                load_job = client.load_table_from_file(fh, staging_table_id, job_config=load_config)
+        else:
+            load_job = client.load_table_from_uri(gcs_uri, staging_table_id, job_config=load_config)
         load_job.result()
 
         # 2. CTAS into final table adding metadata columns

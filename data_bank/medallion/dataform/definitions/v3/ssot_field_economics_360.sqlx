@@ -97,6 +97,7 @@ hc_by_wc AS (
     wc_id,
     COUNTIF(is_month_end_active) AS active_hc
   FROM ${ref("ssot_employee_360")}
+  WHERE month_start >= DATE '2016-04-01'
   GROUP BY 1, 2
 )
 SELECT

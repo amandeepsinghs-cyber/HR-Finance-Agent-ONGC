@@ -68,7 +68,7 @@ WITH emp_fy AS (
       NULLIF(SUM(gross_earnings_inr), 0)
     ) AS women_wage_share_pct,
     AVG(IF(grade_id = 'E1' AND joined_in_month_flag, ctc_annualised_inr / 1e5, NULL)) AS entry_e1_ctc_lakhs,
-    CAST(COUNTIF(superannuation_pct_bp_da > 0.3001) AS FLOAT64) AS superann_cap_violations,
+    CAST(COUNTIF(superannuation_pct_bp_da > 30.01) AS FLOAT64) AS superann_cap_violations,
     -- 3rd PRC pay scales (pay_scale_min_inr, pay_scale_max_inr) took effect 01-Jan-2017 (DPE OM 3-Aug-2017);
     -- Apr-Dec 2016 rows in FY17 were on 2nd-PRC (2007) scales, so scale-band check applies to month_start >= 2017-01-01.
     CAST(COUNTIF(
@@ -103,7 +103,7 @@ WITH emp_fy AS (
     ) AS FLOAT64) AS row_identity_violations,
     AVG(IF(fy_month_no = 12 AND is_month_end_active, age_years, NULL)) AS avg_age_years
   FROM ${ref("ssot_employee_360")}
-  WHERE month_start >= DATE '2016-04-01'
+  WHERE month_start >= DATE '2016-04-01' AND fiscal_year BETWEEN 'FY17' AND 'FY26'
   GROUP BY fiscal_year
 ),
 pool_fy AS (
@@ -118,7 +118,7 @@ pool_fy AS (
     SUM(IF(note35_line = 'f', amount_inr, 0)) / 1e6 AS pool_f_mn,
     SUM(IF(pool_code LIKE 'POOL_RESIDUAL%', amount_inr, 0)) / 1e6 AS resid_only_mn
   FROM ${ref("fact_employee_cost_pool")}
-  WHERE month_start >= DATE '2016-04-01'
+  WHERE month_start >= DATE '2016-04-01' AND fiscal_year BETWEEN 'FY17' AND 'FY26'
   GROUP BY fiscal_year
 ),
 combined_fy AS (

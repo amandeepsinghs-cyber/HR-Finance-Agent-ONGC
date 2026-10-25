@@ -5,8 +5,7 @@ config {
   description: "Employee 360 gold table.",
   bigquery: {
     partitionBy: "month_start",
-    clusterBy: ["wc_id", "grade_id", "function_code", "emp_id"],
-    requirePartitionFilter: true
+    clusterBy: ["wc_id", "grade_id", "function_code", "emp_id"]
   },
   columns: {
     "month_start": "First day of payroll month; partition key [AGG][D]",

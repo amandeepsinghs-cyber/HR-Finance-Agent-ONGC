@@ -49,13 +49,16 @@ const bronzeTables = [
   "sap_employee_cost_pool",
   "sap_payroll_policy_fy",
   "sap_co_pa_v3",
-  "sap_field_alloc_audit"
+  "sap_field_alloc_audit",
+  "sap_dim_app_user"
 ];
+
+const sfx = dataform.projectConfig.schemaSuffix ? `_${dataform.projectConfig.schemaSuffix}` : "";
 
 bronzeTables.forEach(tableName => {
   declare({
     database: "ongc-hr-finance-agent",
-    schema: "hrfin_bronze",
+    schema: `hrfin_bronze${sfx}`,
     name: tableName,
   });
 });
@@ -78,7 +81,7 @@ const refDims = [
 refDims.forEach(tableName => {
   declare({
     database: "ongc-hr-finance-agent",
-    schema: "hrfin_silver",
+    schema: `hrfin_silver${sfx}`,
     name: tableName,
   });
 });
@@ -91,7 +94,7 @@ const hrfinRefDims = [
 hrfinRefDims.forEach(tableName => {
   declare({
     database: "ongc-hr-finance-agent",
-    schema: "hrfin_ref",
+    schema: `hrfin_ref${sfx}`,
     name: tableName,
   });
 });

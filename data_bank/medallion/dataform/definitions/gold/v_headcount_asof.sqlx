@@ -29,7 +29,7 @@ FROM UNNEST([
 ]) d
 CROSS JOIN ${ref("employee_master")} e
 JOIN ${ref("dim_work_centre")} w ON e.current_wc_id = w.wc_id
-JOIN ${ref("dim_grade")} g ON e.current_grade_id = g.grade_id
+JOIN ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_grade")} g ON e.current_grade_id = g.grade_id
 JOIN ${ref("dim_discipline")} d_ref ON e.discipline_id = d_ref.discipline_id
 WHERE e.doj <= d AND (e.separation_date IS NULL OR e.separation_date > d)
 GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14

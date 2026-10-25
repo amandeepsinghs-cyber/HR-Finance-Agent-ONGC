@@ -139,4 +139,5 @@ SELECT
     NULLIF(AVG(inr_usd_fx_rate), 0)
   ) AS capex_intensity_usd_boe
 FROM ${ref("ssot_field_economics_360")}
+WHERE month_start IS NOT NULL
 GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12

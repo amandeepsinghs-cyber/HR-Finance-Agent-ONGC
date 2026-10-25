@@ -197,7 +197,7 @@ WITH g_dim AS (
   SELECT
     *,
     `group` AS group_class
-  FROM ${ref("dim_grade")}
+  FROM ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_grade")}
 ),
 d_dim AS (
   SELECT
@@ -205,7 +205,7 @@ d_dim AS (
     code AS function_code
   FROM ${ref("dim_discipline")}
 ),
-posting_islands AS (
+posting_islands_base AS (
   SELECT
     ph.emp_id,
     ph.wc_id,
@@ -223,11 +223,20 @@ posting_islands AS (
   FROM ${ref("posting_history")} ph
   LEFT JOIN ${ref("dim_work_centre")} wc_ph ON ph.wc_id = wc_ph.wc_id
 ),
+posting_islands AS (
+  SELECT
+    *,
+    MIN(from_date) OVER (PARTITION BY emp_id, wc_id, island_id) AS island_start_date
+  FROM posting_islands_base
+),
 pos_emp_wc AS (
   SELECT
     emp_id,
     wc_id,
-    MIN(CASE WHEN is_current_posting THEN from_date ELSE from_date END) AS current_station_since,
+    COALESCE(
+      MIN(CASE WHEN is_current_posting THEN island_start_date END),
+      MAX(island_start_date)
+    ) AS current_station_since,
     ROUND(SUM(DATE_DIFF(to_date, from_date, DAY)) / 365.25, 2) AS station_tenure_cumulative_years,
     MAX(CASE WHEN posting_type != 'initial' THEN from_date END) AS last_transfer_date,
     COUNTIF(posting_type != 'initial') AS transfers_count,

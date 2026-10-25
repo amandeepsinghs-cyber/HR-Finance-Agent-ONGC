@@ -313,10 +313,52 @@ async def run_planner_turn(
                 is_why = True
                 if plan.spec.metric == "revenue_cr":
                     plan.spec.metric = "corporate_revenue_cr"
+        elif not has_filter and re.search(r"\b(why|what drove|what caused)\b.*\b(pat|pbt|profit|revenue|opex|royalty|saed|windfall|levies|dd&a|finance\s+cost|exchange\s+loss|provision|other\s+income)\b", query or "", re.I):
+            is_why = True
 
     if is_why:
         from app.agents.fin_diagnostics.why import run_why_turn
         return await run_why_turn(query, plan, prev, session_state, persona, turn_id, language, t0)
+
+    if re.search(r"\b(top\s*(?:5|five)\s*actions|quantified\s+actions|what\s+actions\s+(?:can|should)\s+we\s+take)\b", query or "", re.I):
+        from pathlib import Path
+        import pandas as pd
+        from app.agents.fin_diagnostics.actions import generate_actions
+        from app.semantic.normalize import resolve_fy
+        fy_hint = resolve_fy(query)
+        fy_act = (fy_hint.get("fy") if isinstance(fy_hint, dict) and fy_hint.get("fy") else None) or "FY26"
+        snap_path = Path(os.getenv("YUKTI_FIN_SNAPSHOT_PATH") or (Path(__file__).resolve().parents[4] / "financial_ssot" / "out" / "fact_snapshot.parquet"))
+        levers_path = Path(__file__).resolve().parents[1] / "agents" / "fin_diagnostics" / "levers.yaml"
+        df_act = pd.read_parquet(snap_path)
+        act_payload = generate_actions(df_act, fy_act, persona=persona, levers_path=levers_path)
+        items = act_payload.get("items") or []
+        top_titles = ", ".join(str(it.get("title") or "") for it in items[:3])
+        summary_act = f"Here are the top {len(items)} quantified actions for {fy_act}: {top_titles}." if items else f"Here are the quantified actions for {fy_act}."
+        return {
+            "contract": {
+                "contract_version": 3,
+                "turn_id": turn_id,
+                "language": language,
+                "persona": persona,
+                "spoken_summary": summary_act,
+                "display_text": summary_act,
+                "visual": {
+                    "type": "actions",
+                    "mode": "replace",
+                    "title": f"Top 5 Quantified Actions — {fy_act}",
+                    "actions": act_payload,
+                },
+                "actions": act_payload,
+                "insights": [str(it.get("what_to_do") or "") for it in items[:3] if it.get("what_to_do")],
+                "sources": [{"kind": "data", "object": "hrfin_gold.fact_financial_statement_line", "title": f"ONGC Standalone SSOT ({fy_act})"}],
+                "suggestions": [],
+                "access": {"status": "allowed"},
+                "export_options": ["pdf", "xlsx"],
+                "status_events": [f"Generated {len(items)} quantified actions for {fy_act}"],
+                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+            },
+            "meta": None,
+        }
 
     if plan.intent == "what_if":
         # M-B4 / SPEC-11 §2 row 17: what_if runs after RBAC (finance personas only) using grounded numbers from ssot_field_economics_360

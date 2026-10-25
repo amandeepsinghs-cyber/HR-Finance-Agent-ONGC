@@ -15,6 +15,9 @@ def test_dcf_proposal():
     assert "CMD" in pa["requires_role"]
     assert "DIR_FIN" in pa["requires_role"]
     assert "wacc_pct" in pa["inputs"]
+    assert abs(pa["inputs"]["wacc_pct"] - 11.6556) < 1e-4
+    assert pa["lineage"]["wacc"]["source"] == "fact_wacc_annual FY26"
+    assert abs(pa["lineage"]["market_price"]["close_inr"] - 284.65) < 1e-2
 
 def test_dcf_proposal_stale():
     sess = MockSession()

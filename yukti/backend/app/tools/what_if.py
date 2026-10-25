@@ -134,6 +134,8 @@ GROUP BY fiscal_year
 ORDER BY fiscal_year DESC;"""
 
     try:
+        from app.config import rewrite_dataset_sql
+        sql = rewrite_dataset_sql(sql)
         job = client.query(sql, job_config=bigquery.QueryJobConfig(labels=JOB_LABELS))
         raw_rows = [dict(r) for r in job.result()]
         columns = [f.name for f in job.result().schema] if job.result().schema else []

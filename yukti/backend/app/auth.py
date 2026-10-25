@@ -360,7 +360,13 @@ def principal_from_request(request: Request) -> Principal:
     token = token_from_headers(request.headers, request.cookies)
     if not token:
         raise AuthError("no session token")
-    return verify_token(token)
+    try:
+        return verify_token(token)
+    except AuthError:
+        cookie_tok = (request.cookies or {}).get(COOKIE_NAME)
+        if cookie_tok and cookie_tok != token:
+            return verify_token(cookie_tok)
+        raise
 
 
 _UNAUTH = {"type": "error", "message": "Please sign in again to continue.", "retryable": False}

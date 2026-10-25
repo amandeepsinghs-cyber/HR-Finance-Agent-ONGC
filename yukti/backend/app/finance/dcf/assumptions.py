@@ -61,17 +61,20 @@ def _get_val(snapshot: List[Dict[str, Any]], code: str, default: float = 0.0) ->
     return default
 
 def defaults_from_ssot(snapshot: List[Dict[str, Any]], wacc_table: List[Dict[str, Any]], as_of: str) -> DCFAssumptions:
+    from app.finance.dcf.inputs import load_fy26_market_price_default, load_fy26_wacc_default
+
     def mk(val, src):
         return AssumptionField(value=float(val), source=src)
-        
-    # Find WACC from wacc_table
-    wacc_val = 10.5
-    wacc_source = "Illustrative assumption (fact_wacc_annual FY26 Rf seed pending)"
+
+    # Find WACC from wacc_table or canonical fact_wacc_annual FY26 SSOT
+    wacc_val, wacc_source, _ = load_fy26_wacc_default(wacc_table)
     for row in wacc_table:
         if row.get("fiscal_year") == "FY26" and row.get("verified", False):
             if row.get("wacc_pct") is not None:
-                wacc_val = row["wacc_pct"]
+                wacc_val = float(row["wacc_pct"])
                 wacc_source = "fact_wacc_annual FY26"
+
+    mkt_px, mkt_src, _ = load_fy26_market_price_default()
 
     # Filter snapshot
     valid_snapshot = []
@@ -135,5 +138,5 @@ def defaults_from_ssot(snapshot: List[Dict[str, Any]], wacc_table: List[Dict[str
         tax_rate_pct=mk(25.17, "AR"),
         capex_base_inr_cr=mk(39482.738, "Derived"),
         nwc_pct=mk(0.05, "Derived"),
-        market_price_inr=mk(150.0, "Derived")
+        market_price_inr=mk(mkt_px, mkt_src)
     )

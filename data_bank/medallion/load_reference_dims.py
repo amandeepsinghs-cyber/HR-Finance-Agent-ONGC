@@ -18,6 +18,7 @@ Tables loaded:
 from __future__ import annotations
 
 import datetime
+import os
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -25,12 +26,19 @@ import pandas as pd
 import yaml
 from google.cloud import bigquery
 
-PROJECT_ID = "ongc-hr-finance-agent"
-DATASET_ID = "hrfin_silver"
+PROJECT_ID = os.getenv("GCP_PROJECT", "ongc-hr-finance-agent")
+ALLOWED_SILVER_DATASETS = {"hrfin_silver", "hrfin_silver_v3"}
+ALLOWED_REF_DATASETS = {"hrfin_ref", "hrfin_ref_v3"}
+DATASET_ID = os.getenv("YUKTI_SILVER_DATASET", "hrfin_silver").strip()
+REF_DATASET_ID = os.getenv("YUKTI_REF_DATASET", "hrfin_ref").strip()
+if DATASET_ID not in ALLOWED_SILVER_DATASETS:
+    raise ValueError(f"Disallowed YUKTI_SILVER_DATASET={DATASET_ID!r}; must be in {sorted(ALLOWED_SILVER_DATASETS)}")
+if REF_DATASET_ID not in ALLOWED_REF_DATASETS:
+    raise ValueError(f"Disallowed YUKTI_REF_DATASET={REF_DATASET_ID!r}; must be in {sorted(ALLOWED_REF_DATASETS)}")
 BASE_DIR = Path(__file__).resolve().parent.parent
 REF_DIR = BASE_DIR / "world_bible" / "reference"
 
-JOB_LABELS = {"datacloud": "ai-agent"}
+JOB_LABELS = {"datacloud": os.getenv("YUKTI_JOB_LABEL_VALUE", "jetski")}
 
 
 def load_yaml(filename: str) -> Any:
@@ -439,7 +447,7 @@ def build_payroll_policy_fy() -> List[Dict[str, Any]]:
 
 
 def build_field_econ_targets_fy() -> List[Dict[str, Any]]:
-    csv_path = REFERENCE_DIR / "real_targets" / "field_econ_targets_fy.csv"
+    csv_path = REF_DIR / "real_targets" / "field_econ_targets_fy.csv"
     df = pd.read_csv(csv_path)
     records: List[Dict[str, Any]] = []
     for _, row in df.iterrows():
@@ -447,7 +455,25 @@ def build_field_econ_targets_fy() -> List[Dict[str, Any]]:
             "fiscal_year": str(row["fiscal_year"]),
             "line_code": str(row["line_code"]),
             "value": float(row["value"]),
-            "unit": str(row["unit"]),
+            "unit": str(row.get("unit", "INR_MN")),
+            "source_doc": str(row["source_doc"]),
+            "source_page": int(row["source_page"]),
+            "source_text_line": int(row["source_text_line"]),
+            "verified": bool(row["verified"]),
+        })
+    return records
+
+
+def build_employee_targets_fy() -> List[Dict[str, Any]]:
+    csv_path = REF_DIR / "real_targets" / "employee_targets_fy.csv"
+    df = pd.read_csv(csv_path)
+    records: List[Dict[str, Any]] = []
+    for _, row in df.iterrows():
+        records.append({
+            "fiscal_year": str(row["fiscal_year"]),
+            "metric": str(row["metric"]),
+            "value": float(row["value"]),
+            "unit": str(row.get("unit", "INR_CR")),
             "source_doc": str(row["source_doc"]),
             "source_page": int(row["source_page"]),
             "source_text_line": int(row["source_text_line"]),
@@ -459,7 +485,7 @@ def build_field_econ_targets_fy() -> List[Dict[str, Any]]:
 def load_hrfin_ref_dims(client: bigquery.Client | None = None) -> None:
     if client is None:
         client = bigquery.Client(project=PROJECT_ID)
-    dataset_ref = f"{PROJECT_ID}.hrfin_ref"
+    dataset_ref = f"{PROJECT_ID}.{REF_DATASET_ID}"
 
     schema_grade = [
         bigquery.SchemaField("grade_id", "STRING", mode="REQUIRED"),
@@ -528,6 +554,17 @@ def load_hrfin_ref_dims(client: bigquery.Client | None = None) -> None:
         bigquery.SchemaField("verified", "BOOL"),
     ]
 
+    schema_emp_targets = [
+        bigquery.SchemaField("fiscal_year", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("metric", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("value", "NUMERIC"),
+        bigquery.SchemaField("unit", "STRING"),
+        bigquery.SchemaField("source_doc", "STRING"),
+        bigquery.SchemaField("source_page", "INT64"),
+        bigquery.SchemaField("source_text_line", "INT64"),
+        bigquery.SchemaField("verified", "BOOL"),
+    ]
+
     ref_tables_to_load = [
         ("dim_grade_pay_scale", build_grade_pay_scales(), schema_grade),
         ("dim_ida_rate", build_ida_rates(), schema_ida),
@@ -535,6 +572,7 @@ def load_hrfin_ref_dims(client: bigquery.Client | None = None) -> None:
         ("dim_allowance_rule", build_allowance_rules(), schema_allowance),
         ("dim_payroll_policy_fy", build_payroll_policy_fy(), schema_policy),
         ("field_econ_targets_fy", build_field_econ_targets_fy(), schema_fe_targets),
+        ("employee_targets_fy", build_employee_targets_fy(), schema_emp_targets),
     ]
 
     for tbl_name, rows, schema_fields in ref_tables_to_load:

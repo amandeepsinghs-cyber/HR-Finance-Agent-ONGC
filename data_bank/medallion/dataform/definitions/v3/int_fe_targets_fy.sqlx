@@ -14,5 +14,5 @@ SELECT
   SAFE_CAST(source_page AS INT64) AS source_page,
   SAFE_CAST(source_text_line AS INT64) AS source_text_line,
   SAFE_CAST(verified AS BOOL) AS verified
-FROM ${ref("hrfin_ref", "field_econ_targets_fy")}
+FROM ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_ref_" + dataform.projectConfig.schemaSuffix : "hrfin_ref", "field_econ_targets_fy")}
 WHERE SAFE_CAST(verified AS BOOL) = TRUE

@@ -12,7 +12,23 @@ def run_dcf(assumptions: DCFAssumptions, fixture=None) -> Dict[str, Any]:
     val = compute_valuation(assumptions, fcff_res)
     sens = compute_sensitivity(assumptions, fcff_res, val)
     tornado = compute_tornado(assumptions, val.get("per_share", {}).get("intrinsic_inr", 0))
-    
+
+    lineage_refs = []
+    if fixture is None:
+        from app.finance.dcf.inputs import load_fy26_market_price_default, load_fy26_wacc_default
+        w_val, w_src, w_meta = load_fy26_wacc_default()
+        m_val, m_src, m_meta = load_fy26_market_price_default()
+        lineage_refs = [
+            {
+                "item": f"WACC FY26 ({w_val}%)",
+                "source": f"{w_src} (as_of={w_meta.get('as_of_date', '2026-03-31')}, method={w_meta.get('method_version', 'wacc-v1')})",
+            },
+            {
+                "item": f"Market Price ONGC.NS (₹{m_val:.2f})",
+                "source": f"{m_src} ({m_meta.get('source_url') or m_meta.get('source_doc', 'market_prices_seed.csv')})",
+            },
+        ]
+
     return {
         "engine_version": "3.0",
         "scope": "standalone_sotp",
@@ -27,7 +43,7 @@ def run_dcf(assumptions: DCFAssumptions, fixture=None) -> Dict[str, Any]:
         "per_share": val.get("per_share", {}),
         "sensitivity": sens,
         "tornado": tornado,
-        "lineage_refs": [],
+        "lineage_refs": lineage_refs,
         "provenance_label": "illustrative",
         "disclaimer": "Illustrative valuation, not investment advice."
     }

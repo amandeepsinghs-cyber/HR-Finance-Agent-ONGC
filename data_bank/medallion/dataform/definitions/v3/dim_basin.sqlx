@@ -6,9 +6,9 @@ config {
 }
 
 SELECT DISTINCT
-  UPPER(REGEXP_REPLACE(basin_name, r'[^A-Za-z0-9]+', '_')) AS basin_id,
-  basin_name,
+  UPPER(REGEXP_REPLACE(basin, r'[^A-Za-z0-9]+', '_')) AS basin_id,
+  basin AS basin_name,
   onshore_offshore,
   COUNT(DISTINCT field_id) AS field_count
-FROM ${ref("hrfin_silver", "dim_field")}
+FROM ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_field")}
 GROUP BY 1, 2, 3

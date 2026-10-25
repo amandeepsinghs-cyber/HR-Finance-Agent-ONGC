@@ -8,11 +8,11 @@ config {
 SELECT
   field_id,
   name AS field_name,
-  basin_name,
+  basin AS basin_name,
   asset_wc_id,
-  state_code,
+  CAST(NULL AS STRING) AS state_code,
   onshore_offshore,
-  field_category,
-  hydrocarbon_type,
+  maturity AS field_category,
+  hydrocarbon AS hydrocarbon_type,
   discovery_year
-FROM ${ref("hrfin_silver", "dim_field")}
+FROM ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_field")}

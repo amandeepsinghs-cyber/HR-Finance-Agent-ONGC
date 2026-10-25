@@ -40,14 +40,142 @@ YUKTI_RESULT_CACHE = os.getenv("YUKTI_RESULT_CACHE", "1") in ("1", "true", "yes"
 YUKTI_FIN_SSOT_V3 = os.getenv("YUKTI_FIN_SSOT_V3", "1") in ("1", "true", "yes")
 YUKTI_DEMO_CACHE = os.getenv("YUKTI_DEMO_CACHE", "0") in ("1", "true", "yes")
 
-# BigQuery Datasets
+# BigQuery Datasets (allow-listed suffix & dataset names to prevent SQL injection via env)
+ALLOWED_DATASET_SUFFIXES = {"", "v3", "_v3"}
+ALLOWED_DATASET_NAMES = {
+    "hrfin_gold",
+    "hrfin_gold_v3",
+    "hrfin_silver",
+    "hrfin_silver_v3",
+    "hrfin_bronze",
+    "hrfin_bronze_v3",
+    "hrfin_stage",
+    "hrfin_stage_v3",
+    "hrfin_ref",
+    "hrfin_ref_v3",
+    "hrfin_docs",
+}
+
+
+def _validate_dataset_suffix(raw_suffix: str) -> str:
+    sfx = (raw_suffix or "").strip()
+    if sfx not in ALLOWED_DATASET_SUFFIXES:
+        raise ValueError(f"Disallowed BQ_DATASET_SUFFIX={sfx!r}; must be one of {sorted(ALLOWED_DATASET_SUFFIXES)}")
+    return f"_{sfx.lstrip('_')}" if sfx else ""
+
+
+def _validate_dataset_name(name: str, expected_prefix: str) -> str:
+    cleaned = (name or "").strip()
+    if cleaned not in ALLOWED_DATASET_NAMES or not cleaned.startswith(expected_prefix):
+        raise ValueError(
+            f"Disallowed BigQuery dataset identifier {cleaned!r} for {expected_prefix}; "
+            f"must be in {sorted(ALLOWED_DATASET_NAMES)}"
+        )
+    return cleaned
+
+
+BQ_DATASET_SUFFIX = os.getenv("BQ_DATASET_SUFFIX", os.getenv("YUKTI_DATASET_SUFFIX", "")).strip()
+_DS_SFX = _validate_dataset_suffix(BQ_DATASET_SUFFIX)
+BQ_GOLD_DATASET = _validate_dataset_name(
+    os.getenv("BQ_GOLD_DATASET", os.getenv("YUKTI_GOLD_DATASET", f"hrfin_gold{_DS_SFX}")),
+    "hrfin_gold",
+)
+BQ_SILVER_DATASET = _validate_dataset_name(
+    os.getenv("BQ_SILVER_DATASET", os.getenv("YUKTI_SILVER_DATASET", f"hrfin_silver{_DS_SFX}")),
+    "hrfin_silver",
+)
+BQ_BRONZE_DATASET = _validate_dataset_name(
+    os.getenv("BQ_BRONZE_DATASET", os.getenv("YUKTI_BRONZE_DATASET", f"hrfin_bronze{_DS_SFX}")),
+    "hrfin_bronze",
+)
+BQ_STAGE_DATASET = _validate_dataset_name(
+    os.getenv("BQ_STAGE_DATASET", os.getenv("YUKTI_STAGE_DATASET", f"hrfin_stage{_DS_SFX}")),
+    "hrfin_stage",
+)
+BQ_REF_DATASET = _validate_dataset_name(
+    os.getenv("BQ_REF_DATASET", os.getenv("YUKTI_REF_DATASET", f"hrfin_ref{_DS_SFX}")),
+    "hrfin_ref",
+)
+BQ_DOCS_DATASET = _validate_dataset_name(
+    os.getenv("BQ_DOCS_DATASET", os.getenv("YUKTI_DOCS_DATASET", "hrfin_docs")),
+    "hrfin_docs",
+)
+
 ALLOWED_DATASETS = {
     "hrfin_gold",
     "hrfin_silver",
     "hrfin_docs",
+    "hrfin_ref",
+    BQ_GOLD_DATASET,
+    BQ_SILVER_DATASET,
+    BQ_REF_DATASET,
+    BQ_DOCS_DATASET,
 }
 
-JOB_LABELS = {"datacloud": "ai-agent"}
+
+def rewrite_dataset_sql(sql: str) -> str:
+    """Rewrite canonical dataset names to the configured dataset names (e.g. _v3) when overridden."""
+    if not sql:
+        return sql
+    import re
+    out = sql
+    replacements = (
+        ("hrfin_gold", BQ_GOLD_DATASET),
+        ("hrfin_silver", BQ_SILVER_DATASET),
+        ("hrfin_ref", BQ_REF_DATASET),
+        ("hrfin_bronze", BQ_BRONZE_DATASET),
+        ("hrfin_stage", BQ_STAGE_DATASET),
+    )
+    for base_ds, target_ds in replacements:
+        _validate_dataset_name(target_ds, base_ds)
+        if target_ds != base_ds:
+            out = re.sub(rf"\b{base_ds}\b", target_ds, out)
+    if BQ_GOLD_DATASET == "hrfin_gold_v3":
+        # Route unqualified field_pnl_annual (e.g. C6) to the RAS-reconciled v3 view in hrfin_gold_v3
+        out = re.sub(
+            r"(?<![.\w`])field_pnl_annual\b",
+            f"`{GCP_PROJECT}.hrfin_gold_v3.v_field_pnl_v3`",
+            out,
+        )
+        # Route annual field_pnl queries on ssot_field_economics_360 (WHERE field_id IS NOT NULL) to v_field_pnl_v3
+        # when no legacy-only columns are referenced
+        if (
+            "hrfin_gold_v3.ssot_field_economics_360" in out
+            and "WHERE field_id IS NOT NULL" in out
+            and not re.search(
+                r"\b(onshore_offshore|reserves_2p_total_mmtoe|drilling_cost_inr_cr|is_loss_making_3yr_consecutive|is_divestment_candidate|boe_per_employee|manpower_cost_per_boe_usd)\b",
+                out,
+            )
+        ):
+            out = out.replace(
+                f"`{GCP_PROJECT}.hrfin_gold_v3.ssot_field_economics_360`",
+                f"`{GCP_PROJECT}.hrfin_gold_v3.v_field_pnl_v3`",
+            ).replace(
+                "WHERE field_id IS NOT NULL",
+                "WHERE field_id IS NOT NULL AND LOWER(line_type) = 'field'",
+            )
+        # Route continuous_from_date queries on hrfin_gold_v3.ssot_workforce_employee through v_continuous_stay + employee_master
+        wf_tbl = f"`{GCP_PROJECT}.hrfin_gold_v3.ssot_workforce_employee`"
+        if f"FROM {wf_tbl}" in out and "continuous_from_date" in out and "v_continuous_stay" not in out:
+            wf_subq = (
+                f"FROM (SELECT e.* EXCEPT(employment_status, continuous_from_date, continuous_stay_months, continuous_stay_years, is_continuous_5yr_plus), "
+                f"COALESCE(em.employment_status, e.employment_status) AS employment_status, "
+                f"COALESCE(cs.continuous_from_date, e.continuous_from_date) AS continuous_from_date, "
+                f"COALESCE(cs.continuous_stay_months, e.continuous_stay_months) AS continuous_stay_months, "
+                f"COALESCE(cs.continuous_stay_years, e.continuous_stay_years) AS continuous_stay_years, "
+                f"COALESCE(cs.is_continuous_5yr_plus, e.is_continuous_5yr_plus) AS is_continuous_5yr_plus "
+                f"FROM {wf_tbl} e "
+                f"LEFT JOIN `{GCP_PROJECT}.hrfin_silver_v3.employee_master` em ON e.emp_id = em.emp_id "
+                f"LEFT JOIN (SELECT emp_id, wc_id, continuous_from_date, continuous_stay_months, continuous_stay_years, is_continuous_5yr_plus "
+                f"FROM `{GCP_PROJECT}.hrfin_gold_v3.v_continuous_stay` WHERE is_current_stay = TRUE "
+                f"QUALIFY ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY continuous_from_date DESC) = 1) cs "
+                f"ON e.emp_id = cs.emp_id AND e.wc_id = cs.wc_id)"
+            )
+            out = out.replace(f"FROM {wf_tbl}", wf_subq)
+    return out
+
+
+JOB_LABELS = {"datacloud": os.getenv("YUKTI_JOB_LABEL_VALUE", "ai-agent")}
 MAX_BYTES_BILLED = 524_288_000  # 500 MB
 FX_INR_PER_USD = float(os.getenv("YUKTI_FX_INR_PER_USD", "88.33"))
 

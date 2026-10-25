@@ -164,8 +164,10 @@ Output ONLY the corrected SQL inside a ```sql code block.
         sql = given_sql or self.generate_sql(query, active_query_state=active_query_state)
 
         from google.cloud import bigquery
+        from app.config import BQ_SILVER_DATASET, rewrite_dataset_sql
+        sql = rewrite_dataset_sql(sql)
         job_config = bigquery.QueryJobConfig(
-            default_dataset=f"{self.project_id}.hrfin_silver",
+            default_dataset=f"{self.project_id}.{BQ_SILVER_DATASET}",
             labels=JOB_LABELS,
             maximum_bytes_billed=MAX_BYTES_BILLED,
         )

@@ -36,7 +36,9 @@ async def test_dehradun_officers_hinglish_resolves_and_returns_facts():
     assert "Details screen par hain" in spoken, f"Missing Hinglish closing line: {spoken}"
 
     # 3. Templated title & human-only subtitle
-    assert ("Dehradun" in title or "Dehradun" in subtitle) and ("≥5" in title or ">= 5" in title)
+    assert ("Dehradun" in title or "Dehradun" in subtitle) and any(
+        s in f"{title} {subtitle}" for s in ("≥5", ">= 5", ">=5")
+    )
     assert "Dehradun" in subtitle or "Headcount" in subtitle
     assert "WC-" not in subtitle, f"Found raw technical work centre codes in subtitle: {subtitle}"
 

@@ -81,7 +81,7 @@ SELECT
 FROM ranked_postings p
 JOIN ${ref("employee_master")} e ON p.emp_id = e.emp_id
 JOIN ${ref("dim_work_centre")} w ON p.wc_id = w.wc_id
-JOIN ${ref("dim_grade")} g ON p.grade_id = g.grade_id
+JOIN ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_grade")} g ON p.grade_id = g.grade_id
 JOIN ${ref("dim_discipline")} d ON p.discipline_id = d.discipline_id
 JOIN continuous_spans cs ON p.emp_id = cs.emp_id AND p.wc_id = cs.wc_id AND p.island_id = cs.island_id
 LEFT JOIN (SELECT wc_id, discipline_id, grade_id, SUM(sanctioned_strength) AS sanctioned_strength, SUM(in_position_strength) AS in_position_strength, SUM(vacancy_count) AS vacancy_count FROM ${ref("sanctioned_posts")} WHERE fiscal_year = 'FY26' GROUP BY 1, 2, 3) sanc ON p.wc_id = sanc.wc_id AND p.discipline_id = sanc.discipline_id AND p.grade_id = sanc.grade_id

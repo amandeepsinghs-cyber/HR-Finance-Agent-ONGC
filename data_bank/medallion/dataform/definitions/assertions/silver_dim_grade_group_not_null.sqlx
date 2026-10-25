@@ -8,5 +8,5 @@ SELECT
   grade_id,
   cadre,
   `group`
-FROM ${ref("dim_grade")}
+FROM ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_grade")}
 WHERE `group` IS NULL OR TRIM(`group`) = ''

@@ -205,7 +205,8 @@ class QueryResult:
 
 
 def _q(table: str) -> str:
-    return f"`{GCP_PROJECT}.{table}`"
+    from app.config import rewrite_dataset_sql
+    return f"`{GCP_PROJECT}.{rewrite_dataset_sql(table)}`"
 
 
 def _lit(v: Any) -> str:
@@ -2760,6 +2761,8 @@ ORDER BY line_order ASC"""
             raise CompileError(f"unsafe SQL rejected: {err}")
 
     def dry_run(self, sql: str, params: Optional[List[Any]] = None) -> int:
+        from app.config import rewrite_dataset_sql
+        sql = rewrite_dataset_sql(sql)
         self._validate(sql)
         cfg = bigquery.QueryJobConfig(
             dry_run=True,
@@ -2774,6 +2777,8 @@ ORDER BY line_order ASC"""
         return b
 
     def _run_sync(self, sql: str, params: Optional[List[Any]] = None) -> QueryResult:
+        from app.config import rewrite_dataset_sql
+        sql = rewrite_dataset_sql(sql)
         t0 = time.perf_counter()
         try:
             dry = self.dry_run(sql, params=params)

@@ -28,12 +28,12 @@ SELECT
   e.category,
   g.pay_scale_min_inr,
   g.pay_scale_max_inr
-FROM `hrfin_raw.dim_app_user` u
-LEFT JOIN `hrfin_silver.dim_employee` e
+FROM ${ref("sap_dim_app_user")} u
+LEFT JOIN ${ref("employee_master")} e
   ON u.emp_id = e.emp_id
-LEFT JOIN `hrfin_silver.dim_work_centre` w
+LEFT JOIN ${ref("dim_work_centre")} w
   ON u.wc_id = w.wc_id
-LEFT JOIN `hrfin_silver.dim_grade` g
+LEFT JOIN ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_grade")} g
   ON u.grade = g.grade_id
 ORDER BY
   CASE u.persona_id

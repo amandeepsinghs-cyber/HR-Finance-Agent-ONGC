@@ -1,118 +1,133 @@
 import asyncio
+import os
 from typing import Dict, Any, Callable, Awaitable
-from datetime import datetime, timezone
-import uuid
 
 from app.jobs.executor import get_executor
 from app.finance.dcf.run import run_dcf
-from app.finance.dcf.assumptions import DCFAssumptions, AssumptionField
+from app.finance.dcf.assumptions import DCFAssumptions, AssumptionField, defaults_from_ssot
+from app.finance.dcf.inputs import (
+    load_fy26_market_price_default,
+    load_fy26_wacc_default,
+    load_ssot_snapshot_rows,
+    load_wacc_annual_rows,
+)
 from app.finance.dcf.xlsx_writer import write_dcf_xlsx
 
-async def dcf_job_runner(job_id: str, payload: Dict[str, Any], session_id: str, emit_progress: Callable[[str, str, float], Awaitable[None]]) -> Dict[str, Any]:
+
+def build_dcf_assumptions_from_inputs(job_id: str, inputs: Dict[str, Any]) -> DCFAssumptions:
+    inputs = inputs or {}
+    default_wacc_pct, wacc_src, _ = load_fy26_wacc_default()
+    default_mkt_px, mkt_src, mkt_meta = load_fy26_market_price_default()
+    as_of = str(mkt_meta.get("date") or "2026-03-30")
+
+    base = defaults_from_ssot(load_ssot_snapshot_rows(), load_wacc_annual_rows(), as_of=as_of)
+    updates: Dict[str, Any] = {
+        "run_id": job_id,
+        "as_of": as_of,
+        "market_price_inr": AssumptionField(
+            value=float(inputs.get("market_price_inr", default_mkt_px)),
+            source=mkt_src,
+            edited_by_user="market_price_inr" in inputs,
+        ),
+        "wacc_pct": AssumptionField(
+            value=float(inputs.get("wacc_pct", default_wacc_pct)),
+            source=wacc_src if "wacc_pct" not in inputs else f"user override (base: {wacc_src})",
+            edited_by_user="wacc_pct" in inputs,
+        ),
+    }
+    for key in ("terminal_g_pct", "brent_usd", "capex_scale_pct", "production_decline_pct", "holdco_discount_pct"):
+        if key in inputs and inputs[key] is not None:
+            orig_field = getattr(base, key)
+            updates[key] = AssumptionField(
+                value=float(inputs[key]),
+                source=orig_field.source,
+                edited_by_user=True,
+            )
+    return base.model_copy(update=updates)
+
+
+async def dcf_job_runner(
+    job_id: str,
+    payload: Dict[str, Any],
+    session_id: str,
+    emit_progress: Callable[[str, str, float], Awaitable[None]],
+) -> Dict[str, Any]:
     # load_inputs → wacc_build → forecast → valuation → sensitivity_grid → tornado → xlsx → publish
     await emit_progress("load_inputs", "Loading inputs", 0.1)
-    await asyncio.sleep(0.1)
-    
-    inputs = payload.get("inputs", {})
-    
-    def mk(val):
-        return AssumptionField(value=val, source="job")
+    await asyncio.sleep(0.05)
 
-    asm = DCFAssumptions(
-        wacc_pct=mk(inputs.get("wacc_pct", 10.37)),
-        terminal_g_pct=mk(inputs.get("terminal_g_pct", 3.0)),
-        brent_usd=mk(inputs.get("brent_usd", 80.0)),
-        capex_scale_pct=mk(inputs.get("capex_scale_pct", 100.0)),
-        production_decline_pct=mk(inputs.get("production_decline_pct", 0.0)),
-        holdco_discount_pct=mk(inputs.get("holdco_discount_pct", 0.0)),
-        exit_ev_ebitda=mk(5.0),
-        as_of=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-        run_id=job_id,
-        shares_outstanding=mk(1258.0279206),
-        market_price_inr=mk(300.0),
-        listed_investments_inr_cr=mk(300.0), # mock
-        unlisted_investments_inr_cr=mk(0.0),
-        cash_and_equivalents_inr_cr=mk(0.0),
-        srf_deposits_inr_cr=mk(32727.7),
-        decom_provision_inr_cr=mk(0.0),
-        borrowings_inr_cr=mk(7823.4),
-        lease_liab_inr_cr=mk(25821.8),
-        vol_crude_mmt=mk(0),
-        vol_gas_bcm=mk(0),
-        bbl_per_tonne=mk(0),
-        gcv_mmbtu_per_scm=mk(0),
-        fx_inr_usd=mk(0),
-        crude_realisation_discount_pct=mk(0),
-        gas_price_usd_mmbtu=mk(0),
-        vap_revenue_ratio=mk(0),
-        effective_levy_rate=mk(0),
-        opex_per_boe=mk(0),
-        inflation_pct=mk(0),
-        exploration_writeoff_ratio=mk(0),
-        dd_a_ratio=mk(0),
-        tax_rate_pct=mk(25.17),
-        capex_base_inr_cr=mk(0),
-        nwc_pct=mk(0),
-        forecast_fcff=[]
-    )
-    
+    inputs = payload.get("inputs", {})
+    asm = build_dcf_assumptions_from_inputs(job_id, inputs)
+
     await emit_progress("wacc_build", "Building WACC", 0.2)
-    # The actual run_dcf computes wacc, fcff, valuation, sensitivity, tornado
-    # We will simulate the steps via progress.
-    # To be precise, run_dcf does it all at once, so we'll just yield progress.
-    
     res = run_dcf(asm)
     await emit_progress("forecast", "Forecasting FCFF", 0.4)
     await emit_progress("valuation", "Computing valuation", 0.5)
     await emit_progress("sensitivity_grid", "Computing sensitivity", 0.7)
     await emit_progress("tornado", "Computing tornado", 0.8)
-    
+
     await emit_progress("xlsx", "Generating XLSX", 0.9)
     from app.config import EXPORTS_DIR
-    import os
     if not os.path.exists(EXPORTS_DIR):
         os.makedirs(EXPORTS_DIR)
-        
+
     xlsx_path = os.path.join(EXPORTS_DIR, f"ONGC_DCF_{job_id}.xlsx")
     write_dcf_xlsx(res, xlsx_path)
-    
+
     await emit_progress("publish", "Publishing results", 1.0)
-    
-    iv = res.get("per_share", {}).get("intrinsic_inr", 0)
-    px = 300.0 # mock
-    upside = (iv / px - 1) * 100 if px else 0
+
+    iv = float(res.get("per_share", {}).get("intrinsic_inr", 0.0))
+    px = float(res.get("per_share", {}).get("market_inr", asm.market_price_inr.value))
+    mkt_date = str(res.get("per_share", {}).get("market_date", asm.as_of))
+    upside = (iv / px - 1) * 100 if px else 0.0
     verdict = "undervalued" if upside > 10 else ("overvalued" if upside < -10 else "fairly valued")
-    
-    summary = f"The DCF valuation is ready. Intrinsic value is ₹{iv:.2f} per share against a market price of ₹{px:.2f}, so the model suggests ONGC is {verdict} by {abs(upside):.1f}%. This is an illustrative valuation, not investment advice."
-    
+
+    summary = (
+        f"The DCF valuation is ready (illustrative valuation). Intrinsic value is ₹{iv:.2f} per share against "
+        f"a market price of ₹{px:.2f} (NSE close {mkt_date}), so the model suggests ONGC is {verdict} "
+        f"by {abs(upside):.1f}%. Illustrative valuation, not investment advice."
+    )
+
     contract = {
         "contract_version": 3,
         "turn_id": f"job:{job_id}",
+        "language": "en",
+        "spoken_summary": summary,
+        "display_text": summary,
         "visual": {
             "type": "dcf_model",
-            "dcf_model": res
+            "mode": "replace",
+            "title": "ONGC Standalone DCF Valuation (Illustrative)",
+            "dcf_model": res,
         },
+        "access": {"status": "allowed"},
+        "sources": [
+            {"kind": "data", "object": "hrfin_gold.fact_wacc_annual", "title": "ONGC WACC SSOT FY26"},
+            {"kind": "data", "object": "market_prices_seed.csv", "title": f"NSE Bhavcopy ONGC.NS ({mkt_date})"},
+        ],
         "provenance": {
-            "label": "illustrative"
+            "label": "illustrative",
+            "detail": "Illustrative valuation, not investment advice.",
         },
-        "spoken_summary": summary,
         "caveat": "This is an illustrative valuation, not investment advice.",
         "export_options": ["xlsx", "pdf"],
         "artifacts": [
             {
                 "export_id": job_id,
                 "kind": "xlsx",
-                "filename": f"ONGC_DCF_{job_id}.xlsx"
+                "filename": f"ONGC_DCF_{job_id}.xlsx",
             }
-        ]
+        ],
     }
-    
+
     return contract
+
 
 def init_dcf_agent():
     executor = get_executor()
     if executor:
         executor.register_agent_runner("dcf_agent", dcf_job_runner)
+
 
 class DCFAgent:
     def __init__(self):

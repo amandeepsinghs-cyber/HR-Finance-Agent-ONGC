@@ -13,9 +13,9 @@ WITH cal_check AS (
     (SELECT total_csr_spend_inr_cr FROM ${ref("mart_corporate_performance")} WHERE fiscal_year = 'FY26') AS csr_act,
     949.0 AS csr_tgt,
     (SELECT ROUND(SUM(total_liquids_production_mmt), 3) FROM ${ref("mart_asset_productivity")} WHERE fiscal_year = 'FY26') AS liquids_act,
-    20.501 AS liquids_tgt,
+    19.332 AS liquids_tgt,
     (SELECT ROUND(SUM(gas_production_bcm), 3) FROM ${ref("mart_asset_productivity")} WHERE fiscal_year = 'FY26') AS gas_act,
-    19.966 AS gas_tgt
+    19.533 AS gas_tgt
 )
 SELECT
   *

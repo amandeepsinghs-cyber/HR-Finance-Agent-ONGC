@@ -2,12 +2,16 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, Optional
 
+from app.finance.dcf.inputs import load_fy26_market_price_default, load_fy26_wacc_default
+
 def build_dcf_proposal(persona: str, session: Any, overrides: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     overrides = overrides or {}
-    
-    # Defaults and sources
-    wacc_pct = overrides.get("wacc_pct", 10.37)
-    g_pct = overrides.get("terminal_g_pct", 3.0)
+    default_wacc_pct, wacc_source, wacc_meta = load_fy26_wacc_default()
+    default_mkt_px, mkt_source, mkt_meta = load_fy26_market_price_default()
+
+    # Defaults and sources from SSOT fact_wacc_annual FY26 and NSE market_prices_seed.csv
+    wacc_pct = float(overrides.get("wacc_pct", default_wacc_pct))
+    g_pct = float(overrides.get("terminal_g_pct", 3.0))
     
     # Check for degraded cases (market price stale or SSOT lines unverified)
     # BEH-05.09: No market price in last 10 trading days -> proposal disabled
@@ -32,7 +36,7 @@ def build_dcf_proposal(persona: str, session: Any, overrides: Optional[Dict[str,
     }
 
     editable_inputs = [
-        {"key": "wacc_pct", "label": "WACC", "type": "percent", "value": wacc_pct, "min": 5.0, "max": 25.0, "step": 0.1, "source": "fact_wacc_annual FY26"},
+        {"key": "wacc_pct", "label": "WACC", "type": "percent", "value": wacc_pct, "min": 5.0, "max": 25.0, "step": 0.1, "source": wacc_source},
         {"key": "terminal_g_pct", "label": "Terminal Growth", "type": "percent", "value": g_pct, "min": 0.0, "max": 10.0, "step": 0.1, "source": "default (illustrative)"},
         {"key": "brent_usd", "label": "Brent Price", "type": "number", "value": inputs["brent_usd"], "min": 40.0, "max": 120.0, "step": 1.0, "unit": "USD/bbl", "source": "fact_price_realisation (FY26 realised)"},
         {"key": "capex_scale_pct", "label": "Capex Scale", "type": "percent", "value": inputs["capex_scale_pct"], "min": 50.0, "max": 200.0, "step": 5.0, "source": "FY22-FY26 average capex (verified)"},
@@ -48,6 +52,10 @@ def build_dcf_proposal(persona: str, session: Any, overrides: Optional[Dict[str,
         "est_seconds": 15,
         "inputs": inputs,
         "editable_inputs": editable_inputs,
+        "lineage": {
+            "wacc": {**wacc_meta, "source": wacc_source},
+            "market_price": {**mkt_meta, "source": mkt_source, "value_inr": default_mkt_px},
+        },
         "requires_role": ["CMD", "DIR_FIN"],
         "buttons": ["run", "edit", "cancel"],
         "voice_confirm_hint": "Say yes, run it, or cancel.",

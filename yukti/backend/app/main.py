@@ -920,7 +920,14 @@ async def websocket_live_endpoint(
                 first = await asyncio.wait_for(websocket.receive_text(), timeout=5.0)
                 msg = json.loads(first) if first else {}
                 tok = msg.get("token") if isinstance(msg, dict) and msg.get("type") == "auth" else None
-            principal = yauth.verify_token(tok or "")
+            try:
+                principal = yauth.verify_token(tok or "")
+            except yauth.AuthError:
+                cookie_tok = websocket.cookies.get(yauth.SESSION_COOKIE_NAME)
+                if cookie_tok and cookie_tok != tok:
+                    principal = yauth.verify_token(cookie_tok)
+                else:
+                    raise
     except Exception as exc:  # noqa: BLE001 - any auth failure closes the socket
         logger.info(f"/ws/live rejected: {type(exc).__name__}")
         await websocket.send_json({"type": "error", "message": "Please sign in again to continue.", "retryable": False})

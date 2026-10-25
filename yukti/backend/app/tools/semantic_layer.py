@@ -227,7 +227,9 @@ class SemanticLayer:
         refined_sql = normalize_categorical_filters(refined_sql)
 
         # Qualify unadorned datasets with project ID
-        pattern = r"(?<![a-zA-Z0-9_\-\.`])(hrfin_gold|hrfin_silver|hrfin_docs)\.([a-zA-Z0-9_]+)"
+        from app.config import rewrite_dataset_sql
+        refined_sql = rewrite_dataset_sql(refined_sql)
+        pattern = r"(?<![a-zA-Z0-9_\-\.`])(hrfin_(?:gold|silver|docs|ref)(?:_v3)?)\.([a-zA-Z0-9_]+)"
         refined_sql = re.sub(pattern, f"`{self.project_id}`.\\1.\\2", refined_sql)
 
 

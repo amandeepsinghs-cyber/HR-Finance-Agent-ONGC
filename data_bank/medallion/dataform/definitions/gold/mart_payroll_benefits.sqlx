@@ -65,7 +65,7 @@ SELECT
 FROM ${ref("payroll_monthly")} py
 JOIN ${ref("employee_master")} e ON py.emp_id = e.emp_id
 LEFT JOIN ${ref("dim_work_centre")} w ON py.wc_id = w.wc_id
-LEFT JOIN ${ref("dim_grade")} g ON py.grade_id = g.grade_id
+LEFT JOIN ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_grade")} g ON py.grade_id = g.grade_id
 LEFT JOIN (SELECT emp_id, claim_id, claimed_amount_inr, approved_amount_inr, claim_status, hospital_name, is_empanelled_hospital, submission_date, turnaround_days FROM ${ref("medical_claims")} QUALIFY ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY submission_date DESC) = 1) cl ON py.emp_id = cl.emp_id
 LEFT JOIN (SELECT emp_id, leave_type, closing_balance_days, encashable_balance_days FROM ${ref("leave_ledger")} QUALIFY ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY to_date DESC) = 1) lv ON py.emp_id = lv.emp_id
 LEFT JOIN (SELECT fiscal_year, actuarial_liability_inr_cr, plan_assets_inr_cr, net_liability_inr_cr, funded_ratio_pct, discount_rate_pct, salary_escalation_rate_pct, medical_inflation_rate_pct, scheme_name, scheme_type, dpe_30pct_superannuation_compliance_flag FROM ${ref("benefit_liabilities")} QUALIFY ROW_NUMBER() OVER (PARTITION BY fiscal_year ORDER BY scheme_record_id) = 1) bl ON py.fiscal_year = bl.fiscal_year

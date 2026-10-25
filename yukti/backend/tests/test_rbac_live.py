@@ -23,7 +23,7 @@ def results():
     os.environ["YUKTI_RESULT_CACHE"] = "0"
     from app.turn_runner import AgentTurnRunner
     from google.cloud import bigquery
-    from app.config import BQ_LOCATION, GCP_PROJECT, JOB_LABELS
+    from app.config import BQ_GOLD_DATASET, BQ_LOCATION, GCP_PROJECT, JOB_LABELS
 
     async def run():
         r = AgentTurnRunner(model_name="gemini-2.5-flash")
@@ -71,8 +71,8 @@ def results():
     finally:
         os.environ.pop("YUKTI_PLANNER", None)
     c = bigquery.Client(project=GCP_PROJECT, location=BQ_LOCATION)
-    sql = ("SELECT emp_id FROM `%s.hrfin_gold.ssot_workforce_employee` WHERE employment_status = 'Active' "
-           "AND wc_id = 'WC-DEL' AND cadre = 'executive' AND continuous_stay_years >= 5" % GCP_PROJECT)
+    sql = ("SELECT emp_id FROM `%s.%s.ssot_workforce_employee` WHERE employment_status = 'Active' "
+           "AND wc_id = 'WC-DEL' AND cadre = 'executive' AND continuous_stay_years >= 5" % (GCP_PROJECT, BQ_GOLD_DATASET))
     out["bq_ids"] = {r["emp_id"] for r in c.query(sql, job_config=bigquery.QueryJobConfig(labels=JOB_LABELS)).result()}
     return out
 

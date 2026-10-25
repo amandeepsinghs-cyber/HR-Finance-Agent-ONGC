@@ -28,8 +28,16 @@ const secure = backend.protocol === 'https:' || backend.protocol === 'wss:';
 const backendPort = parseInt(backend.port || (secure ? '443' : '80'), 10);
 const httpLib = secure ? https : http;
 
-// P0.4: /api/auth/* (persona session: personas, session, me) is proxied too so the yk_session cookie stays same-origin
-const PROXY_HTTP = [/^\/api\/turn(\/|$|\?)/, /^\/api\/voice-turn(\/|$|\?)/, /^\/api\/export(\/|$|\?)/, /^\/api\/auth(\/|$|\?)/, /^\/health(\/|$|\?)/];
+// P0.4: /api/auth/* (persona session: personas, session, me) and /api/jobs/*, /api/actions/* (P3.2 background jobs) are proxied too so the yk_session cookie stays same-origin
+const PROXY_HTTP = [
+  /^\/api\/turn(\/|$|\?)/,
+  /^\/api\/voice-turn(\/|$|\?)/,
+  /^\/api\/export(\/|$|\?)/,
+  /^\/api\/auth(\/|$|\?)/,
+  /^\/api\/jobs(\/|$|\?)/,
+  /^\/api\/actions(\/|$|\?)/,
+  /^\/health(\/|$|\?)/,
+];
 const isProxiedHttp = (p) => PROXY_HTTP.some((re) => re.test(p));
 const isProxiedWs = (p) => /^\/ws\/live(\/|$|\?)/.test(p);
 

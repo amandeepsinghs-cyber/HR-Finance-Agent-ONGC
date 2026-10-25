@@ -10,5 +10,5 @@ SELECT
   e.current_grade_id
 FROM ${ref("employee_master")} e
 LEFT JOIN ${ref("dim_work_centre")} w ON e.current_wc_id = w.wc_id
-LEFT JOIN ${ref("dim_grade")} g ON e.current_grade_id = g.grade_id
+LEFT JOIN ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_grade")} g ON e.current_grade_id = g.grade_id
 WHERE w.wc_id IS NULL OR g.grade_id IS NULL

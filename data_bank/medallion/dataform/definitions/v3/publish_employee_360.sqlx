@@ -4,8 +4,8 @@ config {
   name: "publish_employee_360",
   dependencies: ["assert_recon_block_pass", "ssot_employee_360", "fact_employee_cost_pool"]
 }
-CREATE OR REPLACE TABLE `ongc-hr-finance-agent.hrfin_gold.ssot_employee_360`
-COPY `ongc-hr-finance-agent.hrfin_stage.ssot_employee_360`;
+CREATE OR REPLACE TABLE `ongc-hr-finance-agent.${dataform.projectConfig.schemaSuffix ? "hrfin_gold_" + dataform.projectConfig.schemaSuffix : "hrfin_gold"}.ssot_employee_360`
+COPY ${ref("ssot_employee_360")};
 
-CREATE OR REPLACE TABLE `ongc-hr-finance-agent.hrfin_gold.fact_employee_cost_pool`
-COPY `ongc-hr-finance-agent.hrfin_stage.fact_employee_cost_pool`;
+CREATE OR REPLACE TABLE `ongc-hr-finance-agent.${dataform.projectConfig.schemaSuffix ? "hrfin_gold_" + dataform.projectConfig.schemaSuffix : "hrfin_gold"}.fact_employee_cost_pool`
+COPY ${ref("fact_employee_cost_pool")};

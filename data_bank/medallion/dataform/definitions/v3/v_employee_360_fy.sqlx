@@ -193,4 +193,5 @@ SELECT
   MAX_BY(is_persona_identity, month_start) AS is_persona_identity,
   MAX_BY(dq_flags, month_start) AS dq_flags
 FROM ${ref('ssot_employee_360')}
+WHERE month_start >= DATE '2016-04-01'
 GROUP BY emp_id, fiscal_year

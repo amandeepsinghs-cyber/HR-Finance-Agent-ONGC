@@ -34,7 +34,7 @@ SELECT
     WHEN 'DIR' THEN NULL
     ELSE NULL
   END AS grade_level_order
-FROM `hrfin_silver.dim_grade` g
+FROM ${ref(dataform.projectConfig.schemaSuffix ? "hrfin_silver_" + dataform.projectConfig.schemaSuffix : "hrfin_silver", "dim_grade")} g
 ORDER BY
   CASE g.grade_id
     WHEN 'E1' THEN 1
