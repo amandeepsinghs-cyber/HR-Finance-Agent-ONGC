@@ -4,20 +4,17 @@ _Last updated: 25-Oct-2026 (v3 release, P5.6)._
 
 ## 1. Cloud Run — v3 production (live)
 - **Service URL:** https://yukti-ai-b6cmgrx7ka-el.a.run.app (alias: https://yukti-ai-89038075859.asia-south1.run.app)
-- **Live revision:** `yukti-ai-00006-bap` (100% traffic) · branch `v3/P5-one-brain` @ `27a9b0b` · `--max-instances=1` · `BQ_DATASET_SUFFIX=v3` (reads `hrfin_*_v3` datasets)
-- **Access:** org policy requires Google sign-in, so a plain browser visit returns **403**. Open it through the authenticated proxy:
+- **Live revision:** `yukti-ai-00009-kol` (100% traffic) · branch `v3/P5-one-brain` @ `405a438` (D-66 leadership names + aurora orb) · `--max-instances=1` · `BQ_DATASET_SUFFIX=v3` (reads `hrfin_*_v3` datasets)
+- **Access:** Google sign-in via Identity-Aware Proxy (IAP, enabled 25-Oct). Open the URL in a browser and sign in with an approved account. Approved today: `admin@amandeepsinghs.altostrat.com`. Add people with:
   ```bash
-  # one-time install (gcloud component manager is disabled on Cloudtop)
-  sudo apt-get install google-cloud-cli-cloud-run-proxy
-  # then
-  gcloud run services proxy yukti-ai --project ongc-hr-finance-agent --region asia-south1 --port 8080
-  # open http://localhost:8080
+  gcloud beta iap web add-iam-policy-binding --project=ongc-hr-finance-agent --resource-type=cloud-run --service=yukti-ai --region=asia-south1 --member=user:NAME@DOMAIN --role=roles/iap.httpsResourceAccessor
   ```
-- **Tagged revision URLs (same sign-in rule):** `https://v3p5b---yukti-ai-b6cmgrx7ka-el.a.run.app` (00006, live) · `https://v3p5---yukti-ai-b6cmgrx7ka-el.a.run.app` (00004, previous)
+  Undo IAP: `gcloud beta run services update yukti-ai --project ongc-hr-finance-agent --region asia-south1 --no-iap`
+- **Tagged revision URLs (same sign-in rule):** `https://v3p5c---yukti-ai-b6cmgrx7ka-el.a.run.app` (00009, live) · `https://v3p5b---…` (00006, previous)
 - **Rollback:**
   ```bash
-  gcloud run services update-traffic yukti-ai --project ongc-hr-finance-agent --region asia-south1 --to-revisions=yukti-ai-00004-vec=100
-  # original baseline: --to-revisions=yukti-ai-00001-wlt=100
+  gcloud run services update-traffic yukti-ai --project ongc-hr-finance-agent --region asia-south1 --to-revisions=yukti-ai-00006-bap=100
+  # earlier: yukti-ai-00004-vec · original baseline: --to-revisions=yukti-ai-00001-wlt=100
   ```
 - Evidence: `docs/reviews/P5.6.md` (smoke tests V19/V20/V22/RBAC/security).
 
