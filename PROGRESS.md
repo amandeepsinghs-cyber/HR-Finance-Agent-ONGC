@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 25-Oct-2026 08:41 UTC · branch `v3/P0-stabilise` @ `9bc9a36`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 25-Oct-2026 13:51 UTC · branch `v3/P0-stabilise` @ `a5f91bb`
 
 > [!IMPORTANT]
-> **Overall: 97% complete (weighted)** — 60/62 steps ✅ done, 1 in flight, 1 to do, 0 blocked. **2 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 97% complete (weighted)** — 60/62 steps ✅ done, 1 in flight, 1 to do, 0 blocked. **2 blocker bugs open.** Integrity: 0 error(s), 1 warning(s).
 
 ## 1. Phase progress
 
@@ -47,65 +47,65 @@
 
 | Verbatim | Features | Feature status | Open steps | Coverage |
 |---|---|---|---|---|
-| V2 | FEAT-027 | 🟡 |  | 🟡 |
-| V3 | FEAT-010, FEAT-031 | 🔴 🔴 |  | 🔴 |
-| V6 | FEAT-013 | 🔴 |  | 🔴 |
-| V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ 🟡 🔴 🟡 |  | 🟡 |
-| V8 | FEAT-001, FEAT-013 | ✅ 🔴 |  | 🟡 |
-| V11 | FEAT-001, FEAT-002, FEAT-003, FEAT-009 | ✅ 🟡 ✅ 🔴 |  | 🟡 |
-| V12 | FEAT-004, FEAT-005 | 🟡 ✅ |  | 🟡 |
-| V13 | FEAT-006, FEAT-009, FEAT-010, FEAT-011, FEAT-021 | 🟡 🔴 🔴 🟡 🟡 |  | 🟡 |
-| V14 | FEAT-007, FEAT-010, FEAT-011, FEAT-014 | 🟡 🔴 🟡 🔴 | P5.6 | 🟡 |
-| V15 | FEAT-015, FEAT-026 | 🟡 🔴 |  | 🟡 |
-| V16 | FEAT-016 | 🟡 |  | 🟡 |
-| V17 | FEAT-017, FEAT-031 | 🔴 🔴 |  | 🔴 |
-| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | 🔴 ⛔ 🔴 🔴 🔴 | P1.1 | 🔴 |
-| V19 | FEAT-021, FEAT-023 | 🟡 🔴 |  | 🟡 |
-| V20 | FEAT-019, FEAT-020, FEAT-024 | ⛔ 🔴 ⛔ | P1.1 | 🔴 |
-| V21 | FEAT-025, FEAT-026, FEAT-027 | 🟡 🔴 🟡 |  | 🟡 |
-| V22 | FEAT-019, FEAT-028, FEAT-029 | ⛔ ⛔ ⛔ | P1.1 | ⛔ |
-| V23 | FEAT-021, FEAT-022, FEAT-032 | 🟡 🔴 🔴 |  | 🟡 |
+| V2 | FEAT-027 | ✅ |  | ✅ |
+| V3 | FEAT-010, FEAT-031 | ✅ ✅ |  | ✅ |
+| V6 | FEAT-013 | 🟡 |  | 🟡 |
+| V7 | FEAT-003, FEAT-015, FEAT-026, FEAT-027 | ✅ ✅ ✅ ✅ |  | ✅ |
+| V8 | FEAT-001, FEAT-013 | ✅ 🟡 |  | 🟡 |
+| V11 | FEAT-001, FEAT-002, FEAT-003, FEAT-009 | ✅ ✅ ✅ ✅ |  | ✅ |
+| V12 | FEAT-004, FEAT-005 | ✅ ✅ |  | ✅ |
+| V13 | FEAT-006, FEAT-009, FEAT-010, FEAT-011, FEAT-021 | ✅ ✅ ✅ ✅ ✅ |  | ✅ |
+| V14 | FEAT-007, FEAT-010, FEAT-011, FEAT-014 | ✅ ✅ ✅ 🟡 | P5.6 | 🟡 |
+| V15 | FEAT-015, FEAT-026 | ✅ ✅ |  | ✅ |
+| V16 | FEAT-016 | ✅ |  | ✅ |
+| V17 | FEAT-017, FEAT-031 | ✅ ✅ |  | ✅ |
+| V18 | FEAT-018, FEAT-019, FEAT-020, FEAT-022, FEAT-032 | ✅ 🟡 ✅ ✅ ✅ | P1.1 | 🟡 |
+| V19 | FEAT-021, FEAT-023 | ✅ ✅ |  | ✅ |
+| V20 | FEAT-019, FEAT-020, FEAT-024 | 🟡 ✅ 🟡 | P1.1 | 🟡 |
+| V21 | FEAT-025, FEAT-026, FEAT-027 | ✅ ✅ ✅ |  | ✅ |
+| V22 | FEAT-019, FEAT-028, FEAT-029 | 🟡 ✅ 🟡 | P1.1 | 🟡 |
+| V23 | FEAT-021, FEAT-022, FEAT-032 | ✅ ✅ ✅ |  | ✅ |
 
 _Not mapped to a feature (process / question-bank / naming verbatims, tracked in UPGRADE_CHECKLIST Part A and docs/question_bank.md): V1, V4, V5, V9, V10._
 
 ## 5. Features (v3 status from the feature list)
 
-✅ 3 · 🟡 12 · 🔴 12 · ⛔ 5 = 32
+✅ 27 · 🟡 5 · 🔴 0 · ⛔ 0 = 32
 
 | Feature | Status | Steps done / total |
 |---|---|---|
 | FEAT-001 Scrollable conversation feed (history) | ✅ | 0/0 |
-| FEAT-002 Multi-turn context & entity carry-over | 🟡 | 0/0 |
+| FEAT-002 Multi-turn context & entity carry-over | ✅ | 0/0 |
 | FEAT-003 Visual presentation audit | ✅ | 0/0 |
-| FEAT-004 Voice orb (Aurora wave) | 🟡 | 1/1 |
+| FEAT-004 Voice orb (Aurora wave) | ✅ | 1/1 |
 | FEAT-005 Executive UI modernisation | ✅ | 0/0 |
-| FEAT-006 CMD named employee roster | 🟡 | 1/1 |
-| FEAT-007 Answer contract v2 | 🟡 | 1/1 |
-| FEAT-008 Generated semantic layer | 🟡 | 1/1 |
-| FEAT-009 QuerySpec planner & compiler (replaces fast-paths) | 🔴 | 1/1 |
-| FEAT-010 Granular-data RBAC (row/column masking) | 🔴 | 0/0 |
-| FEAT-011 Insight engine & drill-down chips | 🟡 | 1/1 |
-| FEAT-012 Reliability, safety, performance | 🟡 | 0/0 |
-| FEAT-013 Voice pipeline quality (no duplicate turns) | 🔴 | 2/2 |
-| FEAT-014 Eval-gated release & Cloud Run redeploy | 🔴 | 4/5 |
-| FEAT-015 Any-chart re-presentation & chart excellence | 🟡 | 0/0 |
-| FEAT-016 AI aura visual language | 🟡 | 1/1 |
-| FEAT-017 Eleven-persona matrix + function split + `self` scope | 🔴 | 2/2 |
-| FEAT-018 Real financial SSOT with page lineage + verification gates | 🔴 | 7/8 |
-| FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | ⛔ | 1/2 |
-| FEAT-020 Knowledge RAG over real AR text | 🔴 | 1/1 |
-| FEAT-021 Employee-360 enterprise table (realistic, reconciled) | 🟡 | 4/4 |
-| FEAT-022 Field economics-360 reconciled to company AR totals | 🔴 | 3/3 |
-| FEAT-023 V19 transfer workflow: Excel intent + Email agent | 🔴 | 2/2 |
-| FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | ⛔ | 7/7 |
-| FEAT-025 Financial statement table visual | 🟡 | 4/4 |
-| FEAT-026 Chart portfolio completion + correct waterfall | 🔴 | 4/4 |
-| FEAT-027 Export suite | 🟡 | 4/4 |
-| FEAT-028 Coordinator + agent registry + jobs + permission UX | ⛔ | 6/6 |
-| FEAT-029 DCF valuation agent | ⛔ | 4/4 |
-| FEAT-030 One-brain consolidation + numeric golden eval | ⛔ | 8/8 |
-| FEAT-031 Identity & security hardening | 🔴 | 3/3 |
-| FEAT-032 Provenance honesty & degraded-mode transparency | 🔴 | 4/4 |
+| FEAT-006 CMD named employee roster | ✅ | 1/1 |
+| FEAT-007 Answer contract v2 | ✅ | 1/1 |
+| FEAT-008 Generated semantic layer | ✅ | 1/1 |
+| FEAT-009 QuerySpec planner & compiler (replaces fast-paths) | ✅ | 1/1 |
+| FEAT-010 Granular-data RBAC (row/column masking) | ✅ | 0/0 |
+| FEAT-011 Insight engine & drill-down chips | ✅ | 1/1 |
+| FEAT-012 Reliability, safety, performance | ✅ | 0/0 |
+| FEAT-013 Voice pipeline quality (no duplicate turns) | 🟡 | 2/2 |
+| FEAT-014 Eval-gated release & Cloud Run redeploy | 🟡 | 4/5 |
+| FEAT-015 Any-chart re-presentation & chart excellence | ✅ | 0/0 |
+| FEAT-016 AI aura visual language | ✅ | 1/1 |
+| FEAT-017 Eleven-persona matrix + function split + `self` scope | ✅ | 2/2 |
+| FEAT-018 Real financial SSOT with page lineage + verification gates | ✅ | 7/8 |
+| FEAT-019 Yahoo Finance ingestion (consolidated view) + market data | 🟡 | 1/2 |
+| FEAT-020 Knowledge RAG over real AR text | ✅ | 1/1 |
+| FEAT-021 Employee-360 enterprise table (realistic, reconciled) | ✅ | 4/4 |
+| FEAT-022 Field economics-360 reconciled to company AR totals | ✅ | 3/3 |
+| FEAT-023 V19 transfer workflow: Excel intent + Email agent | ✅ | 2/2 |
+| FEAT-024 V20 finance diagnostics (year-clarify, multi-year statement, WACC, why | 🟡 | 7/7 |
+| FEAT-025 Financial statement table visual | ✅ | 4/4 |
+| FEAT-026 Chart portfolio completion + correct waterfall | ✅ | 4/4 |
+| FEAT-027 Export suite | ✅ | 4/4 |
+| FEAT-028 Coordinator + agent registry + jobs + permission UX | ✅ | 6/6 |
+| FEAT-029 DCF valuation agent | 🟡 | 4/4 |
+| FEAT-030 One-brain consolidation + numeric golden eval | ✅ | 8/8 |
+| FEAT-031 Identity & security hardening | ✅ | 3/3 |
+| FEAT-032 Provenance honesty & degraded-mode transparency | ✅ | 4/4 |
 
 ## 6. Bugs
 
@@ -142,7 +142,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 ## 8. Integrity checks
 
-✅ No inconsistencies between checklist, bug register, feature list, packets, reviews and git.
+- ⚠️ FEAT-018 is ✅ in the feature list but has unfinished steps: P1.1.
 
 ---
 **How this stays current:** every step completion = (1) update the step's Status in `UPGRADE_CHECKLIST.md` (⬜ → 🔨 Built → 🔍 In review → ✅ Done only with a `docs/reviews/<step>.md` APPROVE), (2) close the linked bugs in `BUG_REGISTER.md`, (3) run `python3 scripts/progress/build_progress.py` (regenerate) and `--check` (validate), (4) commit all three files together. The optional git hook (`scripts/progress/install_hook.sh`) blocks commits when `--check` fails.
