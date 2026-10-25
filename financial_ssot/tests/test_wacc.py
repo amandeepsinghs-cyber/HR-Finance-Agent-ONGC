@@ -132,7 +132,7 @@ def test_damodaran_extraction():
 
 
 def test_build_wacc_dataset_structure():
-    """Test full dataset generation and gates W1-W4 structure."""
+    """Test full dataset generation and gates W1-W4 structure with populated RBI & NSE seeds."""
     df_annual, df_input, report_md = build_wacc_dataset()
 
     assert len(df_annual) == 10
@@ -141,23 +141,56 @@ def test_build_wacc_dataset_structure():
     assert "kd_pretax_pct" in df_annual.columns
     assert "verified" in df_annual.columns
 
-    # Since Rf seed is absent, verified must be False and W1 present in failed_rule_ids
+    for _, r in df_annual.iterrows():
+        fy = r["fiscal_year"]
+        assert r["beta_industry_relevered"] is not None
+        assert not pd.isna(r["rf_gsec_10y_pct"])
+        assert not pd.isna(r["ke_pct"])
+        assert not pd.isna(r["equity_mv_inr_cr"])
+        if fy == "FY20":
+            # P19-B1: FY20 missing N36.UNWIND_DECOM must have None / NaN kd_pretax and W1, W4 failed
+            assert r["verified"] is False
+            assert pd.isna(r["kd_pretax_pct"])
+            assert pd.isna(r["wacc_pct"])
+            assert r["kd_flag"] == "out_of_band"
+            assert "W1" in r["failed_rule_ids"]
+            assert "W4" in r["failed_rule_ids"]
+            assert "N36.UNWIND_DECOM unavailable for FY20" in r["notes"]
+        elif fy == "FY24":
+            # FY24 passes all W1-W4 gates (Kd 7.2861% within [Rf - 1pp, Rf + 3pp])
+            assert r["verified"] is True
+            assert r["failed_rule_ids"] == []
+            assert not pd.isna(r["wacc_pct"])
+            assert r["weight_equity"] + r["weight_debt"] == pytest.approx(1.0, abs=1e-6)
+        else:
+            # Other FYs have complete WACC but Kd outside [Rf - 1pp, Rf + 3pp] -> W4 flagged, no W1 failure
+            assert r["verified"] is False
+            assert "W1" not in r["failed_rule_ids"]
+            assert "W4" in r["failed_rule_ids"]
+            assert not pd.isna(r["kd_pretax_pct"])
+            assert not pd.isna(r["wacc_pct"])
+            assert r["weight_equity"] + r["weight_debt"] == pytest.approx(1.0, abs=1e-6)
+
+    # Lineage inputs: 17 lineage rows per FY (including shares_outstanding) = 170 rows
+    assert len(df_input) == 170
+    assert "# WACC Input Pack and fact_wacc_annual Build Report" in report_md
+
+
+def test_build_wacc_missing_seeds_and_share_capital_flag(tmp_path):
+    """Verify missing Rf/market seeds or missing BS.SHARE_CAPITAL sets NULL and flags W1 without constant fallback."""
+    missing_rbi = tmp_path / "missing_rbi.csv"
+    missing_mkt = tmp_path / "missing_mkt.csv"
+    df_annual, _, _ = build_wacc_dataset(rbi_seed_csv=missing_rbi, market_seed_csv=missing_mkt)
     for _, r in df_annual.iterrows():
         assert r["verified"] is False
         assert "W1" in r["failed_rule_ids"]
-        assert r["beta_industry_relevered"] is not None
-        if r["fiscal_year"] == "FY20":
-            # P19-B1: FY20 missing N36.UNWIND_DECOM must have None / NaN kd_pretax and W4 failed
-            assert pd.isna(r["kd_pretax_pct"])
-            assert r["kd_flag"] == "out_of_band"
-            assert "W4" in r["failed_rule_ids"]
-            assert "N36.UNWIND_DECOM unavailable for FY20" in r["notes"]
-        else:
-            assert not pd.isna(r["kd_pretax_pct"])
+        assert pd.isna(r["wacc_pct"])
 
-    # Lineage inputs: 16 lineage rows per FY = 160 rows
-    assert len(df_input) == 160
-    assert "# WACC Input Pack and fact_wacc_annual Build Report" in report_md
+    # Verify SSOT shares_outstanding differs between pre-buyback (FY17-FY18) and post-buyback (FY21-FY26)
+    bundles = inputs.build_all_inputs()
+    assert bundles["FY17"].shares_outstanding == pytest.approx(12_833_264_000.0, rel=1e-6)
+    assert bundles["FY18"].shares_outstanding == pytest.approx(12_833_264_000.0, rel=1e-6)
+    assert bundles["FY26"].shares_outstanding == pytest.approx(12_580_278_000.0, rel=1e-6)
 
 
 def test_p19_b1_b2_b3_reviews():
@@ -165,7 +198,7 @@ def test_p19_b1_b2_b3_reviews():
     df_annual, df_input, _ = build_wacc_dataset()
     annual_by_fy = {r["fiscal_year"]: r for _, r in df_annual.iterrows()}
 
-    # P19-B1: FY17 and FY18 out-of-band sanity check when Rf missing
+    # P19-B1: FY17 and FY18 out-of-band sanity check
     assert annual_by_fy["FY17"]["kd_flag"] == "out_of_band"
     assert "W4" in annual_by_fy["FY17"]["failed_rule_ids"]
     assert annual_by_fy["FY18"]["kd_flag"] == "out_of_band"
@@ -175,7 +208,7 @@ def test_p19_b1_b2_b3_reviews():
     fy17_debt = annual_by_fy["FY17"]["debt_bv_inr_cr"]
     assert fy17_debt == pytest.approx(41.796, abs=1e-3)
 
-    # P19-B3: All 16 input codes present per fiscal year
+    # P19-B3 + P5 shares_outstanding: All 17 input codes present per fiscal year
     expected_codes = {
         "rf_gsec_10y",
         "default_spread_india",
@@ -191,6 +224,7 @@ def test_p19_b1_b2_b3_reviews():
         "tax_rate",
         "debt_bv",
         "equity_bv",
+        "shares_outstanding",
         "equity_mv",
         "wacc",
     }

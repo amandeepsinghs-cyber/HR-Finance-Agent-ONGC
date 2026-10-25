@@ -179,16 +179,17 @@ def test_execution_local_fallback_wacc_components(planner, compiler):
 
 
 def test_execution_local_fallback_wacc_build_up(planner, compiler):
-    """Local fallback execution for wacc_build_up returns 16 lineage inputs."""
+    """Local fallback execution for wacc_build_up returns 17 lineage inputs (including shares_outstanding)."""
     plan = planner.to_plan("WACC FY24", {}, None)
     compiled = compiler.compile(plan.spec)
     result = compiler._execute_local_financial_fallback(compiled)
     assert result is not None
-    assert len(result.rows) == 16
+    assert len(result.rows) == 17
     codes = {r["input_code"] for r in result.rows}
     assert "rf_gsec_10y" in codes
     assert "erp_total_india" in codes
     assert "kd_used" in codes
+    assert "shares_outstanding" in codes
     assert "wacc" in codes
 
 

@@ -71,13 +71,32 @@ class FYInputBundle:
     prior_total_debt_inr_cr: float | None = None
     avg_total_debt_inr_cr: float | None = None
     equity_bv_inr_cr: float | None = None
+    share_capital_inr_cr: float | None = None
+    shares_outstanding: float | None = None
+    share_capital_doc: str | None = None
+    share_capital_page: int | None = None
+    close_price_inr: float | None = None
+    price_trade_date: str | None = None
+    price_source_url: str | None = None
+    price_retrieved_by: str | None = None
+    price_retrieved_at: str | None = None
+    rbi_source_table: str | None = None
+    rbi_source_url: str | None = None
+    rbi_downloaded_at: str | None = None
+    rbi_sha256: str | None = None
     equity_mv_inr_cr: float | None = None
     damodaran_doc: str | None = None
     damodaran_notes: str | None = None
     failed_rule_ids: list[str] = field(default_factory=list)
 
 
-def load_statement_inputs(parquet_path: Path | None = None) -> dict[str, dict[str, float]]:
+# Face value per equity share in INR:
+# Cited in ONGC AR FY2016-17 Note 21 (p.318): "12,833,235,180 Equity Shares of ₹5 each"
+# and ONGC AR FY2025-26 Note 20 (p.342) / Standalone P&L (p.297): "12,580,279,206 Equity Shares of ₹5 each"
+FACE_VALUE_INR = 5.0
+
+
+def load_statement_inputs(parquet_path: Path | None = None) -> dict[str, dict[str, Any]]:
     """Extract required financial lines per fiscal year from gold statements parquet."""
     if parquet_path is None:
         parquet_path = FACT_PARQUET
@@ -92,20 +111,25 @@ def load_statement_inputs(parquet_path: Path | None = None) -> dict[str, dict[st
     ]
 
     fys = [f"FY{y}" for y in range(16, 27)]
-    out: dict[str, dict[str, float]] = {}
+    out: dict[str, dict[str, Any]] = {}
 
     for fy in fys:
         sub = sa[sa["fiscal_year"] == fy]
 
-        def get_val(lc: str) -> float | None:
+        def get_row(lc: str) -> pd.Series | None:
             m = sub[sub["line_code"] == lc]
             if m.empty:
                 return None
             m_latest = m[m["is_latest_vintage"] == True]
             if not m_latest.empty:
-                val = m_latest.iloc[0]["value_inr_cr"]
-            else:
-                val = m.iloc[0]["value_inr_cr"]
+                return m_latest.iloc[0]
+            return m.iloc[0]
+
+        def get_val(lc: str) -> float | None:
+            r = get_row(lc)
+            if r is None:
+                return None
+            val = r["value_inr_cr"]
             return float(val) if val is not None and not pd.isna(val) else None
 
         fin_cost = get_val("PL.FIN_COST")
@@ -144,6 +168,18 @@ def load_statement_inputs(parquet_path: Path | None = None) -> dict[str, dict[st
             lease_liab = lease_bs
 
         equity = get_val("BS.EQUITY.TOTAL")
+        sc_row = get_row("BS.SHARE_CAPITAL")
+        share_capital = (
+            float(sc_row["value_inr_cr"])
+            if sc_row is not None and sc_row["value_inr_cr"] is not None and not pd.isna(sc_row["value_inr_cr"])
+            else None
+        )
+        sc_doc = str(sc_row["source_doc"]) if sc_row is not None and pd.notna(sc_row.get("source_doc")) else None
+        sc_page = (
+            int(sc_row["source_page"])
+            if sc_row is not None and sc_row.get("source_page") is not None and not pd.isna(sc_row.get("source_page"))
+            else None
+        )
 
         out[fy] = {
             "fin_cost": fin_cost,
@@ -152,51 +188,94 @@ def load_statement_inputs(parquet_path: Path | None = None) -> dict[str, dict[st
             "lease_liab": lease_liab,
             "total_debt": (borrowings or 0.0) + (lease_liab or 0.0),
             "equity_bv": equity,
+            "share_capital": share_capital,
+            "share_capital_doc": sc_doc,
+            "share_capital_page": sc_page,
         }
 
     return out
 
 
-def load_rbi_seed(seed_csv: Path | None = None) -> dict[str, float]:
-    """Load manual RBI 10-year G-sec seed CSV if present."""
+def load_rbi_seed_meta(seed_csv: Path | None = None) -> dict[str, dict[str, Any]]:
+    """Load RBI 10-year G-sec seed CSV with full lineage metadata."""
     if seed_csv is None:
         seed_csv = RBI_SEED_CSV
     if not seed_csv.exists():
         return {}
 
-    rates: dict[str, float] = {}
+    meta: dict[str, dict[str, Any]] = {}
     with open(seed_csv, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            fy = row.get("fiscal_year")
-            y_val = row.get("yield_pct")
+            fy = (row.get("fiscal_year") or "").strip()
+            y_val = (row.get("yield_pct") or "").strip()
             if fy and y_val:
                 try:
-                    rates[fy.strip()] = float(y_val.strip())
+                    meta[fy] = {
+                        "yield_pct": float(y_val),
+                        "as_of_date": (row.get("as_of_date") or "").strip(),
+                        "source_table": (row.get("source_table") or "").strip(),
+                        "source_url": (row.get("source_url") or "").strip(),
+                        "downloaded_by": (row.get("downloaded_by") or "").strip(),
+                        "downloaded_at": (row.get("downloaded_at") or "").strip(),
+                        "sha256": (row.get("sha256_of_source_file") or "").strip(),
+                    }
                 except ValueError:
                     pass
-    return rates
+    return meta
 
 
-def load_market_prices_seed(seed_csv: Path | None = None) -> dict[str, float]:
-    """Load manual market prices seed CSV if present."""
+def load_rbi_seed(seed_csv: Path | None = None) -> dict[str, float]:
+    """Load manual RBI 10-year G-sec seed CSV if present."""
+    return {fy: m["yield_pct"] for fy, m in load_rbi_seed_meta(seed_csv).items()}
+
+
+def load_market_prices_seed_meta(seed_csv: Path | None = None) -> dict[str, dict[str, Any]]:
+    """Load market prices seed CSV with full lineage metadata, keyed by trade date, FY-end date, and FY."""
     if seed_csv is None:
         seed_csv = MARKET_SEED_CSV
     if not seed_csv.exists():
         return {}
 
-    prices: dict[str, float] = {}
+    meta: dict[str, dict[str, Any]] = {}
+    latest_march_by_fy: dict[str, str] = {}
     with open(seed_csv, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            dt = row.get("date")
-            close = row.get("close")
+            dt = (row.get("date") or "").strip()
+            close = (row.get("close") or "").strip()
+            ticker = (row.get("ticker") or "").strip()
+            if ticker and ticker not in ("ONGC.NS", "ONGC"):
+                continue
             if dt and close:
                 try:
-                    prices[dt.strip()] = float(close.strip())
+                    val = float(close)
                 except ValueError:
-                    pass
-    return prices
+                    continue
+                entry = {
+                    "ticker": ticker or "ONGC.NS",
+                    "date": dt,
+                    "close": val,
+                    "source_url": (row.get("source_url") or "").strip() or None,
+                    "retrieved_by": (row.get("retrieved_by") or "").strip() or None,
+                    "retrieved_at": (row.get("retrieved_at") or "").strip() or None,
+                }
+                meta[dt] = entry
+                # Map March trading dates (YYYY-03-DD) to both FYxx and YYYY-03-31 (last trading day of March wins)
+                if len(dt) == 10 and dt[4] == "-" and dt[5:7] == "03":
+                    fy_key = f"FY{dt[2:4]}"
+                    fy_end_key = f"{dt[:4]}-03-31"
+                    prev_dt = latest_march_by_fy.get(fy_key)
+                    if prev_dt is None or dt >= prev_dt:
+                        latest_march_by_fy[fy_key] = dt
+                        meta[fy_key] = entry
+                        meta[fy_end_key] = entry
+    return meta
+
+
+def load_market_prices_seed(seed_csv: Path | None = None) -> dict[str, float]:
+    """Load manual market prices seed CSV if present."""
+    return {k: m["close"] for k, m in load_market_prices_seed_meta(seed_csv).items()}
 
 
 def build_all_inputs(
@@ -209,8 +288,10 @@ def build_all_inputs(
     erp_data = damodaran.extract_india_erp(market_dir)
     beta_data = damodaran.extract_industry_beta(market_dir)
     stmt_data = load_statement_inputs(parquet_path)
-    rbi_rates = load_rbi_seed(rbi_seed_csv)
-    market_prices = load_market_prices_seed(market_seed_csv)
+    rbi_meta = load_rbi_seed_meta(rbi_seed_csv)
+    rbi_rates = {fy: m["yield_pct"] for fy, m in rbi_meta.items()}
+    market_meta = load_market_prices_seed_meta(market_seed_csv)
+    market_prices = {k: m["close"] for k, m in market_meta.items()}
 
     bundles: dict[str, FYInputBundle] = {}
 
@@ -233,17 +314,27 @@ def build_all_inputs(
         )
 
         rf = rbi_rates.get(fy)
+        rf_info = rbi_meta.get(fy, {})
         default_spread = erp_info.get("default_spread_pct")
 
         # Rf used = raw INR 10-yr G-sec (OD-11 decision)
         rf_used = rf
 
-        # Market prices seed -> equity MV if available
-        # Shares outstanding = 12,580,279,206 per SPEC-01 §9.1 and SPEC-02 §4
+        # Derive shares outstanding per FY from SSOT BS.SHARE_CAPITAL ÷ ₹5 face value
+        # Do not fall back to a constant if BS.SHARE_CAPITAL is missing.
+        share_capital = stmt_info.get("share_capital")
+        shares_outstanding = (
+            round((share_capital * 1e7) / FACE_VALUE_INR, 2)
+            if share_capital is not None and share_capital > 0
+            else None
+        )
+
+        # Market prices seed -> equity MV if both close price and SSOT shares_outstanding are available
         close_price = market_prices.get(as_of) or market_prices.get(fy)
+        price_info = market_meta.get(as_of) or market_meta.get(fy) or {}
         equity_mv = (
-            round((close_price * 12_580_279_206) / 1e7, 2)
-            if close_price is not None
+            round((close_price * shares_outstanding) / 1e7, 2)
+            if (close_price is not None and shares_outstanding is not None)
             else None
         )
 
@@ -267,6 +358,19 @@ def build_all_inputs(
             prior_total_debt_inr_cr=prior_debt,
             avg_total_debt_inr_cr=avg_debt,
             equity_bv_inr_cr=stmt_info.get("equity_bv"),
+            share_capital_inr_cr=share_capital,
+            shares_outstanding=shares_outstanding,
+            share_capital_doc=stmt_info.get("share_capital_doc"),
+            share_capital_page=stmt_info.get("share_capital_page"),
+            close_price_inr=close_price,
+            price_trade_date=price_info.get("date"),
+            price_source_url=price_info.get("source_url"),
+            price_retrieved_by=price_info.get("retrieved_by"),
+            price_retrieved_at=price_info.get("retrieved_at"),
+            rbi_source_table=rf_info.get("source_table"),
+            rbi_source_url=rf_info.get("source_url"),
+            rbi_downloaded_at=rf_info.get("downloaded_at"),
+            rbi_sha256=rf_info.get("sha256"),
             equity_mv_inr_cr=equity_mv,
             damodaran_doc=erp_info.get("source_doc"),
             damodaran_notes=erp_info.get("notes"),
@@ -274,7 +378,9 @@ def build_all_inputs(
 
         if rf is None:
             bundle.failed_rule_ids.append("W1")
-        if equity_mv is None:
+        if shares_outstanding is None and "W1" not in bundle.failed_rule_ids:
+            bundle.failed_rule_ids.append("W1")
+        if equity_mv is None and "W1" not in bundle.failed_rule_ids:
             bundle.failed_rule_ids.append("W1")
 
         bundles[fy] = bundle
