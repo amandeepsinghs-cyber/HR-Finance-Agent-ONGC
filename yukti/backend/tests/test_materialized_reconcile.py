@@ -49,16 +49,64 @@ def test_reconcile_headcount_tenure(bq_client):
 
 
 def test_reconcile_field_pnl(bq_client):
-    """(b) agg_field_pnl: FY26 Champang PBT and 53-field sums match ssot_field_economics_360.
-
-    Note: In commit e7de82f (`financial_build/scripts/load_and_reconcile_bq.py`),
-    `hrfin_gold.agg_field_pnl_summary` and `hrfin_gold.ssot_field_economics_360` were
-    recalibrated top-down so the 53 fields sum to the authoritative FY26 Standalone
-    Schedule III Annual Report totals (`ssot_corporate_annual_360`: rev 132508.01 Cr,
-    ebitda 71294.11 Cr, pbt 43247.06 Cr), shifting synthetic Champang FY26 PBT from
-    -4.93 Cr (legacy un-reconciled `v_field_pnl`) to -183.27 Cr.
+    """(b) Field economics FY rollup (`v_field_economics_fy` in `_v3`, or legacy `agg_field_pnl_summary` in v2)
+    reconciles with `ssot_field_economics_360` and FY26 `PL.REV_OPS` (`132,508.14` Cr).
     """
-    # Check Champang
+    if BQ_GOLD_DATASET.endswith("_v3"):
+        sql_null_months = f"""
+        SELECT COUNTIF(month_start IS NULL) AS null_months
+        FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.ssot_field_economics_360`
+        """
+        null_months = list(bq_client.query(sql_null_months).result())[0]["null_months"]
+        assert null_months == 0, f"Expected 0 null month_start rows in {BQ_GOLD_DATASET}.ssot_field_economics_360, got {null_months}"
+
+        sql_champang_fy = f"""
+        SELECT ROUND(field_pbt_cr, 2) AS pbt_cr
+        FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.v_field_economics_fy`
+        WHERE fiscal_year = 'FY26' AND object_name = 'Champang'
+        """
+        pbt_fy = list(bq_client.query(sql_champang_fy).result())[0]["pbt_cr"]
+
+        sql_champang_ssot = f"""
+        SELECT ROUND(SUM(pbt_contrib) / 10.0, 2) AS pbt_cr
+        FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.ssot_field_economics_360`
+        WHERE fiscal_year = 'FY26' AND object_name = 'Champang'
+        """
+        pbt_ssot = list(bq_client.query(sql_champang_ssot).result())[0]["pbt_cr"]
+        assert pbt_fy == Decimal("30.75")
+        assert pbt_fy == pbt_ssot
+
+        sql_sums_fy = f"""
+        SELECT
+            COUNTIF(object_type = 'field') AS field_count,
+            ROUND(SUM(field_revenue_cr), 2) AS sum_rev,
+            ROUND(SUM(field_ebitda_cr), 2) AS sum_ebitda,
+            ROUND(SUM(field_pbt_cr), 2) AS sum_pbt
+        FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.v_field_economics_fy`
+        WHERE fiscal_year = 'FY26'
+        """
+        sums_fy = list(bq_client.query(sql_sums_fy).result())[0]
+
+        sql_sums_ssot = f"""
+        SELECT
+            COUNT(DISTINCT IF(object_type = 'field', object_id, NULL)) AS field_count,
+            ROUND(SUM(revenue_from_operations) / 10.0, 2) AS sum_rev,
+            ROUND(SUM(ebitda) / 10.0, 2) AS sum_ebitda,
+            ROUND(SUM(pbt_contrib) / 10.0, 2) AS sum_pbt
+        FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.ssot_field_economics_360`
+        WHERE fiscal_year = 'FY26'
+        """
+        sums_ssot = list(bq_client.query(sql_sums_ssot).result())[0]
+
+        assert sums_fy["field_count"] == 53
+        assert sums_fy["field_count"] == sums_ssot["field_count"]
+        assert sums_fy["sum_rev"] == Decimal("132508.14")
+        assert sums_fy["sum_rev"] == sums_ssot["sum_rev"]
+        assert sums_fy["sum_ebitda"] == sums_ssot["sum_ebitda"]
+        assert sums_fy["sum_pbt"] == sums_ssot["sum_pbt"]
+        return
+
+    # Check Champang (legacy v2 dataset)
     sql_champang_agg = f"""
     SELECT recomputed_pbt_inr_cr
     FROM `{PROJECT_ID}.{BQ_GOLD_DATASET}.agg_field_pnl_summary`

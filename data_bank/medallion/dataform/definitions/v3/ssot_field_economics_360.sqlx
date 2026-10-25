@@ -273,5 +273,3 @@ LEFT JOIN fx_monthly fx
   ON p.month_str = fx.month_str
 LEFT JOIN hc_by_wc hc
   ON p.month_start = hc.month_start AND d.asset_wc_id = hc.wc_id
-FULL OUTER UNION ALL BY NAME
-SELECT * FROM `ongc-hr-finance-agent.hrfin_gold.ssot_field_economics_360`

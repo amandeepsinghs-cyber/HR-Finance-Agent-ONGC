@@ -281,6 +281,10 @@ class LiveSessionManager:
         if not isinstance(result, dict):
             return
 
+        from app.brain.rbac import enforce_contract as _enforce_live_contract
+
+        result = _enforce_live_contract(dict(result), self.persona)
+
         if job_id and job_id not in self._emitted_job_contracts:
             self._emitted_job_contracts.add(job_id)
             await self.send_json({"type": "contract", "contract": result})
@@ -715,6 +719,9 @@ class LiveSessionManager:
             spoken = f"I've switched the screen view to a {target_kind}."
             last_contract["spoken_summary"] = spoken
             last_contract["display_text"] = spoken
+            from app.brain.rbac import enforce_contract as _enforce_live_replot
+
+            last_contract = _enforce_live_replot(last_contract, self.persona)
             for k in ("latency_ms", "from_answer_cache", "generated_sql", "tool_called", "ui_action"):
                 last_contract.pop(k, None)
             self.session_state.record_turn(last_contract)

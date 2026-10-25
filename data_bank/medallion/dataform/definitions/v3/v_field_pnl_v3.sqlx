@@ -5,23 +5,86 @@ config {
   description: "Compatibility view over v_field_economics_fy for field P&L"
 }
 
+WITH res AS (
+  SELECT
+    field_id,
+    fiscal_year,
+    MAX(reserves_2p_oil_mmt) AS reserves_2p_oil_mmt,
+    MAX(reserves_2p_gas_bcm) AS reserves_2p_gas_bcm,
+    MAX(reserves_2p_total_mmtoe) AS reserves_2p_total_mmtoe,
+    MAX(reserve_replacement_ratio_rrr_2p) AS reserve_replacement_ratio_rrr_2p,
+    MAX(finding_cost_usd_per_boe) AS finding_cost_usd_per_boe,
+    MAX(development_cost_usd_per_boe) AS development_cost_usd_per_boe
+  FROM ${ref("reserves_annual")}
+  GROUP BY 1, 2
+),
+wl AS (
+  SELECT
+    field_id,
+    fiscal_year,
+    COUNT(*) AS wells_drilled_count,
+    COUNTIF(LOWER(well_type) LIKE '%explor%') AS exploratory_wells_count,
+    COUNTIF(LOWER(well_type) LIKE '%dev%') AS development_wells_count,
+    COUNTIF(LOWER(result_status) = 'dry_hole') AS dry_holes_count,
+    ROUND(SUM(COALESCE(drilling_cost_inr_cr, 0)), 2) AS drilling_cost_inr_cr
+  FROM ${ref("wells_drilled")}
+  GROUP BY 1, 2
+),
+fp AS (
+  SELECT
+    field_id,
+    fiscal_year,
+    ANY_VALUE(is_loss_making_3yr_consecutive) AS is_loss_making_3yr_consecutive,
+    ANY_VALUE(is_divestment_candidate) AS is_divestment_candidate,
+    ANY_VALUE(pec_monetisation_potential_flag) AS pec_monetisation_potential_flag,
+    ANY_VALUE(root_cause_loss_code) AS root_cause_loss_code
+  FROM ${ref("field_pnl_annual")}
+  GROUP BY 1, 2
+)
 SELECT
   v.*,
   v.object_id AS field_id,
   v.object_name AS field_name,
   v.object_type AS line_type,
+  LOWER(v.segment) AS onshore_offshore,
   v.prod_boe AS total_production_boe,
   v.field_revenue_cr AS gross_revenue_inr_cr,
+  v.field_revenue_cr AS recomputed_gross_revenue_inr_cr,
+  (v.field_revenue_cr - v.levies_total / 10.0) AS net_revenue_inr_cr,
+  (v.field_revenue_cr - v.levies_total / 10.0) AS recomputed_net_revenue_inr_cr,
   v.rev_crude / 10.0 AS oil_revenue_inr_cr,
   v.rev_gas / 10.0 AS gas_revenue_inr_cr,
   v.royalty / 10.0 AS statutory_royalty_inr_cr,
   v.oidb_cess / 10.0 AS statutory_cess_inr_cr,
   v.excise_saed / 10.0 AS statutory_windfall_tax_saed_inr_cr,
+  v.staff_expenditure / 10.0 AS allocated_manpower_cost_inr_cr,
   v.opex_total / 10.0 AS total_opex_inr_cr,
   v.dda_total / 10.0 AS dda_depreciation_inr_cr,
   v.field_ebitda_cr AS ebitda_inr_cr,
+  v.field_ebitda_cr AS recomputed_ebitda_inr_cr,
   v.field_ebitda_margin_pct AS ebitda_margin_pct,
+  v.field_ebitda_margin_pct AS recomputed_ebitda_margin_pct,
   v.field_pbt_cr AS pbt_inr_cr,
+  v.field_pbt_cr AS recomputed_pbt_inr_cr,
   v.lifting_cost_per_boe_usd AS unit_lifting_cost_usd_per_boe,
-  v.opex_per_boe_inr AS unit_lifting_cost_inr_per_boe
+  v.opex_per_boe_inr AS unit_lifting_cost_inr_per_boe,
+  SAFE_DIVIDE(v.employee_cost_per_boe, NULLIF(v.inr_usd_fx_rate, 0)) AS manpower_cost_per_boe_usd,
+  COALESCE(fp.is_loss_making_3yr_consecutive, FALSE) AS is_loss_making_3yr_consecutive,
+  COALESCE(fp.is_divestment_candidate, FALSE) AS is_divestment_candidate,
+  COALESCE(fp.pec_monetisation_potential_flag, FALSE) AS pec_monetisation_potential_flag,
+  fp.root_cause_loss_code,
+  res.reserves_2p_oil_mmt,
+  res.reserves_2p_gas_bcm,
+  res.reserves_2p_total_mmtoe,
+  res.reserve_replacement_ratio_rrr_2p,
+  res.finding_cost_usd_per_boe,
+  res.development_cost_usd_per_boe,
+  COALESCE(wl.wells_drilled_count, 0) AS wells_drilled_count,
+  COALESCE(wl.exploratory_wells_count, 0) AS exploratory_wells_count,
+  COALESCE(wl.development_wells_count, 0) AS development_wells_count,
+  COALESCE(wl.dry_holes_count, 0) AS dry_holes_count,
+  COALESCE(wl.drilling_cost_inr_cr, 0) AS drilling_cost_inr_cr
 FROM ${ref("v_field_economics_fy")} v
+LEFT JOIN fp ON v.object_id = fp.field_id AND v.fiscal_year = fp.fiscal_year
+LEFT JOIN res ON v.object_id = res.field_id AND v.fiscal_year = res.fiscal_year
+LEFT JOIN wl ON v.object_id = wl.field_id AND v.fiscal_year = wl.fiscal_year

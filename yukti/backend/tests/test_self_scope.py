@@ -95,12 +95,17 @@ def test_11_personas_x_8_self_queries_bind_own_emp_id(monkeypatch, persona: str,
 
     # Attempt parameter spoofing via caller params={"self_emp_id": "EMP-102451"} — must be ignored!
     res = run_certified_query(qid, params={"self_emp_id": "EMP-102451"}, persona=persona)
-    assert "@self_emp_id" in captured["sql"]
-    assert captured["self_emp_id"] == expected_emp_id
-    assert res["rows"][0]["emp_id"] == expected_emp_id
-    if persona != "E2_HR":
-        assert captured["self_emp_id"] != "EMP-102451"
-        assert all(r.get("emp_id") != "EMP-102451" for r in res["rows"])
+    if qid == "my_apar" and persona in ("CMD", "DIR_HR", "DIR_FIN"):
+        assert res["status"] == "refused"
+        assert res["rows"] == []
+        assert res["access"]["rule_ref"] == "D-66"
+    else:
+        assert "@self_emp_id" in captured["sql"]
+        assert captured["self_emp_id"] == expected_emp_id
+        assert res["rows"][0]["emp_id"] == expected_emp_id
+        if persona != "E2_HR":
+            assert captured["self_emp_id"] != "EMP-102451"
+            assert all(r.get("emp_id") != "EMP-102451" for r in res["rows"])
 
 
 @pytest.mark.parametrize("persona", list(ALL_PERSONAS_ORDERED))

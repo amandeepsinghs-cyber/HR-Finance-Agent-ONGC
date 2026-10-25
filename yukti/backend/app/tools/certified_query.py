@@ -164,6 +164,19 @@ def run_certified_query(
     if "@self_emp_id" in raw_sql or "self_emp_id" in param_defs:
         merged_params["self_emp_id"] = resolve_self_emp_id(persona=canon_persona, self_emp_id=self_emp_id)
 
+    # D-66 pre-query guard: refuse APAR and medical queries (e.g. my_apar, E3) for EMP-000001..3 on every persona
+    from app.brain.rbac import enforce_certified_query_d66_pre, enforce_certified_result_d66_post
+
+    d66_pre_refusal = enforce_certified_query_d66_pre(
+        entry=entry,
+        raw_sql=raw_sql,
+        merged_params=merged_params,
+        persona=canon_persona,
+        self_emp_id=merged_params.get("self_emp_id") or self_emp_id,
+    )
+    if d66_pre_refusal is not None:
+        return d66_pre_refusal
+
     # H1.2: Validate parameter names and values against injection patterns before execution or caching
     _UNSAFE_PARAM_RE = re.compile(
         r"(?:;|--|/\*|\*/|['\"`\x00\r\n]|\b(?:UNION|SELECT|DROP|DELETE|UPDATE|INSERT|ALTER|CREATE|TRUNCATE|EXEC|EXECUTE|INFORMATION_SCHEMA|EXTERNAL_QUERY)\b)",
@@ -235,7 +248,7 @@ def run_certified_query(
             default_dataset=f"{GCP_PROJECT}.{BQ_SILVER_DATASET}",
             query_parameters=bq_params,
             labels=JOB_LABELS,
-            maximum_bytes_billed=MAX_BYTES_BILLED,
+            maximum_bytes_billed=max(MAX_BYTES_BILLED, 1_073_741_824),
         )
 
         job = client.query(raw_sql, job_config=job_config)
@@ -338,6 +351,15 @@ def run_certified_query(
             "provenance": prov,
         }
 
+        result = enforce_certified_result_d66_post(
+            result,
+            entry=entry,
+            raw_sql=raw_sql,
+            merged_params=merged_params,
+            persona=canon_persona,
+            self_emp_id=merged_params.get("self_emp_id") or self_emp_id,
+        )
+
         # Cache result
         cache.set_sql(sql=f"CERTIFIED:{entry['id']}:{merged_params}", persona=cache_persona, value=result)
         return result
@@ -359,17 +381,18 @@ def run_certified_query(
                 else:
                     fallback_params.append(bigquery.ScalarQueryParameter(p_name, "STRING", str(p_val)))
 
+            from app.config import BQ_SILVER_DATASET as _FB_SILVER_DS
             job = client.query(raw_sql, job_config=bigquery.QueryJobConfig(
-                default_dataset=f"{GCP_PROJECT}.hrfin_silver",
+                default_dataset=f"{GCP_PROJECT}.{_FB_SILVER_DS}",
                 query_parameters=fallback_params,
                 labels=JOB_LABELS,
-                maximum_bytes_billed=MAX_BYTES_BILLED,
+                maximum_bytes_billed=max(MAX_BYTES_BILLED, 1_073_741_824),
             ))
             rows_iter = job.result()
             schema_fields = [field.name for field in rows_iter.schema] if rows_iter.schema else []
             rows = [{k: _convert_row_value(r[k]) for k in schema_fields} for r in rows_iter]
             elapsed_ms = round((time.perf_counter() - t0) * 1000, 1)
-            return {
+            fb_res = {
                 "type": "certified_query_result",
                 "query_id": entry["id"],
                 "canonical_question": entry["canonical_question"],
@@ -390,9 +413,25 @@ def run_certified_query(
                 "params_applied": merged_params,
                 "provenance": entry.get("provenance", {}),
             }
+            return enforce_certified_result_d66_post(
+                fb_res,
+                entry=entry,
+                raw_sql=raw_sql,
+                merged_params=merged_params,
+                persona=canon_persona,
+                self_emp_id=merged_params.get("self_emp_id") or self_emp_id,
+            )
         except Exception as e2:
             local_res = _run_local_certified_fallback(entry, merged_params, raw_sql, t0)
             if local_res is not None:
+                local_res = enforce_certified_result_d66_post(
+                    local_res,
+                    entry=entry,
+                    raw_sql=raw_sql,
+                    merged_params=merged_params,
+                    persona=canon_persona,
+                    self_emp_id=merged_params.get("self_emp_id") or self_emp_id,
+                )
                 cache.set_sql(sql=f"CERTIFIED:{entry['id']}:{merged_params}", persona=cache_persona, value=local_res)
                 return local_res
             return {

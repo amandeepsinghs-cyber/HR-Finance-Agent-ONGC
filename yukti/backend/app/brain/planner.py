@@ -1089,6 +1089,11 @@ class Planner:
         grain = raw.get("grain")
         sort = Sort(by=raw["sort_by"], dir=raw.get("sort_dir") or "desc") if raw.get("sort_by") else None
         limit = raw.get("limit") if isinstance(raw.get("limit"), int) and raw.get("limit") > 0 else None
+        if limit == 1 and not re.search(
+            r"\b(top\s+1|bottom\s+1|first\s+1|last\s+1|limit\s+1|single|only\s+one|highest|lowest|largest|smallest|most|least)\b",
+            ql_early,
+        ):
+            limit = None
 
         # Entity guard: a single work centre named in the question but missing from the plan.
         if wants_waterfall:

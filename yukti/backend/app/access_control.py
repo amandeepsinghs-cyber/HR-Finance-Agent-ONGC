@@ -449,10 +449,10 @@ _SELF_QUERY_RE = re.compile(
     r"(?:"
     r"(?<![a-z])(?:my|mine|mera|meri|mere)(?:\s+(?:own|current|latest|monthly|annual|fy\d{2}|september|march|april|personal)){0,2}\s+"
     r"(?:salary|payslip|pay\s*slip|pay\s+components|pay\s+scale|ctc|basic\s*pay|da|hra|prp|gross\s*pay|net\s*pay|"
-    r"leave|el|cl|hpl|balance|posting|postings|tenure|station|transfer|apar|rating|ratings|score|appraisal|"
-    r"entitlement|entitlements|advance|advances|hba|car\s+advance|furniture|laptop|medical\s+claim\w*|reimbursement)(?![a-z])"
+    r"leave|el|cl|hpl|balance|posting|postings|tenure|station|transfer|apar|eapar|rating|ratings|score|appraisal|"
+    r"entitlement|entitlements|advance|advances|hba|car\s+advance|furniture|laptop|medical|medical\s+claim\w*|reimbursement|claim\w*)(?![a-z])"
     r"|(?<![a-z])(?:how\s+long\s+have\s+i\s+been\s+posted|where\s+am\s+i\s+posted)(?![a-z])"
-    r"|(?:मेरा|मेरी|मेरे|अपना|अपनी|अपने)\s+(?:\S+\s+){0,3}(?:वेतन|सैलरी|वेतन\s*पर्ची|पेस्लिप|payslip|salary|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|apar|मूल्यांकन|पात्रता)"
+    r"|(?:मेरा|मेरी|मेरे|अपना|अपनी|अपने)\s+(?:\S+\s+){0,3}(?:वेतन|सैलरी|वेतन\s*पर्ची|पेस्लिप|payslip|salary|छुट्टी|पोस्टिंग|स्थानांतरण|एपार|एपीएआर|वार्षिक\s*कार्य\s*निष्पादन|apar|मूल्यांकन|पात्रता|मेडिकल|चिकित्सा|स्वास्थ्य|दावा|दावे|क्लेम)"
     r")",
     re.IGNORECASE,
 )
@@ -531,6 +531,18 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
     normalized_persona = normalize_persona(persona)
 
     # 0. D-66: APAR and medical records for EMP-000001..3 are refused for EVERY persona (including self & CMD)
+    root_id = entry_id.split("__")[0] if entry_id else None
+    if root_id in ("my_apar", "E3") and normalized_persona in ("CMD", "DIR_HR", "DIR_FIN"):
+        from app.brain.rbac import OFFICE_HOLDER_REFUSAL_COPY
+
+        return AccessDecision(
+            status="refused",
+            reason=OFFICE_HOLDER_REFUSAL_COPY,
+            rule_ref="D-66",
+            alternative="Aggregate workforce and policy metrics.",
+            refusal_id="D-66",
+            code="R-APAR" if root_id == "my_apar" else "R-SENS",
+        )
     if query:
         from app.brain.rbac import OFFICE_HOLDER_REFUSAL_COPY, is_office_holder_apar_or_medical
 
@@ -546,7 +558,6 @@ def check_access(persona: str, entry_id: Optional[str] = None, query: Optional[s
             )
 
     # 1. Check if entry_id corresponds to a known refusal first (S1)
-    root_id = entry_id.split("__")[0] if entry_id else None
     _REFUSAL_ID_TO_CODE = {
         "D1": "R-PAY",
         "D2": "R-NAMED",

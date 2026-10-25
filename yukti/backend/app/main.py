@@ -609,6 +609,12 @@ def create_export(
     except TurnOwnershipError as exc_rbac:
         _refuse_export_403(str(exc_rbac), req.turn_id or "")
 
+    if (masked_contract.get("access") or {}).get("status") == "refused":
+        _refuse_export_403(
+            str((masked_contract.get("access") or {}).get("reason") or "Export refused by access control policy."),
+            req.turn_id or "",
+        )
+
     if is_client_supplied and "client_supplied" not in data_classes:
         data_classes.append("client_supplied")
 

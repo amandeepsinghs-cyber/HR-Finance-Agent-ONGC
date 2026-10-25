@@ -137,28 +137,27 @@ def rewrite_dataset_sql(sql: str) -> str:
             f"`{GCP_PROJECT}.hrfin_gold_v3.v_field_pnl_v3`",
             out,
         )
-        # Route annual field_pnl queries on ssot_field_economics_360 (WHERE field_id IS NOT NULL) to v_field_pnl_v3
-        # when no legacy-only columns are referenced
-        if (
-            "hrfin_gold_v3.ssot_field_economics_360" in out
-            and "WHERE field_id IS NOT NULL" in out
-            and not re.search(
-                r"\b(onshore_offshore|reserves_2p_total_mmtoe|drilling_cost_inr_cr|is_loss_making_3yr_consecutive|is_divestment_candidate|boe_per_employee|manpower_cost_per_boe_usd)\b",
-                out,
-            )
-        ):
-            out = out.replace(
-                f"`{GCP_PROJECT}.hrfin_gold_v3.ssot_field_economics_360`",
-                f"`{GCP_PROJECT}.hrfin_gold_v3.v_field_pnl_v3`",
-            ).replace(
-                "WHERE field_id IS NOT NULL",
-                "WHERE field_id IS NOT NULL AND LOWER(line_type) = 'field'",
+        # Route annual field_pnl queries on ssot_field_economics_360 (field_id IS NOT NULL) to v_field_pnl_v3 (over v_field_economics_fy)
+        if "hrfin_gold_v3.ssot_field_economics_360" in out and "field_id IS NOT NULL" in out:
+            out = (
+                out.replace(
+                    f"`{GCP_PROJECT}.hrfin_gold_v3.ssot_field_economics_360`",
+                    f"`{GCP_PROJECT}.hrfin_gold_v3.v_field_pnl_v3`",
+                )
+                .replace(
+                    "WHERE field_id IS NOT NULL",
+                    "WHERE field_id IS NOT NULL AND LOWER(line_type) = 'field'",
+                )
+                .replace(
+                    "AND pnl.field_id IS NOT NULL",
+                    "AND pnl.field_id IS NOT NULL AND LOWER(pnl.line_type) = 'field'",
+                )
             )
     return out
 
 
 JOB_LABELS = {"datacloud": os.getenv("YUKTI_JOB_LABEL_VALUE", "ai-agent")}
-MAX_BYTES_BILLED = 524_288_000  # 500 MB
+MAX_BYTES_BILLED = int(os.getenv("YUKTI_MAX_BYTES_BILLED", "524288000"))  # 500 MB
 FX_INR_PER_USD = float(os.getenv("YUKTI_FX_INR_PER_USD", "88.33"))
 
 # P0.5 (BUG-32, SPEC-06 §4.7): deployment environment, admin routes and CORS allow-list

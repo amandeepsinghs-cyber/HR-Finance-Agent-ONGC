@@ -456,6 +456,14 @@ def enforce_export_rbac(
     is_aggregate = False
     masked = False
 
+    # D-66: Office-holder (EMP-000001..3) APAR and medical contracts are refused for EVERY persona
+    # before any junior/director grade collapse so those rows can never be exported in any form.
+    from app.brain.rbac import enforce_office_holder_contract
+
+    enforce_office_holder_contract(c, norm_p)
+    if (c.get("access") or {}).get("status") == "refused":
+        return c, True, False, sorted(set(data_classes)), dropped_columns
+
     if tbl is not None and (is_junior or is_dir_fin_on_hr):
         raw_cols = list(tbl.get("columns") or [])
         raw_rows = list(tbl.get("rows") or [])

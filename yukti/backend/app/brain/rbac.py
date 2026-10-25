@@ -181,27 +181,159 @@ OFFICE_HOLDER_EMP_IDS: tuple[str, ...] = ("EMP-000001", "EMP-000002", "EMP-00000
 OFFICE_HOLDER_PERSONAS: tuple[str, ...] = ("CMD", "DIR_HR", "DIR_FIN")
 OFFICE_HOLDER_NAMES: tuple[str, ...] = (
     "arun kumar singh",
+    "arun singh",
     "manish patil",
     "anupam agarwal",
+    "अरुण कुमार सिंह",
+    "अरुण सिंह",
+    "मनीष पाटिल",
+    "अनुपम अग्रवाल",
 )
 OFFICE_HOLDER_SYNTHETIC_LABEL: str = "Illustrative HR record (synthetic)"
 OFFICE_HOLDER_REFUSAL_COPY: str = "Not shown: illustrative records are not displayed for named office-holders."
 
 _OFFICE_HOLDER_APAR_RE = re.compile(
-    r"(?:\b(?:apar|eapar|appraisal|performance\s+rating\w*|performance\s+score\w*|annual\s+appraisal\w*)\b|एपार|मूल्यांकन)",
+    r"(?:\b(?:apar|apars|eapar|e-apar|appraisal|appraisals|performance\s+rating\w*|performance\s+score\w*|"
+    r"annual\s+appraisal\w*|annual\s+performance\s+appraisal\w*|varshik\s+karya\s+nishpadan|mulyankan)\b|"
+    r"एपार|एपीएआर|ई-एपार|ई-एपीएआर|वार्षिक\s*कार्य\s*निष्पादन|कार्य\s*निष्पादन|मूल्यांकन)",
     re.IGNORECASE,
 )
 _OFFICE_HOLDER_MEDICAL_RE = re.compile(
-    r"(?:\b(?:medical|health\s+record\w*|medical\s+record\w*|medical\s+claim\w*|medical\s+reimbursement\w*|"
-    r"hospitali[sz]ation\w*|health\s+claim\w*|treatment\s+record\w*|medical\s+history|medical\s+bill\w*)\b|"
-    r"मेडिकल|चिकित्सा|स्वास्थ्य\s*रिकॉर्ड)",
+    r"(?:\b(?:medical|medikal|chikitsa|swasthya|health\s+record\w*|medical\s+record\w*|medical\s+claim\w*|"
+    r"medical\s+reimbursement\w*|hospitali[sz]ation\w*|health\s+claim\w*|health\s+insurance\w*|"
+    r"treatment\s+record\w*|medical\s+history|medical\s+bill\w*|bima\s+dawa|bima\s+claim)\b|"
+    r"मेडिकल|चिकित्सा|स्वास्थ्य\s*बीमा|स्वास्थ्य\s*रिकॉर्ड|स्वास्थ्य\s*दाव|स्वास्थ्य\s*क्लेम|"
+    r"बीमा\s*दाव|बीमा\s*क्लेम|इलाज|अस्पताल|दावा|दावे|क्लेम)",
     re.IGNORECASE,
 )
 _OFFICE_HOLDER_TITLE_TARGET_RE = re.compile(
-    r"\b(?:the\s+cmd|cmd's|chairman(?:'s|\s+&\s+ceo|\s+and\s+ceo)?|"
-    r"director\s*\(?\s*(?:hr|human\s+resources|finance|fin)\s*\)?(?:'s)?)\b",
+    r"(?:\b(?:the\s+cmd|cmd's|cmd\s+ka|cmd\s+ki|cmd\s+ke|"
+    r"chairman(?:'s|\s+&\s+ceo|\s+and\s+ceo|\s+&\s+md|\s+and\s+md|\s+ka|\s+ki|\s+ke)?|"
+    r"adhyaksh|"
+    r"director\s*\(?\s*(?:hr|human\s+resources|finance|fin)\s*\)?(?:'s|\s+ka|\s+ki|\s+ke)?|"
+    r"nideshak\s*\(?\s*(?:manav\s+sansadhan|hr|vitt|finance|fin)\s*\)?)\b|"
+    r"चेयरमैन|अध्यक्ष|सीएमडी|सी\.?एम\.?डी\.?|"
+    r"निदेशक\s*\(?\s*(?:मानव\s*संसाधन|एचआर|एच\.?आर\.?|hr|वित्त|फाइनेंस|finance|fin)\s*\)?)",
     re.IGNORECASE,
 )
+
+_D66_APAR_COLS: frozenset[str] = frozenset({
+    "apar_id",
+    "numerical_score",
+    "final_rating",
+    "benchmark_score",
+    "is_dpc_eligible",
+    "fy26_apar_score",
+    "fy26_apar_rating",
+    "avg_apar_score",
+    "apar_score",
+    "apar_grade",
+    "reporting_officer_score",
+    "reviewing_officer_score",
+    "accepting_authority_score",
+})
+_D66_MEDICAL_COLS: frozenset[str] = frozenset({
+    "claim_id",
+    "claim_type",
+    "claimed_amount_inr",
+    "approved_amount_inr",
+    "reimbursement_status",
+    "claim_status",
+    "hospital_name",
+    "diagnosis",
+    "medical_condition",
+    "medical_category",
+    "medical_reimbursement_inr",
+    "medical_scheme_cost_inr",
+    "patient_relation",
+    "patient_relationship",
+})
+
+
+def row_is_office_holder(row: Any) -> bool:
+    """Data-driven D-66 check: True if `row` carries EMP-000001..3 or one of the 3 office-holder names."""
+    if not isinstance(row, dict):
+        return False
+    for val in row.values():
+        if isinstance(val, str):
+            v_clean = val.strip()
+            if not v_clean:
+                continue
+            if v_clean.upper() in OFFICE_HOLDER_EMP_IDS:
+                return True
+            if v_clean.lower() in OFFICE_HOLDER_NAMES:
+                return True
+    return False
+
+
+def rows_contain_office_holder(rows: Any) -> bool:
+    """True if any dict row in `rows` belongs to `EMP-000001..3`."""
+    if not isinstance(rows, list):
+        return False
+    return any(row_is_office_holder(r) for r in rows)
+
+
+def classify_d66_data_kind(
+    *,
+    columns: Optional[List[str]] = None,
+    rows: Optional[List[Any]] = None,
+    sql: str = "",
+    query_id: str = "",
+    query: str = "",
+    data_classes: Optional[List[str]] = None,
+    spec: Any = None,
+) -> Optional[str]:
+    """Classify whether a query/result/contract carries APAR (`'R-APAR'`) or medical (`'R-SENS'`) data."""
+    qid = (query_id or "").strip()
+    root_qid = qid.split("__")[0] if qid else ""
+    if root_qid == "my_apar":
+        return "R-APAR"
+    if root_qid == "E3":
+        return "R-SENS"
+
+    col_set: set[str] = {str(c).strip() for c in (columns or []) if c}
+    if isinstance(rows, list):
+        for r in rows[:10]:
+            if isinstance(r, dict):
+                col_set.update(str(k).strip() for k in r.keys() if k)
+
+    for col in col_set:
+        c_low = col.lower()
+        if c_low in _D66_APAR_COLS or column_class(col) == "apar":
+            return "R-APAR"
+    for col in col_set:
+        c_low = col.lower()
+        if c_low in _D66_MEDICAL_COLS or (
+            column_class(col) == "sensitive"
+            and any(tok in c_low for tok in ("med", "diag", "claim", "hosp", "health"))
+        ):
+            return "R-SENS"
+
+    sql_low = (sql or "").lower()
+    if "apar_ratings" in sql_low:
+        return "R-APAR"
+    if "medical_claims" in sql_low:
+        return "R-SENS"
+
+    in_classes = list(data_classes or [])
+    spec_metric = (
+        spec.get("metric")
+        if isinstance(spec, dict)
+        else getattr(spec, "metric", None)
+    )
+    q_low = (query or "").strip().lower()
+    if (
+        "apar" in in_classes
+        or spec_metric in ("apar", "apar_score")
+        or (q_low and not is_policy_process_question(query) and bool(_OFFICE_HOLDER_APAR_RE.search(q_low)))
+    ):
+        return "R-APAR"
+    if (
+        spec_metric in ("medical_claims", "medical_spend")
+        or (q_low and not is_policy_process_question(query) and bool(_OFFICE_HOLDER_MEDICAL_RE.search(q_low)))
+    ):
+        return "R-SENS"
+    return None
 
 
 def is_office_holder_apar_or_medical(
@@ -239,7 +371,7 @@ def is_office_holder_apar_or_medical(
     # 1. Explicit mention of EMP-000001..3 or the 3 office-holder names in the question
     if any(eid.lower() in q_low for eid in OFFICE_HOLDER_EMP_IDS):
         targets_office_holder = True
-    elif any(name in q_low for name in OFFICE_HOLDER_NAMES) or "arun singh" in q_low:
+    elif any(name in q_low for name in OFFICE_HOLDER_NAMES):
         targets_office_holder = True
     elif _OFFICE_HOLDER_TITLE_TARGET_RE.search(q_low) and not re.search(
         r"\b(?:restricted\s+to|approved\s+by|notification\s+by|pending\s+formal\s+approval)\b",
@@ -266,10 +398,11 @@ def is_office_holder_apar_or_medical(
         elif "self" in in_classes:
             targets_office_holder = True
         elif re.search(
-            r"(?<![a-z])(?:my|mine|myself|mera|meri|mere|i\s+have|am\s+i)(?![a-z])|मेरा|मेरी|मेरे|अपना|अपनी|अपने",
+            r"(?<![a-z])(?:my|mine|myself|mera|meri|mere|apna|apni|apne|i\s+have|am\s+i)(?![a-z])|मेरा|मेरी|मेरे|अपना|अपनी|अपने",
             q_low,
         ) and not re.search(
-            r"\b(?:my\s+(?:team|colleague\w*|peer\w*|subordinate\w*|reporting\s+officer|boss|manager|department|division|section|unit))\b",
+            r"\b(?:my\s+(?:team|colleague\w*|peer\w*|subordinate\w*|reporting\s+officer|boss|manager|department|division|section|unit))\b|"
+            r"(?:मेरी\s*टीम|मेरे\s*(?:सहकर्मी|अधीनस्थ|बॉस|मैनेजर|प्रबंधक|विभाग))",
             q_low,
         ):
             targets_office_holder = True
@@ -277,6 +410,289 @@ def is_office_holder_apar_or_medical(
     if not targets_office_holder:
         return None
     return "R-APAR" if is_apar else "R-SENS"
+
+
+def _build_certified_d66_refusal(
+    entry: Dict[str, Any],
+    merged_params: Dict[str, Any],
+    code: str,
+) -> Dict[str, Any]:
+    """Canonical D-66 refused response for `run_certified_query`."""
+    return {
+        "status": "refused",
+        "type": "refusal",
+        "query_id": entry["id"],
+        "canonical_question": entry.get("canonical_question", ""),
+        "executed_sql": "",
+        "params_applied": merged_params,
+        "columns": [],
+        "rows": [],
+        "row_count": 0,
+        "total_count": 0,
+        "deterministic_summary": OFFICE_HOLDER_REFUSAL_COPY,
+        "spoken_summary": OFFICE_HOLDER_REFUSAL_COPY,
+        "display_text": OFFICE_HOLDER_REFUSAL_COPY,
+        "access": {
+            "status": "refused",
+            "code": code,
+            "rule_ref": "D-66",
+            "reason": OFFICE_HOLDER_REFUSAL_COPY,
+        },
+        "visual": {
+            "type": "refusal",
+            "title": entry.get("canonical_question", "Restricted Record (D-66)"),
+            "rows": [],
+            "total_rows": 0,
+            "columns": [],
+        },
+        "provenance": entry.get("provenance", {}),
+    }
+
+
+def enforce_certified_query_d66_pre(
+    *,
+    entry: Dict[str, Any],
+    raw_sql: str,
+    merged_params: Dict[str, Any],
+    persona: Optional[str],
+    self_emp_id: Optional[str],
+) -> Optional[Dict[str, Any]]:
+    """Central pre-query D-66 guard for `run_certified_query`."""
+    canon = _canon_or_raw(persona or "") or str(persona or "").strip().upper()
+    bound_self = str(self_emp_id or merged_params.get("self_emp_id") or "").strip().upper()
+    data_kind = classify_d66_data_kind(
+        sql=raw_sql,
+        query_id=str(entry.get("id") or ""),
+        query=str(entry.get("canonical_question") or ""),
+    )
+    if data_kind not in ("R-APAR", "R-SENS"):
+        return None
+
+    targets_oh = False
+    if bound_self in OFFICE_HOLDER_EMP_IDS:
+        targets_oh = True
+    elif "@self_emp_id" in raw_sql and canon in OFFICE_HOLDER_PERSONAS:
+        targets_oh = True
+    else:
+        for val in merged_params.values():
+            if isinstance(val, str):
+                v_clean = val.strip()
+                if v_clean.upper() in OFFICE_HOLDER_EMP_IDS or v_clean.lower() in OFFICE_HOLDER_NAMES:
+                    targets_oh = True
+                    break
+
+    if targets_oh:
+        return _build_certified_d66_refusal(entry, merged_params, data_kind)
+    return None
+
+
+def enforce_certified_result_d66_post(
+    result: Dict[str, Any],
+    *,
+    entry: Dict[str, Any],
+    raw_sql: str,
+    merged_params: Dict[str, Any],
+    persona: Optional[str],
+    self_emp_id: Optional[str],
+) -> Dict[str, Any]:
+    """Central post-query D-66 guard and synthetic-label stamper for `run_certified_query`."""
+    if not isinstance(result, dict) or result.get("status") == "refused":
+        return result
+
+    canon = _canon_or_raw(persona or "") or str(persona or "").strip().upper()
+    bound_self = str(self_emp_id or merged_params.get("self_emp_id") or "").strip().upper()
+    cols = result.get("columns") if isinstance(result.get("columns"), list) else []
+    rows = result.get("rows") if isinstance(result.get("rows"), list) else []
+
+    data_kind = classify_d66_data_kind(
+        columns=cols,
+        rows=rows,
+        sql=raw_sql,
+        query_id=str(entry.get("id") or ""),
+    )
+    has_oh_rows = rows_contain_office_holder(rows)
+    targets_oh_self = bound_self in OFFICE_HOLDER_EMP_IDS or (
+        "@self_emp_id" in raw_sql and canon in OFFICE_HOLDER_PERSONAS
+    )
+
+    if data_kind in ("R-APAR", "R-SENS") and (has_oh_rows or targets_oh_self):
+        non_oh_rows = [r for r in rows if not row_is_office_holder(r)]
+        if targets_oh_self or not non_oh_rows:
+            return _build_certified_d66_refusal(entry, merged_params, data_kind)
+        result["rows"] = non_oh_rows
+        result["row_count"] = len(non_oh_rows)
+        result["total_count"] = len(non_oh_rows)
+        if isinstance(result.get("visual"), dict):
+            result["visual"]["rows"] = non_oh_rows[:50]
+            result["visual"]["total_rows"] = len(non_oh_rows)
+        return result
+
+    is_oh_personal_hr = (
+        targets_oh_self
+        or (has_oh_rows and 0 < len(rows) <= 12)
+        or any(
+            isinstance(v, str) and (v.strip().upper() in OFFICE_HOLDER_EMP_IDS or v.strip().lower() in OFFICE_HOLDER_NAMES)
+            for v in merged_params.values()
+        )
+    )
+    if is_oh_personal_hr:
+        result["caveat"] = OFFICE_HOLDER_SYNTHETIC_LABEL
+        prov = result.get("provenance")
+        prov_dict: Dict[str, Any] = dict(prov) if isinstance(prov, dict) else {"raw": prov}
+        prov_dict["label"] = "synthetic"
+        prov_dict["detail"] = OFFICE_HOLDER_SYNTHETIC_LABEL
+        prov_dict["badge"] = OFFICE_HOLDER_SYNTHETIC_LABEL
+        result["provenance"] = prov_dict
+        det_sum = str(result.get("deterministic_summary") or "").strip()
+        if OFFICE_HOLDER_SYNTHETIC_LABEL not in det_sum:
+            result["deterministic_summary"] = (
+                f"{det_sum} ({OFFICE_HOLDER_SYNTHETIC_LABEL})" if det_sum else OFFICE_HOLDER_SYNTHETIC_LABEL
+            )
+    return result
+
+
+def enforce_office_holder_contract(
+    contract: Dict[str, Any],
+    persona: Optional[str],
+    query: str = "",
+) -> Dict[str, Any]:
+    """Central post-query D-66 guard on any Answer Contract (called inside `enforce_contract`
+    for ALL personas, including `CMD`, `DIR_HR`, and `DIR_FIN`).
+    """
+    if not isinstance(contract, dict):
+        return contract
+    access = contract.setdefault("access", {"status": "allowed"})
+    if access.get("status") == "refused":
+        return contract
+
+    canon = _canon_or_raw(persona or "") or str(contract.get("persona") or persona or "").strip().upper()
+    eff_query = (query or str((contract.get("meta") or {}).get("question") or "")).strip()
+    qspec = contract.get("query_spec") if isinstance(contract.get("query_spec"), dict) else {}
+    sql_parts = [str(contract.get("generated_sql") or "")]
+    for src in contract.get("sources") or []:
+        if isinstance(src, dict) and src.get("sql"):
+            sql_parts.append(str(src["sql"]))
+    sql_str = "\n".join(p for p in sql_parts if p)
+
+    vis = contract.get("visual") if isinstance(contract.get("visual"), dict) else {}
+    tables: List[Dict[str, Any]] = []
+    if isinstance(vis.get("table"), dict):
+        tables.append(vis["table"])
+    for it in (vis.get("compare") or {}).get("items") or []:
+        if isinstance(it, dict):
+            tables.append(it)
+    for t in vis.get("tables") or []:
+        if isinstance(t, dict):
+            tables.append(t)
+
+    all_cols: List[str] = []
+    all_rows: List[Dict[str, Any]] = []
+    for t in tables:
+        for col in t.get("columns") or []:
+            if col and str(col) not in all_cols:
+                all_cols.append(str(col))
+        for r in t.get("rows") or []:
+            if isinstance(r, dict):
+                all_rows.append(r)
+                for k in r.keys():
+                    if k and str(k) not in all_cols:
+                        all_cols.append(str(k))
+    chart_data = (vis.get("chart") or {}).get("data") if isinstance(vis.get("chart"), dict) else None
+    if isinstance(chart_data, list):
+        for r in chart_data:
+            if isinstance(r, dict):
+                all_rows.append(r)
+                for k in r.keys():
+                    if k and str(k) not in all_cols:
+                        all_cols.append(str(k))
+
+    self_id = str(access.get("self_emp_id") or "").strip().upper()
+    d66_code = is_office_holder_apar_or_medical(
+        canon,
+        question=eff_query,
+        data_classes=access.get("data_classes"),
+        spec=None,
+        self_emp_id=self_id or None,
+    )
+
+    if d66_code is None:
+        data_kind = classify_d66_data_kind(
+            columns=all_cols,
+            rows=all_rows,
+            sql=sql_str,
+            query_id=str(contract.get("certified_id") or ""),
+            query=eff_query,
+            data_classes=access.get("data_classes"),
+            spec=qspec,
+        )
+        if data_kind in ("R-APAR", "R-SENS"):
+            has_oh_rows = rows_contain_office_holder(all_rows)
+            text_blob = f"{contract.get('spoken_summary', '')} {contract.get('display_text', '')}".lower()
+            targets_oh = (
+                has_oh_rows
+                or self_id in OFFICE_HOLDER_EMP_IDS
+                or (
+                    canon in OFFICE_HOLDER_PERSONAS
+                    and (
+                        bool(qspec.get("self_scope"))
+                        or "self" in (access.get("data_classes") or [])
+                        or "@self_emp_id" in sql_str
+                    )
+                )
+                or any(eid in sql_str.upper() for eid in OFFICE_HOLDER_EMP_IDS)
+                or any(nm in sql_str.lower() for nm in OFFICE_HOLDER_NAMES)
+                or any(
+                    isinstance(f, dict)
+                    and (
+                        str(f.get("value") or "").strip().upper() in OFFICE_HOLDER_EMP_IDS
+                        or str(f.get("value") or "").strip().lower() in OFFICE_HOLDER_NAMES
+                    )
+                    for f in (qspec.get("filters") or [])
+                )
+                or any(eid.lower() in text_blob for eid in OFFICE_HOLDER_EMP_IDS)
+                or any(nm in text_blob for nm in OFFICE_HOLDER_NAMES)
+            )
+            if targets_oh:
+                d66_code = data_kind
+
+    if d66_code not in ("R-APAR", "R-SENS"):
+        return contract
+
+    contract["access"] = {
+        "status": "refused",
+        "code": d66_code,
+        "rule_ref": "D-66",
+        "reason": OFFICE_HOLDER_REFUSAL_COPY,
+    }
+    contract["spoken_summary"] = OFFICE_HOLDER_REFUSAL_COPY
+    contract["display_text"] = OFFICE_HOLDER_REFUSAL_COPY
+    contract["insights"] = []
+    contract["export_options"] = []
+    contract.pop("caveat", None)
+    vis_out = contract.setdefault("visual", {})
+    vis_out["type"] = "refusal"
+    vis_out["mode"] = vis_out.get("mode") or "replace"
+    vis_out["title"] = "Access restricted"
+    vis_out["code"] = d66_code
+    vis_out["rule_ref"] = "D-66"
+    vis_out.pop("chart", None)
+    vis_out.pop("compare", None)
+    vis_out.pop("document", None)
+    vis_out.pop("tables", None)
+    vis_out.pop("kpi", None)
+    vis_out.pop("statement", None)
+    vis_out["table"] = {
+        "columns": [],
+        "rows": [],
+        "total_rows": 0,
+        "masking": {
+            "level": "refused",
+            "code": d66_code,
+            "reason": OFFICE_HOLDER_REFUSAL_COPY,
+            "rule_ref": "D-66",
+        },
+    }
+    return contract
 
 
 def apply_office_holder_safeguard(
@@ -297,7 +713,11 @@ def apply_office_holder_safeguard(
     canon = _canon_or_raw(persona or "") or str(contract.get("persona") or persona or "").strip().upper()
     q_low = (query or "").strip().lower()
     qspec = contract.get("query_spec") if isinstance(contract.get("query_spec"), dict) else {}
-    sql_str = str(contract.get("generated_sql") or "")
+    sql_parts = [str(contract.get("generated_sql") or "")]
+    for src in contract.get("sources") or []:
+        if isinstance(src, dict) and src.get("sql"):
+            sql_parts.append(str(src["sql"]))
+    sql_str = "\n".join(p for p in sql_parts if p)
     vis = contract.get("visual") if isinstance(contract.get("visual"), dict) else {}
     tbl = vis.get("table") if isinstance(vis.get("table"), dict) else {}
     rows = tbl.get("rows") if isinstance(tbl.get("rows"), list) else []
@@ -310,7 +730,7 @@ def apply_office_holder_safeguard(
     elif canon in OFFICE_HOLDER_PERSONAS and (
         bool(qspec.get("self_scope"))
         or "self" in (access.get("data_classes") or [])
-        or "emp_id = @self_emp_id" in sql_str
+        or "@self_emp_id" in sql_str
     ):
         is_oh_hr = True
     elif canon in OFFICE_HOLDER_PERSONAS and q_low:
@@ -326,7 +746,6 @@ def apply_office_holder_safeguard(
         elif q_low and (
             any(eid.lower() in q_low for eid in OFFICE_HOLDER_EMP_IDS)
             or any(nm in q_low for nm in OFFICE_HOLDER_NAMES)
-            or "arun singh" in q_low
         ):
             is_oh_hr = True
         elif isinstance(qspec.get("filters"), list):
@@ -336,14 +755,8 @@ def apply_office_holder_safeguard(
                     if fval.upper() in OFFICE_HOLDER_EMP_IDS or fval.lower() in OFFICE_HOLDER_NAMES:
                         is_oh_hr = True
                         break
-        if not is_oh_hr and 0 < len(rows) <= 10:
-            for r in rows:
-                if isinstance(r, dict):
-                    r_eid = str(r.get("emp_id") or r.get("PERNR") or "").strip().upper()
-                    r_name = str(r.get("name") or "").strip().lower()
-                    if r_eid in OFFICE_HOLDER_EMP_IDS or r_name in OFFICE_HOLDER_NAMES:
-                        is_oh_hr = True
-                        break
+        if not is_oh_hr and 0 < len(rows) <= 10 and rows_contain_office_holder(rows):
+            is_oh_hr = True
 
     if not is_oh_hr:
         return contract
@@ -1153,7 +1566,11 @@ def enforce_contract(
             )
         return c
 
-    # D-66: stamp synthetic HR label on any allowed/partial contract exposing EMP-000001..3 personal HR fields
+    # D-66: refuse office-holder (EMP-000001..3) APAR/medical contracts for EVERY persona
+    # (including leadership/CMD and self), and stamp the synthetic HR label on allowed HR contracts.
+    enforce_office_holder_contract(c, canon or persona, query=query)
+    if (c.get("access") or {}).get("status") == "refused":
+        return c
     apply_office_holder_safeguard(c, canon or persona, query=query)
 
     if pc == "leadership":

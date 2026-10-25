@@ -300,6 +300,7 @@ class AgentTurnRunner:
             persona_class(persona_eff) == "junior"
             or persona_eff == "DIR_FIN"
             or (contract.get("access") or {}).get("status") != "allowed"
+            or bool(contract.get("caveat"))
         ):
             self._sync_session_after_enforce(session_id, contract)
         # B4: legacy-path data answers also carry deterministic insights (computed from the table
@@ -661,6 +662,18 @@ class AgentTurnRunner:
                 voice_override=voice_override,
                 session_state=session_state,
             )
+            cert_tool_resp = next(
+                (r.get("response") or {} for r in tool_responses_recorded if r.get("name") == "run_certified_query"),
+                {},
+            )
+            legacy_access = (
+                dict(cert_tool_resp["access"])
+                if isinstance(cert_tool_resp.get("access"), dict)
+                else {"status": "allowed"}
+            )
+            if legacy_access.get("status") == "refused":
+                spoken_summary = str(cert_tool_resp.get("spoken_summary") or legacy_access.get("reason") or spoken_summary)
+                full_model_text = str(cert_tool_resp.get("display_text") or spoken_summary)
             contract = {
                 "turn_id": turn_id,
                 "language": det_lang,
@@ -671,11 +684,18 @@ class AgentTurnRunner:
                 "insights": [],
                 "sources": sources_list,
                 "suggestions": ["What can you do?"],
-                "access": {"status": "allowed"},
-                "export_options": ["pdf", "xlsx"],
+                "access": legacy_access,
+                "export_options": [] if legacy_access.get("status") == "refused" else ["pdf", "xlsx"],
                 "status_events": status_events,
                 "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
             }
+            if cert_tool_resp.get("caveat"):
+                contract["caveat"] = cert_tool_resp["caveat"]
+            if isinstance(cert_tool_resp.get("provenance"), dict) and cert_tool_resp["provenance"].get("label"):
+                contract["provenance"] = dict(cert_tool_resp["provenance"])
+            from app.brain.rbac import enforce_contract as _enforce_legacy_contract
+
+            contract = _enforce_legacy_contract(contract, norm_persona, query=query)
             self._validate_contract(contract)
             session_state.record_turn(contract, user_query=query)
             return contract
