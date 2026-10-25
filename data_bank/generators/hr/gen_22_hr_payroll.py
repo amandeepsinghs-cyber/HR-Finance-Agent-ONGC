@@ -17,47 +17,49 @@ _TS_2017_01_01 = pd.Timestamp(2017, 1, 1)
 _TS_2016_12_31 = pd.Timestamp(2016, 12, 31)
 _JULY1_TS = {y: pd.Timestamp(y, 7, 1) for y in range(1970, 2035)}
 
-def get_bp_for_month(doj_dt, snap_dt, grade_id, grades, bundle, gender="Male"):
+PARAMS: Dict[str, Any] = {
+    "u_pos_base": 0.11,                    # Entry fixation baseline above scale minimum upon grade entry
+    "u_pos_grade_tenure_weight": 0.57,     # Within-grade 3% annual increment progression weight over scale span
+    "u_pos_career_tenure_weight": 0.33,    # Cumulative career service increment carry-over weight over career span
+    "u_pos_perf_draw_weight": 0.06,        # Individual performance and merit increment dispersion weight
+    "grade_increment_span_years": 17.8,    # Full within-grade 3% increment progression span from scale min to max
+    "career_tenure_span_years": 34.0,      # Full career service span in years from entry to superannuation
+    "pre_2017_scale_offset": 0.64,         # 2nd-PRC cumulative scale progression prior to 1-Jan-2017 fitment reset
+    "pre_2017_stagnation_cap": 1.09,       # Maximum scale position including up to three 3% stagnation increments
+    "prior_u_fy": 0.98,                    # Regularization prior for annual cafeteria utilization factor u_fy
+    "prior_k_fy": 0.40,                    # Regularization prior for annual PRP pool payout factor k_fy
+    "prior_ot_fy": 1.84,                   # Regularization prior for annual operational overtime intensity factor ot_fy
+}
+
+def get_bp_for_month(doj_dt, grade_start_dt, snap_dt, grade_id, grades, bundle):
     is_2007 = snap_dt < _TS_2017_01_01
     if is_2007:
         scale_info = pay_rules.get_pay_scale(grade_id, "2007", bundle["allowance_rules"])
     else:
         scale_info = pay_rules.get_pay_scale(grade_id, "2017", bundle["allowance_rules"])
-    
+
     scale_min = scale_info["min"]
     scale_max = scale_info["max"]
-    
+
     import hashlib
     h = int(hashlib.md5(str(grade_id + str(doj_dt)).encode()).hexdigest(), 16)
     u_i = (h % 1000) / 1000.0
-    tenure_yrs = max(0.0, (snap_dt - doj_dt).days / 365.25)
-    is_exec = (grades.get(grade_id, {}).get("cadre") == "executive")
-    
-    if is_exec:
-        t_norm = min(1.0, tenure_yrs / 34.0)
-        if grade_id in ("E5", "E6", "E7", "E8", "E9", "DIR", "CMD"):
-            if gender == "Female":
-                u_pos = 0.01 + 0.15 * t_norm + 0.05 * u_i
-            else:
-                u_pos = 0.03 + 0.38 * t_norm + 0.10 * u_i
-        else:
-            if gender == "Female":
-                u_pos = 0.59 + 0.06 * t_norm + 0.08 * u_i
-            else:
-                u_pos = 0.165 + 0.485 * t_norm + 0.12 * u_i
-        vet_boost = 0.0 if gender == "Female" else 0.06 * max(0.0, (tenure_yrs - 21.0) / 10.0)
-    else:
-        t_norm = min(1.0, tenure_yrs / 30.0)
-        if gender == "Female":
-            u_pos = 0.60 + 0.35 * t_norm + 0.08 * u_i
-            vet_boost = 0.0
-        else:
-            u_pos = 0.97 + 0.03 * t_norm
-            vet_boost = 0.0
 
-    u_pos = max(0.0, min(1.0, u_pos + vet_boost))
+    career_tenure_yrs = max(0.0, (snap_dt - doj_dt).days / 365.25)
+    grade_tenure_yrs = max(0.0, (snap_dt - grade_start_dt).days / 365.25)
+
+    g_norm = min(1.0, grade_tenure_yrs / PARAMS["grade_increment_span_years"])
+    t_norm = min(1.0, career_tenure_yrs / PARAMS["career_tenure_span_years"])
+
+    u_pos = (
+        PARAMS["u_pos_base"]
+        + PARAMS["u_pos_grade_tenure_weight"] * g_norm
+        + PARAMS["u_pos_career_tenure_weight"] * t_norm
+        + PARAMS["u_pos_perf_draw_weight"] * u_i
+    )
+    u_pos = max(0.0, min(1.0, u_pos))
     if is_2007:
-        u_pos = min(1.09, u_pos + 0.65)
+        u_pos = min(PARAMS["pre_2017_stagnation_cap"], u_pos + PARAMS["pre_2017_scale_offset"])
     bp = scale_min + u_pos * (scale_max - scale_min)
     return round(bp / 10.0) * 10.0
 
@@ -82,9 +84,9 @@ def process_month(month_str, emp_df, post_df, grades, disciplines, work_centres,
         grade_id = row.PERSK
         wc_id = row.WERKS
         doj_dt = row.doj_dt
-        
-        gender = row.GESCH if hasattr(row, 'GESCH') else "Male"
-        bp = get_bp_for_month(doj_dt, snap_dt, grade_id, grades, bundle, gender)
+        grade_start_dt = row.grade_start_dt
+
+        bp = get_bp_for_month(doj_dt, grade_start_dt, snap_dt, grade_id, grades, bundle)
         
         wc = work_centres.get(wc_id, {})
         city_raw = wc.get("hra_city_class") or wc.get("city", "")
@@ -204,6 +206,8 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
     post_df = df_post[["PERNR", "WERKS", "PERSK", "discipline_id", "BEGDA", "ENDDA"]].copy()
     post_df["post_start_dt"] = pd.to_datetime(post_df["BEGDA"])
     post_df["post_end_dt"] = pd.to_datetime(post_df["ENDDA"])
+    grade_entry = post_df.groupby(["PERNR", "PERSK"])["post_start_dt"].min().reset_index().rename(columns={"post_start_dt": "grade_start_dt"})
+    post_df = post_df.merge(grade_entry, on=["PERNR", "PERSK"], how="left")
 
     print("Running parallel month computation...")
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
@@ -275,7 +279,11 @@ def generate_payroll_monthly_continue(df_emp, df_post, work_centres, grades, dis
                         rel_a = res_a / target_inr
                         rel_tot = (res_a + res_b) / target_tot_inr
                         if abs(rel_a) <= 0.038 and (fy not in ["FY21", "FY22", "FY23", "FY24", "FY25", "FY26"] or abs(rel_tot) <= 0.028):
-                            val = (rel_a / 0.01) ** 2 + 2.0 * (4.0 * (u_cand - 0.98) ** 2 + 0.5 * (k_cand - 0.40) ** 2 + 3.0 * (ot_cand - 1.85) ** 2)
+                            val = (rel_a / 0.01) ** 2 + 2.0 * (
+                                4.0 * (u_cand - PARAMS["prior_u_fy"]) ** 2
+                                + 0.5 * (k_cand - PARAMS["prior_k_fy"]) ** 2
+                                + 3.0 * (ot_cand - PARAMS["prior_ot_fy"]) ** 2
+                            )
                             if val < best_val:
                                 best_val = val
                                 best_x = (float(u_cand), float(k_cand), float(ot_cand))

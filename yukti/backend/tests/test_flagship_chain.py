@@ -95,7 +95,7 @@ def test_t4_compare_mumbai(chain):
     assert ("wc", "in", str(["WC-DEL", "WC-MUM"])) in _filters(c)
     assert c["query_spec"]["dimensions"][0] == "wc"
     by = _by(c, "work_centre")
-    assert by.get("Delhi HQ") == 419 and by.get("Mumbai High") == 560
+    assert by.get("Delhi HQ") == 419 and by.get("Mumbai High") == 547
     assert c["visual"].get("compare") and len(c["visual"]["compare"]["items"]) == 2
 
 
@@ -103,7 +103,7 @@ def test_t5_e5_and_above(chain):
     c = chain[4]
     assert ("grade", ">=", "E5") in _filters(c)
     by = _by(c, "work_centre")
-    assert by.get("Delhi HQ") == 140 and by.get("Mumbai High") == 192
+    assert by.get("Delhi HQ") == 140 and by.get("Mumbai High") == 177
 
 
 def test_t6_last_year_fy26(chain):
@@ -111,7 +111,7 @@ def test_t6_last_year_fy26(chain):
     assert c["query_spec"].get("period", {}).get("fy") == "FY26"
     assert ("grade", ">=", "E5") in _filters(c)
     by = _by(c, "work_centre")
-    assert by.get("Delhi HQ") == 122 and by.get("Mumbai High") == 187  # as of 31-Mar-2026
+    assert by.get("Delhi HQ") == 122 and by.get("Mumbai High") == 174  # as of 31-Mar-2026
     assert "31-Mar-2026" in (c.get("caveat") or "")
 
 

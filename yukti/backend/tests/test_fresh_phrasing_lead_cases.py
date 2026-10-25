@@ -49,11 +49,28 @@ async def test_cmd_lost_money_gets_answer_e2_gets_refusal_no_cache_poisoning():
 
     q = "Which fields lost money last year?"
 
+    import csv
+    from pathlib import Path
+
+    copa_v3 = Path(__file__).resolve().parents[3] / "data_bank" / "landing" / "sap" / "CO_PA_v3.csv"
+    expected_mn = {}
+    with copa_v3.open("r", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            if r.get("fy") == "FY26" and r.get("line_code") == "PL.PBT":
+                oid = r["object_id"]
+                expected_mn[oid] = expected_mn.get(oid, 0.0) + float(r["amount_inr_mn"])
+    expected_pbt = {oid: round(val / 10.0, 2) for oid, val in expected_mn.items()}
+    bar_str = f"{abs(expected_pbt['FLD-BAR']):.2f}"
+    pas_str = f"{abs(expected_pbt['FLD-PAS']):.2f}"
+
     # 1. CMD must get allowed P&L answer
     res_cmd = await runner.execute_turn_async(q, session_id="test-lost-money-cmd-suite", persona="CMD")
     assert res_cmd.get("access", {}).get("status") == "allowed"
     assert res_cmd.get("visual", {}).get("type") in ("table", "chart")
-    assert any(f in res_cmd.get("spoken_summary", "") for f in ("Champang", "Mandapeta", "Khoraghat", "Geleki"))
+    spoken_cmd = res_cmd.get("spoken_summary", "")
+    assert ("Baramura" in spoken_cmd and bar_str in spoken_cmd) or ("Pasarlapudi" in spoken_cmd and pas_str in spoken_cmd)
+    rows_cmd = {r["field"]: r["pbt_cr"] for r in res_cmd["visual"]["table"]["rows"]}
+    assert rows_cmd.get("Pasarlapudi") == expected_pbt["FLD-PAS"] and rows_cmd.get("Baramura") == expected_pbt["FLD-BAR"]
     assert "WC-" not in res_cmd.get("visual", {}).get("subtitle", "")
 
     # 2. E2 must get refusal
@@ -64,4 +81,7 @@ async def test_cmd_lost_money_gets_answer_e2_gets_refusal_no_cache_poisoning():
     res_cmd2 = await runner.execute_turn_async(q, session_id="test-lost-money-cmd2-suite", persona="CMD")
     assert res_cmd2.get("access", {}).get("status") == "allowed"
     assert res_cmd2.get("visual", {}).get("type") in ("table", "chart")
-    assert any(f in res_cmd2.get("spoken_summary", "") for f in ("Champang", "Mandapeta", "Khoraghat", "Geleki"))
+    spoken_cmd2 = res_cmd2.get("spoken_summary", "")
+    assert ("Baramura" in spoken_cmd2 and bar_str in spoken_cmd2) or ("Pasarlapudi" in spoken_cmd2 and pas_str in spoken_cmd2)
+    rows_cmd2 = {r["field"]: r["pbt_cr"] for r in res_cmd2["visual"]["table"]["rows"]}
+    assert rows_cmd2.get("Pasarlapudi") == expected_pbt["FLD-PAS"] and rows_cmd2.get("Baramura") == expected_pbt["FLD-BAR"]

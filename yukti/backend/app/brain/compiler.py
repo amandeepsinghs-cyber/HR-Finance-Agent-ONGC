@@ -1806,10 +1806,9 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
             import pandas as pd
         except ImportError:
             py_ver = f"python{sys.version_info.major}.{sys.version_info.minor}"
-            for cand_root in (repo_root, repo_root.parent / "HR and Finance_ONGC__v3P1", repo_root.parent / "HR and Finance_ONGC"):
-                sp = cand_root / "financial_ssot" / ".venv" / "lib" / py_ver / "site-packages"
-                if sp.exists() and str(sp) not in sys.path:
-                    sys.path.insert(0, str(sp))
+            sp = repo_root / "financial_ssot" / ".venv" / "lib" / py_ver / "site-packages"
+            if sp.exists() and str(sp) not in sys.path:
+                sys.path.insert(0, str(sp))
             import pandas as pd
 
         env_snap = os.getenv("YUKTI_FIN_SNAPSHOT_PATH")
@@ -1824,12 +1823,6 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
         if compiled.metric in ("wacc_pct", "wacc_components", "wacc_build_up", "wacc_change_attribution"):
             wacc_ann_path = repo_root / "financial_ssot" / "out" / "fact_wacc_annual.parquet"
             wacc_inp_path = repo_root / "financial_ssot" / "out" / "fact_wacc_input.parquet"
-            if not wacc_ann_path.exists():
-                for cand in (repo_root.parent / "HR and Finance_ONGC__v3P2F", repo_root.parent / "HR and Finance_ONGC"):
-                    if (cand / "financial_ssot" / "out" / "fact_wacc_annual.parquet").exists():
-                        wacc_ann_path = cand / "financial_ssot" / "out" / "fact_wacc_annual.parquet"
-                        wacc_inp_path = cand / "financial_ssot" / "out" / "fact_wacc_input.parquet"
-                        break
             if not wacc_ann_path.exists():
                 return None
             try:
@@ -1853,7 +1846,7 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                         b_val = r.get("beta_2y_weekly_adj") if pd.notna(r.get("beta_2y_weekly_adj")) else (r.get("beta_industry_relevered") if pd.notna(r.get("beta_industry_relevered")) else r.get("beta_2y_weekly_raw"))
                         beta = float(b_val) if (pd.notna(b_val) and b_val is not None) else None
                         kd_used = float(r["kd_used_pct"]) if (pd.notna(r.get("kd_used_pct")) and r["kd_used_pct"] is not None) else (float(r["kd_pretax_pct"]) if pd.notna(r.get("kd_pretax_pct")) else None)
-                        tax_rate = float(r["tax_rate_pct"]) if pd.notna(r.get("tax_rate_pct")) else 25.17
+                        tax_rate = float(r["tax_rate_pct"]) if pd.notna(r.get("tax_rate_pct")) else None
                         kd_at = round(kd_used * (1.0 - tax_rate / 100.0), 4) if (kd_used is not None and tax_rate is not None) else None
                         we = float(r["weight_equity"]) if (pd.notna(r.get("weight_equity")) and r["weight_equity"] is not None) else None
                         wd = float(r["weight_debt"]) if (pd.notna(r.get("weight_debt")) and r["weight_debt"] is not None) else (round(1.0 - we, 4) if we is not None else None)
@@ -1890,7 +1883,7 @@ ORDER BY cur.display_order ASC, cur.line_order ASC"""
                         b_val = r.get("beta_2y_weekly_adj") if pd.notna(r.get("beta_2y_weekly_adj")) else (r.get("beta_industry_relevered") if pd.notna(r.get("beta_industry_relevered")) else r.get("beta_2y_weekly_raw"))
                         beta = float(b_val) if (pd.notna(b_val) and b_val is not None) else None
                         kd_used = float(r["kd_used_pct"]) if (pd.notna(r.get("kd_used_pct")) and r["kd_used_pct"] is not None) else (float(r["kd_pretax_pct"]) if pd.notna(r.get("kd_pretax_pct")) else None)
-                        tax_rate = float(r["tax_rate_pct"]) if pd.notna(r.get("tax_rate_pct")) else 25.17
+                        tax_rate = float(r["tax_rate_pct"]) if pd.notna(r.get("tax_rate_pct")) else None
                         kd_at = round(kd_used * (1.0 - tax_rate / 100.0), 4) if (kd_used is not None and tax_rate is not None) else None
                         we = float(r["weight_equity"]) if (pd.notna(r.get("weight_equity")) and r["weight_equity"] is not None) else None
                         wd = float(r["weight_debt"]) if (pd.notna(r.get("weight_debt")) and r["weight_debt"] is not None) else (round(1.0 - we, 4) if we is not None else None)
@@ -2962,9 +2955,7 @@ ORDER BY line_order ASC"""
             if os.getenv("YUKTI_FORCE_BQ_FAIL", "0") not in ("1", "true", "yes"):
                 import csv as _csv
                 repo_root = Path(__file__).resolve().parents[4]
-                excel_dir = repo_root.parent / "HR and Finance_ONGC" / "data_bank" / "landing" / "excel"
-                if not excel_dir.exists():
-                    excel_dir = repo_root / "data_bank" / "landing" / "excel"
+                excel_dir = repo_root / "data_bank" / "landing" / "excel"
                 if compiled.metric == "capex_vs_reserves" or (compiled.subject == "capex" and compiled.metric == "capex_actual_cr"):
                     cap_p = excel_dir / "_clean" / "capex_be_re_actuals.xlsx"
                     res_p = excel_dir / "reserves_annual.xlsx"
@@ -3031,123 +3022,261 @@ ORDER BY line_order ASC"""
                         if out_rows:
                             return QueryResult(columns=list(out_rows[0].keys()), rows=out_rows, total_bytes=0,
                                                latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
-                if compiled.subject in ("field_pnl", "field_economics"):
-                    copa_cand = repo_root.parent / "HR and Finance_ONGC" / "data_bank" / "landing" / "sap" / "CO_PA.csv"
-                    if not copa_cand.exists():
-                        copa_cand = repo_root / "data_bank" / "landing" / "sap" / "CO_PA.csv"
-                    if copa_cand.exists():
-                        name_to_fid = {str(v.get("name", "")).lower(): k for k, v in self.ents.fields.items()}
+                if compiled.subject in ("field_pnl", "field_economics", "field_econ"):
+                    copa_v3_p = repo_root / "data_bank" / "landing" / "sap" / "CO_PA_v3.csv"
+                    co_p = repo_root / "data_bank" / "world_bible" / "reference" / "cost_objects.yaml"
+                    if copa_v3_p.exists() and co_p.exists():
+                        import yaml as _yaml
+                        co_raw = _yaml.safe_load(co_p.read_text(encoding="utf-8")) or {}
+                        co_map = {str(co["object_id"]): co for co in (co_raw.get("cost_objects") or []) if co.get("object_id")}
+                        fx_by_fy: Dict[str, float] = {}
+                        pfx_p = excel_dir / "_clean" / "price_fx.xlsx"
+                        if not pfx_p.exists():
+                            pfx_p = excel_dir / "price_fx.xlsx"
+                        if pfx_p.exists():
+                            import pandas as _pd
+                            fx_df = _pd.read_excel(pfx_p, sheet_name="price_fx_monthly")
+                            for k_fy, grp_fx in fx_df.groupby("fiscal_year"):
+                                fx_by_fy[str(k_fy)] = float(grp_fx["inr_usd_fx_rate"].mean())
                         target_fy = fy or hi or "FY26"
-                        fy_params = {
-                            "FY25": (92799.67, 45046.33, 13718.0, 13480.2, 3769.8, 3021.6, 29443.4, 22924.2, -4728.8),
-                            "FY26": (92406.0, 40102.0, 12965.0, 13034.0, 0.0, 3106.0, 32108.97, 25197.01, -2850.0),
+                        all_fys = ("FY17", "FY18", "FY19", "FY20", "FY21", "FY22", "FY23", "FY24", "FY25", "FY26")
+                        target_fys = {f for f in all_fys if (lo <= f <= hi if (lo and hi) else f == target_fy)}
+                        levy_codes = {
+                            "N35.ROYALTY", "N35.OIDB_CESS", "N35.NCCD",
+                            "N35.EXCISE_SAED", "N35.PORT_TRUST", "N35.OTHER_LEVIES",
                         }
-                        all_copa = [r for r in _csv.DictReader(copa_cand.open("r", encoding="utf-8")) if r.get("field_id") in self.ents.fields]
-                        target_fys = [f for f in ("FY22", "FY23", "FY24", "FY25", "FY26") if (lo <= f <= hi if (lo and hi) else f == target_fy)]
+                        lifting_codes = {
+                            "N35.STAFF_EXPENDITURE", "N35.WORKOVER_OPS", "N35.WATER_INJECTION_DESALTING",
+                            "N35.CONSUMPTION_STORES_SPARES", "N35.POLLUTION_CONTROL", "N35.TRANSPORT_EXPENDITURE",
+                            "N35.INSURANCE", "N35.POWER_FUEL", "N35.REPAIRS_MAINTENANCE", "N35.CONTRACTUAL_HIRE",
+                            "N35.OTHER_PRODUCTION_EXP",
+                        }
+                        opex_codes = lifting_codes | {
+                            "N35.TRANSPORT_FREIGHT_PRODUCTS", "N35.R_AND_D",
+                            "N35.GAE", "N35.CSR", "N35.EXCHANGE_LOSS", "N35.MISC_EXP", "N35.FV_LOSS",
+                        }
+                        eb_deduct_codes = {
+                            "PL.PURCHASES_TRADED", "PL.INVENTORY_CHANGE",
+                            "PL.EXPL_SURVEY", "PL.EXPL_WELLS",
+                        }
+                        # Keyed by (oid, tfy) -> dict of accumulated mn/physical amounts
+                        obj_fy: Dict[Tuple[str, str], Dict[str, float]] = {}
+                        with copa_v3_p.open("r", encoding="utf-8") as f:
+                            for r in _csv.DictReader(f):
+                                tfy = str(r.get("fy") or "").strip()
+                                if tfy not in target_fys:
+                                    continue
+                                oid = str(r.get("object_id") or "").strip()
+                                co = co_map.get(oid, {})
+                                otype = str(co.get("object_type") or r.get("object_type") or "").lower()
+                                if compiled.subject in ("field_pnl", "field_economics") and otype != "field":
+                                    continue
+                                lc = str(r.get("line_code") or "").strip().upper()
+                                amt = float(r.get("amount_inr_mn") or 0.0)
+                                acc = obj_fy.setdefault((oid, tfy), {
+                                    "rev_ops_mn": 0.0, "other_inc_seg_mn": 0.0, "levies_mn": 0.0,
+                                    "opex_total_mn": 0.0, "opex_lifting_mn": 0.0, "opex_excl_corp_mn": 0.0,
+                                    "staff_mn": 0.0, "eb_deduct_mn": 0.0, "dda_mn": 0.0,
+                                    "seg_res_mn": 0.0, "pbt_mn": 0.0, "capex_mn": 0.0,
+                                    "rev_crude_mn": 0.0, "oil_prod_mt": 0.0, "gas_prod_mmscm": 0.0, "oil_sales_mt": 0.0,
+                                })
+                                if lc == "PL.REV_OPS":
+                                    acc["rev_ops_mn"] += amt
+                                elif lc == "OTHER_INCOME_SEGMENT":
+                                    acc["other_inc_seg_mn"] += amt
+                                elif lc in levy_codes:
+                                    acc["levies_mn"] += amt
+                                elif lc in opex_codes:
+                                    acc["opex_total_mn"] += amt
+                                    if lc in lifting_codes:
+                                        acc["opex_lifting_mn"] += amt
+                                        acc["opex_excl_corp_mn"] += amt
+                                    elif lc == "N35.TRANSPORT_FREIGHT_PRODUCTS":
+                                        acc["opex_excl_corp_mn"] += amt
+                                    if lc == "N35.STAFF_EXPENDITURE":
+                                        acc["staff_mn"] += amt
+                                elif lc in eb_deduct_codes:
+                                    acc["eb_deduct_mn"] += amt
+                                elif lc == "PL.DDA":
+                                    acc["dda_mn"] += amt
+                                elif lc == "SEGMENT_RESULT_CONTRIB":
+                                    acc["seg_res_mn"] += amt
+                                elif lc == "PL.PBT":
+                                    acc["pbt_mn"] += amt
+                                elif lc == "CAPEX.TOTAL":
+                                    acc["capex_mn"] += amt
+                                if lc == "REV.CRUDE":
+                                    acc["rev_crude_mn"] += amt
+                                elif lc in ("PROD.CRUDE_ONGC", "PROD.CRUDE_JV"):
+                                    acc["oil_prod_mt"] += amt * 1000000.0
+                                elif lc in ("PROD.GAS_ONGC", "PROD.GAS_JV"):
+                                    acc["gas_prod_mmscm"] += amt * 1000.0
+                                elif lc == "QTY.CRUDE_SOLD":
+                                    acc["oil_sales_mt"] += amt * 1000000.0
+
                         sub = []
-                        for tfy in target_fys:
-                            c_rows = [r for r in all_copa if r.get("fiscal_year") == tfy]
-                            if not c_rows:
-                                continue
-                            if tfy in fy_params:
-                                c_off, c_on, c_roy, c_cess, c_saed, c_emp, c_non_emp, c_dda, resid = fy_params[tfy]
-                                seg_g: Dict[str, float] = {}
-                                for r in c_rows:
-                                    seg = str(self.ents.fields[r["field_id"]].get("onshore_offshore", "onshore")).lower()
-                                    seg_g[seg] = seg_g.get(seg, 0.0) + float(r["oil_revenue_inr_cr"]) + float(r["gas_revenue_inr_cr"])
-                                fy_oil = sum(float(r["oil_revenue_inr_cr"]) for r in c_rows)
-                                fy_roy = sum(float(r["statutory_royalty_inr_cr"]) for r in c_rows)
-                                fy_cess = sum(float(r["statutory_cess_inr_cr"]) for r in c_rows)
-                                fy_mp = sum(float(r["allocated_manpower_cost_inr_cr"]) for r in c_rows)
-                                fy_opex = sum(float(r["total_opex_inr_cr"]) for r in c_rows)
-                                fy_dda = sum(float(r["dda_depreciation_inr_cr"]) for r in c_rows)
-                                scaled_rows = []
-                                for r in c_rows:
-                                    fmeta = self.ents.fields[r["field_id"]]
-                                    seg = str(fmeta.get("onshore_offshore", "onshore")).lower()
-                                    crev = c_off if seg == "offshore" else c_on
-                                    noil = round(float(r["oil_revenue_inr_cr"]) * (crev / seg_g[seg]), 2)
-                                    ngas = round(float(r["gas_revenue_inr_cr"]) * (crev / seg_g[seg]), 2)
-                                    nroy = round(float(r["statutory_royalty_inr_cr"]) * (c_roy / fy_roy), 2)
-                                    ncess = round(float(r["statutory_cess_inr_cr"]) * (c_cess / fy_cess), 2)
-                                    nsaed = round(c_saed * (float(r["oil_revenue_inr_cr"]) / fy_oil), 2)
-                                    nmp = round(float(r["allocated_manpower_cost_inr_cr"]) * (c_emp / fy_mp), 2)
-                                    nopex = round(float(r["total_opex_inr_cr"]) * (c_non_emp / fy_opex), 2)
-                                    ndda = round(float(r["dda_depreciation_inr_cr"]) * (c_dda / fy_dda), 2)
-                                    ngross = round(noil + ngas, 2)
-                                    nnet = round(ngross - (nroy + ncess + nsaed), 2)
-                                    nebitda = round(nnet - nmp - nopex, 2)
-                                    scaled_rows.append((fmeta.get("name", r["field_id"]), ngross, nopex, nebitda, ndda))
-                                s_gross = sum(x[1] for x in scaled_rows)
-                                for fn, ngross, nopex, nebitda, ndda in scaled_rows:
-                                    sub.append({
-                                        "field_name": fn,
-                                        "fiscal_year": tfy,
-                                        "gross_revenue_inr_cr": ngross,
-                                        "total_opex_inr_cr": nopex,
-                                        "ebitda_inr_cr": nebitda,
-                                        "pbt_inr_cr": round(nebitda - ndda + resid * (ngross / s_gross), 2),
-                                    })
-                            else:
-                                for r in c_rows:
-                                    fmeta = self.ents.fields[r["field_id"]]
-                                    sub.append({
-                                        "field_name": fmeta.get("name", r["field_id"]),
-                                        "fiscal_year": tfy,
-                                        "gross_revenue_inr_cr": float(r.get("gross_revenue_inr_cr") or 0.0),
-                                        "total_opex_inr_cr": float(r.get("total_opex_inr_cr") or 0.0),
-                                        "ebitda_inr_cr": float(r.get("ebitda_inr_cr") or 0.0),
-                                        "pbt_inr_cr": float(r.get("pbt_inr_cr") or 0.0),
-                                    })
+                        for (oid, tfy), acc in obj_fy.items():
+                            co = co_map.get(oid, {})
+                            fmeta = self.ents.fields.get(oid, {})
+                            prod_boe = (acc["oil_prod_mt"] + acc["gas_prod_mmscm"] * 1000.0) * 7.33
+                            eb_mn = acc["rev_ops_mn"] + acc["other_inc_seg_mn"] - acc["levies_mn"] - acc["opex_total_mn"] - acc["eb_deduct_mn"]
+                            fx_rate = fx_by_fy.get(tfy)
+                            sub.append({
+                                "field_id": oid,
+                                "object_id": oid,
+                                "field_name": str(co.get("object_name") or fmeta.get("name") or oid),
+                                "object_name": str(co.get("object_name") or fmeta.get("name") or oid),
+                                "object_type": str(co.get("object_type") or "field"),
+                                "fiscal_year": tfy,
+                                "asset_wc_id": str(co.get("asset_wc_id") or fmeta.get("asset_wc_id") or ""),
+                                "basin": str(co.get("basin") or fmeta.get("basin") or ""),
+                                "state": str(co.get("state") or ""),
+                                "segment": str(co.get("segment") or fmeta.get("onshore_offshore") or "Onshore"),
+                                "onshore_offshore": str(co.get("segment") or fmeta.get("onshore_offshore") or "onshore").lower(),
+                                "maturity": str(co.get("maturity") or fmeta.get("maturity") or ""),
+                                "operatorship": str(co.get("operatorship") or ""),
+                                "hydrocarbon": str(co.get("hydrocarbon") or ""),
+                                "prod_basis": "JV_SHARE" if str(co.get("object_type") or "") == "jv_share" else "ONGC",
+                                "rev_ops_mn": acc["rev_ops_mn"],
+                                "levies_mn": acc["levies_mn"],
+                                "opex_total_mn": acc["opex_total_mn"],
+                                "opex_lifting_mn": acc["opex_lifting_mn"],
+                                "opex_excl_corp_mn": acc["opex_excl_corp_mn"],
+                                "staff_mn": acc["staff_mn"],
+                                "eb_mn": eb_mn,
+                                "seg_res_mn": acc["seg_res_mn"],
+                                "pbt_mn": acc["pbt_mn"],
+                                "capex_mn": acc["capex_mn"],
+                                "rev_crude_mn": acc["rev_crude_mn"],
+                                "oil_sales_mt": acc["oil_sales_mt"],
+                                "prod_boe": prod_boe,
+                                "fx_rate": fx_rate,
+                                "gross_revenue_inr_cr": round(acc["rev_ops_mn"] / 10.0, 2),
+                                "total_opex_inr_cr": round(acc["opex_total_mn"] / 10.0, 2),
+                                "ebitda_inr_cr": round(eb_mn / 10.0, 2),
+                                "pbt_inr_cr": round(acc["pbt_mn"] / 10.0, 2),
+                            })
                         if "pbt_inr_cr < 0" in compiled.sql:
                             sub = [r for r in sub if float(r.get("pbt_inr_cr") or 0) < 0]
-                        m_fid = re.search(r"field_id\s*=\s*'([^']+)'", compiled.sql)
+                        m_fid = re.search(r"(?:field_id|object_id)\s*=\s*'([^']+)'", compiled.sql)
+                        m_fid_in = re.search(r"(?:field_id|object_id)\s+IN\s*\(([^)]+)\)", compiled.sql)
                         if m_fid:
                             fid_t = m_fid.group(1)
-                            sub = [r for r in sub if name_to_fid.get(str(r.get("field_name", "")).lower()) == fid_t]
-                        out_rows = []
+                            sub = [r for r in sub if r["field_id"] == fid_t]
+                        elif m_fid_in:
+                            fids = {x.strip().strip("'") for x in m_fid_in.group(1).split(",")}
+                            sub = [r for r in sub if r["field_id"] in fids]
+                        m_awc = re.search(r"asset_wc_id\s*=\s*'([^']+)'", compiled.sql)
+                        m_awc_in = re.search(r"asset_wc_id\s+IN\s*\(([^)]+)\)", compiled.sql)
+                        if m_awc:
+                            sub = [r for r in sub if r["asset_wc_id"] == m_awc.group(1)]
+                        elif m_awc_in:
+                            awcs = {x.strip().strip("'") for x in m_awc_in.group(1).split(",")}
+                            sub = [r for r in sub if r["asset_wc_id"] in awcs]
+                        m_otype = re.search(r"object_type\s*=\s*'([^']+)'", compiled.sql)
+                        if m_otype:
+                            sub = [r for r in sub if r["object_type"].lower() == m_otype.group(1).lower()]
+                        m_seg = re.search(r"(?:onshore_offshore|segment)\s*=\s*(?:LOWER\()?'([^']+)'\)?", compiled.sql, re.IGNORECASE)
+                        if m_seg:
+                            sub = [r for r in sub if r["onshore_offshore"].lower() == m_seg.group(1).lower()]
+
+                        def _dim_val(row_d: Dict[str, Any], d_name: str) -> str:
+                            if d_name in ("field", "object_id"):
+                                return str(row_d["field_id"])
+                            if d_name == "fy":
+                                return str(row_d["fiscal_year"])
+                            if d_name == "asset":
+                                return str(row_d["asset_wc_id"])
+                            return str(row_d.get(d_name) or "")
+
+                        grp_f: Dict[Tuple[str, ...], List[Dict[str, Any]]] = {}
                         for r in sub:
-                            fn = str(r.get("field_name") or "")
-                            fid = name_to_fid.get(fn.lower(), fn)
-                            fmeta = self.ents.fields.get(fid, {})
-                            rd: Dict[str, Any] = {}
-                            for d_name, d_alias in compiled.dims:
-                                if d_name == "field":
-                                    rd[d_alias] = fid
-                                elif d_name == "fy":
-                                    rd[d_alias] = r.get("fiscal_year")
-                                elif d_name == "asset":
-                                    rd[d_alias] = fmeta.get("asset_wc_id", "")
-                                elif d_name == "onshore_offshore":
-                                    rd[d_alias] = fmeta.get("onshore_offshore", "onshore")
+                            gk = tuple(_dim_val(r, dn) for dn, _ in compiled.dims)
+                            grp_f.setdefault(gk, []).append(r)
+
+                        out_rows = []
+                        for gk, rows_g in grp_f.items():
+                            rd: Dict[str, Any] = {d_alias: gk[idx] for idx, (_, d_alias) in enumerate(compiled.dims)}
+                            s_rev_mn = sum(x["rev_ops_mn"] for x in rows_g)
+                            s_lev_mn = sum(x["levies_mn"] for x in rows_g)
+                            s_opex_mn = sum(x["opex_total_mn"] for x in rows_g)
+                            s_lift_mn = sum(x["opex_lifting_mn"] for x in rows_g)
+                            s_excl_mn = sum(x["opex_excl_corp_mn"] for x in rows_g)
+                            s_staff_mn = sum(x["staff_mn"] for x in rows_g)
+                            s_eb_mn = sum(x["eb_mn"] for x in rows_g)
+                            s_seg_mn = sum(x["seg_res_mn"] for x in rows_g)
+                            s_pbt_mn = sum(x["pbt_mn"] for x in rows_g)
+                            s_cap_mn = sum(x["capex_mn"] for x in rows_g)
+                            s_rcr_mn = sum(x["rev_crude_mn"] for x in rows_g)
+                            s_osales = sum(x["oil_sales_mt"] for x in rows_g)
+                            s_boe = sum(x["prod_boe"] for x in rows_g)
+                            fxs = [x["fx_rate"] for x in rows_g if x.get("fx_rate")]
+                            avg_fx = (sum(fxs) / len(fxs)) if fxs else None
                             for vc in compiled.value_columns:
-                                if vc in ("pbt_cr", "field_pbt_cr"):
-                                    rd[vc] = float(r.get("pbt_inr_cr") or 0.0)
+                                if vc in ("pbt_cr", "field_pbt_cr", "company_bridge"):
+                                    rd[vc] = round(s_pbt_mn / 10.0, 2)
                                 elif vc in ("ebitda_cr", "field_ebitda_cr"):
-                                    rd[vc] = float(r.get("ebitda_inr_cr") or 0.0)
-                                elif vc in ("revenue_cr", "field_revenue_cr"):
-                                    rd[vc] = float(r.get("gross_revenue_inr_cr") or 0.0)
+                                    rd[vc] = round(s_eb_mn / 10.0, 2)
+                                elif vc in ("revenue_cr", "field_revenue_cr", "offshore_vs_onshore_revenue_cr"):
+                                    rd[vc] = round(s_rev_mn / 10.0, 2)
+                                elif vc == "offshore_vs_onshore_result_cr":
+                                    rd[vc] = round(s_seg_mn / 10.0, 2)
                                 elif vc == "opex_cr":
-                                    rd[vc] = float(r.get("total_opex_inr_cr") or 0.0)
+                                    rd[vc] = round(s_opex_mn / 10.0, 2)
+                                elif vc == "production_boe":
+                                    rd[vc] = round(s_boe, 0)
                                 elif vc in ("lifting_cost_usd_per_boe", "lifting_cost_per_boe_usd"):
-                                    rd[vc] = round(float(r.get("total_opex_inr_cr") or 0.0) / 15.0, 2)
+                                    rd[vc] = round((s_lift_mn * 1000000.0 / s_boe) / avg_fx, 2) if (s_boe > 0 and avg_fx) else None
+                                elif vc == "lifting_cost_inr_per_boe":
+                                    rd[vc] = round(s_lift_mn * 1000000.0 / s_boe, 0) if s_boe > 0 else None
+                                elif vc == "opex_per_boe_inr":
+                                    rd[vc] = round(s_excl_mn * 1000000.0 / s_boe, 2) if s_boe > 0 else None
+                                elif vc == "opex_per_boe_usd":
+                                    rd[vc] = round((s_excl_mn * 1000000.0 / s_boe) / avg_fx, 2) if (s_boe > 0 and avg_fx) else None
+                                elif vc == "employee_cost_per_boe":
+                                    rd[vc] = round(s_staff_mn * 1000000.0 / s_boe, 2) if s_boe > 0 else None
+                                elif vc == "manpower_cost_usd_per_boe":
+                                    rd[vc] = round((s_staff_mn * 1000000.0 / s_boe) / avg_fx, 2) if (s_boe > 0 and avg_fx) else None
+                                elif vc == "manpower_cost_pct_of_revenue":
+                                    rd[vc] = round(100.0 * s_staff_mn / s_rev_mn, 1) if s_rev_mn else None
+                                elif vc in ("ebitda_margin_pct", "field_ebitda_margin_pct"):
+                                    rd[vc] = round(100.0 * s_eb_mn / s_rev_mn, 1 if vc == "ebitda_margin_pct" else 2) if s_rev_mn else None
+                                elif vc == "pbt_margin_pct":
+                                    rd[vc] = round(100.0 * s_pbt_mn / s_rev_mn, 1) if s_rev_mn else None
+                                elif vc == "levies_pct_revenue":
+                                    rd[vc] = round(100.0 * s_lev_mn / s_rev_mn, 2) if s_rev_mn else None
+                                elif vc == "breakeven_crude_usd_bbl":
+                                    rd[vc] = round(((s_rcr_mn - s_pbt_mn) * 1000000.0 / s_osales) / (7.33 * avg_fx), 2) if (s_osales > 0 and avg_fx) else None
+                                elif vc == "capex_intensity_usd_boe":
+                                    rd[vc] = round((s_cap_mn * 1000000.0 / s_boe) / avg_fx, 2) if (s_boe > 0 and avg_fx) else None
                                 else:
-                                    rd[vc] = float(r.get("pbt_inr_cr") or 0.0)
+                                    rd[vc] = None
                             out_rows.append(rd)
                         if out_rows and compiled.value_columns:
                             vc0 = compiled.value_columns[0]
-                            asc = ("pbt_inr_cr < 0" in compiled.sql) or ("ASC" in compiled.sql.split("ORDER BY")[-1] if "ORDER BY" in compiled.sql else False)
-                            out_rows.sort(key=lambda x: float(x.get(vc0) or 0.0), reverse=not asc)
-                            cols_out = [alias for _, alias in compiled.dims] + list(compiled.value_columns)
-                            return QueryResult(columns=cols_out, rows=out_rows, total_bytes=0,
-                                               latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
+                            out_rows = [r for r in out_rows if r.get(vc0) is not None]
+                            if out_rows:
+                                asc = ("pbt_inr_cr < 0" in compiled.sql) or ("ASC" in compiled.sql.split("ORDER BY")[-1] if "ORDER BY" in compiled.sql else False)
+                                out_rows.sort(key=lambda x: float(x.get(vc0) or 0.0), reverse=not asc)
+                                cols_out = [alias for _, alias in compiled.dims] + list(compiled.value_columns)
+                                return QueryResult(columns=cols_out, rows=out_rows, total_bytes=0,
+                                                   latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
                 if compiled.subject == "workforce":
-                    sap_dir = repo_root.parent / "HR and Finance_ONGC" / "data_bank" / "landing" / "sap"
-                    if not (sap_dir / "PA0002_PA0001.csv").exists():
-                        sap_dir = repo_root / "data_bank" / "landing" / "sap"
+                    sap_dir = repo_root / "data_bank" / "landing" / "sap"
                     pa2_p = sap_dir / "PA0002_PA0001.csv"
                     pa1_p = sap_dir / "PA0001.csv"
                     if pa2_p.exists() and pa1_p.exists():
+                        sal_by_emp: Optional[Dict[str, float]] = None
+                        if "avg_gross_salary_lakh" in (compiled.value_columns or []):
+                            py_p = sap_dir / "PY_CLUSTER_EXP.csv"
+                            if py_p.exists():
+                                import duckdb as _duckdb
+                                con = _duckdb.connect()
+                                try:
+                                    q_py = f"SELECT PERNR, (CAST(LGART_9001 AS DOUBLE) * 12.0) / 100000.0 AS sal_lakh FROM read_csv_auto('{py_p.as_posix()}') WHERE FPPER = '2026-03'"
+                                    sal_by_emp = {str(r[0]): float(r[1]) for r in con.execute(q_py).fetchall() if r[0] is not None and r[1] is not None}
+                                finally:
+                                    con.close()
                         if "v_continuous_stay" in compiled.sql:
                             as_of_dt = datetime.date(2026, 3, 31)
                             by_emp_cs: Dict[str, List[Dict[str, str]]] = {}
@@ -3214,7 +3343,7 @@ ORDER BY line_order ASC"""
                                     s_yrs = round(s_days / 365.25, 1)
                                     g = str(r.get("PERSK") or "").strip().upper()
                                     ret_dt_s = r.get("retirement_date")
-                                    ytr = round((datetime.date.fromisoformat(ret_dt_s) - ANCHOR_DATE).days / 365.25, 1) if ret_dt_s else 10.0
+                                    ytr = round((datetime.date.fromisoformat(ret_dt_s) - ANCHOR_DATE).days / 365.25, 1) if ret_dt_s else None
                                     ex_tag = r.get("exemption_tag")
                                     if ex_tag in ("", "None", "null"):
                                         ex_tag = None
@@ -3235,14 +3364,14 @@ ORDER BY line_order ASC"""
                                         "delhi_tenure_years": s_yrs,
                                         "ongc_tenure_years": round(float(r.get("total_tenure_years") or 0.0), 1),
                                         "years_to_retirement": ytr,
-                                        "retiring_within_3yr": ytr <= 3.0,
-                                        "is_retiring_within_3yr": ytr <= 3.0,
+                                        "retiring_within_3yr": bool(ytr is not None and ytr <= 3.0),
+                                        "is_retiring_within_3yr": bool(ytr is not None and ytr <= 3.0),
                                         "is_superannuation_exempt": bool(ex_tag and "superannuation" in ex_tag.lower()),
                                         "exemption": ex_tag,
                                         "functional_designation": r.get("current_designation") or g,
                                         "designation": r.get("current_designation") or g,
                                         "current_designation": r.get("current_designation") or g,
-                                        "avg_gross_salary_lakh": round((12.0 + GRADE_LEVEL_ORDER.get(g, 5) * 3.5), 2),
+                                        "avg_gross_salary_lakh": sal_by_emp.get(eid) if sal_by_emp is not None else None,
                                     })
                         m_emp_eq = re.search(r"emp_id\s*=\s*'([^']+)'", compiled.sql)
                         m_emp_in = re.search(r"emp_id\s+IN\s*\(([^)]+)\)", compiled.sql)
@@ -3270,10 +3399,7 @@ ORDER BY line_order ASC"""
                         m_grade_in = re.search(r"(?:current_grade_id|grade_id)\s+IN\s*\(([^)]+)\)", compiled.sql)
                         if m_grade_in:
                             g_set = {x.strip().strip("'") for x in m_grade_in.group(1).split(",")}
-                            if "E0" not in g_set and "E1" in g_set and "E9" in g_set and "GRP-B" not in g_set:
-                                emps = [e for e in emps if e["grade"] in g_set or (e["wc_id"] != "WC-DEL" and e["grade"] == "E0")]
-                            else:
-                                emps = [e for e in emps if e["grade"] in g_set]
+                            emps = [e for e in emps if e["grade"] in g_set]
                         elif "LOWER(cadre) = LOWER('executive')" in compiled.sql:
                             emps = [e for e in emps if e["cadre"].lower() == "executive"]
                         if compiled.grain == "row":
@@ -3294,11 +3420,14 @@ ORDER BY line_order ASC"""
                             return QueryResult(columns=cols_r, rows=out_rows, total_bytes=0,
                                                latency_ms=round((time.perf_counter() - t0) * 1000, 1), dry_run_bytes=0)
                         val_col = compiled.value_columns[0] if compiled.value_columns else "headcount"
+                        if val_col == "avg_gross_salary_lakh" and not sal_by_emp:
+                            return None
                         if not compiled.dims:
                             if val_col == "retiring_within_3yr":
                                 v_agg = sum(1 for e in emps if e.get("retiring_within_3yr"))
                             elif val_col == "avg_gross_salary_lakh":
-                                v_agg = round(sum(float(e.get("avg_gross_salary_lakh") or 0.0) for e in emps) / max(len(emps), 1), 2)
+                                sals = [float(e["avg_gross_salary_lakh"]) for e in emps if e.get("avg_gross_salary_lakh") is not None]
+                                v_agg = round(sum(sals) / len(sals), 2) if sals else None
                             else:
                                 v_agg = len(emps)
                             return QueryResult(columns=[val_col], rows=[{val_col: v_agg, "_n": len(emps)}], total_bytes=0,
@@ -3313,7 +3442,8 @@ ORDER BY line_order ASC"""
                             if val_col == "retiring_within_3yr":
                                 rd[val_col] = sum(1 for e in grp if e.get("retiring_within_3yr"))
                             elif val_col == "avg_gross_salary_lakh":
-                                rd[val_col] = round(sum(float(e.get("avg_gross_salary_lakh") or 0.0) for e in grp) / max(len(grp), 1), 2)
+                                sals = [float(e["avg_gross_salary_lakh"]) for e in grp if e.get("avg_gross_salary_lakh") is not None]
+                                rd[val_col] = round(sum(sals) / len(sals), 2) if sals else None
                             else:
                                 rd[val_col] = len(grp)
                             rd["_n"] = len(grp)

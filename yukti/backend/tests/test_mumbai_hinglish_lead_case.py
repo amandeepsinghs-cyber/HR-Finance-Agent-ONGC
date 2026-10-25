@@ -27,11 +27,10 @@ async def test_mumbai_hinglish_case():
     title = vis.get("title", "")
     subtitle = vis.get("subtitle", "")
 
-    # 1. Fact correctness
-    assert "560" in spoken or "560" in str(res), f"Expected 560 total executives, got: {spoken}"
-    assert "Production (152)" in spoken or ("Production" in spoken and "152" in spoken) or "E4" in str(res), f"Expected Mumbai breakdown, got: {spoken}"
-    assert "Drilling (98)" in spoken or ("Drilling" in spoken and "98" in spoken) or "E3" in str(res), f"Expected Mumbai breakdown, got: {spoken}"
-    assert "95" not in spoken, f"Found unaggregated cell count 95 in spoken: {spoken}"
+    # 1. Fact correctness (STATION_GT5_CONT_V1 E1..E9 in WC-MUM = 547 executives; 13 are E0)
+    assert "547" in spoken or "547" in str(res), f"Expected 547 total E1..E9 executives, got: {spoken}"
+    assert "Production (150)" in spoken or ("Production" in spoken and "150" in spoken) or "E4" in str(res), f"Expected Mumbai breakdown, got: {spoken}"
+    assert "Drilling (95)" in spoken or ("Drilling" in spoken and "95" in spoken) or "E3" in str(res), f"Expected Mumbai breakdown, got: {spoken}"
     assert "75" not in spoken, f"Found unaggregated cell count 75 in spoken: {spoken}"
 
     # 2. Language & Script Mirroring

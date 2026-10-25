@@ -172,40 +172,95 @@ ORDER BY fiscal_year DESC;"""
             try:
                 import csv as _csv
                 import datetime as _dt
+                import pandas as _pd
+                import yaml as _yaml
                 from app.config import DATA_BANK_DIR
                 from app.semantic.entities import get_entities
                 ents = get_entities()
                 fb_rows = []
                 if any(k in scen for k in ["brent", "price", "crude", "w1"]):
-                    copa_p = DATA_BANK_DIR / "landing" / "sap" / "CO_PA.csv"
-                    if copa_p.exists():
-                        p_val = float(price) if "price" in locals() else 60.0
-                        for r in _csv.DictReader(copa_p.open("r", encoding="utf-8")):
-                            if r.get("fiscal_year") != "FY26" or r.get("field_id") not in ents.fields:
-                                continue
-                            fmeta = ents.fields[r["field_id"]]
-                            oil_rev = float(r.get("oil_revenue_inr_cr") or 0.0)
-                            gas_rev = float(r.get("gas_revenue_inr_cr") or 0.0)
-                            gross_rev = float(r.get("gross_revenue_inr_cr") or (oil_rev + gas_rev) or 1.0)
-                            opex = float(r.get("total_opex_inr_cr") or 0.0)
-                            dda = float(r.get("dda_depreciation_inr_cr") or 0.0)
-                            roy_rate = float(r.get("statutory_royalty_inr_cr") or 0.0) / gross_rev
-                            cess_rate = float(r.get("statutory_cess_inr_cr") or 0.0) / gross_rev
-                            sim_rev = round(oil_rev * ((p_val - 2.5) / 73.4) + gas_rev, 2)
-                            sim_ebitda = round(sim_rev * (1.0 - roy_rate - cess_rate) - opex, 2)
-                            sim_pbt = round(sim_ebitda - dda, 2)
-                            fb_rows.append({
-                                "field_id": r["field_id"],
-                                "field_name": fmeta.get("name", r["field_id"]),
-                                "onshore_offshore": fmeta.get("onshore_offshore", "onshore"),
-                                "sim_gross_revenue_inr_cr": sim_rev,
-                                "total_opex_inr_cr": round(opex, 2),
-                                "sim_ebitda_inr_cr": sim_ebitda,
-                                "sim_pbt_inr_cr": sim_pbt,
-                                "is_ebitda_negative": sim_ebitda < 0,
-                                "is_pbt_negative": sim_pbt < 0,
-                            })
-                        fb_rows.sort(key=lambda x: float(x["sim_pbt_inr_cr"]))
+                    copa_v3_p = DATA_BANK_DIR / "landing" / "sap" / "CO_PA_v3.csv"
+                    pfx_p = DATA_BANK_DIR / "landing" / "excel" / "_clean" / "price_fx.xlsx"
+                    if not pfx_p.exists():
+                        pfx_p = DATA_BANK_DIR / "landing" / "excel" / "price_fx.xlsx"
+                    co_p = DATA_BANK_DIR / "world_bible" / "reference" / "cost_objects.yaml"
+                    if copa_v3_p.exists() and pfx_p.exists():
+                        pfx_df = _pd.read_excel(pfx_p, sheet_name="price_fx_monthly")
+                        pfx_26 = pfx_df[pfx_df["fiscal_year"] == "FY26"]
+                        if not pfx_26.empty:
+                            avg_brent = float(pfx_26["brent_usd_bbl"].mean())
+                            avg_real = float(pfx_26["ongc_crude_net_realisation_usd_bbl"].mean())
+                            avg_disc = avg_brent - avg_real
+                            p_val = float(price) if "price" in locals() else 60.0
+
+                            co_map = {}
+                            if co_p.exists():
+                                co_raw = _yaml.safe_load(co_p.read_text(encoding="utf-8")) or {}
+                                for co in co_raw.get("cost_objects") or []:
+                                    if co.get("object_id"):
+                                        co_map[str(co["object_id"])] = co
+
+                            opex_codes = {
+                                "N35.STAFF_EXPENDITURE", "N35.WORKOVER_OPS", "N35.WATER_INJECTION_DESALTING",
+                                "N35.CONSUMPTION_STORES_SPARES", "N35.POLLUTION_CONTROL", "N35.TRANSPORT_EXPENDITURE",
+                                "N35.INSURANCE", "N35.POWER_FUEL", "N35.REPAIRS_MAINTENANCE", "N35.CONTRACTUAL_HIRE",
+                                "N35.OTHER_PRODUCTION_EXP", "N35.TRANSPORT_FREIGHT_PRODUCTS", "N35.R_AND_D",
+                                "N35.GAE", "N35.CSR", "N35.EXCHANGE_LOSS", "N35.MISC_EXP", "N35.FV_LOSS",
+                            }
+                            non_oil_rev_codes = {"REV.GAS", "REV.VAP", "REV.OTHER_OP"}
+                            # [oil_rev_mn, non_oil_rev_mn, royalty_mn, cess_mn, opex_mn, dda_mn]
+                            f_acc = {}
+                            with copa_v3_p.open("r", encoding="utf-8") as f:
+                                for r in _csv.DictReader(f):
+                                    if str(r.get("fy") or "").strip() != "FY26":
+                                        continue
+                                    oid = str(r.get("object_id") or "").strip()
+                                    co = co_map.get(oid, {})
+                                    otype = str(co.get("object_type") or r.get("object_type") or "").lower()
+                                    if otype != "field":
+                                        continue
+                                    lc = str(r.get("line_code") or "").strip().upper()
+                                    amt = float(r.get("amount_inr_mn") or 0.0)
+                                    acc = f_acc.setdefault(oid, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                                    if lc == "REV.CRUDE":
+                                        acc[0] += amt
+                                    elif lc in non_oil_rev_codes:
+                                        acc[1] += amt
+                                    elif lc == "N35.ROYALTY":
+                                        acc[2] += amt
+                                    elif lc == "N35.OIDB_CESS":
+                                        acc[3] += amt
+                                    elif lc in opex_codes:
+                                        acc[4] += amt
+                                    elif lc == "PL.DDA":
+                                        acc[5] += amt
+
+                            for oid, acc in f_acc.items():
+                                co = co_map.get(oid, {})
+                                oil_rev = acc[0] / 10.0
+                                gas_rev = acc[1] / 10.0
+                                gross_rev = oil_rev + gas_rev
+                                if gross_rev <= 0 or avg_real <= 0:
+                                    continue
+                                roy_rate = (acc[2] / 10.0) / gross_rev
+                                cess_rate = (acc[3] / 10.0) / gross_rev
+                                opex = acc[4] / 10.0
+                                dda = acc[5] / 10.0
+                                sim_rev = round(oil_rev * ((p_val - avg_disc) / avg_real) + gas_rev, 2)
+                                sim_ebitda = round(sim_rev * (1.0 - roy_rate - cess_rate) - opex, 2)
+                                sim_pbt = round(sim_ebitda - dda, 2)
+                                fb_rows.append({
+                                    "field_id": oid,
+                                    "field_name": str(co.get("object_name") or ents.friendly(oid)),
+                                    "onshore_offshore": str(co.get("segment") or "onshore").lower(),
+                                    "sim_gross_revenue_inr_cr": sim_rev,
+                                    "total_opex_inr_cr": round(opex, 2),
+                                    "sim_ebitda_inr_cr": sim_ebitda,
+                                    "sim_pbt_inr_cr": sim_pbt,
+                                    "is_ebitda_negative": sim_ebitda < 0,
+                                    "is_pbt_negative": sim_pbt < 0,
+                                })
+                            fb_rows.sort(key=lambda x: float(x["sim_pbt_inr_cr"]))
                 elif any(k in scen for k in ["freeze", "moratorium", "hiring", "w2"]):
                     pa2_p = DATA_BANK_DIR / "landing" / "sap" / "PA0002_PA0001.csv"
                     if pa2_p.exists():
@@ -214,7 +269,7 @@ ORDER BY fiscal_year DESC;"""
                         for r in _csv.DictReader(pa2_p.open("r", encoding="utf-8")):
                             if r.get("STAT2") != "Active" or not str(r.get("PERSK", "")).startswith("E"):
                                 continue
-                            dname = ents.friendly("discipline", r.get("discipline_id", ""))
+                            dname = ents.friendly(r.get("discipline_id", ""))
                             rec = by_d.setdefault(dname, [0, 0])
                             rec[0] += 1
                             ret_s = r.get("retirement_date")
@@ -229,24 +284,55 @@ ORDER BY fiscal_year DESC;"""
                                 "post_freeze_projected_headcount": tot_hc - ret_hc,
                             })
                 elif any(k in scen for k in ["relocat", "transfer", "cta", "w3", "c13"]):
-                    cohort = int(relocated_officers or 200)
-                    rate = float(cta_lakh or 3.25)
-                    outlay_cr = round((cohort * rate * 100000) / 10000000, 2)
-                    for wcid, vac_cnt in [("WC-ASM", 180), ("WC-CAM", 95), ("WC-TRI", 65), ("WC-RAJ", 45)]:
-                        fb_rows.append({
-                            "field_asset": ents.friendly("wc", wcid),
-                            "sanctioned_posts": 1000,
-                            "in_position": 1000 - vac_cnt,
-                            "vacancy_deficit": vac_cnt,
-                            "planned_executives_relocated": cohort,
-                            "estimated_cta_outlay_cr": outlay_cr,
-                        })
+                    mp_p = DATA_BANK_DIR / "landing" / "excel" / "_clean" / "manpower_plan.xlsx"
+                    if not mp_p.exists():
+                        mp_p = DATA_BANK_DIR / "landing" / "excel" / "manpower_plan.xlsx"
+                    if mp_p.exists():
+                        cohort = int(relocated_officers or 200)
+                        rate = float(cta_lakh or 3.25)
+                        outlay_cr = round((cohort * rate * 100000) / 10000000, 2)
+                        mp_df = _pd.read_excel(mp_p)
+                        target_wcs = ["WC-ASM", "WC-TRI", "WC-CAM", "WC-RAJ"]
+                        sub_mp = mp_df[(mp_df["fiscal_year"] == "FY26") & (mp_df["wc_id"].isin(target_wcs))]
+                        if not sub_mp.empty:
+                            grp = sub_mp.groupby("wc_id", as_index=False)[
+                                ["sanctioned_strength", "in_position_strength", "vacancy_count"]
+                            ].sum()
+                            for _, r in grp.iterrows():
+                                wcid = str(r["wc_id"])
+                                fb_rows.append({
+                                    "field_asset": ents.friendly(wcid),
+                                    "sanctioned_posts": int(r["sanctioned_strength"]),
+                                    "in_position": int(r["in_position_strength"]),
+                                    "vacancy_deficit": int(r["vacancy_count"]),
+                                    "planned_executives_relocated": cohort,
+                                    "estimated_cta_outlay_cr": outlay_cr,
+                                })
+                            fb_rows.sort(key=lambda x: -int(x["vacancy_deficit"]))
                 else:
-                    fb_rows = [
-                        {"fiscal_year": "FY26", "brent_usd": 73.4, "erstwhile_saed_usd": 0.0, "post_withdrawal_net_realisation_usd": 73.4, "estimated_monthly_ebitda_gain_inr_cr": 0.0},
-                        {"fiscal_year": "FY25", "brent_usd": 78.63, "erstwhile_saed_usd": 4.8, "post_withdrawal_net_realisation_usd": 73.83, "estimated_monthly_ebitda_gain_inr_cr": 300.6},
-                        {"fiscal_year": "FY24", "brent_usd": 82.1, "erstwhile_saed_usd": 7.2, "post_withdrawal_net_realisation_usd": 74.9, "estimated_monthly_ebitda_gain_inr_cr": 450.9},
-                    ]
+                    pfx_p = DATA_BANK_DIR / "landing" / "excel" / "_clean" / "price_fx.xlsx"
+                    if not pfx_p.exists():
+                        pfx_p = DATA_BANK_DIR / "landing" / "excel" / "price_fx.xlsx"
+                    copa_v3_p = DATA_BANK_DIR / "landing" / "sap" / "CO_PA_v3.csv"
+                    if pfx_p.exists() and copa_v3_p.exists():
+                        pfx_df = _pd.read_excel(pfx_p, sheet_name="price_fx_monthly")
+                        saed_by_fy = {"FY24": 0.0, "FY25": 0.0, "FY26": 0.0}
+                        with copa_v3_p.open("r", encoding="utf-8") as f:
+                            for r in _csv.DictReader(f):
+                                fy_r = str(r.get("fy") or "").strip()
+                                if fy_r in saed_by_fy and str(r.get("line_code") or "").strip().upper() == "N35.EXCISE_SAED":
+                                    saed_by_fy[fy_r] += float(r.get("amount_inr_mn") or 0.0)
+                        for fy_k in ["FY26", "FY25", "FY24"]:
+                            sub_pf = pfx_df[pfx_df["fiscal_year"] == fy_k]
+                            if sub_pf.empty:
+                                continue
+                            fb_rows.append({
+                                "fiscal_year": fy_k,
+                                "brent_usd": round(float(sub_pf["brent_usd_bbl"].mean()), 2),
+                                "erstwhile_saed_usd": round(float(sub_pf["windfall_tax_saed_usd_bbl"].mean()), 2),
+                                "post_withdrawal_net_realisation_usd": round(float(sub_pf["ongc_crude_net_realisation_usd_bbl"].mean()), 2),
+                                "estimated_monthly_ebitda_gain_inr_cr": round((saed_by_fy.get(fy_k, 0.0) / 10.0) / 12.0, 2),
+                            })
                 if fb_rows:
                     out = {
                         "status": "success",

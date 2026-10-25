@@ -137,6 +137,15 @@ def load_class_parameters():
             "field_asset": 0.0820,# Onshore production installations and field gathering stations
         },
 
+        # Historical female share of recruitment intake by DOJ cohort (ONGC AR women-share history & FY26 BRSR new-hire split 28/167 = 16.77%)
+        "female_share_of_intake_by_doj_year": {
+            1998: 0.040,  # Pre-1999 recruitment cohorts (historical CPSE technical intake ~4.0% women; AR women-share baseline)
+            2005: 0.070,  # FY00–FY06 recruitment cohorts (early campus intake expansion ~7.0% women; AR women-share history)
+            2011: 0.085,  # FY07–FY12 recruitment cohorts (post-2nd-PRC intake ~8.5% women; AR women-share history)
+            2017: 0.125,  # FY13–FY18 GATE Graduate Trainee and technical intake (~12.5% women; BRSR historical trend)
+            2026: 0.168,  # FY19–FY26 recent intake cohorts (calibrated to FY26 BRSR new-hire gender split 28/167 = 16.77%)
+        },
+
         # Mobility, transfer stickiness, and hard station rotation hazards
         "mobility": {
             "office_stickiness_hazard": 0.12, # Transfer-out hazard per year from corporate offices
@@ -195,6 +204,21 @@ def load_class_parameters():
                 "DISC-DRL": 0.35, "DISC-MEC": 0.20, "DISC-ELE": 0.15, "DISC-GPS": 0.12, "DISC-INS": 0.08,
                 "DISC-HSE": 0.05, "DISC-MM": 0.03, "DISC-HR": 0.02,
             },
+        },
+
+        # Career progression and DPC promotion rules by work-centre HQ class and grade residency
+        "promotion_rules": {
+            "grading_mode_by_hq_class": {
+                False: "career_residency",       # Operational and regional work centres progress via career residency
+                True: "sanctioned_post",         # Central corporate directorate complexes staff against fixed post sanctions
+            },
+            "dept_promotee_tenure_min_years": 6.5,   # Minimum prior non-executive service before departmental E0 induction
+            "dept_promotee_tenure_max_years": 11.5,  # Upper service window for active E0 departmental promotees before E1
+            "dept_promotee_e0_share": 0.28,          # Share of eligible mid-tenure cohort inducted via departmental E0 stream
+            "direct_entry_assessment_lag_years": 0.95, # Post-residency confirmation assessment lag for direct-entry E1 officers
+            "time_bound_annual_pass_rate": 0.125,    # Annual time-bound assessment progression rate across E2..E4 bands
+            "merit_annual_dpc_pass_rate": 0.21,      # Annual competitive DPC selection rate per merit transition (E4->E5..E9)
+            "merit_max_wait_years": 29.0,            # Upper career horizon bound for annual merit DPC evaluation cycles
         },
     }
 
@@ -319,11 +343,13 @@ REAL_PERSON_NAMES_BLACKLIST = {
 _NAME_TRACKER = {}
 _NAME_RNG = random.Random(SEED + 101)
 _AUX_RNG = random.Random(SEED + 202)
+_GENDER_RNG = random.Random(SEED + 303)
 
-def make_name(gender: str, state_code: str = "DL", wc_id: str = "GLOBAL") -> str:
+def make_name(gender: str, state_code: str = "DL", wc_id: str = "GLOBAL", orig_gender: str = None) -> str:
     # Preserve exact global RNG draw sequence from baseline generator
+    g_orig = orig_gender or gender
     while True:
-        if gender == "Female":
+        if g_orig == "Female":
             orig_cand = f"{random.choice(female_first)} {random.choice(last_names)}"
         else:
             orig_cand = f"{random.choice(male_first)} {random.choice(last_names)}"
@@ -332,7 +358,7 @@ def make_name(gender: str, state_code: str = "DL", wc_id: str = "GLOBAL") -> str
 
     wc_counts = _NAME_TRACKER.setdefault(wc_id, {})
     is_hq = bool(WC_BY_ID.get(wc_id, {}).get("is_corporate_hq", False))
-    if is_hq and wc_counts.get(orig_cand, 0) == 0:
+    if is_hq and gender == g_orig and wc_counts.get(orig_cand, 0) == 0:
         wc_counts[orig_cand] = 1
         return orig_cand
 
@@ -1469,59 +1495,107 @@ tot_h1_seps = h1_superann_count + len(selected_h1_resig) + 12 + 30
 tot_h1_hires = gt_intake_count + non_intake_count
 print(f"FY27 H1 movements complete: Hires={tot_h1_hires}, Separations={tot_h1_seps}.")
 
-# Pre-assign emp_id in exact total_population order and record baseline grade/entry_mode
+# Pre-assign emp_id in exact total_population order and record baseline grade/entry_mode/gender
 for s in total_population:
     s["emp_id"] = s.get("emp_id") or next_emp_id()
     s["_orig_grade_id"] = s.get("current_grade_id") or s.get("grade_id") or ("E2" if s.get("cadre") == "executive" else "GRP-C")
     s["_orig_entry_mode"] = s.get("entry_mode") or "GATE_GT"
+    s["_orig_gender"] = s.get("gender", "Male")
 
-# Couple non-HQ active executive grades to seniority (EMP-R24, EMP-R09, EMP-R16, EMP-R20)
-non_hq_execs = [
-    s for s in active_specs
-    if s.get("cadre") == "executive"
-    and not s.get("is_persona")
-    and not WC_BY_ID[s.get("current_wc_id") or s.get("wc_id") or delhi_hq_wc].get("is_corporate_hq", False)
+# Derive executive grades from declared promotion rules (grades.yaml residency + PARAMS["promotion_rules"])
+prom_cfg = PARAMS["promotion_rules"]
+exec_transitions = [
+    ("E1", "E2"), ("E2", "E3"), ("E3", "E4"), ("E4", "E5"),
+    ("E5", "E6"), ("E6", "E7"), ("E7", "E8"), ("E8", "E9"),
 ]
-orig_grade_counts = {}
-for s in non_hq_execs:
-    orig_grade_counts[s["current_grade_id"]] = orig_grade_counts.get(s["current_grade_id"], 0) + 1
-
-def _eff_doj_for_grade(s):
-    d = s["doj"]
-    if s.get("gender") == "Female" and d < datetime.date(2022, 4, 1):
-        d = min(datetime.date(2022, 3, 31), d + datetime.timedelta(days=int(18.0 * 365.25)))
-    return d
-
-non_hq_execs.sort(key=lambda s: (_eff_doj_for_grade(s), s["doj"], s["emp_id"]), reverse=True)
-
-n_e1 = orig_grade_counts["E1"] - 601
-n_e2 = orig_grade_counts["E2"] + 101
-n_e0 = 350
-n_e3 = orig_grade_counts["E3"] + 151
-n_e4 = orig_grade_counts["E4"]
-n_e5 = orig_grade_counts["E5"]
-n_e6 = orig_grade_counts["E6"] - 1
-n_e7 = orig_grade_counts["E7"]
-n_e8 = orig_grade_counts["E8"]
-n_e9 = orig_grade_counts["E9"]
-
-coupled_grades = (
-    ["E1"] * n_e1
-    + ["E2"] * n_e2
-    + ["E0"] * n_e0
-    + ["E3"] * n_e3
-    + ["E4"] * n_e4
-    + ["E5"] * n_e5
-    + ["E6"] * n_e6
-    + ["E7"] * n_e7
-    + ["E8"] * n_e8
-    + ["E9"] * n_e9
-)
-for s, g in zip(non_hq_execs, coupled_grades):
-    s["current_grade_id"] = g
-    s["current_designation"] = GRADE_DESIGNATIONS[g]
-    if g == "E0":
+for s in active_specs:
+    if s.get("cadre") != "executive" or s.get("is_persona"):
+        continue
+    cur_g_init = s.get("current_grade_id")
+    if cur_g_init in ("CMD", "DIR"):
+        continue
+    wc_obj = WC_BY_ID[s.get("current_wc_id") or s.get("wc_id") or delhi_hq_wc]
+    hq_cls = bool(wc_obj.get("is_corporate_hq", False))
+    if prom_cfg["grading_mode_by_hq_class"].get(hq_cls, "career_residency") == "sanctioned_post":
+        continue
+    srv_years = max(0.0, (ANCHOR_DATE - s["doj"]).days / 365.25)
+    if (
+        prom_cfg["dept_promotee_tenure_min_years"] <= srv_years <= prom_cfg["dept_promotee_tenure_max_years"]
+        and _AUX_RNG.random() < prom_cfg["dept_promotee_e0_share"]
+    ):
+        s["current_grade_id"] = "E0"
+        s["current_designation"] = GRADE_DESIGNATIONS["E0"]
         s["entry_mode"] = "Departmental_Promotee"
+        continue
+    cur_g = "E1"
+    rem_years = srv_years
+    for f_g, t_g in exec_transitions:
+        min_res = float(GRADE_BY_ID[f_g]["typical_residency_years"])
+        if GRADE_BY_ID[f_g]["scale_type"] == "ONGC-Direct-Entry":
+            req_years = min_res + prom_cfg["direct_entry_assessment_lag_years"]
+        else:
+            p_pass = (
+                prom_cfg["time_bound_annual_pass_rate"]
+                if GRADE_BY_ID[t_g]["promotion_mode"] == "time_bound"
+                else prom_cfg["merit_annual_dpc_pass_rate"]
+            )
+            wait_years = 0.0
+            while _AUX_RNG.random() > p_pass and wait_years < prom_cfg["merit_max_wait_years"]:
+                wait_years += 1.0
+            req_years = min_res + wait_years
+        if rem_years < req_years:
+            break
+        rem_years -= req_years
+        cur_g = t_g
+    s["current_grade_id"] = cur_g
+    s["current_designation"] = GRADE_DESIGNATIONS[cur_g]
+
+# Draw gender composition from declared intake-year ramp on isolated _GENDER_RNG stream
+intake_ramp = sorted(PARAMS["female_share_of_intake_by_doj_year"].items())
+loc_prop = PARAMS["female_propensity"]
+
+def _intake_fem_share(yr: int) -> float:
+    for max_yr, sh in intake_ramp:
+        if yr <= max_yr:
+            return sh
+    return intake_ramp[-1][1]
+
+def _loc_fem_prop(wid: str) -> float:
+    w = WC_BY_ID[wid]
+    if w.get("onshore_offshore") == "offshore":
+        return loc_prop["offshore"]
+    if w.get("is_corporate_hq", False):
+        return loc_prop["corporate_office"]
+    tp = w.get("type")
+    if tp == "institute":
+        return loc_prop["institute"]
+    if tp == "plant":
+        return loc_prop["plant"]
+    return loc_prop["field_asset"]
+
+for s in active_specs:
+    u_g = _GENDER_RNG.random()
+    wid_g = s.get("current_wc_id") or s.get("wc_id") or delhi_hq_wc
+    w_g = _intake_fem_share(s["doj"].year) * _loc_fem_prop(wid_g)
+    s["_gender_key"] = u_g ** (1.0 / w_g)
+
+for cadre_name, target_f_total in [("executive", 1377), ("non_executive", 508)]:
+    fixed_f = sum(
+        1 for s in active_specs
+        if s.get("cadre") == cadre_name
+        and (s.get("is_persona") or s["doj"] >= datetime.date(2025, 4, 1))
+        and s.get("gender") == "Female"
+    )
+    elig = [
+        s for s in active_specs
+        if s.get("cadre") == cadre_name
+        and not s.get("is_persona")
+        and s["doj"] < datetime.date(2025, 4, 1)
+    ]
+    elig.sort(key=lambda x: x["_gender_key"], reverse=True)
+    need_f = target_f_total - fixed_f
+    for idx_e, s in enumerate(elig):
+        s["gender"] = "Female" if idx_e < need_f else "Male"
 
 # -----------------------------------------------------------------------------
 # STEP 11: COMPILE FINAL TABLES & NATIVE SAP / EXCEL FILES
@@ -1543,7 +1617,7 @@ for idx, s in enumerate(total_population):
     gender = s.get("gender", "Male")
     wc_id = s.get("current_wc_id") or s.get("wc_id") or delhi_hq_wc
     state_code = s.get("home_state_code") or WC_BY_ID[wc_id]["state_code"]
-    name = s.get("name") or make_name(gender, state_code, wc_id)
+    name = s.get("name") or make_name(gender, state_code, wc_id, orig_gender=s.get("_orig_gender", gender))
     dob = s["dob"]
     doj = s["doj"]
     fy_joined = s.get("fiscal_year_joined") or get_fy(doj)

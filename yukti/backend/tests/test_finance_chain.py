@@ -69,11 +69,24 @@ def test_data_answers_have_insights_chips_and_grounding(chain, i):
 
 
 def test_t1_profit_and_loss_numbers(chain):
+    import csv
+    from pathlib import Path
+
+    copa_v3 = Path(__file__).resolve().parents[3] / "data_bank" / "landing" / "sap" / "CO_PA_v3.csv"
+    expected_mn = {}
+    with copa_v3.open("r", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            if r.get("fy") == "FY26" and r.get("line_code") == "PL.PBT":
+                oid = r["object_id"]
+                expected_mn[oid] = expected_mn.get(oid, 0.0) + float(r["amount_inr_mn"])
+    expected_pbt = {oid: round(val / 10.0, 2) for oid, val in expected_mn.items()}
     rows = {r["field"]: r for r in chain[0]["visual"]["table"]["rows"]}
-    # Recalibrated synthetic field FY26 PBT in hrfin_gold.agg_field_pnl_summary / ssot_field_economics_360
-    # after top-down Schedule III corporate reconciliation (`financial_build/scripts/load_and_reconcile_bq.py`, commit e7de82f).
-    assert rows["Mumbai High South"]["pbt_cr"] == 7753.84 and rows["Champang"]["pbt_cr"] == -183.27
-    assert any(i["kind"] == "risk" and "Champang" in i["text"] for i in chain[0]["insights_v2"])
+    # P2H.7 RAS-reconciled field FY26 PBT in hrfin_gold.ssot_field_economics_360 (CO_PA_v3.csv)
+    assert rows["Mumbai High South"]["pbt_cr"] == expected_pbt["FLD-MHS"]
+    assert rows["Pasarlapudi"]["pbt_cr"] == expected_pbt["FLD-PAS"]
+    assert 6460.0 < rows["Mumbai High South"]["pbt_cr"] < 6470.0
+    assert -42.0 < rows["Pasarlapudi"]["pbt_cr"] < -40.0
+    assert any(i["kind"] == "risk" and "Pasarlapudi" in i["text"] for i in chain[0]["insights_v2"])
 
 
 def test_t2_capex_by_asset(chain):

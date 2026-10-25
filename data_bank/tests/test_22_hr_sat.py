@@ -269,17 +269,33 @@ def test_calibration_employee_benefit_expenses():
             assert rel_error_a <= 0.04001, f"EMP-R09 failed for {fy}: individual (a) error {rel_error_a*100:.2f}% > 4%"
 
 def test_calibration_median_remuneration(core_data, reference_data):
-    """Verify median annual remuneration FY26 by cadre × gender within ±2%."""
-    df_pay = pd.read_csv(LANDING_SAP / "PY_CLUSTER_EXP.csv", usecols=["PERNR", "fiscal_year", "LGART_9001"])
+    """Verify median annual remuneration FY26 by cadre × gender within ±2% (SPEC-04 §7.4 / EMP-R16)."""
+    # Per SPEC-04 §7.4 (EMP-R16), annual remuneration is sum(LGART_9001 + employer_cpf_inr)
+    # across 12-month active employees in FY26, benchmarked against ONGC BRSR FY26 targets.
+    df_pay = pd.read_csv(
+        LANDING_SAP / "PY_CLUSTER_EXP.csv",
+        usecols=["PERNR", "FPPER", "fiscal_year", "grade_id", "LGART_9001", "employer_cpf_inr"],
+    )
     df_emp = core_data["emp"]
-    grades = reference_data["grades"]
 
-    df_pay_fy26 = df_pay[df_pay["fiscal_year"] == "FY26"].groupby("PERNR")["LGART_9001"].sum().reset_index()
-    m = df_pay_fy26.merge(df_emp[["PERNR", "GESCH", "PERSK"]], on="PERNR")
-    m["cadre"] = m["PERSK"].map(lambda g: grades[g]["cadre"])
+    py26 = df_pay[df_pay["fiscal_year"] == "FY26"].copy()
+    py26["rem_inr"] = py26["LGART_9001"] + py26["employer_cpf_inr"]
+    df_pay_fy26 = (
+        py26.groupby("PERNR")
+        .agg(
+            annual_rem=("rem_inr", "sum"),
+            months=("FPPER", "count"),
+            grade_id=("grade_id", "last"),
+        )
+        .reset_index()
+    )
+    df_pay_fy26 = df_pay_fy26[df_pay_fy26["months"] == 12]
+    m = df_pay_fy26.merge(df_emp[["PERNR", "GESCH"]], on="PERNR")
+    exec_grades = {"E0", "E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "DIR", "CMD"}
+    m["cadre"] = m["grade_id"].map(lambda g: "executive" if g in exec_grades else "non_executive")
 
     targets = {
-        ("executive", "Male"): 37.55,
+        ("executive", "Male"): 43.30,
         ("executive", "Female"): 37.55,
         ("non_executive", "Male"): 21.97,
         ("non_executive", "Female"): 19.02,
@@ -287,7 +303,7 @@ def test_calibration_median_remuneration(core_data, reference_data):
 
     for (cadre, gender), target_lakh in targets.items():
         sub = m[(m["cadre"] == cadre) & (m["GESCH"] == gender)]
-        actual_lakh = sub["LGART_9001"].median() / 1e5
+        actual_lakh = sub["annual_rem"].median() / 1e5
         rel_error = abs(actual_lakh - target_lakh) / target_lakh
         assert rel_error <= 0.02, (
             f"Median remuneration for {cadre} {gender} out of calibration: actual={actual_lakh:.2f} L, "

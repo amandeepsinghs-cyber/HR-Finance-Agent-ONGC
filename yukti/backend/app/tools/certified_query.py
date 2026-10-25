@@ -485,34 +485,80 @@ def _run_local_certified_fallback(
                     "exempt_valid_tag": acc[2],
                     "non_exempt_due_transfer": acc[3],
                 })
-        elif qid == "C6" and (sap_dir / "CO_PA.csv").exists():
+        elif qid == "C6" and (sap_dir / "CO_PA_v3.csv").exists():
+            from app.semantic.entities import get_entities
             fy_target = str(merged_params.get("fiscal_year") or "FY26")
             ents = get_entities()
-            copa_path = sap_dir / "CO_PA.csv"
-            sib_copa = repo_root.parent / "HR and Finance_ONGC" / "data_bank" / "landing" / "sap" / "CO_PA.csv"
-            if sib_copa.exists():
-                copa_path = sib_copa
-            with copa_path.open("r", encoding="utf-8") as f:
+            copa_v3_path = sap_dir / "CO_PA_v3.csv"
+            co_path = repo_root / "data_bank" / "world_bible" / "reference" / "cost_objects.yaml"
+            co_map: Dict[str, Dict[str, Any]] = {}
+            if co_path.exists():
+                co_raw = yaml.safe_load(co_path.read_text(encoding="utf-8")) or {}
+                for co in co_raw.get("cost_objects") or []:
+                    if co.get("object_id"):
+                        co_map[str(co["object_id"])] = co
+
+            levy_codes = {
+                "N35.ROYALTY", "N35.OIDB_CESS", "N35.NCCD",
+                "N35.EXCISE_SAED", "N35.PORT_TRUST", "N35.OTHER_LEVIES",
+            }
+            opex_codes = {
+                "N35.STAFF_EXPENDITURE", "N35.WORKOVER_OPS", "N35.WATER_INJECTION_DESALTING",
+                "N35.CONSUMPTION_STORES_SPARES", "N35.POLLUTION_CONTROL", "N35.TRANSPORT_EXPENDITURE",
+                "N35.INSURANCE", "N35.POWER_FUEL", "N35.REPAIRS_MAINTENANCE", "N35.CONTRACTUAL_HIRE",
+                "N35.OTHER_PRODUCTION_EXP", "N35.TRANSPORT_FREIGHT_PRODUCTS", "N35.R_AND_D",
+                "N35.GAE", "N35.CSR", "N35.EXCHANGE_LOSS", "N35.MISC_EXP", "N35.FV_LOSS",
+            }
+            ebitda_deduct_codes = {
+                "PL.PURCHASES_TRADED", "PL.INVENTORY_CHANGE",
+                "PL.EXPL_SURVEY", "PL.EXPL_WELLS",
+            }
+            # Accumulate [rev_ops_mn, other_inc_seg_mn, levies_mn, opex_mn, eb_deduct_mn, pbt_mn] per field object_id
+            field_acc: Dict[str, List[float]] = {}
+            with copa_v3_path.open("r", encoding="utf-8") as f:
                 for r in _csv.DictReader(f):
-                    if str(r.get("line_type", "")).lower() != "field" or r.get("fiscal_year") != fy_target:
+                    if str(r.get("fy") or "").strip() != fy_target:
                         continue
-                    fid = r["field_id"]
-                    rev = float(r.get("gross_revenue_inr_cr") or 0.0)
-                    opex = float(r.get("total_opex_inr_cr") or 0.0)
-                    eb = float(r.get("ebitda_inr_cr") or 0.0)
-                    pbt = float(r.get("pbt_inr_cr") or 0.0)
-                    rows.append({
-                        "field_name": ents.friendly(fid),
-                        "asset": ents.friendly(r.get("asset_wc_id", "")),
-                        "onshore_offshore": "",
-                        "maturity": "",
-                        "gross_revenue_inr_cr": rev,
-                        "total_opex_inr_cr": opex,
-                        "ebitda_inr_cr": eb,
-                        "pbt_inr_cr": pbt,
-                        "pbt_margin_pct": round(pbt * 100.0 / rev, 1) if rev else None,
-                        "is_loss_making": pbt < 0,
-                    })
+                    oid = str(r.get("object_id") or "").strip()
+                    co = co_map.get(oid, {})
+                    otype = str(co.get("object_type") or r.get("object_type") or "").lower()
+                    if otype != "field":
+                        continue
+                    lc = str(r.get("line_code") or "").strip().upper()
+                    amt = float(r.get("amount_inr_mn") or 0.0)
+                    acc = field_acc.setdefault(oid, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                    if lc == "PL.REV_OPS":
+                        acc[0] += amt
+                    elif lc == "OTHER_INCOME_SEGMENT":
+                        acc[1] += amt
+                    elif lc in levy_codes:
+                        acc[2] += amt
+                    elif lc in opex_codes:
+                        acc[3] += amt
+                    elif lc in ebitda_deduct_codes:
+                        acc[4] += amt
+                    elif lc == "PL.PBT":
+                        acc[5] += amt
+
+            for oid, acc in field_acc.items():
+                co = co_map.get(oid, {})
+                rev = round(acc[0] / 10.0, 2)
+                opex = round(acc[3] / 10.0, 2)
+                eb = round((acc[0] + acc[1] - acc[2] - acc[3] - acc[4]) / 10.0, 2)
+                pbt = round(acc[5] / 10.0, 2)
+                wc_id = str(co.get("asset_wc_id") or "")
+                rows.append({
+                    "field_name": str(co.get("object_name") or ents.friendly(oid)),
+                    "asset": ents.friendly(wc_id) if wc_id else "",
+                    "onshore_offshore": str(co.get("segment") or "").lower(),
+                    "maturity": str(co.get("maturity") or ""),
+                    "gross_revenue_inr_cr": rev,
+                    "total_opex_inr_cr": opex,
+                    "ebitda_inr_cr": eb,
+                    "pbt_inr_cr": pbt,
+                    "pbt_margin_pct": round(pbt * 100.0 / rev, 1) if rev else None,
+                    "is_loss_making": pbt < 0,
+                })
             rows.sort(key=lambda x: -float(x["pbt_inr_cr"]))
             if rows:
                 schema_fields = list(rows[0].keys())

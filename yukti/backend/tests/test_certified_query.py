@@ -45,14 +45,16 @@ def test_certified_c1_execution():
 
 
 def test_certified_c6_execution():
-    """Verifies C6 execution returns Champang as the sole loss-making field in FY26."""
+    """Verifies C6 execution returns the 5 P2H.7 RAS-reconciled loss-making fields in FY26."""
     res = run_certified_query("C6")
     assert res.get("type") == "certified_query_result"
     assert res.get("query_id") == "C6"
     assert res.get("row_count") == 53
 
     loss_fields = [r["field_name"] for r in res.get("rows", []) if r.get("is_loss_making")]
-    assert loss_fields == ["Champang"], f"Expected only Champang loss-making, got: {loss_fields}"
+    assert loss_fields == ["Baramura", "Cambay", "Tatipaka", "Kuthalam", "Pasarlapudi"], (
+        f"Expected P2H.7 reconciled loss-making fields, got: {loss_fields}"
+    )
 
 
 def test_certified_parameter_override():
