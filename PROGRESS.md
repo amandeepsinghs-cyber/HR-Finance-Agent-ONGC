@@ -1,9 +1,9 @@
 # Yukti v3 — Progress Dashboard (`PROGRESS.md`)
 
-> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 25-Oct-2026 14:26 UTC · branch `v3/P0-stabilise` @ `be71f01`
+> **Generated — do not edit by hand.** Source of truth: [`UPGRADE_CHECKLIST.md`](UPGRADE_CHECKLIST.md), [`BUG_REGISTER.md`](BUG_REGISTER.md), [feature list](feature_list_and_verbatims/feature_list/feature_list.md), packet indexes, `docs/reviews/`, git. Regenerate: `python3 scripts/progress/build_progress.py` · Generated 25-Oct-2026 17:06 UTC · branch `v3/P0-stabilise` @ `5d42cfc`
 
 > [!IMPORTANT]
-> **Overall: 98% complete (weighted)** — 61/62 steps ✅ done, 0 in flight, 1 to do, 0 blocked. **2 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
+> **Overall: 100% complete (weighted)** — 62/62 steps ✅ done, 0 in flight, 0 to do, 0 blocked. **0 blocker bugs open.** Integrity: 0 error(s), 0 warning(s).
 
 ## 1. Phase progress
 
@@ -15,7 +15,7 @@
 | **P2F** | Finance diagnostics (V20) | `████████████████████` 100% | 6 | 0 | 0 | 0 | 0 | 0 | 6 |
 | **P3** | Agents + DCF (V22) | `████████████████████` 100% | 10 | 0 | 0 | 0 | 0 | 0 | 10 |
 | **P4** | Visual 9/10 + exports (V21) | `████████████████████` 100% | 9 | 0 | 0 | 0 | 0 | 0 | 9 |
-| **P5** | One brain, eval, redeploy | `█████████████████░░░` 83% | 5 | 0 | 0 | 0 | 1 | 0 | 6 |
+| **P5** | One brain, eval, redeploy | `████████████████████` 100% | 6 | 0 | 0 | 0 | 0 | 0 | 6 |
 
 ## 2. Next actionable steps (all dependencies ✅)
 
@@ -23,19 +23,19 @@
 
 | Step | Task | Owner | Unblocked by |
 |---|---|---|---|
-| P5.6 | Cloud Run redeploy from the green tree (sponsor go-ahead) | O + S | phase gates met |
+| — | Nothing is unblocked: finish the in-flight steps above (G4 reviews) first. | | |
 
 ## 3. Sponsor action items
 
 | ID | Action | Needed by | Status |
 |---|---|---|---|
-| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) — expires daily | P0.1, P1.6+ | ⬜ **Expired again 24-Oct** (needed for BigQuery steps + live app) |
+| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) — expires daily | P0.1, P1.6+ | ✅ Renewed 25-Oct |
 | SA-2 | Approve v3 doc set + OD-7…OD-18 | P0.8 | ✅ Done 23-Oct (D-43…D-54) |
-| SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ⬜ Pending |
-| SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |
+| SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ✅ Done 25-Oct |
+| SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ✅ Done 25-Oct |
 | SA-5 | Review the 10 finance action levers + assumption % (SPEC-08 §7, D-50) | P2F.6 | ⬜ Pending |
 | SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ✅ P0 signed off 23-Oct 09:52 · ⬜ P1 next |
-| SA-7 | Go-ahead for the Cloud Run redeploy (**note:** deploy with `max-instances=1` until exports move to a GCS store; P4.6 G4 r2: the turn registry and export files are per-instance and fail closed with 403 across instances) | P5.6 | ⬜ Pending |
+| SA-7 | Go-ahead for the Cloud Run redeploy (**note:** deploy with `max-instances=1` until exports move to a GCS store; P4.6 G4 r2: the turn registry and export files are per-instance and fail closed with 403 across instances) | P5.6 | ✅ Done 25-Oct: approved; live rev `yukti-ai-00006-bap` (max-instances=1, `_v3` datasets) |
 
 ## 4. Requirement coverage by verbatim (V1–V23)
 
@@ -49,7 +49,7 @@
 | V11 | FEAT-001, FEAT-002, FEAT-003, FEAT-009 | ✅ ✅ ✅ ✅ |  | ✅ |
 | V12 | FEAT-004, FEAT-005 | ✅ ✅ |  | ✅ |
 | V13 | FEAT-006, FEAT-009, FEAT-010, FEAT-011, FEAT-021 | ✅ ✅ ✅ ✅ ✅ |  | ✅ |
-| V14 | FEAT-007, FEAT-010, FEAT-011, FEAT-014 | ✅ ✅ ✅ 🟡 | P5.6 | 🟡 |
+| V14 | FEAT-007, FEAT-010, FEAT-011, FEAT-014 | ✅ ✅ ✅ ✅ |  | ✅ |
 | V15 | FEAT-015, FEAT-026 | ✅ ✅ |  | ✅ |
 | V16 | FEAT-016 | ✅ |  | ✅ |
 | V17 | FEAT-017, FEAT-031 | ✅ ✅ |  | ✅ |
@@ -64,7 +64,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 ## 5. Features (v3 status from the feature list)
 
-✅ 30 · 🟡 2 · 🔴 0 · ⛔ 0 = 32
+✅ 31 · 🟡 1 · 🔴 0 · ⛔ 0 = 32
 
 | Feature | Status | Steps done / total |
 |---|---|---|
@@ -81,7 +81,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 | FEAT-011 Insight engine & drill-down chips | ✅ | 1/1 |
 | FEAT-012 Reliability, safety, performance | ✅ | 0/0 |
 | FEAT-013 Voice pipeline quality (no duplicate turns) | 🟡 | 2/2 |
-| FEAT-014 Eval-gated release & Cloud Run redeploy | 🟡 | 4/5 |
+| FEAT-014 Eval-gated release & Cloud Run redeploy | ✅ | 5/5 |
 | FEAT-015 Any-chart re-presentation & chart excellence | ✅ | 0/0 |
 | FEAT-016 AI aura visual language | ✅ | 1/1 |
 | FEAT-017 Eleven-persona matrix + function split + `self` scope | ✅ | 2/2 |
@@ -103,7 +103,7 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 ## 6. Bugs
 
-- **Blockers:** 14 total — 🔴 open 1 · 🟠 in progress 1 · ↩ regressed 0 · ✅ closed 12
+- **Blockers:** 14 total — 🔴 open 0 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 14
 - **Important:** 33 total — 🔴 open 1 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 32
 - **Cosmetic:** 1 total — 🔴 open 0 · 🟠 in progress 0 · ↩ regressed 0 · ✅ closed 1
 
@@ -111,8 +111,6 @@ _Not mapped to a feature (process / question-bank / naming verbatims, tracked in
 
 | Bug | Status | Symptom | Closing step(s) | Step status |
 |---|---|---|---|---|
-| BUG-13 | open | Cloud Run = baseline rev `00001`; `financial_build/` not in the image | P0.9, P5.6 | P0.9:✅ P5.6:⬜ |
-| BUG-35 | in_progress | Container image cannot build: Dockerfile `lint:tokens` gate fails on raw colours | P4.9, P5.6 | P4.9:✅ P5.6:⬜ |
 
 ## 7. Recent step commits
 

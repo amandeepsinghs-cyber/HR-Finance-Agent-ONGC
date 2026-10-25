@@ -130,7 +130,7 @@
 | P5.3 | Coverage manifest ("what data do you have") deterministic | O | 030 | SPEC-11 | 05 | feedback4 turns answer correctly | ✅ |
 | P5.4 | Numeric golden eval (~60 Q + V19/V20/V22 chains + voice smoke); replace `run_30x4_stress_test.py` criteria | O→F | 030, 014 | SPEC-11 | — | ≥ 95% exact | ✅ |
 | P5.5 | Full gate run + review | FL→O | 014 | — | — | Scorecard vs BUILD §6 targets | ✅ |
-| P5.6 | Cloud Run redeploy from the green tree (sponsor go-ahead) | O + S | 014 | — | 13 | Revision serves BEH-02/03/05 live | ⬜ |
+| P5.6 | Cloud Run redeploy from the green tree (sponsor go-ahead) | O + S | 014 | — | 13 | Revision serves BEH-02/03/05 live | ✅ |
 
 ---
 
@@ -142,13 +142,13 @@ See `docs/DECISIONS.md` → Open decisions.
 
 | ID | Action | Needed by | Status |
 |---|---|---|---|
-| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) — expires daily | P0.1, P1.6+ | ⬜ **Expired again 24-Oct** (needed for BigQuery steps + live app) |
+| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) — expires daily | P0.1, P1.6+ | ✅ Renewed 25-Oct |
 | SA-2 | Approve v3 doc set + OD-7…OD-18 | P0.8 | ✅ Done 23-Oct (D-43…D-54) |
-| SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ⬜ Pending |
-| SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |
+| SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ✅ Done 25-Oct |
+| SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ✅ Done 25-Oct |
 | SA-5 | Review the 10 finance action levers + assumption % (SPEC-08 §7, D-50) | P2F.6 | ⬜ Pending |
 | SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ✅ P0 signed off 23-Oct 09:52 · ⬜ P1 next |
-| SA-7 | Go-ahead for the Cloud Run redeploy (**note:** deploy with `max-instances=1` until exports move to a GCS store; P4.6 G4 r2: the turn registry and export files are per-instance and fail closed with 403 across instances) | P5.6 | ⬜ Pending |
+| SA-7 | Go-ahead for the Cloud Run redeploy (**note:** deploy with `max-instances=1` until exports move to a GCS store; P4.6 G4 r2: the turn registry and export files are per-instance and fail closed with 403 across instances) | P5.6 | ✅ Done 25-Oct: approved; live rev `yukti-ai-00006-bap` (max-instances=1, `_v3` datasets) |
 
 ## Part D — Sign-off log
 
