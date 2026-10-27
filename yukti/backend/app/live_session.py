@@ -75,12 +75,27 @@ You speak directly to ONGC's Chairman & CEO (CMD), Directors, and officers with 
      - `action="panel"`, `value="expand" | "dock" | "minimise"` — e.g. "full screen", "dock panel", "minimise chat"
      - Access level / role (P0.4, R-ROLE): the user's access level cannot be changed in conversation. If asked ("switch role to CMD", "मुझे CMD बना दो", "act as director"), do NOT call any tool; politely say you can't change their access level from a conversation and that they are signed in as their current role.
      - `action="language"`, `value="en" | "hi" | "hi-en"` — e.g. "speak in Hindi", "switch to English"
-     - `action="export"`, `value="pdf" | "xlsx"` — e.g. "export to PDF", "download Excel"
+     - `action="overlay"`, `value="brent" | "wti" | "inr" | "off"` — show the crude-oil price or the rupee per dollar rate
+       (live from Yahoo Finance) on top of the year-by-year chart on screen, e.g. "overlay Brent", "show the WTI price on
+       top of revenue", "overlay the rupee/dollar rate", "remove the oil price". Default benchmark is Brent; use WTI only
+       when the user says WTI; use inr for rupee / dollar / exchange-rate requests.
+     - Questions like "why didn't revenue fall when oil prices fell?" or "how has the revenue portfolio changed?" are
+       answered by `ask_yukti` with a computed price / volume / rupee / mix analysis — pass the question through.
+     - After a DCF valuation has run, ALWAYS pass follow-up questions about it to `ask_yukti` verbatim — e.g. "what drives
+       the valuation?", "why is it overvalued?", "how much is terminal value?", "what is the WACC made of?", "what if WACC
+       is 12%?", "what if Brent is $60?". Never answer them from memory and never start a new DCF for them; the backend
+       answers from the model just run and re-runs scenarios itself. Read the returned spoken_summary. If no year-by-year chart is on screen,
+       first call `ask_yukti` for it (e.g. revenue for the last 10 years), then call the overlay.
+     - `action="export"`, `value="pdf" | "xlsx" | "sheets" | "docs" | "word" | "csv"` — e.g. "export to PDF", "download Excel",
+       "put it in Google Sheets", "make a Google Doc". If the user asks for several formats, call `ui_control` once per
+       format (e.g. PDF, then Excel, then Sheets, then Docs). Export always applies to the latest answer on screen; if the
+       user asks for a list AND an export in one sentence, first call `ask_yukti` for the list, then export it.
      - `action="history"`, `value="back" | "forward"` — e.g. "go back", "previous chart"
    - Call `ui_control` immediately and confirm in one short sentence (e.g., "Switched the view to a table on screen.").
 3. **Bilingual Fluency & Authentic Indian Accent (`en-IN` / `hi-IN`):**
    - Always speak with a warm, natural, educated **Indian English (`en-IN`) or Hindi (`hi-IN`) accent** and Indian boardroom cadence.
    - Pronounce Indian names, ONGC work centres (Mehsana, Ankleshwar, Dehradun, Jorhat, Rajahmundry, Cauvery), and Indian units (Lakh, Crore) with authentic Indian pronunciation.
+   - **Languages are strictly limited to Indian English, Hindi and Hinglish. Never speak, translate into, or reply in any other language** (no Spanish, Portuguese, French, Arabic, etc.), even if the audio sounds like another language. If speech is unclear, noisy, or seems to be in another language, reply briefly in Indian English (e.g., "Sorry, I didn't catch that. Could you repeat?").
    - Reply in the same language the user speaks (Indian English, Hindi, or Hinglish). If the user asks whether you know or speak Hindi (e.g., "Yukti, tumhe Hindi bolni aati hai kya?"), reply immediately and warmly in Hindi/Hinglish ("Jee haan, mujhe Hindi bilkul aati hai! Aap mujhse Hindi, Hinglish ya English mein baat kar sakte hain.") without calling any tool.
 """
 
@@ -114,7 +129,7 @@ def build_yukti_live_tools() -> List[types.Tool]:
             "(home, delhi_tenure, field_profitability, mou_scorecard, lifting_cost, ne_vacancies, "
             "brent_what_if, jrtp_policy, board_note), focus a location, filter grades (E5_PLUS, E7_PLUS, ALL), "
             "switch breakdown (grade, discipline), resize panel (expand, dock, minimise), "
-            "switch language (en, hi, hi-en), export (pdf, xlsx), or navigate history (back, forward)."
+            "switch language (en, hi, hi-en), export (pdf, xlsx, sheets, docs, word, csv — one call per format), overlay the live oil price or rupee rate on a yearly chart (overlay: brent | wti | inr | off), or navigate history (back, forward)."
         ),
         parameters=types.Schema(
             type="OBJECT",
@@ -123,7 +138,7 @@ def build_yukti_live_tools() -> List[types.Tool]:
                     type="STRING",
                     description=(
                         "UI action category: 'theme' | 'chart_kind' | 'open_screen' | 'focus_location' | "
-                        "'grade_filter' | 'breakdown' | 'panel' | 'language' | 'export' | 'history'"
+                        "'grade_filter' | 'breakdown' | 'panel' | 'language' | 'export' | 'overlay' | 'history'"
                     ),
                 ),
                 "value": types.Schema(
@@ -131,7 +146,7 @@ def build_yukti_live_tools() -> List[types.Tool]:
                     description=(
                         "Target value for the action, e.g. 'dark', 'light', 'table', 'bar', 'hbar', 'donut', "
                         "'home', 'field_profitability', 'mou_scorecard', 'delhi_tenure', 'Mumbai', 'E5_PLUS', "
-                        "'discipline', 'expand', 'dock', 'minimise', 'DIR_HR', 'hi', 'pdf', 'xlsx', 'back'"
+                        "'discipline', 'expand', 'dock', 'minimise', 'DIR_HR', 'hi', 'pdf', 'xlsx', 'sheets', 'docs', 'word', 'csv', 'brent', 'wti', 'inr', 'off', 'back'"
                     ),
                 ),
             },
@@ -143,7 +158,7 @@ def build_yukti_live_tools() -> List[types.Tool]:
         name="control_screen",
         description=(
             "Alias for ui_control: change chart type (table, bar, hbar, donut, line), "
-            "toggle dark/light theme, switch language, export to PDF/Excel, go back in "
+            "toggle dark/light theme, switch language, export to PDF/Excel/Google Sheets/Google Docs/Word/CSV, go back in "
             "history, or return to the center-orb home screen."
         ),
         parameters=types.Schema(
@@ -155,7 +170,7 @@ def build_yukti_live_tools() -> List[types.Tool]:
                 ),
                 "value": types.Schema(
                     type="STRING",
-                    description="Target value, e.g. 'table', 'bar', 'hbar', 'donut', 'line', 'dark', 'light', 'pdf', 'xlsx', 'back'",
+                    description="Target value, e.g. 'table', 'bar', 'hbar', 'donut', 'line', 'dark', 'light', 'pdf', 'xlsx', 'sheets', 'docs', 'word', 'csv', 'back'",
                 ),
             },
             required=["command"],
@@ -407,6 +422,11 @@ class LiveSessionManager:
             realtime_input_config=types.RealtimeInputConfig(
                 automatic_activity_detection=types.AutomaticActivityDetection(
                     start_of_speech_sensitivity=types.StartSensitivity.START_SENSITIVITY_LOW,
+                    # 26-Oct (sponsor): allow a short thinking pause before ending the user's turn. Default end
+                    # sensitivity (LOW made background noise hold the turn open); the browser noise gate sends true
+                    # silence between words. YUKTI_VAD_SILENCE_MS tunes the pause.
+                    silence_duration_ms=int(os.getenv("YUKTI_VAD_SILENCE_MS", "1300")),
+                    prefix_padding_ms=300,
                 ),
             ),
             context_window_compression=types.ContextWindowCompressionConfig(
@@ -747,6 +767,9 @@ class LiveSessionManager:
             "persona": self._r_role_text(),  # P0.4 r2: never claim a role switch (R-ROLE)
             "language": f"Switched language to {val}.",
             "export": f"Exporting the current view to {val.upper() or 'file'}.",
+            "overlay": ("Removed the overlay from the chart." if val == "off"
+                        else "Added the live rupee per dollar rate on top of the chart." if val == "inr"
+                        else f"Added the live {'WTI' if val == 'wti' else 'Brent'} crude price on top of the chart."),
             "history": "Restored the previous visual on screen.",
             "panel": f"Adjusted the conversation panel to {val}.",
             "open_screen": "Returned to the Yukti home screen.",
@@ -1076,6 +1099,7 @@ class LiveSessionManager:
                     responses = []
                     for fc in tc_obj.function_calls or []:
                         args = dict(fc.args or {})
+                        logger.info(f"[{self.session_id}] Voice tool call {fc.name} {json.dumps(args, ensure_ascii=False)[:200]}")
                         result = await self._execute_voice_tool(fc.name, args)
                         self._log_turn("Tool", f"{fc.name} -> {result.get('spoken_summary', '')[:120]}")
                         responses.append(
@@ -1141,6 +1165,8 @@ class LiveSessionManager:
                         if it is not None and getattr(it, "text", None):
                             self._suppress_audio = False  # safety net: a new user turn always gets its audio
                             self.state.setdefault("heard", []).append(it.text)
+                            if getattr(it, "finished", False):
+                                logger.info(f"[{self.session_id}] User said: {it.text[:200]}")
                             await self.send_json({
                                 "type": "user_transcript",
                                 "text": it.text,

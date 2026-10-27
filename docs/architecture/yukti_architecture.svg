@@ -1,0 +1,303 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1520 620" width="1520" height="620" font-family="Google Sans, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <pattern id="bg-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#CBD5E1" fill-opacity="0.45"/>
+    </pattern>
+    <filter id="shadow-md" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.07"/>
+    </filter>
+    <filter id="shadow-sm" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.05"/>
+    </filter>
+
+    <!-- Official Google Cloud Icon (google3/googledata/logos/src/product_logos/product_logos/google_cloud/logo/192px.svg) -->
+    <symbol id="icon-google-cloud" viewBox="0 0 192 192">
+      <path fill="#EA4335" d="M121.11,60.87l5.89,0.11l16.01-16.01l0.78-6.78C131.07,26.87,114.33,19.98,96,19.98c-33.19,0-61.18,22.57-69.48,53.17c1.75-1.21,5.48-0.31,5.48-0.31l32-5.26c0,0,1.66-2.72,2.47-2.55C73.79,57.02,84.32,51.98,96,51.98C105.5,51.98,114.24,55.32,121.11,60.87z"/>
+      <path fill="#4285F4" d="M165.5,73.19c-3.71-13.72-11.39-25.82-21.72-35.01l-22.68,22.68C130.18,68.2,136,79.42,136,91.98v4c11.03,0,20,8.97,20,20s-8.97,20-20,20H96L92,140v24l4,3.98h40c28.67,0,52-23.33,52-52C188,98.25,179.08,82.58,165.5,73.19z"/>
+      <path fill="#34A853" d="M56,167.98h39.97v-32H56c-2.94,0-5.72-0.65-8.24-1.8L42,135.95l-16.02,16.02l-1.4,5.41C33.31,164.02,44.2,167.98,56,167.98z"/>
+      <path fill="#FBBC05" d="M56,63.98c-28.67,0-52,23.33-52,52c0,16.88,8.09,31.91,20.6,41.41l23.19-23.19C40.85,131.06,36,124.08,36,115.98c0-11.03,8.97-20,20-20c8.1,0,15.08,4.85,18.22,11.79l23.19-23.19C87.91,72.07,72.88,63.98,56,63.98z"/>
+    </symbol>
+
+    <!-- Official Gemini Spark Icon (google3/googledata/logos/src/product_logos/product_logos/gemini_2025_blue/logo/192px.svg) -->
+    <linearGradient id="gemini-spark-grad" x1="63.88" y1="262.92" x2="143.5" y2="330.05" gradientTransform="translate(0 386) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#346bf1"/>
+      <stop offset=".37" stop-color="#3186ff"/>
+      <stop offset=".78" stop-color="#4fa0ff"/>
+    </linearGradient>
+    <symbol id="icon-gemini" viewBox="0 0 192 192">
+      <path d="M164.93,86.68c-13.56-5.84-25.42-13.84-35.6-24.01-10.17-10.17-18.18-22.04-24.01-35.6-2.24-5.2-4.04-10.54-5.42-16.02-.45-1.79-2.06-3.05-3.9-3.05s-3.45,1.26-3.9,3.05c-1.38,5.48-3.18,10.81-5.42,16.02-5.84,13.56-13.84,25.43-24.01,35.6-10.17,10.17-22.04,18.18-35.6,24.01-5.2,2.24-10.54,4.04-16.02,5.42-1.79.45-3.05,2.06-3.05,3.9s1.26,3.45,3.05,3.9c5.48,1.38,10.81,3.18,16.02,5.42,13.56,5.84,25.42,13.84,35.6,24.01,10.17,10.17,18.18,22.04,24.01,35.6,2.24,5.2,4.04,10.54,5.42,16.02.45,1.79,2.06,3.05,3.9,3.05s3.45-1.26,3.9-3.05c1.38-5.48,3.18-10.81,5.42-16.02,5.84-13.56,13.84-25.42,24.01-35.6,10.17-10.17,22.04-18.18,35.6-24.01,5.2-2.24,10.54-4.04,16.02-5.42,1.79-.45,3.05-2.06,3.05-3.9s-1.26-3.45-3.05-3.9c-5.48-1.38-10.81-3.18-16.02-5.42Z" fill="url(#gemini-spark-grad)"/>
+    </symbol>
+
+    <!-- Official Gemini platform / Model Garden Icon (google3/devsite/two/tenants/clouddocs/static/images/icons/products/vertex-ai-color.svg) -->
+    <symbol id="icon-gemini-platform" viewBox="0 0 512 512">
+      <path d="M128,244.99c-8.84,0-16-7.16-16-16v-95.97c0-8.84,7.16-16,16-16s16,7.16,16,16v95.97c0,8.84-7.16,16-16,16Z" fill="#ea4335"/>
+      <path d="M256,458c-2.98,0-5.97-.83-8.59-2.5l-186-122c-7.46-4.74-9.65-14.63-4.91-22.09,4.75-7.46,14.64-9.65,22.09-4.91l177.41,116.53,177.41-116.53c7.45-4.74,17.34-2.55,22.09,4.91,4.74,7.46,2.55,17.34-4.91,22.09l-186,122c-2.62,1.67-5.61,2.5-8.59,2.5Z" fill="#fbbc04"/>
+      <path d="M256,388.03c-8.84,0-16-7.16-16-16v-73.06c0-8.84,7.16-16,16-16s16,7.16,16,16v73.06c0,8.84-7.16,16-16,16Z" fill="#34a853"/>
+      <circle cx="128" cy="70" r="16" fill="#ea4335"/>
+      <circle cx="128" cy="292" r="16" fill="#ea4335"/>
+      <path d="M384.23,308.01c-8.82,0-15.98-7.14-16-15.97l-.23-94.01c-.02-8.84,7.13-16.02,15.97-16.03h.04c8.82,0,15.98,7.14,16,15.97l.23,94.01c.02-8.84-7.13,16.02-15.97,16.03h-.04Z" fill="#4285f4"/>
+      <circle cx="384" cy="70" r="16" fill="#4285f4"/>
+      <circle cx="384" cy="134" r="16" fill="#4285f4"/>
+      <path d="M320,220.36c-8.84,0-16-7.16-16-16v-103.02c0-8.84,7.16-16,16-16s16,7.16,16,16v103.02c0,8.84-7.16,16-16,16Z" fill="#fbbc04"/>
+      <circle cx="256" cy="171" r="16" fill="#34a853"/>
+      <circle cx="256" cy="235" r="16" fill="#34a853"/>
+      <circle cx="320" cy="265" r="16" fill="#fbbc04"/>
+      <circle cx="320" cy="329" r="16" fill="#fbbc04"/>
+      <path d="M192,217.36c-8.84,0-16-7.16-16-16v-100.02c0-8.84,7.16-16,16-16s16,7.16,16,16v100.02c0,8.84-7.16,16-16,16Z" fill="#fbbc04"/>
+      <circle cx="192" cy="265" r="16" fill="#fbbc04"/>
+      <circle cx="192" cy="329" r="16" fill="#fbbc04"/>
+    </symbol>
+
+    <!-- Official Google Cloud Agents Icon (google3/cloud/solutions/project_ace/skills/experimental/creating_gcp_diagrams/assets/category-icons/category_icons/agents/svg/Agents-512-color.svg) -->
+    <symbol id="icon-agents" viewBox="0 0 512 512">
+      <path d="M256.083,438.958h-.025c-6.531-.01-12.403-3.982-14.831-10.046-.21-.521-21.989-53.918-63.233-94.966-41.269-41.072-94.336-62.688-94.867-62.902-6.066-2.438-10.046-8.326-10.039-14.865.007-6.537,3.983-12.415,10.053-14.842.964-.39,53.504-21.883,94.854-63.036,41.476-41.278,63-94.697,63.213-95.231,2.422-6.092,8.316-10.098,14.871-10.098h.017c6.562.007,12.456,4.012,14.867,10.113.206.521,21.716,53.924,63.206,95.216,41.538,41.341,94.333,62.827,94.861,63.039,6.064,2.436,10.045,8.316,10.045,14.852s-3.969,12.416-10.033,14.851c-.52.209-53.737,21.965-94.874,62.904-41.11,40.916-63.029,94.463-63.245,94.999-2.444,6.048-8.317,10.013-14.838,10.013h-.002ZM125.551,256.183c21.069,11.566,49.712,29.899,75.016,55.082,25.399,25.278,43.886,54.093,55.524,75.267,11.659-21.198,30.162-50.046,55.502-75.267,25.252-25.131,53.939-43.484,75.035-55.069-21.021-11.563-49.611-29.911-75.035-55.213-25.47-25.349-43.907-54.14-55.514-75.348-11.608,21.21-30.048,50.005-55.512,75.348-25.409,25.288-53.996,43.635-75.017,55.2h0Z" fill="#4285f4"/>
+      <path d="M394.5,181c-4.095,0-8.189-1.562-11.313-4.687l-47.5-47.5c-6.249-6.248-6.249-16.379,0-22.627l47.5-47.5c6.248-6.249,16.379-6.249,22.627,0l47.5,47.5c6.249,6.248,6.249,16.379,0,22.627l-47.5,47.5c-3.124,3.124-7.219,4.687-11.313,4.687h-.001ZM369.627,117.5l24.873,24.873,24.873-24.873-24.873-24.873-24.873,24.873Z" fill="#9aa0a6"/>
+      <path d="M117.5,181c-4.095,0-8.189-1.562-11.313-4.687l-47.5-47.5c-6.249-6.248-6.249-16.379,0-22.627l47.5-47.5c6.248-6.249,16.379-6.249,22.627,0l47.5,47.5c6.249,6.248,6.249,16.379,0,22.627l-47.5,47.5c-3.124,3.124-7.219,4.687-11.313,4.687h0ZM92.627,117.5l24.873,24.873,24.873-24.873-24.873-24.873-24.873,24.873Z" fill="#4285f4"/>
+      <path d="M394.5,458c-4.095,0-8.189-1.562-11.313-4.687l-47.5-47.5c-6.249-6.248-6.249-16.379,0-22.627l47.5-47.5c6.248-6.248,16.379-6.248,22.627,0l47.5,47.5c6.249,6.248,6.249,16.379,0,22.627l-47.5,47.5c-3.124,3.124-7.219,4.687-11.313,4.687h-.001ZM369.627,394.5l24.873,24.873,24.873-24.873-24.873-24.873-24.873,24.873Z" fill="#4285f4"/>
+      <path d="M117.5,458c-4.095,0-8.189-1.562-11.313-4.687l-47.5-47.5c-6.249-6.248-6.249-16.379,0-22.627l47.5-47.5c6.248-6.248,16.379-6.248,22.627,0l47.5,47.5c6.249,6.248,6.249,16.379,0,22.627l-47.5,47.5c-3.124,3.124-7.219,4.687-11.313,4.687h0ZM92.627,394.5l24.873,24.873,24.873-24.873-24.873-24.873-24.873,24.873Z" fill="#9aa0a6"/>
+      <path d="M334.166,333.946c41.137-40.94,94.354-62.695,94.874-62.904,6.064-2.435,10.032-8.315,10.033-14.851,0-6.535-3.98-12.416-10.045-14.851-.528-.212-53.323-21.698-94.861-63.039-.072-.071-.15-.131-.223-.2l-22.604,22.604c.087.091.163.189.253.278,25.424,25.302,54.015,43.649,75.035,55.213-21.096,11.585-49.783,29.939-75.035,55.069-25.34,25.221-43.843,54.068-55.502,75.267-11.622-21.144-30.074-49.907-55.418-75.16l-22.628,22.628c41.21,41.041,62.971,94.392,63.181,94.913,2.428,6.064,8.3,10.035,14.831,10.046h.025c6.521,0,12.393-3.966,14.838-10.013.216-.536,22.135-54.083,63.245-94.999h.001Z" fill="#9aa0a6"/>
+    </symbol>
+
+    <!-- Official Google Cloud AI / Machine Learning Icon (google3/devsite/two/tenants/clouddocs/static/images/icons/categories/ai-and-machine-learning-color.svg) -->
+    <symbol id="icon-aiml" viewBox="0 0 512 512">
+      <path fill="#4285f4" d="M377.2,216.1c-4.1,0-8.2-1.6-11.3-4.7l-65.3-65.3c-3-3-4.7-7.1-4.7-11.3s1.7-8.3,4.7-11.3l65.3-65.3c3-3,7.1-4.7,11.3-4.7s8.3,1.7,11.3,4.7l65.3,65.3c6.2,6.2,6.2,16.4,0,22.6l-65.3,65.3c-3.1,3.1-7.2,4.7-11.3,4.7h0ZM334.6,134.8l42.6,42.6,42.6-42.6-42.6-42.7-42.6,42.7Z"/>
+      <path fill="#9aa0a6" d="M300.7,146.1c-6.2-6.2-6.2-16.4,0-22.6l65.3-65.3c6.2-6.2,16.4-6.2,22.6,0l53.9,54-22.6,22.6-42.6-42.7-65.3,65.3s-8.1-8.2-11.3-11.4h0Z"/>
+      <path fill="#4285f4" d="M228,458.5h0c-6.5,0-12.4-4-14.8-10-.2-.5-20.8-51-59.8-89.9-39.1-38.9-89.3-59.3-89.8-59.5-6.1-2.4-10-8.3-10-14.9,0-6.5,4-12.4,10-14.8h0c.5-.2,50.5-20.6,89.8-59.7,39.2-39.1,59.6-89.6,59.8-90.1,2.4-6.1,8.3-10.1,14.9-10.1h0c6.6,0,12.5,4,14.9,10.1.2.5,20.6,51,59.8,90.1,39.3,39.1,89.3,59.5,89.8,59.7,6.1,2.4,10,8.3,10,14.9s-4,12.4-10,14.9c-.5.2-50.9,20.8-89.8,59.5-38.9,38.7-59.6,89.4-59.9,89.9-2.4,6-8.3,10-14.8,10h0ZM105.8,284.2c19.9,11,46.5,28.3,70.1,51.7,23.7,23.5,41,50.3,52.1,70.4,11.1-20,28.5-46.9,52.1-70.4,23.5-23.4,50.2-40.6,70.1-51.7-19.9-11-46.5-28.3-70.1-51.8-23.7-23.6-41-50.4-52.1-70.4-11.1,20.1-28.4,46.8-52.1,70.4-23.7,23.6-50.2,40.8-70.1,51.8h0Z"/>
+      <path fill="#9aa0a6" d="M392.5,269.3c-.5-.2-50.5-20.6-89.8-59.7,0,0,0,0-.1-.1l-22.6,22.6c0,0,.1.1.2.2,23.7,23.6,50.2,40.8,70.1,51.8-20,11.1-46.6,28.3-70.1,51.7-23.6,23.5-41,50.3-52.1,70.4-11.1-20-28.4-46.7-52-70.2l-22.6,22.6c38.9,38.8,59.5,89.3,59.7,89.8,2.4,6.1,8.3,10,14.8,10h0c6.5,0,12.4-4,14.8-10,.2-.5,21-51.2,59.9-89.9,38.9-38.7,89.3-59.3,89.8-59.5,6.1-2.4,10-8.3,10-14.9s-4-12.4-10-14.9h0Z"/>
+    </symbol>
+
+    <!-- Official Google Cloud Run Icon (google3/devsite/two/tenants/clouddocs/static/images/icons/products/run-color.svg) -->
+    <symbol id="icon-cloud-run" viewBox="0 0 512 512">
+      <path fill="#FBBC04" d="M144.4,272c-6.4,0-12.4-3.8-14.9-10.1L55.4,75.9c-3.3-8.2.7-17.5,8.9-20.8,8.2-3.3,17.5.7,20.8,8.9l74.2,186c3.3,8.2-.7,17.5-8.9,20.8-1.9.8-3.9,1.1-5.9,1.1h-.1Z"/>
+      <path fill="#EA4335" d="M256,272c-6.4,0-12.4-3.8-14.9-10.1l-74.1-186c-2.6-6.6-.6-14.1,5-18.5s13.4-4.5,19.2-.4l260.1,186c7.2,5.1,8.9,15.1,3.7,22.3s-15.1,8.9-22.3,3.7L216.9,114.7l54,135.3c3.3,8.2-.7,17.5-8.9,20.8-1.9.8-4,1.1-5.9,1.1h-.1Z"/>
+      <path fill="#34A853" d="M127.2,256l-72,180c-3.3,8.2.7,17.5,8.9,20.8,3.1,1.2,4,1.1,5.9,1.1,6.3,0,12.4-3.8,14.9-10.1l74.4-186c.8-2,1.1-4,1.1-5.9h-33.2Z"/>
+      <path fill="#4285F4" d="M414.5,256l-197.7,141.2,54.1-135.3c.8-2,1.1-4,1.1-5.9h-33.2l-72,180c-2.6,6.6-.6,14.1,5,18.5,2.9,2.3,6.4,3.4,9.9,3.4s6.5-1,9.3-3l260.4-186c4.4-3.1,6.7-8,6.7-13h-43.6Z"/>
+    </symbol>
+
+    <!-- Official Google Cloud Workload Identity Pool / Federation Icon (google3/googledata/logos/src/gcp/product_icons/workload_identity_pool/colors/512px.svg) -->
+    <symbol id="icon-wif" viewBox="0 0 512 512">
+      <path d="M432,400H80a32.041,32.041,0,0,1-32-32V144a32.041,32.041,0,0,1,32-32H432a32.041,32.041,0,0,1,32,32V368A32.041,32.041,0,0,1,432,400ZM80,144V368H432.031L432,144Z" fill="#4285f4"/>
+      <rect x="303.719" y="175.75" width="96" height="16" fill="#669df6"/>
+      <rect x="303.719" y="223.813" width="96" height="16" fill="#669df6"/>
+      <rect x="303.719" y="271.875" width="96" height="16" fill="#669df6"/>
+      <rect x="303.719" y="319.875" width="96" height="16" fill="#669df6"/>
+      <path d="M271.813,239.812v-16H255.8V191.844H223.766V175.75h-16v16.094H175.7V175.75h-16v16.094H127.8v31.968H111.828v16H127.8v32.063H111.828v16H127.8v31.969H159.7v16.015h16V319.844h32.063v16.015h16V319.844H255.8V287.875h16.016v-16H255.8V239.812ZM239.8,303.844h-96v-96h96Z" fill="#aecbfa"/>
+      <path d="M223.766,287.422H159.609v-63.61h64.157Zm-48.157-16h32.157v-31.61H175.609Z" fill="#4285f4"/>
+    </symbol>
+
+    <!-- Official Google Cloud Databases Icon (google3/devsite/two/tenants/clouddocs/static/images/icons/categories/databases-color.svg) -->
+    <symbol id="icon-databases" viewBox="0 0 512 512">
+      <path fill="#4285f4" d="M256,490c-44.2,0-85.9-11.3-117.6-31.8-33.8-21.9-52.4-51.7-52.4-84v-118.2h32v118.2c0,21,13.4,41.3,37.8,57.1,26.5,17.2,62.1,26.7,100.2,26.7s73.7-9.5,100.2-26.7c24.4-15.8,37.8-36.1,37.8-57.1h32c0,32.3-18.6,62.1-52.4,84-31.6,20.5-73.4,31.8-117.6,31.8Z"/>
+      <path fill="#9aa0a6" d="M256,381c-44.2,0-85.9-11.3-117.6-31.8-33.8-21.9-52.4-51.7-52.4-84v-127.3h32v127.3c0,21,13.4,41.3,37.8,57.1,26.5,17.2,62.1,26.7,100.2,26.7s73.7-9.5,100.2-26.7c24.4-15.8,37.8-36.1,37.8-57.1h32c0,32.3-18.6,62.1-52.4,84-31.6,20.5-73.4,31.8-117.6,31.8Z"/>
+      <path fill="#9aa0a6" d="M256,490v-32c38.1,0,73.7-9.5,100.2-26.7,24.4-15.8,37.8-36.1,37.8-57.2v-118.1h32v118.1c0,32.3-18.6,62.1-52.4,84.1-31.6,20.5-73.4,31.8-117.6,31.8h0Z"/>
+      <path fill="#4285f4" d="M256,381v-32c38.1,0,73.7-9.5,100.2-26.7,24.4-15.8,37.8-36.1,37.8-57.2v-127.2h32v127.2c0,32.3-18.6,62.1-52.4,84.1-31.6,20.5-73.4,31.8-117.6,31.8h0Z"/>
+      <path fill="#4285f4" d="M256,253.6c-44.2,0-85.9-11.3-117.6-31.8-33.8-21.9-52.4-51.7-52.4-84s18.6-62.1,52.4-84c31.6-20.5-73.4-31.8-117.6-31.8s86,11.3,117.6,31.8c33.8,21.9,52.4,51.7,52.4,84s-18.6,62.1-52.4,84c-31.6,20.5-73.4,31.8-117.6,31.8ZM256,54c-38.1,0-73.7,9.5-100.2,26.7-24.4,15.8-37.8,36.1-37.8,57.1s13.4,41.3,37.8,57.1c26.5,17.2,62.1,26.7,100.2,26.7s73.7-9.5,100.2-26.7c24.4-15.8,37.8-36.1,37.8-57.1s-13.4-41.3-37.8-57.1c-26.5-17.2-62.1-26.7-100.2-26.7Z"/>
+      <path fill="#9aa0a6" d="M256,253.8v-32c38.1,0,73.7-9.5,100.2-26.7,24.4-15.8,37.8-36.2,37.8-57.2s-13.4-41.4-37.8-57.2c-26.5-17.2-62.1-26.7-100.2-26.7v-32c44.2,0,86,11.3,117.6,31.8,33.8,21.9,52.4,51.8,52.4,84.1s-18.6,62.1-52.4,84.1c-31.6,20.5-73.4,31.8-117.6,31.8h0Z"/>
+    </symbol>
+
+    <!-- Official BigQuery Icon (google3/devsite/two/tenants/clouddocs/static/images/icons/products/bigquery-color.svg) -->
+    <symbol id="icon-bigquery" viewBox="0 0 512 512">
+      <path d="M311.9,418.9c-8.8,0-16-7.2-16-16v-145.8c0-8.8,7.2-16,16-16s16,7.2,16,16v145.8c0,8.8-7.2,16-16,16h0Z" fill="#34A853"/>
+      <path d="M147.6,418.9c-8.8,0-16-7.2-16-16v-200.5c0-8.8,7.2-16,16-16s16,7.2,16,16v200.5c0,8.8-7.2,16-16,16Z" fill="#34A853"/>
+      <path d="M229.8,437.4c-8.8,0-16-7.2-16-16V147.6c0-8.8,7.2-16,16-16s16,7.2,16,16v273.7c0,8.8-7.2,16-16,16h0Z" fill="#34A853"/>
+      <path d="M229.8,437.4c-114.5,0-207.6-93.1-207.6-207.6h32c0,96.8,78.8,175.6,175.6,175.6s175.6-78.8,175.6-175.6h32c0,114.5-93.1,207.6-207.6,207.6h0Z" fill="#FBBC04"/>
+      <path d="M437.4,229.8h-32c0-96.8-78.8-175.6-175.6-175.6S54.1,132.9,54.1,229.8H22.1c0-114.5,93.2-207.7,207.7-207.7s207.6,93.1,207.6,207.6h0Z" fill="#EA4335"/>
+      <path d="M487.4,464.8l-100-100c32.3-37.6,49.9-85,49.9-135.1s-21.6-107.6-60.8-146.8l-22.6,22.6c33.2,33.2,51.4,77.3,51.4,124.2s-18.3,90.9-51.5,124.1h0c-5,5-7.5,7-11.8,10.8l122.8,122.8c3.1,3.1,7.2,4.7,11.3,4.7h0c4.1,0,8.2-1.6,11.3-4.7,6.2-6.2,6.2-16.4,0-22.6h0Z" fill="#4285F4"/>
+    </symbol>
+
+    <!-- Official SharePoint Connector Icon (google3/cloud/console/web/ai/unified_cloud_search/icons/32px/sharepoint_connector.svg) -->
+    <linearGradient id="sp-grad-0" x1="6" y1="11.5" x2="26.5833" y2="11.5" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#103A3B"/>
+      <stop offset="1" stop-color="#116B6E"/>
+    </linearGradient>
+    <linearGradient id="sp-grad-1" x1="18" y1="13" x2="32" y2="21" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1D9097"/>
+      <stop offset="1" stop-color="#29BBC2"/>
+    </linearGradient>
+    <linearGradient id="sp-grad-2" x1="12" y1="21.5" x2="23" y2="26.5" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#28A6B5"/>
+      <stop offset="1" stop-color="#31D6EC"/>
+    </linearGradient>
+    <linearGradient id="sp-grad-3" x1="0" y1="16" x2="19.5" y2="16" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#105557"/>
+      <stop offset="1" stop-color="#116B6E"/>
+    </linearGradient>
+    <symbol id="icon-sharepoint" viewBox="0 0 32 32">
+      <circle cx="15.5" cy="11.5" r="9.5" fill="url(#sp-grad-0)"/>
+      <circle cx="24" cy="17" r="8" fill="url(#sp-grad-1)"/>
+      <circle cx="16.5" cy="23.5" r="6.5" fill="url(#sp-grad-2)"/>
+      <path d="M7 12C7 10.3431 8.34315 9 10 9H17C18.6569 9 20 10.3431 20 12V24C20 25.6569 18.6569 27 17 27H7V12Z" fill="#000000" fill-opacity="0.22"/>
+      <rect y="7" width="18" height="18" rx="2" fill="url(#sp-grad-3)"/>
+      <path d="M13 18.1229C13 16.5726 11.9602 15.8883 9.79665 15.0922C8.10273 14.4637 7.70021 14.2821 7.70021 13.6816C7.70021 13.1648 8.20335 12.8156 9.0587 12.8156C9.93082 12.8156 10.7526 13.1089 11.6751 13.6117L12.6143 11.9497C11.6247 11.3352 10.4507 11 9.02516 11C6.84486 11 5.28512 12.1173 5.28512 13.8212C5.28512 15.567 6.52621 16.1257 8.60587 16.8659C10.2662 17.4525 10.5849 17.7458 10.5849 18.2626C10.5849 18.8771 9.9979 19.1844 9.07547 19.1844C7.98532 19.1844 7.02935 18.8073 6.07338 18.1927L5 19.7849C6.174 20.595 7.63312 21 9.12579 21C11.3732 21 13 19.9385 13 18.1229Z" fill="white"/>
+    </symbol>
+
+    <!-- Generic External Cloud (AWS) Storage & Compute Icons -->
+    <symbol id="icon-aws-storage" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="12" fill="#FFF7ED" stroke="#EA580C" stroke-width="2.5"/>
+      <ellipse cx="32" cy="20" rx="16" ry="6" fill="none" stroke="#EA580C" stroke-width="2.5"/>
+      <path d="M16 20v24c0 3.3 7.2 6 16 6s16-2.7 16-6V20" fill="none" stroke="#EA580C" stroke-width="2.5"/>
+      <path d="M16 32c0 3.3 7.2 6 16 6s16-2.7 16-6" fill="none" stroke="#EA580C" stroke-width="2.5"/>
+    </symbol>
+
+    <symbol id="icon-aws-compute" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="12" fill="#FFF7ED" stroke="#EA580C" stroke-width="2.5"/>
+      <rect x="18" y="18" width="28" height="28" rx="4" fill="none" stroke="#EA580C" stroke-width="2.5"/>
+      <rect x="25" y="25" width="14" height="14" rx="2" fill="#EA580C"/>
+      <path d="M26 12v6M38 12v6M26 46v6M38 46v6M12 26h6M12 38h6M46 26h6M46 38h6" stroke="#EA580C" stroke-width="2.5" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="icon-iap" viewBox="0 0 24 24">
+      <path fill="#4285f4" d="M11.85,7a5.1,5.1,0,1,0,5.1,5.1h0A5.1,5.1,0,0,0,11.85,7Zm0,9.08a4,4,0,1,1,4-4h0A4,4,0,0,1,11.85,16.09Z"/>
+      <path fill="#669df6" d="M13.77,12.71a2.09,2.09,0,0,0-.28-.22,3.11,3.11,0,0,0-2.61-.28,2.31,2.31,0,0,0-.89.47.86.86,0,0,0-.37.65v1h4.47v-.82A1,1,0,0,0,13.77,12.71Z"/>
+      <path fill="#669df6" d="M11.85,11.53a1.16,1.16,0,1,0-1.17-1.15h0A1.17,1.17,0,0,0,11.85,11.53Z"/>
+      <polygon fill="#aecbfa" points="20.78 10.72 19.74 10.72 20.51 11.49 18.3 11.49 18.3 12.39 20.51 12.39 19.74 13.17 20.78 13.17 22 11.94 20.78 10.72"/>
+      <polygon fill="#669df6" points="17.54 8.5 18.18 9.14 19.16 8.17 19.16 9.26 19.89 8.52 19.89 6.79 18.16 6.79 17.43 7.53 18.52 7.53 17.54 8.5"/>
+      <polygon fill="#669df6" points="19.16 15.83 18.18 14.86 17.54 15.49 18.52 16.47 17.43 16.47 18.16 17.2 19.89 17.2 19.89 15.47 19.16 14.74 19.16 15.83"/>
+      <path fill="#669df6" d="M3.35,10.65A1.35,1.35,0,1,0,4.71,12a1.35,1.35,0,0,0-1.36-1.35Zm0,2.1A.76.76,0,1,1,4.11,12h0a.76.76,0,0,1-.76.75Z"/>
+    </symbol>
+    <symbol id="icon-cloud-build" viewBox="0 0 24 24">
+      <polygon fill="#4285f4" points="12.15 16.24 15.67 14.21 15.67 10.15 14.49 9.46 10.97 15.56 12.15 16.24"/>
+      <polygon fill="#669df6" points="8.63 10.15 8.63 14.21 9.81 14.89 13.34 8.8 12.15 8.11 8.63 10.15"/>
+      <polygon fill="#aecbfa" points="11.46 17.45 7.24 15.01 7.24 10.15 3.49 7.98 3.49 17.18 11.46 21.78 11.46 17.45"/>
+      <polygon fill="#aecbfa" points="7.93 8.95 12.15 6.51 16.37 8.95 20.13 6.78 12.15 2.17 4.17 6.78 7.93 8.95"/>
+      <polygon fill="#aecbfa" points="17.06 15.01 12.84 17.45 12.84 21.78 20.82 17.18 20.82 7.98 17.06 10.15 17.06 15.01"/>
+    </symbol>
+    <symbol id="icon-user" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4" fill="#5f6368"/>
+      <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="#9aa0a6"/>
+    </symbol>
+    <symbol id="icon-market" viewBox="0 0 24 24">
+      <rect x="2" y="2" width="20" height="20" rx="4" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.4"/>
+      <polyline points="5,16 9,11 12,13 16,7 19,9" fill="none" stroke="#EA580C" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+  <rect width="1520" height="620" fill="#F8FAFC"/>
+  <rect width="1520" height="620" fill="url(#bg-grid)"/>
+  <rect x="20" y="140" width="178" height="150" rx="10" fill="#FFFFFF" stroke="#64748B" stroke-width="2" filter="url(#shadow-sm)"/>
+  <use href="#icon-user" x="32" y="151" width="32" height="32"/>
+  <text x="74" y="165" font-size="13.5" font-weight="700" fill="#1E293B">ONGC users</text>
+  <text x="74" y="182" font-size="11" font-weight="600" fill="#475569">Browser, voice or text</text>
+  <text x="34" y="208" font-size="11.2" fill="#475569">• CMD, Directors</text>
+  <text x="34" y="228" font-size="11.2" fill="#475569">• HR &amp; Finance staff</text>
+  <text x="34" y="248" font-size="11.2" fill="#475569">• Role picked at sign-in</text>
+  <rect x="222" y="16" width="1022" height="588" rx="14" fill="#F0F9FF" fill-opacity="0.55" stroke="#0284C7" stroke-width="2" filter="url(#shadow-md)"/>
+  <path d="M 222 30 Q 222 16 236 16 L 1230 16 Q 1244 16 1244 30 L 1244 50 L 222 50 Z" fill="#E0F2FE"/>
+  <use href="#icon-google-cloud" x="236" y="21" width="24" height="24"/>
+  <text x="268" y="39" font-size="14" font-weight="700" fill="#0369A1">Google Cloud · project ongc-hr-finance-agent · asia-south1</text>
+  <rect x="242" y="140" width="160" height="150" rx="10" fill="#FFFFFF" stroke="#2563EB" stroke-width="2" filter="url(#shadow-sm)"/>
+  <use href="#icon-iap" x="254" y="151" width="34" height="34"/>
+  <text x="296" y="165" font-size="13.5" font-weight="700" fill="#1E293B">Identity-Aware</text>
+  <text x="296" y="182" font-size="11" font-weight="600" fill="#1D4ED8">Proxy · Google SSO</text>
+  <text x="256" y="208" font-size="11.2" fill="#475569">• Approved users only</text>
+  <text x="256" y="228" font-size="11.2" fill="#475569">• No public access</text>
+  <text x="256" y="248" font-size="11.2" fill="#475569">• Signed session cookie</text>
+  <rect x="242" y="360" width="160" height="190" rx="10" fill="#FFFFFF" stroke="#2563EB" stroke-width="2" filter="url(#shadow-sm)"/>
+  <use href="#icon-cloud-build" x="254" y="371" width="34" height="34"/>
+  <text x="296" y="385" font-size="13.5" font-weight="700" fill="#1E293B">Cloud Build</text>
+  <text x="296" y="402" font-size="11" font-weight="600" fill="#1D4ED8">Build and release</text>
+  <text x="256" y="428" font-size="11.2" fill="#475569">• Container image</text>
+  <text x="256" y="448" font-size="11.2" fill="#475569">• Artifact Registry</text>
+  <text x="256" y="468" font-size="11.2" fill="#475569">• No-traffic rollout</text>
+  <text x="256" y="488" font-size="11.2" fill="#475569">• One-step rollback</text>
+  <rect x="426" y="60" width="798" height="262" rx="12" fill="#FFFFFF" fill-opacity="0.6" stroke="#4285F4" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <use href="#icon-cloud-run" x="438" y="68" width="22" height="22"/>
+  <text x="468" y="85" font-size="12.5" font-weight="700" fill="#1D4ED8">Cloud Run · yukti-ai · one container: web app + backend</text>
+  <rect x="442" y="100" width="232" height="210" rx="10" fill="#FFFFFF" stroke="#2563EB" stroke-width="2" filter="url(#shadow-sm)"/>
+  <use href="#icon-cloud-run" x="454" y="111" width="32" height="32"/>
+  <text x="496" y="125" font-size="13.5" font-weight="700" fill="#1E293B">Yukti web app</text>
+  <text x="496" y="142" font-size="11" font-weight="600" fill="#1D4ED8">Next.js · same-origin proxy</text>
+  <text x="456" y="168" font-size="11.2" fill="#475569">• Aurora voice orb, tap to talk</text>
+  <text x="456" y="188" font-size="11.2" fill="#475569">• Charts, tables, KPI cards</text>
+  <text x="456" y="208" font-size="11.2" fill="#475569">• Exports: PDF, Excel, Word</text>
+  <text x="456" y="228" font-size="11.2" fill="#475569">• Oil and rupee overlays</text>
+  <text x="456" y="248" font-size="11.2" fill="#475569">• Local noise gate on the mic</text>
+  <rect x="704" y="100" width="238" height="210" rx="10" fill="#FFFFFF" stroke="#2563EB" stroke-width="2" filter="url(#shadow-sm)"/>
+  <use href="#icon-agents" x="716" y="111" width="32" height="32"/>
+  <text x="758" y="125" font-size="13.5" font-weight="700" fill="#1E293B">Turn orchestrator</text>
+  <text x="758" y="142" font-size="11" font-weight="600" fill="#1D4ED8">FastAPI · routing in code</text>
+  <text x="718" y="168" font-size="11.2" fill="#475569">• Signed role checked every turn</text>
+  <text x="718" y="188" font-size="11.2" fill="#475569">• Routes each question in order</text>
+  <text x="718" y="208" font-size="11.2" fill="#475569">• Session memory per chat</text>
+  <text x="718" y="228" font-size="11.2" fill="#475569">• Role masking on every answer</text>
+  <text x="718" y="248" font-size="11.2" fill="#475569">• Rejects numbers not in data</text>
+  <rect x="972" y="100" width="236" height="210" rx="10" fill="#FFFFFF" stroke="#2563EB" stroke-width="2" filter="url(#shadow-sm)"/>
+  <use href="#icon-aiml" x="984" y="111" width="32" height="32"/>
+  <text x="1026" y="125" font-size="13.5" font-weight="700" fill="#1E293B">Specialist modules &amp; tools</text>
+  <text x="1026" y="142" font-size="11" font-weight="600" fill="#B45309">Code today, agent-ready registry</text>
+  <text x="986" y="168" font-size="11.2" fill="#475569">• Certified query → SQL compiler</text>
+  <text x="986" y="188" font-size="11.2" fill="#475569">• DCF engine and follow-ups</text>
+  <text x="986" y="208" font-size="11.2" fill="#475569">• Revenue drivers, product mix</text>
+  <text x="986" y="228" font-size="11.2" fill="#475569">• Finance diagnostics bridge</text>
+  <text x="986" y="248" font-size="11.2" fill="#475569">• HR transfers, email drafts</text>
+  <text x="986" y="268" font-size="11.2" fill="#475569">• Exports and background jobs</text>
+  <rect x="442" y="370" width="232" height="190" rx="10" fill="#FFFFFF" stroke="#2563EB" stroke-width="2" filter="url(#shadow-sm)"/>
+  <use href="#icon-gemini" x="454" y="381" width="32" height="32"/>
+  <text x="496" y="395" font-size="13.5" font-weight="700" fill="#1E293B">Gemini Live</text>
+  <text x="496" y="412" font-size="11" font-weight="600" fill="#1D4ED8">Native-audio voice model</text>
+  <text x="456" y="438" font-size="11.2" fill="#475569">• Hears and speaks EN and Hindi</text>
+  <text x="456" y="458" font-size="11.2" fill="#475569">• Calls ask_yukti, ui_control</text>
+  <text x="456" y="478" font-size="11.2" fill="#475569">• No data answers from memory</text>
+  <text x="456" y="498" font-size="11.2" fill="#475569">• Server-side turn detection</text>
+  <rect x="704" y="370" width="238" height="190" rx="10" fill="#FFFFFF" stroke="#2563EB" stroke-width="2" filter="url(#shadow-sm)"/>
+  <use href="#icon-gemini-platform" x="716" y="381" width="32" height="32"/>
+  <text x="758" y="395" font-size="13.5" font-weight="700" fill="#1E293B">Gemini 2.5 Flash</text>
+  <text x="758" y="412" font-size="11" font-weight="600" fill="#1D4ED8">Gemini platform</text>
+  <text x="718" y="438" font-size="11.2" fill="#475569">• Plans question → query spec</text>
+  <text x="718" y="458" font-size="11.2" fill="#475569">• Number-checked explanations</text>
+  <text x="718" y="478" font-size="11.2" fill="#475569">• Short conversational replies</text>
+  <text x="718" y="498" font-size="11.2" fill="#475569">• Never writes the SQL</text>
+  <rect x="972" y="370" width="236" height="190" rx="10" fill="#FFFFFF" stroke="#2563EB" stroke-width="2" filter="url(#shadow-sm)"/>
+  <use href="#icon-bigquery" x="984" y="381" width="32" height="32"/>
+  <text x="1026" y="395" font-size="13.5" font-weight="700" fill="#1E293B">BigQuery</text>
+  <text x="1026" y="412" font-size="11" font-weight="600" fill="#1D4ED8">ONGC single source of truth</text>
+  <text x="986" y="438" font-size="11.2" fill="#475569">• HR roster, postings, pay</text>
+  <text x="986" y="458" font-size="11.2" fill="#475569">• 10-year statements, levies</text>
+  <text x="986" y="478" font-size="11.2" fill="#475569">• WACC and DCF inputs</text>
+  <text x="986" y="498" font-size="11.2" fill="#475569">• Certified v3 datasets</text>
+  <rect x="1268" y="84" width="236" height="246" rx="14" fill="#FFFBEB" fill-opacity="0.65" stroke="#F59E0B" stroke-width="2" stroke-dasharray="8 5" filter="url(#shadow-md)"/>
+  <path d="M 1268 98 Q 1268 84 1282 84 L 1490 84 Q 1504 84 1504 98 L 1504 114 L 1268 114 Z" fill="#FEF3C7"/>
+  <text x="1386.0" y="104" font-size="12.5" font-weight="700" fill="#B45309" text-anchor="middle">External market data</text>
+  <rect x="1282" y="140" width="208" height="170" rx="10" fill="#FFFFFF" stroke="#F59E0B" stroke-width="2" filter="url(#shadow-sm)"/>
+  <use href="#icon-market" x="1294" y="151" width="30" height="30"/>
+  <text x="1336" y="165" font-size="13.5" font-weight="700" fill="#1E293B">Yahoo Finance</text>
+  <text x="1336" y="182" font-size="11" font-weight="600" fill="#B45309">Brent, WTI, rupee</text>
+  <text x="1296" y="208" font-size="11.2" fill="#475569">• Daily history in the app</text>
+  <text x="1296" y="228" font-size="11.2" fill="#475569">• Fetches only missing days</text>
+  <text x="1296" y="248" font-size="11.2" fill="#475569">• Live price for today</text>
+  <text x="1296" y="268" font-size="11.2" fill="#475569">• Saved copy if offline</text>
+  <line x1="198" y1="215" x2="235" y2="215" stroke="#475569" stroke-width="2.2"/>
+  <polygon points="242,215 233,210.5 233,219.5" fill="#475569"/>
+  <line x1="402" y1="215" x2="435" y2="215" stroke="#2563EB" stroke-width="2.2"/>
+  <polygon points="442,215 433,210.5 433,219.5" fill="#2563EB"/>
+  <line x1="674" y1="205" x2="697" y2="205" stroke="#2563EB" stroke-width="2.2"/>
+  <polygon points="704,205 695,200.5 695,209.5" fill="#2563EB"/>
+  <line x1="942" y1="205" x2="965" y2="205" stroke="#2563EB" stroke-width="2.2"/>
+  <polygon points="972,205 963,200.5 963,209.5" fill="#2563EB"/>
+  <line x1="1208" y1="205" x2="1275" y2="205" stroke="#D97706" stroke-width="2.2"/>
+  <polygon points="1282,205 1273,200.5 1273,209.5" fill="#D97706"/>
+  <line x1="558" y1="310" x2="558" y2="363" stroke="#2563EB" stroke-width="2.2"/>
+  <polygon points="558,370 553.5,361 562.5,361" fill="#2563EB"/>
+  <line x1="800" y1="310" x2="800" y2="363" stroke="#2563EB" stroke-width="2.2"/>
+  <polygon points="800,370 795.5,361 804.5,361" fill="#2563EB"/>
+  <line x1="1090" y1="310" x2="1090" y2="363" stroke="#16A34A" stroke-width="2.2"/>
+  <polygon points="1090,370 1085.5,361 1094.5,361" fill="#16A34A"/>
+  <path d="M 674 430 L 688 430 Q 692 430 692 426 L 692 318" fill="none" stroke="#7C3AED" stroke-width="2.2"/>
+  <path d="M 692 318 Q 692 312 698 312 L 712 312" fill="none" stroke="#7C3AED" stroke-width="2.2"/>
+  <polygon points="720,312 711,307.5 711,316.5" fill="#7C3AED"/>
+  <line x1="322" y1="360" x2="322" y2="297" stroke="#64748B" stroke-width="2.2" stroke-dasharray="6 4"/>
+  <polygon points="322,290 317.5,299 326.5,299" fill="#64748B"/>
+  <rect x="199.25" y="193" width="41.5" height="17" rx="8" fill="#FFFFFF" fill-opacity="0.95" stroke="#E2E8F0"/>
+  <text x="220" y="205" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">HTTPS</text>
+  <rect x="521.5" y="332" width="73.0" height="17" rx="8" fill="#FFFFFF" fill-opacity="0.95" stroke="#E2E8F0"/>
+  <text x="558" y="344" font-size="10.5" font-weight="600" fill="#334155" text-anchor="middle">live voice</text>
+  <rect x="754.05" y="332" width="91.89999999999999" height="17" rx="8" fill="#FFFFFF" fill-opacity="0.95" stroke="#E2E8F0"/>
+  <text x="800" y="344" font-size="10.5" font-weight="600" fill="#334155" text-anchor="middle">plan, explain</text>
+  <rect x="1044.05" y="332" width="91.89999999999999" height="17" rx="8" fill="#FFFFFF" fill-opacity="0.95" stroke="#E2E8F0"/>
+  <text x="1090" y="344" font-size="10.5" font-weight="600" fill="#15803D" text-anchor="middle">certified SQL</text>
+  <rect x="1214.1" y="184" width="47.8" height="17" rx="8" fill="#FFFFFF" fill-opacity="0.95" stroke="#E2E8F0"/>
+  <text x="1238" y="196" font-size="10.5" font-weight="600" fill="#B45309" text-anchor="middle">prices</text>
+  <rect x="658.65" y="373" width="66.69999999999999" height="17" rx="8" fill="#FFFFFF" fill-opacity="0.95" stroke="#E2E8F0"/>
+  <text x="692" y="385" font-size="10.5" font-weight="600" fill="#6D28D9" text-anchor="middle">tool call</text>
+  <rect x="298.1" y="318" width="47.8" height="17" rx="8" fill="#FFFFFF" fill-opacity="0.95" stroke="#E2E8F0"/>
+  <text x="322" y="330" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">deploy</text>
+</svg>

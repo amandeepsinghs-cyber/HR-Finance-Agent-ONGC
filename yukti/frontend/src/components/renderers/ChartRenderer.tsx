@@ -32,11 +32,14 @@ import {
 } from '@/charts/options';
 import { fmtValue, fmtShare, humanizeKey, humanizeValue, parseUnit, toNumber } from '@/charts/format';
 import { KpiRenderer } from './KpiRenderer';
+import { OilPricePayload, withOilOverlay } from '@/charts/oilOverlay';
 
 interface ChartRendererProps {
   spec: ChartSpec;
   isDark?: boolean;
   title?: string;
+  /** 26-Oct: optional Brent / WTI line on a right-hand $/bbl axis (fiscal-year charts only) */
+  oilOverlay?: OilPricePayload | null;
 }
 
 /** Recompute tokens when the root font-size (big-screen scale) changes. */
@@ -185,12 +188,47 @@ function useOneTimeNote(note?: string): string | null {
   return show && note ? note : null;
 }
 
-export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = false }) => {
+/**
+ * 26-Oct: long daily series (e.g. 5 years of Brent closes, labels like "26 Oct 2021") show only the year on the axis,
+ * once at the first point of each year, instead of a cluttered row of dates. Tooltips keep the full date.
+ */
+const DAY_LABEL = /^\d{1,2} [A-Za-z]{3} (\d{4})$/;
+function withYearTicks(option: any): any {
+  if (!option) return option;
+  const xa = Array.isArray(option.xAxis) ? option.xAxis[0] : option.xAxis;
+  const data: unknown[] = xa?.type === 'category' && Array.isArray(xa.data) ? xa.data : [];
+  if (data.length < 60) return option;
+  const years = data.map((d) => {
+    const m = String(d && typeof d === 'object' ? (d as any).value : d).match(DAY_LABEL);
+    return m ? m[1] : null;
+  });
+  if (years.filter(Boolean).length < data.length * 0.9) return option;
+  // last known year carries over to non-date labels such as "Today (live)"
+  let prevYear: string | null = null;
+  const show = years.map((y) => {
+    const cur = y ?? prevYear;
+    const first = !!cur && cur !== prevYear;
+    prevYear = cur;
+    return first;
+  });
+  // a partial first year (e.g. a series starting in late Oct 2021) would crowd the next label: drop it
+  const nextTick = show.indexOf(true, 1);
+  if (show[0] && nextTick > 0 && nextTick < data.length * 0.12) show[0] = false;
+  const yearAt = (i: number) => years[i] ?? years.slice(0, i).reverse().find(Boolean) ?? '';
+  const patch = (a: any) => ({
+    ...a,
+    axisLabel: { ...(a.axisLabel || {}), interval: (i: number) => show[i], formatter: (_v: string, i: number) => yearAt(i), rotate: 0, hideOverlap: true },
+    axisTick: { ...(a.axisTick || {}), show: true, interval: (i: number) => show[i] },
+  });
+  return { ...option, xAxis: Array.isArray(option.xAxis) ? option.xAxis.map((a: any, i: number) => (i === 0 ? patch(a) : a)) : patch(option.xAxis) };
+}
+
+export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = false, oilOverlay = null }) => {
   const t = useChartTokens(isDark);
   const plan = useMemo(() => planChart(spec), [spec]);
   const note = useOneTimeNote(spec.note);
 
-  const option = useMemo(() => {
+  const baseOption = useMemo(() => {
     const data = (spec.data || []) as Record<string, any>[];
     const colors = donutColors(plan, t);
     switch (plan.form) {
@@ -242,6 +280,10 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ spec, isDark = fal
         return null;
     }
   }, [plan, t, spec]);
+  const option = useMemo(
+    () => withYearTicks(oilOverlay ? withOilOverlay(baseOption, oilOverlay, t) : baseOption),
+    [baseOption, oilOverlay, t],
+  );
 
   if (!plan.rows.length) {
     return <div className="h-full grid place-items-center text-[var(--ink-2)]">No data returned for this view.</div>;

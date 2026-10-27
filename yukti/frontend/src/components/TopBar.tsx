@@ -5,7 +5,7 @@ import { PersonaPicker } from './PersonaPicker';
 import React, { useEffect, useRef, useState } from 'react';
 import { PersonaType } from '@/contracts/answerContract';
 import { OrbState } from './VoiceOrb';
-import { Sun, Moon, ChevronDown, SkipBack, SkipForward, Languages } from 'lucide-react';
+import { Sun, Moon, ChevronDown, SkipBack, SkipForward, Languages, Volume2, VolumeX, Network } from 'lucide-react';
 import { IconButton } from './ui/primitives';
 
 interface TopBarProps {
@@ -23,6 +23,9 @@ interface TopBarProps {
   backend: 'checking' | 'online' | 'offline';
   demo?: { index: number; total: number; onPrev: () => void; onNext: () => void };
   micLevel?: () => number;
+  /** Yukti's voice output on/off (moved here from the ask bar on 26-Oct: the ask bar keeps one voice input, the aurora) */
+  isMuted?: boolean;
+  onToggleMute?: () => void;
 }
 
 // P2H.2: persona labels come from the shared directory (11 personas, D-41/D-60); the server is the source of truth.
@@ -80,6 +83,8 @@ export const LevelMeter: React.FC<{ level: () => number; active: boolean; size?:
 };
 
 export const TopBar: React.FC<TopBarProps> = ({
+  isMuted = false,
+  onToggleMute,
   currentPersona,
   onPersonaChange,
   isDark,
@@ -135,16 +140,17 @@ export const TopBar: React.FC<TopBarProps> = ({
           alt="Oil and Natural Gas Corporation Limited"
           className="w-[4.5rem] h-[4.5rem] xl:w-[5rem] xl:h-[5rem] shrink-0 rounded-[var(--radius-sm)] object-cover shadow-[var(--card-shadow)]"
         />
-        <div className="min-w-0 flex flex-col justify-center leading-tight space-y-0.5">
-          <div className="flex items-baseline gap-1.5 flex-wrap leading-none">
+        <div className="min-w-0 flex flex-col justify-center leading-tight">
+          {/* Two lines: "Yukti AI Agent" / "HR and Finance" (sponsor, 26-Oct) */}
+          <div className="flex flex-col gap-[0.2rem] leading-none pb-1">
             <span className="font-display font-bold text-[1.35rem] xl:text-[1.5rem] tracking-[-0.02em] text-[var(--brand-red)] leading-none">
-              Yukti AI Agent ,
+              Yukti AI Agent
             </span>
             <span className="text-[0.88rem] xl:text-[0.95rem] font-semibold tracking-[0.01em] text-[var(--brand-red-deep)] whitespace-nowrap leading-none">
               HR and Finance
             </span>
           </div>
-          <div className="text-[0.76rem] font-medium text-[var(--ink-2)] truncate leading-tight pt-0.5">
+          <div className="text-[0.76rem] font-medium text-[var(--ink-2)] truncate leading-tight">
             Oil and Natural Gas Corporation Limited
           </div>
           <div className="text-[0.76rem] text-[var(--ink-3)] font-normal truncate leading-tight">
@@ -226,6 +232,29 @@ export const TopBar: React.FC<TopBarProps> = ({
           <Languages className="w-4 h-4" />
           {language === 'hi' ? 'हिन्दी' : language === 'hi-en' ? 'Hinglish' : 'English'}
         </button>
+        {onToggleMute && (
+          <IconButton
+            onClick={onToggleMute}
+            label={isMuted ? "Yukti is muted (replies continue on screen) — click to unmute" : "Mute Yukti's voice (the reply keeps going on screen). To stop a reply, tap the aurora."}
+            aria-label={isMuted ? "Unmute Yukti" : "Mute Yukti"}
+            aria-pressed={isMuted}
+            data-testid="voice-output-toggle"
+          >
+            {isMuted ? <VolumeX className="w-4 h-4 text-[var(--maroon)]" /> : <Volume2 className="w-4 h-4" />}
+          </IconButton>
+        )}
+        {/* "How Yukti works" — architecture page, opens in a new tab so the conversation is kept (27-Oct) */}
+        <a
+          href="/architecture"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="How Yukti works"
+          title="How Yukti works — architecture"
+          data-testid="architecture-link"
+          className="inline-grid place-items-center w-9 h-9 rounded-[var(--radius-md)] transition-colors duration-fast text-[var(--ink-2)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+        >
+          <Network className="w-[1.1rem] h-[1.1rem]" />
+        </a>
         <IconButton onClick={onThemeToggle} label={isDark ? 'Switch to light mode' : 'Switch to dark mode'} data-testid="theme-toggle">
           {isDark ? <Sun /> : <Moon />}
         </IconButton>

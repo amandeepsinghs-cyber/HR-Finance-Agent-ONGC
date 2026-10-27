@@ -262,6 +262,18 @@ def health() -> Dict[str, Any]:
 
 
 # ---------------------------------------------------------------- P0.4 identity (SPEC-06 §4.4)
+@app.get("/api/market/oil")
+def market_oil(benchmark: str = "brent", principal: Principal = Depends(require_principal)) -> Dict[str, Any]:
+    """Live Brent / WTI prices (Yahoo Finance) + Indian-FY averages for the revenue-chart overlay (26-Oct).
+    Public market data (any signed-in persona); 10-min cache with a saved fallback copy."""
+    from app.market.oil_prices import get_oil_prices
+
+    try:
+        return get_oil_prices(benchmark)
+    except RuntimeError as e:
+        raise HTTPException(status_code=503, detail={"type": "error", "message": str(e), "retryable": True})
+
+
 @app.get("/api/auth/personas")
 def auth_personas() -> Dict[str, Any]:
     """Demo login picker: the personas a session can be started as (no secrets)."""

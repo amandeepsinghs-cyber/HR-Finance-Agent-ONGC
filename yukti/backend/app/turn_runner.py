@@ -375,6 +375,17 @@ class AgentTurnRunner:
         from app.ui_control import SCREEN_CANONICAL_QUERIES
         query_normalized = query.strip().lower().rstrip("?!.")
         _sc_probe = _sc_detect(query_normalized)
+        # 26-Oct: "plot / show the Brent or WTI trend" is a new oil-price chart, not a re-plot of the card on screen
+        from app.market.oil_intent import detect_oil_plot as _detect_oil_plot_early
+
+        from app.market.revenue_drivers import detect_portfolio_mix as _dpm_early, detect_revenue_drivers as _drd_early
+
+        from app.finance.dcf.followup import detect_dcf_followup as _ddf_early
+
+        if _sc_probe and _sc_probe.get("command") == "set_chart_kind" and (
+            _detect_oil_plot_early(query) or _drd_early(query) or _dpm_early(query) or _ddf_early(query, session_state)
+        ):
+            _sc_probe = None
         if is_role_switch_request(query) or (_sc_probe and _sc_probe.get("command") == "set_persona"):
             return self._role_switch_contract(query, session_state, norm_persona, principal, turn_id, det_lang, t0)
 
@@ -530,6 +541,26 @@ class AgentTurnRunner:
                 logger.exception(f"Transfer note drafting failed; falling back: {e_tn}")
 
         # Coordinator / Planner
+        # 27-Oct: follow-ups on the DCF run in this conversation (drivers, explanations, what-if re-runs)
+        from app.finance.dcf.followup import answer_dcf_followup_async, detect_dcf_followup
+
+        # (runs before the coordinator, which would otherwise propose a NEW DCF run for any 'valuation' question;
+        #  pending confirmations such as 'yes, proceed' are resolved first)
+        dcf_req = None if (spec_patch or getattr(session_state, 'pending_actions', None)) else detect_dcf_followup(query, session_state)
+        if dcf_req:
+            try:
+                dcf_contract = await answer_dcf_followup_async(dcf_req, query, norm_persona, turn_id, det_lang, t0)
+                return self._finalize_planner_contract({"contract": dcf_contract, "meta": None}, session_state, query, t0)
+            except Exception as e_dcf:  # noqa: BLE001 - e.g. an invalid what-if: say so instead of a generic answer
+                logging.getLogger(__name__).warning(f"dcf follow-up failed: {e_dcf}")
+                if dcf_req.get("intent") == "whatif":
+                    msg = f"I couldn't run that scenario: {e_dcf}" if isinstance(e_dcf, ValueError) else "I couldn't re-run the DCF with that change just now."
+                    from app.brain.smalltalk import build_smalltalk_contract as _bsc
+
+                    err_c = await _bsc(query, norm_persona, turn_id, det_lang, t0)
+                    err_c.update({"spoken_summary": msg, "display_text": msg, "suggestions": ["What drives the valuation?", "What if WACC is 12%?"]})
+                    return self._finalize_planner_contract({"contract": err_c, "meta": None}, session_state, query, t0)
+
         from app.agents.coordinator import route_turn
         coord_res = await route_turn(query, norm_persona, session_state)
         if "contract" in coord_res:
@@ -583,6 +614,36 @@ class AgentTurnRunner:
             except Exception:
                 pass
                 
+        # 26-Oct: direct crude-oil price questions ("plot Brent for the past 5 years") come from the live Yahoo feed;
+        # the data planner only knows ONGC data. If the feed is unavailable, fall through to the normal path.
+        from app.market.oil_intent import build_oil_plot_contract, detect_oil_plot
+
+        # 27-Oct: "why did revenue hold up while oil fell?" (price / volume / rupee / mix) and "how has the portfolio
+        # changed?" (stacked product mix) are computed answers from ONGC financials + market data.
+        from app.market.revenue_drivers import (
+            build_drivers_contract,
+            build_mix_contract,
+            detect_portfolio_mix,
+            detect_revenue_drivers,
+        )
+
+        drv_req = None if patch_obj else (detect_revenue_drivers(query) or detect_portfolio_mix(query))
+        if drv_req:
+            try:
+                builder = build_drivers_contract if drv_req["kind"] == "drivers" else build_mix_contract
+                drv_contract = await asyncio.to_thread(builder, drv_req, norm_persona, turn_id, det_lang, t0)
+                return self._finalize_planner_contract({"contract": drv_contract, "meta": None}, session_state, query, t0)
+            except Exception as e_drv:  # noqa: BLE001 - fall back to the normal path
+                logging.getLogger(__name__).warning(f"revenue drivers/mix failed: {e_drv}")
+
+        oil_req = detect_oil_plot(query) if not patch_obj else None
+        if oil_req:
+            try:
+                oil_contract = await asyncio.to_thread(build_oil_plot_contract, oil_req, norm_persona, turn_id, det_lang, t0)
+                return self._finalize_planner_contract({"contract": oil_contract, "meta": None}, session_state, query, t0)
+            except RuntimeError:
+                pass
+
         if planner_enabled() and os.getenv("YUKTI_PLANNER", "1") != "0":
             try:
                 planned = await run_planner_turn(query, session_state, norm_persona, turn_id, det_lang, t0,
@@ -700,22 +761,11 @@ class AgentTurnRunner:
             session_state.record_turn(contract, user_query=query)
             return contract
         else:
-            # Honest structured response
-            contract = {
-                "turn_id": turn_id,
-                "language": det_lang,
-                "persona": norm_persona,
-                "spoken_summary": "I couldn't work that out just now. Please try again in a minute. (ref E-PLN-1234)",
-                "display_text": "I couldn't work that out just now. Please try again in a minute. (ref E-PLN-1234)",
-                "visual": {"type": "none", "mode": "replace"},
-                "insights": [],
-                "sources": [],
-                "suggestions": ["What can you do?", "Show coverage"],
-                "access": {"status": "allowed"},
-                "export_options": [],
-                "status_events": ["Planner could not resolve the query."],
-                "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
-            }
+            # 26-Oct: non-data turns (greetings, "what can you do", other) used to end here with the generic error
+            # E-PLN-1234. Answer them conversationally instead: one plain Gemini call, no tools, no data, no figures.
+            from app.brain.smalltalk import build_smalltalk_contract
+
+            contract = await build_smalltalk_contract(query, norm_persona, turn_id, det_lang, t0)
             self._validate_contract(contract)
             session_state.record_turn(contract, user_query=query)
             return contract

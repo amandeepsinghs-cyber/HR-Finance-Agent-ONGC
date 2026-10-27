@@ -15,6 +15,7 @@ import { FIXTURES } from '@/fixtures';
 import { routeQueryToFixture } from '@/services/mockRouter';
 import { yuktiClient, WsState } from '@/services/websocketClient';
 import { EXPORT_EVENT, type ExportEventDetail } from '@/components/AnswerCard';
+import { OIL_OVERLAY_EVENT, isOilOverlayEligible, type OilOverlayEventDetail } from '@/charts/oilOverlay';
 import { dispatchUi, labelOf, parseUiCommands, UiCommand, useUiCommands } from '@/services/uiCommands';
 import { cleanText } from '@/charts/format';
 import { BargeInDetector, micGateOpen, PLAYBACK_TAIL_MS, SpeakTracker } from '@/services/voiceGate';
@@ -27,6 +28,22 @@ type Backend = 'checking' | 'online' | 'offline';
 // Tap / Space / Stop always interrupt regardless.
 // G4 r2 (BUG-41): OFF by default — a continuous loud echo >= ~0.45 s at constant playback level is indistinguishable
 // from speech for a level-based detector. Re-enable only after a sponsor live test (see BUG-41).
+/** Hands-free voice: the mic opens automatically after sign-in (set NEXT_PUBLIC_HANDS_FREE=0 for tap-to-talk). */
+const HANDS_FREE = process.env.NEXT_PUBLIC_HANDS_FREE !== '0';
+/** "Listen locally, send on tap": with hands-free on, the open mic only drives the aurora; Gemini hears audio only
+ *  while engaged (after a tap, and for follow-ups until ENGAGE_IDLE_MS of silence after Yukti's reply). */
+const ENGAGE_IDLE_MS = 8000;
+const VOICE_ACTIVITY_LEVEL = 0.2;
+/** noise gate: speech must exceed the adaptive background floor by this much (0..1 level scale) */
+const GATE_MARGIN = 0.12;
+const GATE_HANGOVER_MS = 450;
+const GATE_PREROLL_FRAMES = 6; // 6 x 30 ms
+/** engaged but no turn for this long (e.g. constant noise): stop sending, back to local-only */
+const ENGAGE_MAX_NO_TURN_MS = 20000;
+/** browser speech-recognition fallback waits this long after the last speech before sending (thinking pauses) */
+const SR_FALLBACK_COMMIT_MS = 2200;
+const restStateOf = (micActive: boolean, engaged: boolean): OrbState => (micActive && engaged ? 'listening' : 'idle');
+
 const VOICE_BARGE_IN = false;
 const GATED_RING_FRAMES = 17; // P0.10 r2 S-1: 17 × 30 ms worklet frames ≈ 0.5 s
 type Lang = 'en' | 'hi' | 'hi-en';
@@ -168,6 +185,36 @@ export default function YuktiApp() {
   useEffect(() => {
     micActiveRef.current = isMicActive;
   }, [isMicActive]);
+  // Hands-free voice (26-Oct, Siri feel): once signed in, the mic opens by itself so the aurora reacts the moment anyone
+  // speaks. A tap on the orb / mic while listening mutes it (stays muted until tapped again).
+  // NEXT_PUBLIC_HANDS_FREE=0 restores tap-to-talk.
+  const handsFreeRef = useRef(HANDS_FREE);
+  // engaged = Gemini receives mic audio. Tap-to-talk mode (HANDS_FREE off) is always engaged while the mic is on.
+  const engagedRef = useRef(!HANDS_FREE);
+  const lastActivityRef = useRef(0);
+  const engagedAtRef = useRef(0); // engagement start, or end of the last Yukti turn
+  const noiseGateRef = useRef<{ floor: number; lastSpeechMs: number; preroll: ArrayBuffer[] }>({ floor: 0.1, lastSpeechMs: 0, preroll: [] });
+  // browser speech-recognition fallback: pending (debounced) commit of the user's sentence
+  const srPendingRef = useRef<{ text: string; timer: number | null; fire: () => void }>({ text: '', timer: null, fire: () => undefined });
+  const handsFreeFailsRef = useRef(0);
+  const orbStateRef = useRef<OrbState>('idle');
+  orbStateRef.current = orbState;
+  // browsers only allow audio after the first click / key press on the page (the sign-in pick counts)
+  const [userActivated, setUserActivated] = useState(false);
+  const [visTick, setVisTick] = useState(0);
+  useEffect(() => {
+    if ((navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive) setUserActivated(true);
+    const onAct = () => setUserActivated(true);
+    const onVis = () => setVisTick((n) => n + 1);
+    window.addEventListener('pointerdown', onAct, { once: true, capture: true });
+    window.addEventListener('keydown', onAct, { once: true, capture: true });
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      window.removeEventListener('pointerdown', onAct, { capture: true });
+      window.removeEventListener('keydown', onAct, { capture: true });
+      document.removeEventListener('visibilitychange', onVis);
+    };
+  }, []);
   useEffect(() => {
     liveRef.current = isLiveMode;
   }, [isLiveMode]);
@@ -235,7 +282,7 @@ export default function YuktiApp() {
     });
     engine.setPlaybackEndHandler(() => {
       tailUntilRef.current = performance.now() + PLAYBACK_TAIL_MS; // P0.10: echo tail
-      setOrbState((s) => (s === 'speaking' ? (micActiveRef.current ? 'listening' : 'idle') : s));
+      setOrbState((s) => (s === 'speaking' ? (restStateOf(micActiveRef.current, engagedRef.current)) : s));
     });
     (window as any).__yukti = {
       engine,
@@ -341,7 +388,7 @@ export default function YuktiApp() {
         // first sign-in: /ws/live was never opened, so open it now that there is a signed principal
         if (firstSignIn && liveRef.current) void yuktiClient.connect({ persona: p, language: langRef.current, voice: 'Leda' });
       });
-    setOrbState(micActiveRef.current ? 'listening' : 'idle');
+    setOrbState(restStateOf(micActiveRef.current, engagedRef.current));
   }, []);
 
   // Register global UI-command event bus handlers (Urvi `useUiCommands` pattern)
@@ -379,10 +426,33 @@ export default function YuktiApp() {
         // Re-plot updates the CURRENT card in place (U2.5); no backend call, no new card.
         dispatchFeed({ type: 'refine', update: (c) => applyChartKind(c, val) });
       },
+      overlay: (val) => {
+        // 26-Oct: oil-price overlay on the most recent fiscal-year chart (not a chat reply that came after it)
+        const target = [...turnsRef.current].reverse().find((t) => {
+          const c = t.contract as any;
+          return c?.visual?.type === 'chart' && isOilOverlayEligible(c.visual.chart);
+        });
+        const v = String(val || 'brent').toLowerCase();
+        const detail: OilOverlayEventDetail = { value: v === 'off' ? 'off' : v === 'wti' ? 'wti' : v === 'inr' ? 'inr' : 'brent', targetTurnId: target?.contract?.turn_id };
+        window.dispatchEvent(new CustomEvent<OilOverlayEventDetail>(OIL_OVERLAY_EVENT, { detail }));
+        if (!detail.handled && detail.value !== 'off')
+          pushMessage({
+            id: uid('a'),
+            role: 'agent',
+            text: 'The oil price can be shown on top of a year-by-year chart. Ask for one first (e.g. "Show revenue for the last 10 years"), then say "overlay Brent" or "overlay WTI".',
+            timestamp: now(),
+          });
+      },
       export: (val) => {
         // P4.7 (SPEC-10 §4.8): typed/spoken export intents are performed by the latest answer card, which owns
         // the live chart (PNG/SVG), the turn id (server-side RBAC) and the toast. Value: format | 'auto' | 'fmt:default'.
-        const detail: ExportEventDetail = { value: String(val || 'auto').toLowerCase() };
+        // 26-Oct: export the most recent answer that has something to export (a table/chart/document), not a
+        // chat reply that came after it ("export it as Excel" after "thanks" still exports the list).
+        const target = [...turnsRef.current].reverse().find((t) => {
+          const c = t.contract as any;
+          return c && (c.export_options || []).length > 0 && c.visual && c.visual.type && c.visual.type !== 'none';
+        });
+        const detail: ExportEventDetail = { value: String(val || 'auto').toLowerCase(), targetTurnId: target?.contract?.turn_id };
         window.dispatchEvent(new CustomEvent<ExportEventDetail>(EXPORT_EVENT, { detail }));
         if (!detail.handled) console.warn('[yukti] export intent with no answer on screen', detail.value);
       },
@@ -421,6 +491,8 @@ export default function YuktiApp() {
       dispatchUi({ action: 'chart_kind', value: val.toLowerCase() });
     } else if (cmd === 'export') {
       dispatchUi({ action: 'export', value: val || 'auto' });
+    } else if (cmd === 'overlay') {
+      dispatchUi({ action: 'overlay', value: val.toLowerCase() || 'brent' });
     }
   }, []);
 
@@ -572,7 +644,7 @@ export default function YuktiApp() {
       settleVoiceTurn('settle', undefined, true); // keep what Yukti had said so far (or note the interruption)
       engineRef.current?.stopPlayback(false);
       engineRef.current?.acceptIncoming();
-      setOrbState(micActiveRef.current ? 'listening' : 'idle');
+      setOrbState(restStateOf(micActiveRef.current, engagedRef.current));
     };
 
     const onTurnComplete = (metrics?: { speak_id?: string | null }) => {
@@ -594,14 +666,14 @@ export default function YuktiApp() {
       liveAgentMsgRef.current = null;
       setStatusLine(null);
       setMessages((prev) => prev.map((m) => (m.streaming ? { ...m, streaming: false } : m)));
-      if (!engineRef.current?.isAudioPlaying()) setOrbState(micActiveRef.current ? 'listening' : 'idle');
+      if (!engineRef.current?.isAudioPlaying()) setOrbState(restStateOf(micActiveRef.current, engagedRef.current));
     };
 
     const onError = (e: { message: string }) => {
       settleVoiceTurn('fail', `Voice session problem: ${e.message}`);
       setStatusLine(null);
       pushMessage({ id: uid('err'), role: 'error', text: `Voice session problem: ${e.message}`, timestamp: now() });
-      setOrbState(micActiveRef.current ? 'listening' : 'idle');
+      setOrbState(restStateOf(micActiveRef.current, engagedRef.current));
     };
 
     yuktiClient.on('ws_state', onState);
@@ -641,7 +713,7 @@ export default function YuktiApp() {
     tailUntilRef.current = 0;
     bargeDetectorRef.current.reset();
     gatedRingRef.current = [];
-    setOrbState(micActiveRef.current ? 'listening' : 'idle');
+    setOrbState(restStateOf(micActiveRef.current, engagedRef.current));
   }, []);
   const interruptNowRef = useRef(interruptNow);
   useEffect(() => {
@@ -719,11 +791,37 @@ export default function YuktiApp() {
         tailUntilMs: tailUntilRef.current,
         bargeOpen: bargeOpenRef.current,
       });
-      if (liveRef.current && open) yuktiClient.sendAudioChunk(chunk);
-      else if (!open) {
+      // 26-Oct noise gate: adaptive background-noise floor; only frames clearly above it count as speech. Non-speech
+      // frames are sent as true silence, so Gemini can always tell the user has stopped (room noise used to keep the
+      // turn open forever). A short pre-roll and hangover keep word onsets and tails intact.
+      const lv = eng.getRawMicLevel();
+      const g = noiseGateRef.current;
+      g.floor = lv < g.floor ? g.floor * 0.7 + lv * 0.3 : g.floor + (lv - g.floor) * 0.002;
+      const nowMs = performance.now();
+      const isSpeech = lv > Math.max(VOICE_ACTIVITY_LEVEL, g.floor + GATE_MARGIN);
+      if (isSpeech) g.lastSpeechMs = nowMs;
+      const gateOpen = nowMs - g.lastSpeechMs < GATE_HANGOVER_MS;
+      if (engagedRef.current && isSpeech) lastActivityRef.current = nowMs;
+      if (!engagedRef.current) {
+        g.preroll = [];
+        return; // listening locally only: the aurora reacts, nothing is sent to Gemini
+      }
+      if (!open) {
+        // half-duplex gate closed (Yukti speaking): keep the recent frames for a voice barge-in (P0.10)
         const ring = gatedRingRef.current;
         ring.push(chunk);
         if (ring.length > GATED_RING_FRAMES) ring.shift();
+        return;
+      }
+      if (!liveRef.current) return;
+      if (gateOpen) {
+        for (const pre of g.preroll) yuktiClient.sendAudioChunk(pre);
+        g.preroll = [];
+        yuktiClient.sendAudioChunk(chunk);
+      } else {
+        g.preroll.push(chunk);
+        if (g.preroll.length > GATE_PREROLL_FRAMES) g.preroll.shift();
+        yuktiClient.sendAudioChunk(new ArrayBuffer(chunk.byteLength)); // silence
       }
     }, deviceId);
     if (!res.ok) {
@@ -736,20 +834,39 @@ export default function YuktiApp() {
 
     eng.startSpeechRecognition(
       langRef.current,
-      (interim) => setLiveInterimText(interim),
+      (interim) => {
+        if (engagedRef.current) setLiveInterimText(interim);
+        // still talking: push back any pending fallback commit (a thinking pause must not cut the sentence)
+        const pend = srPendingRef.current;
+        if (pend.timer !== null && interim.trim()) {
+          window.clearTimeout(pend.timer);
+          pend.timer = window.setTimeout(pend.fire, SR_FALLBACK_COMMIT_MS);
+        }
+      },
       (finalText) => {
         setLiveInterimText('');
         // When Gemini Live transcribes the user's PCM stream, onUserTranscript sets wsAudioGotFirstChunkRef=true
         // during speech so browser SR is suppressed (zero duplicate turns). When Gemini Live has not transcribed
         // the turn (e.g. quiet/virtual mic where getUserMedia delivers near-zero PCM, or degraded socket),
         // browser SR commits the utterance and routes it through runTypedTurn + Leda 24 kHz voice playback.
-        if (!wsAudioGotFirstChunkRef.current && finalText.trim()) {
+        // 26-Oct: wait SR_FALLBACK_COMMIT_MS after the last speech before committing, joining the pieces of a sentence
+        // spoken with pauses; Gemini Live's own transcript (if it arrives meanwhile) still wins and cancels this.
+        if (!engagedRef.current || wsAudioGotFirstChunkRef.current || !finalText.trim()) return;
+        const pend = srPendingRef.current;
+        pend.text = `${pend.text} ${finalText.trim()}`.trim();
+        pend.fire = () => {
+          const text = pend.text;
+          pend.text = '';
+          pend.timer = null;
+          if (!engagedRef.current || wsAudioGotFirstChunkRef.current || !text) return;
           wsAudioGotFirstChunkRef.current = true;
           srHandledTurnRef.current = true;
           if (liveRef.current) yuktiClient.sendInterrupt();
           void stopMicRef.current(false);
-          void runTypedTurnRef.current(finalText.trim());
-        }
+          void runTypedTurnRef.current(text);
+        };
+        if (pend.timer !== null) window.clearTimeout(pend.timer);
+        pend.timer = window.setTimeout(pend.fire, SR_FALLBACK_COMMIT_MS);
       }
     );
 
@@ -757,7 +874,7 @@ export default function YuktiApp() {
       void yuktiClient.connect({ persona: personaRef.current, language: langRef.current, voice: 'Leda' });
     }
     setIsMicActive(true);
-    setOrbState('listening');
+    setOrbState(restStateOf(true, engagedRef.current));
     return true;
   };
 
@@ -804,16 +921,84 @@ export default function YuktiApp() {
     };
   }, []);
 
+  // Engagement (listen locally, send on tap): engage = Gemini starts hearing the mic; disengage = back to local-only.
+  const engage = useCallback(() => {
+    engagedRef.current = true;
+    lastActivityRef.current = performance.now();
+    engagedAtRef.current = performance.now();
+    setOrbState((s) => (s === 'idle' && micActiveRef.current ? 'listening' : s));
+  }, []);
+  const disengage = useCallback(() => {
+    if (!HANDS_FREE || !engagedRef.current) return;
+    engagedRef.current = false;
+    if (liveRef.current && micActiveRef.current && !srHandledTurnRef.current) yuktiClient.sendAudioStreamEnd();
+    setLiveInterimText('');
+    setOrbState((s) => (s === 'listening' ? 'idle' : s));
+  }, []);
+
   const toggleMic = useCallback(async () => {
     // P0.10: while Yukti is speaking, a tap means "stop talking and listen to me", never "turn the mic off"
     if (engineRef.current?.isAudioPlaying()) {
       interruptNow();
+      if (HANDS_FREE) engage();
       if (!micActiveRef.current) await startMic();
+      return;
+    }
+    if (HANDS_FREE) {
+      // tap while Yukti is listening to you = stop sending (the aurora keeps reacting locally)
+      if (micActiveRef.current && engagedRef.current) {
+        disengage();
+        return;
+      }
+      handsFreeRef.current = true;
+      handsFreeFailsRef.current = 0;
+      if (!micActiveRef.current && !(await startMic())) return;
+      engage();
       return;
     }
     if (micActiveRef.current) await stopMic(true);
     else await startMic();
-  }, [startMic, stopMic, interruptNow]);
+  }, [startMic, stopMic, interruptNow, engage, disengage]);
+
+  // Follow-ups without a tap: when Yukti finishes a reply, stay engaged; engagement ends after ENGAGE_IDLE_MS
+  // with no voice and no turn in progress.
+  const prevOrbStateRef = useRef<OrbState>('idle');
+  useEffect(() => {
+    const prev = prevOrbStateRef.current;
+    prevOrbStateRef.current = orbState;
+    if (HANDS_FREE && prev === 'speaking' && orbState !== 'speaking' && orbState !== 'thinking') engage();
+  }, [orbState, engage]);
+  useEffect(() => {
+    if (!HANDS_FREE) return;
+    const id = window.setInterval(() => {
+      if (!engagedRef.current) return;
+      const st = orbStateRef.current;
+      if (st === 'thinking' || st === 'speaking' || engineRef.current?.isAudioPlaying()) {
+        lastActivityRef.current = performance.now();
+        engagedAtRef.current = performance.now();
+        return;
+      }
+      const now = performance.now();
+      if (now - lastActivityRef.current > ENGAGE_IDLE_MS || now - engagedAtRef.current > ENGAGE_MAX_NO_TURN_MS) disengage();
+    }, 400);
+    return () => window.clearInterval(id);
+  }, [disengage]);
+
+  // Hands-free: (re)open the mic (local listening for the aurora) whenever Yukti is idle, signed in and visible. This covers the first
+  // sign-in, the browser speech-recognition fallback (which closes the mic for its turn) and returning to the tab.
+  useEffect(() => {
+    if (!HANDS_FREE || !handsFreeRef.current || !persona || isMicActive || micError || signInRequired) return;
+    if (orbState !== 'idle' || !userActivated || document.visibilityState !== 'visible') return;
+    if (handsFreeFailsRef.current >= 3) return; // give up quietly after repeated failures; a tap still works
+    const id = window.setTimeout(async () => {
+      // re-check at fire time: a turn may have started in the meantime
+      if (!handsFreeRef.current || micActiveRef.current || orbStateRef.current !== 'idle' || !personaRef.current) return;
+      if (engineRef.current?.isAudioPlaying() || document.visibilityState !== 'visible') return;
+      const ok = await startMic();
+      handsFreeFailsRef.current = ok ? 0 : handsFreeFailsRef.current + 1;
+    }, 600);
+    return () => window.clearTimeout(id);
+  }, [persona, isMicActive, orbState, micError, signInRequired, userActivated, visTick, startMic]);
 
   const handleToggleMute = useCallback(() => {
     setIsMuted((prev) => {
@@ -975,7 +1160,7 @@ export default function YuktiApp() {
         setBusy(false);
         setSlow(false);
         setStatusLine(null);
-        setOrbState((s) => (s === 'speaking' ? 'speaking' : micActiveRef.current ? 'listening' : 'idle'));
+        setOrbState((s) => (s === 'speaking' ? 'speaking' : restStateOf(micActiveRef.current, engagedRef.current)));
       }
     },
     [applyContract, pushMessage, checkBackend]
@@ -1066,7 +1251,7 @@ export default function YuktiApp() {
     const newSid = yuktiClient.resetSession();
     if (personaRef.current) delete personaStoreRef.current[personaRef.current];
     void newSid;
-    setOrbState(micActiveRef.current ? 'listening' : 'idle');
+    setOrbState(restStateOf(micActiveRef.current, engagedRef.current));
   }, []);
 
   const micLevel = useCallback(() => engineRef.current?.getMicLevel() || 0, []);
@@ -1089,6 +1274,8 @@ export default function YuktiApp() {
         backend={backend}
         demo={!isLiveMode ? { index: Math.max(0, fixtureIndex), total: FIXTURES.length, onPrev: () => loadFixture(Math.max(0, fixtureIndex - 1)), onNext: () => loadFixture(fixtureIndex + 1) } : undefined}
         micLevel={micLevel}
+        isMuted={isMuted}
+        onToggleMute={handleToggleMute}
       />
       {/* P2H.2 G4 M2 (BEH-01.01): first visit → blocking sign-in; nothing loads under a default identity */}
       <PersonaPicker open={signInRequired} required current={null} onClose={() => undefined} onPick={(id) => handlePersonaChange(id)} />

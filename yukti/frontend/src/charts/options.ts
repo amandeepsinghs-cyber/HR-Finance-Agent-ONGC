@@ -732,7 +732,12 @@ export function groupedOption(plan: ChartPlan, t: ChartTokens, data: Record<stri
 /** Horizontal stacked bars (e.g. receivables ageing) with severity ramp and totals. */
 export function stackedOption(plan: ChartPlan, t: ChartTokens, data: Record<string, any>[]): Opt {
   const keys = plan.seriesKeys;
-  const sorted = [...data].sort((a, b) => keys.reduce((s, k) => s + (toNumber(b[k]) || 0), 0) - keys.reduce((s, k) => s + (toNumber(a[k]) || 0), 0)).slice(0, 12);
+  // 27-Oct: a time dimension (fiscal years / years) keeps chronological order; categories are ranked by total
+  const timeDim = data.length > 1 && data.every((r) => /^(FY\s*'?\d{2,4}(-\d{2})?|\d{4}(-\d{2})?)$/i.test(String(r[plan.dimKey] ?? '').trim()));
+  const sorted = (timeDim
+    ? [...data]
+    : [...data].sort((a, b) => keys.reduce((s, k) => s + (toNumber(b[k]) || 0), 0) - keys.reduce((s, k) => s + (toNumber(a[k]) || 0), 0))
+  ).slice(timeDim ? -12 : 0, timeDim ? undefined : 12);
   const labels = sorted.map((r) => humanizeValue(r[plan.dimKey]));
   // Severity = buckets beyond 90 days (lower bound ≥ 90: "91-180", ">180", "180+ days", "overdue"). Severity
   // shades run maroonSoft → maroon so the oldest bucket is the darkest; current buckets use the blue ramp.

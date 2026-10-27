@@ -61,7 +61,9 @@ class Pcm16DownsamplerProcessor extends AudioWorkletProcessor {
       if (av > peakAbs) peakAbs = av;
     }
 
-    const gain = peakAbs > 0.00015 && peakAbs < 0.25 ? Math.min(24.0, 0.35 / peakAbs) : 1.0;
+    // 26-Oct: boost only real (speech-level) signal, and gently. The old 24x boost on any block above -76 dBFS turned
+    // room hiss into loud audio, so Gemini never heard silence (turns did not end) and misread noise as other languages.
+    const gain = peakAbs >= 0.02 && peakAbs < 0.25 ? Math.min(3.0, 0.35 / peakAbs) : 1.0;
 
     let sumSq = 0;
     for (let i = 0; i < n; i++) {

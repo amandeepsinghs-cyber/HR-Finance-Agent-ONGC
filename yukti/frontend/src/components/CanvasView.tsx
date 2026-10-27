@@ -100,7 +100,7 @@ const Greeting: React.FC<{
   useEffect(() => {
     const fit = () => {
       const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-      // Siri-scale wide aurora wave on the greeting (≈ 236 px tall × 448 px wide at 1440p, scales on 4K)
+      // aurora wave on the greeting (≈ 236 px at 1440p, scales on 4K); sponsor preferred this over the 288 px trial (26-Oct)
       setOrbPx(Math.round(Math.min(420, Math.max(200, rem * 14.75))));
     };
     fit();
@@ -111,15 +111,16 @@ const Greeting: React.FC<{
 
   return (
     <div className="relative flex-1 flex flex-col items-center justify-between text-center px-6 pt-4 pb-32 w-full min-h-[calc(100vh-14.5rem)]" data-testid="greeting">
-      <div className="relative my-auto flex flex-col items-center max-w-[60rem] w-full">
-        <h1 className="text-display font-display text-[var(--ink)]">
-          {name ? `${hello}, ${name}` : hello}
-        </h1>
-        <p className="mt-2 text-body text-[var(--ink-2)]">I&apos;m Yukti, your HR &amp; Finance agent. Ask by voice or type below.</p>
+      {/* AI aura bloom (D-16): feathery pastel light behind Yukti's presence only (static per D-25) */}
+      <div className="pointer-events-none absolute -inset-x-16 -top-10 h-[80%] [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_72%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_72%)]" aria-hidden>
+        <div className="yk-aura-bloom" />
+      </div>
 
-        {/* FEAT-004 / V12: centre-stage aurora voice orb on the greeting (restored; dropped in the 23-Oct WIP snapshot).
+      <div className="relative my-auto flex flex-col items-center max-w-[60rem] w-full">
+        {/* FEAT-004 / V12 / D-29: centre-stage "Aurora wave" voice orb above the greeting (the sponsor-selected design,
+            restored 26-Oct after the 23-Oct WIP snapshot swapped it for a cloud sphere; refs in docs/design_refs/aurora_wave).
             Tap to talk; it reflects listening / thinking / speaking via orbState + the live audio engine. */}
-        <div className="mt-8 relative flex flex-col items-center" data-testid="greeting-talk">
+        <div className="relative flex flex-col items-center" data-testid="greeting-talk">
           <VoiceOrb
             state={orbState}
             isDark={isDark}
@@ -130,6 +131,11 @@ const Greeting: React.FC<{
             pressed={!!isMicActive}
           />
         </div>
+
+        <h1 className="mt-6 text-display font-display text-[var(--ink)]">
+          {name ? `${hello}, ${name}` : hello}
+        </h1>
+        <p className="mt-2 text-body text-[var(--ink-2)]">I&apos;m Yukti, your HR &amp; Finance agent. Ask by voice or type below.</p>
 
         {liveInterimText ? (
           <p className="mt-5 text-body text-[var(--ink-2)] max-w-[44rem] animate-pulse">&ldquo;{liveInterimText}&rdquo;</p>

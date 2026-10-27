@@ -3,7 +3,7 @@
  *
  * Wraps Next.js and proxies backend traffic through the UI origin so the browser
  * only ever talks to ONE port (forward only port 3200 from your laptop):
- *   /api/turn, /api/export, /api/export/{id}, /api/auth/*, /health  -> YUKTI_BACKEND_URL (HTTP or HTTPS, e.g. Cloud Run)
+ *   /api/turn, /api/export, /api/export/{id}, /api/auth/*, /api/market/*, /health  -> YUKTI_BACKEND_URL (HTTP or HTTPS, e.g. Cloud Run)
  *   /ws/live                                          -> YUKTI_BACKEND_URL (WebSocket upgrade)
  * Everything else (pages, assets, HMR websocket) is served by Next.
  *
@@ -36,6 +36,7 @@ const PROXY_HTTP = [
   /^\/api\/auth(\/|$|\?)/,
   /^\/api\/jobs(\/|$|\?)/,
   /^\/api\/actions(\/|$|\?)/,
+  /^\/api\/market(\/|$|\?)/, // 26-Oct: live Brent / WTI prices for the oil overlay
   /^\/health(\/|$|\?)/,
 ];
 const isProxiedHttp = (p) => PROXY_HTTP.some((re) => re.test(p));

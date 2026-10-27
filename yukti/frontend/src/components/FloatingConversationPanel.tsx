@@ -20,8 +20,6 @@ import {
   Scale,
   FileText,
   MessageSquare,
-  Volume2,
-  VolumeX,
   X,
   Maximize2,
   Minimize2,
@@ -408,60 +406,27 @@ export const FloatingConversationPanel: React.FC<Props> = ({
           {/* Expanded contents */}
           {!collapsed && (
             <>
-              {/* Replicate the TopBar Listening aura ring + animated 5-bar LevelMeter at the bottom panel (made bigger: 2.75rem / 44px) */}
-              {orbState !== 'idle' ? (
-                /* P4.9 (SPEC-09 §4.9, V12/V16): the Siri-like orb is visible in docked + fullscreen whenever Yukti is
-                   listening, thinking or speaking — not only when the panel is minimised. Same control + testids as
-                   the mic button: tap stops Yukti / toggles the mic (P0.10 Stop control). */
-                <button
-                  type="button"
-                  onClick={onToggleMic}
-                  data-testid="mic-button"
-                  aria-pressed={isMicActive}
-                  aria-label={orbState === 'speaking' ? 'Stop Yukti speaking' : isMicActive ? 'Stop listening' : 'Start talking'}
-                  title={orbState === 'speaking' ? 'Stop Yukti and talk (or press Space)' : isMicActive ? 'Listening — click to stop' : 'Talk to Yukti (or press Space)'}
-                  data-orb-state={orbState}
-                  className="relative shrink-0 w-12 h-12 rounded-full grid place-items-center cursor-pointer transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
-                >
-                  <VoiceOrb state={orbState} isDark={isDark} size={48} audioEngine={audioEngine} interactive={false} label={`Yukti is ${orbState}`} />
-                  {orbState === 'speaking' && (
-                    <span className="absolute inset-0 grid place-items-center pointer-events-none" aria-hidden>
-                      <span className="w-5 h-5 rounded-full grid place-items-center bg-[var(--card)] border border-[var(--hairline)] shadow-sm text-[var(--ink)]">
-                        <Square className="w-2.5 h-2.5 fill-current" data-testid="stop-speaking" />
-                      </span>
+              {/* 26-Oct (sponsor): ONE voice input. The aurora is always the control (mic off, local listening, listening,
+                  thinking, speaking); the old mic icon / level-meter variants are gone. Same testid + toggle as before. */}
+              <button
+                type="button"
+                onClick={onToggleMic}
+                data-testid="mic-button"
+                aria-pressed={orbState === 'listening'}
+                aria-label={orbState === 'speaking' ? 'Stop Yukti speaking' : orbState === 'listening' ? 'Stop listening' : 'Talk to Yukti'}
+                title={orbState === 'speaking' ? 'Stop Yukti and talk (or press Space)' : orbState === 'listening' ? 'Listening — click to stop' : 'Tap to talk to Yukti (or press Space)'}
+                data-orb-state={orbState}
+                className="relative shrink-0 w-12 h-12 rounded-full grid place-items-center cursor-pointer transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+              >
+                <VoiceOrb state={orbState} isDark={isDark} size={48} audioEngine={audioEngine} interactive={false} label={`Yukti is ${orbState}`} />
+                {orbState === 'speaking' && (
+                  <span className="absolute inset-0 grid place-items-center pointer-events-none" aria-hidden>
+                    <span className="w-5 h-5 rounded-full grid place-items-center bg-[var(--card)] border border-[var(--hairline)] shadow-sm text-[var(--ink)]">
+                      <Square className="w-2.5 h-2.5 fill-current" data-testid="stop-speaking" />
                     </span>
-                  )}
-                </button>
-              ) : isMicActive ? (
-                <button
-                  type="button"
-                  onClick={onToggleMic}
-                  data-testid="mic-button"
-                  aria-pressed={isMicActive}
-                  aria-label="Stop listening"
-                  title="Listening — click to stop"
-                  data-aura="listening"
-                  className="yk-aura-ring rounded-full w-11 h-11 shrink-0 cursor-pointer transition-transform hover:scale-105 active:scale-95"
-                >
-                  <span
-                    className="yk-aura-surface rounded-full w-full h-full grid place-items-center bg-[var(--card)] border border-[var(--hairline)] shadow-sm text-[var(--accent)]"
-                  >
-                    {/* mic open but Yukti idle: live input level (the orb branch above covers listening/thinking/speaking) */}
-                    <LevelMeter level={micLevel} active size="lg" />
                   </span>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={onToggleMic}
-                  data-testid="mic-button"
-                  aria-pressed={isMicActive}
-                  className="shrink-0 w-[2.65rem] h-[2.65rem] rounded-full flex items-center justify-center transition-all font-medium text-[0.84rem] bg-[var(--mic-bg)] text-[var(--brand-red)] border border-[var(--mic-border)] hover:bg-[var(--mic-bg-hover)] shadow-sm"
-                  title="Talk to Yukti (or press Space)"
-                >
-                  <Mic className="w-[1.12rem] h-[1.12rem]" />
-                </button>
-              )}
+                )}
+              </button>
             </>
           )}
 
@@ -477,7 +442,7 @@ export const FloatingConversationPanel: React.FC<Props> = ({
                 e.currentTarget.blur();
               }
             }}
-            placeholder={isMicActive ? (liveInterimText || 'Listening… speak naturally') : 'Ask Yukti anything about HR, Finance, policies, or draft a note…'}
+            placeholder={orbState === 'listening' ? (liveInterimText || 'Listening… speak naturally') : 'Tap the aurora to talk, or type your question about HR, Finance or policies…'}
             data-testid="chat-input"
             className={clsx(
               collapsed
@@ -488,18 +453,7 @@ export const FloatingConversationPanel: React.FC<Props> = ({
 
           {!collapsed && (
             <>
-              {/* Speaker / Voice Mute Toggle */}
-              <IconButton
-                onClick={onToggleMute}
-                className={clsx(
-                  '!w-9 !h-9 !rounded-full border border-[var(--hairline)] [&>svg]:!w-4 [&>svg]:!h-4',
-                  isMuted ? '!text-[var(--maroon)] !bg-[var(--maroon-pale)]' : '!text-[var(--accent)] !bg-[var(--surface)]',
-                )}
-                label={isMuted ? 'Voice output muted — click to unmute' : 'Voice output active (Leda) — click to mute'}
-                aria-label="Toggle voice output"
-              >
-                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-              </IconButton>
+              {/* Speaker (Yukti's voice on/off) moved to the top bar on 26-Oct so the ask bar has a single voice input */}
             </>
           )}
 

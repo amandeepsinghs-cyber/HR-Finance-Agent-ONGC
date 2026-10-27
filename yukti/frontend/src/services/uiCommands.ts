@@ -60,6 +60,8 @@ export const UI_ACTIONS = {
   // 'png:default') means no format word was given, so the card states which default it used.
   export: ['xlsx', 'csv', 'pdf', 'png', 'svg', 'docx', 'eml', 'sheets', 'docs', 'auto'] as const,
   history: ['back', 'forward'] as const,
+  // 26-Oct: Brent / WTI price line on top of a fiscal-year chart (revenue, PAT…); 'off' removes it
+  overlay: ['brent', 'wti', 'inr', 'off'] as const,
 } as const;
 
 export type UiAction = keyof typeof UI_ACTIONS;
@@ -128,6 +130,12 @@ export function labelOf(cmd: UiCommand): string {
     }
     case 'history':
       return cmd.value === 'back' ? 'History → Previous visual' : 'History → Next visual';
+    case 'overlay':
+      return cmd.value === 'off'
+        ? 'Overlay removed'
+        : cmd.value === 'inr'
+          ? 'Overlay → rupee per dollar'
+          : `Overlay → ${cmd.value === 'wti' ? 'WTI' : 'Brent'} oil price`;
   }
 }
 
@@ -377,9 +385,24 @@ function matchClause(raw: string): UiCommand | null {
  * If any clause is a data question or screen navigation requiring backend data,
  * return `null` so it goes through the agent.
  */
+/** 26-Oct: "overlay Brent", "show the WTI price on top", "add oil price to the chart", "remove oil price". */
+export function detectOilOverlay(text: string): UiCommand | null {
+  const q = text.toLowerCase();
+  const oil = /\b(brent|wti|west texas|oil price|oil prices|crude price|crude prices|crude oil price|oil|rupee|dollar rate|exchange rate|usd ?inr|inr|currency|forex)\b/;
+  if (!oil.test(q)) return null;
+  if (/\b(remove|hide|clear|drop|turn off|without)\b/.test(q)) return { action: 'overlay', value: 'off' };
+  const verb = /\b(overlay|superimpose|super impose)\b/.test(q);
+  const placed = /\b(add|show|plot|put|include|bring|compare)\b/.test(q) && /\b(on top|over it|overlay|alongside|on the (same )?(chart|graph|plot)|to the (chart|graph|plot)|with (the )?(revenue|chart|graph|plot)|as well|too)\b/.test(q);
+  if (!verb && !placed) return null;
+  if (/\b(rupee|dollar rate|exchange rate|usd ?inr|inr|currency|forex)\b/.test(q) && !/\b(brent|wti|crude|oil)\b/.test(q)) return { action: 'overlay', value: 'inr' };
+  return { action: 'overlay', value: /\b(wti|west texas)\b/.test(q) ? 'wti' : 'brent' };
+}
+
 export function parseUiCommands(text: string): UiCommand[] | null {
   const cleaned = text.trim().replace(/[?.!]+$/g, '');
   if (!cleaned) return null;
+  const oilCmd = detectOilOverlay(cleaned);
+  if (oilCmd) return [oilCmd];
   // Whole-utterance export check first (export requests often list column names separated by commas / "and")
   const wholeExport = detectExportIntent(cleaned);
   if (wholeExport) {

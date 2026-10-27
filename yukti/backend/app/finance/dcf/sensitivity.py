@@ -53,7 +53,9 @@ def compute_tornado(assumptions, base_ps):
         ("brent_usd", "brent", lambda v: (v - 10, v + 10)),
         ("opex_per_boe", "opex", lambda v: (v * 0.85, v * 1.15)),
         ("capex_scale_pct", "capex", lambda v: (v - 20, v + 20)),
-        ("production_decline_pct", "prod", lambda v: (v - 10, v + 10)),
+        # 27-Oct (sponsor): ±3 pts/yr (was ±10, which swung value ₹17–685/share and dwarfed every other driver;
+        # ±2–3%/yr is a realistic range for ONGC's mature fields)
+        ("production_decline_pct", "prod", lambda v: (v - 3, v + 3)),
         ("wacc_pct", "wacc", lambda v: (v - 1, v + 1)),
         ("terminal_g_pct", "g", lambda v: (v - 1, v + 1)),
         ("fx_inr_usd", "fx", lambda v: (v * 0.95, v * 1.05)),

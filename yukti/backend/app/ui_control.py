@@ -62,6 +62,8 @@ UI_ACTIONS: Dict[str, Tuple[str, ...]] = {
     "panel": ("expand", "dock", "minimise", "close", "open_history"),
     "export": ("pdf", "xlsx", "docx", "sheets", "docs"),
     "history": ("back", "forward"),
+    # 26-Oct: Brent / WTI price line on top of a fiscal-year chart (revenue, PAT...); "off" removes it
+    "overlay": ("brent", "wti", "inr", "off"),
 }
 
 # Canonical queries triggered when the user says "open <screen>" or focuses a location/filter
@@ -79,6 +81,21 @@ SCREEN_CANONICAL_QUERIES: Dict[str, str] = {
 
 # Forgiving synonyms so the LLM (or deterministic parser) doesn't have to hit exact tokens.
 _ALIASES: Dict[Tuple[str, str], Tuple[str, str]] = {
+    # 26-Oct oil overlay synonyms
+    ("overlay", "oil"): ("overlay", "brent"),
+    ("overlay", "oil_price"): ("overlay", "brent"),
+    ("overlay", "crude"): ("overlay", "brent"),
+    ("overlay", "west_texas"): ("overlay", "wti"),
+    ("overlay", "rupee"): ("overlay", "inr"),
+    ("overlay", "dollar"): ("overlay", "inr"),
+    ("overlay", "usd"): ("overlay", "inr"),
+    ("overlay", "usdinr"): ("overlay", "inr"),
+    ("overlay", "currency"): ("overlay", "inr"),
+    ("overlay", "exchange_rate"): ("overlay", "inr"),
+    ("overlay", "fx"): ("overlay", "inr"),
+    ("overlay", "none"): ("overlay", "off"),
+    ("overlay", "remove"): ("overlay", "off"),
+    ("overlay", "hide"): ("overlay", "off"),
     # Legacy command names from control_screen
     ("set_theme", "dark"): ("theme", "dark"),
     ("set_theme", "light"): ("theme", "light"),
@@ -243,6 +260,7 @@ def to_legacy_ui_action(cmd: Dict[str, str]) -> Dict[str, str]:
         "focus_location": ("focus_location", val),
         "grade_filter": ("grade_filter", val),
         "breakdown": ("breakdown", val),
+        "overlay": ("overlay", val),
     }
     legacy_cmd, legacy_val = legacy_map.get(act, (act, val))
     return {

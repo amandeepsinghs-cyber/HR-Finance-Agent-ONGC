@@ -55,6 +55,8 @@ export class VoiceAudioEngine {
   private recordedChunks: Blob[] = [];
   private recordedMimeType: string = 'audio/webm';
   private isMuted = false;
+  // 26-Oct: true mute = output volume 0 while the reply keeps playing (unmute resumes mid-sentence); stop is separate
+  private muteGain: GainNode | null = null;
   private synthSpeaking = false;
   // P0.10 r2 (S-2): watchdogs so a missing onend/onended can never leave the mic gate closed forever
   private synthDeadlineMs = 0; // performance.now() after which a "speaking" synth is treated as finished
@@ -88,6 +90,9 @@ export class VoiceAudioEngine {
       this.playAnalyser.fftSize = 256;
       this.playAnalyser.smoothingTimeConstant = 0.75;
       this.playFreq = new Uint8Array(this.playAnalyser.frequencyBinCount);
+      this.muteGain = this.playCtx.createGain();
+      this.muteGain.gain.value = this.isMuted ? 0 : 1;
+      this.muteGain.connect(this.playCtx.destination);
       this.nextPlayTime = this.playCtx.currentTime;
     }
     return this.playCtx;
@@ -101,9 +106,21 @@ export class VoiceAudioEngine {
     return this.isMuted;
   }
 
+  /** Mute / unmute Yukti's voice WITHOUT stopping the reply (use stopPlayback / interrupt to stop). */
   public setMuted(m: boolean): void {
     this.isMuted = m;
-    if (m) this.stopPlayback(true);
+    if (this.muteGain && this.playCtx) {
+      const now = this.playCtx.currentTime;
+      this.muteGain.gain.cancelScheduledValues(now);
+      this.muteGain.gain.setTargetAtTime(m ? 0 : 1, now, 0.03); // quick fade, no click
+    }
+    // browser-TTS fallback cannot be volume-controlled: pause / resume it instead
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window && this.synthSpeaking) {
+      try {
+        if (m) window.speechSynthesis.pause();
+        else window.speechSynthesis.resume();
+      } catch {}
+    }
   }
 
   /** Speaks text immediately via browser SpeechSynthesis (female Indian/English voice) when Leda stream isn't active. */
@@ -468,7 +485,8 @@ export class VoiceAudioEngine {
           const lv = Math.min(1, Math.sqrt(rms) * 2.2);
           this.rawMicLevel = lv; // fallback path feeds barge-in too
           this.micLevel = this.micLevel * 0.45 + lv * 0.55;
-          const gain = peakAbs > 0.00015 && peakAbs < 0.25 ? Math.min(24.0, 0.35 / peakAbs) : 1.0;
+          // same gentle, speech-only boost as audio-processor.js (26-Oct: the 24x boost amplified room noise)
+          const gain = peakAbs >= 0.02 && peakAbs < 0.25 ? Math.min(3.0, 0.35 / peakAbs) : 1.0;
           while (pos < n) {
             const i0 = Math.floor(pos);
             const frac = pos - i0;
@@ -573,7 +591,7 @@ export class VoiceAudioEngine {
   }
 
   public enqueue24kAudio(pcmData: string | ArrayBuffer): void {
-    if (this.isMuted) return;
+    // muted replies still play (silently, via muteGain) so the aurora, timing and unmute-mid-reply all work
     // After a barge-in, the rest of the interrupted reply is discarded until acceptIncoming() (U3.4).
     if (this.dropIncoming) return;
     if (typeof window !== 'undefined' && 'speechSynthesis' in window && this.synthSpeaking) {
@@ -613,7 +631,7 @@ export class VoiceAudioEngine {
     const src = ctx.createBufferSource();
     src.buffer = buf;
     // Connect directly to ctx.destination (Urvi `audioPlayer.ts` pattern) and in parallel to playAnalyser for orb visual
-    src.connect(ctx.destination);
+    src.connect(this.muteGain || ctx.destination);
     if (this.playAnalyser) {
       try {
         src.connect(this.playAnalyser);
@@ -673,5 +691,6 @@ export class VoiceAudioEngine {
     this.playCtx = null;
     this.playAnalyser = null;
     this.playFreq = null;
+    this.muteGain = null;
   }
 }

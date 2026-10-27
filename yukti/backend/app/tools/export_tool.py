@@ -873,9 +873,12 @@ class DocumentExporter:
                 all_stmt_rows.extend(sec.get("rows") or [])
 
             tbl = doc.add_table(rows=1 + len(all_stmt_rows), cols=len(headers))
+            # 26-Oct perf: python-docx tbl.cell(r, c) rebuilds the whole cell grid on every call (O(n^2)); a 787-row
+            # roster took ~11 min. Build the grid once and index it.
+            grid = [row.cells for row in tbl.rows]
             tbl.style = "Table Grid"
             for c_idx, h_text in enumerate(headers):
-                cell = tbl.cell(0, c_idx)
+                cell = grid[0][c_idx]
                 cell.text = h_text
                 self._shade_docx_cell(cell, "F3F4F6")
                 for run in cell.paragraphs[0].runs:
@@ -887,7 +890,7 @@ class DocumentExporter:
                 kind = str(r.get("kind") or "line").lower()
                 is_bold = kind in ("subtotal", "total") or "profit before tax" in label.lower() or "profit after tax" in label.lower()
 
-                c0 = tbl.cell(r_idx, 0)
+                c0 = grid[r_idx][0]
                 c0.text = label
                 c0.paragraphs[0].paragraph_format.left_indent = Pt(12 * level)
                 if is_bold:
@@ -896,7 +899,7 @@ class DocumentExporter:
 
                 vals = r.get("values") or {}
                 for p_idx, p in enumerate(periods, start=1):
-                    c_p = tbl.cell(r_idx, p_idx)
+                    c_p = grid[r_idx][p_idx]
                     c_p.text = _format_accounting_num(vals.get(p), decimals=2)
                     if is_bold:
                         for run in c_p.paragraphs[0].runs:
@@ -909,9 +912,12 @@ class DocumentExporter:
 
         if eff_cols and eff_rows:
             tbl = doc.add_table(rows=1 + len(eff_rows), cols=len(eff_cols))
+            # 26-Oct perf: python-docx tbl.cell(r, c) rebuilds the whole cell grid on every call (O(n^2)); a 787-row
+            # roster took ~11 min. Build the grid once and index it.
+            grid = [row.cells for row in tbl.rows]
             tbl.style = "Table Grid"
             for c_idx, col_key in enumerate(eff_cols):
-                cell = tbl.cell(0, c_idx)
+                cell = grid[0][c_idx]
                 cell.text = str(headers_map.get(col_key) or col_key)
                 self._shade_docx_cell(cell, "F3F4F6")
                 for run in cell.paragraphs[0].runs:
@@ -923,7 +929,7 @@ class DocumentExporter:
                         txt = _format_accounting_num(v, decimals=2 if isinstance(v, float) else 0)
                     else:
                         txt = "" if v is None else str(v)
-                    tbl.cell(r_idx, c_idx).text = txt
+                    grid[r_idx][c_idx].text = txt
 
         if markdown_text:
             self._append_markdown_to_docx(doc, markdown_text)
@@ -941,11 +947,14 @@ class DocumentExporter:
             num_cols = max(len(r) for r in table_buffer)
             if num_cols > 0:
                 tbl = doc.add_table(rows=len(table_buffer), cols=num_cols)
+                # 26-Oct perf: python-docx tbl.cell(r, c) rebuilds the whole cell grid on every call (O(n^2)); a 787-row
+                # roster took ~11 min. Build the grid once and index it.
+                grid = [row.cells for row in tbl.rows]
                 tbl.style = "Table Grid"
                 for r_idx, row_vals in enumerate(table_buffer):
                     for c_idx, cell_val in enumerate(row_vals):
                         if c_idx < num_cols:
-                            cell = tbl.cell(r_idx, c_idx)
+                            cell = grid[r_idx][c_idx]
                             cell.text = cell_val
                             if r_idx == 0:
                                 self._shade_docx_cell(cell, "F3F4F6")

@@ -1,15 +1,22 @@
 'use client';
 
 /**
- * Yukti Voice Orb — Feathery, Light Siri-Style Flowing Aura.
+ * Yukti voice orb: "Aurora wave" (D-29; replaces the U3.1 infinity ribbon). Borderless, feathered bands of AI-aura
+ * light that ripple with the voice — no outlines, no rings, no hard edges (aura per D-16).
  *
- * Pure borderless, feathery clouds of glowing light (no dots, no hard rings, no pinched lip shape)
- * that continuously drift, breathe, and swirl like Siri's luminous aura, and swell/accelerate
- * dynamically when voice audio is heard or spoken.
+ * State dynamics:
+ *   idle      calm, slow low ripples and a faint ambient glow
+ *   listening band amplitude / thickness follow the RAW mic level (no synthetic floor)
+ *   thinking  a travelling shimmer moves through the bands
+ *   speaking  bands follow Yukti's output level (playback analyser)
+ *
+ * Canvas 2D, AI-aura tokens only, DPR-aware. prefers-reduced-motion: no ambient drift (still when silent), but the wave
+ * still follows a live voice, since that movement is the feedback that Yukti hears you (26-Oct, sponsor);
+ * pauses when off-screen or the tab is hidden. Public props are unchanged, so every caller keeps working.
  */
 import React, { useEffect, useRef } from 'react';
 import { VoiceAudioEngine } from '@/services/audioAnalyser';
-import { CLOUDS_DARK, CLOUDS_LIGHT, tint } from '@/design/orbPalette';
+import TOKENS from '@/design/tokens.json';
 
 export type OrbState = 'idle' | 'listening' | 'thinking' | 'speaking';
 
@@ -20,19 +27,41 @@ interface VoiceOrbProps {
   className?: string;
   onClick?: () => void;
   interactive?: boolean;
+  /** any source of raw mic + output levels 0..1 (the app's VoiceAudioEngine, or a simulator on showcase pages) */
   audioEngine?: Pick<VoiceAudioEngine, 'getRawMicLevel' | 'getOutputLevel'> & {
     getMicLevel?: () => number;
   };
   label?: string;
+  /** toggle state announced to assistive tech (mic on/off) */
   pressed?: boolean;
 }
 
+type RGB = [number, number, number];
+const ch = (hex: string): RGB => {
+  const h = hex.replace('#', '');
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+};
+const tint = (c: RGB, a: number) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${Math.max(0, Math.min(1, a))})`;
+const white = (a: number) => tint([255, 255, 255], a);
 
+interface Params {
+  energy: number;
+  flow: number;
+  ripple: number;
+}
+/** perceptual gain on the 0..1 voice level, so normal speaking volume produces a clearly visible swell */
+const VOICE_BOOST = 1.2;
+const TARGET: Record<OrbState, Params> = {
+  idle: { energy: 0.55, flow: 0.18, ripple: 0.1 },
+  listening: { energy: 0.8, flow: 0.38, ripple: 0.35 },
+  thinking: { energy: 0.7, flow: 0.55, ripple: 0.15 },
+  speaking: { energy: 0.92, flow: 0.45, ripple: 0.6 },
+};
 
 export const VoiceOrb: React.FC<VoiceOrbProps> = ({
   state = 'idle',
   isDark = false,
-  size = 220,
+  size = 200,
   className = '',
   onClick,
   interactive = true,
@@ -45,129 +74,216 @@ export const VoiceOrb: React.FC<VoiceOrbProps> = ({
   const engineRef = useRef(audioEngine);
   stateRef.current = state;
   engineRef.current = audioEngine;
+  // Reduced motion: the loop draws a single frame, so state changes trigger an explicit redraw.
+  const redrawRef = useRef<(() => void) | null>(null);
+  // ?orbdebug=1: live readout of state / voice level / reduced-motion, to diagnose 'not reacting' on a given machine
+  const debugRef = useRef<HTMLSpanElement | null>(null);
+  const [debug, setDebug] = React.useState(false); // set after mount, so server and client HTML match
+  useEffect(() => setDebug(new URLSearchParams(window.location.search).has('orbdebug')), []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) return;
-
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+    const th = (isDark ? TOKENS.themes.dark : TOKENS.themes.light) as unknown as Record<string, string>;
+    const pal = { blue: ch(th['aura-ring-blue']), red: ch(th['aura-ring-red']), yellow: ch(th['aura-ring-yellow']), green: ch(th['aura-ring-green']), violet: ch(th['aura-ring-violet']) };
     const dpr = Math.min(2, typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
     canvas.width = Math.round(size * dpr);
     canvas.height = Math.round(size * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    let raf = 0;
-    let last = performance.now();
-    // Phase continuously advances so the feathery Siri aura is always gently alive and drifting
+    const reduced = typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const cur = { ...TARGET[stateRef.current], level: 0, think: stateRef.current === 'thinking' ? 1 : 0 };
+    const t0 = performance.now();
+    let last = t0;
+    // integrated phase: speed changes never scrub the waveform (G4 A1)
     let phase = 0;
-    let smoothLevel = 0;
-    const clouds = isDark ? CLOUDS_DARK : CLOUDS_LIGHT;
+    let thinkPhase = 0;
+    let clock = 0; // drives the slow amplitude breathing; frozen in reduced motion unless someone speaks
+    let raf = 0;
+    let visible = true;
 
-    const render = (now: number) => {
+    const bands: [RGB, number, number, number][] = [
+      [pal.blue, 0.0, 1.0, 1.0],
+      [pal.violet, 1.3, 1.25, 0.9],
+      [pal.red, 2.6, 0.85, 0.7],
+      [pal.green, 3.9, 1.1, 0.65],
+      [pal.yellow, 5.2, 0.95, 0.55],
+    ];
+    const small = size < 80; // ask bar: 3 bands, no halo pass, so it stays a clean wave
+    const N = small ? 40 : 90;
+    // small orb keeps the clearest Google hues: blue, red, yellow
+    const activeBands = small ? [bands[0], bands[2], bands[4]] : bands;
+    const span = size * 0.46;
+    const cx = size / 2;
+    const cy = size / 2;
+    // gradients that depend only on palette / size / theme are built once per effect (G4 A4)
+    const bandGrad = new Map<string, CanvasGradient>();
+    const gradFor = (c: RGB, a: number, alphaMul: number) => {
+      const key = `${c.join(',')}|${a}|${alphaMul}`;
+      let g = bandGrad.get(key);
+      if (!g) {
+        g = ctx.createLinearGradient(cx - span, 0, cx + span, 0);
+        g.addColorStop(0, tint(c, 0));
+        g.addColorStop(0.28, tint(c, a * alphaMul));
+        g.addColorStop(0.72, tint(c, a * alphaMul));
+        g.addColorStop(1, tint(c, 0));
+        bandGrad.set(key, g);
+      }
+      return g;
+    };
+    const maskGrad = (() => {
+      const g = ctx.createRadialGradient(0, 0, size * 0.12, 0, 0, size * 0.5);
+      g.addColorStop(0, white(1));
+      g.addColorStop(0.6, white(0.9));
+      g.addColorStop(1, white(0));
+      return g;
+    })();
+    const HALO = isDark ? 0.1 : 0.14;
+    const CORE = isDark ? 0.36 : 0.46;
+
+    const draw = (now: number) => {
+      const s = stateRef.current;
+      const tg = TARGET[s];
+      // frame-rate independent easing (same feel at 60 and 120 Hz)
       const dt = Math.min(0.1, Math.max(0, (now - last) / 1000));
       last = now;
-
-      const s = stateRef.current;
+      const k = 1 - Math.exp(-dt / 0.28);
+      cur.energy += (tg.energy - cur.energy) * k;
+      cur.flow += (tg.flow - cur.flow) * k;
+      cur.ripple += (tg.ripple - cur.ripple) * k;
       const eng = engineRef.current;
-      const rawMic = eng?.getRawMicLevel ? eng.getRawMicLevel() : 0;
-      const smoothMic = eng?.getMicLevel ? eng.getMicLevel() : 0;
-      const outLv = eng?.getOutputLevel ? eng.getOutputLevel() : 0;
+      // Siri feel (26-Oct): react to the open mic the moment anyone speaks (idle or listening), with a perceptual
+      // boost and a quick attack; Yukti's own voice drives it while speaking. Mic level is 0 whenever the mic is closed.
+      const rawLv = !eng ? 0 : s === 'speaking' ? eng.getOutputLevel() : s === 'thinking' ? 0 : eng.getRawMicLevel();
+      const lv = Math.min(1, rawLv * VOICE_BOOST);
+      cur.level += (lv - cur.level) * (1 - Math.exp(-dt / (lv > cur.level ? 0.03 : 0.12)));
+      // reduced motion: time only advances while there is voice, so a silent orb is perfectly still
+      const motion = reduced ? Math.min(1, cur.level * 3) : 1;
+      cur.think += ((s === 'thinking' ? 1 : 0) - cur.think) * k;
+      if (debugRef.current) debugRef.current.textContent = `${s} · raw ${rawLv.toFixed(2)} · level ${cur.level.toFixed(2)}${reduced ? ' · reduced-motion' : ''}`;
+      phase += dt * (0.8 + cur.flow * 2 + cur.level * 6) * motion;
+      thinkPhase += dt * 3 * (reduced ? 0 : 1);
+      clock += dt * motion;
 
-      const speakCadence =
-        s === 'speaking'
-          ? Math.max(outLv, 0.35 + 0.2 * Math.sin(now * 0.008) + 0.12 * Math.cos(now * 0.013))
-          : 0;
-
-      const rawLv =
-        s === 'listening'
-          ? Math.max(rawMic, smoothMic)
-          : s === 'speaking'
-            ? Math.max(speakCadence, rawMic * 0.4)
-            : Math.max(rawMic, smoothMic, outLv);
-
-      const targetLv = Math.min(1, rawLv * 1.65);
-      smoothLevel += (targetLv - smoothLevel) * (targetLv > smoothLevel ? 0.25 : 0.1);
-
-      const baseSpeed = s === 'thinking' ? 2.6 : s === 'listening' || s === 'speaking' ? 1.55 : 0.95;
-      phase += dt * (baseSpeed + smoothLevel * 3.2);
-
+      const t = clock;
       const W = size;
-      const H = size;
-      const cx = W / 2;
-      const cy = H / 2;
+      const baseAmp = W * (0.075 + cur.ripple * 0.08 + cur.level * 0.15);
+      ctx.clearRect(0, 0, W, W);
 
-      ctx.clearRect(0, 0, W, H);
-
-      // 1. Outer ambient feathery aura halo
-      const breathe = 0.5 + 0.5 * Math.sin(phase * 0.85);
-      const outerR = W * (0.45 + 0.03 * breathe + smoothLevel * 0.04);
-      const amb = ctx.createRadialGradient(cx, cy, 0, cx, cy, outerR);
-      amb.addColorStop(0, tint(clouds[0].color, (isDark ? 0.18 : 0.14) + smoothLevel * 0.12));
-      amb.addColorStop(0.55, tint(clouds[1].color, (isDark ? 0.1 : 0.08) + smoothLevel * 0.08));
-      amb.addColorStop(1, tint(clouds[0].color, 0));
+      // ambient glow (no edge)
+      const amb = ctx.createRadialGradient(cx, cy, 0, cx, cy, W * 0.5);
+      amb.addColorStop(0, tint(pal.violet, (isDark ? 0.2 : 0.12) * cur.energy + cur.level * 0.22));
+      amb.addColorStop(1, tint(pal.blue, 0));
       ctx.fillStyle = amb;
-      ctx.fillRect(0, 0, W, H);
+      ctx.fillRect(0, 0, W, W);
 
-      // 2. Drifting, feathery Siri light clouds (soft multi-stop radial gradients that blend seamlessly)
-      ctx.save();
       ctx.globalCompositeOperation = isDark ? 'screen' : 'source-over';
-
-      clouds.forEach((c, idx) => {
-        const tX = phase * c.speedX + c.phase;
-        const tY = phase * c.speedY + c.phase * 1.3;
-        const orbitScale = 1 + smoothLevel * 0.22 + (s === 'thinking' ? 0.12 : 0);
-        const x = cx + Math.cos(tX) * W * c.orbitX * orbitScale;
-        const y = cy + Math.sin(tY) * H * c.orbitY * orbitScale;
-
-        const pulse = 1 + 0.1 * Math.sin(phase * 1.4 + idx * 1.1) + smoothLevel * 0.18;
-        const r = Math.min(W * 0.31, W * c.radiusMul * pulse);
-        const alpha = Math.min(0.82, c.alphaMul * (1 + smoothLevel * 0.35 + (s === 'listening' ? 0.1 : 0)));
-
-        const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-        g.addColorStop(0, tint(c.color, alpha));
-        g.addColorStop(0.38, tint(c.color, alpha * 0.68));
-        g.addColorStop(0.72, tint(c.color, alpha * 0.22));
-        g.addColorStop(1, tint(c.color, 0));
-
-        ctx.fillStyle = g;
+      const yAt = (u: number, f: number, ph: number, speed: number, amp: number) => {
+        const env = Math.pow(Math.sin(Math.PI * u), 1.6);
+        const x = (u - 0.5) * 2;
+        const wave = Math.sin(x * 2.2 * f + speed + ph) * 0.6 + Math.sin(x * 4.1 - speed * 1.3 + ph * 1.7) * 0.4;
+        const think = Math.sin(x * 3 - thinkPhase + ph) * 0.5;
+        // thinking blends in smoothly instead of snapping (G4 A2)
+        return env * (wave + (think - wave) * cur.think) * amp;
+      };
+      const band = (c: RGB, a: number, f: number, ph: number, thickness: number, alphaMul: number) => {
+        const speed = phase * f;
+        const amp = baseAmp * (0.6 + 0.4 * Math.sin(t * 0.9 + ph) + cur.level * 0.18 * Math.sin(t * 9 + ph * 2.3));
+        ctx.fillStyle = gradFor(c, a, alphaMul);
         ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2);
+        for (let i = 0; i <= N; i++) {
+          const u = i / N;
+          const env = Math.pow(Math.sin(Math.PI * u), 1.2);
+          const x = cx - span + u * span * 2;
+          const y = cy + yAt(u, f, ph, speed, amp) - thickness * env;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        for (let i = N; i >= 0; i--) {
+          const u = i / N;
+          const env = Math.pow(Math.sin(Math.PI * u), 1.2);
+          ctx.lineTo(cx - span + u * span * 2, cy + yAt(u, f, ph, speed, amp) + thickness * env);
+        }
+        ctx.closePath();
         ctx.fill();
+      };
+      activeBands.forEach(([c, ph, f, a], bi) => {
+        const thickness = W * (0.05 + cur.energy * 0.03 + cur.level * 0.05) * (1 - bi * 0.08);
+        // feathered halo of each band first (wide + faint), then the band itself — light, not shapes
+        if (!small) band(c, a, f, ph, thickness * 2.4, HALO);
+        band(c, a, f, ph, thickness, CORE);
       });
+      // thinking cue that doesn't depend on voice level: a soft highlight travelling along the wave (G4 A3)
+      if (cur.think > 0.02) {
+        const u = ((thinkPhase * 0.18) % 1.2) - 0.1;
+        const hx = cx - span + u * span * 2;
+        const hy = cy + yAt(Math.max(0, Math.min(1, u)), 1, 0, phase, baseAmp * 0.8); // rides the wave
+        const edgeFade = Math.sin(Math.PI * Math.max(0, Math.min(1, (u + 0.1) / 1.2))); // no visible wrap
+        const hg = ctx.createRadialGradient(hx, hy, 0, hx, hy, W * 0.16);
+        hg.addColorStop(0, white((isDark ? 0.35 : 0.6) * cur.think * edgeFade));
+        hg.addColorStop(1, white(0));
+        ctx.fillStyle = hg;
+        ctx.fillRect(hx - W * 0.16, hy - W * 0.16, W * 0.32, W * 0.32);
+      }
+      ctx.globalCompositeOperation = 'source-over';
 
-      // 3. Bright, airy pearl light core in the center so overlapping inner edges never look gray
-      const coreR = W * (0.26 + 0.025 * Math.cos(phase * 1.2) + smoothLevel * 0.05);
-      const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR);
-      const coreAlpha = isDark ? 0.32 + smoothLevel * 0.18 : 0.78 + smoothLevel * 0.15;
-      coreGrad.addColorStop(0, `rgba(255, 255, 255, ${Math.min(0.95, coreAlpha)})`);
-      coreGrad.addColorStop(0.48, `rgba(255, 255, 255, ${coreAlpha * 0.55})`);
-      coreGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      ctx.fillStyle = coreGrad;
-      ctx.beginPath();
-      ctx.arc(cx, cy, coreR, 0, Math.PI * 2);
-      ctx.fill();
+      // thin luminous core thread: visible at rest, fades away as soon as someone speaks (26-Oct, sponsor)
+      const threadA = (isDark ? 0.3 : 0.7) * Math.max(0, 1 - cur.level * 3);
+      if (threadA > 0.01) {
+        ctx.strokeStyle = white(threadA);
+        ctx.lineWidth = Math.max(0.6, W * 0.0035);
+        ctx.beginPath();
+        for (let i = 0; i <= N; i++) {
+          const u = i / N;
+          const x = cx - span + u * span * 2;
+          const y = cy + yAt(u, 1, 0, phase, baseAmp * 0.8);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
 
-      // 4. Circular radial feather mask (destination-in) so the outer edge is 100% circular & feathery (never clips to a square)
+      // borderless: feather everything into the background with an elliptical alpha mask
+      ctx.save();
       ctx.globalCompositeOperation = 'destination-in';
-      const featherMask = ctx.createRadialGradient(cx, cy, W * 0.18, cx, cy, W * 0.48);
-      featherMask.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      featherMask.addColorStop(0.68, 'rgba(255, 255, 255, 0.92)');
-      featherMask.addColorStop(0.88, 'rgba(255, 255, 255, 0.35)');
-      featherMask.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      ctx.fillStyle = featherMask;
-      ctx.fillRect(0, 0, W, H);
-
+      ctx.translate(cx, cy);
+      ctx.scale(1, 0.7 + cur.level * 0.15); // the feather opens up as the wave swells, so peaks are not clipped
+      ctx.fillStyle = maskGrad;
+      ctx.fillRect(-W, -W, W * 2, W * 2);
       ctx.restore();
-
-      raf = requestAnimationFrame(render);
     };
 
-    raf = requestAnimationFrame(render);
+    redrawRef.current = null;
+    const frame = (now: number) => {
+      raf = 0;
+      if (!visible || (typeof document !== 'undefined' && document.visibilityState === 'hidden')) return;
+      draw(now);
+      raf = requestAnimationFrame(frame);
+    };
+    const io =
+      typeof IntersectionObserver !== 'undefined'
+        ? new IntersectionObserver((entries) => {
+            visible = entries[0]?.isIntersecting ?? true;
+            if (visible && !raf) raf = requestAnimationFrame(frame);
+          })
+        : null;
+    io?.observe(canvas);
+    const onVis = () => {
+      if (document.visibilityState === 'visible' && !raf) raf = requestAnimationFrame(frame);
+    };
+    document.addEventListener('visibilitychange', onVis);
+    raf = requestAnimationFrame(frame);
     return () => {
+      redrawRef.current = null;
       if (raf) cancelAnimationFrame(raf);
+      io?.disconnect();
+      document.removeEventListener('visibilitychange', onVis);
     };
   }, [size, isDark]);
+
+  useEffect(() => {
+    redrawRef.current?.();
+  }, [state]);
 
   const clickable = interactive && !!onClick;
   return (
@@ -190,12 +306,11 @@ export const VoiceOrb: React.FC<VoiceOrbProps> = ({
       title={label}
       data-testid="voice-orb"
       data-state={state}
+      className={`relative inline-grid place-items-center rounded-full select-none ${clickable ? 'cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]' : ''} ${className}`}
       style={{ width: size, height: size }}
-      className={`relative inline-flex items-center justify-center select-none rounded-full transition-transform duration-300 ${
-        clickable ? 'cursor-pointer hover:scale-[1.03] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]' : ''
-      } ${className}`}
     >
-      <canvas ref={canvasRef} style={{ width: size, height: size }} className="block" aria-hidden />
+      <canvas ref={canvasRef} style={{ width: size, height: size }} aria-hidden />
+      {debug && <span ref={debugRef} className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-caption text-[var(--ink-3)]" />}
     </div>
   );
 };

@@ -35,6 +35,8 @@ import { planChart } from '@/charts/plan';
 import { cleanText, humanizeKey, toNumber } from '@/charts/format';
 import { Badge, Card, Chip, ContextChips } from './ui/primitives';
 import { ExportMenu } from './ExportMenu';
+import { OilOverlayBar } from './OilOverlayBar';
+import { OIL_OVERLAY_EVENT, OilBenchmark, OilOverlayEventDetail, OilPricePayload, isOilOverlayEligible, oilCorrelation } from '@/charts/oilOverlay';
 import { getTokens } from '@/charts/theme';
 import { chartsWithin } from '@/charts/chartRegistry';
 import {
@@ -62,6 +64,8 @@ export const EXPORT_EVENT = 'yukti:export';
 export interface ExportEventDetail {
   value: string; // 'pdf' | 'png:default' | 'auto' | …
   handled?: boolean;
+  /** 26-Oct: the answer to export (the most recent answer WITH data). Without it, the latest card handles the event. */
+  targetTurnId?: string;
 }
 
 
@@ -268,6 +272,54 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   const effVisual = override?.visual || visual;
   const effectiveVisualType = effVisual?.type;
   const effectiveChartSpec = effVisual?.chart;
+
+  // 26-Oct: opt-in Brent / WTI overlay on fiscal-year charts (chip, or "overlay Brent / WTI" by voice or text)
+  const oilEligible = effVisual?.type === 'chart' && !effVisual?.compare?.items?.length && isOilOverlayEligible(effectiveChartSpec);
+  const [oilBenchmark, setOilBenchmark] = useState<OilBenchmark | null>(null);
+  const [oilData, setOilData] = useState<OilPricePayload | null>(null);
+  const [oilLoading, setOilLoading] = useState(false);
+  const [oilError, setOilError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!oilBenchmark) {
+      setOilData(null);
+      setOilError(null);
+      return;
+    }
+    let cancelled = false;
+    setOilLoading(true);
+    setOilError(null);
+    fetch(`/api/market/oil?benchmark=${oilBenchmark}`, { credentials: 'same-origin', cache: 'no-store' })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json().catch(() => null))?.detail?.message || 'Live oil prices are unavailable right now.');
+        return r.json() as Promise<OilPricePayload>;
+      })
+      .then((d) => !cancelled && setOilData(d))
+      .catch((e) => !cancelled && setOilError(String(e?.message || e)))
+      .finally(() => !cancelled && setOilLoading(false));
+    return () => {
+      cancelled = true;
+    };
+  }, [oilBenchmark]);
+  const oilCorr = useMemo(() => (oilData && effectiveChartSpec ? oilCorrelation(effectiveChartSpec, oilData) : null), [oilData, effectiveChartSpec]);
+  const oilSeriesLabel = useMemo(() => {
+    const yk = (effectiveChartSpec as any)?.y || (effectiveChartSpec as any)?.value || '';
+    const h = humanizeKey(String(yk)).replace(/\s*\(.*?\)\s*/g, ' ').trim();
+    return h ? h.charAt(0).toUpperCase() + h.slice(1) : 'This series';
+  }, [effectiveChartSpec]);
+  const oilEligibleRef = useRef(oilEligible);
+  oilEligibleRef.current = oilEligible;
+  useEffect(() => {
+    const myId = (contract as any)?.turn_id as string | undefined;
+    const onOil = (e: Event) => {
+      const d = (e as CustomEvent<OilOverlayEventDetail>).detail;
+      if (!d || d.handled || !oilEligibleRef.current) return;
+      if (d.targetTurnId ? d.targetTurnId !== myId : !isLatest) return;
+      d.handled = true;
+      setOilBenchmark(d.value === 'off' ? null : d.value);
+    };
+    window.addEventListener(OIL_OVERLAY_EVENT, onOil);
+    return () => window.removeEventListener(OIL_OVERLAY_EVENT, onOil);
+  }, [contract, isLatest]);
   const effectiveTableSpec = useMemo(() => {
     const t = effVisual?.table;
     if (!t?.rows?.length) return t && t.columns ? t : prof.rows.length ? { columns: prof.columns, rows: prof.rows } : undefined;
@@ -451,10 +503,13 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   exportRef.current = handleExport;
   useEffect(() => {
     // A greeting / text-only card has nothing to export and no toast surface: let the event fall through.
-    if (!isLatest || isGreeting) return;
+    // 26-Oct: an export request targets the most recent answer that has data (targetTurnId), so "export it" still
+    // works after a follow-up chat reply; without a target, the latest card handles it as before.
+    const myTurnId = (contract as any)?.turn_id as string | undefined;
     const onExport = (e: Event) => {
       const d = (e as CustomEvent<ExportEventDetail>).detail;
       if (!d || d.handled) return;
+      if (d.targetTurnId ? d.targetTurnId !== myTurnId : !isLatest || isGreeting) return;
       d.handled = true;
       const [raw, flag] = String(d.value || 'auto').split(':');
       let fmt = normalizeExportFormat(raw);
@@ -511,7 +566,17 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
   const localSnapshot = contract.provenance?.label === 'local_snapshot' || contract.status?.source === 'local_snapshot';
   const sourceTag = localSnapshot
     ? `Local snapshot${contract.provenance?.snapshot_date ? ` ${contract.provenance.snapshot_date}` : ''}`
-    : firstSource ? (firstSource.kind === 'policy' ? 'Policy' : firstSource.kind === 'document' ? 'Document' : 'SSOT') : undefined;
+    : firstSource
+      ? firstSource.kind === 'policy'
+        ? 'Policy'
+        : firstSource.kind === 'document'
+          ? 'Document'
+          : /yahoo/i.test(String(firstSource.object || '')) // 26-Oct: live market data (oil prices)
+            ? 'Yahoo Finance · live'
+            : /^DCF engine/i.test(String(firstSource.object || '')) // 27-Oct: DCF follow-ups
+              ? 'DCF model'
+              : 'SSOT'
+      : undefined;
 
   // Follow-up chips (U2.3 / U5.4): drill-downs first, else the agent's suggestions; latest card only.
   const followUps: { label: string; q: string; patch?: SpecPatch }[] = (contract.drilldowns?.length
@@ -564,6 +629,18 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
           {/* KPI hero numerals */}
           {kpis.length > 0 && effectiveVisualType !== 'kpi' && !refused && <KpiRenderer kpis={displayVisualType === 'statement' ? kpis.slice(0, 3) : kpis} isDark={isDark} spark={spark} />}
 
+          {oilEligible && !refused && (
+            <OilOverlayBar
+              active={oilBenchmark}
+              data={oilData}
+              loading={oilLoading}
+              error={oilError}
+              correlation={oilCorr}
+              seriesLabel={oilSeriesLabel}
+              onSet={(v) => setOilBenchmark(v === 'off' ? null : v)}
+            />
+          )}
+
           {/* Full-screen Visual + Key Takeaways (borderless canvas, no outer boxes, no plot-type bar) */}
           <div className={`grid gap-[1.75rem] ${insights.length && !refused && !wideTable ? 'xl:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]' : ''}`}>
             <section
@@ -578,7 +655,9 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               {effectiveVisualType === 'chart' && effVisual?.compare?.items?.length ? (
                 <CompareRenderer compare={effVisual.compare} isDark={isDark} unit={effVisual.chart?.unit} />
               ) : (
-                effectiveVisualType === 'chart' && effectiveChartSpec && <ChartRenderer spec={effectiveChartSpec} isDark={isDark} title={visual?.title} />
+                effectiveVisualType === 'chart' && effectiveChartSpec && (
+                  <ChartRenderer spec={effectiveChartSpec} isDark={isDark} title={visual?.title} oilOverlay={oilEligible && oilBenchmark ? oilData : null} />
+                )
               )}
               {displayVisualType === 'statement' && statementSpec && (
                 <StatementTable statement={statementSpec} onWhy={onAsk ? (r) => onAsk(`Why did ${r.label} change?`) : undefined} />
