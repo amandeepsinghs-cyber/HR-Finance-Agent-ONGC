@@ -2,8 +2,9 @@
 
 **Yukti is one voice agent backed by a deterministic, tool-driven engine.** Gemini Live talks with the user. Code decides which specialist answers. Every number comes from BigQuery, the DCF engine or market data, never from a language model.
 
-- **In-app page:** `/architecture`. It opens from the network icon in the top bar, e.g. https://yukti-ai-b6cmgrx7ka-el.a.run.app/architecture (behind IAP).
-- **Source for the page:** [`yukti/frontend/src/app/architecture/page.tsx`](../yukti/frontend/src/app/architecture/page.tsx). Keep it in step with this document.
+- **In-app page:** `/architecture` (network icon in the top bar), e.g. https://yukti-ai-b6cmgrx7ka-el.a.run.app/architecture (behind IAP). **Every box on the diagram is clickable** and opens a side panel with a plain-words / technical toggle (what it does, how it works, inputs → outputs, guardrails, code). Below the diagram, **Inside the orchestrator** shows the 15-step routing ladder; each step is clickable.
+- **Orchestration in depth:** [ORCHESTRATION_EXPLANATION.md](ORCHESTRATION_EXPLANATION.md).
+- **Source for the page:** [`yukti/frontend/src/app/architecture/`](../yukti/frontend/src/app/architecture/). The panel and ladder text is in `content.ts`, and the card hotspots use the SVG coordinates. Keep it in step with this document.
 
 ![Yukti architecture](architecture/yukti_architecture.png)
 
@@ -28,14 +29,15 @@ Registry entries hold `id`, `class`, `requires_role`, `triggers`, `examples` and
 
 1. **The user asks** by voice or text. The signed persona cookie carries the role.
 2. **Gemini Live** calls `ask_yukti(question)`. It does not answer data questions from memory.
-3. **`turn_runner.py` routes** in a fixed order:
-   1. FY clarification or UI command
-   2. DCF follow-ups (`app/finance/dcf/followup.py`)
-   3. Coordinator: regex over the registry, then the role gate, then the confirmation gate for `dcf_agent`, which runs as a background job
-   4. Revenue drivers and mix
-   5. Oil and rupee overlays
-   6. Planner pipeline
-   7. Smalltalk fallback (`app/brain/smalltalk.py`)
+3. **`turn_runner.py` routes** down a fixed ladder of about 15 checks, and the first match wins:
+   - control: role switch, screen command, pending year question, chart change;
+   - **access check**;
+   - simple intents: greeting, coverage, HR policy, transfer note;
+   - specialists: DCF follow-ups, coordinator, revenue drivers and mix, oil and rupee;
+   - planner pipeline;
+   - small talk.
+
+   The full ladder, with examples, is in [ORCHESTRATION_EXPLANATION.md](ORCHESTRATION_EXPLANATION.md).
 4. **Planner pipeline:** Gemini 2.5 Flash produces a QuerySpec in JSON. A deterministic compiler builds certified SQL, which runs on BigQuery. The presenter builds charts, tables and KPI cards.
 5. **Checks:** `enforce_contract` applies role-based masking. The narrator rejects any number that is not in the result.
 6. **Gemini Live** reads the grounded answer aloud while the canvas renders it.

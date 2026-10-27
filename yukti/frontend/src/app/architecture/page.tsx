@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ArchitectureExplorer } from './ArchitectureExplorer';
 
 /**
  * "How Yukti works" — the architecture page linked from the top bar (27-Oct).
@@ -22,7 +23,7 @@ const AI_ROLES: { part: string; kind: string; decides: string; numbers: string }
 const FLOW: { step: string; detail: string }[] = [
   { step: 'You ask', detail: 'By voice or text. Your signed role travels with every question.' },
   { step: 'Gemini Live hands over', detail: 'It does not answer from memory; it calls ask_yukti with your question.' },
-  { step: 'The orchestrator routes', detail: 'In a fixed order: clarify the year or a screen command → DCF follow-up → specialist module → revenue drivers → oil and rupee → data query → small talk.' },
+  { step: 'The orchestrator routes', detail: 'Down a fixed ladder of about 15 checks — control, access check, simple intents, specialists, then the AI planner — the first match answers. See “Inside the orchestrator” above.' },
   { step: 'Numbers are computed', detail: 'Gemini 2.5 Flash writes a query plan, code compiles it to certified SQL, BigQuery returns the figures. DCF and market numbers come from their engines.' },
   { step: 'The answer is checked', detail: 'Role-based masking is applied, and any number in the explanation that is not in the data is rejected.' },
   { step: 'You see and hear it', detail: 'Charts, tables and KPI cards appear on screen; Gemini Live reads the grounded answer aloud.' },
@@ -64,15 +65,7 @@ export default function ArchitecturePage() {
           language model.
         </p>
 
-        <a href="/architecture/yukti_architecture.svg" target="_blank" rel="noreferrer" className="block mt-6" title="Open full size">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/architecture/yukti_architecture.png"
-            alt="Yukti AI architecture: users, Identity-Aware Proxy, Cloud Run with web app, turn orchestrator and specialist modules, Gemini Live, Gemini 2.5 Flash, BigQuery and Yahoo Finance"
-            className="w-full rounded-[var(--radius-md)] border border-[var(--hairline)] shadow-[var(--card-shadow)]"
-          />
-        </a>
-        <div className="text-[0.78rem] text-[var(--ink-3)] mt-2">Click the diagram to open it full size.</div>
+        <ArchitectureExplorer />
 
         <H2>Where AI is used — and where it is not</H2>
         <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--card)]">
