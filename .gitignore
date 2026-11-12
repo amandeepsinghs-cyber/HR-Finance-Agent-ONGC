@@ -2,6 +2,10 @@
 node_modules/
 .next/
 out/
+!financial_ssot/out/
+!financial_ssot/out/fact_snapshot.parquet
+!financial_ssot/out/fact_wacc_annual.parquet
+!financial_ssot/out/fact_wacc_input.parquet
 .venv/
 venv/
 __pycache__/
