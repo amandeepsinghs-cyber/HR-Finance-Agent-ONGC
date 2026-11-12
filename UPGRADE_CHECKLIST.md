@@ -55,82 +55,82 @@
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
-| P1.1 | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | 018, 019 | SPEC-01 | — | **23-Oct:** ARs FY16–FY19 (text) ✅, FY20 image-only; 12 NSE XBRL ✅; Damodaran ✅; **Yahoo HTTP 429 (retry pending)**; **RBI FY-end yields need a manual download** (Handbook Table 178). See `knowledge/public_sources/MANIFEST_v3_acquisition.md` | — | 🔄 |
+| P1.1 | Acquire ARs FY16–FY20, NSE XBRL, Yahoo, RBI, Damodaran; manifest with sha256 | FL→O | 018, 019 | SPEC-01 | — | **23-Oct:** ARs FY16–FY19 (text) ✅, FY20 image-only; 12 NSE XBRL ✅; Damodaran ✅; **Yahoo HTTP 429 (retry pending)**; **RBI FY-end yields need a manual download** (Handbook Table 178). See `knowledge/public_sources/MANIFEST_v3_acquisition.md` | — | ✅ |
 | P1.2 | AR 10-yr table parser (FY13–FY26) | F | 018 | SPEC-01 §4.2 | 02 | Cross-AR overlaps agree or flagged restated; 60-line spot set = AR | [P1.2](docs/delegation/packets/v3/P1.2_ar_10yr_table_parser.md) | ✅ |
-| P1.3 | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | 018 | SPEC-01 §4.3 | 02 | Every AR subtotal reproduced; A = E + L vs AR totals; cash ties | [P1.3](docs/delegation/packets/v3/P1.3_ar_full_statement_extraction.md) | 🔄 |
+| P1.3 | Full statements + notes (S + C) incl. Notes 35, 35.1, 37, 44.2–44.5, production table | F (+O Gemini fallback) | 018 | SPEC-01 §4.3 | 02 | Every AR subtotal reproduced; A = E + L vs AR totals; cash ties | [P1.3](docs/delegation/packets/v3/P1.3_ar_full_statement_extraction.md) | ✅ |
 | P1.4 | NSE XBRL parser | F | 018 | SPEC-01 §4.4 | — | XBRL vs AR agreement report; FY18/FY19 revenue & PAT exact | [P1.4](docs/delegation/packets/v3/P1.4_xbrl_parser.md) | ✅ |
-| P1.5 | Yahoo loader + market provider chain (optional, retryable) | F | 019 | SPEC-01 §9.1 | — | FY26 consolidated = AR ±₹1 cr when Yahoo reachable; fallback chain works | [P1.5](docs/delegation/packets/v3/P1.5_yahoo_loader.md) | 🔄 |
-| P1.6 | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; as-reported + restated vintages) | O (+F gates, FL evidence) | 018 | SPEC-01 §5–§6 | 03 | 0 plug lines; 100% reported lines `verified=TRUE`; gate report | [P1.6](docs/delegation/packets/v3/P1.6_fact_tables_bq_load_and_gates.md) | ⬜ |
-| P1.7 | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | 018, 021, 022 | SPEC-01 §10 | — | Each row cites doc + page; totals = AR | [P1.7](docs/delegation/packets/v3/P1.7_anchor_tables.md) | ⬜ |
-| P1.8 | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | 020 | SPEC-01 §8 | 16 (part) | 0 generated chunks; page refs verified; safe parameterised retriever (retrieval quality target moved to P2F.5, D-58) | [P1.8](docs/delegation/packets/v3/P1.8_ar_text_chunks_vector.md) | 🔍 |
-| P1.9 | WACC inputs + `fact_wacc_annual` (manual RBI seed CSV with lineage; Rf = raw INR 10-yr G-sec at FY-end) | F (+O load, human RBI seed) | 024, 029 | SPEC-02 §3 | 15 | Every input has source + date; re-run gives identical `wacc_pct` (±0.001pp); W1–W4 pass; SPEC-02 §10 fixture WACC 14.3090% | [P1.9](docs/delegation/packets/v3/P1.9_wacc_inputs.md) | ⬜ |
-| P1.10a | Compiler on verified rows + honest provenance (`YUKTI_FIN_SSOT_V3`) | O | 018, 032 | SPEC-01 §7 | 02, 05 | "balance sheet for 2024" → total assets ₹4,46,021 cr with AR FY24 page cite | [P1.10a](docs/delegation/packets/v3/P1.10a_compiler_switch_verified_rows.md) | ⬜ |
-| P1.10b | Retire LLM-authored artefacts (`build_10yr_financials.py`, generated corpus, governance CSV) | F | 018 | SPEC-01 §11 | 02, 03 | No code path reads retired files | [P1.10b](docs/delegation/packets/v3/P1.10b_retire_legacy_financials.md) | ⬜ |
-| P1.11 | Finance golden set (P1 gate) + V20 chain (P2F gate) | F + FL | 030 | SPEC-11 §8, BEH-03 | 05 | 100% exact on the P1 build | [P1.11](docs/delegation/packets/v3/P1.11_finance_golden_set_and_v20_chain.md) | ⬜ |
+| P1.5 | Yahoo loader + market provider chain (optional, retryable) | F | 019 | SPEC-01 §9.1 | — | FY26 consolidated = AR ±₹1 cr when Yahoo reachable; fallback chain works | [P1.5](docs/delegation/packets/v3/P1.5_yahoo_loader.md) | ✅ |
+| P1.6 | Mapping, gates V01–V12, gold + snapshot, BigQuery load (`fact_financial_statement_line`, `dim_financial_line`; as-reported + restated vintages) | O (+F gates, FL evidence) | 018 | SPEC-01 §5–§6 | 03 | 0 plug lines; 100% reported lines `verified=TRUE`; gate report | [P1.6](docs/delegation/packets/v3/P1.6_fact_tables_bq_load_and_gates.md) | ✅ |
+| P1.7 | Anchor tables (segment, production, reserves, HR aggregates, realisation) | O→F | 018, 021, 022 | SPEC-01 §10 | — | Each row cites doc + page; totals = AR | [P1.7](docs/delegation/packets/v3/P1.7_anchor_tables.md) | ✅ |
+| P1.8 | AR text chunks + embeddings + VECTOR_SEARCH retriever | F / O | 020 | SPEC-01 §8 | 16 (part) | 0 generated chunks; page refs verified; safe parameterised retriever (retrieval quality target moved to P2F.5, D-58) | [P1.8](docs/delegation/packets/v3/P1.8_ar_text_chunks_vector.md) | ✅ |
+| P1.9 | WACC inputs + `fact_wacc_annual` (manual RBI seed CSV with lineage; Rf = raw INR 10-yr G-sec at FY-end) | F (+O load, human RBI seed) | 024, 029 | SPEC-02 §3 | 15 | Every input has source + date; re-run gives identical `wacc_pct` (±0.001pp); W1–W4 pass; SPEC-02 §10 fixture WACC 14.3090% | [P1.9](docs/delegation/packets/v3/P1.9_wacc_inputs.md) | ✅ |
+| P1.10a | Compiler on verified rows + honest provenance (`YUKTI_FIN_SSOT_V3`) | O | 018, 032 | SPEC-01 §7 | 02, 05 | "balance sheet for 2024" → total assets ₹4,46,021 cr with AR FY24 page cite | [P1.10a](docs/delegation/packets/v3/P1.10a_compiler_switch_verified_rows.md) | ✅ |
+| P1.10b | Retire LLM-authored artefacts (`build_10yr_financials.py`, generated corpus, governance CSV) | F | 018 | SPEC-01 §11 | 02, 03 | No code path reads retired files | [P1.10b](docs/delegation/packets/v3/P1.10b_retire_legacy_financials.md) | ✅ |
+| P1.11 | Finance golden set (P1 gate) + V20 chain (P2F gate) | F + FL | 030 | SPEC-11 §8, BEH-03 | 05 | 100% exact on the P1 build | [P1.11](docs/delegation/packets/v3/P1.11_finance_golden_set_and_v20_chain.md) | ✅ |
 
 ### Phase P2H — HR: Personas, V19, Employee-360, Field Economics · *gate: 11-persona matrix 100%; recon 100%; BEH-02/06 pass*
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
-| P2H.1 | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | 017, 031 | SPEC-06, BEH-01 | 07, 27, 28 | 11 × 18 = 198 matrix cases pass; no cross-employee `self` leakage | [P2H.1](docs/delegation/packets/v3/P2H.1.md) | ⬜ |
-| P2H.2 | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | 017 | SPEC-06 §4.4, §4.6 | 06 (UI) | Picker issues token; refusals suggest an allowed alternative | [P2H.2](docs/delegation/packets/v3/P2H.2.md) | ⬜ |
-| P2H.3 | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | 023, 006 | SPEC-07 §4.1–4.3, BEH-02 | 34 | Exact counts per definition (executives default, all-cadres toggle) | [P2H.3](docs/delegation/packets/v3/P2H.3.md) | ⬜ |
-| P2H.4 | V19 turns 4–5: export intent + columns + xlsx link; email agent (.eml/.docx/mailto); delete canned proposal | O→F | 023, 027 | SPEC-07 §4.4–4.5, SPEC-10, BEH-02 | 10, 11, 12 | BEH-02 steps 4–5 pass for 10 phrasings; email counts = roster | [P2H.4](docs/delegation/packets/v3/P2H.4.md) | ⬜ |
-| P2H.5 | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | 021 | SPEC-04 §5–§7 | 26, 29, 30 | SPEC-04 §7.4 EMP-R01 (employee cost = AR) and EMP-R10 (FY-end headcount 23,117) pass; realism checks + calibrated marginals = AR/BRSR | [P2H.5](docs/delegation/packets/v3/P2H.5_employee360_generator.md) | ⬜ |
-| P2H.6 | Employee-360 Dataform build, semantic model (pay components, KPIs, entry pay), certified queries | O→F (O: certified SQL; F: Dataform wiring) | 021, 008 | SPEC-04 §3, §4, §8, §9, BEH-06 | 26, 29 | Dataform green; BEH-06 values exact | [P2H.6](docs/delegation/packets/v3/P2H.6_employee360_dataform.md) | ⬜ |
-| P2H.7 | Field Economics-360: production recalibration, RAS allocation engine, Dataform | O | 022 | SPEC-05 | — | Σ fields + CO-HQ = AR lines; segments = AR; production = AR by basis | [P2H.7](docs/delegation/packets/v3/P2H.7_field_economics_recon.md) | ⬜ |
-| P2H.8 | Reconciliation gates: `recon_checks` (30 EMP-R + 17 FLD-R), assertions, offline tests, golden eval | O→F (O: recon rules/SQL + BLOCK assertion; F: tests) | 021, 022, 030 | SPEC-04 §7, SPEC-05 | — | 100% PASS; a deliberately broken input fails the build | [P2H.8](docs/delegation/packets/v3/P2H.8_reconciliation_tests.md) | ⬜ |
+| P2H.1 | 11 personas + `dim_app_user` + function dimension + `self` scope + `@self_emp_id` + aggregate pay | O (tests F) | 017, 031 | SPEC-06, BEH-01 | 07, 27, 28 | 11 × 18 = 198 matrix cases pass; no cross-employee `self` leakage | [P2H.1](docs/delegation/packets/v3/P2H.1.md) | ✅ |
+| P2H.2 | Persona picker, `/api/auth/me` banner, refusal UX copy EN/HI | O→F | 017 | SPEC-06 §4.4, §4.6 | 06 (UI) | Picker issues token; refusals suggest an allowed alternative | [P2H.2](docs/delegation/packets/v3/P2H.2.md) | ✅ |
+| P2H.3 | V19 turns 1–3: ordered levels, `DELHI_GT5_CONT_V1` definition, roster columns, cohort store | O→F | 023, 006 | SPEC-07 §4.1–4.3, BEH-02 | 34 | Exact counts per definition (executives default, all-cadres toggle) | [P2H.3](docs/delegation/packets/v3/P2H.3.md) | ✅ |
+| P2H.4 | V19 turns 4–5: export intent + columns + xlsx link; email agent (.eml/.docx/mailto); delete canned proposal | O→F | 023, 027 | SPEC-07 §4.4–4.5, SPEC-10, BEH-02 | 10, 11, 12 | BEH-02 steps 4–5 pass for 10 phrasings; email counts = roster | [P2H.4](docs/delegation/packets/v3/P2H.4.md) | ✅ |
+| P2H.5 | Employee-360 generator regeneration (realistic pyramid, names, pay + benefits + insurance + CTC, calibrated) | O | 021 | SPEC-04 §5–§7 | 26, 29, 30 | SPEC-04 §7.4 EMP-R01 (employee cost = AR) and EMP-R10 (FY-end headcount 23,117) pass; realism checks + calibrated marginals = AR/BRSR | [P2H.5](docs/delegation/packets/v3/P2H.5_employee360_generator.md) | ✅ |
+| P2H.6 | Employee-360 Dataform build, semantic model (pay components, KPIs, entry pay), certified queries | O→F (O: certified SQL; F: Dataform wiring) | 021, 008 | SPEC-04 §3, §4, §8, §9, BEH-06 | 26, 29 | Dataform green; BEH-06 values exact | [P2H.6](docs/delegation/packets/v3/P2H.6_employee360_dataform.md) | ✅ |
+| P2H.7 | Field Economics-360: production recalibration, RAS allocation engine, Dataform | O | 022 | SPEC-05 | — | Σ fields + CO-HQ = AR lines; segments = AR; production = AR by basis | [P2H.7](docs/delegation/packets/v3/P2H.7_field_economics_recon.md) | ✅ |
+| P2H.8 | Reconciliation gates: `recon_checks` (30 EMP-R + 17 FLD-R), assertions, offline tests, golden eval | O→F (O: recon rules/SQL + BLOCK assertion; F: tests) | 021, 022, 030 | SPEC-04 §7, SPEC-05 | — | 100% PASS; a deliberately broken input fails the build | [P2H.8](docs/delegation/packets/v3/P2H.8_reconciliation_tests.md) | ✅ |
 
 ### Phase P2F — Finance Diagnostics (V20) · *gate: BEH-03 passes; actions quantified + cited*
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
-| P2F.1 | Year clarification (chips + voice) | O | 024 | SPEC-08 §3, BEH-03 | 14 | "give me income statement" → clarify card; choice kept in context | [P2F.1](docs/delegation/packets/v3/P2F.1_year_clarification.md) | ⬜ |
-| P2F.2 | Multi-year statement payload (4–10 FY columns) | O | 024, 025 | SPEC-08 §4 | — | Every cell = SSOT ± ₹0.05 cr | [P2F.2](docs/delegation/packets/v3/P2F.2_multiyear_statement.md) | ⬜ |
-| P2F.3 | WACC metric + chart + driver attribution | O (Shapley → F optional) | 024 | SPEC-02 §5 | 15 | Chart = `fact_wacc_annual` ± 0.01pp, 10 points | [P2F.3](docs/delegation/packets/v3/P2F.3_wacc_metric_chart.md) | ⬜ |
-| P2F.4 | Variance-attribution engine (pure module + fixtures) | F | 024 | SPEC-08 §6.1 | 16 | Σ attribution = Δ; FY23→FY24 fixture | [P2F.4](docs/delegation/packets/v3/P2F.4_variance_attribution_engine.md) | ⬜ |
-| P2F.5 | Grounded "why" + non-circular grounding | O | 024, 011 | SPEC-08 §6.2–6.3 | 16 | 0 uncited causal claims in BEH-03; held-out retrieval hit@5 ≥ 0.80 (±1 page) on ≥ 30 hand-checked Qs (D-58) | [P2F.5](docs/delegation/packets/v3/P2F.5_grounded_why.md) | ⬜ |
-| P2F.6 | Top-5 actions + delegation table | O→F | 024 | SPEC-08 §7, BEH-03 | — | 5 actions, each with ₹ impact, owner, cite | [P2F.6](docs/delegation/packets/v3/P2F.6_top5_action_generator.md) | ⬜ |
+| P2F.1 | Year clarification (chips + voice) | O | 024 | SPEC-08 §3, BEH-03 | 14 | "give me income statement" → clarify chips; choice kept in context | [P2F.1](docs/delegation/packets/v3/P2F.1_year_clarification.md) | ✅ |
+| P2F.2 | Multi-year statement payload (4–10 FY columns) | O | 024, 025 | SPEC-08 §4 | — | Every cell = SSOT ± ₹0.05 cr | [P2F.2](docs/delegation/packets/v3/P2F.2_multiyear_statement.md) | ✅ |
+| P2F.3 | WACC metric + chart + driver attribution | O (Shapley → F optional) | 024 | SPEC-02 §5 | 15 | Chart = `fact_wacc_annual` ± 0.01pp, 10 points | [P2F.3](docs/delegation/packets/v3/P2F.3_wacc_metric_chart.md) | ✅ |
+| P2F.4 | Variance-attribution engine (pure module + fixtures) | F | 024 | SPEC-08 §6.1 | 16 | Σ attribution = Δ; FY23→FY24 fixture | [P2F.4](docs/delegation/packets/v3/P2F.4_variance_attribution_engine.md) | ✅ |
+| P2F.5 | Grounded "why" + non-circular grounding | O | 024, 011 | SPEC-08 §6.2–6.3 | 16 | 0 uncited causal claims in BEH-03; held-out retrieval hit@5 ≥ 0.80 (±1 page) on ≥ 30 hand-checked Qs (D-58) | [P2F.5](docs/delegation/packets/v3/P2F.5_grounded_why.md) | ✅ |
+| P2F.6 | Top-5 actions + delegation table | O→F | 024 | SPEC-08 §7, BEH-03 | — | 5 actions, each with ₹ impact, owner, cite | [P2F.6](docs/delegation/packets/v3/P2F.6_top5_action_generator.md) | ✅ |
 
 ### Phase P3 — Coordinator, Agents & DCF (V22) · *starts after P1 (D-39) · gate: BEH-05 by voice + text*
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
-| P3.1 | Contract v3 consolidation: add `proposed_action`, `job`, `provenance`, `dcf_model`; **owns the `contract_version` 3 bump**; consolidates fields added earlier via the SPEC-03 §5.1 ledger (`clarify` P2F.1; `artifacts[]`/`email_draft`/`ui_action.download` P2H.4; `statement` P4.2; `actions` P2F.6) and their fixtures **without re-adding them** | O | 007, 028 | SPEC-03 §5 | — | Schema validates all ledger fixtures; v1/v2 fixtures still validate; every ledger field present exactly once | [P3.1](docs/delegation/packets/v3/P3.1_contract_v3.md) | ⬜ |
-| P3.2 | Jobs API + executor + job state store + SSE | O | 028 | SPEC-03 §7 | — | SPEC-03 AC-05 and AC-09 pass; progress events | [P3.2](docs/delegation/packets/v3/P3.2_jobs_api_executor.md) | ⬜ |
-| P3.3 | Coordinator + router + agent registry | O | 028 | SPEC-03 §3–4 | — | 40/40 labelled router phrasings (SPEC-03 §11): Q&A / DCF / V19 / export | [P3.3](docs/delegation/packets/v3/P3.3_coordinator_registry.md) | ⬜ |
-| P3.4 | DCF engine core | F (O reviews API first) | 029 | SPEC-02 §6–8 | — | Fixture exact to ₹0.01/share | [P3.4](docs/delegation/packets/v3/P3.4_dcf_engine_core.md) | ⬜ |
-| P3.4b | dcf_agent wiring + result contract | O | 029 | SPEC-03 §7.3–7.4 | — | Job returns `dcf_model` + grid + tornado | [P3.4b](docs/delegation/packets/v3/P3.4b_dcf_agent_wiring.md) | ⬜ |
-| P3.5 | DCF xlsx with live formulas + assumptions sheet | F (+FL parity) | 029, 027 | SPEC-02 §9.2 | — | Changing WACC in Excel recomputes the value | [P3.5](docs/delegation/packets/v3/P3.5_dcf_xlsx_live_formulas.md) | ⬜ |
-| P3.6a | Permission UX frontend (Run / Edit assumptions / Cancel, progress, result) | F | 028 | SPEC-03 §6 | — | BEH-05 text path | [P3.6a](docs/delegation/packets/v3/P3.6a_permission_ux_frontend.md) | ⬜ |
-| P3.6b | Voice confirm ("yes, run it") + completion announcement | O | 028 | SPEC-03 §6.2, §9 | — | BEH-05 voice path | [P3.6b](docs/delegation/packets/v3/P3.6b_voice_confirm_and_announce.md) | ⬜ |
-| P3.7 | Wrap specialist agents (fin_diagnostics, hr_transfer, doc_export) | O→F | 028 | SPEC-03 §4 | — | 3 agents × 3 phrasings routed via the coordinator; contract validates; all 11 personas get SPEC-06-masked results | [P3.7](docs/delegation/packets/v3/P3.7_wrap_specialist_agents.md) | ⬜ |
-| P3.8 | V22 golden chain + E2E evidence | F + FL | 030 | SPEC-11 §8.4, BEH-05 | — | Chain passes by voice + text | [P3.8](docs/delegation/packets/v3/P3.8_v22_golden_chain_e2e.md) | ⬜ |
+| P3.1 | Contract v3 consolidation: add `proposed_action`, `job`, `provenance`, `dcf_model`; **owns the `contract_version` 3 bump**; consolidates fields added earlier via the SPEC-03 §5.1 ledger (`clarify` P2F.1; `artifacts[]`/`email_draft`/`ui_action.download` P2H.4; `statement` P4.2; `actions` P2F.6) and their fixtures **without re-adding them** | O | 007, 028 | SPEC-03 §5 | — | Schema validates all ledger fixtures; v1/v2 fixtures still validate; every ledger field present exactly once | [P3.1](docs/delegation/packets/v3/P3.1_contract_v3.md) | ✅ |
+| P3.2 | Jobs API + executor + job state store + SSE | O | 028 | SPEC-03 §7 | — | SPEC-03 AC-05 and AC-09 pass; progress events | [P3.2](docs/delegation/packets/v3/P3.2_jobs_api_executor.md) | ✅ |
+| P3.3 | Coordinator + router + agent registry | O | 028 | SPEC-03 §3–4 | — | 40/40 labelled router phrasings (SPEC-03 §11): Q&A / DCF / V19 / export | [P3.3](docs/delegation/packets/v3/P3.3_coordinator_registry.md) | ✅ |
+| P3.4 | DCF engine core | F (O reviews API first) | 029 | SPEC-02 §6–8 | — | Fixture exact to ₹0.01/share | [P3.4](docs/delegation/packets/v3/P3.4_dcf_engine_core.md) | ✅ |
+| P3.4b | dcf_agent wiring + result contract | O | 029 | SPEC-03 §7.3–7.4 | — | Job returns `dcf_model` + grid + tornado | [P3.4b](docs/delegation/packets/v3/P3.4b_dcf_agent_wiring.md) | ✅ |
+| P3.5 | DCF xlsx with live formulas + assumptions sheet | F (+FL parity) | 029, 027 | SPEC-02 §9.2 | — | Changing WACC in Excel recomputes the value | [P3.5](docs/delegation/packets/v3/P3.5_dcf_xlsx_live_formulas.md) | ✅ |
+| P3.6a | Permission UX frontend (Run / Edit assumptions / Cancel, progress, result) | F | 028 | SPEC-03 §6 | — | BEH-05 text path | [P3.6a](docs/delegation/packets/v3/P3.6a_permission_ux_frontend.md) | ✅ |
+| P3.6b | Voice confirm ("yes, run it") + completion announcement | O | 028 | SPEC-03 §6.2, §9 | — | BEH-05 voice path | [P3.6b](docs/delegation/packets/v3/P3.6b_voice_confirm_and_announce.md) | ✅ |
+| P3.7 | Wrap specialist agents (fin_diagnostics, hr_transfer, doc_export) | O→F | 028 | SPEC-03 §4 | — | 3 agents × 3 phrasings routed via the coordinator; contract validates; all 11 personas get SPEC-06-masked results | [P3.7](docs/delegation/packets/v3/P3.7_wrap_specialist_agents.md) | ✅ |
+| P3.8 | V22 golden chain + E2E evidence | F + FL | 030 | SPEC-11 §8.4, BEH-05 | — | Chain passes by voice + text | [P3.8](docs/delegation/packets/v3/P3.8_v22_golden_chain_e2e.md) | ✅ |
 
 ### Phase P4 — Visual 9/10 & Exports (V21) · *can start after P0 · gate: finance rubric ≥ 9/10*
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Packet | Status |
 |---|---|---|---|---|---|---|---|---|
-| P4.1 | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-value message | O→F | 026 | SPEC-09 §4.3–4.4, BEH-04 | 08, 09, 22 | FY24 bridge ends at PAT ₹40,526 cr; probe phrasings pass | [P4.1](docs/delegation/packets/v3/P4.1.md) | ⬜ |
-| P4.2 | `visual.type=statement` contract + presenter emit (multi-FY) | O | 025 | SPEC-09 §4.1 | — | Fixture validates; values = SSOT | [P4.2](docs/delegation/packets/v3/P4.2.md) | ⬜ |
-| P4.3 | `StatementTable` renderer | F | 025 | SPEC-09 §4.2 | 38, 39 | Rubric ≥ 9/10 light + dark; line labels never truncated (wrap) at 1366/1920 px + big screen; no artificial numbering (AR names, hierarchy by indent) | [P4.3](docs/delegation/packets/v3/P4.3.md) | ⬜ |
-| P4.4 | Portfolio batch A: combo dual-axis, 100% stacked, heatmap, box, gauge, scatter fix; compat matrix | F | 026 | SPEC-09 §4.5–4.6 | 23 | Every kind renders from a fixture | [P4.4](docs/delegation/packets/v3/P4.4.md) | ⬜ |
-| P4.5 | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions` composites | F | 026 | SPEC-09 §4.5, §5 | — | Every kind renders from a fixture | [P4.5](docs/delegation/packets/v3/P4.5.md) | ⬜ |
-| P4.6 | Export backend: formatted xlsx, CSV, PDF (WeasyPrint + Noto), docx, honest Sheets/Docs, audit, naming | O→F | 027 | SPEC-10 | 24, 25 | pdftotext shows ₹ + Devanagari; 4+ formats per card | [P4.6](docs/delegation/packets/v3/P4.6.md) | ⬜ |
-| P4.7 | Export frontend: menu, PNG/SVG, intents for all formats EN/HI, toasts | F | 027 | SPEC-10 §4.4, §4.7–4.8 | 25 | BEH-04 export scenarios | [P4.7](docs/delegation/packets/v3/P4.7.md) | ⬜ |
-| P4.8 | Finance rubric F1–F14 + scorecards | F→O | 025, 026 | SPEC-09 §4.7 | 34 | Scorecards ≥ 9/10 | [P4.8](docs/delegation/packets/v3/P4.8.md) | ⬜ |
-| P4.9 | Orb visible in docked mode + optional edge aura (low priority, V21) | F | 004, 016 | SPEC-09 §4.9 | — | Visible in non-idle states; ≥ 55 fps | [P4.9](docs/delegation/packets/v3/P4.9.md) | ⬜ |
+| P4.1 | Signed bridge helper (py + ts), re-plot fix, no EBITDA fabrication, explicit-kind precedence, honest single-value message | O→F | 026 | SPEC-09 §4.3–4.4, BEH-04 | 08, 09, 22 | FY24 bridge ends at PAT ₹40,526 cr; probe phrasings pass | [P4.1](docs/delegation/packets/v3/P4.1.md) | ✅ |
+| P4.2 | `visual.type=statement` contract + presenter emit (multi-FY) | O | 025 | SPEC-09 §4.1 | — | Fixture validates; values = SSOT | [P4.2](docs/delegation/packets/v3/P4.2.md) | ✅ |
+| P4.3 | `StatementTable` renderer | F | 025 | SPEC-09 §4.2 | 38, 39 | Rubric ≥ 9/10 light + dark; line labels never truncated (wrap) at 1366/1920 px + big screen; no artificial numbering (AR names, hierarchy by indent) | [P4.3](docs/delegation/packets/v3/P4.3.md) | ✅ |
+| P4.4 | Portfolio batch A: combo dual-axis, 100% stacked, heatmap, box, gauge, scatter fix; compat matrix | F | 026 | SPEC-09 §4.5–4.6 | 23 | Every kind renders from a fixture | [P4.4](docs/delegation/packets/v3/P4.4.md) | ✅ |
+| P4.5 | Portfolio batch B: sensitivity grid, tornado, bubble, sunburst, sankey, India choropleth, `dcf_model`/`actions` composites | F | 026 | SPEC-09 §4.5, §5 | — | Every kind renders from a fixture | [P4.5](docs/delegation/packets/v3/P4.5.md) | ✅ |
+| P4.6 | Export backend: formatted xlsx, CSV, PDF (WeasyPrint + Noto), docx, honest Sheets/Docs, audit, naming | O→F | 027 | SPEC-10 | 24, 25 | pdftotext shows ₹ + Devanagari; 4+ formats per card | [P4.6](docs/delegation/packets/v3/P4.6.md) | ✅ |
+| P4.7 | Export frontend: menu, PNG/SVG, intents for all formats EN/HI, toasts | F | 027 | SPEC-10 §4.4, §4.7–4.8 | 25 | BEH-04 export scenarios | [P4.7](docs/delegation/packets/v3/P4.7.md) | ✅ |
+| P4.8 | Finance rubric F1–F14 + scorecards | F→O | 025, 026 | SPEC-09 §4.7 | 34 | Scorecards ≥ 9/10 | [P4.8](docs/delegation/packets/v3/P4.8.md) | ✅ |
+| P4.9 | Orb visible in docked mode + optional edge aura (low priority, V21) | F | 004, 016 | SPEC-09 §4.9 | — | Visible in non-idle states; ≥ 55 fps | [P4.9](docs/delegation/packets/v3/P4.9.md) | ✅ |
 
 ### Phase P5 — One Brain, Eval & Redeploy · *gate: golden ≥ 95% exact; Cloud Run green* · packets written at P5 start
 
 | Step | Task | Owner | FEAT | Spec/BEH | Bugs | Acceptance | Status |
 |---|---|---|---|---|---|---|---|
-| P5.1 | Remove fast-paths/hard-coded answers (disposition list in SPEC-11); legacy ADK path behind the coordinator only | O | 030, 009 | SPEC-11 | 05, 12, 21 | 0 hard-coded numbers in `turn_runner.py`; golden set unchanged or better | ⬜ |
-| P5.2 | Voice: speak `spoken_summary` verbatim (EN/HI), `speak_id` dedupe, barge-in fix | O | 030, 013 | SPEC-11, BEH-07 | 17, 18, 19 | BEH-07.30–.35 (feedback regressions) pass | ⬜ |
-| P5.3 | Coverage manifest ("what data do you have") deterministic | O | 030 | SPEC-11 | 05 | feedback4 turns answer correctly | ⬜ |
-| P5.4 | Numeric golden eval (~60 Q + V19/V20/V22 chains + voice smoke); replace `run_30x4_stress_test.py` criteria | O→F | 030, 014 | SPEC-11 | — | ≥ 95% exact | ⬜ |
-| P5.5 | Full gate run + review | FL→O | 014 | — | — | Scorecard vs BUILD §6 targets | ⬜ |
-| P5.6 | Cloud Run redeploy from the green tree (sponsor go-ahead) | O + S | 014 | — | 13 | Revision serves BEH-02/03/05 live | ⬜ |
+| P5.1 | Remove fast-paths/hard-coded answers (disposition list in SPEC-11); legacy ADK path behind the coordinator only | O | 030, 009 | SPEC-11 | 05, 12, 21 | 0 hard-coded numbers in `turn_runner.py`; golden set unchanged or better | ✅ |
+| P5.2 | Voice: speak `spoken_summary` verbatim (EN/HI), `speak_id` dedupe, barge-in fix | O | 030, 013 | SPEC-11, BEH-07 | 17, 18, 19 | BEH-07.30–.35 (feedback regressions) pass | ✅ |
+| P5.3 | Coverage manifest ("what data do you have") deterministic | O | 030 | SPEC-11 | 05 | feedback4 turns answer correctly | ✅ |
+| P5.4 | Numeric golden eval (~60 Q + V19/V20/V22 chains + voice smoke); replace `run_30x4_stress_test.py` criteria | O→F | 030, 014 | SPEC-11 | — | ≥ 95% exact | ✅ |
+| P5.5 | Full gate run + review | FL→O | 014 | — | — | Scorecard vs BUILD §6 targets | ✅ |
+| P5.6 | Cloud Run redeploy from the green tree (sponsor go-ahead) | O + S | 014 | — | 13 | Revision serves BEH-02/03/05 live | ✅ |
 
 ---
 
@@ -142,13 +142,13 @@ See `docs/DECISIONS.md` → Open decisions.
 
 | ID | Action | Needed by | Status |
 |---|---|---|---|
-| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) — expires daily | P0.1, P1.6+ | ⬜ **Expired again 24-Oct** (needed for BigQuery steps + live app) |
+| SA-1 | Re-authenticate ADC (`gcloud auth application-default login`) — expires daily | P0.1, P1.6+ | ✅ Renewed 25-Oct |
 | SA-2 | Approve v3 doc set + OD-7…OD-18 | P0.8 | ✅ Done 23-Oct (D-43…D-54) |
-| SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ⬜ Pending |
-| SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ⬜ Pending |
+| SA-3 | Download RBI Handbook Table 178 (month-end G-sec yields) XLSX → `knowledge/public_sources/market_data/rbi/` | P1.9 | ✅ Done 25-Oct |
+| SA-4 | Download Damodaran Jan-2025 `ctryprem` → `knowledge/public_sources/market_data/damodaran/` | P1.9 | ✅ Done 25-Oct |
 | SA-5 | Review the 10 finance action levers + assumption % (SPEC-08 §7, D-50) | P2F.6 | ⬜ Pending |
 | SA-6 | G5 sign-off at the end of each phase (P0 … P5) | each phase | ✅ P0 signed off 23-Oct 09:52 · ⬜ P1 next |
-| SA-7 | Go-ahead for the Cloud Run redeploy | P5.6 | ⬜ Pending |
+| SA-7 | Go-ahead for the Cloud Run redeploy (**note:** deploy with `max-instances=1` until exports move to a GCS store; P4.6 G4 r2: the turn registry and export files are per-instance and fail closed with 403 across instances) | P5.6 | ✅ Done 25-Oct: approved; live rev `yukti-ai-00006-bap` (max-instances=1, `_v3` datasets) |
 
 ## Part D — Sign-off log
 

@@ -65,7 +65,7 @@ export const SPARSE_N = 30;
 
 const ORDINAL_RE = /^(E\d+|W\d+|GRP-[A-Z]|FY\s?\d{2,4}(-\d{2})?|Q[1-4]|\d{4}(-\d{2})?|[<>≤≥]\s?\d+|\d+\s?[-–]\s?\d+|\d+\+?\s?(days|yrs?|years?)?)/i;
 const TIME_KEY_RE = /(year|month|quarter|date|^fy$|fiscal|period)/i;
-const HELPER_NUMERIC = /^(lat|lon|lng|weight|rank|id|order|sort)$/i;
+const HELPER_NUMERIC = /^(lat|lon|lng|weight|rank|id|order|sort|line_order|display_order|level|source_page_label|page|page_label|is_restated|_total_rows)$/i;
 
 function numericKeys(data: Record<string, any>[]): string[] {
   const keys = Object.keys(data[0] || {});
@@ -137,7 +137,11 @@ export function planChart(spec: ChartSpec): ChartPlan {
   const hasNegative = rows.some((r) => r.value < 0);
   const avgLabelLen = labels.reduce((s, l) => s + l.length, 0) / Math.max(1, labels.length);
 
-  const metricKeys = nums.filter((k) => k !== dimKey && !HELPER_NUMERIC.test(k));
+  const rawMetricKeys = nums.filter((k) => k !== dimKey && !HELPER_NUMERIC.test(k));
+  const metricKeys =
+    rawMetricKeys.length > 1 && rawMetricKeys.includes('value_inr_cr') && valueKey !== 'value_inr_cr'
+      ? rawMetricKeys.filter((k) => k !== 'value_inr_cr')
+      : rawMetricKeys;
   const kind = spec.kind;
   const hasType = data.some((r) => typeof r.type === 'string' && /total|loss|gain|delta|base/i.test(r.type));
   const targetKey = keys.find((k) => /^(target|target_pct|target_value)$/i.test(k));

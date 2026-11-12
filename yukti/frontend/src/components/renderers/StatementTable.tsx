@@ -75,8 +75,8 @@ export function StatementTable({ statement, onWhy }: StatementTableProps) {
             </tr>
           </thead>
           <tbody>
-            {statement.sections.map((sec) => (
-              <React.Fragment key={sec.id}>
+            {statement.sections.map((sec, secIdx) => (
+              <React.Fragment key={`${sec.id}-${secIdx}`}>
                 {/* a single section whose label repeats the statement name adds nothing: skip the header row */}
                 {!(statement.sections.length === 1 && sec.label === (STATEMENT_LABEL[statement.statement] || '')) && (
                 <tr className="yk-statement__section" data-testid="statement-section">

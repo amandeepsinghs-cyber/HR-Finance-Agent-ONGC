@@ -50,3 +50,70 @@ BigQuery row/column security or authorized views per persona; document ACLs from
 - Demo: in-memory result cache + run `scripts/warmup.py` before the session.
 - Production/pilot (many users / several instances): add **Memorystore (Redis)** for a shared result cache + conversation/session memory (needs Serverless VPC Access / Direct VPC egress; ~US$40–50/month for the smallest Mumbai instance — confirm current pricing).
 - Gemini Live has no India region (us-central1); BigQuery/GCS/Document AI stay in asia-south1.
+
+---
+
+## ⏸ ARCH-C — "Trace a question" on the architecture page (desired feature)
+
+**Registered:** 27-Oct-2026, by the user. Deferred: build it later, not now.
+**Builds on:** v3p9 click-through architecture (A: clickable cards; B: orchestrator ladder) — `yukti/frontend/src/app/architecture/`, `docs/ORCHESTRATION_EXPLANATION.md`.
+
+### What the user gets
+Pick a question and watch its path light up:
+- **Diagram:** the cards and arrows it touches are highlighted in order, e.g. Users → IAP → Web app → Gemini Live → Orchestrator → Gemini Flash → BigQuery → back. Everything else is dimmed.
+- **Ladder:** steps it was checked against and did not match show a grey "checked" mark. The step that answered is highlighted. Later steps show "not reached".
+- **Inside the step:** for the planner, the sub-stages (plan → compile → policy → BigQuery → mask → narrate) with what happened at each, e.g. "bar chart, 7 rows, 312 ms".
+- **"Trace this answer" (phase 2):** a link on any real answer in the app opens the same view for that turn.
+
+### Build plan
+
+**Phase 1: curated sample traces (frontend only, ~0.5–1 day)**
+1. **Make the diagram addressable.** Switch the page from PNG plus hotspots to the **inline SVG**. In `gen_architecture.py`, add `data-node="<id>"` to every card group and `data-edge="<from>-><to>"` to every arrow, using the same ids as `content.ts`. Regenerate, and copy the result to `public/architecture/` and `docs/architecture/`.
+2. **Sample traces in `content.ts`.** Add `TRACES: { id, question, persona, nodes[], edges[], ladderChecked[], ladderMatched, subSteps[] }`, with 6–8 samples covering every band:
+   - headcount by grade (planner);
+   - "make it a pie chart" (UI change);
+   - "run a DCF" → "yes" (coordinator, confirmation, background job);
+   - "what drives the valuation?" (DCF follow-up);
+   - "why did revenue hold up while oil fell?" (coordinator delegates → revenue drivers);
+   - "plot Brent" (oil);
+   - a junior asking for named salaries (access check refusal);
+   - "thanks" (small talk).
+3. **`TracePlayer` component:** a sample picker plus Play / Step / Reset.
+   - Animate along the edges with CSS stroke-dashoffset, about 400 ms per hop.
+   - Add `.is-active`, `.is-dim` and `.is-done` classes to the SVG nodes and ladder steps.
+   - Respect `prefers-reduced-motion`: no animation, highlight only.
+4. **Anti-drift test (important).** Add a backend test, `tests/test_arch_traces.py`. It loads the sample questions (exported to `docs/architecture/traces.json` from `content.ts`, or the reverse) and runs each through the **real detectors**:
+   - `detect_screen_control_intent`
+   - `check_access`
+   - `detect_dcf_followup`
+   - the coordinator regex
+   - `detect_revenue_drivers` and `detect_portfolio_mix`
+   - `detect_oil_plot`
+
+   It asserts that the first matching step equals the declared `ladderMatched`. If someone reorders the ladder, the test fails and the page cannot lie.
+
+**Phase 2: live trace of real answers (backend + frontend, ~1–1.5 days)**
+1. **`RouteTrace` recorder** (`app/brain/route_trace.py`): a `contextvars`-based list of `{step, name, matched: bool, ms, note}`.
+   - In `turn_runner._execute_turn_inner`, every check records one entry.
+   - In the coordinator, record the registry match and the decision: `delegate_to`, proposal or refused.
+   - In `pipeline.run_planner_turn`, record intent, compile source, row count, dry-run bytes and narration fallback, reusing the existing `status_events`.
+2. **Contract field.** Add `route_trace` to the answer contract schema as optional. It holds **step names, timings and handler names only: no rows, no SQL text, no values**, so masking and access rules are unaffected. `enforce_contract` passes it through unchanged. Add a unit test asserting that it never contains result values.
+3. **Persist.** Save the trace with the turn in session memory and the export registry, so `/architecture?turn=<turn_id>` can fetch it. Add a new `GET /api/trace/<turn_id>`, scoped to the same session and persona. Add the path to the `server.js` proxy allow-list.
+4. **UI.** Add a small "How was this answered?" link on `AnswerCard`. It opens `/architecture?turn=<id>` in a new tab, where `TracePlayer` plays the live trace instead of a sample.
+5. **Off switch.** Env flag `YUKTI_ROUTE_TRACE=1`, default on. If it is off, the link is hidden.
+
+### Acceptance criteria
+- Every band of the ladder has at least one sample. Each sample's highlighted path matches what the code actually does, enforced by the anti-drift test.
+- The live trace for a real turn shows the step that answered, all earlier checks as "no match", and timings that add up to the turn latency within ±10%.
+- Keyboard: samples and steps can be reached with Tab and played with Enter or Space. It works in light and dark mode. The token and contrast lints pass.
+- No data in `route_trace`: unit test plus a manual check on a junior-persona refusal.
+
+### Files likely touched
+- **Frontend:** `src/app/architecture/{ArchitectureExplorer.tsx, content.ts}`, new `TracePlayer.tsx`, `src/components/AnswerCard.tsx`, `server.js`.
+- **Backend:** new `app/brain/route_trace.py`; `app/turn_runner.py`, `app/agents/coordinator.py`, `app/brain/pipeline.py`, the contract schema, `app/main.py` (trace endpoint); new `tests/test_arch_traces.py` and `tests/test_route_trace.py`.
+- **Diagram:** the `gen_architecture.py` generator (`data-node` / `data-edge` ids), `public/architecture/*`, `docs/architecture/*`. Today the generator lives outside the repo, in the agent scratch folder. **First step:** move it into `docs/architecture/gen_architecture.py`, so the diagram is reproducible from git.
+- **Docs:** `docs/ARCHITECTURE.md`, `docs/ORCHESTRATION_EXPLANATION.md` (add a "Trace a question" note).
+
+### Risks / notes
+- **Drift** between the page and the code is the main risk. The anti-drift test in phase 1 and the live trace in phase 2 both address it.
+- The ladder order in `turn_runner.py` changes often (e.g. the 26–27 Oct additions). Keep `LADDER` in `content.ts`, the trace step ids and `ORCHESTRATION_EXPLANATION.md` in sync. A single step-id enum, shared by the backend recorder and the frontend, would help.

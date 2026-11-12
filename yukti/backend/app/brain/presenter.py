@@ -380,7 +380,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             fy=fy,
             scope=scope_str,
             title=title or "Statement of Profit and Loss (Standalone)",
-            include_prior_from_single_fy=(stmt_periods is None),
+            include_prior_from_single_fy=False,
         )
         emit_stmt = v3_field_enabled("statement")
         default_table_type = "statement" if emit_stmt else "table"
@@ -433,8 +433,8 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
                 }
             )
         vis["kpis"] = kpis[:3] if emit_stmt else kpis
-        # 7 clean display columns + hidden line_code so frontend re-plot can classify statement lines
-        disp_cols = ["line_item", "note_ref", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "yoy_change_pct", "pct_of_revenue", "line_code"]
+        # Clean display columns + hidden line_code so frontend re-plot can classify statement lines
+        disp_cols = ["line_item", "note_ref", "amount_cr", "pct_of_revenue", "line_code"]
         disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
 
@@ -491,7 +491,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             fy=fy,
             scope=scope_str,
             title=title or "Balance Sheet (Standalone)",
-            include_prior_from_single_fy=(stmt_periods is None),
+            include_prior_from_single_fy=False,
         )
         emit_stmt = v3_field_enabled("statement")
         default_table_type = "statement" if emit_stmt else "table"
@@ -532,7 +532,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             },
         ]
         vis["kpis"] = kpis[:3] if emit_stmt else kpis
-        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_change_pct", "pct_of_assets", "line_code"]
+        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "pct_of_assets", "line_code"]
         disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
         bs_chart_specs = [
@@ -583,7 +583,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             fy=fy,
             scope=scope_str,
             title=title or "Statement of Cash Flows (Standalone)",
-            include_prior_from_single_fy=(stmt_periods is None),
+            include_prior_from_single_fy=False,
             bs_cash_by_period=load_snapshot_bs_cash_by_period(),
         )
         emit_stmt = v3_field_enabled("statement")
@@ -625,7 +625,7 @@ def build_visual(spec: QuerySpec, compiled: CompiledQuery, columns: List[str], r
             },
         ]
         vis["kpis"] = kpis[:3] if emit_stmt else kpis
-        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "prior_fy_cr", "yoy_delta_cr", "pct_of_ocf", "line_code"]
+        disp_cols = ["line_item", "note_ref", "section", "amount_cr", "pct_of_ocf", "line_code"]
         disp_rows = [{**r, **{k: r.get(k) for k in disp_cols}} for r in rows]
         vis["table"] = {"columns": disp_cols, "rows": disp_rows, "total_rows": len(disp_rows)}
         pbt_v = _num(_pick_code(by_code, "CF.START_PROFIT", "pbt_inr_cr").get("amount_cr"))

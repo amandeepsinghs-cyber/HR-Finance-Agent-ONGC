@@ -1278,12 +1278,12 @@ ORDER BY fiscal_year ASC"""
         sql = f"""WITH cur AS (
   SELECT *
   FROM {_q(_V_AS_REPORTED)}
-  WHERE statement = 'pnl' AND fiscal_year = {_lit(fy)} AND scope = '{scope}' AND verified = TRUE AND is_own_vintage = TRUE AND STARTS_WITH(line_code, 'PL.') AND NOT STARTS_WITH(line_code, 'PL_10YR')
+  WHERE statement = 'pnl' AND fiscal_year = {_lit(fy)} AND scope = '{scope}' AND verified = TRUE AND is_own_vintage = TRUE AND source_table = 'standalone_pnl' AND STARTS_WITH(line_code, 'PL.') AND NOT STARTS_WITH(line_code, 'PL_10YR')
 ),
 prv AS (
   SELECT line_code, COALESCE(value_inr_cr, value) AS prev_val
   FROM {_q(_T_FACT_FIN)}
-  WHERE statement = 'pnl' AND fiscal_year = {_lit(prev_fy)} AND scope = '{scope}' AND report_vintage = {_lit(vintage)} AND STARTS_WITH(line_code, 'PL.') AND NOT STARTS_WITH(line_code, 'PL_10YR') AND period_type = 'annual'
+  WHERE statement = 'pnl' AND fiscal_year = {_lit(prev_fy)} AND scope = '{scope}' AND report_vintage = {_lit(vintage)} AND source_table = 'standalone_pnl' AND STARTS_WITH(line_code, 'PL.') AND NOT STARTS_WITH(line_code, 'PL_10YR') AND period_type = 'annual'
 ),
 base AS (
   SELECT MAX(IF(line_code = 'PL.REV_OPS', COALESCE(value_inr_cr, value), NULL)) AS base_val FROM cur

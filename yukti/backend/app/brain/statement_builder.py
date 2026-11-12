@@ -410,13 +410,22 @@ def _infer_meta(
         sec_id, sec_label = meta[1], meta[2]
     else:
         raw_sec = str(raw_row.get("section") or "").strip()
+        sl = raw_sec.lower()
         if statement == "pnl":
-            if order <= 6 or raw_sec.lower() in ("revenue", "revenue breakdown", "income"):
+            if sl in ("revenue", "revenue breakdown", "income"):
                 sec_id, sec_label = "income", "Income"
-            elif order >= 19 or raw_sec.lower() in ("exceptional", "tax", "bottom line", "profit", "profit & tax"):
-                sec_id, sec_label = "profit", "Profit & Tax"
-            else:
+            elif sl in ("expenses", "expense"):
                 sec_id, sec_label = "expenses", "Expenses"
+            elif sl in ("exceptional", "tax", "bottom line", "profit", "profit & tax", "oci", "per share", "eps"):
+                sec_id, sec_label = "profit", "Profit & Tax"
+            elif order <= 6:
+                sec_id, sec_label = "income", "Income"
+            elif order >= 19 and order < 100:
+                sec_id, sec_label = "profit", "Profit & Tax"
+            elif order <= 135:
+                sec_id, sec_label = "expenses", "Expenses"
+            else:
+                sec_id, sec_label = "profit", "Profit & Tax"
         elif statement == "balance_sheet":
             sl = raw_sec.lower()
             if "non-current asset" in sl or order <= 8:
