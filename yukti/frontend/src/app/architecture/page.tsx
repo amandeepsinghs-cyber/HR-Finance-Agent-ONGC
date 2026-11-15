@@ -65,6 +65,20 @@ export default function ArchitecturePage() {
           language model.
         </p>
 
+        {/* 15-Nov: the visual, 4-tab architecture portal (18-service diagram, voice lanes, voice → BigQuery pipeline, agent model) */}
+        <a
+          href="/architecture/portal.html"
+          className="mt-5 flex items-center justify-between gap-4 rounded-[var(--radius-md)] border border-[var(--hairline)] bg-[var(--accent-pale)] px-5 py-4 text-[var(--ink)] hover:border-[var(--accent)] transition-colors"
+        >
+          <span>
+            <span className="block font-semibold text-[var(--accent-deep)]">Open the visual architecture guide</span>
+            <span className="block text-[0.88rem] text-[var(--ink-2)]">
+              18 services, how Gemini voice works, the voice → BigQuery pipeline step by step, and the agent model.
+            </span>
+          </span>
+          <span className="shrink-0 font-semibold text-[var(--accent-deep)]">Open →</span>
+        </a>
+
         <ArchitectureExplorer />
 
         <H2>Where AI is used — and where it is not</H2>

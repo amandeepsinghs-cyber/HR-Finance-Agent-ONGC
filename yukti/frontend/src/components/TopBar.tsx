@@ -243,17 +243,19 @@ export const TopBar: React.FC<TopBarProps> = ({
             {isMuted ? <VolumeX className="w-4 h-4 text-[var(--maroon)]" /> : <Volume2 className="w-4 h-4" />}
           </IconButton>
         )}
-        {/* "How Yukti works" — architecture page, opens in a new tab so the conversation is kept (27-Oct) */}
+        {/* "How Yukti works" — visual architecture portal (public/architecture/portal.html). Opens in a new tab so the
+            conversation is kept, and follows the current theme (?theme=dark), 15-Nov. */}
         <a
-          href="/architecture"
+          href={`/architecture/portal.html${isDark ? '?theme=dark' : ''}`}
           target="_blank"
           rel="noreferrer"
           aria-label="How Yukti works"
           title="How Yukti works — architecture"
           data-testid="architecture-link"
-          className="inline-grid place-items-center w-9 h-9 rounded-[var(--radius-md)] transition-colors duration-fast text-[var(--ink-2)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+          className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-[var(--radius-md)] text-label font-medium transition-colors duration-fast text-[var(--ink-2)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
         >
           <Network className="w-[1.1rem] h-[1.1rem]" />
+          <span className="hidden xl:inline">How Yukti works</span>
         </a>
         <IconButton onClick={onThemeToggle} label={isDark ? 'Switch to light mode' : 'Switch to dark mode'} data-testid="theme-toggle">
           {isDark ? <Sun /> : <Moon />}
