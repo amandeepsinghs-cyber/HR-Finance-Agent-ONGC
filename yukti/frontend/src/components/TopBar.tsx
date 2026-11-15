@@ -106,7 +106,11 @@ export const TopBar: React.FC<TopBarProps> = ({
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (ddRef.current && !ddRef.current.contains(e.target as Node)) setOpen(false);
+      const t = e.target as Node;
+      // The picker is portalled to <body> (outside ddRef): a press inside it must not close it before the click lands.
+      // It closes itself on backdrop press / Escape / a pick.
+      if ((t as Element).closest?.('[data-testid="persona-picker-overlay"]')) return;
+      if (ddRef.current && !ddRef.current.contains(t)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
     document.addEventListener('mousedown', onDoc);
