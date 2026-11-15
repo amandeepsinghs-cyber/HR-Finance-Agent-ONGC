@@ -195,7 +195,7 @@
   <text x="1059" y="90.5" font-size="12" font-weight="700" fill="#FEFEFE" text-anchor="middle">4</text>
   <use href="#icon-python" x="1061" y="99.0" width="38" height="38"/>
   <text x="1109" y="114.0" font-size="15" font-weight="700" fill="#1F1F1F">SQL Compiler</text>
-  <text x="1109" y="134.0" font-size="12.2" font-weight="600" fill="#4B31E3">sqlglot Builds Safe SQL</text>
+  <text x="1109" y="134.0" font-size="12.2" font-weight="600" fill="#4B31E3">Python Builds Safe SQL</text>
 </g><g id="hop-5" class="hop-node">
   <rect x="76" y="288" width="356" height="94" rx="12" fill="#FFFFFF" stroke="#137333" stroke-width="2.2" filter="url(#shadow-sm)"/>
   <circle cx="90" cy="302" r="12" fill="#137333"/>

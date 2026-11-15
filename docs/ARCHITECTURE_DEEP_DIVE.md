@@ -33,7 +33,7 @@ Yukti runs inside a single IAP-protected Cloud Run service (`yukti-ai`) backed b
 1. **Voice Call:** `Gemini Live` hears the question and calls `ask_yukti(query)`.
 2. **Role & Access Gate:** `turn_runner.py` verifies the tamper-proof HMAC cookie role and blocks unauthorized topics upfront.
 3. **JSON Plan (No SQL):** `Gemini 2.5 Flash` (`planner.py`) turns the question into a structured JSON `QuerySpec` (metric, dimensions, filters, period).
-4. **SQL Compiler:** Python (`compiler.py`) maps that JSON against Yukti's 86-table catalog and builds read-only parameterized SQL via `sqlglot`.
+4. **SQL Compiler:** Python (`compiler.py`) maps that JSON against Yukti's catalog and certified definitions and builds parameterised SQL; a safety validator (`validate_sql_safety`) allows only a single read-only `SELECT` on approved datasets.
 5. **Pre-Query RBAC Rewrite:** If a role lacks clearance for employee names, `rbac.py` automatically rewrites the query to safe grade-level totals before BigQuery runs.
 6. **BigQuery Execution:** Asserts a **500 MB dry-run cap**, then queries `hrfin_gold_v3` in `asia-south1`.
 7. **Number Guard & Reply:** Masks small cells (`< 5` people), rejects any spoken sentence containing unverified digits (`narrator.py`), updates the screen, and speaks the verified summary.
