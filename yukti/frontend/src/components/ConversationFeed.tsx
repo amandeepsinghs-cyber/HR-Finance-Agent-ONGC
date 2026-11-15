@@ -235,6 +235,7 @@ export const ConversationFeed: React.FC<ConversationFeedProps> = ({
               {t.status === 'done' && t.contract && (
                 <AnswerCard
                   contract={t.contract}
+                  question={t.question}
                   isDark={isDark}
                   persona={persona}
                   fresh={!!t.fresh && isLast}

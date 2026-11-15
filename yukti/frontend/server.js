@@ -37,6 +37,7 @@ const PROXY_HTTP = [
   /^\/api\/jobs(\/|$|\?)/,
   /^\/api\/actions(\/|$|\?)/,
   /^\/api\/market(\/|$|\?)/, // 26-Oct: live Brent / WTI prices for the oil overlay
+  /^\/api\/access-requests(\/|$|\?)/, // 15-Nov: E1–E4 access requests -> Director / ED approvals
   /^\/health(\/|$|\?)/,
 ];
 const isProxiedHttp = (p) => PROXY_HTTP.some((re) => re.test(p));

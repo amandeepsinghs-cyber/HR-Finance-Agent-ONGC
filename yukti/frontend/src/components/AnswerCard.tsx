@@ -19,6 +19,7 @@ import { DocumentRenderer } from './renderers/DocumentRenderer';
 import { EmailDraftRenderer } from './renderers/EmailDraftRenderer';
 import { MapRenderer } from './renderers/MapRenderer';
 import { RefusalRenderer } from './renderers/RefusalRenderer';
+import { AccessRequestBar, shouldOfferAccessRequest } from './AccessRequestBar';
 import { SourceChipsModal } from './SourceChipsModal';
 import { RosterTable } from './renderers/RosterTable';
 import { CompareRenderer } from './renderers/CompareRenderer';
@@ -125,6 +126,8 @@ export interface AnswerCardProps {
   contract: AnswerContract;
   isDark?: boolean;
   persona?: string;
+  /** the user's question for this card (15-Nov: sent with an access request) */
+  question?: string;
   /** arrived live in this view: plays the newest-answer glow once */
   fresh?: boolean;
   /** latest card in the feed: shows follow-up chips */
@@ -219,7 +222,7 @@ const TextAnswer: React.FC<{
   );
 };
 
-export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false, persona, isLatest = false, onNavigateToAlternative, onAsk, onReplot }) => {
+export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false, persona, question, isLatest = false, onNavigateToAlternative, onAsk, onReplot }) => {
   const [selectedSource, setSelectedSource] = useState<SourceCitation | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
   useEffect(() => {
@@ -625,6 +628,11 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({ contract, isDark = false
               </p>
             )}
           </header>
+
+          {/* 15-Nov: E1–E4 — data withheld at this access level; request access from Director / ED */}
+          {shouldOfferAccessRequest(contract, persona || contract.persona) && (
+            <AccessRequestBar contract={contract} persona={persona || contract.persona} question={question} />
+          )}
 
           {/* KPI hero numerals */}
           {kpis.length > 0 && effectiveVisualType !== 'kpi' && !refused && <KpiRenderer kpis={displayVisualType === 'statement' ? kpis.slice(0, 3) : kpis} isDark={isDark} spark={spark} />}

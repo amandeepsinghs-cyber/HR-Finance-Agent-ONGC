@@ -213,6 +213,7 @@ export const CanvasView: React.FC<CanvasViewProps> = ({
         <AnswerCard
           key={latest.id}
           contract={latest.contract}
+          question={latest.question}
           isDark={isDark}
           persona={persona}
           fresh={latest.fresh}

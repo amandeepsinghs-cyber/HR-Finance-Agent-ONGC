@@ -52,6 +52,7 @@ from app.export_audit import (
 from app.tools.export_tool import DOCS_TOAST, SHEETS_TOAST, DocumentExporter
 from app.turn_runner import get_agent_turn_runner
 from app.jobs.api import router as jobs_router
+from app.access_requests import router as access_requests_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("yukti.server")
@@ -71,6 +72,7 @@ app = FastAPI(
 )
 
 app.include_router(jobs_router)
+app.include_router(access_requests_router)  # 15-Nov: E1–E4 "request access" -> Director / ED approval (demo)
 
 # CORS (P0.5, BUG-32): only configured origins (YUKTI_ALLOWED_ORIGINS), never "*" with credentials.
 # The UI normally talks to the backend through its single-origin proxy (server.js), so browsers never preflight.

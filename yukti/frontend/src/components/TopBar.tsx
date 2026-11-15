@@ -7,6 +7,7 @@ import { PersonaType } from '@/contracts/answerContract';
 import { OrbState } from './VoiceOrb';
 import { Sun, Moon, ChevronDown, SkipBack, SkipForward, Languages, Volume2, VolumeX, Network } from 'lucide-react';
 import { IconButton } from './ui/primitives';
+import { ApprovalsBell } from './ApprovalsBell';
 
 interface TopBarProps {
   /** null = not signed in (P2H.2 G4 M2/M3): the button reads "Sign in as…" and never shows CMD */
@@ -247,6 +248,8 @@ export const TopBar: React.FC<TopBarProps> = ({
             {isMuted ? <VolumeX className="w-4 h-4 text-[var(--maroon)]" /> : <Volume2 className="w-4 h-4" />}
           </IconButton>
         )}
+        {/* 15-Nov: access requests — approvals inbox (Directors / CMD) or "my requests" (E1–E4) */}
+        <ApprovalsBell persona={currentPersona} />
         {/* "How Yukti works" — visual architecture portal (public/architecture/portal.html). Opens in a new tab so the
             conversation is kept, and follows the current theme (?theme=dark), 15-Nov. */}
         <a
