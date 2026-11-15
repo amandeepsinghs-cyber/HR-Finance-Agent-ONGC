@@ -60,9 +60,10 @@ export default function ArchitecturePage() {
         </div>
 
         <p className="text-[1.05rem] text-[var(--ink)] leading-relaxed">
-          <strong>Yukti is one voice agent backed by a deterministic, tool-driven engine.</strong> Gemini Live talks with you; code
-          decides which specialist answers; every number comes from ONGC’s certified data or a calculation engine, never from the
-          language model.
+          <strong>Yukti is a single-agent, multi-tool architecture.</strong> An agentic front end (Gemini Live) understands intent,
+          context and multilingual speech in English, Hindi and Hinglish; deterministic code on the back end does every calculation
+          (certified SQL on BigQuery, access rules, checked narration). The AI stays out of the arithmetic, so no number is invented,
+          calculations are exact and repeatable, and every answer is traceable and auditable.
         </p>
 
         {/* 15-Nov: the visual, 4-tab architecture portal (18-service diagram, voice lanes, voice → BigQuery pipeline, agent model) */}

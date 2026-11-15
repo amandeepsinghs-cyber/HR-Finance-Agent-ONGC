@@ -1,12 +1,14 @@
 # Voice-to-SQL in Yukti: From Gemini Live to BigQuery
 
+> **Architecture in one line.** Yukti is a **single-agent, multi-tool** architecture that combines the best of both worlds. An **agentic front end** (Gemini Live) understands intent, context and multilingual speech in English, Hindi and Hinglish, with natural conversational flow. **Deterministic code** on the back end does every calculation: certified SQL on BigQuery, access rules, and checked narration. That keeps the AI out of the arithmetic, so no number is invented, calculations are exact and repeatable, and every answer is traceable and auditable.
+
 > **BLUF.** Yukti answers spoken HR and Finance questions from BigQuery, but **no AI model ever writes SQL**. AI is used only to *hear*, *understand* and *speak*: Gemini Live turns speech into a question and calls Yukti's `ask_yukti` tool; Gemini 2.5 Flash turns that question into a small typed plan (`QuerySpec`, in effect a dictionary of what is needed: metric, split, filters, period). From the plan onward, **deterministic Python code** checks access, builds parameterised SQL from a governed catalog, validates it, caps its cost with a BigQuery dry run, and runs it. A typical data answer takes **about 3 seconds** end to end (median 2.9 s at the last gate).
 
 ---
 
 ## 1. The 30-second pitch
 
-> *"Yukti lets ONGC leaders ask HR and Finance questions by voice. Gemini Live listens and speaks; Gemini Flash turns the question into a structured plan. Yukti's own code, not the AI, writes the SQL from a certified catalog, applies the caller's access rules before the query runs, caps the cost of every query, and checks that every number Yukti says out loud is in the result. The same plan always produces the same SQL, so answers are repeatable and auditable."*
+> *"Yukti is a single-agent, multi-tool system: an agentic voice front end and a deterministic back end. Yukti lets ONGC leaders ask HR and Finance questions by voice. Gemini Live listens and speaks; Gemini Flash turns the question into a structured plan. Yukti's own code, not the AI, writes the SQL from a certified catalog, applies the caller's access rules before the query runs, caps the cost of every query, and checks that every number Yukti says out loud is in the result. The same plan always produces the same SQL, so answers are repeatable and auditable."*
 
 ---
 

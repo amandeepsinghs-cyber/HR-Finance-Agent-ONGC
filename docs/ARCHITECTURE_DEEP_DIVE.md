@@ -1,5 +1,7 @@
 # Yukti AI (`HR and Finance_ONGC`) — Visual Architecture & Flow Guide
 
+> **Architecture narrative.** Yukti is a **single-agent, multi-tool** architecture that combines the best of both worlds. An **agentic front end** (Gemini Live) understands intent, context and multilingual speech in English, Hindi and Hinglish, with natural conversational flow. **Deterministic code** on the back end does every calculation: certified SQL on BigQuery, access rules, and checked narration. That keeps the AI out of the arithmetic, so no number is invented, calculations are exact and repeatable, and every answer is traceable and auditable.
+
 > **Interactive HTML Portal:** Open [`architecture/yukti_architecture_portal.html`](architecture/yukti_architecture_portal.html) in any browser to click service cards and step through the 7-stage BigQuery SQL pipeline interactively.
 
 ---
