@@ -10,7 +10,17 @@
 
 ---
 
-## 2. The data's journey: every conversion and who does it
+## 2. Why SQL, and why BigQuery
+
+HR & Finance (Yukti) is fundamentally an **OLAP / aggregation problem**: slicing headcounts by station, grade and tenure, rolling up 10 years of Schedule III statements, and applying corporate definitions (for example, "continuous stay of more than 1,826 days") consistently across about **38 million rows**. **SQL is the native language for this**, and **BigQuery** is built to run these scans and group-bys quickly and cheaply.
+
+The hard part is not writing SQL. It is applying ONGC's definitions **exactly the same way every time**. So Yukti uses AI only to understand the question (a dictionary of what is needed), and keeps the definitions in certified SQL that code applies.
+
+*Not everything is aggregation:* HR policy questions use document search (Vertex AI Search), and DCF valuation uses its own calculation engine.
+
+---
+
+## 3. The data's journey: every conversion and who does it
 
 ![Data journey: every format change and who does it](architecture/yukti_data_journey.png)
 
@@ -43,7 +53,7 @@ The chart (step 9) is pushed to the screen **as soon as it is ready**, before Ge
 
 ---
 
-## 3. End-to-end architecture
+## 4. End-to-end architecture
 
 ```text
  🎤 User (voice or text)
@@ -104,7 +114,7 @@ The chart (step 9) is pushed to the screen **as soon as it is ready**, before Ge
 
 ---
 
-## 4. Who does what: each component, its input and its output
+## 5. Who does what: each component, its input and its output
 
 Read top to bottom: each row hands its **output** to the next row as **input**. Rows marked **AI** call a Gemini model; everything else is ordinary code or a Google Cloud service.
 
@@ -150,7 +160,7 @@ Follow-up questions ("only Mumbai", "as a pie chart") produce a smaller **patch*
 
 ---
 
-## 5. Worked example
+## 6. Worked example
 
 **Signed in as CMD, the user says:** *"How many executives have been in Delhi for more than 5 years, by grade?"*
 
@@ -197,12 +207,12 @@ GROUP BY grade
 
 ---
 
-## 6. The stages in detail
+## 7. The stages in detail
 
 ### Stage 1 — Hearing and routing (Gemini Live + orchestrator)
 * Gemini Live streams audio both ways and exposes exactly three tools: `ask_yukti(query)`, `ui_control(action, value)` and its alias `control_screen`. Its instructions require `ask_yukti` for every data, policy, what-if or follow-up question.
 * Gemini Live passes **text**, not a plan. Planning happens in Stage 2.
-* The orchestrator's 15-step ladder runs the **access check before any data handler** and answers many questions without SQL (see §3 and §4).
+* The orchestrator's 15-step ladder runs the **access check before any data handler** and answers many questions without SQL (see §4 and §5).
 
 ### Stage 2 — Understanding (planner, AI as a function)
 * Gemini 2.5 Flash maps the question, recent turns and the catalog of allowed metrics and dimensions into a `QuerySpec`. Follow-ups ("only Mumbai", "as a pie chart") become a **patch** on the previous plan.
@@ -227,7 +237,7 @@ GROUP BY grade
 
 ---
 
-## 7. Why not let the AI write SQL?
+## 8. Why not let the AI write SQL?
 
 | | LLM writes SQL directly | Yukti (AI plans, code writes SQL) |
 |---|---|---|
@@ -240,7 +250,7 @@ GROUP BY grade
 
 ---
 
-## 8. Limits and known gaps (be upfront about these)
+## 9. Limits and known gaps (be upfront about these)
 
 * **Understanding is still AI.** Determinism starts at the plan. If Gemini Flash misreads the question, the SQL will be exact but for the wrong question. This is measured with the golden question set; the question and the plan are shown and logged for every answer.
 * **"More than" vs "at least".** Certified definitions use strict `>` (e.g. `> 1826` days), but some generic plans currently produce `>=` (e.g. "more than 3 years" became "3 years or more"). Fix pending.
@@ -250,7 +260,7 @@ GROUP BY grade
 
 ---
 
-## 9. FAQ
+## 10. FAQ
 
 **Q1. Doesn't BigQuery already do natural language to SQL?**
 BigQuery has Gemini features that help analysts write and explain SQL in the console and notebooks. Yukti adds what those do not: **real-time voice**, a **governed plan-then-compile** design where no model writes the executed SQL, **role-based access applied before and after each query**, number-checked narration, and a voice-plus-chart experience for executives.
@@ -266,7 +276,7 @@ Yukti's workload is analytical (sums, trends and group-bys over ~38 million rows
 
 ---
 
-## 10. Key files
+## 11. Key files
 
 | Concern | File |
 |---|---|

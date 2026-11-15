@@ -1149,7 +1149,7 @@
       <div class="takeaway">
         <div class="takeaway-text">
           <h2>How Voice Turns Into a BigQuery Query — Without Any AI Writing SQL</h2>
-          <p><strong>Click any step (1–7) on the diagram or pills below</strong> to trace a real question from spoken audio all the way to BigQuery and back.</p>
+          <p>Yukti is fundamentally an <strong>aggregation (OLAP) problem</strong>: slicing headcounts, rolling up statements and applying corporate definitions across ~38 million rows. <strong>SQL is the native language for this</strong>, so AI plans the question and Yukti's code writes the SQL. <strong>Click any step (1–7)</strong> on the diagram or the pills below to trace a real question from voice to BigQuery and back.</p>
         </div>
       </div>
 
@@ -1458,6 +1458,7 @@
       <div class="story-card" style="margin-bottom: 24px;">
         <span class="sc-num" style="background: var(--intel-pale); color: var(--intel);">Step 6 → Step 7</span>
         <h3>What is the "dictionary"? (QuerySpec)</h3>
+        <p><strong>Why a dictionary and then SQL?</strong> Yukti's questions are aggregations (headcounts, roll-ups, corporate definitions over millions of rows), and SQL is the native language for those. AI only fills in <em>what</em> is needed; certified SQL written by code applies ONGC's definitions the same way every time.</p>
         <p>Simply: <strong>Gemini Flash fills in a dictionary of what is needed, and the SQL builder turns that dictionary into a SQL command.</strong> Precisely, the form takes three shapes:</p>
         <div class="shape-steps">
           <div class="shape-step"><h4>1 · JSON text</h4><p>Gemini replies in a fixed answer format, so it can only return JSON in that shape.</p></div>
