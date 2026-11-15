@@ -20,7 +20,48 @@ The hard part is not writing SQL. It is applying ONGC's definitions **exactly th
 
 ---
 
-## 3. The data's journey: every conversion and who does it
+## 3. The core design pattern (shared with Urvi / WellPulse)
+
+**Both voice agents use AI only to fill in a dictionary; trusted code does the filtering and computation.** Urvi uses narrow tools, so one AI step is enough. Yukti answers open-ended analytics across many tables, so a planner fills the dictionary.
+
+```text
+[Spoken audio]
+      │
+      ▼
+[1. Speech → dictionary]  (AI)
+  Urvi:  Gemini Live calls a narrow tool directly
+         well_profile({"well_id": "GK-129", "months": 36})
+  Yukti: Gemini Live calls one broad tool → ask_yukti({"query": "…"})
+         then Gemini 2.5 Flash fills the plan dictionary
+         {"metric": "headcount", "dimensions": ["grade"], "filters": [...]}
+      │
+      ▼
+[2. Validate, then call trusted code]  (code)
+  Urvi:  well_profile(well_id, months)
+  Yukti: QuerySpec.model_validate(plan) → access rules → compiler.compile(spec)
+      │
+      ▼
+[3. Deterministic filtering and computation]  (code, not AI)
+  • Filter records by well, field, status, station, grade, tenure
+  • Compute: decline curves and ML classifiers (Urvi); certified SQL on BigQuery (Yukti)
+      │
+      ▼
+[4. Verified output]
+  • Screen: the full result (charts, tables, 3D map)
+  • Voice: a short summary for Gemini Live to speak in English or Hindi
+    (Yukti checks every spoken number against the result)
+```
+
+| | **Urvi (WellPulse)** | **Yukti (HR & Finance)** |
+|---|---|---|
+| Voice tools | Many narrow tools with typed arguments (e.g. `well_profile(well_id, months)`) | One broad tool, `ask_yukti(query)`, plus `ui_control` for the screen |
+| Who fills the dictionary | Gemini Live, in the tool call | Gemini 2.5 Flash, in the planner (`QuerySpec`) |
+| Why | Questions map to a known set of well and field operations | Questions span 86 tables of metrics, filters and periods, too many for fixed tool parameters |
+| Trusted computation | Python analytics (decline curves, ML classifiers) | Access rules + certified SQL on BigQuery |
+
+---
+
+## 4. The data's journey: every conversion and who does it
 
 ![Data journey: every format change and who does it](architecture/yukti_data_journey.png)
 
@@ -53,7 +94,7 @@ The chart (step 9) is pushed to the screen **as soon as it is ready**, before Ge
 
 ---
 
-## 4. End-to-end architecture
+## 5. End-to-end architecture
 
 ```text
  🎤 User (voice or text)
@@ -114,7 +155,7 @@ The chart (step 9) is pushed to the screen **as soon as it is ready**, before Ge
 
 ---
 
-## 5. Who does what: each component, its input and its output
+## 6. Who does what: each component, its input and its output
 
 Read top to bottom: each row hands its **output** to the next row as **input**. Rows marked **AI** call a Gemini model; everything else is ordinary code or a Google Cloud service.
 
@@ -160,7 +201,7 @@ Follow-up questions ("only Mumbai", "as a pie chart") produce a smaller **patch*
 
 ---
 
-## 6. Worked example
+## 7. Worked example
 
 **Signed in as CMD, the user says:** *"How many executives have been in Delhi for more than 5 years, by grade?"*
 
@@ -207,12 +248,12 @@ GROUP BY grade
 
 ---
 
-## 7. The stages in detail
+## 8. The stages in detail
 
 ### Stage 1 — Hearing and routing (Gemini Live + orchestrator)
 * Gemini Live streams audio both ways and exposes exactly three tools: `ask_yukti(query)`, `ui_control(action, value)` and its alias `control_screen`. Its instructions require `ask_yukti` for every data, policy, what-if or follow-up question.
 * Gemini Live passes **text**, not a plan. Planning happens in Stage 2.
-* The orchestrator's 15-step ladder runs the **access check before any data handler** and answers many questions without SQL (see §4 and §5).
+* The orchestrator's 15-step ladder runs the **access check before any data handler** and answers many questions without SQL (see §5 and §6).
 
 ### Stage 2 — Understanding (planner, AI as a function)
 * Gemini 2.5 Flash maps the question, recent turns and the catalog of allowed metrics and dimensions into a `QuerySpec`. Follow-ups ("only Mumbai", "as a pie chart") become a **patch** on the previous plan.
@@ -237,7 +278,7 @@ GROUP BY grade
 
 ---
 
-## 8. Why not let the AI write SQL?
+## 9. Why not let the AI write SQL?
 
 | | LLM writes SQL directly | Yukti (AI plans, code writes SQL) |
 |---|---|---|
@@ -250,7 +291,7 @@ GROUP BY grade
 
 ---
 
-## 9. Limits and known gaps (be upfront about these)
+## 10. Limits and known gaps (be upfront about these)
 
 * **Understanding is still AI.** Determinism starts at the plan. If Gemini Flash misreads the question, the SQL will be exact but for the wrong question. This is measured with the golden question set; the question and the plan are shown and logged for every answer.
 * **"More than" vs "at least".** Certified definitions use strict `>` (e.g. `> 1826` days), but some generic plans currently produce `>=` (e.g. "more than 3 years" became "3 years or more"). Fix pending.
@@ -260,7 +301,7 @@ GROUP BY grade
 
 ---
 
-## 10. FAQ
+## 11. FAQ
 
 **Q1. Doesn't BigQuery already do natural language to SQL?**
 BigQuery has Gemini features that help analysts write and explain SQL in the console and notebooks. Yukti adds what those do not: **real-time voice**, a **governed plan-then-compile** design where no model writes the executed SQL, **role-based access applied before and after each query**, number-checked narration, and a voice-plus-chart experience for executives.
@@ -276,7 +317,7 @@ Yukti's workload is analytical (sums, trends and group-bys over ~38 million rows
 
 ---
 
-## 11. Key files
+## 12. Key files
 
 | Concern | File |
 |---|---|

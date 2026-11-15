@@ -520,6 +520,17 @@
     .btn-sm:hover { border-color: var(--accent-deep); color: var(--accent-deep); }
 
     /* Tab 5: data journey */
+    .pattern-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 8px; }
+    @media (max-width: 1100px) { .pattern-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 700px) { .pattern-grid { grid-template-columns: 1fr; } }
+    .pattern-step { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-md); padding: 14px 16px; }
+    .pattern-step p { font-size: 13.5px; color: var(--ink-2); margin: 6px 0 0 0; }
+    .pattern-step .mono { font-size: 12px; word-break: break-word; }
+    .pattern-num { font-family: var(--font-display); font-weight: 700; font-size: 14.5px; color: var(--ink); display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .pt { font-family: var(--font-sans); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+    .pt.ai { background: var(--intel-pale); color: var(--intel); }
+    .pt.code { background: var(--accent-pale); color: var(--accent-deep); }
+    .pt.out { background: var(--positive-pale); color: var(--positive); }
     .jn-node { cursor: pointer; }
     .jn-node:hover > rect:first-of-type { stroke-width: 3.4px !important; }
     .who-table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -1334,6 +1345,26 @@
         <div class="takeaway-text">
           <h2>Your Question Changes Format 13 Times — Only 5 Steps Use AI</h2>
           <p>Voice becomes audio, then text, then a <strong>dictionary of what is needed</strong>, then SQL, then numbers, then a chart and speech. <strong>AI only hears, understands and speaks</strong>; Yukti's code and BigQuery produce every number. <strong>Click a box</strong> to highlight who does it in the table below.</p>
+        </div>
+      </div>
+
+      <div class="story-card" style="margin-bottom: 24px;">
+        <span class="sc-num" style="background: var(--accent-pale); color: var(--accent-deep);">Core design pattern · shared with Urvi (WellPulse)</span>
+        <h3>AI fills in a dictionary; trusted code does the filtering and computation</h3>
+        <p>Urvi uses narrow tools, so one AI step is enough. Yukti answers open-ended analytics across 86 tables, so a planner fills the dictionary.</p>
+        <div class="pattern-grid">
+          <div class="pattern-step"><div class="pattern-num">1 · Speech → dictionary <span class="pt ai">AI</span></div>
+            <p><strong>Urvi:</strong> Gemini Live calls a narrow tool directly: <span class="mono">well_profile({"well_id": "GK-129", "months": 36})</span></p>
+            <p><strong>Yukti:</strong> Gemini Live calls one broad tool, <span class="mono">ask_yukti({"query": "…"})</span>; Gemini 2.5 Flash then fills the plan: <span class="mono">{"metric": "headcount", "dimensions": ["grade"], "filters": [...]}</span></p></div>
+          <div class="pattern-step"><div class="pattern-num">2 · Validate, call trusted code <span class="pt code">Code</span></div>
+            <p><strong>Urvi:</strong> <span class="mono">well_profile(well_id, months)</span></p>
+            <p><strong>Yukti:</strong> <span class="mono">QuerySpec.model_validate(plan)</span> → access rules → <span class="mono">compiler.compile(spec)</span></p></div>
+          <div class="pattern-step"><div class="pattern-num">3 · Filter and compute <span class="pt code">Code</span></div>
+            <p>Filter by well, field, status, station, grade, tenure.</p>
+            <p>Compute decline curves and ML classifiers (Urvi) or certified SQL on BigQuery (Yukti).</p></div>
+          <div class="pattern-step"><div class="pattern-num">4 · Verified output <span class="pt out">Screen + voice</span></div>
+            <p><strong>Screen:</strong> the full result (charts, tables, 3D map).</p>
+            <p><strong>Voice:</strong> a short summary spoken in English or Hindi; Yukti checks every spoken number against the result.</p></div>
         </div>
       </div>
 
